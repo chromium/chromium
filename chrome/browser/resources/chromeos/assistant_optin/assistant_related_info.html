@@ -27,12 +27,13 @@
         height: 200px;
       }
     }
-    /**
-     * TODO(crbug.com/1101320): remove this when style of gstatic animation is
-     * fixed.
-     */
-    #content-container {
-      z-index: 1;
+
+    :host-context([orientation=landscape]).animation-container {
+      transform: translateX(-20px);
+    }
+
+    :host-context([orientation=vertical]) oobe-adaptive-dialog {
+      --oobe-adaptive-dialog-content-top-padding: 20px;
     }
   </style>
   <link rel="stylesheet" href="assistant_shared_styles.css">
@@ -47,11 +48,9 @@
     </h1>
     <div slot="subtitle" hidden$="[[skipActivityControl_]]"
         inner-h-t-m-l="[[i18nAdvanced('assistantRelatedInfoMessage')]]"></div>
-    <div slot="subtitle" class="animation-outer-container"
+    <div slot="subtitle" class="animation-container"
         hidden$="[[!skipActivityControl_]]">
-      <div class="animation-container">
-        <webview id="assistant-animation-webview" tabindex="-1"></webview>
-      </div>
+      <webview id="assistant-animation-webview" tabindex="-1"></webview>
     </div>
     <div slot="content" class="flex layout vertical center center-justified"
         hidden$="[[skipActivityControl_]]">

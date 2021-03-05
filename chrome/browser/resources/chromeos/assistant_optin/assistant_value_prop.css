@@ -16,12 +16,8 @@
   --oobe-adaptive-dialog-content-top-padding: 0;
 }
 
-/**
-  * TODO(crbug.com/1101320): remove this when style of gstatic animation is
-  * fixed
-  */
-#content-container {
-  z-index: 1;
+#animation-container-horizontal-mode {
+  transform: translateX(-20px);
 }
 
 #intro-title-text {

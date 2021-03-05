@@ -50,37 +50,39 @@ webview {
   margin-inline-end: 0;
 }
 
-/**
- * TODO(crbug.com/1101320): remove below when style of gstatic animation is
- * fixed.
- */
-h1,
-#content-container {
-  z-index: 1;
-}
-
-.animation-outer-container {
-  max-height: 240px;
-}
-
 :host-context(html:not([new-layout])) .animation-container {
   display: none;
 }
 
 :host-context([new-layout]) .animation-container {
-  height: 350px;
-  transform: translateY(-15%);
+  height: 220px;
 }
 
 @media screen and (max-height: 1040px) {
-  :host-context([orientation=vertical][screen=oobe]) .animation-container {
+  :host-context([orientation=vertical][screen=oobe]) .animation-container,
+  :host-context([orientation=vertical][screen=oobe])
+      #animation-container-vertical-mode {
     display: none;
+  }
+
+  :host-context([orientation=vertical][screen=oobe])
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
   }
 }
 
 @media screen and (max-height: 825px) {
-  :host-context([orientation=vertical][screen=gaia-signin])
-      .animation-container {
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      .animation-container,
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      #animation-container-vertical-mode {
     display: none;
+  }
+
+  :host-context([orientation=vertical]:not([screen=oobe]))
+      oobe-adaptive-dialog {
+    --oobe-adaptive-dialog-content-top-padding:
+        var(--oobe-adaptive-dialog-header-top-padding);
   }
 }
