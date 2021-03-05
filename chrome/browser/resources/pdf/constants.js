@@ -27,6 +27,7 @@ export const DisplayAnnotationsAction = {
  *   keywords: string,
  *   linearized: boolean,
  *   modDate: string,
+ *   pageSize: string,
  *   producer: string,
  *   subject: string,
  *   title: string,
