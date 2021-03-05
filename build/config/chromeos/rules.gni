@@ -392,8 +392,25 @@ template("lacros_tast_test") {
   forward_variables_from(invoker,
                          [
                            "override_board",
+                           "tast_attr_expr",
+                           "tast_disabled_tests",
                            "tast_tests",
                          ])
+  assert(defined(tast_attr_expr) != defined(tast_tests),
+         "Specify one of tast_tests or tast_attr_expr.")
+
+  # Append any disabled tests to the expression.
+  if (defined(tast_disabled_tests)) {
+    assert(defined(tast_attr_expr),
+           "tast_attr_expr must be used when specifying tast_disabled_tests.")
+    foreach(test, tast_disabled_tests) {
+      tast_attr_expr += " && !\"name:${test}\""
+    }
+  }
+  if (defined(tast_attr_expr)) {
+    tast_attr_expr = "( " + tast_attr_expr + " )"
+  }
+
   generate_runner_script(target_name) {
     testonly = true
     generated_script = "$root_build_dir/bin/run_${target_name}"
