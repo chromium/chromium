@@ -497,10 +497,16 @@ void ExternalWebAppManager::OnExternalWebAppsSynchronized(
                               url_and_result.second.code);
     if (url_and_result.second.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
+    }
+    // We mark the app as migrated to a web app as long as the installation
+    // was successful, even if the previous app was not installed. This ensures
+    // we properly re-install apps if the migration feature is rolled back.
+    if (IsSuccess(url_and_result.second.code)) {
       auto iter = desired_uninstalls.find(url_and_result.first);
-      DCHECK(iter != desired_uninstalls.end());
-      for (const auto& uninstalled_id : iter->second) {
-        MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
+      if (iter != desired_uninstalls.end()) {
+        for (const auto& uninstalled_id : iter->second) {
+          MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
+        }
       }
     }
   }
