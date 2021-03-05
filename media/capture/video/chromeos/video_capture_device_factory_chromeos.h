@@ -16,8 +16,6 @@
 
 namespace media {
 
-class CameraAppDeviceBridgeImpl;
-
 using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>)>;
 
@@ -26,8 +24,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
  public:
   explicit VideoCaptureDeviceFactoryChromeOS(
       scoped_refptr<base::SingleThreadTaskRunner>
-          task_runner_for_screen_observer,
-      CameraAppDeviceBridgeImpl* camera_app_device_bridge);
+          task_runner_for_screen_observer);
 
   ~VideoCaptureDeviceFactoryChromeOS() override;
 
@@ -35,8 +32,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) final;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
-
-  bool IsSupportedCameraAppDeviceBridge() override;
 
   static gpu::GpuMemoryBufferManager* GetBufferManager();
   static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
@@ -58,8 +53,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
   // that |camera_hal_delegate_| issues and receives must be sequenced through
   // |camera_hal_ipc_thread_|.
   scoped_refptr<CameraHalDelegate> camera_hal_delegate_;
-
-  CameraAppDeviceBridgeImpl* camera_app_device_bridge_;  // Weak.
 
   bool initialized_;
 

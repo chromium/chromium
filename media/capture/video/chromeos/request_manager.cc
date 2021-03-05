@@ -17,6 +17,7 @@
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
@@ -42,7 +43,7 @@ RequestManager::RequestManager(
     std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
     BlobifyCallback blobify_callback,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    CameraAppDeviceImpl* camera_app_device)
+    base::WeakPtr<CameraAppDeviceImpl> camera_app_device)
     : callback_ops_(this, std::move(callback_ops_receiver)),
       capture_interface_(std::move(capture_interface)),
       device_context_(device_context),
@@ -57,7 +58,7 @@ RequestManager::RequestManager(
       capturing_(false),
       partial_result_count_(1),
       first_frame_shutter_time_(base::TimeTicks()),
-      camera_app_device_(std::move(camera_app_device)) {
+      camera_app_device_(camera_app_device) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);

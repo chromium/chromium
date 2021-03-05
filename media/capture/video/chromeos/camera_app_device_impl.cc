@@ -5,6 +5,7 @@
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
 
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 
 namespace media {
@@ -59,20 +60,21 @@ ReprocessTaskQueue CameraAppDeviceImpl::GetSingleShotReprocessOptions(
 }
 
 CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
-                                         cros::mojom::CameraInfoPtr camera_info,
-                                         base::OnceClosure cleanup_callback)
+                                         cros::mojom::CameraInfoPtr camera_info)
     : device_id_(device_id),
       camera_info_(std::move(camera_info)),
-      cleanup_callback_(std::move(cleanup_callback)),
-      creation_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       next_metadata_observer_id_(0),
-      next_camera_event_observer_id_(0),
-      weak_ptr_factory_(
-          std::make_unique<base::WeakPtrFactory<CameraAppDeviceImpl>>(this)) {}
+      next_camera_event_observer_id_(0) {}
 
 CameraAppDeviceImpl::~CameraAppDeviceImpl() {
-  creation_task_runner_->DeleteSoon(FROM_HERE, std::move(weak_ptr_factory_));
+  // If the instance is bound, then this instance should only be destroyed when
+  // the mojo connection is dropped, which also happens on the mojo thread.
+  DCHECK(!mojo_task_runner_ || mojo_task_runner_->BelongsToCurrentThread());
+
+  // All the weak pointers of |weak_ptr_factory_| should be invalidated on
+  // camera device IPC thread before destroying CameraAppDeviceImpl.
+  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
 }
 
 void CameraAppDeviceImpl::BindReceiver(
@@ -80,8 +82,17 @@ void CameraAppDeviceImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver));
   receivers_.set_disconnect_handler(
       base::BindRepeating(&CameraAppDeviceImpl::OnMojoConnectionError,
-                          weak_ptr_factory_->GetWeakPtr()));
+                          weak_ptr_factory_for_mojo_.GetWeakPtr()));
   mojo_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+}
+
+base::WeakPtr<CameraAppDeviceImpl> CameraAppDeviceImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void CameraAppDeviceImpl::InvalidatePtrs(base::OnceClosure callback) {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  std::move(callback).Run();
 }
 
 void CameraAppDeviceImpl::ConsumeReprocessOptions(
@@ -140,7 +151,7 @@ void CameraAppDeviceImpl::OnShutterDone() {
   mojo_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread,
-                     weak_ptr_factory_->GetWeakPtr()));
+                     weak_ptr_factory_for_mojo_.GetWeakPtr()));
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -157,9 +168,10 @@ void CameraAppDeviceImpl::SetReprocessOption(
 
   ReprocessTask task;
   task.effect = effect;
-  task.callback = media::BindToCurrentLoop(base::BindOnce(
-      &CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
-      weak_ptr_factory_->GetWeakPtr(), std::move(reprocess_result_callback)));
+  task.callback = media::BindToCurrentLoop(
+      base::BindOnce(&CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
+                     weak_ptr_factory_for_mojo_.GetWeakPtr(),
+                     std::move(reprocess_result_callback)));
 
   if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
     auto e = BuildMetadataEntry(
@@ -295,11 +307,8 @@ void CameraAppDeviceImpl::DisableEeNr(ReprocessTask* task) {
 }
 
 void CameraAppDeviceImpl::OnMojoConnectionError() {
-  // Since it is the error handler of a receiver set, it might be triggered more
-  // than once.
-  if (!cleanup_callback_.is_null()) {
-    std::move(cleanup_callback_).Run();
-  }
+  CameraAppDeviceBridgeImpl::GetInstance()->OnDeviceMojoDisconnected(
+      device_id_);
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(

@@ -263,7 +263,7 @@ export class Preview {
       track.stop();
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
-        await deviceOperator.waitForDeviceClose(deviceId);
+        deviceOperator.dropConnection(deviceId);
       }
       this.stream_ = null;
     }
