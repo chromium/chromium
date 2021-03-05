@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
@@ -26,13 +24,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater {
     private static final float ANIMATION_PERCENTAGE_ZERO = 0.f;
     private static final float ANIMATION_PERCENTAGE_COMPLETE = 1.f;
-    private static final float EXPANDED_CAPTION_THRESHOLD = 0.5f;
-
-    /**
-     * The resource id for the string to display when the Bar is expanded.
-     */
-    @VisibleForTesting
-    public static final int EXPANED_CAPTION_ID = R.string.contextmenu_open_in_new_tab;
 
     /**
      * The caption View.

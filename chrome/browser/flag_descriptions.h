@@ -1660,8 +1660,8 @@ extern const char kContextMenuPerformanceInfoAndRemoteHintFetchingDescription[];
 extern const char kContextualSearchDebugName[];
 extern const char kContextualSearchDebugDescription[];
 
-extern const char kContextualSearchDefinitionsName[];
-extern const char kContextualSearchDefinitionsDescription[];
+extern const char kContextualSearchForceCaptionName[];
+extern const char kContextualSearchForceCaptionDescription[];
 
 extern const char kContextualSearchLiteralSearchTapName[];
 extern const char kContextualSearchLiteralSearchTapDescription[];

@@ -32,6 +32,7 @@ public interface ContextualSearchPanelInterface {
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum, @Nullable String[] relatedSearches);
     void setCaption(String caption);
+    void ensureCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);
     void setManagementDelegate(ContextualSearchManagementDelegate delegate);
     void onPanelNavigatedToPrefetchedSearch(boolean didResolve);

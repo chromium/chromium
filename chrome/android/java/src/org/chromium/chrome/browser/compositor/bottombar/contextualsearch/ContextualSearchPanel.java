@@ -617,6 +617,14 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getSearchBarControl().setCaption(caption);
     }
 
+    /** Ensures that we have a Caption to display in the SearchBar. */
+    @Override
+    public void ensureCaption() {
+        if (getSearchBarControl().getCaptionVisible()) return;
+        getSearchBarControl().setCaption(
+                mContext.getResources().getString(R.string.contextual_search_default_caption));
+    }
+
     /**
      * Handles showing the resolved search term in the SearchBar.
      * @param searchTerm The string that represents the search term.

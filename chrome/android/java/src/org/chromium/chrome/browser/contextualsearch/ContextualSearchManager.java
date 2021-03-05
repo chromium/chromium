@@ -506,6 +506,7 @@ public class ContextualSearchManager
             mTranslateController.forceAutoDetectTranslateUnlessDisabled(mSearchRequest);
             mDidStartLoadingResolvedSearchRequest = false;
             mSearchPanel.setSearchTerm(selection);
+            ensureCaption();
             if (shouldPrefetch) loadSearchUrl();
         } else {
             // The selection is no longer valid, so we can't build a request.  Don't show the UX.
@@ -742,6 +743,7 @@ public class ContextualSearchManager
             boolean doesAnswer = false;
             onSetCaption(resolvedSearchTerm.caption(), doesAnswer);
         }
+        ensureCaption();
 
         boolean quickActionShown =
                 mSearchPanel.getSearchBarControl().getQuickActionControl().hasQuickAction();
@@ -1309,6 +1311,7 @@ public class ContextualSearchManager
         String searchQuery = mRelatedSearches[suggestionIndex];
         mSearchRequest = new ContextualSearchRequest(searchQuery);
         mSearchPanel.setSearchTerm(searchQuery);
+        // TODO(donnd): determine what to show in the Caption.
         loadSearchUrl();
     }
 
@@ -1552,6 +1555,7 @@ public class ContextualSearchManager
         if (isSearchPanelShowing()) {
             if (selectionValid) {
                 mSearchPanel.setSearchTerm(selection);
+                ensureCaption();
             } else {
                 hideContextualSearch(StateChangeReason.INVALID_SELECTION);
             }
@@ -1579,7 +1583,10 @@ public class ContextualSearchManager
 
     /** Shows the given selection as the Search Term in the Bar. */
     private void showSelectionAsSearchInBar(String selection) {
-        if (isSearchPanelShowing()) mSearchPanel.setSearchTerm(selection);
+        if (isSearchPanelShowing()) {
+            mSearchPanel.setSearchTerm(selection);
+            ensureCaption();
+        }
     }
 
     // ============================================================================================
@@ -1880,6 +1887,17 @@ public class ContextualSearchManager
         final Tab tab = mTabSupplier.get();
         if (tab == null || tab.getView() == null) return 0;
         return tab.getView().getHeight();
+    }
+
+    // ============================================================================================
+    // Misc helpers
+    // ============================================================================================
+
+    /** Ensures that a caption has been set. We use a default guidance message by default. */
+    private void ensureCaption() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION)) {
+            mSearchPanel.ensureCaption();
+        }
     }
 
     // ============================================================================================

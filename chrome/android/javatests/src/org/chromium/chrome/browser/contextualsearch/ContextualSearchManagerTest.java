@@ -211,6 +211,8 @@ public class ContextualSearchManagerTest {
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, false);
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_UI = ImmutableMap.of(
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
+    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     private ActivityMonitor mActivityMonitor;
     private ContextualSearchFakeServer mFakeServer;
@@ -3735,5 +3737,26 @@ public class ContextualSearchManagerTest {
         Assert.assertTrue("Related Searches results should have been returned but were not!",
                 resolvedSearchTerm.relatedSearches().length > 0);
         // TODO(donnd): Add a check that the searches appeared in the Panel once the Panel can.
+    }
+
+    /**
+     * Tests that a caption is shown on a non intelligent search when the force-caption feature is
+     * enabled.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testNonResolveCaption() throws Exception {
+        // Simulate a non-resolve search and make sure no Caption is shown.
+        simulateNonResolveSearch("search");
+        Assert.assertFalse(mPanel.getSearchBarControl().getCaptionVisible());
+        closePanel();
+
+        // Now try again with Caption-forcing.
+        FeatureList.setTestFeatures(ENABLE_FORCE_CAPTION);
+        simulateNonResolveSearch("search");
+        Assert.assertTrue(mPanel.getSearchBarControl().getCaptionVisible());
+        closePanel();
     }
 }
