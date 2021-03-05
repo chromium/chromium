@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -69,24 +70,19 @@ MessagePumpWin::~MessagePumpWin() = default;
 void MessagePumpWin::Run(Delegate* delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  RunState s;
-  s.delegate = delegate;
-  s.should_quit = false;
-  s.run_depth = state_ ? state_->run_depth + 1 : 1;
+  RunState run_state(delegate);
+  if (run_state_)
+    run_state.is_nested = true;
 
-  RunState* previous_state = state_;
-  state_ = &s;
-
+  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
   DoRunLoop();
-
-  state_ = previous_state;
 }
 
 void MessagePumpWin::Quit() {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  DCHECK(state_);
-  state_->should_quit = true;
+  DCHECK(run_state_);
+  run_state_->should_quit = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -218,13 +214,13 @@ void MessagePumpForUI::DoRunLoop() {
 
     bool more_work_is_plausible = ProcessNextWindowsMessage();
     in_native_loop_ = false;
-    if (state_->should_quit)
+    if (run_state_->should_quit)
       break;
 
-    Delegate::NextWorkInfo next_work_info = state_->delegate->DoWork();
+    Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
     in_native_loop_ = false;
     more_work_is_plausible |= next_work_info.is_immediate();
-    if (state_->should_quit)
+    if (run_state_->should_quit)
       break;
 
     if (installed_native_timer_) {
@@ -238,12 +234,12 @@ void MessagePumpForUI::DoRunLoop() {
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = state_->delegate->DoIdleWork();
+    more_work_is_plausible = run_state_->delegate->DoIdleWork();
     // DoIdleWork() shouldn't end up in native nested loops and thus shouldn't
     // have any chance of reinstalling a native timer.
     DCHECK(!in_native_loop_);
     DCHECK(!installed_native_timer_);
-    if (state_->should_quit)
+    if (run_state_->should_quit)
       break;
 
     if (more_work_is_plausible)
@@ -262,7 +258,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
   for (DWORD delay = GetSleepTimeoutMs(next_work_info.delayed_run_time,
                                        next_work_info.recent_now);
        delay != 0; delay = GetSleepTimeoutMs(next_work_info.delayed_run_time)) {
-    state_->delegate->BeforeWait();
+    run_state_->delegate->BeforeWait();
 
     // Tell the optimizer to retain these values to simplify analyzing hangs.
     base::debug::Alias(&delay);
@@ -286,7 +282,7 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
       // current thread.
 
       // As in ProcessNextWindowsMessage().
-      auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+      auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
       {
         TRACE_EVENT0("base", "MessagePumpForUI::WaitForWork GetQueueStatus");
         if (HIWORD(::GetQueueStatus(QS_SENDMESSAGE)) & QS_SENDMESSAGE)
@@ -319,7 +315,7 @@ void MessagePumpForUI::HandleWorkMessage() {
   // If we are being called outside of the context of Run, then don't try to do
   // any work.  This could correspond to a MessageBox call or something of that
   // sort.
-  if (!state_) {
+  if (!run_state_) {
     // Since we handled a kMsgHaveWork message, we must still update this flag.
     work_scheduled_ = false;
     return;
@@ -330,11 +326,11 @@ void MessagePumpForUI::HandleWorkMessage() {
   // messages that may be in the Windows message queue.
   ProcessPumpReplacementMessage();
 
-  Delegate::NextWorkInfo next_work_info = state_->delegate->DoWork();
+  Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
   if (next_work_info.is_immediate()) {
     ScheduleWork();
   } else {
-    state_->delegate->BeforeWait();
+    run_state_->delegate->BeforeWait();
     ScheduleNativeTimer(next_work_info);
   }
 }
@@ -359,14 +355,14 @@ void MessagePumpForUI::HandleTimerMessage() {
   // If we are being called outside of the context of Run, then don't do
   // anything.  This could correspond to a MessageBox call or something of
   // that sort.
-  if (!state_)
+  if (!run_state_)
     return;
 
-  Delegate::NextWorkInfo next_work_info = state_->delegate->DoWork();
+  Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
   if (next_work_info.is_immediate()) {
     ScheduleWork();
   } else {
-    state_->delegate->BeforeWait();
+    run_state_->delegate->BeforeWait();
     ScheduleNativeTimer(next_work_info);
   }
 }
@@ -464,7 +460,7 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
     // (GetQueueStatus() itself not being expected to do work; it's fine to use
     // only on ScopedDoNativeWork for both calls -- we trace them independently
     // just in case internal work stalls).
-    auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+    auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
 
     {
       // Individually trace ::GetQueueStatus and ::PeekMessage because sampling
@@ -517,7 +513,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
     // it if |enable_wm_quit_| is explicitly set (and is generally unexpected
     // otherwise).
     if (enable_wm_quit_) {
-      state_->should_quit = true;
+      run_state_->should_quit = true;
       return false;
     }
     UMA_HISTOGRAM_ENUMERATION("Chrome.MessageLoopProblem",
@@ -529,7 +525,7 @@ bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   if (msg.message == kMsgHaveWork && msg.hwnd == message_window_.hwnd())
     return ProcessPumpReplacementMessage();
 
-  auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
 
   for (Observer& observer : observers_)
     observer.WillDispatchMSG(msg);
@@ -557,7 +553,7 @@ bool MessagePumpForUI::ProcessPumpReplacementMessage() {
   bool have_message = false;
   {
     // ::PeekMessage may process internal events. Consider it native work.
-    auto scoped_do_native_work = state_->delegate->BeginNativeWork();
+    auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
 
     TRACE_EVENT0("base",
                  "MessagePumpForUI::ProcessPumpReplacementMessage PeekMessage");
@@ -722,27 +718,27 @@ void MessagePumpForIO::DoRunLoop() {
     // had no work, then it is a good time to consider sleeping (waiting) for
     // more work.
 
-    Delegate::NextWorkInfo next_work_info = state_->delegate->DoWork();
+    Delegate::NextWorkInfo next_work_info = run_state_->delegate->DoWork();
     bool more_work_is_plausible = next_work_info.is_immediate();
-    if (state_->should_quit)
+    if (run_state_->should_quit)
       break;
 
-    state_->delegate->BeforeWait();
+    run_state_->delegate->BeforeWait();
     more_work_is_plausible |= WaitForIOCompletion(0);
-    if (state_->should_quit)
+    if (run_state_->should_quit)
       break;
 
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = state_->delegate->DoIdleWork();
-    if (state_->should_quit)
+    more_work_is_plausible = run_state_->delegate->DoIdleWork();
+    if (run_state_->should_quit)
       break;
 
     if (more_work_is_plausible)
       continue;
 
-    state_->delegate->BeforeWait();
+    run_state_->delegate->BeforeWait();
     WaitForWork(next_work_info);
   }
 }
@@ -754,7 +750,7 @@ void MessagePumpForIO::WaitForWork(Delegate::NextWorkInfo next_work_info) {
 
   // We do not support nested IO message loops. This is to avoid messy
   // recursion problems.
-  DCHECK_EQ(1, state_->run_depth) << "Cannot nest an IO message loop!";
+  DCHECK(!run_state_->is_nested) << "Cannot nest an IO message loop!";
 
   DWORD timeout = GetSleepTimeoutMs(next_work_info.delayed_run_time,
                                     next_work_info.recent_now);
@@ -783,8 +779,7 @@ bool MessagePumpForIO::WaitForIOCompletion(DWORD timeout) {
                           item.handler->io_handler_location())));
       });
 
-  Delegate::ScopedDoNativeWork scoped_do_native_work(
-      state_->delegate->BeginNativeWork());
+  auto scoped_do_native_work = run_state_->delegate->BeginNativeWork();
   item.handler->OnIOCompleted(item.context, item.bytes_transfered, item.error);
 
   return true;

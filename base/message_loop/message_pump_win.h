@@ -38,13 +38,15 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
 
  protected:
   struct RunState {
-    Delegate* delegate;
+    explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
+
+    Delegate* const delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
-    bool should_quit;
+    bool should_quit = false;
 
-    // Used to count how many Run() invocations are on the stack.
-    int run_depth;
+    // Set to true if this Run() is nested within another Run().
+    bool is_nested = false;
   };
 
   virtual void DoRunLoop() = 0;
@@ -72,8 +74,8 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   //     this is simpler than MessagePumpForUI.
   std::atomic_bool work_scheduled_{false};
 
-  // State for the current invocation of Run.
-  RunState* state_ = nullptr;
+  // State for the current invocation of Run(). null if not running.
+  RunState* run_state_ = nullptr;
 
   THREAD_CHECKER(bound_thread_);
 };

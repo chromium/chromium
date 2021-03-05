@@ -91,15 +91,12 @@ void MessagePumpLibevent::FdWatchController::OnFileCanWriteWithoutBlocking(
   watcher_->OnFileCanWriteWithoutBlocking(fd);
 }
 
-MessagePumpLibevent::MessagePumpLibevent()
-    : keep_running_(true),
-      in_run_(false),
-      processed_io_events_(false),
-      event_base_(event_base_new()),
-      wakeup_pipe_in_(-1),
-      wakeup_pipe_out_(-1) {
+MessagePumpLibevent::MessagePumpLibevent() : event_base_(event_base_new()) {
   if (!Init())
     NOTREACHED();
+  DCHECK_NE(wakeup_pipe_in_, -1);
+  DCHECK_NE(wakeup_pipe_out_, -1);
+  DCHECK(wakeup_event_);
 }
 
 MessagePumpLibevent::~MessagePumpLibevent() {
@@ -194,8 +191,8 @@ static void timer_callback(int fd, short events, void* context) {
 
 // Reentrant!
 void MessagePumpLibevent::Run(Delegate* delegate) {
-  AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
-  AutoReset<bool> auto_reset_in_run(&in_run_, true);
+  RunState run_state(delegate);
+  AutoReset<RunState*> auto_reset_run_state(&run_state_, &run_state);
 
   // event_base_loopexit() + EVLOOP_ONCE is leaky, see http://crbug.com/25641.
   // Instead, make our own timer and reuse it on each call to event_base_loop().
@@ -209,7 +206,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     bool immediate_work_available = next_work_info.is_immediate();
 
-    if (!keep_running_)
+    if (run_state.should_quit)
       break;
 
     // Process native events if any are ready. Do not block waiting for more.
@@ -221,7 +218,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
     bool attempt_more_work = immediate_work_available || processed_io_events_;
     processed_io_events_ = false;
 
-    if (!keep_running_)
+    if (run_state.should_quit)
       break;
 
     if (attempt_more_work)
@@ -229,7 +226,7 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
 
     attempt_more_work = delegate->DoIdleWork();
 
-    if (!keep_running_)
+    if (run_state.should_quit)
       break;
 
     if (attempt_more_work)
@@ -265,15 +262,15 @@ void MessagePumpLibevent::Run(Delegate* delegate) {
       event_del(timer_event.get());
     }
 
-    if (!keep_running_)
+    if (run_state.should_quit)
       break;
   }
 }
 
 void MessagePumpLibevent::Quit() {
-  DCHECK(in_run_) << "Quit was called outside of Run!";
+  DCHECK(run_state_) << "Quit was called outside of Run!";
   // Tell both libevent and Run that they should break out of their loops.
-  keep_running_ = false;
+  run_state_->should_quit = true;
   ScheduleWork();
 }
 
@@ -328,6 +325,12 @@ void MessagePumpLibevent::OnLibeventNotification(int fd,
 
   MessagePumpLibevent* pump = controller->pump();
   pump->processed_io_events_ = true;
+
+  // Make the MessagePumpDelegate aware of this other form of "DoWork". Skip if
+  // OnLibeventNotification is called outside of Run() (e.g. in unit tests).
+  Delegate::ScopedDoNativeWork scoped_do_native_work;
+  if (pump->run_state_)
+    scoped_do_native_work = pump->run_state_->delegate->BeginNativeWork();
 
   if ((flags & (EV_READ | EV_WRITE)) == (EV_READ | EV_WRITE)) {
     // Both callbacks will be called. It is necessary to check that |controller|
