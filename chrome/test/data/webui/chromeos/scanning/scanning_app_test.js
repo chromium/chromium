@@ -8,11 +8,15 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
+import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
+
+const MY_FILES_PATH = '/home/chronos/user/MyFiles';
 
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
@@ -240,11 +244,17 @@ export function scanningAppTest() {
   /** @type {?FakeScanService} */
   let fakeScanService_ = null;
 
+  /** @type {?TestScanningBrowserProxy} */
+  let testBrowserProxy = null;
+
   /** @type {?HTMLSelectElement} */
   let scannerSelect = null;
 
   /** @type {?HTMLSelectElement} */
   let sourceSelect = null;
+
+  /** @type {?HTMLSelectElement} */
+  let scanToSelect = null;
 
   /** @type {?HTMLSelectElement} */
   let fileTypeSelect = null;
@@ -296,6 +306,9 @@ export function scanningAppTest() {
   suiteSetup(() => {
     fakeScanService_ = new FakeScanService();
     setScanServiceForTesting(fakeScanService_);
+    testBrowserProxy = new TestScanningBrowserProxy();
+    ScanningBrowserProxyImpl.instance_ = testBrowserProxy;
+    testBrowserProxy.setMyFilesPath(MY_FILES_PATH);
   });
 
   setup(function() {
@@ -308,6 +321,7 @@ export function scanningAppTest() {
     scanningApp = null;
     scannerSelect = null;
     sourceSelect = null;
+    scanToSelect = null;
     fileTypeSelect = null;
     colorModeSelect = null;
     pageSizeSelect = null;
@@ -401,6 +415,7 @@ export function scanningAppTest() {
 
           scannerSelect = scanningApp.$$('#scannerSelect').$$('select');
           sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
+          scanToSelect = scanningApp.$$('#scanToSelect').$$('select');
           fileTypeSelect = scanningApp.$$('#fileTypeSelect').$$('select');
           colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
           pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
@@ -423,6 +438,7 @@ export function scanningAppTest() {
           // if it exists.
           assertEquals(
               firstCapabilities.sources[1].name, scanningApp.selectedSource);
+          assertEquals(MY_FILES_PATH, scanningApp.selectedFilePath);
           assertEquals(FileType.PDF.toString(), scanningApp.selectedFileType);
           assertEquals(
               ColorMode.COLOR.toString(), scanningApp.selectedColorMode);
@@ -437,6 +453,7 @@ export function scanningAppTest() {
           // should be enabled, and the helper text should be displayed.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
+          assertFalse(scanToSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
           assertFalse(colorModeSelect.disabled);
           assertFalse(pageSizeSelect.disabled);
@@ -462,6 +479,7 @@ export function scanningAppTest() {
           // progress.
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
+          assertTrue(scanToSelect.disabled);
           assertTrue(fileTypeSelect.disabled);
           assertTrue(colorModeSelect.disabled);
           assertTrue(pageSizeSelect.disabled);
@@ -527,6 +545,7 @@ export function scanningAppTest() {
           // enabled. The progress bar and text should no longer be visible.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
+          assertFalse(scanToSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
           assertFalse(colorModeSelect.disabled);
           assertFalse(pageSizeSelect.disabled);
