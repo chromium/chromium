@@ -197,7 +197,7 @@
       {
         "id": "PluginsContentSetting",
         "type": "string",
-        "enum": ["allow", "block", "detect_important_content"]
+        "enum": ["block"]
       },
       {
         "id": "PopupsContentSetting",
@@ -275,7 +275,7 @@
       },
       "plugins": {
         "$ref": "ContentSetting",
-        "description": "Whether to run plugins. One of<br><var>allow</var>: Run plugins automatically,<br><var>block</var>: Don't run plugins automatically,<br><var>detect_important_content</var>: Only run automatically those plugins that are detected as the website's main content.<br>The primary URL is the URL of the top-level frame. The secondary URL is not used.",
+        "description": "<i>Deprecated.</i> With Flash support removed in Chrome 88, this permission no longer has any effect. Value is always <var>block</var>. Calls to <code>set()</code> and <code>clear()</code> will be ignored.",
         "value": [
           "plugins",
           {"$ref":"PluginsContentSetting"}

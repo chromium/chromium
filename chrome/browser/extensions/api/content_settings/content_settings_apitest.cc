@@ -346,11 +346,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest,
       "ContentSettings.ExtensionNonEmbeddedSettingSet", 2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, PluginsApiTest) {
-  constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
-  EXPECT_TRUE(RunLazyTest(kExtensionPath)) << message_;
-}
-
 IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
   constexpr char kExtensionPath[] = "content_settings/disablepluginsapi";
   const extensions::Extension* extension =
@@ -360,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiLazyTest, ConsoleErrorTest) {
                            ->GetBackgroundHostForExtension(extension->id())
                            ->host_contents();
   content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern("*API is no longer supported*");
+  console_observer.SetPattern("*contentSettings.plugins is deprecated.*");
   browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       profile(), extension->id(), "setPluginsSetting()");
   console_observer.Wait();
