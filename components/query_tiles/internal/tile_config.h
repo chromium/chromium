@@ -60,6 +60,9 @@ extern const char kNumTrendingTilesKey[];
 // Finch parameter key for max number of trending tile impressions.
 extern const char kMaxTrendingTileImpressionsKey[];
 
+// Finch parameter key for the starting position to shuffle unclicked tiles.
+extern const char kTileShufflePositionKey[];
+
 class TileConfig {
  public:
   // Gets the URL for the Query Tiles server.
@@ -109,6 +112,10 @@ class TileConfig {
 
   // Get the maximum number of impressions for a trending tile to be displayed.
   static int GetMaxTrendingTileImpressions();
+
+  // Get the starting position tp shuffle unclicked tiles. Tiles before this
+  // position are not shuffled.
+  static int GetTileShufflePosition();
 };
 
 }  // namespace query_tiles

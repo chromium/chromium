@@ -59,6 +59,8 @@ constexpr char kNumTrendingTilesKey[] = "num_trending_tiles_to_display";
 constexpr char kMaxTrendingTileImpressionsKey[] =
     "max_trending_tile_impressions";
 
+constexpr char kTileShufflePositionKey[] = "tile_shuffle_position";
+
 // Default expire duration.
 constexpr int kDefaultExpireDurationInSeconds = 48 * 60 * 60;  // 2 days.
 
@@ -91,6 +93,9 @@ constexpr int kDefaultNumTrendingTilesToDisplay = 2;
 
 // Default number of impressions a trending tile to be displayed .
 constexpr int kDefaultMaxTrendingTileImpressions = 2;
+
+// Default position to start shuffling unclicked tile.
+constexpr int kDefaultTileShufflePosition = 2;
 
 namespace {
 
@@ -237,6 +242,13 @@ int TileConfig::GetMaxTrendingTileImpressions() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kQueryTiles, kMaxTrendingTileImpressionsKey,
       kDefaultMaxTrendingTileImpressions);
+}
+
+// static
+int TileConfig::GetTileShufflePosition() {
+  return base::GetFieldTrialParamByFeatureAsInt(features::kQueryTiles,
+                                                kTileShufflePositionKey,
+                                                kDefaultTileShufflePosition);
 }
 
 }  // namespace query_tiles
