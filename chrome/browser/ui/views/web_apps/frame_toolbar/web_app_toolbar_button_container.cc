@@ -108,35 +108,21 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     // extensions should hide before other toolbar buttons.
     constexpr int kLowPriorityFlexOrder = 2;
 
-    if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-      auto display_mode =
-          base::FeatureList::IsEnabled(
-              features::kDesktopPWAsElidedExtensionsMenu)
-              ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
-              : ExtensionsToolbarContainer::DisplayMode::kCompact;
-      extensions_container_ =
-          AddChildView(std::make_unique<ExtensionsToolbarContainer>(
-              browser_view_->browser(), display_mode));
-      extensions_container_->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(
-              extensions_container_->GetAnimatingLayoutManager()
-                  ->GetDefaultFlexRule())
-              .WithOrder(kLowPriorityFlexOrder));
-      views::SetHitTestComponent(extensions_container_,
-                                 static_cast<int>(HTCLIENT));
-    } else {
-      browser_actions_container_ =
-          AddChildView(std::make_unique<BrowserActionsContainer>(
-              browser_view_->browser(), nullptr, this,
-              false /* interactive */));
-      browser_actions_container_->SetProperty(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(browser_actions_container_->GetFlexRule())
-              .WithOrder(kLowPriorityFlexOrder));
-      views::SetHitTestComponent(browser_actions_container_,
-                                 static_cast<int>(HTCLIENT));
-    }
+    auto display_mode =
+        base::FeatureList::IsEnabled(features::kDesktopPWAsElidedExtensionsMenu)
+            ? ExtensionsToolbarContainer::DisplayMode::kAutoHide
+            : ExtensionsToolbarContainer::DisplayMode::kCompact;
+    extensions_container_ =
+        AddChildView(std::make_unique<ExtensionsToolbarContainer>(
+            browser_view_->browser(), display_mode));
+    extensions_container_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            extensions_container_->GetAnimatingLayoutManager()
+                ->GetDefaultFlexRule())
+            .WithOrder(kLowPriorityFlexOrder));
+    views::SetHitTestComponent(extensions_container_,
+                               static_cast<int>(HTCLIENT));
   }
 
   if (app_controller->HasTitlebarMenuButton()) {
@@ -257,54 +243,6 @@ void WebAppToolbarButtonContainer::FadeInContentSettingIcons() {
 void WebAppToolbarButtonContainer::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
-}
-
-views::LabelButton* WebAppToolbarButtonContainer::GetOverflowReferenceView() {
-  return web_app_menu_button_;
-}
-
-base::Optional<int> WebAppToolbarButtonContainer::GetMaxBrowserActionsWidth()
-    const {
-  // Our maximum size is 1 icon so don't specify a pixel-width max here.
-  return base::Optional<int>();
-}
-
-bool WebAppToolbarButtonContainer::CanShowIconInToolbar() const {
-  return false;
-}
-
-std::unique_ptr<ToolbarActionsBar>
-WebAppToolbarButtonContainer::CreateToolbarActionsBar(
-    ToolbarActionsBarDelegate* delegate,
-    Browser* browser,
-    ToolbarActionsBar* main_bar) const {
-  DCHECK_EQ(browser_view_->browser(), browser);
-  class WebAppToolbarActionsBar : public ToolbarActionsBar {
-   public:
-    using ToolbarActionsBar::ToolbarActionsBar;
-
-    gfx::Insets GetIconAreaInsets() const override {
-      // TODO(calamity): Unify these toolbar action insets with other clients
-      // once all toolbar button sizings are consolidated.
-      // https://crbug.com/822967.
-      return gfx::Insets(2);
-    }
-
-    size_t GetIconCount() const override {
-      // Only show an icon when an extension action is popped out due to
-      // activation, and none otherwise.
-      return GetPoppedOutAction() ? 1 : 0;
-    }
-
-    int GetMinimumWidth() const override {
-      // Allow the BrowserActionsContainer to collapse completely and be hidden
-      return 0;
-    }
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(WebAppToolbarActionsBar);
-  };
-  return std::make_unique<WebAppToolbarActionsBar>(delegate, browser, main_bar);
 }
 
 SkColor

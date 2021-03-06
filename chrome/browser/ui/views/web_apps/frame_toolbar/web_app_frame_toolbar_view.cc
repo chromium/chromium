@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -146,8 +144,9 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
 }
 
 BrowserActionsContainer* WebAppFrameToolbarView::GetBrowserActionsContainer() {
-  CHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
-  return right_container_->browser_actions_container();
+  // TODO(devlin): Keep cleaning this up. https://crbug.com/1165609.
+  NOTREACHED();
+  return nullptr;
 }
 
 ExtensionsToolbarContainer*
@@ -164,9 +163,7 @@ gfx::Size WebAppFrameToolbarView::GetToolbarButtonSize() const {
 }
 
 views::View* WebAppFrameToolbarView::GetDefaultExtensionDialogAnchorView() {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    return right_container_->extensions_container()->extensions_button();
-  return GetAppMenuButton();
+  return right_container_->extensions_container()->extensions_button();
 }
 
 PageActionIconView* WebAppFrameToolbarView::GetPageActionIconView(

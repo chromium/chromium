@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -27,7 +27,6 @@ class WebAppMenuButton;
 class WebAppOriginText;
 
 class WebAppToolbarButtonContainer : public views::View,
-                                     public BrowserActionsContainer::Delegate,
                                      public IconLabelBubbleView::Delegate,
                                      public ContentSettingImageView::Delegate,
                                      public ImmersiveModeController::Observer,
@@ -69,10 +68,6 @@ class WebAppToolbarButtonContainer : public views::View,
     return page_action_icon_controller_.get();
   }
 
-  BrowserActionsContainer* browser_actions_container() {
-    return browser_actions_container_;
-  }
-
   ExtensionsToolbarContainer* extensions_container() {
     return extensions_container_;
   }
@@ -106,15 +101,6 @@ class WebAppToolbarButtonContainer : public views::View,
   void FadeInContentSettingIcons();
 
   void ChildPreferredSizeChanged(views::View* child) override;
-
-  // BrowserActionsContainer::Delegate:
-  views::LabelButton* GetOverflowReferenceView() override;
-  base::Optional<int> GetMaxBrowserActionsWidth() const override;
-  bool CanShowIconInToolbar() const override;
-  std::unique_ptr<ToolbarActionsBar> CreateToolbarActionsBar(
-      ToolbarActionsBarDelegate* delegate,
-      Browser* browser,
-      ToolbarActionsBar* main_bar) const override;
 
   // IconLabelBubbleView::Delegate:
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
@@ -160,7 +146,6 @@ class WebAppToolbarButtonContainer : public views::View,
   // All remaining members are owned by the views hierarchy.
   WebAppOriginText* web_app_origin_text_ = nullptr;
   WebAppContentSettingsContainer* content_settings_container_ = nullptr;
-  BrowserActionsContainer* browser_actions_container_ = nullptr;
   ExtensionsToolbarContainer* extensions_container_ = nullptr;
   WebAppMenuButton* web_app_menu_button_ = nullptr;
 };
