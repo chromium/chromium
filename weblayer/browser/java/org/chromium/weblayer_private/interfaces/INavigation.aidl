@@ -40,12 +40,12 @@ interface INavigation {
   boolean isUserDecidingIntentLaunch() = 14;
   boolean isKnownProtocol() = 15;
   boolean isServedFromBackForwardCache() = 16;
+  boolean isFormSubmission() = 19;
+  String getReferrer() = 20;
 
   // @since 88
   void disableNetworkErrorAutoReload() = 17;
 
   // @since 90
   IClientPage getPage() = 18;
-  boolean isFormSubmission() = 19;
-  String getReferrer() = 20;
 }
