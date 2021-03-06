@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 
 namespace chromeos {
@@ -23,10 +23,6 @@ class AssistantManagerServiceDelegate;
 
 class LibassistantServiceHostImpl : public LibassistantServiceHost {
  public:
-  using InitializeCallback =
-      base::OnceCallback<void(assistant_client::AssistantManager*,
-                              assistant_client::AssistantManagerInternal*)>;
-
   explicit LibassistantServiceHostImpl(
       AssistantManagerServiceDelegate* delegate);
   LibassistantServiceHostImpl(LibassistantServiceHostImpl&) = delete;
@@ -38,20 +34,14 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
       mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
           receiver) override;
   void Stop() override;
-  void SetInitializeCallback(InitializeCallback) override;
 
  private:
   // Owned by |AssistantManagerServiceImpl| which also owns |this|.
   AssistantManagerServiceDelegate* const delegate_;
 
-  // Protects access to |libassistant_service_|. This is required because the
-  // service will be launched/stopped on a background thread, where the other
-  // methods will be called from the main thread.
-  base::Lock libassistant_service_lock_;
+  SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<chromeos::libassistant::LibassistantService>
-      libassistant_service_ GUARDED_BY(libassistant_service_lock_);
-  // Used when SetInitializeCallback() is called before Launch().
-  InitializeCallback pending_initialize_callback_;
+      libassistant_service_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace assistant

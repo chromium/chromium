@@ -8,12 +8,10 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
-#include "chromeos/services/assistant/proxy/libassistant_service_host.h"
 #include "chromeos/services/assistant/public/cpp/migration/assistant_manager_service_delegate.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom-forward.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
@@ -28,36 +26,14 @@ namespace {
 using chromeos::libassistant::mojom::AuthenticationTokenPtr;
 using chromeos::libassistant::mojom::ServiceState;
 
-struct StartArguments {
-  StartArguments() = default;
-  StartArguments(StartArguments&&) = default;
-  StartArguments& operator=(StartArguments&&) = default;
-  ~StartArguments() = default;
-
-  assistant_client::ConversationStateListener* conversation_state_listener;
-};
-
-// TODO(b/171748795): This should all be migrated to the mojom service, which
-// should be responsible for the complete creation of the Libassistant
-// objects.
-// Note: this method will be called from the mojom (background) thread.
-void InitializeAssistantManager(
-    StartArguments arguments,
-    assistant_client::AssistantManager* assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  // TODO(jeroendh): Remove in follow up CL.
-}
-
 }  // namespace
 
 ServiceControllerProxy::ServiceControllerProxy(
-    LibassistantServiceHost* host,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
         client)
-    : host_(host),
-      url_loader_factory_(network::SharedURLLoaderFactory::Create(
+    : url_loader_factory_(network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory))),
       service_controller_remote_(std::move(client)) {}
 
@@ -65,12 +41,6 @@ ServiceControllerProxy::~ServiceControllerProxy() = default;
 
 void ServiceControllerProxy::Start(
     chromeos::libassistant::mojom::BootupConfigPtr bootup_config) {
-  // We need to initialize the |AssistantManager| once it's created and before
-  // it's started, so we register a callback to do just that.
-  StartArguments arguments;
-  host_->SetInitializeCallback(
-      base::BindOnce(InitializeAssistantManager, std::move(arguments)));
-
   // The mojom service will create the |AssistantManager|.
   service_controller_remote_->Initialize(std::move(bootup_config),
                                          BindURLLoaderFactory());

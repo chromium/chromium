@@ -104,8 +104,7 @@ class AssistantProxy {
   void StopLibassistantService();
   void StopLibassistantServiceOnBackgroundThread();
 
-  void BindControllers(LibassistantServiceHost* host,
-                       std::unique_ptr<network::PendingSharedURLLoaderFactory>
+  void BindControllers(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                            pending_url_loader_factory);
 
   // Owned by |AssistantManagerServiceImpl|.

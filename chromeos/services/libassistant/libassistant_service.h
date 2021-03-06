@@ -16,11 +16,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace assistant_client {
-class AssistantManager;
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 class AssistantManagerServiceDelegate;
@@ -44,18 +39,12 @@ class TimerController;
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     : public mojom::LibassistantService {
  public:
-  using InitializeCallback =
-      base::OnceCallback<void(assistant_client::AssistantManager*,
-                              assistant_client::AssistantManagerInternal*)>;
-
   LibassistantService(
       mojo::PendingReceiver<mojom::LibassistantService> receiver,
       assistant::AssistantManagerServiceDelegate* delegate);
   LibassistantService(LibassistantService&) = delete;
   LibassistantService& operator=(LibassistantService&) = delete;
   ~LibassistantService() override;
-
-  void SetInitializeCallback(InitializeCallback callback);
 
   // mojom::LibassistantService implementation:
   void Bind(

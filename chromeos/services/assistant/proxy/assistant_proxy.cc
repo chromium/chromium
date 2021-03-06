@@ -33,7 +33,7 @@ void AssistantProxy::Initialize(
   libassistant_service_host_ = host;
   LaunchLibassistantService();
 
-  BindControllers(host, std::move(pending_url_loader_factory));
+  BindControllers(std::move(pending_url_loader_factory));
 }
 
 void AssistantProxy::LaunchLibassistantService() {
@@ -76,7 +76,6 @@ void AssistantProxy::StopLibassistantServiceOnBackgroundThread() {
 }
 
 void AssistantProxy::BindControllers(
-    LibassistantServiceHost* host,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory) {
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
@@ -128,7 +127,7 @@ void AssistantProxy::BindControllers(
       std::make_unique<ConversationControllerProxy>(
           std::move(pending_conversation_controller_remote));
   service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
-      host, std::move(pending_url_loader_factory),
+      std::move(pending_url_loader_factory),
       std::move(pending_service_controller_remote));
 
   audio_input_controller_ = std::move(pending_audio_input_controller_remote);

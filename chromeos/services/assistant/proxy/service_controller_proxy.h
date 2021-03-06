@@ -22,14 +22,11 @@ class SharedURLLoaderFactory;
 namespace chromeos {
 namespace assistant {
 
-class LibassistantServiceHost;
-
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 class ServiceControllerProxy {
  public:
   ServiceControllerProxy(
-      LibassistantServiceHost* host,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
       mojo::PendingRemote<chromeos::libassistant::mojom::ServiceController>
@@ -54,9 +51,6 @@ class ServiceControllerProxy {
 
  private:
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
-
-  // Owned by |AssistantManagerServiceImpl| which (indirectly) also owns us.
-  LibassistantServiceHost* const host_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

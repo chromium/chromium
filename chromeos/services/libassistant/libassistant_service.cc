@@ -105,10 +105,6 @@ void LibassistantService::Bind(
                           std::move(timer_delegate));
 }
 
-void LibassistantService::SetInitializeCallback(InitializeCallback callback) {
-  service_controller().SetInitializeCallback(std::move(callback));
-}
-
 void LibassistantService::AddSpeechRecognitionObserver(
     mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) {
   speech_recognition_observers_.Add(std::move(observer));

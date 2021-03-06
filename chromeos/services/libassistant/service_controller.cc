@@ -139,10 +139,6 @@ void ServiceController::Bind(
   settings_controller_ = settings_controller;
 }
 
-void ServiceController::SetInitializeCallback(InitializeCallback callback) {
-  initialize_callback_ = std::move(callback);
-}
-
 void ServiceController::Initialize(
     mojom::BootupConfigPtr config,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
@@ -184,11 +180,6 @@ void ServiceController::Start() {
 
   DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
   DVLOG(1) << "Starting Libassistant service";
-
-  if (initialize_callback_) {
-    std::move(initialize_callback_)
-        .Run(assistant_manager(), assistant_manager_internal());
-  }
 
   assistant_manager()->Start();
 
