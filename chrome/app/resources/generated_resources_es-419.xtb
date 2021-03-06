@@ -4608,7 +4608,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6238923052227198598">Mantener la nota más reciente en la pantalla bloqueada</translation>
 <translation id="6239558157302047471">Volver a cargar &amp;marco</translation>
 <translation id="6240821072888636753">Preguntar siempre</translation>
-<translation id="6241530762627360640">Acceder a la información sobre los dispositivos Bluetooth sincronizados con el sistema y detectar dispositivos Bluetooth cercanos.</translation>
+<translation id="6241530762627360640">Acceder a la información sobre los dispositivos Bluetooth vinculados con el sistema y detectar dispositivos Bluetooth cercanos.</translation>
 <translation id="6241844896329831164">No se necesita acceso</translation>
 <translation id="6242574558232861452">Se está comprobando la descarga conforme a las políticas de seguridad de tu organización.</translation>
 <translation id="6242589501614145408">Restablecer tu llave de seguridad</translation>
@@ -6183,6 +6183,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8018298733481692628">¿Quieres borrar este perfil?</translation>
 <translation id="8018313076035239964">Controla qué contenido pueden mostrarte los sitios web y qué información pueden usar</translation>
 <translation id="8023801379949507775">Actualizar las extensiones ahora</translation>
+<translation id="8025151549289123443">Pantalla de bloqueo y acceso</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
 <translation id="8028803902702117856">Descargando <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
