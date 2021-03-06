@@ -159,7 +159,7 @@ def _MeasureApkSignatureBlock(zip_file):
   start_of_central_directory = struct.unpack('<I', zip_file.fp.read(4))[0]
 
   # Compute the offset after the last zip entry.
-  last_info = zip_file.infolist()[-1]
+  last_info = max(zip_file.infolist(), key=lambda i: i.header_offset)
   last_header_size = (30 + len(last_info.filename) +
                       _ReadZipInfoExtraFieldLength(zip_file, last_info))
   end_of_last_file = (last_info.header_offset + last_header_size +
