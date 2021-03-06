@@ -601,7 +601,6 @@ class MEDIA_GPU_EXPORT V4L2Device
                                                 bool slice_based);
   std::vector<VideoCodecProfile> V4L2PixFmtToVideoCodecProfiles(
       uint32_t pix_fmt);
-  static uint32_t V4L2PixFmtToDrmFormat(uint32_t format);
   // Calculates the largest plane's allocation size requested by a V4L2 device.
   static gfx::Size AllocatedSizeFromV4L2Format(
       const struct v4l2_format& format);
@@ -609,18 +608,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Convert required H264 profile and level to V4L2 enums.
   static int32_t VideoCodecProfileToV4L2H264Profile(VideoCodecProfile profile);
   static int32_t H264LevelIdcToV4L2H264Level(uint8_t level_idc);
-
-  // Converts v4l2_memory to a string.
-  static const char* V4L2MemoryToString(const v4l2_memory memory);
-
-  // Returns the printable name of a v4l2_buf_type.
-  static const char* V4L2BufferTypeToString(const enum v4l2_buf_type buf_type);
-
-  // Composes human readable string of v4l2_format.
-  static std::string V4L2FormatToString(const struct v4l2_format& format);
-
-  // Composes human readable string of v4l2_buffer.
-  static std::string V4L2BufferToString(const struct v4l2_buffer& buffer);
 
   // Composes VideoFrameLayout based on v4l2_format.
   // If error occurs, it returns base::nullopt.

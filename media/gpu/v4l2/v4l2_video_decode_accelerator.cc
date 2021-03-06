@@ -36,6 +36,7 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 #include "media/gpu/v4l2/v4l2_stateful_workaround.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/gpu/v4l2/v4l2_vda_helpers.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -2655,7 +2656,7 @@ bool V4L2VideoDecodeAccelerator::OnMemoryDump(
   if (input_queue_) {
     input_queue_buffers_count = input_queue_->AllocatedBuffersCount();
     input_queue_buffers_memory_type =
-        V4L2Device::V4L2MemoryToString(input_queue_->GetMemoryType());
+        V4L2MemoryToString(input_queue_->GetMemoryType());
     if (output_queue_->GetMemoryType() == V4L2_MEMORY_MMAP)
       input_queue_memory_usage = input_queue_->GetMemoryUsage();
   }
@@ -2666,7 +2667,7 @@ bool V4L2VideoDecodeAccelerator::OnMemoryDump(
   if (output_queue_) {
     output_queue_buffers_count = output_queue_->AllocatedBuffersCount();
     output_queue_buffers_memory_type =
-        V4L2Device::V4L2MemoryToString(output_queue_->GetMemoryType());
+        V4L2MemoryToString(output_queue_->GetMemoryType());
     if (output_queue_->GetMemoryType() == V4L2_MEMORY_MMAP)
       output_queue_memory_usage = output_queue_->GetMemoryUsage();
   }
