@@ -505,8 +505,12 @@ bool MessagePumpForUI::ProcessNextWindowsMessage() {
 bool MessagePumpForUI::ProcessMessageHelper(const MSG& msg) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  TRACE_EVENT1("base,toplevel", "MessagePumpForUI::ProcessMessageHelper",
-               "message", msg.message);
+  TRACE_EVENT("base,toplevel", "MessagePumpForUI::ProcessMessageHelper",
+              [&](perfetto::EventContext ctx) {
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_chrome_message_pump_for_ui()
+                    ->set_message_id(msg.message);
+              });
   if (msg.message == WM_QUIT) {
     // WM_QUIT is the standard way to exit a ::GetMessage() loop. Our
     // MessageLoop has its own quit mechanism, so WM_QUIT should only terminate

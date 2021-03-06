@@ -54,9 +54,14 @@ message ChromeTaskGraphRunner {
   optional int64 source_frame_number = 1;
 }
 
+message ChromeMessagePumpForUI {
+  // The MSG defined in winuser.h.
+  optional uint32 message_id = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1007
+  // Next ID: 1008
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -73,5 +78,7 @@ message ChromeTrackEvent {
         chrome_task_posted_to_disabled_queue = 1005;
 
     optional ChromeTaskGraphRunner chrome_task_graph_runner = 1006;
+
+    optional ChromeMessagePumpForUI chrome_message_pump_for_ui = 1007;
   }
 }
