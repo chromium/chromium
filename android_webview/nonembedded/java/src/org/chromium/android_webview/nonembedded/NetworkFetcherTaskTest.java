@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Same package as DownloadFileTask to access DownloadFileTask.Natives.
+// Same package as NetworkFetcherTask to access NetworkFetcherTask.Natives.
 package org.chromium.android_webview.nonembedded;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,28 +31,29 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.concurrent.TimeoutException;
 
-/** Test DownloadFileTask. */
+/** Test NetworkFetcherTask. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class DownloadFileTaskTest {
+public class NetworkFetcherTaskTest {
     private HttpURLConnection mConnection;
-
     private Context mContext;
     private File mTempDirectory;
 
     @Rule
     public JniMocker jniMocker = new JniMocker();
     @Mock
-    private DownloadFileTask.Natives mNativeMock;
+    private NetworkFetcherTask.Natives mNativeMock;
 
     @Before
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(DownloadFileTaskJni.TEST_HOOKS, mNativeMock);
+        jniMocker.mock(NetworkFetcherTaskJni.TEST_HOOKS, mNativeMock);
 
         mContext = ContextUtils.getApplicationContext();
         mTempDirectory = new File(mContext.getFilesDir(), "tmp/");
@@ -68,6 +70,31 @@ public class DownloadFileTaskTest {
 
     @Test
     @MediumTest
+    public void testPostRequest() throws IOException, TimeoutException {
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(mConnection.getHeaderField("Content-Length")).thenReturn("4");
+        when(mConnection.getHeaderField("ETag")).thenReturn("etag");
+        when(mConnection.getHeaderField("X-Cup-Server-Proof")).thenReturn("xCupServerProof");
+        when(mConnection.getHeaderField("X-Retry-After")).thenReturn("10");
+
+        when(mConnection.getInputStream())
+                .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("abcd")));
+        OutputStream outStream = new ByteArrayOutputStream();
+        when(mConnection.getOutputStream()).thenReturn(outStream);
+
+        NetworkFetcherTask.postRequest(mConnection, /** nativeNetworkFetcherTask= */ 0,
+                /** mainTaskRunner= */ 0, mock(GURL.class), "postData".getBytes(), "JSON",
+                new String[0], new String[0]);
+        assertEquals("postData", outStream.toString());
+        verify(mNativeMock).callResponseStartedCallback(0, 0, 200, 4);
+        verify(mNativeMock).callProgressCallback(0, 0, 4);
+        verify(mNativeMock)
+                .callPostRequestCompleteCallback(
+                        0, 0, "abcd".getBytes(), 0, "etag", "xCupServerProof", 10);
+    }
+
+    @Test
+    @MediumTest
     public void testDownloadToFile() throws IOException, TimeoutException {
         File file = new File(mTempDirectory, "downloadedContents.txt");
         Assert.assertTrue(file.exists() || file.createNewFile());
@@ -77,7 +104,7 @@ public class DownloadFileTaskTest {
         when(mConnection.getInputStream())
                 .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
 
-        DownloadFileTask.downloadToFile(mConnection, /** nativeDownloadFileTask= */ 0,
+        NetworkFetcherTask.downloadToFile(mConnection, /** nativeNetworkFetcherTask= */ 0,
                 /** mainTaskRunner= */ 0, mock(GURL.class), file.getAbsolutePath());
         verify(mNativeMock).callResponseStartedCallback(0, 0, 200, 4);
         verify(mNativeMock).callProgressCallback(0, 0, 4);

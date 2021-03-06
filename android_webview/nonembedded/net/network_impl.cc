@@ -4,8 +4,13 @@
 
 #include "android_webview/nonembedded/net/network_impl.h"
 
-#include "android_webview/nonembedded/net/download_file_task.h"
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "android_webview/nonembedded/net/network_fetcher_task.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 
 namespace android_webview {
@@ -31,8 +36,13 @@ void NetworkFetcherImpl::PostRequest(
     ResponseStartedCallback response_started_callback,
     ProgressCallback progress_callback,
     PostRequestCompleteCallback post_request_complete_callback) {
-  // TODO(crbug.com/1174140): Implement.
-  NOTREACHED();
+  // A new NetworkFetcherImpl must be created for each network operation.
+  DCHECK(!network_task_);
+
+  network_task_ = NetworkFetcherTask::CreatePostRequestTask(
+      url, post_data, content_type, post_additional_headers,
+      std::move(response_started_callback), progress_callback,
+      std::move(post_request_complete_callback));
 }
 
 void NetworkFetcherImpl::DownloadToFile(
@@ -44,7 +54,7 @@ void NetworkFetcherImpl::DownloadToFile(
   // A new NetworkFetcherImpl must be created for each network operation.
   DCHECK(!network_task_);
 
-  network_task_ = std::make_unique<DownloadFileTask>(
+  network_task_ = NetworkFetcherTask::CreateDownloadToFileTask(
       url, file_path, std::move(response_started_callback), progress_callback,
       std::move(download_to_file_complete_callback));
 }

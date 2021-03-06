@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "android_webview/nonembedded/net/network_task.h"
+#include "android_webview/nonembedded/net/network_fetcher_task.h"
 #include "components/update_client/network.h"
 
 namespace android_webview {
@@ -49,7 +49,7 @@ class NetworkFetcherImpl : public update_client::NetworkFetcher {
                           download_to_file_complete_callback) override;
 
  private:
-  std::unique_ptr<NetworkTask> network_task_;
+  std::unique_ptr<NetworkFetcherTask> network_task_;
 };
 
 }  // namespace android_webview
