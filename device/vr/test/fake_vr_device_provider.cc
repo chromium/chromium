@@ -40,7 +40,8 @@ void FakeVRDeviceProvider::Initialize(
                                  mojo::PendingRemote<mojom::XRRuntime>)>
         add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-    base::OnceClosure initialization_complete) {
+    base::OnceClosure initialization_complete,
+    XrFrameSinkClientFactory xr_frame_sink_client_factory) {
   add_device_callback_ = std::move(add_device_callback);
   remove_device_callback_ = std::move(remove_device_callback);
 

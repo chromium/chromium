@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "content/browser/xr/service/xr_frame_sink_client_impl.h"
 #include "content/browser/xr/xr_utils.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -54,6 +56,10 @@ bool IsEnabled(const base::CommandLine* command_line,
               name) == 0);
 }
 #endif
+
+std::unique_ptr<device::XrFrameSinkClient> FrameSinkClientFactory() {
+  return std::make_unique<XrFrameSinkClientImpl>();
+}
 
 }  // namespace
 
@@ -491,7 +497,8 @@ void XRRuntimeManagerImpl::InitializeProviders() {
         base::BindRepeating(&XRRuntimeManagerImpl::RemoveRuntime,
                             base::Unretained(this)),
         base::BindOnce(&XRRuntimeManagerImpl::OnProviderInitialized,
-                       base::Unretained(this)));
+                       base::Unretained(this)),
+        base::BindRepeating(&FrameSinkClientFactory));
   }
 
   providers_initialized_ = true;

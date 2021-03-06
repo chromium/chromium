@@ -17,6 +17,7 @@
 #include "device/vr/android/arcore/arcore_impl.h"
 #include "device/vr/android/arcore/arcore_session_utils.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
+#include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "ui/display/display.h"
 
 using base::android::JavaRef;
@@ -62,13 +63,15 @@ ArCoreDevice::ArCoreDevice(
     std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
     std::unique_ptr<MailboxToSurfaceBridgeFactory>
         mailbox_to_surface_bridge_factory,
-    std::unique_ptr<ArCoreSessionUtils> arcore_session_utils)
+    std::unique_ptr<ArCoreSessionUtils> arcore_session_utils,
+    XrFrameSinkClientFactory xr_frame_sink_client_factory)
     : VRDeviceBase(mojom::XRDeviceId::ARCORE_DEVICE_ID),
       main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       arcore_factory_(std::move(arcore_factory)),
       ar_image_transport_factory_(std::move(ar_image_transport_factory)),
       mailbox_bridge_factory_(std::move(mailbox_to_surface_bridge_factory)),
       arcore_session_utils_(std::move(arcore_session_utils)),
+      xr_frame_sink_client_factory_(std::move(xr_frame_sink_client_factory)),
       mailbox_bridge_(mailbox_bridge_factory_->Create()),
       session_state_(std::make_unique<ArCoreDevice::SessionState>()) {
   // Ensure display_info_ is set to avoid crash in CallDeferredSessionCallback

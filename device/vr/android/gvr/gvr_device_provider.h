@@ -28,7 +28,8 @@ class DEVICE_VR_EXPORT GvrDeviceProvider : public VRDeviceProvider {
                                    mojo::PendingRemote<mojom::XRRuntime>)>
           add_device_callback,
       base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-      base::OnceClosure initialization_complete) override;
+      base::OnceClosure initialization_complete,
+      XrFrameSinkClientFactory xr_frame_sink_client_factory) override;
 
   bool Initialized() override;
 

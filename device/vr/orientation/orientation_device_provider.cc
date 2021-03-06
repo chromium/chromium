@@ -26,7 +26,8 @@ void VROrientationDeviceProvider::Initialize(
                                  mojo::PendingRemote<mojom::XRRuntime>)>
         add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-    base::OnceClosure initialization_complete) {
+    base::OnceClosure initialization_complete,
+    XrFrameSinkClientFactory xr_frame_sink_client_factory) {
   if (device_ && device_->IsAvailable()) {
     add_device_callback.Run(device_->GetId(), device_->GetVRDisplayInfo(),
                             device_->GetDeviceData(), device_->BindXRRuntime());

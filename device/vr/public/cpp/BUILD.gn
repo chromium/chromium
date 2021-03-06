@@ -15,6 +15,8 @@ component("cpp") {
     "session_mode.h",
     "vr_device_provider.cc",
     "vr_device_provider.h",
+    "xr_frame_sink_client.cc",
+    "xr_frame_sink_client.h",
   ]
 
   deps = [

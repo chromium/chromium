@@ -23,7 +23,8 @@ void IsolatedVRDeviceProvider::Initialize(
         add_device_callback,
     base::RepeatingCallback<void(device::mojom::XRDeviceId)>
         remove_device_callback,
-    base::OnceClosure initialization_complete) {
+    base::OnceClosure initialization_complete,
+    device::XrFrameSinkClientFactory xr_frame_sink_client_factory) {
   add_device_callback_ = std::move(add_device_callback);
   remove_device_callback_ = std::move(remove_device_callback);
   initialization_complete_ = std::move(initialization_complete);

@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "device/vr/android/arcore/arcore_gl.h"
+#include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/vr_device.h"
 #include "device/vr/vr_device_base.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -43,7 +44,8 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
       std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory,
       std::unique_ptr<MailboxToSurfaceBridgeFactory>
           mailbox_to_surface_bridge_factory,
-      std::unique_ptr<ArCoreSessionUtils> arcore_session_utils);
+      std::unique_ptr<ArCoreSessionUtils> arcore_session_utils,
+      XrFrameSinkClientFactory xr_frame_sink_client_factory);
   ~ArCoreDevice() override;
 
   // VRDeviceBase implementation.
@@ -122,6 +124,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
   std::unique_ptr<ArImageTransportFactory> ar_image_transport_factory_;
   std::unique_ptr<MailboxToSurfaceBridgeFactory> mailbox_bridge_factory_;
   std::unique_ptr<ArCoreSessionUtils> arcore_session_utils_;
+  XrFrameSinkClientFactory xr_frame_sink_client_factory_;
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
 
