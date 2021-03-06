@@ -1436,6 +1436,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
 
     install_task_->UpdateWebAppFromInfo(
         web_contents(), app_id, std::move(web_app_info),
+        /*redownload_app_icons=*/false,
         base::BindLambdaForTesting([&](const AppId& installed_app_id,
                                        InstallResultCode code) {
           result.app_id = installed_app_id;

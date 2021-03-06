@@ -916,6 +916,11 @@ const base::Feature kUserActivityEventLogging{"UserActivityEventLogging",
 #endif
 
 #if !defined(OS_ANDROID)
+const base::Feature kWebAppManifestIconUpdating{
+    "WebAppManifestIconUpdating", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(OS_ANDROID)
+
+#if !defined(OS_ANDROID)
 // Allow capturing of WebRTC event logs, and uploading of those logs to Crash.
 // Please note that a Chrome policy must also be set, for this to have effect.
 // Effectively, this is a kill-switch for the feature.

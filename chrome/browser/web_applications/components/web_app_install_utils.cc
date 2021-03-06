@@ -338,6 +338,9 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu) &&
       icons_map) {
+    // When icon redownloading on app update is disabled, FilterAndResize* won't
+    // be called in the install task, and instead PopulateShortcutItemIcons will
+    // be called directly from OnIconsRetrievedFinalizeUpdate.
     PopulateShortcutItemIcons(web_app_info, icons_map);
   }
 

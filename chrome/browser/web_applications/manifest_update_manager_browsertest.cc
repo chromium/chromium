@@ -68,6 +68,7 @@ constexpr char kInstallableIconList[] = R"(
 )";
 constexpr SkColor kInstallableIconTopLeftColor =
     SkColorSetRGB(0x15, 0x96, 0xE0);
+constexpr SkColor kBasicIconTopLeftColor = SkColorSetRGB(0x55, 0x55, 0x55);
 
 constexpr char kAnotherInstallableIconList[] = R"(
   [
@@ -671,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckKeepsSameName) {
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckFindsIconUrlChange) {
+                       CheckDoesNotFindIconUrlChange) {
   constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
@@ -686,10 +687,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
-            ManifestUpdateResult::kAppUpdated);
+            ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  CheckShortcutInfoUpdated(app_id, kAnotherInstallableIconTopLeftColor);
+                                      ManifestUpdateResult::kAppUpdated, 0);
+  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -741,6 +742,33 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
+  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  EXPECT_EQ(GetProvider().registrar().GetAppScope(app_id),
+            http_server_.GetURL("/"));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       CheckDoesNotApplyIconURLChange) {
+  // This test changes the scope and also the icon list. The scope should update
+  // but the icons should not.
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "$1",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"/banners/", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {"/", kAnotherInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // The icon should not be updated.
   CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
   EXPECT_EQ(GetProvider().registrar().GetAppScope(app_id),
             http_server_.GetURL("/"));
@@ -993,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckFindsIconContentChange) {
+                       CheckDoesNotFindIconContentChange) {
   constexpr char kManifest[] = R"(
     {
       "name": "Test app name",
@@ -1027,73 +1055,35 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       }));
 
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
-            ManifestUpdateResult::kAppUpdated);
+            ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-  CheckShortcutInfoUpdated(app_id, SK_ColorBLUE);
+                                      ManifestUpdateResult::kAppUpdated, 0);
+  CheckShortcutInfoUpdated(app_id, kBasicIconTopLeftColor);
 
   EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
                              /*x=*/0, /*y=*/0),
-            SK_ColorBLUE);
+            SK_ColorBLACK);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
-                       CheckIgnoresIconDownloadFail) {
-  constexpr char kManifest[] = R"(
+                       CheckDoesNotUpdateGeneratedIcons) {
+  constexpr char kManifestTemplate[] = R"(
     {
       "name": "Test app name",
       "start_url": ".",
       "scope": "/",
       "display": "standalone",
-      "icons": [
-        {
-          "src": "/web_apps/basic-48.png?ignore",
-          "sizes": "48x48",
-          "type": "image/png"
-        },
-        {
-          "src": "/web_apps/basic-192.png?ignore",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
+      "icons": $1
     }
   )";
-  OverrideManifest(kManifest, {});
+  OverrideManifest(kManifestTemplate, {"[]"});
   AppId app_id = InstallWebApp();
 
-  // Make basic-48.png fail to download.
-  // Replace the contents of basic-192.png with blue-192.png without changing
-  // the URL.
-  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
-      [this](content::URLLoaderInterceptor::RequestParams* params)
-          -> bool /*intercepted*/ {
-        if (params->url_request.url ==
-            http_server_.GetURL("/web_apps/basic-48.png?ignore")) {
-          content::URLLoaderInterceptor::WriteResponse("malformed response", "",
-                                                       params->client.get());
-          return true;
-        }
-        if (params->url_request.url ==
-            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/blue-192.png", params->client.get());
-          return true;
-        }
-        return false;
-      }));
-
+  OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
-            ManifestUpdateResult::kIconDownloadFailed);
-  histogram_tester_.ExpectBucketCount(
-      kUpdateHistogramName, ManifestUpdateResult::kIconDownloadFailed, 1);
-
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/48, /*x=*/0,
-                             /*y=*/0),
-            SK_ColorBLACK);
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
-            SK_ColorBLACK);
+            ManifestUpdateResult::kAppUpToDate);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 0);
 }
 
 class ManifestUpdateManagerCaptureLinksBrowserTest
@@ -1140,8 +1130,7 @@ class ManifestUpdateManagerSystemAppBrowserTest
  public:
   ManifestUpdateManagerSystemAppBrowserTest()
       : system_app_(
-            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {
-  }
+            TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp()) {}
 
   void SetUpOnMainThread() override { system_app_->WaitForAppInstall(); }
 
@@ -1546,6 +1535,58 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
+                       ShortcutIconContentChangeDoesNotApplyAppIconUpdate) {
+  constexpr char kManifest[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "shortcuts": [
+        {
+          "name": "Home",
+          "short_name": "HM",
+          "description": "Go home",
+          "url": "/",
+          "icons": [
+            {
+              "src": "/web_apps/basic-192.png?ignore",
+              "sizes": "192x192",
+              "type": "image/png"
+            }
+          ]
+        }
+      ]
+    }
+  )";
+  OverrideManifest(kManifest, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  // Replace the contents of basic-192.png with blue-192.png without changing
+  // the URL.
+  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
+      [this](content::URLLoaderInterceptor::RequestParams* params)
+          -> bool /*intercepted*/ {
+        if (params->url_request.url ==
+            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/blue-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  OverrideManifest(kManifest, {kAnotherInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  // The icon should not be updated.
+  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
                        CheckFindsShortcutIconSrcUpdated) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -1630,6 +1671,149 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
                 .shortcut_icon_infos[0]
                 .square_size_px,
             kAnotherIconSize);
+}
+
+class ManifestUpdateManagerIconUpdatingBrowserTest
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerIconUpdatingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAppManifestIconUpdating);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
+                       CheckFindsIconContentChange) {
+  constexpr char kManifest[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": [
+        {
+          "src": "/web_apps/basic-192.png?ignore",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  )";
+  OverrideManifest(kManifest, {});
+  AppId app_id = InstallWebApp();
+
+  // Replace the contents of basic-192.png with blue-192.png without changing
+  // the URL.
+  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
+      [this](content::URLLoaderInterceptor::RequestParams* params)
+          -> bool /*intercepted*/ {
+        if (params->url_request.url ==
+            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/blue-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // The icon should have changed, as the file has been updated (but the url is
+  // the same).
+  CheckShortcutInfoUpdated(app_id, SK_ColorBLUE);
+
+  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
+                             /*x=*/0, /*y=*/0),
+            SK_ColorBLUE);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
+                       CheckFindsIconUrlChange) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+
+  OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // The icon should have changed.
+  CheckShortcutInfoUpdated(app_id, kAnotherInstallableIconTopLeftColor);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
+                       CheckIgnoresIconDownloadFail) {
+  constexpr char kManifest[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": [
+        {
+          "src": "/web_apps/basic-48.png?ignore",
+          "sizes": "48x48",
+          "type": "image/png"
+        },
+        {
+          "src": "/web_apps/basic-192.png?ignore",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  )";
+  OverrideManifest(kManifest, {});
+  AppId app_id = InstallWebApp();
+
+  // Make basic-48.png fail to download.
+  // Replace the contents of basic-192.png with blue-192.png without changing
+  // the URL.
+  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
+      [this](content::URLLoaderInterceptor::RequestParams* params)
+          -> bool /*intercepted*/ {
+        if (params->url_request.url ==
+            http_server_.GetURL("/web_apps/basic-48.png?ignore")) {
+          content::URLLoaderInterceptor::WriteResponse("malformed response", "",
+                                                       params->client.get());
+          return true;
+        }
+        if (params->url_request.url ==
+            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "chrome/test/data/web_apps/blue-192.png", params->client.get());
+          return true;
+        }
+        return false;
+      }));
+
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kIconDownloadFailed);
+  histogram_tester_.ExpectBucketCount(
+      kUpdateHistogramName, ManifestUpdateResult::kIconDownloadFailed, 1);
+
+  // Since one request failed, none of the icons should be updated. So the '192'
+  // size here is not updated to blue.
+  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/48, /*x=*/0,
+                             /*y=*/0),
+            SK_ColorBLACK);
+  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
+                             /*x=*/0, /*y=*/0),
+            SK_ColorBLACK);
 }
 
 }  // namespace web_app
