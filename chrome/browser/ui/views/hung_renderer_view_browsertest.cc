@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -27,7 +26,7 @@
 // Interactive UI tests for the hung renderer (aka page unresponsive) dialog.
 class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
  public:
-  HungRendererDialogViewBrowserTest() = default;
+  HungRendererDialogViewBrowserTest() {}
 
   // Normally the dialog only shows multiple WebContents when they're all part
   // of the same process, but that's hard to achieve in a test.
@@ -51,25 +50,9 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
         base::DoNothing::Repeatedly());
 
     if (name == "MultiplePages") {
-      HungRendererDialogView* view =
-          HungRendererDialogView::GetInstanceForWebContentsForTests(
-              web_contents);
       auto* web_contents2 = chrome::DuplicateTabAt(browser(), 0);
-      AddWebContents(view, web_contents2);
+      AddWebContents(HungRendererDialogView::GetInstance(), web_contents2);
     }
-  }
-
-  HungRendererDialogView* CreateDialogView() {
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-
-    return HungRendererDialogView::CreateInstance(
-        web_contents, browser()->window()->GetNativeWindow());
-  }
-
-  void EndForWebContents(HungRendererDialogView* dialog,
-                         content::WebContents* contents) {
-    dialog->EndForWebContents(
-        contents, contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   }
 
  private:
@@ -91,15 +74,15 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest,
 
 // This is a regression test for https://crbug.com/855369.
 IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-
   // Simulate creation of the dialog, without initializing or showing it yet.
   // This is what happens when HungRendererDialogView::ShowForWebContents
   // returns early if the frame or the dialog are not active.
-  CreateDialogView();
-  ASSERT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents));
+  HungRendererDialogView::Create(browser()->window()->GetNativeWindow());
+  ASSERT_TRUE(HungRendererDialogView::GetInstance());
 
   // Simulate the renderer becoming responsive again.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderWidgetHost* render_widget_host =
       web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
   content::WebContentsDelegate* web_contents_delegate = browser();
@@ -107,11 +90,11 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, InactiveWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-
-  HungRendererDialogView* dialog = CreateDialogView();
+  HungRendererDialogView* dialog =
+      HungRendererDialogView::Create(browser()->window()->GetNativeWindow());
   ASSERT_TRUE(dialog);
-  ASSERT_TRUE(HungRendererDialogView::IsShowingForWebContents(web_contents));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   // The Hung Dialog requires window activation, window activations does not
   // work reliably in browser tests, especially in Mac because of the activation
@@ -128,38 +111,11 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, ProcessClosed) {
       dialog->table_for_testing()->GetViewAccessibility();
   EXPECT_EQ(size_t{1}, view_accessibility.virtual_children().size());
 
-  // Simulate an abrupt ending to the WebContents. The accessibility tree for
-  // the TableView depends on the Hung Render View table model to send the right
-  // events. By checking the virtual tree, we can guarantee the sync is
-  // correct.
-  EndForWebContents(dialog, web_contents);
+  // Simulate an abrupt ending to webcontents. The accessibility tree for the
+  // TableView depends on the Hung Render View table model to send the right
+  // events. By checking the virtual tree, we can guarantee the sync is correct.
+  dialog->EndForWebContents(
+      web_contents,
+      web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget());
   EXPECT_EQ(size_t{0}, view_accessibility.virtual_children().size());
-}
-
-IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
-  auto* browser1 = browser();
-  auto* web_contents1 = browser1->tab_strip_model()->GetActiveWebContents();
-  auto* widget_host1 =
-      web_contents1->GetMainFrame()->GetRenderViewHost()->GetWidget();
-
-  auto* browser2 =
-      Browser::Create(Browser::CreateParams(browser1->profile(), true));
-  chrome::NewTab(browser2);
-  auto* web_contents2 = browser2->tab_strip_model()->GetActiveWebContents();
-  auto* widget_host2 =
-      web_contents2->GetMainFrame()->GetRenderViewHost()->GetWidget();
-
-  HungRendererDialogView::Show(web_contents1, widget_host1,
-                               base::DoNothing::Repeatedly());
-  HungRendererDialogView::Show(web_contents2, widget_host2,
-                               base::DoNothing::Repeatedly());
-  HungRendererDialogView::Hide(web_contents1, widget_host1);
-  HungRendererDialogView::Hide(web_contents2, widget_host2);
-
-  HungRendererDialogView::Show(web_contents1, widget_host1,
-                               base::DoNothing::Repeatedly());
-  HungRendererDialogView::Show(web_contents2, widget_host2,
-                               base::DoNothing::Repeatedly());
-  HungRendererDialogView::Hide(web_contents2, widget_host2);
-  HungRendererDialogView::Hide(web_contents1, widget_host1);
 }

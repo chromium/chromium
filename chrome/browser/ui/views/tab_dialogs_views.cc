@@ -56,7 +56,7 @@ void TabDialogsViews::HideHungRendererDialog(
 }
 
 bool TabDialogsViews::IsShowingHungRendererDialog() {
-  return HungRendererDialogView::IsShowingForWebContents(web_contents_);
+  return HungRendererDialogView::GetInstance();
 }
 
 void TabDialogsViews::ShowProfileSigninConfirmation(

@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_observer.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -38,7 +38,7 @@ class HungPagesTableModel : public ui::TableModel,
  public:
   class Delegate {
    public:
-    // Notification when the model is updated (e.g. new location) yet
+    // Notification when the model is updated (eg. new location) yet
     // still hung.
     virtual void TabUpdated() = 0;
 
@@ -46,7 +46,7 @@ class HungPagesTableModel : public ui::TableModel,
     virtual void TabDestroyed() = 0;
 
    protected:
-    virtual ~Delegate() = default;
+    virtual ~Delegate() {}
   };
 
   explicit HungPagesTableModel(Delegate* delegate);
@@ -127,13 +127,11 @@ class HungPagesTableModel : public ui::TableModel,
   // some more until the renderer process responds).
   base::RepeatingClosure hang_monitor_restarter_;
 
-  base::ScopedObservation<content::RenderProcessHost,
-                          content::RenderProcessHostObserver>
-      process_observation_{this};
+  ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
+      process_observer_{this};
 
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      widget_observation_{this};
+  ScopedObserver<content::RenderWidgetHost, content::RenderWidgetHostObserver>
+      widget_observer_{this};
 };
 
 // This class displays a dialog which contains information about a hung
@@ -146,15 +144,19 @@ class HungRendererDialogView : public views::DialogDelegateView,
   HungRendererDialogView(const HungRendererDialogView&) = delete;
   HungRendererDialogView& operator=(const HungRendererDialogView&) = delete;
 
+  // Factory function for creating an instance of the HungRendererDialogView
+  // class. At any given point only one instance can be active.
+  static HungRendererDialogView* Create(gfx::NativeWindow context);
+
+  // Returns a pointer to the singleton instance if any.
+  static HungRendererDialogView* GetInstance();
+
   // Shows or hides the hung renderer dialog for the given WebContents.
   static void Show(content::WebContents* contents,
                    content::RenderWidgetHost* render_widget_host,
                    base::RepeatingClosure hang_monitor_restarter);
   static void Hide(content::WebContents* contents,
                    content::RenderWidgetHost* render_widget_host);
-
-  // Returns true if there is an instance showing for the given WebContents.
-  static bool IsShowingForWebContents(content::WebContents* contents);
 
   // Returns true if the frame is in the foreground.
   static bool IsFrameActive(content::WebContents* contents);
@@ -164,34 +166,30 @@ class HungRendererDialogView : public views::DialogDelegateView,
     return hung_pages_table_model_.get();
   }
 
+  virtual void ShowForWebContents(
+      content::WebContents* contents,
+      content::RenderWidgetHost* render_widget_host,
+      base::RepeatingClosure hang_monitor_restarter);
+  virtual void EndForWebContents(content::WebContents* contents,
+                                 content::RenderWidgetHost* render_widget_host);
+
   // views::DialogDelegateView overrides:
   base::string16 GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
+  void WindowClosing() override;
 
   // HungPagesTableModel::Delegate overrides:
   void TabUpdated() override;
   void TabDestroyed() override;
 
- private:
-  friend class HungRendererDialogViewBrowserTest;
-
-  explicit HungRendererDialogView(content::WebContents* web_contents);
+ protected:
+  HungRendererDialogView();
   ~HungRendererDialogView() override;
 
-  // Creates an instance for the given WebContents and window.
-  static HungRendererDialogView* CreateInstance(content::WebContents* contents,
-                                                gfx::NativeWindow window);
+  static HungRendererDialogView* g_instance_;
 
-  // Gets the instance, if any, for the given WebContents, or null if there is
-  // none.
-  static HungRendererDialogView* GetInstanceForWebContentsForTests(
-      content::WebContents* contents);
-
-  void ShowForWebContents(content::WebContents* contents,
-                          content::RenderWidgetHost* render_widget_host,
-                          base::RepeatingClosure hang_monitor_restarter);
-  void EndForWebContents(content::WebContents* contents,
-                         content::RenderWidgetHost* render_widget_host);
+ private:
+  friend class HungRendererDialogViewBrowserTest;
 
   // Restart the hang timer, giving the page more time.
   void RestartHangTimer();
@@ -200,9 +198,6 @@ class HungRendererDialogView : public views::DialogDelegateView,
   void UpdateLabels();
 
   void CloseDialogWithNoAction();
-
-  // The WebContents that this dialog was created for and is associated with.
-  content::WebContents* web_contents_;
 
   // The label describing the list.
   views::Label* info_label_;
