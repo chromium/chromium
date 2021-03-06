@@ -76,6 +76,8 @@ class CartService : public history::HistoryServiceObserver,
  private:
   friend class CartServiceFactory;
   friend class CartServiceTest;
+  FRIEND_TEST_ALL_PREFIXES(CartHandlerNtpModuleFakeDataTest,
+                           TestEnableFakeData);
 
   // Use |CartServiceFactory::GetForProfile(...)| to get an instance of this
   // service.

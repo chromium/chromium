@@ -67,10 +67,6 @@ const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kEmptyExpected = {};
 }  // namespace
 
-// TODO(crbug.com/1175279): CartHandlerTest.* tests are flaky on TSan.
-#if defined(THREAD_SANITIZER)
-#define CartHandlerTest DISABLED_CartHandlerTest
-#endif
 class CartHandlerTest : public testing::Test {
  public:
   CartHandlerTest()
@@ -123,6 +119,10 @@ class CartHandlerTest : public testing::Test {
   void TearDown() override {}
 
  protected:
+  // This needs to be declared before |task_environment_|, so that it will be
+  // destroyed after |task_environment_| has run all the tasks on other threads
+  // that might check if a feature is enabled.
+  base::test::ScopedFeatureList feature_list_;
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -140,60 +140,6 @@ TEST_F(CartHandlerTest, TestHideStatusChange) {
 
   handler_->RestoreHiddenCartModule();
   ASSERT_FALSE(service_->IsHidden());
-}
-
-// Verifies GetMerchantCarts loads fake data with feature parameter.
-//
-// Disabled due to excessive flakiness. http://crbug.com/1175279
-TEST_F(CartHandlerTest, DISABLED_TestEnableFakeData) {
-  base::RunLoop run_loop;
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule,
-      {{"NtpChromeCartModuleDataParam", "fake"}});
-  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
-  task_environment_.RunUntilIdle();
-
-  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
-  auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart1->merchant = kFakeMerchant;
-  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
-  carts.push_back(std::move(dummy_cart1));
-
-  handler_->GetMerchantCarts(base::BindOnce(
-      &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
-  run_loop.Run();
-}
-
-// Verifies GetMerchantCarts loads real data without fake data parameter.
-// TODO(crbug.com/1180772): Test is flaky on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_TestDisableFakeData DISABLED_TestDisableFakeData
-#else
-#define MAYBE_TestDisableFakeData TestDisableFakeData
-#endif
-TEST_F(CartHandlerTest, MAYBE_TestDisableFakeData) {
-  base::RunLoop run_loop;
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
-  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
-  task_environment_.RunUntilIdle();
-
-  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
-  auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart1->merchant = kFakeMerchant;
-  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
-  auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
-  dummy_cart2->merchant = kMockMerchantB;
-  dummy_cart2->cart_url = GURL(kMockMerchantURLB);
-  carts.push_back(std::move(dummy_cart2));
-  carts.push_back(std::move(dummy_cart1));
-
-  handler_->GetMerchantCarts(base::BindOnce(
-      &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
-  run_loop.Run();
 }
 
 // Tests hiding a single cart and undoing the hide.
@@ -278,11 +224,102 @@ TEST_F(CartHandlerTest, TestRemoveCart) {
   run_loop[5].Run();
 }
 
+// Test cart click index histogram is properly recorded.
+TEST_F(CartHandlerTest, TestOnCartItemClicked) {
+  handler_->OnCartItemClicked(3);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
+  handler_->OnCartItemClicked(2);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 2));
+  handler_->OnCartItemClicked(3);
+  ASSERT_EQ(2,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
+}
+
+// Test cart item count histogram is properly recorded.
+TEST_F(CartHandlerTest, TestOnModuleCreated) {
+  handler_->OnModuleCreated(0);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
+  handler_->OnModuleCreated(1);
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 1));
+  handler_->OnModuleCreated(0);
+  ASSERT_EQ(2,
+            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
+}
+
+// Override CartHandlerTest so that we can initialize feature_list_ in our
+// constructor, before CartHandlerTest::SetUp is called.
+class CartHandlerNtpModuleFakeDataTest : public CartHandlerTest {
+ public:
+  CartHandlerNtpModuleFakeDataTest() {
+    // This needs to be called before any tasks that run on other threads check
+    // if a feature is enabled.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"NtpChromeCartModuleDataParam", "fake"}});
+  }
+};
+
+// Verifies GetMerchantCarts loads fake data with feature parameter.
+TEST_F(CartHandlerNtpModuleFakeDataTest, TestEnableFakeData) {
+  // Remove fake data loaded by CartService::CartService.
+  service_->DeleteCartsWithFakeData();
+
+  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
+  task_environment_.RunUntilIdle();
+
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
+  dummy_cart1->merchant = kFakeMerchant;
+  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
+  carts.push_back(std::move(dummy_cart1));
+
+  base::RunLoop run_loop;
+  handler_->GetMerchantCarts(base::BindOnce(
+      &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
+  run_loop.Run();
+}
+
+// Override CartHandlerTest so that we can initialize feature_list_ in our
+// constructor, before CartHandlerTest::SetUp is called.
+class CartHandlerNtpModuleTest : public CartHandlerTest {
+ public:
+  CartHandlerNtpModuleTest() {
+    // This needs to be called before any tasks that run on other threads check
+    // if a feature is enabled.
+    feature_list_.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
+  }
+};
+
+// Verifies GetMerchantCarts loads real data without fake data parameter.
+TEST_F(CartHandlerNtpModuleTest, TestDisableFakeData) {
+  base::RunLoop run_loop;
+  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
+  task_environment_.RunUntilIdle();
+
+  std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
+  auto dummy_cart1 = chrome_cart::mojom::MerchantCart::New();
+  dummy_cart1->merchant = kFakeMerchant;
+  dummy_cart1->cart_url = GURL(kFakeMerchantURL);
+  auto dummy_cart2 = chrome_cart::mojom::MerchantCart::New();
+  dummy_cart2->merchant = kMockMerchantB;
+  dummy_cart2->cart_url = GURL(kMockMerchantURLB);
+  carts.push_back(std::move(dummy_cart2));
+  carts.push_back(std::move(dummy_cart1));
+
+  handler_->GetMerchantCarts(base::BindOnce(
+      &GetEvaluationMerchantCarts, run_loop.QuitClosure(), std::move(carts)));
+  run_loop.Run();
+}
+
 // Tests show welcome surface for first three appearances of cart module.
-TEST_F(CartHandlerTest, TestShowWelcomeSurface) {
+TEST_F(CartHandlerNtpModuleTest, TestShowWelcomeSurface) {
   base::RunLoop run_loop[11];
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
 
   // Add a cart with product image.
   CartDB* cart_db_ = service_->GetDB();
@@ -332,30 +369,4 @@ TEST_F(CartHandlerTest, TestShowWelcomeSurface) {
                                             run_loop[10].QuitClosure(),
                                             std::move(carts_with_product)));
   run_loop[10].Run();
-}
-
-// Test cart click index histogram is properly recorded.
-TEST_F(CartHandlerTest, TestOnCartItemClicked) {
-  handler_->OnCartItemClicked(3);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
-  handler_->OnCartItemClicked(2);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 2));
-  handler_->OnCartItemClicked(3);
-  ASSERT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.ClickCart", 3));
-}
-
-// Test cart item count histogram is properly recorded.
-TEST_F(CartHandlerTest, TestOnModuleCreated) {
-  handler_->OnModuleCreated(0);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
-  handler_->OnModuleCreated(1);
-  ASSERT_EQ(1,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 1));
-  handler_->OnModuleCreated(0);
-  ASSERT_EQ(2,
-            histogram_tester_.GetBucketCount("NewTabPage.Carts.CartCount", 0));
 }
