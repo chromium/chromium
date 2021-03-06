@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -60,59 +58,42 @@ public class NotificationIntentInterceptor {
     }
 
     /**
-     * Deprecated, now we use {@link TrampolineActivity} to do the logging. Temporarily kept or
-     * existing notification will crash. Receives the event when the user taps on the notification
-     * body, notification action, or dismiss notification.
+     * Receives the event when the user taps on the notification body, notification action, or
+     * dismiss notification.
      * {@link Notification#contentIntent}, {@link Notification#deleteIntent}
      * {@link Notification.Action#actionIntent} will be delivered to this broadcast receiver.
      */
     public static final class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            processIntent(context, intent);
-        }
-    }
+            @IntentType
+            int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
+            @NotificationUmaTracker.SystemNotificationType
+            int notificationType = intent.getIntExtra(
+                    EXTRA_NOTIFICATION_TYPE, NotificationUmaTracker.SystemNotificationType.UNKNOWN);
 
-    private static void processIntent(Context context, Intent intent) {
-        @IntentType
-        int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
-        @NotificationUmaTracker.SystemNotificationType
-        int notificationType = intent.getIntExtra(
-                EXTRA_NOTIFICATION_TYPE, NotificationUmaTracker.SystemNotificationType.UNKNOWN);
+            long createTime = intent.getLongExtra(EXTRA_CREATE_TIME, INVALID_CREATE_TIME);
 
-        long createTime = intent.getLongExtra(EXTRA_CREATE_TIME, INVALID_CREATE_TIME);
+            switch (intentType) {
+                case IntentType.UNKNOWN:
+                    break;
+                case IntentType.CONTENT_INTENT:
+                    NotificationUmaTracker.getInstance().onNotificationContentClick(
+                            notificationType, createTime);
+                    break;
+                case IntentType.DELETE_INTENT:
+                    NotificationUmaTracker.getInstance().onNotificationDismiss(
+                            notificationType, createTime);
+                    break;
+                case IntentType.ACTION_INTENT:
+                    int actionType = intent.getIntExtra(
+                            EXTRA_ACTION_TYPE, NotificationUmaTracker.ActionType.UNKNOWN);
+                    NotificationUmaTracker.getInstance().onNotificationActionClick(
+                            actionType, notificationType, createTime);
+                    break;
+            }
 
-        switch (intentType) {
-            case IntentType.UNKNOWN:
-                break;
-            case IntentType.CONTENT_INTENT:
-                NotificationUmaTracker.getInstance().onNotificationContentClick(
-                        notificationType, createTime);
-                break;
-            case IntentType.DELETE_INTENT:
-                NotificationUmaTracker.getInstance().onNotificationDismiss(
-                        notificationType, createTime);
-                break;
-            case IntentType.ACTION_INTENT:
-                int actionType = intent.getIntExtra(
-                        EXTRA_ACTION_TYPE, NotificationUmaTracker.ActionType.UNKNOWN);
-                NotificationUmaTracker.getInstance().onNotificationActionClick(
-                        actionType, notificationType, createTime);
-                break;
-        }
-
-        forwardPendingIntent(intent);
-    }
-
-    /**
-     * A trampoline activity that handles notification events logging.
-     */
-    public static class TrampolineActivity extends Activity {
-        @Override
-        protected void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            processIntent(getApplicationContext(), getIntent());
-            finish();
+            forwardPendingIntent(intent);
         }
     }
 
@@ -138,8 +119,7 @@ public class NotificationIntentInterceptor {
             flags = pendingIntentProvider.getFlags();
         }
         Context applicationContext = ContextUtils.getApplicationContext();
-        Intent intent = new Intent(applicationContext, TrampolineActivity.class);
-
+        Intent intent = new Intent(applicationContext, Receiver.class);
         intent.setAction(INTENT_ACTION);
         intent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
         intent.putExtra(EXTRA_INTENT_TYPE, intentType);
@@ -158,8 +138,7 @@ public class NotificationIntentInterceptor {
         int originalRequestCode =
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
         int requestCode = computeHashCode(metadata, intentType, intentId, originalRequestCode);
-
-        return PendingIntent.getActivity(applicationContext, requestCode, intent, flags);
+        return PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags);
     }
 
     /**
