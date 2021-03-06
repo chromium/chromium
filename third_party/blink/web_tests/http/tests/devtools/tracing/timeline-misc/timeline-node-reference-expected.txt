@@ -1,4 +1,4 @@
 Tests the Timeline API instrumentation of a Layout event
 
-Layout root node id: boundary
+Layout root node id: undefined
 

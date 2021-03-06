@@ -877,8 +877,8 @@ class CORE_EXPORT LocalFrameView final
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 
   void PerformPreLayoutTasks();
-  void PerformLayout(bool in_subtree_layout);
-  void PerformPostLayoutTasks();
+  LayoutObject* PerformLayout();
+  void PerformPostLayoutTasks(bool view_size_changed);
 
   DocumentLifecycle& Lifecycle() const;
 
@@ -902,7 +902,7 @@ class CORE_EXPORT LocalFrameView final
 
   void UpdateGeometriesIfNeeded();
   bool WasViewportResized();
-  void SendResizeEventIfNeeded();
+  void SendResizeEventIfNeeded(bool visual_viewport_size_changed);
 
   void ScheduleUpdatePluginsIfNecessary();
   void UpdatePluginsTimerFired(TimerBase*);
