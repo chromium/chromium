@@ -530,7 +530,8 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     AddressProfileSavePromptCallback callback) {
 #if defined(OS_ANDROID)
-  // TODO(crbug.com/1167061): Implement.
+  save_address_profile_message_delegate_.DisplaySavePrompt(
+      web_contents(), profile, std::move(callback));
 #else
   SaveAddressProfileBubbleControllerImpl::CreateForWebContents(web_contents());
   SaveAddressProfileBubbleControllerImpl* controller =

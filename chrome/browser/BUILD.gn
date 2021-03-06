@@ -2931,6 +2931,8 @@ static_library("browser") {
       "autofill/android/personal_data_manager_android.cc",
       "autofill/android/personal_data_manager_android.h",
       "autofill/android/phone_number_util_android.cc",
+      "autofill/android/save_address_profile_message_delegate.cc",
+      "autofill/android/save_address_profile_message_delegate.h",
       "autofill/autofill_keyboard_accessory_adapter.cc",
       "autofill/autofill_keyboard_accessory_adapter.h",
       "autofill/credit_card_accessory_controller.h",
