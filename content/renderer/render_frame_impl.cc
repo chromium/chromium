@@ -1602,7 +1602,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       compositor_deps->GetTaskGraphRunner(),
       params->widget_params->visual_properties.screen_infos,
       compositor_deps->CreateUkmRecorderFactory(),
-      /*settings=*/nullptr);
+      /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
+      compositor_deps->GetCompositorThreadPipeline());
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call
@@ -1773,7 +1774,8 @@ void RenderFrameImpl::CreateFrame(
         compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_infos,
         compositor_deps->CreateUkmRecorderFactory(),
-        /*settings=*/nullptr);
+        /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
+        compositor_deps->GetCompositorThreadPipeline());
 
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and
@@ -1817,7 +1819,8 @@ void RenderFrameImpl::CreateFrame(
         compositor_deps->GetTaskGraphRunner(),
         widget_params->visual_properties.screen_infos,
         compositor_deps->CreateUkmRecorderFactory(),
-        /*settings=*/nullptr);
+        /*settings=*/nullptr, compositor_deps->GetMainThreadPipeline(),
+        compositor_deps->GetCompositorThreadPipeline());
 
     // The WebFrameWidget should start with valid VisualProperties, including a
     // non-zero size. While WebFrameWidget would not normally receive IPCs and

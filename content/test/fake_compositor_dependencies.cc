@@ -40,4 +40,15 @@ FakeCompositorDependencies::CreateUkmRecorderFactory() {
   return std::make_unique<cc::TestUkmRecorderFactory>();
 }
 
+gfx::RenderingPipeline* FakeCompositorDependencies::GetMainThreadPipeline() {
+  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
+  return nullptr;
+}
+
+gfx::RenderingPipeline*
+FakeCompositorDependencies::GetCompositorThreadPipeline() {
+  // TODO(crbug.com/1157620): Implement to test rendering pipelines.
+  return nullptr;
+}
+
 }  // namespace content

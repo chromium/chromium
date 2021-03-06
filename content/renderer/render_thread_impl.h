@@ -79,6 +79,10 @@ namespace cc {
 class TaskGraphRunner;
 }
 
+namespace gfx {
+class RenderingPipeline;
+}
+
 namespace gpu {
 class GpuChannelHost;
 }
@@ -203,6 +207,8 @@ class CONTENT_EXPORT RenderThreadImpl
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
+  gfx::RenderingPipeline* GetMainThreadPipeline() override;
+  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
 
   bool IsLcdTextEnabled();
   bool IsElasticOverscrollEnabled();
@@ -519,6 +525,9 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // Thread for running multimedia operations (e.g., video decoding).
   std::unique_ptr<base::Thread> media_thread_;
+
+  std::unique_ptr<gfx::RenderingPipeline> main_thread_pipeline_;
+  std::unique_ptr<gfx::RenderingPipeline> compositor_thread_pipeline_;
 
   // Will point to appropriate task runner after initialization,
   // regardless of whether |compositor_thread_| is overriden.

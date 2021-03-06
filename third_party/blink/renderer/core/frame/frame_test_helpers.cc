@@ -541,7 +541,9 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   frame_widget->InitializeCompositing(
       frame_widget->GetAgentGroupScheduler(), frame_widget->task_graph_runner(),
       initial_screen_infos, std::make_unique<cc::TestUkmRecorderFactory>(),
-      &layer_tree_settings);
+      &layer_tree_settings,
+      /*main_thread_pipeline=*/nullptr,
+      /*compositor_thread_pipeline=*/nullptr);
   frame_widget->SetCompositorVisible(true);
   return frame_widget;
 }

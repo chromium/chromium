@@ -161,7 +161,9 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_infos,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-      const cc::LayerTreeSettings* settings) override;
+      const cc::LayerTreeSettings* settings,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void SetCursor(const ui::Cursor& cursor) override;

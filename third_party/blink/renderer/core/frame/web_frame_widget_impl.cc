@@ -1894,13 +1894,16 @@ void WebFrameWidgetImpl::InitializeCompositing(
     cc::TaskGraphRunner* task_graph_runner,
     const ScreenInfos& screen_infos,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    gfx::RenderingPipeline* main_thread_pipeline,
+    gfx::RenderingPipeline* compositor_thread_pipeline) {
   DCHECK(View()->does_composite());
   DCHECK(!non_composited_client_);  // Assure only one initialize is called.
   widget_base_->InitializeCompositing(
       agent_group_scheduler, task_graph_runner, is_for_child_local_root_,
       screen_infos, std::move(ukm_recorder_factory), settings,
-      input_handler_weak_ptr_factory_.GetWeakPtr());
+      input_handler_weak_ptr_factory_.GetWeakPtr(), main_thread_pipeline,
+      compositor_thread_pipeline);
 
   LocalFrameView* frame_view;
   if (is_for_child_local_root_) {

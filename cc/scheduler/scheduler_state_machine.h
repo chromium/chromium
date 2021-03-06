@@ -350,6 +350,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool should_defer_invalidation_for_fast_main_frame() const {
     return should_defer_invalidation_for_fast_main_frame_;
   }
+  bool did_commit_during_frame() const { return did_commit_during_frame_; }
 
  protected:
   bool BeginFrameRequiredForAction() const;

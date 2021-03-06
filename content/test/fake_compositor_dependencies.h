@@ -25,6 +25,8 @@ class FakeCompositorDependencies : public CompositorDependencies {
   blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   std::unique_ptr<cc::UkmRecorderFactory> CreateUkmRecorderFactory() override;
+  gfx::RenderingPipeline* GetMainThreadPipeline() override;
+  gfx::RenderingPipeline* GetCompositorThreadPipeline() override;
 
   void set_use_zoom_for_dsf_enabled(bool enabled) {
     use_zoom_for_dsf_ = enabled;

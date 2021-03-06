@@ -22,6 +22,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 namespace perfetto {
 namespace protos {
@@ -97,7 +98,9 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
             const SchedulerSettings& scheduler_settings,
             int layer_tree_host_id,
             base::SingleThreadTaskRunner* task_runner,
-            std::unique_ptr<CompositorTimingHistory> compositor_timing_history);
+            std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
+            gfx::RenderingPipeline* main_thread_pipeline,
+            gfx::RenderingPipeline* compositor_thread_pipeline);
   Scheduler(const Scheduler&) = delete;
   ~Scheduler() override;
 
@@ -327,6 +330,14 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Keeps track of the begin frame interval from the last BeginFrameArgs to
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
+
+  gfx::RenderingPipeline* const main_thread_pipeline_;
+  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      main_thread_pipeline_active_;
+
+  gfx::RenderingPipeline* const compositor_thread_pipeline_;
+  base::Optional<gfx::RenderingPipeline::ScopedPipelineActive>
+      compositor_thread_pipeline_active_;
 
  private:
   // Posts the deadline task if needed by checking

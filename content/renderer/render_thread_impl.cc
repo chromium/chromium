@@ -90,6 +90,7 @@
 #include "content/renderer/variations_render_thread_observer.h"
 #include "content/renderer/worker/embedded_shared_worker_stub.h"
 #include "content/renderer/worker/worker_thread_registry.h"
+#include "components/viz/common/features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "gin/public/debug.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -148,6 +149,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/rendering_pipeline.h"
 
 #if defined(OS_ANDROID)
 #include <cpu-features.h>
@@ -687,6 +689,24 @@ void RenderThreadImpl::Init() {
   DCHECK(parsed_num_raster_threads) << string_value;
   DCHECK_GT(num_raster_threads, 0);
 
+  if (base::FeatureList::IsEnabled(features::kAdpf)) {
+    main_thread_pipeline_ = gfx::RenderingPipeline::CreateRendererMain();
+    main_thread_pipeline_->AddSequenceManagerThread(
+        base::PlatformThread::CurrentId(), base::ThreadTaskRunnerHandle::Get());
+
+    compositor_thread_pipeline_ =
+        gfx::RenderingPipeline::CreateRendererCompositor();
+
+    compositor_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](gfx::RenderingPipeline* compositor_thread_pipeline) {
+                         compositor_thread_pipeline->AddSequenceManagerThread(
+                             base::PlatformThread::CurrentId(),
+                             base::ThreadTaskRunnerHandle::Get());
+                       },
+                       compositor_thread_pipeline_.get()));
+  }
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   categorized_worker_pool_->SetBackgroundingCallback(
       main_thread_scheduler_->DefaultTaskRunner(),
@@ -700,7 +720,7 @@ void RenderThreadImpl::Init() {
           },
           weak_factory_.GetWeakPtr()));
 #endif
-  categorized_worker_pool_->Start(num_raster_threads);
+  categorized_worker_pool_->Start(num_raster_threads, nullptr);
 
   discardable_memory_allocator_ = CreateDiscardableMemoryAllocator();
 
@@ -862,6 +882,7 @@ void RenderThreadImpl::SetResourceRequestSenderDelegate(
 void RenderThreadImpl::InitializeCompositorThread() {
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
+
   compositor_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&ThreadRestrictions::SetIOAllowed),
@@ -1293,6 +1314,14 @@ void RenderThreadImpl::SetScrollAnimatorEnabled(
 std::unique_ptr<cc::UkmRecorderFactory>
 RenderThreadImpl::CreateUkmRecorderFactory() {
   return std::make_unique<UkmRecorderFactoryImpl>(child_process_host());
+}
+
+gfx::RenderingPipeline* RenderThreadImpl::GetMainThreadPipeline() {
+  return main_thread_pipeline_.get();
+}
+
+gfx::RenderingPipeline* RenderThreadImpl::GetCompositorThreadPipeline() {
+  return compositor_thread_pipeline_.get();
 }
 
 bool RenderThreadImpl::IsMainThread() {

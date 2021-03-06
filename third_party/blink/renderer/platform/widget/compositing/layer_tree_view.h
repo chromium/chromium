@@ -32,6 +32,10 @@ class TaskGraphRunner;
 class UkmRecorderFactory;
 }  // namespace cc
 
+namespace gfx {
+class RenderingPipeline;
+}  // namespace gfx
+
 namespace blink {
 
 namespace scheduler {
@@ -57,7 +61,9 @@ class PLATFORM_EXPORT LayerTreeView
                   scoped_refptr<base::SingleThreadTaskRunner> main_thread,
                   scoped_refptr<base::SingleThreadTaskRunner> compositor_thread,
                   cc::TaskGraphRunner* task_graph_runner,
-                  std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory);
+                  std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
+                  gfx::RenderingPipeline* main_thread_pipeline,
+                  gfx::RenderingPipeline* compositor_thread_pipeline);
 
   // Drops any references back to the delegate in preparation for being
   // destroyed.

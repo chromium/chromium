@@ -179,7 +179,9 @@ void WidgetBase::InitializeCompositing(
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
     const cc::LayerTreeSettings* settings,
     base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-        frame_widget_input_handler) {
+        frame_widget_input_handler,
+    gfx::RenderingPipeline* main_thread_pipeline,
+    gfx::RenderingPipeline* compositor_thread_pipeline) {
   DCHECK(!initialized_);
   scheduler::WebThreadScheduler* main_thread_scheduler =
       &agent_group_scheduler.GetMainThreadScheduler();
@@ -205,7 +207,8 @@ void WidgetBase::InitializeCompositing(
       compositing_thread_scheduler
           ? compositing_thread_scheduler->DefaultTaskRunner()
           : nullptr,
-      task_graph_runner, std::move(ukm_recorder_factory));
+      task_graph_runner, std::move(ukm_recorder_factory), main_thread_pipeline,
+      compositor_thread_pipeline);
 
   FrameWidget* frame_widget = client_->FrameWidget();
 

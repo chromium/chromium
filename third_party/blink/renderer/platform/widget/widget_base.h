@@ -35,6 +35,10 @@ class TaskGraphRunner;
 class UkmRecorderFactory;
 }  // namespace cc
 
+namespace gfx {
+class RenderingPipeline;
+}  // namespace gfx
+
 namespace ui {
 class Cursor;
 }
@@ -91,7 +95,9 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
       const cc::LayerTreeSettings* settings,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
-          frame_widget_input_handler);
+          frame_widget_input_handler,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline);
 
   // Similar to `InitializeCompositing()` but for non-compositing widgets.
   // Exactly one of either `InitializeCompositing()` or this method must

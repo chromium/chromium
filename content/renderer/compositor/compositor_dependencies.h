@@ -26,6 +26,10 @@ class WebThreadScheduler;
 }
 }  // namespace blink
 
+namespace gfx {
+class RenderingPipeline;
+}  // namespace gfx
+
 namespace content {
 
 class CONTENT_EXPORT CompositorDependencies {
@@ -35,6 +39,8 @@ class CONTENT_EXPORT CompositorDependencies {
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
   virtual std::unique_ptr<cc::UkmRecorderFactory>
   CreateUkmRecorderFactory() = 0;
+  virtual gfx::RenderingPipeline* GetMainThreadPipeline() = 0;
+  virtual gfx::RenderingPipeline* GetCompositorThreadPipeline() = 0;
 
   virtual ~CompositorDependencies() {}
 };

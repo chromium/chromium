@@ -144,6 +144,8 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       debug_state_(settings_.initial_debug_state),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
+      main_thread_pipeline_(params.main_thread_pipeline),
+      compositor_thread_pipeline_(params.compositor_thread_pipeline),
       event_listener_properties_(),
       mutator_host_(params.mutator_host),
       dark_mode_filter_(params.dark_mode_filter) {
@@ -1928,9 +1930,20 @@ void LayerTreeHost::SetDelegatedInkMetadata(
   SetNeedsCommit();
 }
 
+gfx::RenderingPipeline* LayerTreeHost::TakeMainPipeline() {
+  auto* pipeline = main_thread_pipeline_;
+  main_thread_pipeline_ = nullptr;
+  return pipeline;
+}
+
+gfx::RenderingPipeline* LayerTreeHost::TakeCompositorPipeline() {
+  auto* pipeline = compositor_thread_pipeline_;
+  compositor_thread_pipeline_ = nullptr;
+  return pipeline;
+}
+
 std::vector<std::unique_ptr<DocumentTransitionRequest>>
 LayerTreeHost::TakeDocumentTransitionRequestsForTesting() {
   return std::move(document_transition_requests_);
 }
-
 }  // namespace cc

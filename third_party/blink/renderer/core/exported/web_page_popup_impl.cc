@@ -454,14 +454,17 @@ void WebPagePopupImpl::InitializeCompositing(
     cc::TaskGraphRunner* task_graph_runner,
     const ScreenInfos& screen_infos,
     std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    gfx::RenderingPipeline* main_thread_pipeline,
+    gfx::RenderingPipeline* compositor_thread_pipeline) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
-  widget_base_->InitializeCompositing(agent_group_scheduler, task_graph_runner,
-                                      /*for_child_local_root_frame=*/false,
-                                      screen_infos,
-                                      std::move(ukm_recorder_factory), settings,
-                                      /*frame_widget_input_handler=*/nullptr);
+  widget_base_->InitializeCompositing(
+      agent_group_scheduler, task_graph_runner,
+      /*for_child_local_root_frame=*/false, screen_infos,
+      std::move(ukm_recorder_factory), settings,
+      /*frame_widget_input_handler=*/nullptr, main_thread_pipeline,
+      compositor_thread_pipeline);
   cc::LayerTreeDebugState debug_state =
       widget_base_->LayerTreeHost()->GetDebugState();
   debug_state.TurnOffHudInfoDisplay();

@@ -36,14 +36,18 @@ Scheduler::Scheduler(
     const SchedulerSettings& settings,
     int layer_tree_host_id,
     base::SingleThreadTaskRunner* task_runner,
-    std::unique_ptr<CompositorTimingHistory> compositor_timing_history)
+    std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
+    gfx::RenderingPipeline* main_thread_pipeline,
+    gfx::RenderingPipeline* compositor_thread_pipeline)
     : settings_(settings),
       client_(client),
       layer_tree_host_id_(layer_tree_host_id),
       task_runner_(task_runner),
       compositor_timing_history_(std::move(compositor_timing_history)),
       begin_impl_frame_tracker_(FROM_HERE),
-      state_machine_(settings) {
+      state_machine_(settings),
+      main_thread_pipeline_(main_thread_pipeline),
+      compositor_thread_pipeline_(compositor_thread_pipeline) {
   TRACE_EVENT1("cc", "Scheduler::Scheduler", "settings", settings_.AsValue());
   DCHECK(client_);
   DCHECK(!state_machine_.BeginFrameNeeded());
@@ -185,6 +189,8 @@ void Scheduler::NotifyReadyToCommit(
 }
 
 void Scheduler::DidCommit() {
+  if (main_thread_pipeline_)
+    main_thread_pipeline_->NotifyFrameFinished();
   compositor_timing_history_->DidCommit();
 }
 
@@ -194,6 +200,8 @@ void Scheduler::BeginMainFrameAborted(CommitEarlyOutReason reason) {
   compositor_timing_history_->BeginMainFrameAborted(
       last_dispatched_begin_main_frame_args_.frame_id, reason);
   state_machine_.BeginMainFrameAborted(reason);
+  if (main_thread_pipeline_)
+    main_thread_pipeline_->NotifyFrameFinished();
   ProcessScheduledActions();
 }
 
@@ -283,6 +291,8 @@ void Scheduler::StartOrStopBeginFrames() {
     devtools_instrumentation::NeedsBeginFrameChanged(layer_tree_host_id_,
                                                      false);
     client_->WillNotReceiveBeginFrame();
+    main_thread_pipeline_active_.reset();
+    compositor_thread_pipeline_active_.reset();
   }
 }
 
@@ -563,6 +573,29 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
 
   skipped_last_frame_to_reduce_latency_ = false;
 
+  // A pipeline is activated if it's subscribed to BeginFrame callbacks. For the
+  // compositor this implies BeginImplFrames while for the main thread it would
+  // be BeginMainFrames.
+  // TODO(crbug.com/1157620) : For now this also includes cases where the
+  // rendering loop doesn't lead to any visual updates, for example a rAF
+  // callback updating content offscreen. These can be treated differently from
+  // a scheduling perspective (Idle vs Animating).
+  if (compositor_thread_pipeline_) {
+    if (!compositor_thread_pipeline_active_)
+      compositor_thread_pipeline_active_.emplace(compositor_thread_pipeline_);
+    compositor_thread_pipeline_->SetTargetDuration(adjusted_args.interval);
+  }
+
+  if (main_thread_pipeline_) {
+    // TODO(crbug.com/1157620) : We need a heuristic to mark the main pipeline
+    // inactive if it stops subscribing to main frames. For instance after a
+    // composited animation is committed.
+    if (state_machine_.did_commit_during_frame() &&
+        !main_thread_pipeline_active_)
+      main_thread_pipeline_active_.emplace(main_thread_pipeline_);
+    main_thread_pipeline_->SetTargetDuration(adjusted_args.interval);
+  }
+
   BeginImplFrame(adjusted_args, now);
 }
 
@@ -618,6 +651,9 @@ void Scheduler::FinishImplFrame() {
 
   if (begin_frame_source_)
     begin_frame_source_->DidFinishFrame(this);
+
+  if (compositor_thread_pipeline_)
+    compositor_thread_pipeline_->NotifyFrameFinished();
 }
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,

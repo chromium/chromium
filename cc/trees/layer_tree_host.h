@@ -61,6 +61,7 @@
 
 namespace gfx {
 struct PresentationFeedback;
+class RenderingPipeline;
 }
 
 namespace cc {
@@ -114,6 +115,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
     MutatorHost* mutator_host = nullptr;
     RasterDarkModeFilter* dark_mode_filter = nullptr;
+    gfx::RenderingPipeline* main_thread_pipeline = nullptr;
+    gfx::RenderingPipeline* compositor_thread_pipeline = nullptr;
 
     // The image worker task runner is used to schedule image decodes. The
     // compositor thread may make sync calls to this thread, analogous to the
@@ -631,6 +634,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void NotifyTransitionRequestsFinished(
       const std::vector<uint32_t>& sequence_ids);
+  // Called during impl side initialization.
+  gfx::RenderingPipeline* TakeMainPipeline();
+  gfx::RenderingPipeline* TakeCompositorPipeline();
 
   LayerTreeHostClient* client() { return client_; }
   LayerTreeHostSchedulingClient* scheduling_client() {
@@ -843,7 +849,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // destroyed midway which causes a crash. crbug.com/654672
   bool inside_main_frame_ = false;
 
+  // State cached until impl side is initialized.
   TaskGraphRunner* task_graph_runner_;
+  gfx::RenderingPipeline* main_thread_pipeline_;
+  gfx::RenderingPipeline* compositor_thread_pipeline_;
 
   uint32_t num_consecutive_frames_without_slow_paths_ = 0;
 

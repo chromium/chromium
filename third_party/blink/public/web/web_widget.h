@@ -68,6 +68,10 @@ class Cursor;
 class LatencyInfo;
 }
 
+namespace gfx {
+class RenderingPipeline;
+}
+
 namespace blink {
 struct ScreenInfo;
 struct ScreenInfos;
@@ -90,7 +94,9 @@ class WebWidget {
       cc::TaskGraphRunner* task_graph_runner,
       const ScreenInfos& screen_info,
       std::unique_ptr<cc::UkmRecorderFactory> ukm_recorder_factory,
-      const cc::LayerTreeSettings* settings) = 0;
+      const cc::LayerTreeSettings* settings,
+      gfx::RenderingPipeline* main_thread_pipeline,
+      gfx::RenderingPipeline* compositor_thread_pipeline) = 0;
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink and begin producing frames from the

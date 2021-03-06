@@ -90,7 +90,9 @@ void SingleThreadProxy::Start() {
     scheduler_on_impl_thread_.reset(
         new Scheduler(this, scheduler_settings, layer_tree_host_->GetId(),
                       task_runner_provider_->MainThreadTaskRunner(),
-                      std::move(compositor_timing_history)));
+                      std::move(compositor_timing_history),
+                      layer_tree_host_->TakeMainPipeline(),
+                      layer_tree_host_->TakeCompositorPipeline()));
   }
 }
 

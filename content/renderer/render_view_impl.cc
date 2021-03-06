@@ -469,7 +469,9 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
                                compositor_deps_->GetTaskGraphRunner(),
                                opener_widget->GetOriginalScreenInfos(),
                                compositor_deps_->CreateUkmRecorderFactory(),
-                               /*settings=*/nullptr);
+                               /*settings=*/nullptr,
+                               compositor_deps_->GetMainThreadPipeline(),
+                               compositor_deps_->GetCompositorThreadPipeline());
   return popup;
 }
 
