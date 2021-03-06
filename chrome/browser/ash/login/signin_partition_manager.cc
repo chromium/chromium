@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/signin_partition_manager.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

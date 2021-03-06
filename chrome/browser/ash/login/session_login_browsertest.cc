@@ -5,7 +5,7 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

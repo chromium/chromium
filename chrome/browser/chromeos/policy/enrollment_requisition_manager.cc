@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"

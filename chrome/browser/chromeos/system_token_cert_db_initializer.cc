@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"

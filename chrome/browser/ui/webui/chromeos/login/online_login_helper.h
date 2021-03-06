@@ -9,8 +9,8 @@
 
 #include "base/optional.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
+#include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/signin_partition_manager.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chromeos/login/auth/cryptohome_authenticator.h"
 #include "components/login/base_screen_handler_utils.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/login/auth/user_context.h"

@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/chromeos/policy/device_policy_decoder_chromeos.h"
 #include "chrome/browser/chromeos/policy/value_validation/onc_device_policy_value_validator.h"
 #include "chromeos/tpm/install_attributes.h"

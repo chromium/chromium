@@ -192,7 +192,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/security_token_session_controller_factory.h"
+#include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 

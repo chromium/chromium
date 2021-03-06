@@ -11,7 +11,7 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"

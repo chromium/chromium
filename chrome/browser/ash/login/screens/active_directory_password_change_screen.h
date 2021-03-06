@@ -9,8 +9,8 @@
 #include <string>
 
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 
 namespace authpolicy {
 class ActiveDirectoryAccountInfo;

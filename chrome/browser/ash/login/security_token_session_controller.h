@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
 
 #include <string>
 #include <vector>
@@ -107,4 +107,4 @@ class SecurityTokenSessionController
 }  // namespace login
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_SECURITY_TOKEN_SESSION_CONTROLLER_H_

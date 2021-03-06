@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/security_token_pin_dialog_host_ash_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
 
 #include <utility>
 

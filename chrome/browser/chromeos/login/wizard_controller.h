@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
@@ -55,7 +56,6 @@
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 // TODO(https://crbug.com/1164001): move LoginDisplayHost to forward
 // declaration when moved to chrome/browser/ash/.
 #include "chrome/browser/ash/login/ui/login_display_host.h"
