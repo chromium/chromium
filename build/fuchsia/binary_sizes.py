@@ -298,6 +298,15 @@ def FarBaseName(name):
   return name
 
 
+def GetPackageMerkleRoot(far_file_path):
+  """Returns a package's Merkle digest."""
+
+  # The digest is the first word on the first line of the merkle tool's output.
+  merkle_tool = GetHostToolPathFromPlatform('merkleroot')
+  output = subprocess.check_output([merkle_tool, far_file_path])
+  return output.splitlines()[0].split()[0]
+
+
 def GetBlobs(far_file, build_out_dir, extract_dir):
   """Calculates compressed and uncompressed blob sizes for specified FAR file.
   Does not count blobs from SDK libraries."""
@@ -322,8 +331,15 @@ def GetBlobs(far_file, build_out_dir, extract_dir):
   # Fuchsia SDK modules and the ICU icudtl.dat file are excluded from sizes.
   excluded_files = GetSdkModulesForExclusion() | set(['icudtl.dat'])
 
-  # Sum compresses and uncompressed blob sizes, except for SDK blobs.
+  # Add the meta.far file blob.
   blobs = {}
+  meta_name = 'meta.far'
+  meta_hash = GetPackageMerkleRoot(meta_far_file_path)
+  compressed = GetCompressedSize(meta_far_file_path)
+  uncompressed = os.path.getsize(meta_far_file_path)
+  blobs[meta_name] = Blob(meta_name, meta_hash, compressed, uncompressed)
+
+  # Add package blobs, except SDK and ICU blobs.
   for blob_name, blob_hash in blob_name_hashes.items():
     if os.path.basename(blob_name) not in excluded_files:
       extracted_blob_path = os.path.join(far_extract_dir, blob_hash)
