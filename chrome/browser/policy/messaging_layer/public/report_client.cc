@@ -154,7 +154,7 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
     return;
   }
   completed_ = true;
-  DCHECK(encrypted_records_->empty());
+  DCHECK(encrypted_records_);
   if (encrypted_records_->empty()) {
     return;
   }

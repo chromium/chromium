@@ -31,8 +31,6 @@
 namespace reporting {
 namespace {
 
-using reporting::Destination;
-
 // Usage (in tests only):
 //
 //   TestEvent<ResType> e;
@@ -159,6 +157,5 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
 }
-
 }  // namespace
 }  // namespace reporting
