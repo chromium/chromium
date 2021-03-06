@@ -7783,6 +7783,12 @@ be describing additional metrics about the same event.
       the number of rebuffering events.
     </summary>
   </metric>
+  <metric name="MediaStreamType" enum="MediaStreamType">
+    <summary>
+      Enum value indicating the type of MediaStream if the playback is from a
+      MediaStream, or kNonMediaStream otherwise.
+    </summary>
+  </metric>
   <metric name="PlayerID">
     <summary>
       ID which corresponds to a given WebMediaPlayerImpl instance. May be linked

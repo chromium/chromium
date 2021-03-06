@@ -50463,6 +50463,16 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Pending Media Tracks"/>
 </enum>
 
+<enum name="MediaStreamType">
+  <int value="0" label="Local element capture"/>
+  <int value="1" label="Local device capture"/>
+  <int value="2" label="Local tab capture"/>
+  <int value="3" label="Local desktop capture"/>
+  <int value="4" label="Local display capture"/>
+  <int value="5" label="Remote media stream"/>
+  <int value="6" label="None"/>
+</enum>
+
 <enum name="MediaTimelineAbsTimeDelta">
   <int value="0" label="[0, 1ms)"/>
   <int value="1" label="[1ms, 16ms)"/>

@@ -56,6 +56,10 @@ MediaMetricsProvider::MediaMetricsProvider(
       uma_info_(is_incognito == BrowsingMode::kIncognito) {}
 
 MediaMetricsProvider::~MediaMetricsProvider() {
+  // These UKM and UMA metrics do not apply to MediaStreams.
+  if (media_stream_type_ != mojom::MediaStreamType::kNone)
+    return;
+
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a
   // nullptr. If it's unavailable, UKM reporting will be skipped.
@@ -207,8 +211,10 @@ void MediaMetricsProvider::SetAudioPipelineInfo(const AudioDecoderInfo& info) {
   uma_info_.audio_pipeline_info = info;
 }
 
-void MediaMetricsProvider::Initialize(bool is_mse,
-                                      mojom::MediaURLScheme url_scheme) {
+void MediaMetricsProvider::Initialize(
+    bool is_mse,
+    mojom::MediaURLScheme url_scheme,
+    mojom::MediaStreamType media_stream_type) {
   if (initialized_) {
     mojo::ReportBadMessage(kInvalidInitialize);
     return;
@@ -217,6 +223,7 @@ void MediaMetricsProvider::Initialize(bool is_mse,
   is_mse_ = is_mse;
   initialized_ = true;
   url_scheme_ = url_scheme;
+  media_stream_type_ = media_stream_type;
 }
 
 void MediaMetricsProvider::OnError(PipelineStatus status) {

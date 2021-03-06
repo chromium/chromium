@@ -265,7 +265,9 @@ class WatchTimeReporterTest
     void AcquirePlaybackEventsRecorder(
         mojo::PendingReceiver<mojom::PlaybackEventsRecorder> receiver)
         override {}
-    void Initialize(bool is_mse, mojom::MediaURLScheme url_scheme) override {}
+    void Initialize(bool is_mse,
+                    mojom::MediaURLScheme url_scheme,
+                    mojom::MediaStreamType media_stream_type) override {}
     void OnError(PipelineStatus status) override {}
     void SetIsEME() override {}
     void SetTimeToMetadata(base::TimeDelta elapsed) override {}
@@ -310,7 +312,8 @@ class WatchTimeReporterTest
 
     wtr_ = std::make_unique<blink::WatchTimeReporter>(
         mojom::PlaybackProperties::New(has_audio_, has_video_, false, false,
-                                       is_mse, is_encrypted, false),
+                                       is_mse, is_encrypted, false,
+                                       mojom::MediaStreamType::kNone),
         initial_video_size,
         base::BindRepeating(&WatchTimeReporterTest::GetCurrentMediaTime,
                             base::Unretained(this)),
