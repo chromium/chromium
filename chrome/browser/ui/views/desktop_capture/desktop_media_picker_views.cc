@@ -220,8 +220,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                        ? DialogSource::kGetCurrentBrowsingContextMedia
                        : DialogSource::kGetDisplayMedia;
 
-  int selected_tab = 0;
-
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
       case DesktopMediaList::Type::kNone: {
@@ -316,7 +314,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         break;
       }
       case DesktopMediaList::Type::kCurrentTab: {
-        selected_tab = source_types_.size();
         source_types_.push_back(DesktopMediaList::Type::kCurrentTab);
         const DesktopMediaSourceViewStyle kCurrentTabStyle(
             1,                                       // columns
@@ -368,11 +365,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
   DCHECK(!source_types_.empty());
 
-  // Focus on the correct dialog-tab.
-  OnSourceTypeSwitched(selected_tab);
-  if (tabbed_pane_) {
-    tabbed_pane_->SelectTabAt(selected_tab);
-  }
+  OnSourceTypeSwitched(0);
 
   // If |params.web_contents| is set and it's not a background page then the
   // picker will be shown modal to the web contents. Otherwise the picker is
