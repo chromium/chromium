@@ -60,7 +60,7 @@ class CORE_EXPORT StyleResolverState {
   StyleResolverState(Document&,
                      Element&,
                      PseudoId,
-                     PseudoElementStyleRequest::RequestType,
+                     StyleRequest::RequestType,
                      const ComputedStyle* parent_style,
                      const ComputedStyle* layout_parent_style);
   StyleResolverState(Document&, Element&, const StyleRequest&);
@@ -185,7 +185,7 @@ class CORE_EXPORT StyleResolverState {
   StyleResolverState(Document&,
                      Element&,
                      PseudoElement*,
-                     PseudoElementStyleRequest::RequestType,
+                     StyleRequest::RequestType,
                      ElementType,
                      const ComputedStyle* parent_style,
                      const ComputedStyle* layout_parent_style);
@@ -211,7 +211,7 @@ class CORE_EXPORT StyleResolverState {
 
   CSSAnimationUpdate animation_update_;
   bool is_animation_interpolation_map_ready_ = false;
-  PseudoElementStyleRequest::RequestType pseudo_request_type_;
+  StyleRequest::RequestType pseudo_request_type_;
 
   FontBuilder font_builder_;
 
