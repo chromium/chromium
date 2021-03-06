@@ -298,28 +298,18 @@ void HandleCycleForwardMRU(const ui::Accelerator& accelerator) {
       WindowCycleController::WindowCyclingDirection::kForward);
 }
 
-void HandleActivateDesk(const ui::Accelerator& accelerator) {
+void HandleActivateDesk(const ui::Accelerator& accelerator,
+                        bool activate_left) {
   auto* desks_controller = DesksController::Get();
   const bool success = desks_controller->ActivateAdjacentDesk(
-      /*going_left=*/
-      (accelerator.key_code() == ui::VKEY_OEM_4 ||
-       accelerator.key_code() == ui::VKEY_LEFT),
-      DesksSwitchSource::kDeskSwitchShortcut);
+      activate_left, DesksSwitchSource::kDeskSwitchShortcut);
   if (!success)
     return;
 
-  switch (accelerator.key_code()) {
-    case ui::VKEY_OEM_4:
-    case ui::VKEY_LEFT:
-      base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateLeft"));
-      break;
-    case ui::VKEY_OEM_6:
-    case ui::VKEY_RIGHT:
-      base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateRight"));
-      break;
-
-    default:
-      NOTREACHED();
+  if (activate_left) {
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateLeft"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Accel_Desks_ActivateRight"));
   }
 }
 
@@ -1949,7 +1939,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case CYCLE_BACKWARD_MRU:
     case CYCLE_FORWARD_MRU:
       return CanHandleCycleMru(accelerator);
-    case DESKS_ACTIVATE_DESK:
+    case DESKS_ACTIVATE_DESK_LEFT:
+    case DESKS_ACTIVATE_DESK_RIGHT:
     case DESKS_MOVE_ACTIVE_ITEM:
     case DESKS_NEW_DESK:
     case DESKS_REMOVE_CURRENT_DESK:
@@ -2148,8 +2139,11 @@ void AcceleratorControllerImpl::PerformAction(
     case CYCLE_FORWARD_MRU:
       HandleCycleForwardMRU(accelerator);
       break;
-    case DESKS_ACTIVATE_DESK:
-      HandleActivateDesk(accelerator);
+    case DESKS_ACTIVATE_DESK_LEFT:
+      HandleActivateDesk(accelerator, /*activate_left=*/true);
+      break;
+    case DESKS_ACTIVATE_DESK_RIGHT:
+      HandleActivateDesk(accelerator, /*activate_left=*/false);
       break;
     case DESKS_MOVE_ACTIVE_ITEM:
       HandleMoveActiveItem(accelerator);

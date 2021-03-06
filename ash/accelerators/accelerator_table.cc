@@ -382,7 +382,8 @@ const AcceleratorAction kActionsKeepingMenuOpen[] = {
     // Keep the menu open when switching desks. The desk activation code will
     // close the menu without animation manually. Otherwise, the menu will fade
     // out and a trace will be visible while switching desks.
-    DESKS_ACTIVATE_DESK,
+    DESKS_ACTIVATE_DESK_LEFT,
+    DESKS_ACTIVATE_DESK_RIGHT,
     DESKS_NEW_DESK,
     DESKS_REMOVE_CURRENT_DESK,
     DISABLE_CAPS_LOCK,
