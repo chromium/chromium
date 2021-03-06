@@ -13,4 +13,4 @@ Chrome OS:
     Daemon for encryption and storage of reports.
 
 If you'd like to begin using ERP within Chrome please check the comment in
-[//chrome/browser/policy/messaging_layer/public/report_client.h](https:://chromium.googlesource.com/chromium/src/+/master/chrome/browser/policy/messaging_layer/public/report_client.h#25).
+[//components/reporting/client/report_queue_provider.h](https:://chromium.googlesource.com/chromium/src/+/master/components/reporting/client/report_queue_provider.h#25).

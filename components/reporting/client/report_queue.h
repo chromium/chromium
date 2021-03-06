@@ -44,7 +44,7 @@ namespace reporting {
 //           [](google::protobuf::ImportantMessage important_message,
 //              reporting::ReportQueue::EnqueueCallback done_cb,
 //              std::unique_ptr<reporting::ReportQueueConfiguration> config) {
-//             reporting::ReportingClient::CreateReportQueueImpl(
+//             reporting::ReportQueueProvider::CreateQueue(
 //                 std::move(config),
 //                 base::BindOnce(
 //                     [](google::protobuf::ImportantMessage important_message,
