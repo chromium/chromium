@@ -141,6 +141,18 @@ std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,
   int32_t os_bugfix_version = 0;
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
+
+#if defined(OS_MAC)
+  // A significant amount of web content breaks if the reported "Mac
+  // OS X" major version number is greater than 10. Continue to report
+  // this as 10_15_7, the last dot release for that macOS version.
+  if (os_major_version > 10) {
+    os_major_version = 10;
+    os_minor_version = 15;
+    os_bugfix_version = 7;
+  }
+#endif
+
 #endif
 
 #if defined(OS_ANDROID)
