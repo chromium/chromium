@@ -36,6 +36,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -643,7 +644,9 @@ void BrowserTestBase::SetUp() {
 
     auto ui_task = std::make_unique<base::OnceClosure>(
         base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                       base::Unretained(this), loop.QuitClosure()));
+                       base::Unretained(this), loop.QuitClosure(),
+                       /*wait_retry_left=*/
+                       TestTimeouts::action_max_timeout()));
 
     // The MainFunctionParams must out-live all the startup tasks running.
     MainFunctionParams params(*command_line);
@@ -730,17 +733,24 @@ void BrowserTestBase::SimulateNetworkServiceCrash() {
 }
 
 #if defined(OS_ANDROID)
-void BrowserTestBase::WaitUntilJavaIsReady(base::OnceClosure quit_closure) {
+void BrowserTestBase::WaitUntilJavaIsReady(
+    base::OnceClosure quit_closure,
+    const base::TimeDelta& wait_retry_left) {
+  CHECK_GE(wait_retry_left.InMilliseconds(), 0)
+      << "WaitUntilJavaIsReady() timed out.";
+
   if (testing::android::JavaAsyncStartupTasksCompleteForBrowserTests()) {
     std::move(quit_closure).Run();
     return;
   }
 
+  base::TimeDelta retry_interval = base::TimeDelta::FromMilliseconds(100);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                     base::Unretained(this), std::move(quit_closure)),
-      base::TimeDelta::FromMilliseconds(100));
+                     base::Unretained(this), std::move(quit_closure),
+                     wait_retry_left - retry_interval),
+      retry_interval);
   return;
 }
 #endif
