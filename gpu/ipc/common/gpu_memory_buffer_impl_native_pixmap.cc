@@ -90,22 +90,32 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
 }
 
 bool GpuMemoryBufferImplNativePixmap::Map() {
-  DCHECK(!mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  if (map_count_++)
+    return true;
+
   DCHECK_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()),
             handle_.planes.size());
-  mapped_ = pixmap_->Map();
-  return mapped_;
+  if (!pixmap_->Map()) {
+    --map_count_;
+    return false;
+  }
+
+  return true;
 }
 
 void* GpuMemoryBufferImplNativePixmap::memory(size_t plane) {
-  DCHECK(mapped_);
+  AssertMapped();
   return pixmap_->GetMemoryAddress(plane);
 }
 
 void GpuMemoryBufferImplNativePixmap::Unmap() {
-  DCHECK(mapped_);
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+  if (--map_count_)
+    return;
+
   pixmap_->Unmap();
-  mapped_ = false;
 }
 
 int GpuMemoryBufferImplNativePixmap::stride(size_t plane) const {

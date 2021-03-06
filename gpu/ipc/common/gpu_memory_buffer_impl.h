@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/size.h"
@@ -46,12 +47,18 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
                       gfx::BufferFormat format,
                       DestructionCallback callback);
 
+  void AssertMapped();
+
   const gfx::GpuMemoryBufferId id_;
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   DestructionCallback callback_;
-  bool mapped_;
   gpu::SyncToken destruction_sync_token_;
+
+  // Note: This lock must be held throughout the entirety of the Map() and
+  // Unmap() operations to avoid corrupt mutation across multiple threads.
+  base::Lock map_lock_;
+  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImpl);
