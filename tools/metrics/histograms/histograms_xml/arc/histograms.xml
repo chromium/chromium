@@ -971,6 +971,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.Runtime.Performance.CommitDeviation" units="microseconds"
     expires_after="2021-08-09">
+  <obsolete>
+    Removed in Mar 2021. Now reported as
+    Arc.Runtime.Performance.CommitDeviationNew
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
@@ -978,13 +982,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Standard deviation for commit time delta from ideal time.</summary>
 </histogram>
 
+<histogram name="Arc.Runtime.Performance.CommitDeviation2" units="microseconds"
+    expires_after="2021-08-09">
+<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
+
+  <owner>khmel@google.com</owner>
+  <owner>camurcu@google.com</owner>
+  <summary>
+    Standard deviation for commit time delta from ideal time. Only collected if
+    the user has app syncing enabled and doesn't have a custom passphrase set.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Runtime.Performance.FPS" units="fps"
     expires_after="2021-07-18">
+  <obsolete>
+    Removed in Mar 2021. Now reported as
+    Arc.Runtime.Performance.CommitDeviationNew
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>Render frames per second.</summary>
+</histogram>
+
+<histogram name="Arc.Runtime.Performance.FPS2" units="fps"
+    expires_after="2021-07-18">
+<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
+
+  <owner>khmel@google.com</owner>
+  <owner>camurcu@google.com</owner>
+  <summary>
+    Render frames per second. Only collected if the user has app syncing enabled
+    and doesn't have a custom passphrase set.
+  </summary>
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
@@ -1020,11 +1052,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Arc.Runtime.Performance.RenderQuality" units="%"
     expires_after="2021-07-18">
+  <obsolete>
+    Removed in Mar 2021. Now reported as
+    Arc.Runtime.Performance.CommitDeviationNew
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>Render quality with maximum 100%.</summary>
+</histogram>
+
+<histogram name="Arc.Runtime.Performance.RenderQuality2" units="%"
+    expires_after="2021-07-18">
+<!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
+
+  <owner>khmel@google.com</owner>
+  <owner>camurcu@google.com</owner>
+  <summary>
+    Render quality with maximum 100%. Only collected if the user has app syncing
+    enabled and doesn't have a custom passphrase set.
+  </summary>
 </histogram>
 
 <histogram name="Arc.SdkVersionUpgradeType" enum="ArcSdkVersionUpgradeType"

@@ -12,9 +12,12 @@
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_custom_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/chromeos/arc/tracing/arc_app_performance_tracing_uma_session.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
@@ -23,6 +26,11 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "components/sync/base/passphrase_enums.h"
+#include "components/sync/base/sync_prefs.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "ui/aura/window.h"
 
 namespace arc {
@@ -63,11 +71,12 @@ class AppToCategoryMapper {
   AppToCategoryMapper() {
     // Please refer to
     // https://goto.google.com/arc++app-runtime-performance-metrics.
-    Add("iicceeckdelepgbcpojbgahbhnklpane", "OnlineGame");
-    Add("hhkmajjdndhdnkbmomodobajdjngeejb", "CasualGame2");
-    Add("niajncocfieigpbiamllekeadpgbhkke", "ShooterGame");
-    Add("icloenboalgjkknjdficgpgpcedmmojn", "Video");
-    Add("nlhkolcnehphdkaljhgcbkmahloeacoj", "HeavyGame");
+    Add("iicceeckdelepgbcpojbgahbhnklpane", "Roblox");
+    Add("ojjlibnpojmhhabohpkclejfdblglkpj", "MinecraftEducationEdition");
+    Add("hhkmajjdndhdnkbmomodobajdjngeejb", "GachaClub");
+    Add("niajncocfieigpbiamllekeadpgbhkke", "GarenaFreeFire");
+    Add("icloenboalgjkknjdficgpgpcedmmojn", "Netflix");
+    Add("nlhkolcnehphdkaljhgcbkmahloeacoj", "PUBGMobile");
   }
 
   static AppToCategoryMapper& GetInstance() {
@@ -393,6 +402,24 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
 
   if (category.empty()) {
     // App is not recognized as app for tracing, ignore it.
+    return;
+  }
+
+  Profile* const profile = Profile::FromBrowserContext(context_);
+  DCHECK(profile);
+
+  const syncer::SyncPrefs prefs(profile->GetPrefs());
+
+  if (!prefs.GetSelectedTypes().Has(syncer::UserSelectableType::kApps)) {
+    VLOG(1) << "Cannot trace: App Sync is not enabled.";
+    return;
+  }
+
+  const syncer::SyncUserSettings* sync_user_settings =
+      ProfileSyncServiceFactory::GetForProfile(profile)->GetUserSettings();
+
+  if (sync_user_settings->IsUsingSecondaryPassphrase()) {
+    VLOG(1) << "Cannot trace: User has a sync passphrase.";
     return;
   }
 

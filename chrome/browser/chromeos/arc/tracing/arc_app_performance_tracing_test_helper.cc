@@ -12,6 +12,9 @@
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
+#include "components/sync/base/sync_prefs.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -109,6 +112,13 @@ void ArcAppPerformanceTracingTestHelper::PlayDefaultSequence() {
       normal_interval + error3,
   };
   PlaySequence(sequence);
+}
+
+void ArcAppPerformanceTracingTestHelper::DisableAppSync() {
+  DCHECK(profile_);
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(syncer::prefs::kSyncKeepEverythingSynced, false);
+  pref_service->SetBoolean(syncer::prefs::kSyncApps, false);
 }
 
 }  // namespace arc

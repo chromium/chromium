@@ -116,6 +116,8 @@ class ArcAppPerformanceTracing : public KeyedService,
   //   * Active window is ARC++ window.
   //   * Task information exists for the window.
   //   * ARC++ app is in set of predefined apps eligible for tracing.
+  //   * User has app syncing enabled and no sync passphrase.
+  //   * Stats reporting is enabled for user.
   // This does nothing if session was already started.
   // This is called each time when ARC++ window gets active or ARC++ task
   // creation is reported.

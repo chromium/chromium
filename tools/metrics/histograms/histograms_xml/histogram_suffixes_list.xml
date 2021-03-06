@@ -994,14 +994,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Replaced with CasualGame2 in 2020/09.
     </obsolete>
   </suffix>
-  <suffix name="CasualGame2" label="Casual game 2."/>
-  <suffix name="HeavyGame" label="Heavy Game."/>
-  <suffix name="OnlineGame" label="Online game."/>
-  <suffix name="ShooterGame" label="Shooter game."/>
-  <suffix name="Video" label="Video playback app."/>
+  <suffix name="GachaClub" label="Casual game 2: Gacha Club"/>
+  <suffix name="GarenaFreeFire" label="Shooter game: Garena Free Fire"/>
+  <suffix name="MinecraftEducationEdition"
+      label="Online game 2: Minecraft: Education Edition"/>
+  <suffix name="Netflix" label="Video playback app: Netflix"/>
+  <suffix name="PUBGMobile" label="Heavy Game: PUBG Mobile"/>
+  <suffix name="Roblox" label="Online game: Roblox"/>
   <affected-histogram name="Arc.Runtime.Performance.CommitDeviation"/>
+  <affected-histogram name="Arc.Runtime.Performance.CommitDeviation2"/>
   <affected-histogram name="Arc.Runtime.Performance.FPS"/>
+  <affected-histogram name="Arc.Runtime.Performance.FPS2"/>
   <affected-histogram name="Arc.Runtime.Performance.RenderQuality"/>
+  <affected-histogram name="Arc.Runtime.Performance.RenderQuality2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ArcThrottleObservers" separator=".">

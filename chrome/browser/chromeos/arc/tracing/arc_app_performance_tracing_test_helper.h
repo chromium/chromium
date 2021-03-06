@@ -56,6 +56,9 @@ class ArcAppPerformanceTracingTestHelper {
   // RenderQuality = 48% for target tracing period as 1/3 seconds.
   void PlayDefaultSequence();
 
+  // Disables App Syncing for profile.
+  void DisableAppSync();
+
  private:
   // Unowned pointer.
   Profile* profile_ = nullptr;

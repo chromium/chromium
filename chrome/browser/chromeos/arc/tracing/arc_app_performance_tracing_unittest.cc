@@ -202,9 +202,26 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   tracing_helper().PlayDefaultSequence();
   tracing_helper().FireTimerForTesting();
   EXPECT_TRUE(tracing_helper().GetTracing()->WasReported(kFocusCategory));
-  EXPECT_EQ(45L, ReadFocusStatistics("FPS"));
-  EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation"));
-  EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality"));
+  EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
+  EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
+  EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
+  arc_widget->Close();
+}
+
+TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledWhenAppSyncDisabled) {
+  tracing_helper().DisableAppSync();
+  views::Widget* const arc_widget =
+      ArcAppPerformanceTracingTestHelper::CreateArcWindow("org.chromium.arc.1");
+  ASSERT_TRUE(arc_widget);
+  ASSERT_TRUE(arc_widget->GetNativeWindow());
+  tracing_helper().GetTracing()->OnWindowActivated(
+      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
+      arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+  tracing_helper().GetTracing()->OnTaskCreated(
+      1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
+      std::string() /* intent */);
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
   arc_widget->Close();
 }
 

@@ -34,7 +34,7 @@ std::string GetHistogramName(const std::string& category,
 void ReportFPS(const std::string& category_name, double fps) {
   DCHECK(!category_name.empty());
   DCHECK_GT(fps, 0);
-  base::UmaHistogramCounts100(GetHistogramName(category_name, "FPS"),
+  base::UmaHistogramCounts100(GetHistogramName(category_name, "FPS2"),
                               static_cast<int>(std::round(fps)));
 }
 
@@ -42,7 +42,7 @@ void ReportCommitDeviation(const std::string& category_name, double error_mcs) {
   DCHECK(!category_name.empty());
   DCHECK_GE(error_mcs, 0);
   base::UmaHistogramCustomCounts(
-      GetHistogramName(category_name, "CommitDeviation"),
+      GetHistogramName(category_name, "CommitDeviation2"),
       static_cast<int>(std::round(error_mcs)), 100 /* min */, 5000 /* max */,
       50 /* buckets */);
 }
@@ -53,7 +53,7 @@ void ReportQuality(const std::string& category_name, double quality) {
   // Report quality from 0 to 100%.
   const int sample = (int)(quality * 100.0);
   base::UmaHistogramPercentageObsoleteDoNotUse(
-      GetHistogramName(category_name, "RenderQuality"), sample);
+      GetHistogramName(category_name, "RenderQuality2"), sample);
 }
 
 }  // namespace
