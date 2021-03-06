@@ -44,22 +44,6 @@ namespace cors {
 
 namespace {
 
-using IsConsistent = ::base::StrongAlias<class IsConsistentTag, bool>;
-
-// Record, for requests with associated Trust Tokens operations of operation
-// types requiring initiators to have the Trust Tokens Permissions Policy
-// feature enabled, whether the browser process thinks it's possible for the
-// initiating frame to have the feature enabled. (If the answer is "no," it
-// indicates a misbehaving renderer in theory but, unfortunately, is more likely
-// a false positive due to inconsistent state; see crbug.com/1117458.)
-void HistogramWhetherTrustTokenFeaturePolicyConsistentWithBrowserOpinion(
-    IsConsistent is_consistent) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Net.TrustTokens.SubresourceOperationRequiringFeaturePolicy."
-      "PolicyIsConsistentWithBrowserOpinion",
-      is_consistent.value());
-}
-
 // Verifies state that should hold for Trust Tokens parameters provided by a
 // functioning renderer:
 // - Trust Tokens should be enabled
@@ -85,22 +69,19 @@ bool VerifyTrustTokenParamsIntegrityIfPresent(
     return false;
   }
 
+  // TODO(crbug.com/1145346): There's no current way to get a trusted
+  // browser-side view of whether a request "came from" a secure context, so we
+  // don't implement a check for the second criterion in the function comment.
+
   if (trust_token_redemption_policy ==
           mojom::TrustTokenRedemptionPolicy::kForbid &&
       DoesTrustTokenOperationRequireFeaturePolicy(
           url_request.trust_token_params->type)) {
     // Got a request configured for Trust Tokens redemption or signing from
     // a context in which this operation is prohibited.
-    //
-    // TODO(crbug.com/1118183): Re-add a ReportBadMessage (and false return)
-    // once the false positives in crbug.com/1117458 have been resolved.
-    base::debug::DumpWithoutCrashing();
-    HistogramWhetherTrustTokenFeaturePolicyConsistentWithBrowserOpinion(
-        IsConsistent(false));
-  } else if (DoesTrustTokenOperationRequireFeaturePolicy(
-                 url_request.trust_token_params->type)) {
-    HistogramWhetherTrustTokenFeaturePolicyConsistentWithBrowserOpinion(
-        IsConsistent(true));
+    mojo::ReportBadMessage(
+        "TrustTokenParamsIntegrity: RequestFromContextLackingPermission");
+    return false;
   }
 
   return true;

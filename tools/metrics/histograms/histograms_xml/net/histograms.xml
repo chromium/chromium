@@ -5158,7 +5158,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.TrustTokens.SubresourceOperationRequiringFeaturePolicy.PolicyIsConsistentWithBrowserOpinion"
-    enum="BooleanConsistent" expires_after="2021-03-30">
+    enum="BooleanConsistent" expires_after="2021-09-30">
+  <obsolete>
+    Removed from code 2021-02.
+  </obsolete>
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
