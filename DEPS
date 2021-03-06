@@ -376,6 +376,11 @@ vars = {
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
   'libunwind_revision':    '8869f42e7fc234f038cd78097e19e304773cc8f0',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling feed
+  # and whatever else without interference from each other.
+  # TODO(crbug.com/1166332) rename to clang_format_revision.
+  'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -391,11 +396,6 @@ vars = {
 
   # GN CIPD package version.
   'gn_version': 'git_revision:dfcbc6fed0a8352696f92d67ccad54048ad182b3',
-
-  # Also, if you change these, update buildtools/DEPS too.
-  # TODO(crbug.com/1166332) rename to clang_format_revision.
-  'clang_fmt_revision':    '99803d74e35962f63a775f29477882afd4d57d94',
-
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
