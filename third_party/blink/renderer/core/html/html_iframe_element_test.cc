@@ -317,7 +317,7 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
   EXPECT_EQ(ConsoleMessages().size(), 1u)
       << "Allow attribute parsing should only generate console message once, "
          "even though there might be multiple call to "
-         "FeaturePolicyParser::ParseAttribute.";
+         "PermissionsPolicyParser::ParseAttribute.";
   EXPECT_TRUE(ConsoleMessages().front().StartsWith("Unrecognized feature"))
       << "Expect feature policy parser raising error for unrecognized feature "
          "but got: "

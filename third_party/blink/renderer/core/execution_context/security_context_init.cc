@@ -161,13 +161,13 @@ void SecurityContextInit::ApplyFeaturePolicy(
   if (!feature_policy_header.IsEmpty())
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);
 
-  feature_policy_header_ = FeaturePolicyParser::ParseHeader(
+  feature_policy_header_ = PermissionsPolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
       execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
   ParsedPermissionsPolicy report_only_feature_policy_header =
-      FeaturePolicyParser::ParseHeader(
+      PermissionsPolicyParser::ParseHeader(
           response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
           report_only_permissions_policy_header,
           execution_context_->GetSecurityOrigin(),

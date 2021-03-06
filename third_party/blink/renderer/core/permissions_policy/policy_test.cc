@@ -31,7 +31,7 @@ class PolicyTest : public testing::Test {
 
     auto feature_policy = PermissionsPolicy::CreateFromParentPolicy(
         nullptr, ParsedPermissionsPolicy(), origin->ToUrlOrigin());
-    auto header = FeaturePolicyParser::ParseHeader(
+    auto header = PermissionsPolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         /* permissions_policy_header */ g_empty_string, origin.get(),
@@ -192,7 +192,7 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
 
 TEST_F(IFramePolicyTest, TestCombinedPolicy) {
   ParsedPermissionsPolicy container_policy =
-      FeaturePolicyParser::ParseAttribute(
+      PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'",
           SecurityOrigin::CreateFromString(kSelfOrigin),
           SecurityOrigin::CreateFromString(kOriginA), dummy_logger_);

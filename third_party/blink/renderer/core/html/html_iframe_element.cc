@@ -321,8 +321,8 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
 
   // Start with the allow attribute
   ParsedPermissionsPolicy container_policy =
-      FeaturePolicyParser::ParseAttribute(allow_, self_origin, src_origin,
-                                          logger, GetExecutionContext());
+      PermissionsPolicyParser::ParseAttribute(allow_, self_origin, src_origin,
+                                              logger, GetExecutionContext());
 
   // Process the allow* attributes. These only take effect if the corresponding
   // feature is not present in the allow attribute's value.

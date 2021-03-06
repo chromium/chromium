@@ -541,7 +541,7 @@ ParsingContext::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
 
 }  // namespace
 
-ParsedPermissionsPolicy FeaturePolicyParser::ParseHeader(
+ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     const String& feature_policy_header,
     const String& permissions_policy_header,
     scoped_refptr<const SecurityOrigin> origin,
@@ -578,7 +578,7 @@ ParsedPermissionsPolicy FeaturePolicyParser::ParseHeader(
   return permissions_policy;
 }
 
-ParsedPermissionsPolicy FeaturePolicyParser::ParseAttribute(
+ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,
@@ -589,7 +589,7 @@ ParsedPermissionsPolicy FeaturePolicyParser::ParseAttribute(
       .ParseFeaturePolicy(policy);
 }
 
-ParsedPermissionsPolicy FeaturePolicyParser::ParseFeaturePolicyForTest(
+ParsedPermissionsPolicy PermissionsPolicyParser::ParseFeaturePolicyForTest(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,
@@ -601,7 +601,7 @@ ParsedPermissionsPolicy FeaturePolicyParser::ParseFeaturePolicyForTest(
       .ParseFeaturePolicy(policy);
 }
 
-ParsedPermissionsPolicy FeaturePolicyParser::ParsePermissionsPolicyForTest(
+ParsedPermissionsPolicy PermissionsPolicyParser::ParsePermissionsPolicyForTest(
     const String& policy,
     scoped_refptr<const SecurityOrigin> self_origin,
     scoped_refptr<const SecurityOrigin> src_origin,

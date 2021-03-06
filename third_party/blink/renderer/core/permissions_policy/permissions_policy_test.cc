@@ -78,11 +78,11 @@ const char kAllowlistHeaderHistogram[] =
 
 }  // namespace
 
-class FeaturePolicyParserTest : public ::testing::Test {
+class PermissionsPolicyParserTest : public ::testing::Test {
  protected:
-  FeaturePolicyParserTest() = default;
+  PermissionsPolicyParserTest() = default;
 
-  ~FeaturePolicyParserTest() override = default;
+  ~PermissionsPolicyParserTest() override = default;
 
   scoped_refptr<const SecurityOrigin> origin_a_ =
       SecurityOrigin::CreateFromString(ORIGIN_A);
@@ -107,7 +107,7 @@ class FeaturePolicyParserTest : public ::testing::Test {
       scoped_refptr<const SecurityOrigin> origin,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* context = nullptr) {
-    return FeaturePolicyParser::ParseHeader(
+    return PermissionsPolicyParser::ParseHeader(
         feature_policy_header, g_empty_string, origin, logger, logger, context);
   }
 };
@@ -121,7 +121,7 @@ struct ParsedPolicyDeclarationForTest {
 
 using ParsedPolicyForTest = std::vector<ParsedPolicyDeclarationForTest>;
 
-struct FeaturePolicyParserTestCase {
+struct PermissionsPolicyParserTestCase {
   const char* test_name;
 
   // Test inputs.
@@ -134,9 +134,9 @@ struct FeaturePolicyParserTestCase {
   ParsedPolicyForTest expected_parse_result;
 };
 
-class FeaturePolicyParserParsingTest
-    : public FeaturePolicyParserTest,
-      public ::testing::WithParamInterface<FeaturePolicyParserTestCase> {
+class PermissionsPolicyParserParsingTest
+    : public PermissionsPolicyParserTest,
+      public ::testing::WithParamInterface<PermissionsPolicyParserTestCase> {
  private:
   scoped_refptr<const SecurityOrigin> GetSrcOrigin(const char* origin_str) {
     scoped_refptr<const SecurityOrigin> src_origin;
@@ -157,7 +157,7 @@ class FeaturePolicyParserParsingTest
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* context = nullptr) {
-    return FeaturePolicyParser::ParseFeaturePolicyForTest(
+    return PermissionsPolicyParser::ParseFeaturePolicyForTest(
         policy_string, SecurityOrigin::CreateFromString(self_origin_string),
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
@@ -169,7 +169,7 @@ class FeaturePolicyParserParsingTest
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* context = nullptr) {
-    return FeaturePolicyParser::ParsePermissionsPolicyForTest(
+    return PermissionsPolicyParser::ParsePermissionsPolicyForTest(
         policy_string, SecurityOrigin::CreateFromString(self_origin_string),
         GetSrcOrigin(src_origin_string), logger, feature_names, context);
   }
@@ -206,336 +206,336 @@ class FeaturePolicyParserParsingTest
   }
 
  public:
-  static const FeaturePolicyParserTestCase kCases[];
+  static const PermissionsPolicyParserTestCase kCases[];
 };
 
-const FeaturePolicyParserTestCase FeaturePolicyParserParsingTest::kCases[] = {
-    {
-        /* test_name */ "EmptyPolicy",
-        /* feature_policy_string */ "",
-        /* permissions_policy_string */ "",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */ {},
-    },
-    {
-        /* test_name */ "SimplePolicyWithSelf",
-        /* feature_policy_string */ "geolocation 'self'",
-        /* permissions_policy_string */ "geolocation=self",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */
+const PermissionsPolicyParserTestCase
+    PermissionsPolicyParserParsingTest::kCases[] = {
         {
+            /* test_name */ "EmptyPolicy",
+            /* feature_policy_string */ "",
+            /* permissions_policy_string */ "",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */ {},
+        },
+        {
+            /* test_name */ "SimplePolicyWithSelf",
+            /* feature_policy_string */ "geolocation 'self'",
+            /* permissions_policy_string */ "geolocation=self",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "SimplePolicyWithSelfExplicitListSyntax",
-        /* feature_policy_string */ NOT_APPLICABLE,
-        /* permissions_policy_string */ "geolocation=(self)",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */
         {
+            /* test_name */ "SimplePolicyWithSelfExplicitListSyntax",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            /* permissions_policy_string */ "geolocation=(self)",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "SimplePolicyWithStar",
-        /* feature_policy_string */ "geolocation *",
-        /* permissions_policy_string */ "geolocation=*",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */
         {
+            /* test_name */ "SimplePolicyWithStar",
+            /* feature_policy_string */ "geolocation *",
+            /* permissions_policy_string */ "geolocation=*",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ true,
-                /* matches_opaque_src */ true,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "ComplicatedPolicy",
-        /* feature_policy_string */
-        "geolocation *; "
-        "fullscreen " ORIGIN_B " " ORIGIN_C "; "
-        "payment 'self'",
-        /* permissions_policy_string */
-        "geolocation=*, "
-        "fullscreen=(\"" ORIGIN_B "\" \"" ORIGIN_C "\"),"
-        "payment=self",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */
         {
+            /* test_name */ "ComplicatedPolicy",
+            /* feature_policy_string */
+            "geolocation *; "
+            "fullscreen " ORIGIN_B " " ORIGIN_C "; "
+            "payment 'self'",
+            /* permissions_policy_string */
+            "geolocation=*, "
+            "fullscreen=(\"" ORIGIN_B "\" \"" ORIGIN_C "\"),"
+            "payment=self",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ true,
-                /* matches_opaque_src */ true,
-                {},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kFullscreen,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_B, ORIGIN_C},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kPayment,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_B, ORIGIN_C},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kPayment,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "MultiplePoliciesIncludingBadFeatureName",
-        /* feature_policy_string */
-        "geolocation * " ORIGIN_B "; "
-        "fullscreen " ORIGIN_B " bad_feature_name " ORIGIN_C ";"
-        "payment 'self' badorigin",
-        /* permissions_policy_string */
-        "geolocation=(* \"" ORIGIN_B "\"),"
-        "fullscreen=(\"" ORIGIN_B "\" bad_feature_name \"" ORIGIN_C "\"),"
-        "payment=(self \"badorigin\")",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ ORIGIN_B,
-        /* expected_parse_result */
         {
+            /* test_name */ "MultiplePoliciesIncludingBadFeatureName",
+            /* feature_policy_string */
+            "geolocation * " ORIGIN_B "; "
+            "fullscreen " ORIGIN_B " bad_feature_name " ORIGIN_C ";"
+            "payment 'self' badorigin",
+            /* permissions_policy_string */
+            "geolocation=(* \"" ORIGIN_B "\"),"
+            "fullscreen=(\"" ORIGIN_B "\" bad_feature_name \"" ORIGIN_C "\"),"
+            "payment=(self \"badorigin\")",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ true,
-                /* matches_opaque_src */ true,
-                {},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kFullscreen,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_B, ORIGIN_C},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kPayment,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_B, ORIGIN_C},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kPayment,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "HeaderPoliciesWithNoOptionalOriginLists",
-        /* feature_policy_string */ "geolocation;fullscreen;payment",
-        // Note: In structured header, if no value is associated with a key
-        // in dictionary, default value would be boolean true, which is
-        // not allowed as allowlist value in permission policy syntax.
-        /* permissions_policy_string */
-        "geolocation=self,fullscreen=self,payment=self",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ nullptr,
-        /* expected_parse_result */
         {
+            /* test_name */ "HeaderPoliciesWithNoOptionalOriginLists",
+            /* feature_policy_string */ "geolocation;fullscreen;payment",
+            // Note: In structured header, if no value is associated with a key
+            // in dictionary, default value would be boolean true, which is
+            // not allowed as allowlist value in permission policy syntax.
+            /* permissions_policy_string */
+            "geolocation=self,fullscreen=self,payment=self",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ nullptr,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kFullscreen,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
-            },
-            {
-                mojom::blink::PermissionsPolicyFeature::kPayment,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_A},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kPayment,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_A},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "EmptyPolicyOpaqueSrcOrigin",
-        /* feature_policy_string */ "",
-        /* permissions_policy_string */ "",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */ {},
-    },
-    {
-        /* test_name */ "SimplePolicyOpaqueSrcOrigin",
-        /* feature_policy_string */ "geolocation",
-        /* permissions_policy_string */ NOT_APPLICABLE,
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */
         {
+            /* test_name */ "EmptyPolicyOpaqueSrcOrigin",
+            /* feature_policy_string */ "",
+            /* permissions_policy_string */ "",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */ {},
+        },
+        {
+            /* test_name */ "SimplePolicyOpaqueSrcOrigin",
+            /* feature_policy_string */ "geolocation",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ true,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "SimplePolicyWithSrcOpaqueSrcOrigin",
-        /* feature_policy_string */ "geolocation 'src'",
-        /* permissions_policy_string */ NOT_APPLICABLE,
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */
         {
+            /* test_name */ "SimplePolicyWithSrcOpaqueSrcOrigin",
+            /* feature_policy_string */ "geolocation 'src'",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ true,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "SimplePolicyWithStarOpaqueSrcOrigin",
-        /* feature_policy_string */ "geolocation *",
-        /* permissions_policy_string */ "geolocation=*",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */
         {
+            /* test_name */ "SimplePolicyWithStarOpaqueSrcOrigin",
+            /* feature_policy_string */ "geolocation *",
+            /* permissions_policy_string */ "geolocation=*",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ true,
-                /* matches_opaque_src */ true,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ true,
+                    /* matches_opaque_src */ true,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithExplicitOriginsOpaqueSrcOrigin",
-        /* feature_policy_string */ "geolocation " ORIGIN_B " " ORIGIN_C,
-        /* permissions_policy_string */
-        "geolocation=(\"" ORIGIN_B "\" \"" ORIGIN_C "\")",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithExplicitOriginsOpaqueSrcOrigin",
+            /* feature_policy_string */ "geolocation " ORIGIN_B " " ORIGIN_C,
+            /* permissions_policy_string */
+            "geolocation=(\"" ORIGIN_B "\" \"" ORIGIN_C "\")",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {ORIGIN_B, ORIGIN_C},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {ORIGIN_B, ORIGIN_C},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithMultipleOriginsIncludingSrc"
-                        "OpaqueSrcOrigin",
-        /* feature_policy_string */ "geolocation " ORIGIN_B " 'src'",
-        /* permissions_policy_string */ NOT_APPLICABLE,
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ OPAQUE_ORIGIN,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithMultipleOriginsIncludingSrc"
+                            "OpaqueSrcOrigin",
+            /* feature_policy_string */ "geolocation " ORIGIN_B " 'src'",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ OPAQUE_ORIGIN,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ true,
-                {ORIGIN_B},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ true,
+                    {ORIGIN_B},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithInvalidDataTypeInt",
-        /* feature_policy_string */ NOT_APPLICABLE,
-        // int value should be rejected as allowlist items.
-        /* permissions_policy_string */ "geolocation=9",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ nullptr,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithInvalidDataTypeInt",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            // int value should be rejected as allowlist items.
+            /* permissions_policy_string */ "geolocation=9",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ nullptr,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithInvalidDataTypeFloat",
-        /* feature_policy_string */ NOT_APPLICABLE,
-        // decimal value should be rejected as allowlist items.
-        /* permissions_policy_string */ "geolocation=1.1",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ nullptr,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithInvalidDataTypeFloat",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            // decimal value should be rejected as allowlist items.
+            /* permissions_policy_string */ "geolocation=1.1",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ nullptr,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithInvalidDataTypeBoolean",
-        /* feature_policy_string */ NOT_APPLICABLE,
-        // boolean value should be rejected as allowlist items.
-        /* permissions_policy_string */ "geolocation=?0",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ nullptr,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithInvalidDataTypeBoolean",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            // boolean value should be rejected as allowlist items.
+            /* permissions_policy_string */ "geolocation=?0",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ nullptr,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {},
+                },
             },
         },
-    },
-    {
-        /* test_name */ "PolicyWithEmptyOriginString",
-        /* feature_policy_string */ NOT_APPLICABLE,
-        /* permissions_policy_string */ "geolocation=\"\"",
-        /* self_origin */ ORIGIN_A,
-        /* src_origin */ nullptr,
-        /* expected_parse_result */
         {
+            /* test_name */ "PolicyWithEmptyOriginString",
+            /* feature_policy_string */ NOT_APPLICABLE,
+            /* permissions_policy_string */ "geolocation=\"\"",
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ nullptr,
+            /* expected_parse_result */
             {
-                mojom::blink::PermissionsPolicyFeature::kGeolocation,
-                /* matches_all_origins */ false,
-                /* matches_opaque_src */ false,
-                {},
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {},
+                },
             },
         },
-    },
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    FeaturePolicyParserParsingTest,
-    ::testing::ValuesIn(FeaturePolicyParserParsingTest::kCases),
-    [](const testing::TestParamInfo<FeaturePolicyParserTestCase>& param_info) {
-      return param_info.param.test_name;
-    });
+    PermissionsPolicyParserParsingTest,
+    ::testing::ValuesIn(PermissionsPolicyParserParsingTest::kCases),
+    [](const testing::TestParamInfo<PermissionsPolicyParserTestCase>&
+           param_info) { return param_info.param.test_name; });
 
-TEST_P(FeaturePolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
+TEST_P(PermissionsPolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
   PolicyParserMessageBuffer logger;
-  const FeaturePolicyParserTestCase& test_case = GetParam();
+  const PermissionsPolicyParserTestCase& test_case = GetParam();
   if (test_case.feature_policy_string == NOT_APPLICABLE)
     return;
 
@@ -547,9 +547,9 @@ TEST_P(FeaturePolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
       test_case.expected_parse_result);
 }
 
-TEST_P(FeaturePolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
+TEST_P(PermissionsPolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
   PolicyParserMessageBuffer logger;
-  const FeaturePolicyParserTestCase& test_case = GetParam();
+  const PermissionsPolicyParserTestCase& test_case = GetParam();
   if (test_case.permissions_policy_string == NOT_APPLICABLE)
     return;
 
@@ -561,16 +561,16 @@ TEST_P(FeaturePolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
       test_case.expected_parse_result);
 }
 
-TEST_F(FeaturePolicyParserParsingTest,
+TEST_F(PermissionsPolicyParserParsingTest,
        FeaturePolicyDuplicatedFeatureDeclaration) {
   PolicyParserMessageBuffer logger;
 
   // For Feature-Policy header, if there are multiple declaration for same
   // feature, the allowlist value from *FIRST* declaration will be taken.
   CheckParsedPolicy(
-      FeaturePolicyParser::ParseHeader("geolocation 'none', geolocation 'self'",
-                                       "", origin_a_.get(), logger, logger,
-                                       nullptr /* context */),
+      PermissionsPolicyParser::ParseHeader(
+          "geolocation 'none', geolocation 'self'", "", origin_a_.get(), logger,
+          logger, nullptr /* context */),
       {
           {
               // allowlist value 'none' is expected.
@@ -584,16 +584,16 @@ TEST_F(FeaturePolicyParserParsingTest,
   EXPECT_TRUE(logger.GetMessages().IsEmpty());
 }
 
-TEST_F(FeaturePolicyParserParsingTest,
+TEST_F(PermissionsPolicyParserParsingTest,
        PermissionsPolicyDuplicatedFeatureDeclaration) {
   PolicyParserMessageBuffer logger;
 
   // For Permissions-Policy header, if there are multiple declaration for same
   // feature, the allowlist value from *LAST* declaration will be taken.
   CheckParsedPolicy(
-      FeaturePolicyParser::ParseHeader("", "geolocation=(), geolocation=self",
-                                       origin_a_.get(), logger, logger,
-                                       nullptr /* context */),
+      PermissionsPolicyParser::ParseHeader(
+          "", "geolocation=(), geolocation=self", origin_a_.get(), logger,
+          logger, nullptr /* context */),
       {
           {
               // allowlist value 'self' is expected.
@@ -607,17 +607,17 @@ TEST_F(FeaturePolicyParserParsingTest,
   EXPECT_TRUE(logger.GetMessages().IsEmpty());
 }
 
-TEST_F(FeaturePolicyParserParsingTest,
+TEST_F(PermissionsPolicyParserParsingTest,
        FeaturePolicyHeaderPermissionsPolicyHeaderCoExistConflictEntry) {
   PolicyParserMessageBuffer logger;
 
   // When there is conflict take the value from permission policy,
   // non-conflicting entries will be merged.
   CheckParsedPolicy(
-      FeaturePolicyParser::ParseHeader("geolocation 'none', fullscreen 'self'",
-                                       "geolocation=self, payment=*",
-                                       origin_a_.get(), logger, logger,
-                                       nullptr /* context */),
+      PermissionsPolicyParser::ParseHeader(
+          "geolocation 'none', fullscreen 'self'",
+          "geolocation=self, payment=*", origin_a_.get(), logger, logger,
+          nullptr /* context */),
       {
           {
               // With geolocation appearing in both headers,
@@ -643,7 +643,7 @@ TEST_F(FeaturePolicyParserParsingTest,
       });
 }
 
-TEST_F(FeaturePolicyParserParsingTest,
+TEST_F(PermissionsPolicyParserParsingTest,
        FeaturePolicyHeaderPermissionsPolicyHeaderCoExistSeparateLogger) {
   PolicyParserMessageBuffer feature_policy_logger("Feature Policy: ");
   PolicyParserMessageBuffer permissions_policy_logger("Permissions Policy: ");
@@ -652,7 +652,7 @@ TEST_F(FeaturePolicyParserParsingTest,
   // results in an empty allowlist, which is equivalent to 'none' in feature
   // policy syntax.
   CheckParsedPolicy(
-      FeaturePolicyParser::ParseHeader(
+      PermissionsPolicyParser::ParseHeader(
           "worse-feature 'none', geolocation 'self'" /* feature_policy_header */
           ,
           "bad-feature=*, geolocation=\"data://bad-origin\"" /* permissions_policy_header
@@ -686,11 +686,11 @@ TEST_F(FeaturePolicyParserParsingTest,
       });
 }
 
-TEST_F(FeaturePolicyParserParsingTest, CommaSeparatorInAttribute) {
+TEST_F(PermissionsPolicyParserParsingTest, CommaSeparatorInAttribute) {
   PolicyParserMessageBuffer logger;
 
   CheckParsedPolicy(
-      FeaturePolicyParser::ParseAttribute(
+      PermissionsPolicyParser::ParseAttribute(
           "geolocation 'none', fullscreen 'self'",
           /* self_origin */ origin_a_.get(),
           /* src_origin */ origin_a_.get(), logger, /* context */ nullptr),
@@ -715,36 +715,36 @@ TEST_F(FeaturePolicyParserParsingTest, CommaSeparatorInAttribute) {
       << "\"fullscreen\" should be treated as an invalid allowlist item";
 }
 
-TEST_F(FeaturePolicyParserTest, ParseValidHeaderPolicy) {
+TEST_F(PermissionsPolicyParserTest, ParseValidHeaderPolicy) {
   for (const char* policy_string : kValidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
-    FeaturePolicyParser::ParseFeaturePolicyForTest(
+    PermissionsPolicyParser::ParseFeaturePolicyForTest(
         policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
     EXPECT_EQ(0UL, logger.GetMessages().size())
         << "Should parse " << policy_string;
   }
 }
 
-TEST_F(FeaturePolicyParserTest, ParseInvalidHeaderPolicy) {
+TEST_F(PermissionsPolicyParserTest, ParseInvalidHeaderPolicy) {
   for (const char* policy_string : kInvalidHeaderPolicies) {
     PolicyParserMessageBuffer logger;
-    FeaturePolicyParser::ParseFeaturePolicyForTest(
+    PermissionsPolicyParser::ParseFeaturePolicyForTest(
         policy_string, origin_a_.get(), nullptr, logger, test_feature_name_map);
     EXPECT_LT(0UL, logger.GetMessages().size())
         << "Should fail to parse " << policy_string;
   }
 }
 
-TEST_F(FeaturePolicyParserTest, ParseTooLongPolicy) {
+TEST_F(PermissionsPolicyParserTest, ParseTooLongPolicy) {
   PolicyParserMessageBuffer logger;
   auto policy_string = "geolocation http://" + std::string(1 << 17, 'a');
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       policy_string.c_str(), origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map);
   EXPECT_EQ(1UL, logger.GetMessages().size())
       << "Should fail to parse feature policy string with size "
       << policy_string.size();
-  FeaturePolicyParser::ParsePermissionsPolicyForTest(
+  PermissionsPolicyParser::ParsePermissionsPolicyForTest(
       policy_string.c_str(), origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map);
   EXPECT_EQ(2UL, logger.GetMessages().size())
@@ -753,14 +753,14 @@ TEST_F(FeaturePolicyParserTest, ParseTooLongPolicy) {
 }
 
 // Test histogram counting the use of permissions policies in header.
-TEST_F(FeaturePolicyParserTest, HeaderHistogram) {
+TEST_F(PermissionsPolicyParserTest, HeaderHistogram) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
   HistogramTester tester;
   PolicyParserMessageBuffer logger;
 
-  FeaturePolicyParser::ParseFeaturePolicyForTest("payment; fullscreen",
-                                                 origin_a_.get(), nullptr,
-                                                 logger, test_feature_name_map);
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
+      "payment; fullscreen", origin_a_.get(), nullptr, logger,
+      test_feature_name_map);
   tester.ExpectTotalCount(histogram_name, 2);
   tester.ExpectBucketCount(
       histogram_name,
@@ -774,17 +774,17 @@ TEST_F(FeaturePolicyParserTest, HeaderHistogram) {
 }
 
 // Test counting the use of each permissions policy only once per header.
-TEST_F(FeaturePolicyParserTest, HistogramMultiple) {
+TEST_F(PermissionsPolicyParserTest, HistogramMultiple) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Header";
   HistogramTester tester;
   PolicyParserMessageBuffer logger;
 
   // If the same feature is listed multiple times, it should only be counted
   // once.
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "geolocation 'self'; payment; geolocation *", origin_a_.get(), nullptr,
       logger, test_feature_name_map);
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "fullscreen 'self', fullscreen *", origin_a_.get(), nullptr, logger,
       test_feature_name_map);
   tester.ExpectTotalCount(histogram_name, 3);
@@ -802,16 +802,16 @@ TEST_F(FeaturePolicyParserTest, HistogramMultiple) {
 
 // Test histogram counting the use of permissions policies via "allow"
 // attribute. This test parses two policies on the same document.
-TEST_F(FeaturePolicyParserTest, AllowHistogramSameDocument) {
+TEST_F(PermissionsPolicyParserTest, AllowHistogramSameDocument) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Allow";
   HistogramTester tester;
   PolicyParserMessageBuffer logger;
   auto dummy = std::make_unique<DummyPageHolder>();
 
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "payment; fullscreen", origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map, dummy->GetFrame().DomWindow());
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "fullscreen; geolocation", origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map, dummy->GetFrame().DomWindow());
 
@@ -834,17 +834,17 @@ TEST_F(FeaturePolicyParserTest, AllowHistogramSameDocument) {
 
 // Test histogram counting the use of permissions policies via "allow"
 // attribute. This test parses two policies on different documents.
-TEST_F(FeaturePolicyParserTest, AllowHistogramDifferentDocument) {
+TEST_F(PermissionsPolicyParserTest, AllowHistogramDifferentDocument) {
   const char* histogram_name = "Blink.UseCounter.FeaturePolicy.Allow";
   HistogramTester tester;
   PolicyParserMessageBuffer logger;
   auto dummy = std::make_unique<DummyPageHolder>();
   auto dummy2 = std::make_unique<DummyPageHolder>();
 
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "payment; fullscreen", origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map, dummy->GetFrame().DomWindow());
-  FeaturePolicyParser::ParseFeaturePolicyForTest(
+  PermissionsPolicyParser::ParseFeaturePolicyForTest(
       "fullscreen; geolocation", origin_a_.get(), origin_b_.get(), logger,
       test_feature_name_map, dummy2->GetFrame().DomWindow());
 
@@ -866,7 +866,7 @@ TEST_F(FeaturePolicyParserTest, AllowHistogramDifferentDocument) {
 }
 
 // Tests the use counter for comma separator in declarations.
-TEST_F(FeaturePolicyParserTest, CommaSeparatedUseCounter) {
+TEST_F(PermissionsPolicyParserTest, CommaSeparatedUseCounter) {
   PolicyParserMessageBuffer logger;
 
   // Declarations without a semicolon should not trigger the use counter.
@@ -891,7 +891,7 @@ TEST_F(FeaturePolicyParserTest, CommaSeparatedUseCounter) {
 }
 
 // Tests the use counter for semicolon separator in declarations.
-TEST_F(FeaturePolicyParserTest, SemicolonSeparatedUseCounter) {
+TEST_F(PermissionsPolicyParserTest, SemicolonSeparatedUseCounter) {
   PolicyParserMessageBuffer logger;
 
   // Declarations without a semicolon should not trigger the use counter.
@@ -926,7 +926,7 @@ struct AllowlistHistogramData {
 };
 
 class FeaturePolicyAllowlistHistogramTest
-    : public FeaturePolicyParserTest,
+    : public PermissionsPolicyParserTest,
       public testing::WithParamInterface<AllowlistHistogramData> {
  public:
   static const AllowlistHistogramData kCases[];
@@ -1038,9 +1038,9 @@ TEST_P(FeaturePolicyAllowlistHistogramTest, AttributeHistogram) {
   AllowlistHistogramData data = GetParam();
 
   auto dummy = std::make_unique<DummyPageHolder>();
-  FeaturePolicyParser::ParseAttribute(data.policy_declaration, origin_a_.get(),
-                                      origin_b_.get(), logger,
-                                      dummy->GetFrame().DomWindow());
+  PermissionsPolicyParser::ParseAttribute(
+      data.policy_declaration, origin_a_.get(), origin_b_.get(), logger,
+      dummy->GetFrame().DomWindow());
   for (FeaturePolicyAllowlistType expected_bucket : data.expected_buckets) {
     tester.ExpectBucketCount(kAllowlistAttributeHistogram,
                              static_cast<int>(expected_bucket), 1);
@@ -1055,9 +1055,9 @@ TEST_F(FeaturePolicyAllowlistHistogramTest, MixedInAttributeHistogram) {
 
   auto dummy = std::make_unique<DummyPageHolder>();
   const char* declaration = "fullscreen *; geolocation 'src' " ORIGIN_A;
-  FeaturePolicyParser::ParseAttribute(declaration, origin_a_.get(),
-                                      origin_b_.get(), logger,
-                                      dummy->GetFrame().DomWindow());
+  PermissionsPolicyParser::ParseAttribute(declaration, origin_a_.get(),
+                                          origin_b_.get(), logger,
+                                          dummy->GetFrame().DomWindow());
 
   tester.ExpectBucketCount(kAllowlistAttributeHistogram,
                            static_cast<int>(FeaturePolicyAllowlistType::kStar),
@@ -1075,9 +1075,9 @@ TEST_F(FeaturePolicyAllowlistHistogramTest, SrcInAttributeHistogram) {
 
   auto dummy = std::make_unique<DummyPageHolder>();
   const char* declaration = "fullscreen 'src'";
-  FeaturePolicyParser::ParseAttribute(declaration, origin_a_.get(),
-                                      origin_b_.get(), logger,
-                                      dummy->GetFrame().DomWindow());
+  PermissionsPolicyParser::ParseAttribute(declaration, origin_a_.get(),
+                                          origin_b_.get(), logger,
+                                          dummy->GetFrame().DomWindow());
 
   tester.ExpectBucketCount(kAllowlistAttributeHistogram,
                            static_cast<int>(FeaturePolicyAllowlistType::kSrc),
