@@ -1913,8 +1913,7 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
   EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
 }
 
-// Flaky: crbug.com/1156634
-TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
+TEST_P(AppsGridViewTest, MouseDragFlipPage) {
   apps_grid_view_->set_page_flip_delay_for_testing(
       base::TimeDelta::FromMilliseconds(10));
   GetPaginationModel()->SetTransitionDurations(
