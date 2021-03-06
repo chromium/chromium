@@ -94,7 +94,7 @@ public class WebFeedFollowIntroController {
     }
 
     private boolean shouldShowFollowAccelerator() {
-        return false;
+        return true;
     }
 
     private void turnOnHighlightForFollowMenuItem() {

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,6 +50,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content.browser.ContentFeatureListImpl;
 import org.chromium.content.browser.ContentFeatureListImplJni;
@@ -101,6 +105,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     Profile mProfileMock;
     @Mock
+    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock
+    private PrefService mPrefServiceMock;
+    @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
     @Mock
     private ModalDialogManager mModalDialogManager;
@@ -126,7 +134,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
         when(mTabModel.isIncognito()).thenReturn(false);
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
+        jniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
+        when(mPrefServiceMock.getBoolean(Pref.ENABLE_WEB_FEED_UI)).thenReturn(true);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         jniMocker.mock(ContentFeatureListImplJni.TEST_HOOKS, mContentFeatureListJniMock);

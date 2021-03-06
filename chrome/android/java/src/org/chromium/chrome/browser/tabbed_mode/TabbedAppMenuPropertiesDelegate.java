@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -58,8 +59,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private boolean shouldShowWebFeedMenuItem() {
         // TODO(crbug/1152592): Add menu variation to flag and show only one variation. Also,
         // restrict when to show the footer based on tab (eg. not on chrome:// etc.).
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && mActivityTabProvider.get() != null && !mActivityTabProvider.get().isIncognito();
+        return FeedFeatures.isWebFeedUIEnabled() && mActivityTabProvider.get() != null
+                && !mActivityTabProvider.get().isIncognito();
     }
 
     @Override

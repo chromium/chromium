@@ -21,6 +21,9 @@ struct Properties {
   // Whether prefetching for offline availability is enabled.
   bool is_prefetching_enabled;
 
+  // Whether the WebFeed UI is enabled.
+  bool is_web_feed_ui_enabled;
+
   // Last load stream status, human readable.
   string load_stream_status;
 
@@ -132,4 +135,7 @@ interface PageHandler {
   // Overrides the feed stream data with the payload inside a feedui::Slice for
   // testing purpose. See go/feed-stream-data-testing for more details.
   OverrideFeedStreamData(array<uint8> data);
+
+  // Sets whether the WebFeed UI is enabled.
+  SetWebFeedUIEnabled(bool enabled);
 };

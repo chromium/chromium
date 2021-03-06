@@ -67,6 +67,8 @@ extern const char kClientInstanceId[];
 extern const char kDiscoverAPIEndpointOverride[];
 // The pref name for storing the server experiments the client is in.
 extern const char kExperiments[];
+// If set to false, the WebFeed UI is disabled.
+extern const char kEnableWebFeedUI[];
 
 }  // namespace prefs
 

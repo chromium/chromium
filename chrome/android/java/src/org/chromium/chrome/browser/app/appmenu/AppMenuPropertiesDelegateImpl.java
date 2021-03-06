@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.download.DownloadUtils;
+import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -507,7 +508,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         // Enable web feed follow menu item if WebFeed feature is enabled.
         MenuItem followMenuItem = menu.findItem(R.id.feed_follow_id);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+        if (FeedFeatures.isWebFeedUIEnabled()) {
             followMenuItem.setVisible(true);
             WebFeedBridge.FollowedIds followedIds =
                     mWebFeedBridge.getFollowedIds(currentTab.getUrl());

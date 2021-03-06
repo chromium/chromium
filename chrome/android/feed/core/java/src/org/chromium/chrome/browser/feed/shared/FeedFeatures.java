@@ -78,6 +78,15 @@ public final class FeedFeatures {
         return !sEverDisabledForPolicy;
     }
 
+    /**
+     * @return Whether the WebFeed UI is enabled.
+     */
+    public static boolean isWebFeedUIEnabled() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+                && prefService.getBoolean(Pref.ENABLE_WEB_FEED_UI);
+    }
+
     private static void articlesEnabledPrefChange() {
         // Cannot assume this is called because of an actual change. May be going from true to true.
         if (!getPrefService().getBoolean(Pref.ENABLE_SNIPPETS)) {
