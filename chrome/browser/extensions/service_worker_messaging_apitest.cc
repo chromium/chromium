@@ -10,6 +10,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -215,6 +216,25 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectNative) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
   ASSERT_TRUE(RunExtensionTest("service_worker/messaging/connect_native"))
       << message_;
+}
+
+// Regression test for https://crbug.com/1176400.
+// Tests that service worker shutdown closes messaging channel properly.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
+                       WorkerShutsDownWhileNativeMessagePortIsOpen) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/messaging/native_message_after_worker_stop"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  size_t num_channels =
+      MessageService::Get(profile())->GetChannelCountForTest();
+  StopServiceWorker(*extension);
+  // After worker shutdown, expect the channel count to reduce by 1.
+  EXPECT_EQ(num_channels - 1,
+            MessageService::Get(profile())->GetChannelCountForTest());
 }
 
 // Tests chrome.tabs.sendMessage from SW extension to content script.
