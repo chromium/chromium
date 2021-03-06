@@ -20,6 +20,9 @@ CONTENT_EXPORT extern const base::Feature kAllowActivationDelegationAttr;
 CONTENT_EXPORT extern const base::Feature
     kAllowContentInitiatedDataUrlNavigations;
 CONTENT_EXPORT extern const base::Feature kAndroidDownloadableFontsMatching;
+#if defined(OS_WIN)
+CONTENT_EXPORT extern const base::Feature kAudioProcessHighPriorityWin;
+#endif
 CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;
 CONTENT_EXPORT extern const base::Feature kAudioServiceOutOfProcess;
 CONTENT_EXPORT extern const base::Feature kAudioServiceSandbox;
