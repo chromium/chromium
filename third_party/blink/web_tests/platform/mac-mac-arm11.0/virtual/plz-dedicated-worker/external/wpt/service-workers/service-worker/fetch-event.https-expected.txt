@@ -42,7 +42,6 @@ PASS FetchEvent#request.isHistoryNavigation is true (with history.go(2))
 PASS FetchEvent#request.isHistoryNavigation is true (POST + history.go(-1))
 PASS XHR upload progress events for response coming from SW
 PASS XHR upload progress events for network fallback
-PASS Fetch with POST with text on sw 421 response should not be retried.
 PASS restore global state
 Harness: the test ran to completion.
 

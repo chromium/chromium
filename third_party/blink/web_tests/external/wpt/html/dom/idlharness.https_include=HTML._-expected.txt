@@ -989,7 +989,6 @@ PASS HTMLObjectElement interface: existence and properties of interface prototyp
 PASS HTMLObjectElement interface: attribute data
 PASS HTMLObjectElement interface: attribute type
 PASS HTMLObjectElement interface: attribute name
-PASS HTMLObjectElement interface: attribute useMap
 PASS HTMLObjectElement interface: attribute form
 PASS HTMLObjectElement interface: attribute width
 PASS HTMLObjectElement interface: attribute height
@@ -1011,13 +1010,13 @@ PASS HTMLObjectElement interface: attribute standby
 PASS HTMLObjectElement interface: attribute vspace
 PASS HTMLObjectElement interface: attribute codeBase
 PASS HTMLObjectElement interface: attribute codeType
+PASS HTMLObjectElement interface: attribute useMap
 PASS HTMLObjectElement interface: attribute border
 PASS HTMLObjectElement must be primary interface of document.createElement("object")
 PASS Stringification of document.createElement("object")
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "data" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "type" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "name" with the proper type
-PASS HTMLObjectElement interface: document.createElement("object") must inherit property "useMap" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "form" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "width" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "height" with the proper type
@@ -1040,6 +1039,7 @@ PASS HTMLObjectElement interface: document.createElement("object") must inherit 
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "vspace" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "codeBase" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "codeType" with the proper type
+PASS HTMLObjectElement interface: document.createElement("object") must inherit property "useMap" with the proper type
 PASS HTMLObjectElement interface: document.createElement("object") must inherit property "border" with the proper type
 PASS HTMLParamElement interface: existence and properties of interface object
 PASS HTMLParamElement interface object length
