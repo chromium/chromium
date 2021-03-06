@@ -84,7 +84,8 @@ constexpr base::TimeDelta kShelfHandleIconDragDelay =
     base::TimeDelta::FromMilliseconds(500);
 
 // Delay in milliseconds to do the page flip in fullscreen app list.
-constexpr int kPageFlipDelayInMsFullscreen = 500;
+constexpr base::TimeDelta kPageFlipDelay =
+    base::TimeDelta::FromMilliseconds(500);
 
 // The drag and drop proxy should get scaled by this factor.
 constexpr float kDragAndDropProxyScale = 1.2f;
@@ -397,7 +398,7 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppsGridViewFolderDelegate* folder_delegate)
     : folder_delegate_(folder_delegate),
       contents_view_(contents_view),
-      page_flip_delay_in_ms_(kPageFlipDelayInMsFullscreen) {
+      page_flip_delay_(kPageFlipDelay) {
   DCHECK(contents_view_);
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // Clip any icons that are outside the grid view's bounds. These icons would
@@ -2519,9 +2520,8 @@ void AppsGridView::MaybeStartPageFlipTimer(const gfx::Point& drag_point) {
     page_flip_target_ = new_page_flip_target;
 
     if (page_flip_target_ != pagination_model_.selected_page()) {
-      page_flip_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromMilliseconds(page_flip_delay_in_ms_),
-          this, &AppsGridView::OnPageFlipTimer);
+      page_flip_timer_.Start(FROM_HERE, page_flip_delay_, this,
+                             &AppsGridView::OnPageFlipTimer);
     }
   }
 }

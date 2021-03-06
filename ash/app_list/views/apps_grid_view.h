@@ -25,6 +25,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "ui/base/models/list_model_observer.h"
@@ -347,8 +348,8 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
 
   const AppListModel* model() const { return model_; }
 
-  void set_page_flip_delay_in_ms_for_testing(int page_flip_delay_in_ms) {
-    page_flip_delay_in_ms_ = page_flip_delay_in_ms;
+  void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
+    page_flip_delay_ = page_flip_delay;
   }
 
   views::BoundsAnimator* bounds_animator_for_testing() {
@@ -867,9 +868,9 @@ class APP_LIST_EXPORT AppsGridView : public views::View,
 
   std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
 
-  // Delay in milliseconds of when |page_flip_timer_| should fire after user
-  // drags an item near the edges.
-  int page_flip_delay_in_ms_;
+  // Delay for when |page_flip_timer_| should fire after user drags an item near
+  // the edge.
+  base::TimeDelta page_flip_delay_;
 
   // True if it is the end gesture from shelf dragging.
   bool is_end_gesture_ = false;

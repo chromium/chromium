@@ -1915,7 +1915,8 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
 
 // Flaky: crbug.com/1156634
 TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
-  apps_grid_view_->set_page_flip_delay_in_ms_for_testing(10);
+  apps_grid_view_->set_page_flip_delay_for_testing(
+      base::TimeDelta::FromMilliseconds(10));
   GetPaginationModel()->SetTransitionDurations(
       base::TimeDelta::FromMilliseconds(10),
       base::TimeDelta::FromMilliseconds(10));
@@ -2134,7 +2135,8 @@ class AppsGridGapTest : public AppsGridViewTest {
   // testing::Test overrides:
   void SetUp() override {
     AppsGridViewTest::SetUp();
-    apps_grid_view_->set_page_flip_delay_in_ms_for_testing(10);
+    apps_grid_view_->set_page_flip_delay_for_testing(
+        base::TimeDelta::FromMilliseconds(10));
     GetPaginationModel()->SetTransitionDurations(
         base::TimeDelta::FromMilliseconds(10),
         base::TimeDelta::FromMilliseconds(10));
