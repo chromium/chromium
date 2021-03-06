@@ -28,7 +28,8 @@ namespace internal {
 // GetInterface() handler callbacks for chrome-specific document-scoped
 // interfaces.
 void PopulateChromeFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map);
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
+    content::RenderFrameHost* render_frame_host);
 
 // PopulateChromeWebUIFrameBinders() registers BrowserInterfaceBroker's
 // GetInterface() handler callbacks for chrome-specific document-scoped

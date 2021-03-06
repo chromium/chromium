@@ -41,6 +41,19 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+cart_db::ChromeCartContentProto BuildProtoWithProducts(
+    const char* domain,
+    const char* cart_url,
+    const std::vector<const char*>& product_urls) {
+  cart_db::ChromeCartContentProto proto;
+  proto.set_key(domain);
+  proto.set_merchant_cart_url(cart_url);
+  for (const auto* const v : product_urls) {
+    proto.add_product_image_urls(v);
+  }
+  return proto;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
                               Profile* profile,
@@ -53,7 +66,7 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 const char kMockExample[] = "walmart.com";
 const char kMockExampleFallbackURL[] = "https://www.walmart.com/cart";
 const char kMockExampleLinkURL[] = "https://www.walmart.com/shopping-cart/";
-const char kMockExampleURL[] = "http://www.walmart.com/mycart";
+const char kMockExampleURL[] = "http://www.walmart.com/cart.html";
 
 const cart_db::ChromeCartContentProto kMockExampleProtoFallbackCart =
     BuildProto(kMockExample, kMockExampleFallbackURL);
@@ -61,6 +74,12 @@ const cart_db::ChromeCartContentProto kMockExampleProtoLinkCart =
     BuildProto(kMockExample, kMockExampleLinkURL);
 const cart_db::ChromeCartContentProto kMockExampleProto =
     BuildProto(kMockExample, kMockExampleURL);
+const cart_db::ChromeCartContentProto kMockExampleProtoWithProducts =
+    BuildProtoWithProducts(kMockExample,
+                           kMockExampleURL,
+                           // TODO(crbug/1179698): use the real answer.
+                           {"https://example.com/image.jpg"});
+
 const char kMockAmazon[] = "amazon.com";
 const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
 const cart_db::ChromeCartContentProto kMockAmazonProto =
@@ -73,6 +92,8 @@ const ShoppingCarts kExpectedExampleFallbackCart = {
 const ShoppingCarts kExpectedExampleLinkCart = {
     {kMockExample, kMockExampleProtoLinkCart}};
 const ShoppingCarts kExpectedExample = {{kMockExample, kMockExampleProto}};
+const ShoppingCarts kExpectedExampleWithProducts = {
+    {kMockExample, kMockExampleProtoWithProducts}};
 const ShoppingCarts kExpectedAmazon = {{kMockAmazon, kMockAmazonProto}};
 const ShoppingCarts kEmptyExpected = {};
 
@@ -82,6 +103,8 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
   if (request.relative_url == "/purchase.html")
     return nullptr;
   if (request.relative_url == "/product.html")
+    return nullptr;
+  if (request.relative_url == "/cart.html")
     return nullptr;
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -217,6 +240,52 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     std::move(closure).Run();
   }
 
+  void WaitForProductCount(const ShoppingCarts& expected) {
+    satisfied_ = false;
+    while (true) {
+      base::RunLoop().RunUntilIdle();
+      base::RunLoop run_loop;
+      service_->LoadAllActiveCarts(base::BindOnce(
+          &CommerceHintAgentTest::CheckCartWithProducts, base::Unretained(this),
+          run_loop.QuitClosure(), expected));
+      run_loop.Run();
+      if (satisfied_)
+        break;
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    }
+  }
+
+  void CheckCartWithProducts(base::OnceClosure closure,
+                             ShoppingCarts expected,
+                             bool result,
+                             ShoppingCarts found) {
+    bool fail = false;
+    bool same_size = found.size() == expected.size();
+    if (!same_size)
+      fail = true;
+    for (size_t i = 0; i < std::min(found.size(), expected.size()); i++) {
+      EXPECT_EQ(found[i].first, expected[i].first);
+      GURL::Replacements remove_port;
+      remove_port.ClearPort();
+      EXPECT_EQ(GURL(found[i].second.merchant_cart_url())
+                    .ReplaceComponents(remove_port)
+                    .spec(),
+                expected[i].second.merchant_cart_url());
+      bool same_size = found[i].second.product_image_urls_size() ==
+                       expected[i].second.product_image_urls_size();
+      if (!same_size)
+        fail = true;
+      if (same_size) {
+        for (int j = 0; j < found[i].second.product_image_urls_size(); j++) {
+          EXPECT_EQ(found[i].second.product_image_urls(j),
+                    expected[i].second.product_image_urls(j));
+        }
+      }
+    }
+    satisfied_ = !fail;
+    std::move(closure).Run();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   CartService* service_;
   bool satisfied_;
@@ -261,9 +330,17 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
-  NavigateToURL("https://www.walmart.com/mycart");
+  // Cannot use dummy page with zero products, or the cart would be deleted.
+  NavigateToURL("https://www.walmart.com/cart.html");
 
   WaitForCartCount(kExpectedExample);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
+  // This page has two products.
+  NavigateToURL("https://www.walmart.com/cart.html");
+
+  WaitForProductCount(kExpectedExampleWithProducts);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
@@ -271,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
   NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExampleFallbackCart);
 
-  NavigateToURL("https://www.walmart.com/mycart");
+  NavigateToURL("https://www.walmart.com/cart.html");
   WaitForCarts(kExpectedExample);
 
   NavigateToURL("https://www.walmart.com/");
