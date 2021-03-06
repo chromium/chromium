@@ -40,6 +40,10 @@ void TestSystemTrayClient::ShowConnectedDevicesSettings() {
 
 void TestSystemTrayClient::ShowTetherNetworkSettings() {}
 
+void TestSystemTrayClient::ShowWifiSyncSettings() {
+  show_wifi_sync_settings_count_++;
+}
+
 void TestSystemTrayClient::ShowAboutChromeOS() {}
 
 void TestSystemTrayClient::ShowHelp() {}

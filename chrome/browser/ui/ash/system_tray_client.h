@@ -67,6 +67,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void ShowIMESettings() override;
   void ShowConnectedDevicesSettings() override;
   void ShowTetherNetworkSettings() override;
+  void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
   void ShowHelp() override;
   void ShowAccessibilityHelp() override;

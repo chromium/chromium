@@ -369,6 +369,14 @@ void SystemTrayClient::ShowTetherNetworkSettings() {
       chromeos::settings::mojom::kMobileDataNetworksSubpagePath);
 }
 
+void SystemTrayClient::ShowWifiSyncSettings() {
+  ShowSettingsSubPageForActiveUser(
+      std::string(chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath) +
+      "?settingId=" +
+      base::NumberToString(static_cast<int32_t>(
+          chromeos::settings::mojom::Setting::kWifiSyncOnOff)));
+}
+
 void SystemTrayClient::ShowAboutChromeOS() {
   // We always want to check for updates when showing the about page from the
   // Ash UI.
