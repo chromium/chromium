@@ -17,10 +17,7 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -28,7 +25,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -172,53 +168,6 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
   SetHighlight(text, color);
-}
-
-bool BrowserAppMenuButton::GetDropFormats(
-    int* formats,
-    std::set<ui::ClipboardFormatType>* format_types) {
-  return BrowserActionDragData::GetDropFormats(format_types);
-}
-
-bool BrowserAppMenuButton::AreDropTypesRequired() {
-  return BrowserActionDragData::AreDropTypesRequired();
-}
-
-bool BrowserAppMenuButton::CanDrop(const ui::OSExchangeData& data) {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    return false;
-  return BrowserActionDragData::CanDrop(data,
-                                        toolbar_view_->browser()->profile());
-}
-
-void BrowserAppMenuButton::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(!weak_factory_.HasWeakPtrs());
-  int run_types = views::MenuRunner::FOR_DROP;
-  if (event.IsKeyEvent())
-    run_types |= views::MenuRunner::SHOULD_SHOW_MNEMONICS;
-
-  if (!g_open_app_immediately_for_testing) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&BrowserAppMenuButton::ShowMenu,
-                       weak_factory_.GetWeakPtr(), run_types),
-        base::TimeDelta::FromMilliseconds(views::GetMenuShowDelay()));
-  } else {
-    ShowMenu(run_types);
-  }
-}
-
-int BrowserAppMenuButton::OnDragUpdated(const ui::DropTargetEvent& event) {
-  return ui::DragDropTypes::DRAG_MOVE;
-}
-
-void BrowserAppMenuButton::OnDragExited() {
-  weak_factory_.InvalidateWeakPtrs();
-}
-
-ui::mojom::DragOperation BrowserAppMenuButton::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  return ui::mojom::DragOperation::kMove;
 }
 
 std::unique_ptr<views::InkDropHighlight>

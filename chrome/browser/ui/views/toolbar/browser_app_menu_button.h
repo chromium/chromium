@@ -42,15 +42,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   static bool g_open_app_immediately_for_testing;
 
   // AppMenuButton:
-  bool GetDropFormats(int* formats,
-                      std::set<ui::ClipboardFormatType>* format_types) override;
-  bool AreDropTypesRequired() override;
-  bool CanDrop(const ui::OSExchangeData& data) override;
-  void OnDragEntered(const ui::DropTargetEvent& event) override;
-  int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  void OnDragExited() override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
   std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
       const override;
   void OnThemeChanged() override;
