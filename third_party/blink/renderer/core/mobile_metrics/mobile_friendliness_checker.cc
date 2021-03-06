@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
+#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 
 namespace blink {
+
+using mojom::blink::ViewportStatus;
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
@@ -31,20 +34,31 @@ MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
 void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
-  if (viewport.type != ViewportDescription::Type::kViewportMeta)
-    return;
-
-  mobile_friendliness_.viewport_device_width =
-      viewport.max_width.IsDeviceWidth();
-  if (viewport.max_width.IsFixed()) {
-    mobile_friendliness_.viewport_hardcoded_width =
-        viewport.max_width.GetFloatValue();
+  switch (viewport.type) {
+    case ViewportDescription::Type::kUserAgentStyleSheet:
+      mobile_friendliness_.viewport_device_width = ViewportStatus::kNo;
+      mobile_friendliness_.allow_user_zoom = ViewportStatus::kYes;
+      break;
+    case ViewportDescription::Type::kViewportMeta:
+      mobile_friendliness_.viewport_device_width =
+          viewport.max_width.IsDeviceWidth() ? ViewportStatus::kYes
+                                             : ViewportStatus::kNo;
+      if (viewport.max_width.IsFixed()) {
+        mobile_friendliness_.viewport_hardcoded_width =
+            viewport.max_width.GetFloatValue();
+      }
+      if (viewport.zoom_is_explicit) {
+        mobile_friendliness_.viewport_initial_scale_x10 =
+            std::floor(viewport.zoom * 10 + 0.5);
+      }
+      if (viewport.user_zoom_is_explicit) {
+        mobile_friendliness_.allow_user_zoom =
+            viewport.user_zoom ? ViewportStatus::kYes : ViewportStatus::kNo;
+      }
+      break;
+    default:
+      return;
   }
-  if (viewport.zoom_is_explicit)
-    mobile_friendliness_.viewport_initial_scale = viewport.zoom;
-
-  if (viewport.user_zoom_is_explicit)
-    mobile_friendliness_.allow_user_zoom = viewport.user_zoom;
   frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
 }
 
@@ -87,7 +101,7 @@ void MobileFriendlinessChecker::NotifyInvalidatePaint(
 }
 
 void MobileFriendlinessChecker::NotifyPrePaintFinished() {
-  if (!font_size_check_enabled_ || !needs_report_mf_)
+  if (!needs_report_mf_)
     return;
   DCHECK_EQ(frame_view_->GetFrame().GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kInPrePaint);

@@ -208,6 +208,7 @@ source_set("common") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom:mojom",
     "//services/network/public/cpp:cpp",
+    "//third_party/blink/public/mojom:mobile_metrics_shared",
     "//ui/base:base",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/display",

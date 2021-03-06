@@ -1203,26 +1203,34 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
 }
 
 void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
-  ukm::builders::MobileFriendliness mf(GetDelegate().GetPageUkmSourceId());
-  mf.SetViewportDeviceWidth(
-        GetDelegate().GetMobileFriendliness().viewport_device_width)
-      .SetAllowUserZoom(GetDelegate().GetMobileFriendliness().allow_user_zoom)
-      .SetSmallTextRatio(ukm::GetExponentialBucketMin(
-          GetDelegate().GetMobileFriendliness().small_text_ratio, 1.2));
-  const int initial_scale_x10 = std::floor(
-      GetDelegate().GetMobileFriendliness().viewport_initial_scale * 10);
-  if (initial_scale_x10 > 0) {
-    mf.SetViewportInitialScaleX10(
-        ukm::GetExponentialBucketMin(initial_scale_x10, 1.2));
+  ukm::builders::MobileFriendliness builder(GetDelegate().GetPageUkmSourceId());
+  const blink::MobileFriendliness& mf = GetDelegate().GetMobileFriendliness();
+  if (mf.viewport_device_width == blink::mojom::ViewportStatus::kYes)
+    builder.SetViewportDeviceWidth(true);
+  else if (mf.viewport_device_width == blink::mojom::ViewportStatus::kNo)
+    builder.SetViewportDeviceWidth(false);
+
+  if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kYes)
+    builder.SetAllowUserZoom(true);
+  else if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kNo)
+    builder.SetAllowUserZoom(false);
+
+  if (mf.small_text_ratio != -1) {
+    builder.SetSmallTextRatio(
+        ukm::GetExponentialBucketMin(mf.small_text_ratio, 1.2));
   }
 
-  const int hardcoded_width =
-      GetDelegate().GetMobileFriendliness().viewport_hardcoded_width;
+  if (mf.viewport_initial_scale_x10 != -1) {
+    builder.SetViewportInitialScaleX10(
+        ukm::GetExponentialBucketMin(mf.viewport_initial_scale_x10, 1.2));
+  }
+
+  const int hardcoded_width = mf.viewport_hardcoded_width;
   if (hardcoded_width > 0) {
-    mf.SetViewportHardcodedWidth(
+    builder.SetViewportHardcodedWidth(
         BucketWithOffsetAndUnit(hardcoded_width, 500, 10));
   }
-  mf.Record(ukm::UkmRecorder::Get());
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void UkmPageLoadMetricsObserver::RecordPageEndMetrics(

@@ -215,6 +215,7 @@ source_set("headers") {
     "//skia/public/mojom:shared_typemap_traits",
     "//third_party/blink/public/common/privacy_budget",
     "//third_party/blink/public/common/tokens:tokens_headers",
+    "//third_party/blink/public/mojom:mobile_metrics_shared_cpp_sources",
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",

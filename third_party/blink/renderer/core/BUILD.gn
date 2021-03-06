@@ -252,6 +252,7 @@ component("core") {
     ":core_generated",
     ":core_hot",
     "//skia",
+    "//third_party/blink/public/mojom:mobile_metrics_blink",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
     "//third_party/blink/public/mojom:mojom_core_blink",
     "//third_party/blink/renderer/bindings/core/v8",

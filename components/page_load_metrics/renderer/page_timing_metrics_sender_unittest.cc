@@ -165,7 +165,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
   mojom::PageLoadTiming timing;
   blink::MobileFriendliness mobile_friendliness;
   mobile_friendliness.viewport_hardcoded_width = 480;
-  mobile_friendliness.allow_user_zoom = true;
+  mobile_friendliness.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
   InitPageLoadTimingForTest(&timing);
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -175,7 +175,7 @@ TEST_F(PageTimingMetricsSenderTest, SendMobileFriendlinessEvents) {
 
   blink::MobileFriendliness expected_mf;
   expected_mf.viewport_hardcoded_width = 480;
-  expected_mf.allow_user_zoom = true;
+  expected_mf.allow_user_zoom = blink::mojom::ViewportStatus::kYes;
   validator_.UpdateExpectedMobileFriendliness(expected_mf);
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedMobileFriendliness();

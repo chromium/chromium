@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MOBILE_METRICS_MOBILE_FRIENDLINESS_H_
 
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-shared.h"
 
 namespace blink {
 
@@ -22,22 +23,25 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
 
   // Whether <meta name="viewport" content="width=device-width"> is specified or
   // not.
-  bool viewport_device_width = false;
+  mojom::ViewportStatus viewport_device_width = mojom::ViewportStatus::kUnknown;
 
   // The value specified in meta tag like <meta name="viewport"
   // content="initial-scale=1.0">.
-  double viewport_initial_scale = 1.0;
+  // Default -1 means "Unknown" and should not be sent as UKM.
+  int viewport_initial_scale_x10 = -1;
 
   // The value specified in meta tag like <meta name="viewport"
   // content="width=500">.
-  int viewport_hardcoded_width = 0;
+  // Default -1 means "Unknown" and should not be sent as UKM.
+  int viewport_hardcoded_width = -1;
 
   // Whether the page allows user to zoom in/out.
   // It is specified like <meta name="viewport" content="user-scalable=no">.
-  bool allow_user_zoom = true;
+  mojom::ViewportStatus allow_user_zoom = mojom::ViewportStatus::kUnknown;
 
   // Percentage of small font size text area in all text area.
-  int small_text_ratio = 0;
+  // Default -1 means "Unknown" and should not be sent as UKM.
+  int small_text_ratio = -1;
 };
 
 }  // namespace blink

@@ -8,7 +8,7 @@ namespace blink {
 
 bool MobileFriendliness::operator==(const MobileFriendliness& other) const {
   return viewport_device_width == other.viewport_device_width &&
-         viewport_initial_scale == other.viewport_initial_scale &&
+         viewport_initial_scale_x10 == other.viewport_initial_scale_x10 &&
          viewport_hardcoded_width == other.viewport_hardcoded_width &&
          allow_user_zoom == other.allow_user_zoom &&
          small_text_ratio == other.small_text_ratio;
