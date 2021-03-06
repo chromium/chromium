@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 from telemetry import story
-from page_sets.desktop_ui import tab_search_story
+from page_sets.desktop_ui import download_shelf_story, tab_search_story
 
 
 class DesktopUIStorySet(story.StorySet):
@@ -25,6 +25,11 @@ class DesktopUIStorySet(story.StorySet):
       tab_search_story.TabSearchStoryMeasureMemory3TabSearch,
   ]
 
+  DOWNLOAD_SHELF_STORIES = [
+      download_shelf_story.DownloadShelfStory1File,
+      download_shelf_story.DownloadShelfStory5File,
+  ]
+
   def __init__(self):
     super(DesktopUIStorySet,
           self).__init__(archive_data_file=('../data/desktop_ui.json'),
@@ -34,3 +39,6 @@ class DesktopUIStorySet(story.StorySet):
           cls(self,
               ['--enable-features=TabSearch', '--top-chrome-touch-ui=disabled'
                ]))
+
+    for cls in self.DOWNLOAD_SHELF_STORIES:
+      self.AddStory(cls(self))
