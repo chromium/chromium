@@ -2428,6 +2428,74 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   }
 }
 
+// Regression test for https://crbug.com/1183571. This used to crash.
+// A grand child, same-origin with its parent, but cross-origin with the main
+// document is accessing a popup.
+//
+// TODO(arthursonzogni): Add a similar WPT test.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       GrandChildAccessCrash1183571) {
+  GURL a_url_coop(https_server()->GetURL(
+      "a.com",
+      "/set-header?Cross-Origin-Opener-Policy-Report-Only: same-origin"));
+  GURL b_url(https_server()->GetURL("b.com", "/empty.html"));
+  GURL c_url(https_server()->GetURL("c.com", "/empty.html"));
+
+  // 1. Start from COOP-Report-Only:same-origin. (a.com COOP-RO)
+  EXPECT_TRUE(NavigateToURL(shell(), a_url_coop));
+  RenderFrameHostImpl* opener_rfh = current_frame_host();
+
+  // 2. Add a window in a different (virtual) browsing context group.
+  //
+  // The new popup won't be used, but it is created to avoid the
+  // DOMWindow::ReportCoopAccess() fast early return. The original bug won't
+  // reproduce without this.
+  {
+    ShellAddedObserver shell_observer;
+    EXPECT_TRUE(ExecJs(opener_rfh, JsReplace(R"(
+      window.open($1);
+    )",
+                                             b_url)));
+    WaitForLoadStop(shell_observer.GetShell()->web_contents());
+  }
+
+  // 3. Insert a cross-origin iframe. (b.com)
+  EXPECT_TRUE(ExecJs(opener_rfh, JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                           b_url)));
+  WaitForLoadStop(web_contents());
+  RenderFrameHostImpl* opener_child_rfh =
+      opener_rfh->child_at(0)->current_frame_host();
+
+  // 4. Insert a grand-child iframe (b.com).
+  EXPECT_TRUE(ExecJs(opener_child_rfh, JsReplace(R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = $1;
+    document.body.appendChild(iframe);
+  )",
+                                                 b_url)));
+  WaitForLoadStop(web_contents());
+  RenderFrameHostImpl* opener_grand_child_rfh =
+      opener_child_rfh->child_at(0)->current_frame_host();
+
+  // 5. The grand child creates a new cross-origin popup...
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(opener_grand_child_rfh, JsReplace(R"(
+    window.openee = window.open($1);
+  )",
+                                                       c_url)));
+  WaitForLoadStop(shell_observer.GetShell()->web_contents());
+
+  // 6. ... and tries to access it.
+  EXPECT_EQ("I didn't crash", EvalJs(opener_grand_child_rfh, R"(
+    window.openee.closed;
+    "I didn't crash";
+  )"));
+}
+
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.
