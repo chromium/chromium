@@ -5,13 +5,16 @@
 from pathos import pools
 
 
-def GetProcessPool():
+def GetProcessPool(nodes=None):
   """Returns a pathos.pools.ProcessPool instance.
 
   Split out for ease of unittesting since pathos can still run into pickling
   issues with MagicMocks used in tests.
 
+  Args:
+    nodes: How many processes processes to spawn in the process pool.
+
   Returns:
     A pathos.pools.ProcessPool instance.
   """
-  return pools.ProcessPool()
+  return pools.ProcessPool(nodes=nodes)

@@ -19,7 +19,7 @@ from unexpected_passes import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
-ASYNC_RESULT_SLEEP_DURATION = 5
+MAX_QUERY_TRIES = 3
 
 # Largely written by nodir@ and modified by bsheedy@
 # This query gets us all results for tests that have had results with a
@@ -213,86 +213,22 @@ class BigQueryQuerier(object):
         ],
       }
     """
-    all_unmatched_results = {}
 
-    # We use two separate pools since each is better for a different task.
-    # Adding retrieved results to the expectation map is computationally
-    # intensive, so properly parallelizing it results in large speedup. Python's
-    # default interpreter does not support true multithreading, and the
-    # multiprocessing module throws a fit when using custom data types due to
-    # pickling, so use pathos' ProcessPool for this, which is like
-    # multiprocessing but handles all the pickling automatically.
-    #
-    # However, ProcessPool appears to add a non-trivial amount of overhead when
-    # passing data back and forth, so use a thread pool for triggering BigQuery
-    # queries. Each query is already started in its own subprocess, so the lack
-    # of multithreading is not an issue. multiprocessing.pool.ThreadPool() is
-    # not officially documented, but comes up frequently when looking for
-    # information on Python thread pools and is used in other places in the
-    # Chromium code base.
-    #
-    # Using two pools also allows us to start processing data while queries are
-    # still running since the latter spends most of its time waiting for the
-    # query to complete.
-    #
-    # Since the ThreadPool is going to be idle most of the time, we can use many
-    # more threads than we have logical cores.
-    thread_count = 4 * multiprocessing.cpu_count()
-    query_pool = multiprocessing.pool.ThreadPool(thread_count)
-    result_pool = multiprocessing_utils.GetProcessPool()
+    # Spin up a separate process for each query/add step. This is wasteful in
+    # the sense that we'll have a bunch of idle processes once faster steps
+    # start finishing, but ensures that we start slow queries early and avoids
+    # the overhead of passing large amounts of data between processes. See
+    # crbug.com/1182459 for more information on performance considerations.
+    process_pool = multiprocessing_utils.GetProcessPool(nodes=len(builders))
 
-    running_queries = set()
-    running_adds = set()
-    running_adds_lock = threading.Lock()
+    args = [(b, builder_type, expectation_map) for b in builders]
 
-    def pass_query_result_to_add(result):
-      bn, r = result
-      arg = (expectation_map, builder_type, bn, r)
-      running_adds_lock.acquire()
-      running_adds.add(
-          result_pool.apipe(expectations.AddResultListToMapMultiprocessing,
-                            arg))
-      running_adds_lock.release()
-
-    for b in builders:
-      arg = (b, builder_type)
-      running_queries.add(
-          query_pool.apply_async(self.QueryBuilder,
-                                 arg,
-                                 callback=pass_query_result_to_add))
-
-    # We check the AsyncResult objects here because the provided callback only
-    # gets called on success, and exceptions are not raised until the result is
-    # retrieved. This can be removed whenever this is switched to Python 3, as
-    # apply_async has an error_callback parameter there.
-    while True:
-      completed_queries = set()
-      for rq in running_queries:
-        if rq.ready():
-          completed_queries.add(rq)
-          rq.get()
-      running_queries -= completed_queries
-      if not len(running_queries):
-        break
-      time.sleep(ASYNC_RESULT_SLEEP_DURATION)
-
-    # At this point, no more AsyncResults should be getting added to
-    # |running_adds|, so we don't need to bother with the lock.
-    add_results = []
-    while True:
-      completed_adds = set()
-      for ra in running_adds:
-        if ra.ready():
-          completed_adds.add(ra)
-          add_results.append(ra.get())
-      running_adds -= completed_adds
-      if not len(running_adds):
-        break
-      time.sleep(ASYNC_RESULT_SLEEP_DURATION)
+    results = process_pool.map(self._QueryAddCombined, args)
 
     tmp_expectation_map = {}
+    all_unmatched_results = {}
 
-    for (unmatched_results, prefixed_builder_name, merge_map) in add_results:
+    for (unmatched_results, prefixed_builder_name, merge_map) in results:
       expectations.MergeExpectationMaps(tmp_expectation_map, merge_map,
                                         expectation_map)
       if unmatched_results:
@@ -303,6 +239,27 @@ class BigQueryQuerier(object):
 
     return all_unmatched_results
 
+  def _QueryAddCombined(self, inputs):
+    """Combines the query and add steps for use in a process pool.
+
+    Args:
+      inputs: An iterable of inputs for QueryBuilder() and
+          expectations.AddResultListToMap(). Should be in the order:
+          builder builder_type expectation_map
+
+    Returns:
+      The output of expectations.AddResultListToMap().
+    """
+    builder, builder_type, expectation_map = inputs
+    results = self.QueryBuilder(builder, builder_type)
+
+    prefixed_builder_name = '%s:%s' % (builder_type, builder)
+    unmatched_results = expectations.AddResultListToMap(expectation_map,
+                                                        prefixed_builder_name,
+                                                        results)
+
+    return unmatched_results, prefixed_builder_name, expectation_map
+
   def QueryBuilder(self, builder, builder_type):
     """Queries ResultDB for results from |builder|.
 
@@ -312,9 +269,7 @@ class BigQueryQuerier(object):
           "ci" or "try".
 
     Returns:
-      A tuple (builder, results). |builder| is simply the value of the input
-      |builder| argument, returned to facilitate parallel execution. |results|
-      is the results returned by the query converted into a list of
+      The results returned by the query converted into a list of
       data_types.Resultobjects.
     """
 
@@ -322,7 +277,7 @@ class BigQueryQuerier(object):
         builder, builder_type)
     if test_filter_clause is None:
       # No affected tests on this builder, so early return.
-      return (builder, [])
+      return []
 
     query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type,
                                          test_filter_clause=test_filter_clause,
@@ -345,7 +300,7 @@ class BigQueryQuerier(object):
         logging.warning(
             'Did not get results for "%s", but this may be because its results '
             'do not apply to any expectations for this suite.', builder)
-      return (builder, results)
+      return results
 
     for r in query_results:
       if not self._check_webgl_version(r['typ_tags']):
@@ -359,7 +314,7 @@ class BigQueryQuerier(object):
           data_types.Result(test_name, tags, actual_result, step, build_id))
     logging.debug('Got %d results for %s builder %s', len(results),
                   builder_type, builder)
-    return (builder, results)
+    return results
 
   def _GetTestFilterClauseForBuilder(self, builder, builder_type):
     """Returns a SQL clause to only include relevant tests.
@@ -425,23 +380,36 @@ class BigQueryQuerier(object):
     Returns:
       The result of |query| as JSON.
     """
-    cmd = _GenerateBigQueryCommand(self._project, parameters)
-    with open(os.devnull, 'w') as devnull:
-      p = subprocess.Popen(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=devnull,
-                           stdin=subprocess.PIPE)
-      # We pass in the query via stdin instead of including it on the
-      # commandline because we can run into command length issues in large query
-      # mode.
-      stdout, _ = p.communicate(query)
-      if p.returncode:
-        error_msg = 'Error running command %s. stdout: %s' % (cmd, stdout)
-        if 'memory' in stdout:
-          error_msg += ('\nIt looks like BigQuery may have run out of memory. '
-                        'Try lowering --num-samples or using '
-                        '--large-query-mode.')
-        raise RuntimeError(error_msg)
+
+    def run_cmd(cmd, tries):
+      if tries >= MAX_QUERY_TRIES:
+        raise RuntimeError('Query failed too many times, aborting')
+
+      with open(os.devnull, 'w') as devnull:
+        p = subprocess.Popen(cmd,
+                             stdout=subprocess.PIPE,
+                             stderr=devnull,
+                             stdin=subprocess.PIPE)
+        # We pass in the query via stdin instead of including it on the
+        # commandline because we can run into command length issues in large
+        # query mode.
+        stdout, _ = p.communicate(query)
+        if p.returncode:
+          # When running many queries in parallel, it's possible to hit the
+          # rate limit for the account if we're unlucky, so try again if we do.
+          if 'Exceeded rate limits' in stdout:
+            logging.warning('Query hit rate limit, retrying')
+            return run_cmd(cmd, tries + 1)
+          error_msg = 'Error running command %s. stdout: %s' % (cmd, stdout)
+          if 'memory' in stdout:
+            error_msg += ('\nIt looks like BigQuery may have run out of '
+                          'memory. Try lowering --num-samples or using '
+                          '--large-query-mode.')
+          raise RuntimeError(error_msg)
+        return stdout
+
+    bq_cmd = _GenerateBigQueryCommand(self._project, parameters)
+    stdout = run_cmd(bq_cmd, 0)
     return json.loads(stdout)
 
 

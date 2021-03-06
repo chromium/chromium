@@ -64,8 +64,7 @@ class QueryBuilderUnittest(unittest.TestCase):
   def testNoResults(self):
     """Tests functionality if the query returns no results."""
     self._popen_mock.return_value = unittest_utils.FakeProcess(stdout='[]')
-    builder, results = self._querier.QueryBuilder('builder', 'ci')
-    self.assertEqual(builder, 'builder')
+    results = self._querier.QueryBuilder('builder', 'ci')
     self.assertEqual(results, [])
 
   def testValidResults(self):
@@ -92,8 +91,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     ]
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_results))
-    builder, results = self._querier.QueryBuilder('builder', 'ci')
-    self.assertEqual(builder, 'builder')
+    results = self._querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -141,7 +139,7 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance1')
     self._popen_mock.return_value = unittest_utils.FakeProcess(
         stdout=json.dumps(query_results))
-    _, results = querier.QueryBuilder('builder', 'ci')
+    results = querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -149,7 +147,7 @@ class QueryBuilderUnittest(unittest.TestCase):
                           'step_name', '1234'))
 
     querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance2')
-    _, results = querier.QueryBuilder('builder', 'ci')
+    results = querier.QueryBuilder('builder', 'ci')
     self.assertEqual(len(results), 1)
     self.assertEqual(
         results[0],
@@ -167,27 +165,27 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = unittest_utils.CreateGenericQuerier()
     with mock.patch.object(querier,
                            '_RunBigQueryCommandForJsonOutput') as query_mock:
-      _, _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', 'ci')
       assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
 
     # Special-cased suites.
     querier = unittest_utils.CreateGenericQuerier(suite='info_collection')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandForJsonOutput') as query_mock:
-      _, _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', 'ci')
       assertSuiteInQuery('info_collection_test', query_mock.call_args)
 
     querier = unittest_utils.CreateGenericQuerier(suite='power')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandForJsonOutput') as query_mock:
-      _, _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', 'ci')
       assertSuiteInQuery('power_measurement_integration_test',
                          query_mock.call_args)
 
     querier = unittest_utils.CreateGenericQuerier(suite='trace_test')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandForJsonOutput') as query_mock:
-      _, _ = querier.QueryBuilder('builder', 'ci')
+      _ = querier.QueryBuilder('builder', 'ci')
       assertSuiteInQuery('trace_integration_test', query_mock.call_args)
 
   def testFilterInsertion(self):
@@ -212,9 +210,8 @@ class QueryBuilderUnittest(unittest.TestCase):
         self._querier, '_GetTestFilterClauseForBuilder',
         return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandForJsonOutput') as query_mock:
-      builder, results = self._querier.QueryBuilder('builder', 'ci')
+      results = self._querier.QueryBuilder('builder', 'ci')
       query_mock.assert_not_called()
-      self.assertEqual(builder, 'builder')
       self.assertEqual(results, [])
 
 
@@ -230,11 +227,6 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._pool_mock = self._pool_patcher.start()
     self._pool_mock.return_value = unittest_utils.FakePool()
     self.addCleanup(self._pool_patcher.stop)
-    self._sleep_patcher = mock.patch.object(queries,
-                                            'ASYNC_RESULT_SLEEP_DURATION',
-                                            return_value=0.1)
-    self._sleep_mock = self._sleep_patcher.start()
-    self.addCleanup(self._sleep_patcher.stop)
 
   def testValidResults(self):
     """Tests functionality when valid results are returned by the query."""
@@ -242,13 +234,11 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     def SideEffect(builder, *args):
       del args
       if builder == 'matched_builder':
-        return builder, [
+        return [
             data_types.Result('foo', ['win'], 'Pass', 'step_name', 'build_id')
         ]
       else:
-        return builder, [
-            data_types.Result('bar', [], 'Pass', 'step_name', 'build_id')
-        ]
+        return [data_types.Result('bar', [], 'Pass', 'step_name', 'build_id')]
 
     self._query_mock.side_effect = SideEffect
 
@@ -381,6 +371,30 @@ class RunBigQueryCommandForJsonOutputUnittest(unittest.TestCase):
     self._popen_mock.return_value = unittest_utils.FakeProcess(returncode=1)
     with self.assertRaises(RuntimeError):
       self._querier._RunBigQueryCommandForJsonOutput('', {})
+
+  def testRateLimitRetrySuccess(self):
+    """Tests that rate limit errors result in retries."""
+
+    def SideEffect(*_, **__):
+      SideEffect.call_count += 1
+      if SideEffect.call_count == 1:
+        return unittest_utils.FakeProcess(
+            returncode=1, stdout='Exceeded rate limits for foo.')
+      return unittest_utils.FakeProcess(stdout='[]')
+
+    SideEffect.call_count = 0
+
+    self._popen_mock.side_effect = SideEffect
+    self._querier._RunBigQueryCommandForJsonOutput('', {})
+    self.assertEqual(self._popen_mock.call_count, 2)
+
+  def testRateLimitRetryFailure(self):
+    """Tests that rate limit errors stop retrying after enough iterations."""
+    self._popen_mock.return_value = unittest_utils.FakeProcess(
+        returncode=1, stdout='Exceeded rate limits for foo.')
+    with self.assertRaises(RuntimeError):
+      self._querier._RunBigQueryCommandForJsonOutput('', {})
+    self.assertEqual(self._popen_mock.call_count, queries.MAX_QUERY_TRIES)
 
 
 class GenerateBigQueryCommandUnittest(unittest.TestCase):

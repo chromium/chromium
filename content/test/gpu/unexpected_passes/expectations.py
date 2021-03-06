@@ -316,20 +316,6 @@ def MergeExpectationMaps(base_map, merge_map, reference_map=None):
         base_map[key] = value
 
 
-def AddResultListToMapMultiprocessing(inputs):
-  """Version of AddResultListToMap meant for multiprocessing.
-
-  Since parallel map() methods typically take an iterable of iterables, we need
-  to expand the inner iterable into arguments to actually use the underlying
-  method.
-  """
-  expectation_map, builder_type, builder_name, results = inputs
-  prefixed_builder_name = '%s:%s' % (builder_type, builder_name)
-  unmatched_results = AddResultListToMap(expectation_map, prefixed_builder_name,
-                                         results)
-  return unmatched_results, prefixed_builder_name, expectation_map
-
-
 def AddResultListToMap(expectation_map, builder, results):
   """Adds |results| to |expectation_map|.
 
