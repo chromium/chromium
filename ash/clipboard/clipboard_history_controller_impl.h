@@ -48,6 +48,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
       const ClipboardHistoryControllerImpl&) = delete;
   ~ClipboardHistoryControllerImpl() override;
 
+  // Clean up th child widgets prior to destruction.
+  void Shutdown();
+
   void AddObserver(
       ClipboardHistoryController::Observer* observer) const override;
   void RemoveObserver(

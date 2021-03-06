@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/scoped_observation.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -38,7 +39,7 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
   // height to correctly fit the text.
   void CalculateAndSetWidgetBounds();
 
-  std::unique_ptr<views::Widget> widget_;
+  views::UniqueWidgetPtr widget_;
 
   ClipboardNudgeView* nudge_view_ = nullptr;  // not_owned
 
