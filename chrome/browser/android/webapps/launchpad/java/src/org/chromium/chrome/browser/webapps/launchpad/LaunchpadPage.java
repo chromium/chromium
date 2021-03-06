@@ -10,6 +10,8 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
+import java.util.List;
+
 /**
  * Native page for launching WebApks.
  */
@@ -19,15 +21,15 @@ public class LaunchpadPage extends BasicNativePage {
 
     /**
      * Create a new instance of the app launcher page.
-     * @param activity The {@link Activity} used to get context and instantiate the
-     *                 {@link LaunchpadCoordinator}.
+     * @param activity The activity to get context and launch apps.
      * @param host A NativePageHost to load URLs.
+     * @param items The list of LaunchpadItems to be displayed.
      */
-    public LaunchpadPage(Activity activity, NativePageHost host) {
+    public LaunchpadPage(Activity activity, NativePageHost host, List<LaunchpadItem> items) {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.launchpad_title);
-        mLaunchpadCoordinator = new LaunchpadCoordinator(activity);
+        mLaunchpadCoordinator = new LaunchpadCoordinator(activity, items);
 
         initWithView(mLaunchpadCoordinator.getView());
     }
@@ -45,6 +47,7 @@ public class LaunchpadPage extends BasicNativePage {
     @Override
     public void destroy() {
         mLaunchpadCoordinator.destroy();
+        mLaunchpadCoordinator = null;
         super.destroy();
     }
 }

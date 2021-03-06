@@ -377,6 +377,48 @@ public class WebApkValidatorTest {
     }
 
     /**
+     * Tests {@link WebApkValidator.isValidV1WebApk} returns true if a package name corresponds to a
+     * WebAPK and the WebAPK is valid.
+     */
+    @Test
+    public void testIsValidV1WebApkReturnsTrueForValidWebApk() {
+        mPackageManager.addPackage(newPackageInfoWithBrowserSignature(
+                WEBAPK_PACKAGE_NAME, new Signature(EXPECTED_SIGNATURE), TEST_STARTURL, null));
+
+        assertTrue(WebApkValidator.isValidV1WebApk(
+                RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests {@link WebApkValidator.isValidV1WebApk} returns false if the package
+     * name is not valid for WebApks.
+     */
+    @Test
+    public void testIsValidV1WebApkFalseForInvalidPackageName() {
+        mPackageManager.addPackage(newPackageInfoWithBrowserSignature(INVALID_WEBAPK_PACKAGE_NAME,
+                new Signature(EXPECTED_SIGNATURE), TEST_STARTURL, null));
+
+        assertFalse(WebApkValidator.isValidV1WebApk(
+                RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests {@link WebApkValidator.isValidV1WebApk} returns false if the package
+     * name is maps lite.
+     */
+    @Test
+    public void testIsValidV1WebApkFalseForMapsLite() {
+        mPackageManager.addPackage(newPackageInfoWithBrowserSignature(MAPSLITE_PACKAGE_NAME,
+                new Signature(SIGNATURE_1), MAPSLITE_EXAMPLE_STARTURL, null));
+        mPackageManager.addPackage(
+                newPackageInfoWithBrowserSignature(MAPSLITE_PACKAGE_NAME + ".other",
+                        new Signature(SIGNATURE_1), MAPSLITE_EXAMPLE_STARTURL, null));
+
+        assertFalse(WebApkValidator.isValidV1WebApk(
+                RuntimeEnvironment.application, MAPSLITE_PACKAGE_NAME));
+    }
+
+    /**
      * Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} for a valid installed entry.
      */
     @Test

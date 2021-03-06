@@ -7,17 +7,21 @@ package org.chromium.chrome.browser.webapps.launchpad;
 import android.app.Activity;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 /**
- * Displays and manages the UI for browsing installed web apps.
+ * Displays and manages the UI for browsing installed web apps. This is the top level coordinator
+ * for the launchpad ui.
  */
 class LaunchpadCoordinator {
-    private ViewGroup mMainView;
+    private final ViewGroup mMainView;
 
     /**
      * Creates a new LaunchpadCoordinator.
-     * @param activity The Activity associated with the LaunchpadCoordinator.
+     * @param context The context associated with the LaunchpadCoordinator.
+     * @param items The list of LaunchpadItems to be displayed.
      */
-    LaunchpadCoordinator(Activity activity) {
+    LaunchpadCoordinator(Activity activity, List<LaunchpadItem> items) {
         mMainView = (ViewGroup) activity.getLayoutInflater().inflate(
                 R.layout.launchpad_page_layout, null);
     }

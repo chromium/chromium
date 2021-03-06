@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.webapps.launchpad.LaunchpadPage;
+import org.chromium.chrome.browser.webapps.launchpad.LaunchpadUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
@@ -129,7 +130,8 @@ public class NativePageFactory {
 
         protected NativePage buildLaunchpadPage(Tab tab) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LAUNCHPAD)) {
-                return new LaunchpadPage(mActivity, new TabShim(tab, mActivity));
+                return new LaunchpadPage(mActivity, new TabShim(tab, mActivity),
+                        LaunchpadUtils.retrieveWebApks(mActivity));
             } else {
                 return null;
             }
