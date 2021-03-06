@@ -851,6 +851,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Policy.AllowlistDomainsTotalSize" units="bytes"
+    expires_after="2022-02-26">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The size of the allowlist domains set by the enterprise policy in bytes.
+    Note that this is measuring the total bytes of the list rather than the
+    length of the list. These domains are copied to the Safe Browsing checker
+    delegate. Logged each time a Safe Browsing checker delegate is created for
+    the renderer and the allowlist policy is set.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.Daily.Extended" enum="BooleanEnabled"
     expires_after="2021-11-04">
   <owner>xinghuilu@chromium.org</owner>

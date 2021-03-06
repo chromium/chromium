@@ -49,6 +49,8 @@ class AwUrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       const security_interstitials::UnsafeResource& resource,
       bool is_main_frame) override;
   bool IsUrlAllowlisted(const GURL& url) override;
+  void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) override;
   bool ShouldSkipRequestCheck(const GURL& original_url,
                               int frame_tree_node_id,
                               int render_process_id,

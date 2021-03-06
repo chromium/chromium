@@ -152,6 +152,8 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   MOCK_METHOD0(GetUIManager, BaseUIManager*());
 
   bool IsUrlAllowlisted(const GURL& url) override { return false; }
+  void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) override {}
   const SBThreatTypeSet& GetThreatTypes() override { return threat_types_; }
   SafeBrowsingDatabaseManager* GetDatabaseManager() override {
     return database_manager_;

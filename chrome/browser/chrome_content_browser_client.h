@@ -748,15 +748,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
 
   // Returns the existing UrlCheckerDelegate object if it is already created.
-  // Otherwise, creates a new one and returns it. It returns nullptr if
-  // |safe_browsing_enabled_for_profile| is false, because it should bypass safe
-  // browsing check when safe browsing is disabled. Set
+  // Otherwise, creates a new one and returns it. Updates the
+  // |allowlist_domains| in the UrlCheckerDelegate object before returning. It
+  // returns nullptr if |safe_browsing_enabled_for_profile| is false, because it
+  // should bypass safe browsing check when safe browsing is disabled. Set
   // |should_check_on_sb_disabled| to true if you still want to perform safe
   // browsing check when safe browsing is disabled(e.g. for enterprise real time
   // URL check).
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
-  GetSafeBrowsingUrlCheckerDelegate(bool safe_browsing_enabled_for_profile,
-                                    bool should_check_on_sb_disabled);
+  GetSafeBrowsingUrlCheckerDelegate(
+      bool safe_browsing_enabled_for_profile,
+      bool should_check_on_sb_disabled,
+      const std::vector<std::string>& allowlist_domains);
 
   // Returns a RealTimeUrlLookupServiceBase object used for real time URL check.
   // Returns an enterprise version if |is_enterprise_lookup_enabled| is true.

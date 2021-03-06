@@ -4445,13 +4445,15 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
         GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
                             is_consumer_lookup_enabled);
+
     result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindOnce(
             &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
             base::Unretained(this),
             safe_browsing::IsSafeBrowsingEnabled(*profile->GetPrefs()),
             // Should check for enterprise when safe browsing is disabled.
-            /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled),
+            /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled,
+            safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
         wc_getter, frame_tree_node_id,
         url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr));
   }
@@ -5319,7 +5321,8 @@ const ui::NativeTheme* ChromeContentBrowserClient::GetWebTheme() const {
 scoped_refptr<safe_browsing::UrlCheckerDelegate>
 ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate(
     bool safe_browsing_enabled_for_profile,
-    bool should_check_on_sb_disabled) {
+    bool should_check_on_sb_disabled,
+    const std::vector<std::string>& allowlist_domains) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   // Should not bypass safe browsing check if the check is for enterprise
@@ -5333,6 +5336,12 @@ ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate(
         base::MakeRefCounted<safe_browsing::UrlCheckerDelegateImpl>(
             safe_browsing_service_->database_manager(),
             safe_browsing_service_->ui_manager());
+  }
+
+  // Update allowlist domains.
+  if (safe_browsing_url_checker_delegate_) {
+    safe_browsing_url_checker_delegate_->SetPolicyAllowlistDomains(
+        allowlist_domains);
   }
 
   return safe_browsing_url_checker_delegate_;

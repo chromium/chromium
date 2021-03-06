@@ -60,6 +60,13 @@ class UrlCheckerDelegate
   // the SafeBrowsing database.
   virtual bool IsUrlAllowlisted(const GURL& url) = 0;
 
+  // Set the Safe Browsing allowlist domains. If the url being checked matches
+  // one of the domains in |allowlist_domains|, it is considered safe and
+  // therefore won't be checked with the SafeBrowsing database. If the current
+  // platform doesn't support the allowlist policy, this function will be no-op.
+  virtual void SetPolicyAllowlistDomains(
+      const std::vector<std::string>& allowlist_domains) = 0;
+
   // If the method returns true, the entire request won't be checked, including
   // the original URL and redirects.
   // If neither of |render_process_id| and |render_frame_id| is -1, they will be

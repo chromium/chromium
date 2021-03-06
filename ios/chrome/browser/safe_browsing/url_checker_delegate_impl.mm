@@ -115,6 +115,12 @@ bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
 }
 
+void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
+    const std::vector<std::string>& allowlist_domains) {
+  // The SafeBrowsingAllowlistDomains policy is not supported on iOS.
+  return;
+}
+
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     const GURL& original_url,
     int frame_tree_node_id,
