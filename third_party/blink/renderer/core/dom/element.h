@@ -102,9 +102,6 @@ struct FocusParams;
 
 using ScrollOffset = FloatSize;
 
-// TODO(andruud): Callers should use StyleRequest directly.
-using PseudoElementStyleRequest = StyleRequest;
-
 enum SpellcheckAttributeState {
   kSpellcheckAttributeTrue,
   kSpellcheckAttributeFalse,
@@ -736,24 +733,21 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // missing from the cache.
   const ComputedStyle* CachedStyleForPseudoElement(PseudoId);
 
-  // Calculate the ComputedStyle corresponding to the provided
-  // PseudoElementStyleRequest, bypassing the pseudo style cache.
+  // Calculate the ComputedStyle corresponding to the provided StyleRequest,
+  // bypassing the pseudo style cache.
   //
   // This is appropriate to use if the cached version is invalid in a given
   // situation.
   scoped_refptr<ComputedStyle> UncachedStyleForPseudoElement(
-      const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style);
+      const StyleRequest&);
 
   // This is the same as UncachedStyleForPseudoElement, except that the caller
   // must provide an appropriate StyleRecalcContext such that e.g. @container
   // queries are evaluated correctly.
   //
   // See StyleRecalcContext for more information.
-  scoped_refptr<ComputedStyle> StyleForPseudoElement(
-      const StyleRecalcContext&,
-      const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style);
+  scoped_refptr<ComputedStyle> StyleForPseudoElement(const StyleRecalcContext&,
+                                                     const StyleRequest&);
 
   virtual bool CanGeneratePseudoElement(PseudoId) const;
 

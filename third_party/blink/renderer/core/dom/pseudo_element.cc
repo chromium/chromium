@@ -124,9 +124,9 @@ PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
 scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   Element* parent = ParentOrShadowHostElement();
-  return parent->StyleForPseudoElement(style_recalc_context,
-                                       PseudoElementStyleRequest(pseudo_id_),
-                                       parent->GetComputedStyle());
+  return parent->StyleForPseudoElement(
+      style_recalc_context,
+      StyleRequest(pseudo_id_, parent->GetComputedStyle()));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(

@@ -1126,7 +1126,7 @@ StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
                                  selector_filter_, cascade.MutableMatchResult(),
                                  state.Style(), EInsideLink::kNotInsideLink);
-  collector.SetPseudoElementStyleRequest(PseudoElementStyleRequest(pseudo_id));
+  collector.SetPseudoElementStyleRequest(StyleRequest(pseudo_id, nullptr));
   MatchAllRules(state, collector, false /* include_smil_properties */);
 
   cascade.Apply();
@@ -1167,7 +1167,7 @@ void StyleResolver::CollectPseudoRulesForElement(
     ElementRuleCollector& collector,
     PseudoId pseudo_id,
     unsigned rules_to_include) {
-  collector.SetPseudoElementStyleRequest(PseudoElementStyleRequest(pseudo_id));
+  collector.SetPseudoElementStyleRequest(StyleRequest(pseudo_id, nullptr));
 
   if (rules_to_include & kUACSSRules)
     MatchUARules(element, collector);

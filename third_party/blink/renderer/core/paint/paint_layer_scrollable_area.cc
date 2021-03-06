@@ -1960,8 +1960,7 @@ void PaintLayerScrollableArea::UpdateScrollCornerStyle() {
   scoped_refptr<ComputedStyle> corner =
       GetLayoutBox()->IsScrollContainer()
           ? style_source.GetUncachedPseudoElementStyle(
-                PseudoElementStyleRequest(kPseudoIdScrollbarCorner),
-                style_source.Style())
+                StyleRequest(kPseudoIdScrollbarCorner, style_source.Style()))
           : scoped_refptr<ComputedStyle>(nullptr);
   if (corner) {
     if (!scroll_corner_) {
@@ -2101,8 +2100,7 @@ void PaintLayerScrollableArea::UpdateResizerStyle(
   scoped_refptr<ComputedStyle> resizer =
       GetLayoutBox()->IsScrollContainer()
           ? style_source.GetUncachedPseudoElementStyle(
-                PseudoElementStyleRequest(kPseudoIdResizer),
-                style_source.Style())
+                StyleRequest(kPseudoIdResizer, style_source.Style()))
           : scoped_refptr<ComputedStyle>(nullptr);
   if (resizer) {
     if (!resizer_) {

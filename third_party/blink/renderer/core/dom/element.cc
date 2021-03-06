@@ -5211,36 +5211,31 @@ const ComputedStyle* Element::CachedStyleForPseudoElement(PseudoId pseudo_id) {
     return cached;
 
   scoped_refptr<ComputedStyle> result =
-      UncachedStyleForPseudoElement(StyleRequest(pseudo_id), style);
+      UncachedStyleForPseudoElement(StyleRequest(pseudo_id, style));
   if (result)
     return style->AddCachedPseudoElementStyle(std::move(result));
   return nullptr;
 }
 
 scoped_refptr<ComputedStyle> Element::UncachedStyleForPseudoElement(
-    const PseudoElementStyleRequest& request,
-    const ComputedStyle* parent_style) {
+    const StyleRequest& request) {
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
-  return StyleForPseudoElement(style_recalc_context, request, parent_style);
+  return StyleForPseudoElement(style_recalc_context, request);
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     const StyleRecalcContext& style_recalc_context,
-    const PseudoElementStyleRequest& request,
-    const ComputedStyle* parent_style) {
+    const StyleRequest& request) {
   const bool is_before_or_after = request.pseudo_id == kPseudoIdBefore ||
                                   request.pseudo_id == kPseudoIdAfter;
 
-  DCHECK(parent_style);
-
-  StyleRequest style_request = request;
-  style_request.parent_override = parent_style;
-  style_request.layout_parent_override = parent_style;
+  DCHECK(request.parent_override);
+  DCHECK(request.layout_parent_override);
 
   if (is_before_or_after) {
-    const ComputedStyle* layout_parent_style = parent_style;
-    if (parent_style->Display() == EDisplay::kContents) {
+    const ComputedStyle* layout_parent_style = request.parent_override;
+    if (layout_parent_style->Display() == EDisplay::kContents) {
       // TODO(futhark@chromium.org): Calling getComputedStyle for elements
       // outside the flat tree should return empty styles, but currently we do
       // not. See issue https://crbug.com/831568. We can replace the if-test
@@ -5250,26 +5245,28 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
         layout_parent_style = layout_parent->GetComputedStyle();
       }
     }
-    style_request.layout_parent_override = layout_parent_style;
+    StyleRequest before_after_request = request;
+    before_after_request.layout_parent_override = layout_parent_style;
     return GetDocument().GetStyleResolver().ResolveStyle(
-        this, style_recalc_context, style_request);
+        this, style_recalc_context, before_after_request);
   }
 
   if (request.pseudo_id == kPseudoIdFirstLineInherited) {
-    style_request.pseudo_id = IsPseudoElement()
-                                  ? To<PseudoElement>(this)->GetPseudoId()
-                                  : kPseudoIdNone;
+    StyleRequest first_line_inherited_request = request;
+    first_line_inherited_request.pseudo_id =
+        IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoId()
+                          : kPseudoIdNone;
     Element* target = IsPseudoElement() ? parentElement() : this;
     scoped_refptr<ComputedStyle> result =
         GetDocument().GetStyleResolver().ResolveStyle(
-            target, style_recalc_context, style_request);
+            target, style_recalc_context, first_line_inherited_request);
     if (result)
       result->SetStyleType(kPseudoIdFirstLineInherited);
     return result;
   }
 
   return GetDocument().GetStyleResolver().ResolveStyle(
-      this, style_recalc_context, style_request);
+      this, style_recalc_context, request);
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {

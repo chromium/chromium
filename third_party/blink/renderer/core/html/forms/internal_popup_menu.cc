@@ -89,9 +89,7 @@ scoped_refptr<const ComputedStyle> StyleForHoveredScrollbarPart(
   scrollbar->SetHoveredPart(part);
   scoped_refptr<const ComputedStyle> part_style =
       element.UncachedStyleForPseudoElement(
-          PseudoElementStyleRequest(target_id, To<CustomScrollbar>(scrollbar),
-                                    part),
-          style);
+          StyleRequest(target_id, To<CustomScrollbar>(scrollbar), part, style));
   return part_style;
 }
 

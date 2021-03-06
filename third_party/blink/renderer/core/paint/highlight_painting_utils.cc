@@ -147,16 +147,14 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
   if (!element || element->IsPseudoElement())
     return nullptr;
 
-  PseudoElementStyleRequest request(pseudo);
-
   if (pseudo == kPseudoIdSelection &&
       element->GetDocument().GetStyleEngine().UsesWindowInactiveSelector() &&
       !element->GetDocument().GetPage()->GetFocusController().IsActive()) {
     // ::selection and ::selection:window-inactive styles may be different. Only
     // cache the styles for ::selection if there are no :window-inactive
     // selector, or if the page is active.
-    return element->UncachedStyleForPseudoElement(request,
-                                                  element->GetComputedStyle());
+    return element->UncachedStyleForPseudoElement(
+        StyleRequest(pseudo, element->GetComputedStyle()));
   }
 
   return element->CachedStyleForPseudoElement(pseudo);

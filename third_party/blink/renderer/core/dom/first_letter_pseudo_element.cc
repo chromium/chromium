@@ -319,8 +319,9 @@ FirstLetterPseudoElement::CustomStyleForLayoutObject(
     return nullptr;
   DCHECK(first_letter_text->Parent());
   return ParentOrShadowHostElement()->StyleForPseudoElement(
-      style_recalc_context, PseudoElementStyleRequest(GetPseudoId()),
-      first_letter_text->Parent()->FirstLineStyle());
+      style_recalc_context,
+      StyleRequest(GetPseudoId(),
+                   first_letter_text->Parent()->FirstLineStyle()));
 }
 
 void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(LayoutText* first_letter_text) {

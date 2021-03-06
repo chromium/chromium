@@ -92,9 +92,6 @@ class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
 
-// TODO(andruud): Callers should use StyleRequest directly.
-using PseudoElementStyleRequest = StyleRequest;
-
 enum VisualRectFlags {
   kDefaultVisualRectFlags = 0,
   kEdgeInclusive = 1 << 0,
@@ -1738,8 +1735,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // version), while the uncached pseudo style can inherit from any style.
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
   scoped_refptr<ComputedStyle> GetUncachedPseudoElementStyle(
-      const PseudoElementStyleRequest&,
-      const ComputedStyle* parent_style = nullptr) const;
+      const StyleRequest&) const;
 
   LayoutView* View() const {
     NOT_DESTROYED();

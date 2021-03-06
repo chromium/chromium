@@ -71,7 +71,6 @@ ElementRuleCollector::ElementRuleCollector(
       style_recalc_context_(style_recalc_context),
       selector_filter_(filter),
       style_(style),
-      pseudo_style_request_(kPseudoIdNone),
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
           selector_filter_.ParentStackIsConsistent(context.ParentNode())),

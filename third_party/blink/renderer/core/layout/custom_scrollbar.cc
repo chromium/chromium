@@ -147,7 +147,7 @@ CustomScrollbar::GetScrollbarPseudoElementStyle(ScrollbarPart part_type,
   const ComputedStyle* source_style = element->GetLayoutObject()->Style();
   scoped_refptr<const ComputedStyle> part_style =
       element->UncachedStyleForPseudoElement(
-          PseudoElementStyleRequest(pseudo_id, this, part_type), source_style);
+          StyleRequest(pseudo_id, this, part_type, source_style));
   if (!part_style)
     return nullptr;
   return source_style->AddCachedPseudoElementStyle(std::move(part_style));
