@@ -6030,27 +6030,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   constexpr bool kAllowZeroCopyImages = true;
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
-  // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
-  // Android M -- appears to work fine on R, but to avoid regressions in <video>
-  // limit to TexImage2D only for now. Fails conformance test on Nexus 5X:
-  // conformance/textures/misc/texture-corner-case-videos.html
-  //
-  // TODO(crbug.com/1181562): TexSubImage2D via the GPU path performs poorly on
-  // Linux when used with ShMem GpuMemoryBuffer backed frames. We don't have a
-  // way to differentiate between true texture backed frames and ShMem GMBs, so
-  // for now limit GPU texturing to TexImage2D.
-  const bool function_supports_gpu_teximage = function_id == kTexImage2D;
-#else
-  const bool function_supports_gpu_teximage =
-      function_id == kTexImage2D || function_id == kTexSubImage2D;
-#endif
+  // TODO(crbug.com/1182585): TexImageGPU doesn't work with VideoFrames of any
+  // type (texture, software, or GpuMemoryBuffer) for some reason. The first
+  // frame textures okay, but no subsequent frames appear.
+  const bool gpu_teximage_enabled = false;
 
-  // TODO(crbug.com/1182585): GpuMemoryBuffers don't seem to work with the GPU
-  // uploading path.
-  const bool can_upload_via_gpu =
-      function_supports_gpu_teximage && CanUseTexImageViaGPU(format, type) &&
-      source_image_rect_is_default && !media_video_frame->HasGpuMemoryBuffer();
+  const bool can_upload_via_gpu = gpu_teximage_enabled &&
+                                  CanUseTexImageViaGPU(format, type) &&
+                                  source_image_rect_is_default;
 
   // If we can upload via GPU, try to to use an accelerated resource provider
   // configured appropriately for video. Otherwise use the software cache.
