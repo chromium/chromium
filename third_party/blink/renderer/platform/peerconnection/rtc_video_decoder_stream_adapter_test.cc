@@ -169,6 +169,10 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
   }
 
   bool BasicTeardown() {
+    // Flush the media thread, to finish any in-flight decodes.  Otherwise, they
+    // will be cancelled by the call to Release().
+    task_environment_.RunUntilIdle();
+
     if (Release() != WEBRTC_VIDEO_CODEC_OK)
       return false;
     return true;
@@ -400,6 +404,25 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // Let the decodes / reset complete.
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(BasicTeardown());
+}
+
+TEST_P(RTCVideoDecoderStreamAdapterTest, WontForwardFramesAfterRelease) {
+  // Deliver frames after calling Release, and verify that it doesn't (a)
+  // crash or (b) deliver the frames.
+  auto* decoder = decoder_factory_->decoder();
+  EXPECT_TRUE(BasicSetup());
+  EXPECT_CALL(*decoder, Decode_(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+  task_environment_.RunUntilIdle();
+  // Should not be called.
+  EXPECT_CALL(decoded_cb_, Run(_)).Times(0);
+  FinishDecode(0);
+  // Note that the decode is queued at this point, but hasn't run yet on the
+  // media thread.  Release on the decoder thread, so that it should not try to
+  // forward the frame when the media thread finally runs.
+  adapter_->Release();
+  EXPECT_TRUE(BasicTeardown());
 }
 
 INSTANTIATE_TEST_SUITE_P(UseHwDecoding,

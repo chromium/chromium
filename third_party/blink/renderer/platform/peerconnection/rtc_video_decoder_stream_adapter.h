@@ -161,7 +161,6 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Decoding thread members.
   bool key_frame_required_ = true;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
-  webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
 
   // Shared members.
   mutable base::Lock lock_;
@@ -179,6 +178,9 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   bool logged_init_status_ GUARDED_BY(lock_) = false;
   // Current decoder info, as reported by GetDecoderInfo().
   webrtc::VideoDecoder::DecoderInfo decoder_info_ GUARDED_BY(lock_);
+  // Current decode callback, if any.
+  webrtc::DecodedImageCallback* decode_complete_callback_ GUARDED_BY(lock_) =
+      nullptr;
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

@@ -509,6 +509,10 @@ int32_t RTCVideoDecoderStreamAdapter::Release() {
 
   base::AutoLock auto_lock(lock_);
 
+  // We don't know how long it'll take for shutdown on the media thread to
+  // cancel our weak ptrs, so make sure that nobody sends any frames after this.
+  decode_complete_callback_ = nullptr;
+
   PostCrossThreadTask(
       *media_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(&RTCVideoDecoderStreamAdapter::ShutdownOnMediaThread,
@@ -662,13 +666,14 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
 
   // Assumes that Decoded() can be safely called with the lock held, which
   // apparently it can be because RTCVideoDecoder does the same.
-  DCHECK(decode_complete_callback_);
+
   // Since we can reset the queue length while things are in flight, just clamp
   // to zero.  We could choose to discard this frame, too, since it was before a
   // reset was issued.
   if (pending_buffer_count_ > 0)
     pending_buffer_count_--;
-  decode_complete_callback_->Decoded(rtc_frame);
+  if (decode_complete_callback_)
+    decode_complete_callback_->Decoded(rtc_frame);
   AdjustQueueLength_Locked();
 }
 
