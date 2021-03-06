@@ -5596,6 +5596,7 @@
         {
             "platforms": [
                 "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
                 "ios",
@@ -8202,26 +8203,6 @@
                         "TextfieldFocusOnTapUp",
                         "WebUITabStrip",
                         "WebUITabStripTabDragIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewFileMetricsProviderMetadata": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_10",
-                    "params": {
-                        "prev_run_metrics_count_only": "true",
-                        "send_unreported_metrics": "yes",
-                        "storage": "MappedFile"
-                    },
-                    "enable_features": [
-                        "PersistentHistograms"
                     ]
                 }
             ]
