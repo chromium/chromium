@@ -1,0 +1,33 @@
+From 67038ecd125a5ae019819bbc9bb4de21c8f27e30 Mon Sep 17 00:00:00 2001
+From: mcrouse <mcrouse@google.com>
+Date: Fri, 5 Mar 2021 15:30:53 -0800
+Subject: [PATCH] adding korean characters to ranges
+
+---
+ third_party/utf/src/runetype/isalpharune.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/third_party/utf/src/runetype/isalpharune.c b/third_party/utf/src/runetype/isalpharune.c
+index 901433d2e056..086c0a8649b5 100644
+--- a/third_party/utf/src/runetype/isalpharune.c
++++ b/third_party/utf/src/runetype/isalpharune.c
+@@ -52,8 +52,6 @@ static Rune singles[][1] = {
+ 	{ 0x9FD5 },
+ 	{ 0xA9CF },
+ 	{ 0xAA7A },
+-	{ 0xAC00 },
+-	{ 0xD7A3 },
+ 	{ 0x1083C },
+ 	{ 0x10A00 },
+ 	{ 0x11176 },
+@@ -349,6 +347,7 @@ static Rune ranges[][2] = {
+ 	{ 0xAB30, 0xAB5A },
+ 	{ 0xAB5C, 0xAB65 },
+ 	{ 0xAB70, 0xABE2 },
++	{ 0xAC00, 0xD7A3 },
+ 	{ 0xD7B0, 0xD7C6 },
+ 	{ 0xD7CB, 0xD7FB },
+ 	{ 0xF900, 0xFA6D },
+-- 
+2.30.1.766.gb4fecdf3b7-goog
+
