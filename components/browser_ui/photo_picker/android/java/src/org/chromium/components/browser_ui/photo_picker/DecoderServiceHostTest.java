@@ -204,7 +204,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     public void testDecodingOrder() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
-        host.bind(mContext);
+        host.bind();
         waitForDecoder();
 
         String video1 = "noogler.mp4";
@@ -261,7 +261,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals("0:00", mLastVideoDuration);
         Assert.assertEquals(10, mLastFrameCount);
 
-        host.unbind(mContext);
+        host.unbind();
     }
 
     @Test
@@ -269,7 +269,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     public void testDecodingOrderNoAnimationSupported() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ false);
-        host.bind(mContext);
+        host.bind();
         waitForDecoder();
 
         String video1 = "noogler.mp4";
@@ -322,7 +322,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals("0:00", mLastVideoDuration);
         Assert.assertEquals(1, mLastFrameCount);
 
-        host.unbind(mContext);
+        host.unbind();
     }
 
     @Test
@@ -330,7 +330,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     public void testDecodingSizes() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
-        host.bind(mContext);
+        host.bind();
         waitForDecoder();
 
         String video1 = "noogler.mp4"; // 1920 x 1080 video.
@@ -402,7 +402,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals(2000, mLastInitialFrame.getWidth());
         Assert.assertEquals(1125, mLastInitialFrame.getHeight());
 
-        host.unbind(mContext);
+        host.unbind();
     }
 
     @Test
@@ -410,7 +410,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     public void testCancelation() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
-        host.bind(mContext);
+        host.bind();
         waitForDecoder();
 
         String green = "green100x100.jpg";
@@ -439,7 +439,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         waitForThumbnailDecode();
         Assert.assertEquals(yellowPath, mLastDecodedPath);
 
-        host.unbind(mContext);
+        host.unbind();
     }
 
     @Test
@@ -462,7 +462,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     public void testFileNotFoundFailureMode() throws Throwable {
         DecoderServiceHost host =
                 new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
-        host.bind(mContext);
+        host.bind();
         waitForDecoder();
 
         // Try decoding a file that doesn't exist.
@@ -472,6 +472,6 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         Assert.assertEquals(noPath, mLastDecodedPath);
         Assert.assertEquals(null, mLastInitialFrame);
 
-        host.unbind(mContext);
+        host.unbind();
     }
 }
