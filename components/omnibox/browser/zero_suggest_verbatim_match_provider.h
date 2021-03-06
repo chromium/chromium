@@ -4,6 +4,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_VERBATIM_MATCH_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_VERBATIM_MATCH_PROVIDER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
@@ -26,7 +27,7 @@ class ZeroSuggestVerbatimMatchProvider : public AutocompleteProvider {
 
  private:
   ~ZeroSuggestVerbatimMatchProvider() override;
-  AutocompleteProviderClient* const client_{nullptr};
+  const CheckedPtr<AutocompleteProviderClient> client_{nullptr};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_VERBATIM_MATCH_PROVIDER_H_

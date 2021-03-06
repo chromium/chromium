@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
@@ -118,7 +119,7 @@ class BASE_EXPORT ProcessIterator {
   DIR* procfs_dir_;
 #endif
   ProcessEntry entry_;
-  const ProcessFilter* filter_;
+  CheckedPtr<const ProcessFilter> filter_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessIterator);
 };

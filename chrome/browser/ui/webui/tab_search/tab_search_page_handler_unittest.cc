@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
@@ -93,14 +94,14 @@ class TestTabSearchPageHandler : public TabSearchPageHandler {
             web_ui,
             webui_controller) {
     mock_debounce_timer_ = new base::MockRetainingOneShotTimer();
-    SetTimerForTesting(base::WrapUnique(mock_debounce_timer_));
+    SetTimerForTesting(base::WrapUnique(mock_debounce_timer_.get()));
   }
   base::MockRetainingOneShotTimer* mock_debounce_timer() {
     return mock_debounce_timer_;
   }
 
  private:
-  base::MockRetainingOneShotTimer* mock_debounce_timer_;
+  CheckedPtr<base::MockRetainingOneShotTimer> mock_debounce_timer_;
 };
 
 class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
@@ -187,7 +188,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<content::WebContents> web_contents_;
   content::TestWebUI web_ui_;
-  Profile* profile2_;
+  CheckedPtr<Profile> profile2_;
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<Browser> browser3_;
   std::unique_ptr<Browser> browser4_;

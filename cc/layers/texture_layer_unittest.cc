@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -1362,8 +1363,8 @@ class SoftwareLayerTreeHostClient : public StubLayerTreeHostClient {
   FakeLayerTreeFrameSink* frame_sink() const { return frame_sink_; }
 
  private:
-  FakeLayerTreeFrameSink* frame_sink_ = nullptr;
-  LayerTreeHost* host_ = nullptr;
+  CheckedPtr<FakeLayerTreeFrameSink> frame_sink_ = nullptr;
+  CheckedPtr<LayerTreeHost> host_ = nullptr;
 };
 
 class SoftwareTextureLayerTest : public LayerTreeTest {
@@ -1416,7 +1417,7 @@ class SoftwareTextureLayerTest : public LayerTreeTest {
   scoped_refptr<Layer> root_;
   scoped_refptr<SolidColorLayer> solid_color_layer_;
   scoped_refptr<TextureLayer> texture_layer_;
-  TestLayerTreeFrameSink* frame_sink_ = nullptr;
+  CheckedPtr<TestLayerTreeFrameSink> frame_sink_ = nullptr;
   int num_frame_sinks_created_ = 0;
 };
 
@@ -1896,7 +1897,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
   scoped_refptr<CrossThreadSharedBitmap> bitmap_;
   // Keeps a pointer value of the first frame sink, which will be removed
   // from the host and destroyed.
-  void* first_frame_sink_;
+  CheckedPtr<void> first_frame_sink_;
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(SoftwareTextureLayerLoseFrameSinkTest);

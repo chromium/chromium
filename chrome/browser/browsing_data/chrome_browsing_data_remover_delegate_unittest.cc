@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -365,7 +366,7 @@ class RemoveSafeBrowsingCookieTester : public RemoveCookieTester {
   }
 
  private:
-  TestingBrowserProcess* browser_process_;
+  CheckedPtr<TestingBrowserProcess> browser_process_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveSafeBrowsingCookieTester);
 };
@@ -409,7 +410,7 @@ class RemoveHistoryTester {
 
  private:
   // TestingProfile owns the history service; we shouldn't delete it.
-  history::HistoryService* history_service_ = nullptr;
+  CheckedPtr<history::HistoryService> history_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveHistoryTester);
 };
@@ -492,8 +493,8 @@ class RemoveFaviconTester {
   base::OnceClosure quit_closure_;
 
   // Owned by TestingProfile.
-  history::HistoryService* history_service_ = nullptr;
-  favicon::FaviconService* favicon_service_ = nullptr;
+  CheckedPtr<history::HistoryService> history_service_ = nullptr;
+  CheckedPtr<favicon::FaviconService> favicon_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveFaviconTester);
 };
@@ -594,8 +595,8 @@ class RemovePasswordsTester {
   }
 
  private:
-  password_manager::MockPasswordStore* profile_store_;
-  password_manager::MockPasswordStore* account_store_;
+  CheckedPtr<password_manager::MockPasswordStore> profile_store_;
+  CheckedPtr<password_manager::MockPasswordStore> account_store_;
   password_manager::MockPasswordSyncMetadataStore account_metadata_store_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovePasswordsTester);
@@ -632,7 +633,7 @@ class RemovePermissionPromptCountsTest {
   }
 
  private:
-  permissions::PermissionDecisionAutoBlocker* autoblocker_;
+  CheckedPtr<permissions::PermissionDecisionAutoBlocker> autoblocker_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovePermissionPromptCountsTest);
 };
@@ -709,7 +710,7 @@ class RemoveDownloadsTester {
   explicit RemoveDownloadsTester(TestingProfile* testing_profile)
       : download_manager_(new content::MockDownloadManager()) {
     content::BrowserContext::SetDownloadManagerForTesting(
-        testing_profile, base::WrapUnique(download_manager_));
+        testing_profile, base::WrapUnique(download_manager_.get()));
     std::unique_ptr<ChromeDownloadManagerDelegate> delegate =
         std::make_unique<ChromeDownloadManagerDelegate>(testing_profile);
     chrome_download_manager_delegate_ = delegate.get();
@@ -729,9 +730,10 @@ class RemoveDownloadsTester {
   content::MockDownloadManager* download_manager() { return download_manager_; }
 
  private:
-  DownloadCoreService* service_;
-  content::MockDownloadManager* download_manager_;  // Owned by testing profile.
-  ChromeDownloadManagerDelegate* chrome_download_manager_delegate_;
+  CheckedPtr<DownloadCoreService> service_;
+  CheckedPtr<content::MockDownloadManager>
+      download_manager_;  // Owned by testing profile.
+  CheckedPtr<ChromeDownloadManagerDelegate> chrome_download_manager_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveDownloadsTester);
 };
@@ -843,7 +845,7 @@ class RemoveAutofillTester {
     base::RunLoop().Run();
   }
 
-  autofill::PersonalDataManager* personal_data_manager_;
+  CheckedPtr<autofill::PersonalDataManager> personal_data_manager_;
   PersonalDataLoadedObserverMock personal_data_observer_;
   DISALLOW_COPY_AND_ASSIGN(RemoveAutofillTester);
 };
@@ -939,7 +941,7 @@ class StrikeDatabaseTester {
   }
 
  private:
-  autofill::StrikeDatabase* strike_database_;
+  CheckedPtr<autofill::StrikeDatabase> strike_database_;
 };
 
 }  // namespace autofill
@@ -964,9 +966,9 @@ class ClearReportingCacheTester {
   const MockReportingService& mock() { return *service_; }
 
  private:
-  net::URLRequestContext* url_request_context_;
+  CheckedPtr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<MockReportingService> service_;
-  net::ReportingService* old_service_;
+  CheckedPtr<net::ReportingService> old_service_;
 };
 
 class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
@@ -1035,7 +1037,7 @@ class ClearNetworkErrorLoggingTester {
   const MockNetworkErrorLoggingService& mock() { return *service_; }
 
  private:
-  net::URLRequestContext* url_request_context_;
+  CheckedPtr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<MockNetworkErrorLoggingService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(ClearNetworkErrorLoggingTester);
@@ -1203,7 +1205,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
  private:
   // Cached pointer to BrowsingDataRemover for access to testing methods.
-  content::BrowsingDataRemover* remover_;
+  CheckedPtr<content::BrowsingDataRemover> remover_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -110,7 +111,7 @@ class ProfileInfoHandlerTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<TestProfileInfoHandler> handler_;
 };
 

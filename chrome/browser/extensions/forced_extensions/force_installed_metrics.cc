@@ -297,7 +297,7 @@ ForceInstalledMetrics::ForceInstalledMetrics(
   if (tracker_->IsDoneLoading())
     OnForceInstalledExtensionsLoaded();
   else
-    tracker_observer_.Add(tracker_);
+    tracker_observer_.Add(tracker_.get());
 }
 
 ForceInstalledMetrics::~ForceInstalledMetrics() = default;

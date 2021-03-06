@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "extensions/common/extension_id.h"
@@ -81,7 +82,7 @@ class ExtensionSettingsOverriddenDialog
   const Params params_;
 
   // The profile associated with the controller.
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_H_

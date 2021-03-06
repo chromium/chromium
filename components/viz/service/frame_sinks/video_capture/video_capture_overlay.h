@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -159,7 +160,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   // re-rendering the overlay.
   gfx::Rect ComputeSourceMutationRect() const;
 
-  FrameSource* const frame_source_;
+  const CheckedPtr<FrameSource> frame_source_;
 
   mojo::Receiver<mojom::FrameSinkVideoCaptureOverlay> receiver_;
 

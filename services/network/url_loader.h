@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -249,7 +250,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     URLLoader* get() const { return pointer_; }
 
    private:
-    URLLoader* const pointer_;
+    const CheckedPtr<URLLoader> pointer_;
 
     DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };

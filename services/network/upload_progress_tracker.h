@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -53,7 +54,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UploadProgressTracker {
 
   void ReportUploadProgressIfNeeded();
 
-  net::URLRequest* request_;  // Not owned.
+  CheckedPtr<net::URLRequest> request_;  // Not owned.
 
   uint64_t last_upload_position_ = 0;
   bool waiting_for_upload_progress_ack_ = false;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/common/user_script.h"
 
 namespace base {
@@ -34,9 +35,9 @@ class ExtensionUserScriptLoader;
 class ContentAction {
  public:
   struct ApplyInfo {
-    const Extension* extension;
-    content::BrowserContext* browser_context;
-    content::WebContents* tab;
+    CheckedPtr<const Extension> extension;
+    CheckedPtr<content::BrowserContext> browser_context;
+    CheckedPtr<content::WebContents> tab;
     int priority;
   };
 
@@ -103,7 +104,7 @@ class RequestContentScript : public ContentAction {
                                      const Extension* extension) const;
 
   UserScript script_;
-  ExtensionUserScriptLoader* script_loader_ = nullptr;
+  CheckedPtr<ExtensionUserScriptLoader> script_loader_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RequestContentScript);
 };

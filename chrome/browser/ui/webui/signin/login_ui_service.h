@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
@@ -112,7 +113,7 @@ class LoginUIService : public KeyedService {
   // Weak pointers to the recently opened UIs, with the most recent in front.
   std::list<LoginUI*> ui_list_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 #endif
 
   // List of observers.

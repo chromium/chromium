@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile_window.h"
 
 #include <stddef.h>
@@ -152,7 +153,7 @@ class ProfileWindowCountBrowserTest
  private:
   bool is_incognito_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {

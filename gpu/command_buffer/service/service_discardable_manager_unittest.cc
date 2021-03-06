@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/service_discardable_manager.h"
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_mock.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
@@ -128,7 +129,7 @@ class ServiceDiscardableManagerTest : public GpuServiceTest {
   GpuPreferences gpu_preferences_;
   scoped_refptr<FeatureInfo> feature_info_;
   MockDestructionObserver destruction_observer_;
-  TextureManager* texture_manager_;
+  CheckedPtr<TextureManager> texture_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
   FakeDecoderClient client_;
   std::unique_ptr<MockGLES2Decoder> decoder_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_SYNC_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -77,8 +78,8 @@ class ProfileCustomizationBubbleSyncController
   void ApplyDefaultColorAndShowBubble();
   void SkipBubble();
 
-  syncer::SyncService* const sync_service_;
-  ThemeService* const theme_service_;
+  const CheckedPtr<syncer::SyncService> sync_service_;
+  const CheckedPtr<ThemeService> theme_service_;
   base::OnceCallback<void(bool)> show_bubble_callback_;
   SkColor const suggested_profile_color_;
   base::TimeTicks observation_start_time_;

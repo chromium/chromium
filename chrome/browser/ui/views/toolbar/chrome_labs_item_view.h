@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_ITEM_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/flags_ui/feature_entry.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -38,7 +39,7 @@ class ChromeLabsItemView : public views::View {
   // Combobox with selected state of the lab.
   views::Combobox* lab_state_combobox_;
 
-  const flags_ui::FeatureEntry* feature_entry_;
+  CheckedPtr<const flags_ui::FeatureEntry> feature_entry_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_ITEM_VIEW_H_

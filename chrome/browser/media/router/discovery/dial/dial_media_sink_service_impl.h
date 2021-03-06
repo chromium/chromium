@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
@@ -170,10 +171,10 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   std::unique_ptr<DialAppDiscoveryService> app_discovery_service_;
 
   // Raw pointer to DialRegistry singleton.
-  DialRegistry* dial_registry_ = nullptr;
+  CheckedPtr<DialRegistry> dial_registry_ = nullptr;
 
   // DialRegistry for unit test.
-  DialRegistry* test_dial_registry_ = nullptr;
+  CheckedPtr<DialRegistry> test_dial_registry_ = nullptr;
 
   // Device data list from current round of discovery.
   DialRegistry::DeviceList current_devices_;

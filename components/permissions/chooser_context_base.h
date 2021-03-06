@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
@@ -145,7 +146,7 @@ class ChooserContextBase : public KeyedService {
                          const url::Origin& embedding_origin,
                          base::Value value);
 
-  HostContentSettingsMap* const host_content_settings_map_;
+  const CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
 };
 
 }  // namespace permissions

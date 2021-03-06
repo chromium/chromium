@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -218,7 +219,7 @@ class Shell : public WebContentsDelegate,
   std::unique_ptr<WebContents> web_contents_;
 
   std::unique_ptr<DevToolsWebContentsObserver> devtools_observer_;
-  ShellDevToolsFrontend* devtools_frontend_ = nullptr;
+  CheckedPtr<ShellDevToolsFrontend> devtools_frontend_ = nullptr;
 
   bool is_fullscreen_ = false;
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
@@ -131,13 +132,13 @@ class OmahaWnd : public CAxDialogImpl<OmahaWnd>,
 
   THREAD_CHECKER(thread_checker_);
 
-  WTL::CMessageLoop* message_loop_;
+  CheckedPtr<WTL::CMessageLoop> message_loop_;
   HWND parent_;
 
   bool is_complete_;
   bool is_close_enabled_;
 
-  OmahaWndEvents* events_sink_;
+  CheckedPtr<OmahaWndEvents> events_sink_;
 
   UpdaterScope scope_;
   base::string16 bundle_name_;

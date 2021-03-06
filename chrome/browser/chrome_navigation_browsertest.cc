@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1123,7 +1124,7 @@ class WillProcessResponseObserver : public content::WebContentsObserver {
     }
 
    private:
-    bool* will_process_response_called_;
+    CheckedPtr<bool> will_process_response_called_;
     NavigationThrottle::ThrottleCheckResult WillProcessResponse() override {
       *will_process_response_called_ = true;
       return NavigationThrottle::PROCEED;

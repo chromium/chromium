@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
@@ -40,7 +41,7 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void SelectAt();
 
   // The tabbed pane to be tested.
-  TabbedPane* tabbed_pane_;
+  CheckedPtr<TabbedPane> tabbed_pane_;
 };
 
 }  // namespace examples

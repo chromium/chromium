@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
@@ -94,7 +95,7 @@ class ShippingAddressEditorViewController : public EditorViewController {
     EditorField field_;
 
     // Raw pointer back to the owner of this class, therefore will not be null.
-    ShippingAddressEditorViewController* controller_;
+    CheckedPtr<ShippingAddressEditorViewController> controller_;
 
     DISALLOW_COPY_AND_ASSIGN(ShippingAddressValidationDelegate);
   };

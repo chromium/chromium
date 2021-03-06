@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/prefs/pref_notifier.h"
@@ -71,7 +72,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   virtual void FireObservers(const std::string& path);
 
   // Weak reference; the notifier is owned by the PrefService.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   PrefObserverMap pref_observers_;
   PrefInitObserverList init_observers_;

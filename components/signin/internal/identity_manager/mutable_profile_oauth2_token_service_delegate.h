@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -219,9 +220,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   net::BackoffEntry backoff_entry_;
   GoogleServiceAuthError backoff_error_;
 
-  SigninClient* client_;
-  AccountTrackerService* account_tracker_service_;
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  CheckedPtr<SigninClient> client_;
+  CheckedPtr<AccountTrackerService> account_tracker_service_;
+  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
   scoped_refptr<TokenWebData> token_web_data_;
   signin::AccountConsistencyMethod account_consistency_;
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
@@ -71,7 +72,7 @@ class PolicyProvider : public ObservableProvider {
 
   OriginIdentifierValueMap value_map_;
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

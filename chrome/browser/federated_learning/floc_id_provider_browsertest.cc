@@ -4,6 +4,7 @@
 
 #include "chrome/browser/federated_learning/floc_id_provider_impl.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -491,7 +492,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Owned by the floc id provider.
-  MockFlocEventLogger* floc_event_logger_ = nullptr;
+  CheckedPtr<MockFlocEventLogger> floc_event_logger_ = nullptr;
 
   base::ScopedTempDir scoped_temp_dir_;
   int next_unique_file_suffix_ = 1;

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/chooser_controller/fake_bluetooth_chooser_controller.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
@@ -76,12 +77,12 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   }
 
  protected:
-  ChooserDialogView* dialog_ = nullptr;
-  FakeBluetoothChooserController* controller_ = nullptr;
+  CheckedPtr<ChooserDialogView> dialog_ = nullptr;
+  CheckedPtr<FakeBluetoothChooserController> controller_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  views::Widget* widget_ = nullptr;
+  CheckedPtr<views::Widget> widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserDialogViewTest);
 };

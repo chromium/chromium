@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +116,7 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     }
 
     base::RepeatingClosure next_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    CheckedPtr<safe_browsing::ArchiveAnalyzerResults> results_;
 
     DISALLOW_COPY_AND_ASSIGN(ResultsGetter);
   };

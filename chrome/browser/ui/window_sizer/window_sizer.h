@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -155,7 +156,7 @@ class WindowSizer {
   std::unique_ptr<StateProvider> state_provider_;
 
   // Note that this browser handle might be NULL.
-  const Browser* const browser_;
+  const CheckedPtr<const Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowSizer);
 };

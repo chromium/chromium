@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
 #include "ui/views/views_export.h"
@@ -64,12 +65,12 @@ class VIEWS_EXPORT AXTreeSourceViews
 
  private:
   // The top-level object to use for the AX tree. See class comment.
-  AXAuraObjWrapper* const root_ = nullptr;
+  const CheckedPtr<AXAuraObjWrapper> root_ = nullptr;
 
   // ID to use for the AX tree.
   const ui::AXTreeID tree_id_;
 
-  views::AXAuraObjCache* cache_;
+  CheckedPtr<views::AXAuraObjCache> cache_;
 };
 
 }  // namespace views

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/permission_controller_delegate.h"
 
 namespace content {
@@ -55,7 +56,7 @@ class HeadlessPermissionManager : public content::PermissionControllerDelegate {
   void UnsubscribePermissionStatusChange(int subscription_id) override;
 
  private:
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessPermissionManager);
 };

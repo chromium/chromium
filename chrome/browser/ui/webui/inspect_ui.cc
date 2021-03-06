@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -107,7 +108,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void HandleTCPDiscoveryConfigCommand(const base::ListValue* args);
   void HandleOpenNodeFrontendCommand(const base::ListValue* args);
 
-  InspectUI* const inspect_ui_;
+  const CheckedPtr<InspectUI> inspect_ui_;
 
   DISALLOW_COPY_AND_ASSIGN(InspectMessageHandler);
 };

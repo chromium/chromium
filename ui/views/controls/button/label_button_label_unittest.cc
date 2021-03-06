@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme_base.h"
 #include "ui/views/test/views_test_base.h"
@@ -49,7 +50,7 @@ class TestLabel : public internal::LabelButtonLabel {
   }
 
  private:
-  SkColor* last_color_;
+  CheckedPtr<SkColor> last_color_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLabel);
 };
@@ -77,7 +78,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
  protected:
   SkColor last_color_ = gfx::kPlaceholderColor;
   std::unique_ptr<views::Widget> widget_;
-  TestLabel* label_;
+  CheckedPtr<TestLabel> label_;
   TestNativeTheme theme1_;
   TestNativeTheme theme2_;
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_SELECTION_DIALOG_VIEW_IMPL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -38,7 +39,7 @@ class VirtualCardSelectionDialogViewImpl
   base::string16 GetWindowTitle() const override;
 
  private:
-  VirtualCardSelectionDialogController* controller_ = nullptr;
+  CheckedPtr<VirtualCardSelectionDialogController> controller_ = nullptr;
 };
 
 }  // namespace autofill

@@ -6,6 +6,7 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -368,7 +369,7 @@ class WrappedSkImageRepresentationSkia : public SharedImageRepresentationSkia {
     return static_cast<WrappedSkImage*>(backing());
   }
 
-  SkSurface* write_surface_ = nullptr;
+  CheckedPtr<SkSurface> write_surface_ = nullptr;
 };
 
 class WrappedSkImageRepresentationMemory

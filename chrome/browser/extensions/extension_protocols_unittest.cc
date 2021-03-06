@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -380,7 +381,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
   const ukm::SourceIdObj test_ukm_id_;
 
   // |power_monitor_source_| is owned by the global PowerMonitor.
-  base::PowerMonitorTestSource* power_monitor_source_ = nullptr;
+  CheckedPtr<base::PowerMonitorTestSource> power_monitor_source_ = nullptr;
 };
 
 class ExtensionProtocolsTest : public ExtensionProtocolsTestBase {

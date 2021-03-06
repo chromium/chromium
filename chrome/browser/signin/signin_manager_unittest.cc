@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/signin/signin_manager.h"
 
+#include "base/memory/checked_ptr.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -41,7 +42,7 @@ class FakeIdentityManagerObserver : public IdentityManager::Observer {
   void Reset() { events_.clear(); }
 
  private:
-  IdentityManager* identity_manager_;
+  CheckedPtr<IdentityManager> identity_manager_;
   std::vector<PrimaryAccountChangeEvent> events_;
 };
 }  // namespace

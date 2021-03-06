@@ -9,6 +9,7 @@
 #include <list>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
@@ -75,7 +76,7 @@ class FakeServerSocket : public net::ServerSocket {
 
   net::IPEndPoint local_address_;
 
-  std::unique_ptr<net::StreamSocket>* accept_socket_;
+  CheckedPtr<std::unique_ptr<net::StreamSocket>> accept_socket_;
   net::CompletionOnceCallback accept_callback_;
 
   std::list<net::StreamSocket*> incoming_sockets_;
@@ -119,7 +120,7 @@ class P2PSocketTcpServerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  FakeServerSocket* socket_;  // Owned by |p2p_socket_|.
+  CheckedPtr<FakeServerSocket> socket_;  // Owned by |p2p_socket_|.
   std::unique_ptr<FakeSocketClient> fake_client_;
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<P2PSocketTcpServer> p2p_socket_;

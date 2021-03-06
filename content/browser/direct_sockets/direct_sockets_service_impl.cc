@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -263,7 +264,7 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
   bool is_raw_address_ = false;
 
   const ProtocolType protocol_;
-  network::mojom::NetworkContext* const network_context_;
+  const CheckedPtr<network::mojom::NetworkContext> network_context_;
   blink::mojom::DirectSocketOptionsPtr options_;
 
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;

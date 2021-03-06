@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -227,7 +228,7 @@ class TabHoverCardController::EventSniffer : public ui::EventHandler,
   }
 
  private:
-  TabHoverCardController* const controller_;
+  const CheckedPtr<TabHoverCardController> controller_;
   OwnerView owner_view_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
@@ -433,7 +434,7 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_ = new TabHoverCardBubbleView(tab);
-  hover_card_observation_.Observe(hover_card_);
+  hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
   slide_progressed_subscription_ = slide_animator_->AddSlideProgressedCallback(

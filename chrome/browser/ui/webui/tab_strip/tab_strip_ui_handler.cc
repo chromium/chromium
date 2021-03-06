@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -110,8 +111,8 @@ class WebUIBackgroundContextMenu : public ui::SimpleMenuModel::Delegate,
   }
 
  private:
-  Browser* const browser_;
-  const ui::AcceleratorProvider* const accelerator_provider_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<const ui::AcceleratorProvider> accelerator_provider_;
 };
 
 class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
@@ -147,8 +148,8 @@ class WebUITabContextMenu : public ui::SimpleMenuModel::Delegate,
   }
 
  private:
-  Browser* const browser_;
-  const ui::AcceleratorProvider* const accelerator_provider_;
+  const CheckedPtr<Browser> browser_;
+  const CheckedPtr<const ui::AcceleratorProvider> accelerator_provider_;
   const int tab_index_;
 };
 
@@ -620,7 +621,7 @@ void TabStripUIHandler::HandleMoveGroup(const base::ListValue* args) {
     to_index = browser_->tab_strip_model()->count();
   }
 
-  auto* target_browser = browser_;
+  auto* target_browser = browser_.get();
   Browser* source_browser =
       tab_strip_ui::GetBrowserWithGroupId(browser_->profile(), group_id_string);
   if (!source_browser) {

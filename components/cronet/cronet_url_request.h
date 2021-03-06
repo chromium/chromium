@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "net/base/idempotency.h"
@@ -298,7 +299,7 @@ class CronetURLRequest {
     DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
   };
 
-  CronetURLRequestContext* context_;
+  CheckedPtr<CronetURLRequestContext> context_;
   // |network_tasks_| is invoked on network thread.
   NetworkTasks network_tasks_;
 

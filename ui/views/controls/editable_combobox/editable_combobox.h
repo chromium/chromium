@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -149,8 +150,8 @@ class VIEWS_EXPORT EditableCombobox
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
                                   bool is_animating) override;
 
-  Textfield* textfield_;
-  Button* arrow_ = nullptr;
+  CheckedPtr<Textfield> textfield_;
+  CheckedPtr<Button> arrow_ = nullptr;
   std::unique_ptr<ui::ComboboxModel> combobox_model_;
 
   // The EditableComboboxMenuModel used by |menu_runner_|.

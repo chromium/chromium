@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 
 namespace syncer {
@@ -82,7 +83,7 @@ class AutofillProfileSyncDifferenceTracker {
   bool InitializeLocalOnlyEntriesIfNeeded();
 
   // The table for reading local data.
-  AutofillTable* const table_;
+  const CheckedPtr<AutofillTable> table_;
 
   // This class loads local data from |table_| lazily. This field tracks if that
   // has happened or not yet.

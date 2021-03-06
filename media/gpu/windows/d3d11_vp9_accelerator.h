@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/memory/checked_ptr.h"
 #include "media/base/media_log.h"
 #include "media/base/status_codes.h"
 #include "media/gpu/vp9_decoder.h"
@@ -73,8 +74,8 @@ class D3D11VP9Accelerator : public VP9Decoder::VP9Accelerator {
 
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
 
-  D3D11VideoDecoderClient* client_;
-  MediaLog* const media_log_;
+  CheckedPtr<D3D11VideoDecoderClient> client_;
+  const CheckedPtr<MediaLog> media_log_;
   UINT status_feedback_;
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;

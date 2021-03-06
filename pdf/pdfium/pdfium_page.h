@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "pdf/page_orientation.h"
@@ -223,7 +224,7 @@ class PDFiumPage {
     ~ScopedUnloadPreventer();
 
    private:
-    PDFiumPage* const page_;
+    const CheckedPtr<PDFiumPage> page_;
   };
 
   struct Link {
@@ -401,7 +402,7 @@ class PDFiumPage {
   void GenerateAndSendThumbnail(float device_pixel_ratio,
                                 SendThumbnailCallback send_callback);
 
-  PDFiumEngine* engine_;
+  CheckedPtr<PDFiumEngine> engine_;
   ScopedFPDFPage page_;
   ScopedFPDFTextPage text_page_;
   int index_;

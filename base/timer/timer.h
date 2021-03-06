@@ -68,6 +68,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker_impl.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -183,7 +184,7 @@ class BASE_EXPORT TimerBase {
 
   // When non-null, the |scheduled_task_| was posted to call RunScheduledTask()
   // at |scheduled_run_time_|.
-  BaseTimerTaskInternal* scheduled_task_;
+  CheckedPtr<BaseTimerTaskInternal> scheduled_task_;
 
   // Location in user code.
   Location posted_from_;
@@ -204,7 +205,7 @@ class BASE_EXPORT TimerBase {
   TimeTicks desired_run_time_;
 
   // The tick clock used to calculate the run time for scheduled tasks.
-  const TickClock* const tick_clock_;
+  const CheckedPtr<const TickClock> tick_clock_;
 
   // If true, |user_task_| is scheduled to run sometime in the future.
   bool is_running_;

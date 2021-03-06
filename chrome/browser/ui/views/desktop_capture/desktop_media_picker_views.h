@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
@@ -78,15 +79,15 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
-  content::WebContents* const web_contents_;
+  const CheckedPtr<content::WebContents> web_contents_;
 
-  DesktopMediaPickerViews* parent_;
+  CheckedPtr<DesktopMediaPickerViews> parent_;
 
-  views::Label* description_label_ = nullptr;
+  CheckedPtr<views::Label> description_label_ = nullptr;
 
-  views::Checkbox* audio_share_checkbox_ = nullptr;
+  CheckedPtr<views::Checkbox> audio_share_checkbox_ = nullptr;
 
-  views::TabbedPane* tabbed_pane_ = nullptr;
+  CheckedPtr<views::TabbedPane> tabbed_pane_ = nullptr;
   std::vector<std::unique_ptr<DesktopMediaListController>> list_controllers_;
   std::vector<DesktopMediaList::Type> source_types_;
 
@@ -132,7 +133,7 @@ class DesktopMediaPickerViews : public DesktopMediaPicker {
   // The |dialog_| is owned by the corresponding views::Widget instance.
   // When DesktopMediaPickerViews is destroyed the |dialog_| is destroyed
   // asynchronously by closing the widget.
-  DesktopMediaPickerDialogView* dialog_;
+  CheckedPtr<DesktopMediaPickerDialogView> dialog_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_H_

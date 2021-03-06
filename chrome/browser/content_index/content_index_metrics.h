@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTENT_INDEX_CONTENT_INDEX_METRICS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/mojom/content_index/content_index.mojom.h"
 
 namespace content {
@@ -41,7 +42,7 @@ class ContentIndexMetrics {
   static void RecordContentIndexEntries(size_t num_entries);
 
  private:
-  ukm::UkmBackgroundRecorderService* ukm_background_service_;
+  CheckedPtr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentIndexMetrics);
 };

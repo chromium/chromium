@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
@@ -60,7 +61,7 @@ class AuthenticatorSheetModelBase
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
  private:
-  AuthenticatorRequestDialogModel* dialog_model_;
+  CheckedPtr<AuthenticatorRequestDialogModel> dialog_model_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorSheetModelBase);
 };

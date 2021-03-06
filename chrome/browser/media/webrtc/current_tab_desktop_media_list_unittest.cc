@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -170,7 +171,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   ScopedTestingLocalState local_state_;
 
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<Browser> browser_;
 
   StrictMock<MockObserver> observer_;

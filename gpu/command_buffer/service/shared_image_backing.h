@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -235,7 +236,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const uint32_t usage_;
   const size_t estimated_size_;
 
-  SharedImageFactory* factory_ = nullptr;
+  CheckedPtr<SharedImageFactory> factory_ = nullptr;
 
   // Bound to the thread on which the backing is created. The |factory_|
   // can only be used from this thread.

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/examples/example_base.h"
 
@@ -28,10 +29,10 @@ class VIEWS_EXAMPLES_EXPORT ScrollViewExample : public ExampleBase {
   void ButtonPressed(gfx::Rect bounds, SkColor from, SkColor to);
 
   // The content of the scroll view.
-  ScrollableView* scrollable_;
+  CheckedPtr<ScrollableView> scrollable_;
 
   // The scroll view to test.
-  ScrollView* scroll_view_;
+  CheckedPtr<ScrollView> scroll_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollViewExample);
 };
