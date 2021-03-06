@@ -6046,9 +6046,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       function_id == kTexImage2D || function_id == kTexSubImage2D;
 #endif
 
-  const bool can_upload_via_gpu = function_supports_gpu_teximage &&
-                                  CanUseTexImageViaGPU(format, type) &&
-                                  source_image_rect_is_default;
+  // TODO(crbug.com/1182585): GpuMemoryBuffers don't seem to work with the GPU
+  // uploading path.
+  const bool can_upload_via_gpu =
+      function_supports_gpu_teximage && CanUseTexImageViaGPU(format, type) &&
+      source_image_rect_is_default && !media_video_frame->HasGpuMemoryBuffer();
 
   // If we can upload via GPU, try to to use an accelerated resource provider
   // configured appropriately for video. Otherwise use the software cache.

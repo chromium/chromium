@@ -129,7 +129,10 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
   task_environment_.RunUntilIdle();
 }
 
-TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameGpuMemoryBufferFrame) {
+// TODO(crbug.com/1183572): Re-enable this test once we can map GpuMemoryBuffers
+// again.
+TEST(VideoFrameImageUtilTest,
+     DISABLED_CreateImageFromVideoFrameGpuMemoryBufferFrame) {
   base::test::SingleThreadTaskEnvironment task_environment_;
   auto cpu_frame = CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
                                    media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
