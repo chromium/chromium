@@ -90,7 +90,6 @@ js_library("control_panel.m") {
   ]
   deps = [
     ":repeat_button.m",
-    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/foreground/elements:files_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
@@ -121,7 +120,6 @@ js_library("track_info_panel.m") {
     "$root_gen_dir/ui/file_manager/audio_player/elements/track_info_panel.m.js",
   ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
@@ -142,7 +140,6 @@ js_library("track_list.m") {
   sources =
       [ "$root_gen_dir/ui/file_manager/audio_player/elements/track_list.m.js" ]
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
     "//third_party/polymer/v3_0/components-chromium/paper-ripple:paper-ripple",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
