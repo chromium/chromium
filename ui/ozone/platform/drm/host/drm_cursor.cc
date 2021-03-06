@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -29,7 +30,7 @@ class NullProxy : public DrmCursorProxy {
   void CursorSet(gfx::AcceleratedWidget window,
                  const std::vector<SkBitmap>& bitmaps,
                  const gfx::Point& point,
-                 int frame_delay_ms) override {}
+                 base::TimeDelta frame_delay) override {}
   void Move(gfx::AcceleratedWidget window, const gfx::Point& point) override {}
   void InitializeOnEvdevIfNecessary() override {}
 
@@ -244,11 +245,12 @@ void DrmCursor::SendCursorShowLocked() {
     return;
   }
   CursorSetLockTested(window_, bitmap_->bitmaps(), GetBitmapLocationLocked(),
-                      bitmap_->frame_delay_ms());
+                      bitmap_->frame_delay());
 }
 
 void DrmCursor::SendCursorHideLocked() {
-  CursorSetLockTested(window_, std::vector<SkBitmap>(), gfx::Point(), 0);
+  CursorSetLockTested(window_, std::vector<SkBitmap>(), gfx::Point(),
+                      base::TimeDelta());
 }
 
 void DrmCursor::SendCursorMoveLocked() {
@@ -261,9 +263,9 @@ void DrmCursor::SendCursorMoveLocked() {
 void DrmCursor::CursorSetLockTested(gfx::AcceleratedWidget window,
                                     const std::vector<SkBitmap>& bitmaps,
                                     const gfx::Point& point,
-                                    int frame_delay_ms) {
+                                    base::TimeDelta frame_delay) {
   lock_.AssertAcquired();
-  proxy_->CursorSet(window, bitmaps, point, frame_delay_ms);
+  proxy_->CursorSet(window, bitmaps, point, frame_delay);
 }
 
 void DrmCursor::MoveLockTested(gfx::AcceleratedWidget window,

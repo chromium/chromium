@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
@@ -277,10 +278,9 @@ void DrmThread::SetWindowBounds(gfx::AcceleratedWidget widget,
 void DrmThread::SetCursor(gfx::AcceleratedWidget widget,
                           const std::vector<SkBitmap>& bitmaps,
                           const gfx::Point& location,
-                          int32_t frame_delay_ms) {
+                          base::TimeDelta frame_delay) {
   TRACE_EVENT0("drm", "DrmThread::SetCursor");
-  screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location,
-                                                frame_delay_ms);
+  screen_manager_->GetWindow(widget)->SetCursor(bitmaps, location, frame_delay);
 }
 
 void DrmThread::MoveCursor(gfx::AcceleratedWidget widget,

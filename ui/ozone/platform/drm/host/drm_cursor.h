@@ -14,6 +14,10 @@
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace ui {
 class BitmapCursorOzone;
 class DrmWindowHostManager;
@@ -25,11 +29,11 @@ class DrmCursorProxy {
  public:
   virtual ~DrmCursorProxy() {}
 
-  // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay_ms|.
+  // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay|.
   virtual void CursorSet(gfx::AcceleratedWidget window,
                          const std::vector<SkBitmap>& bitmaps,
                          const gfx::Point& point,
-                         int frame_delay_ms) = 0;
+                         base::TimeDelta frame_delay) = 0;
   // Moves the cursor in |window| to |point|.
   virtual void Move(gfx::AcceleratedWidget window, const gfx::Point& point) = 0;
 
@@ -83,7 +87,7 @@ class DrmCursor : public CursorDelegateEvdev {
   void CursorSetLockTested(gfx::AcceleratedWidget window,
                            const std::vector<SkBitmap>& bitmaps,
                            const gfx::Point& point,
-                           int frame_delay_ms);
+                           base::TimeDelta frame_delay);
   void MoveLockTested(gfx::AcceleratedWidget window, const gfx::Point& point);
 
   // The mutex synchronizing this object.

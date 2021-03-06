@@ -51,7 +51,7 @@ PlatformCursor CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
-    int frame_delay_ms) {
+    base::TimeDelta frame_delay) {
   NOTIMPLEMENTED();
   return 0;
 }

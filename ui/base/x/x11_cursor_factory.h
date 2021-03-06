@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
                                       const std::vector<SkBitmap>& bitmaps,
                                       const gfx::Point& hotspot,
-                                      int frame_delay_ms) override;
+                                      base::TimeDelta frame_delay) override;
   void RefImageCursor(PlatformCursor cursor) override;
   void UnrefImageCursor(PlatformCursor cursor) override;
   void ObserveThemeChanges() override;

@@ -4,6 +4,7 @@
 
 module ui.ozone.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
@@ -12,12 +13,11 @@ import "ui/gfx/mojom/accelerated_widget.mojom";
 // where functionality equivalent to the DrmCursorProxy is exposed by a
 // dedicated thread within the Ozone platform.
 interface DeviceCursor {
-  // Sets the cursor |bitmaps| on |window| at |point| with
-  // |frame_delay_ms|.
+  // Sets the cursor |bitmaps| on |window| at |point| with |frame_delay|.
   SetCursor(gfx.mojom.AcceleratedWidget window,
             array<skia.mojom.BitmapN32> bitmaps,
             gfx.mojom.Point point,
-            int32 frame_delay_ms);
+            mojo_base.mojom.TimeDelta frame_delay);
 
   // Moves the cursor in |window| to |point|.
   MoveCursor(gfx.mojom.AcceleratedWidget window, gfx.mojom.Point point);

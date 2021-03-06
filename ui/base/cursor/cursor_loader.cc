@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -23,7 +24,8 @@ namespace {
 constexpr mojom::CursorType kAnimatedCursorTypes[] = {
     mojom::CursorType::kWait, mojom::CursorType::kProgress};
 
-const int kAnimatedCursorFrameDelayMs = 25;
+constexpr base::TimeDelta kAnimatedCursorFrameDelay =
+    base::TimeDelta::FromMilliseconds(25);
 
 }  // namespace
 
@@ -83,7 +85,7 @@ void CursorLoader::LoadImageCursor(mojom::CursorType type,
     GetAnimatedCursorBitmaps(resource_id, scale(), rotation(), &hotspot,
                              &bitmaps);
     image_cursors_[type] = factory_->CreateAnimatedCursor(
-        type, bitmaps, hotspot, kAnimatedCursorFrameDelayMs);
+        type, bitmaps, hotspot, kAnimatedCursorFrameDelay);
   }
 }
 

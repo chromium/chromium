@@ -71,11 +71,11 @@ PlatformCursor X11CursorFactory::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
-    int frame_delay_ms) {
+    base::TimeDelta frame_delay) {
   std::vector<XCursorLoader::Image> images;
   images.reserve(bitmaps.size());
   for (const auto& bitmap : bitmaps)
-    images.push_back(XCursorLoader::Image{bitmap, hotspot, frame_delay_ms});
+    images.push_back(XCursorLoader::Image{bitmap, hotspot, frame_delay});
   auto cursor = cursor_loader_->CreateCursor(images);
   cursor->AddRef();
   return ToPlatformCursor(cursor.get());

@@ -175,7 +175,7 @@ class DrmThread : public base::Thread,
   void SetCursor(gfx::AcceleratedWidget widget,
                  const std::vector<SkBitmap>& bitmaps,
                  const gfx::Point& location,
-                 int32_t frame_delay_ms) override;
+                 base::TimeDelta frame_delay) override;
   void MoveCursor(gfx::AcceleratedWidget widget,
                   const gfx::Point& location) override;
 

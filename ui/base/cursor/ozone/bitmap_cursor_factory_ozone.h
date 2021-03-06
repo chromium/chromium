@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
@@ -35,7 +36,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   BitmapCursorOzone(mojom::CursorType type,
                     const std::vector<SkBitmap>& bitmaps,
                     const gfx::Point& hotspot,
-                    int frame_delay_ms);
+                    base::TimeDelta frame_delay);
 
   // Creates a cursor with external storage.
   BitmapCursorOzone(mojom::CursorType type, void* platform_data);
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
 
   // For animated cursors.
   const std::vector<SkBitmap>& bitmaps();
-  int frame_delay_ms();
+  base::TimeDelta frame_delay();
 
   // For theme cursors.
   void* platform_data() { return platform_data_; }
@@ -58,7 +59,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorOzone
   const mojom::CursorType type_;
   std::vector<SkBitmap> bitmaps_;
   gfx::Point hotspot_;
-  int frame_delay_ms_;
+  base::TimeDelta frame_delay_;
 
   // Platform cursor data.  Having this non-nullptr means that this cursor
   // is supplied by the platform.
@@ -90,7 +91,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) BitmapCursorFactoryOzone
   PlatformCursor CreateAnimatedCursor(mojom::CursorType type,
                                       const std::vector<SkBitmap>& bitmaps,
                                       const gfx::Point& hotspot,
-                                      int frame_delay_ms) override;
+                                      base::TimeDelta frame_delay) override;
   void RefImageCursor(PlatformCursor cursor) override;
   void UnrefImageCursor(PlatformCursor cursor) override;
 

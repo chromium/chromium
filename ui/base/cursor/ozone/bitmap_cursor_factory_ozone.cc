@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
@@ -89,13 +91,12 @@ PlatformCursor ToPlatformCursor(BitmapCursorOzone* cursor) {
 
 }  // namespace
 
-BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type)
-    : type_(type), frame_delay_ms_(0) {}
+BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type) : type_(type) {}
 
 BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
                                      const SkBitmap& bitmap,
                                      const gfx::Point& hotspot)
-    : type_(type), hotspot_(hotspot), frame_delay_ms_(0) {
+    : type_(type), hotspot_(hotspot) {
   if (!bitmap.isNull())
     bitmaps_.push_back(bitmap);
 }
@@ -103,13 +104,13 @@ BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
 BitmapCursorOzone::BitmapCursorOzone(mojom::CursorType type,
                                      const std::vector<SkBitmap>& bitmaps,
                                      const gfx::Point& hotspot,
-                                     int frame_delay_ms)
+                                     base::TimeDelta frame_delay)
     : type_(type),
       bitmaps_(bitmaps),
       hotspot_(hotspot),
-      frame_delay_ms_(frame_delay_ms) {
+      frame_delay_(frame_delay) {
   DCHECK_LT(0U, bitmaps.size());
-  DCHECK_LE(0, frame_delay_ms);
+  DCHECK_LE(base::TimeDelta(), frame_delay);
   // No null bitmap should be in the list. Blank cursors should just be an empty
   // vector.
   DCHECK(std::find_if(bitmaps_.begin(), bitmaps_.end(),
@@ -135,8 +136,8 @@ const std::vector<SkBitmap>& BitmapCursorOzone::bitmaps() {
   return bitmaps_;
 }
 
-int BitmapCursorOzone::frame_delay_ms() {
-  return frame_delay_ms_;
+base::TimeDelta BitmapCursorOzone::frame_delay() {
+  return frame_delay_;
 }
 
 BitmapCursorFactoryOzone::BitmapCursorFactoryOzone() {}
@@ -178,12 +179,12 @@ PlatformCursor BitmapCursorFactoryOzone::CreateAnimatedCursor(
     mojom::CursorType type,
     const std::vector<SkBitmap>& bitmaps,
     const gfx::Point& hotspot,
-    int frame_delay_ms) {
+    base::TimeDelta frame_delay) {
   DCHECK_LT(0U, bitmaps.size());
-  BitmapCursorOzone* cursor =
-      new BitmapCursorOzone(type, bitmaps, hotspot, frame_delay_ms);
+  auto cursor = base::MakeRefCounted<BitmapCursorOzone>(type, bitmaps, hotspot,
+                                                        frame_delay);
   cursor->AddRef();  // Balanced by UnrefImageCursor.
-  return ToPlatformCursor(cursor);
+  return ToPlatformCursor(cursor.get());
 }
 
 void BitmapCursorFactoryOzone::RefImageCursor(PlatformCursor cursor) {
