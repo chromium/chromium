@@ -5198,21 +5198,20 @@ bool Element::PseudoElementStylesDependOnFontMetrics() const {
   return false;
 }
 
-const ComputedStyle* Element::CachedStyleForPseudoElement(
-    const PseudoElementStyleRequest& request) {
+const ComputedStyle* Element::CachedStyleForPseudoElement(PseudoId pseudo_id) {
   const ComputedStyle* style = GetComputedStyle();
 
-  if (!style || (request.pseudo_id < kFirstInternalPseudoId &&
-                 !style->HasPseudoElementStyle(request.pseudo_id))) {
+  if (!style || (pseudo_id < kFirstInternalPseudoId &&
+                 !style->HasPseudoElementStyle(pseudo_id))) {
     return nullptr;
   }
 
   if (const ComputedStyle* cached =
-          style->GetCachedPseudoElementStyle(request.pseudo_id))
+          style->GetCachedPseudoElementStyle(pseudo_id))
     return cached;
 
   scoped_refptr<ComputedStyle> result =
-      UncachedStyleForPseudoElement(request, style);
+      UncachedStyleForPseudoElement(StyleRequest(pseudo_id), style);
   if (result)
     return style->AddCachedPseudoElementStyle(std::move(result));
   return nullptr;

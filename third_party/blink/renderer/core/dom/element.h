@@ -732,10 +732,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool PseudoElementStylesDependOnFontMetrics() const;
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
-  // PseudoElementStyleRequest from cache, calculating the ComputedStyle
-  // on-demand if it's missing from the cache.
-  const ComputedStyle* CachedStyleForPseudoElement(
-      const PseudoElementStyleRequest&);
+  // PseudoId from cache, calculating the ComputedStyle on-demand if it's
+  // missing from the cache.
+  const ComputedStyle* CachedStyleForPseudoElement(PseudoId);
 
   // Calculate the ComputedStyle corresponding to the provided
   // PseudoElementStyleRequest, bypassing the pseudo style cache.

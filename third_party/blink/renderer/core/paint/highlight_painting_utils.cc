@@ -159,7 +159,7 @@ scoped_refptr<const ComputedStyle> HighlightPseudoStyle(Node* node,
                                                   element->GetComputedStyle());
   }
 
-  return element->CachedStyleForPseudoElement(request);
+  return element->CachedStyleForPseudoElement(pseudo);
 }
 
 Color HighlightColor(const Document& document,
