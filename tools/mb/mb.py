@@ -98,6 +98,7 @@ class MetaBuildWrapper(object):
     self.isolate_exe = 'isolate.exe' if self.platform.startswith(
         'win') else 'isolate'
     self.use_luci_auth = False
+    self.rts_out_dir = self.PathJoin('gen', 'rts')
 
   def Main(self, args):
     self.ParseArgs(args)
@@ -280,6 +281,10 @@ class MetaBuildWrapper(object):
     subp.set_defaults(func=self.CmdIsolateEverything)
     subp.add_argument('path',
                       help='path build was generated into')
+    subp.add_argument('--use-rts',
+                      action='store_true',
+                      default=False,
+                      help='whether or not to use regression test selection')
 
     subp = subps.add_parser('isolate',
                             description='Generate the .isolate files for a '
@@ -463,7 +468,7 @@ class MetaBuildWrapper(object):
     args = [
        exe, 'select',
       '-model-dir', self.PathJoin(self.chromium_src_dir, 'testing', 'rts'), \
-      '-out', self.PathJoin(self.args.path, 'gen', 'rts'),
+      '-out', self.PathJoin(self.ToAbsPath(self.args.path), self.rts_out_dir),
       '-checkout', self.chromium_src_dir,
     ]
     if self.args.rts_target_change_recall:
@@ -473,8 +478,8 @@ class MetaBuildWrapper(object):
             'rts-target-change-recall must be between (0 and 1]', None)
       args += ['-target-change-recall', str(self.args.rts_target_change_recall)]
 
-    _, _, err = self.Run(args, force_verbose=False)
-    if err:
+    ret, _, _ = self.Run(args, force_verbose=True)
+    if ret != 0:
       self.WriteFailureAndRaise(err, None)
 
   def CmdGen(self):
@@ -1236,6 +1241,16 @@ class MetaBuildWrapper(object):
 
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
+
+      # For more info about RTS, please see
+      # //docs/testing/regression-test-selection.md
+      if self.args.use_rts:
+        filter_file = target + '.filter'
+        filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+        if self.Exists(self.ToAbsPath(build_dir, filter_file_path)):
+          runtime_deps.append(filter_file_path)
+          command.append('--test-launcher-filter-file=%s' % filter_file_path)
+          self.Print('added rts filter file to isolate: %s' % filter_file)
 
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
