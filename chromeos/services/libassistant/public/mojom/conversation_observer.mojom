@@ -34,6 +34,10 @@ interface ConversationObserver{
   // Assistant received suggestions response from Libassistant.
   OnSuggestionsResponse(array<AssistantSuggestion> suggestions);
 
+  // Assistant got open URL response from server. If |in_background| is true,
+  // the url will be opened in the background without closing the Assistant UI.
+  OnOpenUrlResponse(url.mojom.Url url, bool in_background);
+
   // Libassistant is removing the notification with the given id.
   OnNotificationRemoved(string id);
 

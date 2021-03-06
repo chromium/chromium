@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   void OnTextResponse(const std::string& response) override {}
   void OnSuggestionsResponse(
       const std::vector<AssistantSuggestion>& suggestions) override {}
+  void OnOpenUrlResponse(const GURL& url, bool in_background) override {}
   void OnNotificationRemoved(const std::string& id) override {}
   void OnAllNotificationsRemoved() override {}
 

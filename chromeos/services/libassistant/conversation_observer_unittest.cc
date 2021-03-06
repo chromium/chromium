@@ -46,6 +46,11 @@ class CrosActionModuleHelper {
       observer->OnShowSuggestions(suggestions);
   }
 
+  void OpenUrl(const std::string& url, bool in_background) {
+    for (auto* observer : action_observers())
+      observer->OnOpenUrl(url, in_background);
+  }
+
  private:
   const std::vector<assistant::action::AssistantActionObserver*>&
   action_observers() {
@@ -80,6 +85,7 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   MOCK_METHOD(void,
               OnSuggestionsResponse,
               (const std::vector<assistant::AssistantSuggestion>& suggestions));
+  MOCK_METHOD(void, OnOpenUrlResponse, (const GURL& url, bool in_background));
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -201,6 +207,15 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
           }));
 
   action_module_helper().ShowSuggestions(fake_suggestions);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnOpenUrlResponse) {
+  const std::string fake_url = "https://fake-url/";
+  EXPECT_CALL(observer_mock(),
+              OnOpenUrlResponse(GURL(fake_url), /*in_background=*/false));
+
+  action_module_helper().OpenUrl(fake_url, /*in_background=*/false);
   observer_mock().FlushForTesting();
 }
 

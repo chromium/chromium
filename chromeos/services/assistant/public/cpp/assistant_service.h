@@ -38,10 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
       const AssistantInteractionSubscriber&) = delete;
   ~AssistantInteractionSubscriber() override = default;
 
-  // Assistant got open URL response from server. |in_background| refers to
-  // being in background of Assistant UI, not in background of browser.
-  virtual void OnOpenUrlResponse(const GURL& url, bool in_background) {}
-
   // Assistant got open Android app response from server. Returns if the app is
   // opened.
   virtual bool OnOpenAppResponse(const AndroidAppInfo& app_info);

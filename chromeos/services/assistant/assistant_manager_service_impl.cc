@@ -515,6 +515,11 @@ void AssistantManagerServiceImpl::OnTextResponse(const std::string& reponse) {
   receive_inline_response_ = true;
 }
 
+void AssistantManagerServiceImpl::OnOpenUrlResponse(const GURL& url,
+                                                    bool in_background) {
+  receive_url_response_ = url.spec();
+}
+
 void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnScheduleWait, id, time_ms);
   DCHECK(features::IsWaitSchedulingEnabled());
@@ -537,18 +542,6 @@ void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
   // Notify subscribers that a wait has been started.
   for (auto& it : interaction_subscribers_)
     it.OnWaitStarted();
-}
-
-void AssistantManagerServiceImpl::OnOpenUrl(const std::string& url,
-                                            bool is_background) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnOpenUrl, url,
-                     is_background);
-
-  receive_url_response_ = url;
-  const GURL gurl = GURL(url);
-
-  for (auto& it : interaction_subscribers_)
-    it.OnOpenUrlResponse(gurl, is_background);
 }
 
 void AssistantManagerServiceImpl::OnShowNotification(

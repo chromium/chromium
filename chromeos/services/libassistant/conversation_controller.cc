@@ -340,6 +340,15 @@ void ConversationController::OnShowSuggestions(
     observer->OnSuggestionsResponse(ToAssistantSuggestion(suggestions));
 }
 
+// Called from Libassistant thread.
+void ConversationController::OnOpenUrl(const std::string& url,
+                                       bool in_background) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnOpenUrl, url, in_background);
+
+  for (auto& observer : observers_)
+    observer->OnOpenUrlResponse(GURL(url), in_background);
+}
+
 void ConversationController::SendVoicelessInteraction(
     const std::string& interaction,
     const std::string& description,
