@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 class PrefRegistrySimple;
@@ -69,7 +68,7 @@ class NtpOverriddenBubbleDelegate
       bool acknowledge_existing_extensions);
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The ID of the extension we are showing the bubble for.
   std::string extension_id_;

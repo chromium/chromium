@@ -5,7 +5,6 @@
 #include "components/performance_manager/public/freezing/freezing.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
@@ -43,7 +42,7 @@ class FreezingVoteTokenPMImpl : public PageNode::ObserverDefaultImpl {
   // Resets this instance so it is no longer casting a vote for |page_node_|.
   void Reset();
 
-  CheckedPtr<const PageNode> page_node_ = nullptr;
+  const PageNode* page_node_ = nullptr;
 
   base::ScopedObservation<Graph,
                           PageNodeObserver,

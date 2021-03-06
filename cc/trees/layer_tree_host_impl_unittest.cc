@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
@@ -5365,8 +5364,8 @@ class LayerTreeHostImplTestMultiScrollable
   }
 
   void ResetScrollbars() {
-    GetEffectNode(scrollbar_1_.get())->opacity = 0;
-    GetEffectNode(scrollbar_2_.get())->opacity = 0;
+    GetEffectNode(scrollbar_1_)->opacity = 0;
+    GetEffectNode(scrollbar_2_)->opacity = 0;
     UpdateDrawProperties(host_impl_->active_tree());
 
     if (is_aura_scrollbar_)
@@ -5374,8 +5373,8 @@ class LayerTreeHostImplTestMultiScrollable
   }
 
   bool is_aura_scrollbar_;
-  CheckedPtr<SolidColorScrollbarLayerImpl> scrollbar_1_;
-  CheckedPtr<SolidColorScrollbarLayerImpl> scrollbar_2_;
+  SolidColorScrollbarLayerImpl* scrollbar_1_;
+  SolidColorScrollbarLayerImpl* scrollbar_2_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -10310,10 +10309,10 @@ class BlendStateCheckLayer : public LayerImpl {
   }
 
  private:
-  CheckedPtr<viz::ClientResourceProvider> resource_provider_;
+  viz::ClientResourceProvider* resource_provider_;
   bool blend_;
   bool has_render_surface_;
-  CheckedPtr<LayerImpl> comparison_layer_;
+  LayerImpl* comparison_layer_;
   bool quads_appended_;
   gfx::Rect quad_rect_;
   gfx::Rect opaque_content_rect_;
@@ -10744,7 +10743,7 @@ class LayerTreeHostImplViewportCoveredTest : public LayerTreeHostImplTest {
   viz::DrawQuad::Material gutter_quad_material_;
   gfx::Size gutter_texture_size_;
   gfx::Size viewport_size_;
-  CheckedPtr<BlendStateCheckLayer> child_;
+  BlendStateCheckLayer* child_;
   bool did_activate_pending_tree_;
 };
 
@@ -11426,7 +11425,7 @@ class LayerTreeHostImplTestPrepareTiles : public LayerTreeHostImplTest {
     host_impl_->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
   }
 
-  CheckedPtr<FakeLayerTreeHostImpl> fake_host_impl_;
+  FakeLayerTreeHostImpl* fake_host_impl_;
 };
 
 TEST_F(LayerTreeHostImplTestPrepareTiles, PrepareTilesWhenInvisible) {
@@ -11885,8 +11884,8 @@ class SimpleSwapPromiseMonitor : public SwapPromiseMonitor {
   void OnSetNeedsRedrawOnImpl() override { (*set_needs_redraw_count_)++; }
 
  private:
-  CheckedPtr<int> set_needs_commit_count_;
-  CheckedPtr<int> set_needs_redraw_count_;
+  int* set_needs_commit_count_;
+  int* set_needs_redraw_count_;
 };
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
@@ -17745,7 +17744,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
   void TestUncompositedScrollingState(bool mutates_transform_tree);
 
  private:
-  CheckedPtr<LayerImpl> scroller_layer_ = nullptr;
+  LayerImpl* scroller_layer_ = nullptr;
 
   base::TimeTicks cur_time_;
   viz::BeginFrameArgs begin_frame_args_;

@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "ipc/ipc_sender.h"
@@ -76,7 +75,7 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
       mojo::ScopedInterfaceEndpointHandle handle);
 
   // The channel to which this filter was added.
-  CheckedPtr<Channel> channel_;
+  Channel* channel_;
 
   // The process's main thread.
   scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner_;
@@ -93,7 +92,7 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   // Locks data members above.
   base::Lock lock_;
 
-  const CheckedPtr<base::WaitableEvent> shutdown_event_;
+  base::WaitableEvent* const shutdown_event_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncMessageFilter);
 };

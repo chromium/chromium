@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_WEB_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -50,7 +49,7 @@ class DownloadShelfWebView : public DownloadShelf,
   bool IsShowing() const override;
   bool IsClosing() const override;
 
-  CheckedPtr<BrowserView> parent_;
+  BrowserView* parent_;
 
   // The show/hide animation for the shelf itself.
   gfx::SlideAnimation shelf_animation_{this};

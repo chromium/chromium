@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/cloud_print.mojom.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,7 +34,7 @@ class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
   void GetPrinters(GetPrintersCallback callback) override;
   void DisableCloudPrintProxy() override;
 
-  CheckedPtr<CloudPrintProxy::Provider> proxy_provider_;  // Owned by our owner.
+  CloudPrintProxy::Provider* proxy_provider_;  // Owned by our owner.
 
   DISALLOW_COPY_AND_ASSIGN(CloudPrintMessageHandler);
 };

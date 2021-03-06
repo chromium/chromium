@@ -5,7 +5,6 @@
 #ifndef UI_AURA_TEST_DEFAULT_EVENT_GENERATOR_DELEGATE_H_
 #define UI_AURA_TEST_DEFAULT_EVENT_GENERATOR_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/test/event_generator_delegate_aura.h"
 
 namespace aura {
@@ -23,7 +22,7 @@ class DefaultEventGeneratorDelegate : public EventGeneratorDelegateAura {
       const Window* window) const override;
 
  private:
-  CheckedPtr<Window> root_window_;
+  Window* root_window_;
 
   DISALLOW_COPY_AND_ASSIGN(DefaultEventGeneratorDelegate);
 };

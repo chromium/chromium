@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "net/ssl/ssl_info.h"
@@ -105,7 +104,7 @@ class CertReportHelper {
   // Handles reports of invalid SSL certificates.
   std::unique_ptr<SSLCertReporter> ssl_cert_reporter_;
   // The WebContents for which this helper sends reports.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   // The URL for which this helper sends reports.
   const GURL request_url_;
   // The SSLInfo used in this helper's report.
@@ -118,7 +117,7 @@ class CertReportHelper {
   // The time at which the interstitial was constructed.
   const base::Time interstitial_time_;
   // Helpful for recording metrics about cert reports.
-  CheckedPtr<security_interstitials::MetricsHelper> metrics_helper_;
+  security_interstitials::MetricsHelper* metrics_helper_;
   // Appends additional details to a report.
   ClientDetailsCallback client_details_callback_;
   // Default to DID_NOT_PROCEED. If no user action is processed via

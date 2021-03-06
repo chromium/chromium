@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "extensions/test/extension_test_notification_observer.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -52,7 +51,7 @@ class ExtensionTestNotificationObserver::NotificationSet::
     owner_->WebContentsDestroyed(web_contents());
   }
 
-  CheckedPtr<ExtensionTestNotificationObserver::NotificationSet> owner_;
+  ExtensionTestNotificationObserver::NotificationSet* owner_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

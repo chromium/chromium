@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
@@ -73,7 +72,7 @@ class SaveAddressProfileBubbleControllerImpl
   // accepts.
   AutofillProfile address_profile_;
 
-  CheckedPtr<AutofillBubbleBase> edit_dialog_ = nullptr;
+  AutofillBubbleBase* edit_dialog_ = nullptr;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address

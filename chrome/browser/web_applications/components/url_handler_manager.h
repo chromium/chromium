@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 class Profile;
@@ -43,8 +42,8 @@ class UrlHandlerManager {
   AppRegistrar* registrar() const { return registrar_; }
 
  private:
-  const CheckedPtr<Profile> profile_;
-  CheckedPtr<AppRegistrar> registrar_;
+  Profile* const profile_;
+  AppRegistrar* registrar_;
 };
 
 }  // namespace web_app

@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -268,9 +267,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // Interface used for drawing. Common among different draw modes.
   sk_sp<SkSurface> root_surface_;
-  CheckedPtr<SkCanvas> root_canvas_ = nullptr;
-  CheckedPtr<SkCanvas> current_canvas_ = nullptr;
-  CheckedPtr<SkSurface> current_surface_ = nullptr;
+  SkCanvas* root_canvas_ = nullptr;
+  SkCanvas* current_canvas_ = nullptr;
+  SkSurface* current_surface_ = nullptr;
   class FrameResourceFence;
   scoped_refptr<FrameResourceFence> current_frame_resource_fence_;
 
@@ -301,7 +300,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   std::vector<SkMatrix> batched_cdt_matrices_;
 
   // Specific for SkDDL.
-  const CheckedPtr<SkiaOutputSurface> skia_output_surface_ = nullptr;
+  SkiaOutputSurface* const skia_output_surface_ = nullptr;
 
   // Lock set for resources that are used for the current frame. All resources
   // in this set will be unlocked with a sync token when the frame is done in

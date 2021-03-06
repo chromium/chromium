@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
 #include <wrl/client.h>
@@ -80,7 +79,7 @@ class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
   AXPlatformNodeDelegate* GetParentNodeDelegate() const;
 
   gfx::AcceleratedWidget widget_;
-  const CheckedPtr<AXFragmentRootDelegateWin> delegate_;
+  AXFragmentRootDelegateWin* const delegate_;
   Microsoft::WRL::ComPtr<ui::AXFragmentRootPlatformNodeWin> platform_node_;
   ui::AXUniqueId unique_id_;
 };

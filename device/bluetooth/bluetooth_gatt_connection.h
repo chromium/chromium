@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {
@@ -62,7 +61,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattConnection {
 
   // Bluetooth address of the underlying device.
   std::string device_address_;
-  CheckedPtr<BluetoothDevice> device_ = nullptr;
+  BluetoothDevice* device_ = nullptr;
 
  private:
   bool owns_reference_for_connection_ = false;

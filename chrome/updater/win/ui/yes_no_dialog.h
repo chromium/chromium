@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
@@ -59,7 +58,7 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   LRESULT OnClose(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
   LRESULT OnNCDestroy(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
 
-  CheckedPtr<WTL::CMessageLoop> message_loop_;
+  WTL::CMessageLoop* message_loop_;
   HWND parent_;
   bool yes_clicked_;
 

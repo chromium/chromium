@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace bookmarks {
@@ -28,8 +27,8 @@ class BookmarkLocalChangesBuilder {
   syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries) const;
 
  private:
-  const CheckedPtr<SyncedBookmarkTracker> bookmark_tracker_;
-  const CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
+  SyncedBookmarkTracker* const bookmark_tracker_;
+  bookmarks::BookmarkModel* const bookmark_model_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkLocalChangesBuilder);
 };

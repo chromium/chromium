@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_PAGE_IMPL_H_
 #define WEBLAYER_BROWSER_PAGE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "weblayer/public/page.h"
@@ -33,7 +32,7 @@ class PageImpl : public Page,
   friend class content::RenderDocumentHostUserData<PageImpl>;
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
-  CheckedPtr<content::RenderFrameHost> rfh_;
+  content::RenderFrameHost* rfh_;
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_page_;

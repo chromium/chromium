@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
@@ -54,7 +53,7 @@ class AppInfoHeaderPanel : public AppInfoPanel,
   bool CanShowAppInWebStore() const;
 
   // UI elements on the dialog. Elements are nullptr if they are not displayed.
-  CheckedPtr<views::ImageView> app_icon_view_ = nullptr;
+  views::ImageView* app_icon_view_ = nullptr;
 
   std::unique_ptr<extensions::ChromeAppIcon> app_icon_;
 

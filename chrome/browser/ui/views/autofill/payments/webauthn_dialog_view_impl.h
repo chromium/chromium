@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_VIEW_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_model_observer.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -49,13 +48,13 @@ class WebauthnDialogViewImpl : public WebauthnDialogView,
   // Re-inits dialog content and resizes.
   void RefreshContent();
 
-  CheckedPtr<WebauthnDialogController> controller_ = nullptr;
+  WebauthnDialogController* controller_ = nullptr;
 
-  CheckedPtr<AuthenticatorRequestSheetView> sheet_view_ = nullptr;
+  AuthenticatorRequestSheetView* sheet_view_ = nullptr;
 
   // Dialog model owned by |sheet_view_|. Since this dialog owns the
   // |sheet_view_|, the model_ will always be valid.
-  CheckedPtr<WebauthnDialogModel> model_ = nullptr;
+  WebauthnDialogModel* model_ = nullptr;
 };
 
 }  // namespace autofill

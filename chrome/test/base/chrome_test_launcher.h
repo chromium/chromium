@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/test/test_launcher.h"
 
@@ -79,7 +78,7 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
   std::unique_ptr<ScopedFirewallRules> firewall_rules_;
 #endif
 
-  CheckedPtr<ChromeTestSuiteRunner> runner_;
+  ChromeTestSuiteRunner* runner_;
 };
 
 // Launches Chrome browser tests. |parallel_jobs| is number of test jobs to be

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_CONVERSION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_CONVERSIONS_CONVERSION_INTERNALS_HANDLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/conversions/conversion_internals.mojom.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -46,7 +45,7 @@ class ConversionInternalsHandlerImpl
       std::unique_ptr<ConversionManager::Provider> manager_provider);
 
  private:
-  CheckedPtr<WebUI> web_ui_;
+  WebUI* web_ui_;
   std::unique_ptr<ConversionManager::Provider> manager_provider_;
 
   mojo::Receiver<::mojom::ConversionInternalsHandler> receiver_;

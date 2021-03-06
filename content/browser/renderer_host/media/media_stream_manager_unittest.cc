@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -163,7 +162,7 @@ class TestBrowserClient : public ContentBrowserClient {
   MediaObserver* GetMediaObserver() override { return media_observer_; }
 
  private:
-  CheckedPtr<MediaObserver> media_observer_;
+  MediaObserver* media_observer_;
 };
 
 class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
@@ -388,7 +387,7 @@ class MediaStreamManagerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  CheckedPtr<MockVideoCaptureProvider> video_capture_provider_;
+  MockVideoCaptureProvider* video_capture_provider_;
   base::RunLoop run_loop_;
 
  private:

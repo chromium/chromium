@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 #define CHROME_SERVICES_SPEECH_SODA_SODA_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_native_library.h"
 #include "chrome/services/speech/soda/soda_async_impl.h"
 
@@ -51,7 +50,7 @@ class SodaClient {
   SodaStartFunction soda_start_func_;
 
   // An opaque handle to the SODA async instance.
-  CheckedPtr<void> soda_async_handle_;
+  void* soda_async_handle_;
 
   bool is_initialized_;
   int sample_rate_;

@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -76,8 +75,8 @@ class CONTENT_EXPORT PermissionServiceContext : public WebContentsObserver {
 
   void CloseBindings(RenderFrameHost* render_frame_host);
 
-  const CheckedPtr<RenderFrameHost> render_frame_host_;
-  const CheckedPtr<RenderProcessHost> render_process_host_;
+  RenderFrameHost* const render_frame_host_;
+  RenderProcessHost* const render_process_host_;
   mojo::UniqueReceiverSet<blink::mojom::PermissionService> services_;
   std::unordered_map<int, std::unique_ptr<PermissionSubscription>>
       subscriptions_;

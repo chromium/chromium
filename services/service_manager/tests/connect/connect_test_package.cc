@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
@@ -187,7 +186,7 @@ class ProvidedService : public Service,
     }
   }
 
-  CheckedPtr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
   service_manager::ServiceReceiver service_receiver_{this};
   const std::string title_;
   mojo::PendingReceiver<mojom::Service> receiver_;

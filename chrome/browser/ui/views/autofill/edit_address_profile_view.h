@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_EDIT_ADDRESS_PROFILE_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -33,7 +32,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
   void WindowClosing() override;
 
  private:
-  CheckedPtr<SaveAddressProfileBubbleController> controller_;
+  SaveAddressProfileBubbleController* controller_;
 };
 
 }  // namespace autofill

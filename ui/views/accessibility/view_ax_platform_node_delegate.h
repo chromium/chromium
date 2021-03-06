@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
@@ -149,7 +148,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
 
   // We own this, but it is reference-counted on some platforms so we can't use
   // a unique_ptr. It is destroyed in the destructor.
-  CheckedPtr<ui::AXPlatformNode> ax_platform_node_ = nullptr;
+  ui::AXPlatformNode* ax_platform_node_ = nullptr;
 
   mutable ui::AXNodeData data_;
 };

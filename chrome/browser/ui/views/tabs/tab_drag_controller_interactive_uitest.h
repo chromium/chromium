@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "url/url_constants.h"
 
@@ -53,7 +52,7 @@ class TabDragControllerTest : public InProcessBrowserTest {
   void SetWindowFinderForTabStrip(TabStrip* tab_strip,
                                   std::unique_ptr<WindowFinder> window_finder);
 
-  CheckedPtr<const BrowserList> browser_list;
+  const BrowserList* browser_list;
 
  protected:
   void HandleGestureEvent(TabStrip* tab_strip, ui::GestureEvent* event);

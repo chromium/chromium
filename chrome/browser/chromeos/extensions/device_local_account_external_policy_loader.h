@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
@@ -72,7 +71,7 @@ class DeviceLocalAccountExternalPolicyLoader
   // the |external_cache_|.
   void UpdateExtensionListFromStore();
 
-  CheckedPtr<policy::CloudPolicyStore> store_;
+  policy::CloudPolicyStore* store_;
   const base::FilePath cache_dir_;
   std::unique_ptr<ExternalCache> external_cache_;
   std::unique_ptr<base::DictionaryValue> prefs_;

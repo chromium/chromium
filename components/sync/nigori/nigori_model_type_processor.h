@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -81,7 +80,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
 
   // The bridge owns this processor instance so the pointer should never become
   // invalid.
-  CheckedPtr<NigoriSyncBridge> bridge_;
+  NigoriSyncBridge* bridge_;
 
   // The model type metadata (progress marker, initial sync done, etc).
   sync_pb::ModelTypeState model_type_state_;

@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -101,7 +100,7 @@ class UnconsentedPrimaryAccountChecker
   }
 
  private:
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 };
 
 Profile* CreateTestingProfile(const base::FilePath& path) {

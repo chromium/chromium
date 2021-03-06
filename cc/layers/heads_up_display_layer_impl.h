@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -165,7 +164,7 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
-  CheckedPtr<viz::DrawQuad> current_quad_ = nullptr;
+  viz::DrawQuad* current_quad_ = nullptr;
   // Used for software raster when it will be uploaded to a texture.
   sk_sp<SkSurface> staging_surface_;
 

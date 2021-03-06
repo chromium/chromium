@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
@@ -174,10 +173,10 @@ class BackForwardMenuModel : public ui::MenuModel {
   // An index of -1 means no index.
   std::string BuildActionName(const std::string& name, int index) const;
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   // The unit tests will provide their own WebContents to use.
-  CheckedPtr<content::WebContents> test_web_contents_ = nullptr;
+  content::WebContents* test_web_contents_ = nullptr;
 
   // Represents whether this is the delegate for the forward button or the
   // back button.

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -217,7 +216,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
   Profile* current_profile() { return active_browser_->profile(); }
 
-  CheckedPtr<Browser> active_browser_;
+  Browser* active_browser_;
 };
 
 // Tests that a user can save a simple Autocomplete value.

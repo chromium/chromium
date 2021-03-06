@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_PERMISSION_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -35,7 +34,7 @@ class WebIdPermissionDialog : public views::BubbleDialogDelegateView {
   bool Accept() override;
   bool Cancel() override;
 
-  CheckedPtr<content::WebContents> rp_web_contents_;
+  content::WebContents* rp_web_contents_;
   Callback callback_;
 };
 

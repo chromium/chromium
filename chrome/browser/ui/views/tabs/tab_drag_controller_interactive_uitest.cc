@@ -17,7 +17,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -1501,7 +1500,7 @@ class CaptureLoseWindowFinder : public WindowFinder {
   }
 
  private:
-  CheckedPtr<TabStrip> tab_strip_;
+  TabStrip* tab_strip_;
 };
 
 }  // namespace
@@ -1583,7 +1582,7 @@ class MaximizedBrowserWindowWaiter {
   }
 
   // The browser window observed by this waiter.
-  CheckedPtr<BrowserWindow> window_;
+  BrowserWindow* window_;
 
   // The waiter's RunLoop quit closure.
   base::RepeatingClosure quit_;

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -83,7 +82,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   void RecordFormFactorMetric();
 
   // Owns this class.
-  CheckedPtr<sharesheet::SharesheetServiceDelegate> delegate_;
+  sharesheet::SharesheetServiceDelegate* delegate_;
   base::string16 active_target_;
   apps::mojom::IntentPtr intent_;
   sharesheet::CloseCallback close_callback_;
@@ -97,18 +96,18 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   size_t keyboard_highlighted_target_ = 0;
 
-  CheckedPtr<views::View> main_view_ = nullptr;
-  CheckedPtr<views::View> default_view_ = nullptr;
-  CheckedPtr<views::View> expanded_view_ = nullptr;
-  CheckedPtr<views::View> share_action_view_ = nullptr;
+  views::View* main_view_ = nullptr;
+  views::View* default_view_ = nullptr;
+  views::View* expanded_view_ = nullptr;
+  views::View* share_action_view_ = nullptr;
   // Separator that appears above the expand button.
-  CheckedPtr<views::Separator> expand_button_separator_ = nullptr;
+  views::Separator* expand_button_separator_ = nullptr;
   // Separator between the default_view and the expanded_view.
-  CheckedPtr<views::Separator> expanded_view_separator_ = nullptr;
-  CheckedPtr<views::View> parent_view_ = nullptr;
-  CheckedPtr<SharesheetExpandButton> expand_button_ = nullptr;
-  CheckedPtr<SharesheetContentPreviews> content_previews_ = nullptr;
-  CheckedPtr<views::Label> share_title_view_ = nullptr;
+  views::Separator* expanded_view_separator_ = nullptr;
+  views::View* parent_view_ = nullptr;
+  SharesheetExpandButton* expand_button_ = nullptr;
+  SharesheetContentPreviews* content_previews_ = nullptr;
+  views::Label* share_title_view_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
 };

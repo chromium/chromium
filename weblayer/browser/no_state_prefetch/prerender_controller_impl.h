@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "weblayer/public/prerender_controller.h"
 
@@ -39,7 +38,7 @@ class PrerenderControllerImpl : public PrerenderController {
   void Prerender(const GURL& url) override;
 
  private:
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace weblayer

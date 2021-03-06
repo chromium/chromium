@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "google_apis/drive/base_requests.h"
 #include "google_apis/drive/drive_api_error_codes.h"
 #include "google_apis/drive/task_util.h"
@@ -213,10 +212,10 @@ template<typename T1, typename T2, typename T3, typename T4>
 struct OutputParams {
   OutputParams(T1* out1, T2* out2, T3* out3, T4* out4)
       : out1(out1), out2(out2), out3(out3), out4(out4) {}
-  CheckedPtr<T1> out1;
-  CheckedPtr<T2> out2;
-  CheckedPtr<T3> out3;
-  CheckedPtr<T4> out4;
+  T1* out1;
+  T2* out2;
+  T3* out3;
+  T4* out4;
 };
 
 // Copies the |in1|'s value to |output->out1|, |in2|'s to |output->out2|,

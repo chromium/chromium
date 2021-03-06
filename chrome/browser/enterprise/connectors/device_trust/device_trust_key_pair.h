@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_KEY_PAIR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/ec_private_key.h"
@@ -49,9 +48,9 @@ class DeviceTrustKeyPair {
 
  private:
   // TODO(b/181059258) Replace with url_matcher::URLMatcher.
-  CheckedPtr<const base::ListValue> origins_;
+  const base::ListValue* origins_;
   std::unique_ptr<crypto::ECPrivateKey> key_pair_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Load key pair from prefs if available, if not, it will generate a
   // new key pair and store the encoded encrypted version of it into prefs.

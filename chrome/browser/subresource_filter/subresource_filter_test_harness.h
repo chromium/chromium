@@ -7,7 +7,6 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
@@ -77,7 +76,7 @@ class SubresourceFilterTestHarness : public ChromeRenderViewHostTestHarness {
   TestingPrefServiceSimple pref_service_;
   subresource_filter::testing::ScopedSubresourceFilterConfigurator
       scoped_configuration_;
-  CheckedPtr<subresource_filter::TestSubresourceFilterClient> client_;
+  subresource_filter::TestSubresourceFilterClient* client_;
   std::unique_ptr<subresource_filter::RulesetService> ruleset_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SubresourceFilterTestHarness);

@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -126,7 +125,7 @@ class ErrorObserver : public ErrorConsole::Observer {
         error_console_(error_console),
         errors_observed_(0),
         observer_(this) {
-    observer_.Add(error_console_.get());
+    observer_.Add(error_console_);
   }
 
   // ErrorConsole::Observer implementation.
@@ -146,7 +145,7 @@ class ErrorObserver : public ErrorConsole::Observer {
 
  private:
   size_t errors_expected_;
-  CheckedPtr<ErrorConsole> error_console_;
+  ErrorConsole* error_console_;
   size_t errors_observed_;
   ScopedObserver<ErrorConsole, ErrorConsole::Observer> observer_;
   base::RunLoop run_loop_;
@@ -712,8 +711,8 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
         ->DispatchEventToExtension(extension_id_, std::move(event));
   }
 
-  const CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
-  const CheckedPtr<EventRouter> event_router_ = nullptr;
+  content::BrowserContext* const browser_context_ = nullptr;
+  EventRouter* const event_router_ = nullptr;
   const ExtensionId extension_id_;
   std::unique_ptr<Event> event_;
   ExtensionTestMessageListener listener_;
@@ -853,8 +852,8 @@ class ServiceWorkerPushMessagingTest : public ServiceWorkerTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  CheckedPtr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
-  CheckedPtr<PushMessagingServiceImpl> push_service_;
+  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
+  PushMessagingServiceImpl* push_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPushMessagingTest);
 };
@@ -1697,7 +1696,7 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
   // Holds version id of an extension worker once OnVersionStartedRunning is
   // observed.
   base::Optional<int64_t> running_version_id_;
-  CheckedPtr<content::ServiceWorkerContext> context_ = nullptr;
+  content::ServiceWorkerContext* context_ = nullptr;
   GURL extension_url_;
 };
 

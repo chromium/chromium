@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -319,7 +318,7 @@ struct MockDnsClientRule {
   uint16_t qtype;
   bool secure;
   bool delay;
-  CheckedPtr<URLRequestContext> context;
+  URLRequestContext* context;
 };
 
 typedef std::vector<MockDnsClientRule> MockDnsClientRuleList;

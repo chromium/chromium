@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -123,10 +122,10 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
  private:
   // The ExtensionService associated with the primary profile.
-  CheckedPtr<extensions::ExtensionService> extension_service_ = nullptr;
+  extensions::ExtensionService* extension_service_ = nullptr;
 
   // ToolbarActionsModel associated with the main profile.
-  CheckedPtr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  ToolbarActionsModel* toolbar_model_ = nullptr;
 
   std::unique_ptr<ExtensionActionTestHelper> test_util_;
 

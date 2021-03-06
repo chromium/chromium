@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/layers/layer_impl.h"
@@ -120,7 +119,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                     float stop_ratio);
 
   // The client manages the lifecycle of this.
-  CheckedPtr<BrowserControlsOffsetManagerClient> client_;
+  BrowserControlsOffsetManagerClient* client_;
 
   BrowserControlsState permitted_state_;
 

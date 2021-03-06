@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -49,7 +48,7 @@ class LabsComboboxModel : public ui::ComboboxModel {
   int GetDefaultIndex() const override { return default_index_; }
 
  private:
-  CheckedPtr<const flags_ui::FeatureEntry> feature_entry_;
+  const flags_ui::FeatureEntry* feature_entry_;
   int default_index_;
 };
 

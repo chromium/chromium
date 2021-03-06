@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -69,7 +68,7 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
   }
 
  private:
-  CheckedPtr<Shell> shell_;
+  Shell* shell_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsWebContentsObserver);
 };

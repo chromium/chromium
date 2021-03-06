@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -232,7 +231,7 @@ class GFX_EXPORT SkiaVectorAnimation {
   base::TimeDelta scheduled_start_offset_;
   base::TimeDelta scheduled_duration_;
 
-  CheckedPtr<SkiaVectorAnimationObserver> observer_ = nullptr;
+  SkiaVectorAnimationObserver* observer_ = nullptr;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
 

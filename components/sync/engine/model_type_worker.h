@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -312,7 +311,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  CheckedPtr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 

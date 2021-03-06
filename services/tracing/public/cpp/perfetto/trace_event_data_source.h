@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/user_metrics.h"
@@ -58,7 +57,7 @@ class AutoThreadLocalBoolean {
   ~AutoThreadLocalBoolean() { thread_local_boolean_->Set(false); }
 
  private:
-  CheckedPtr<base::ThreadLocalBoolean> thread_local_boolean_;
+  base::ThreadLocalBoolean* thread_local_boolean_;
   DISALLOW_COPY_AND_ASSIGN(AutoThreadLocalBoolean);
 };
 

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -278,7 +277,7 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
   base::Time now_;
 
   // We don't own this pointer.
-  CheckedPtr<storage::FileSystemContext> filesystem_context_;
+  storage::FileSystemContext* filesystem_context_;
 
   // Storage to pass information back from callbacks.
   std::unique_ptr<std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>

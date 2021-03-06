@@ -4,7 +4,6 @@
 
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -95,7 +94,7 @@ class MimeHandlerStreamManager::EmbedderObserver
 
   bool IsTrackedRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
-  const CheckedPtr<MimeHandlerStreamManager> stream_manager_;
+  MimeHandlerStreamManager* const stream_manager_;
   const std::string view_id_;
   int frame_tree_node_id_;
   int render_process_id_;
@@ -107,7 +106,7 @@ class MimeHandlerStreamManager::EmbedderObserver
   // If a RFH is swapped with another RFH, this is set to the new RFH. This
   // ensures that we don't inadvarently clean up the stream when the old RFH
   // dies.
-  CheckedPtr<content::RenderFrameHost> new_host_;
+  content::RenderFrameHost* new_host_;
 };
 
 MimeHandlerStreamManager::MimeHandlerStreamManager() = default;

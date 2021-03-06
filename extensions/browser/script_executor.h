@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
@@ -133,7 +132,7 @@ class ScriptExecutor {
   // The next value to use for request_id in ExtensionMsg_ExecuteCode_Params.
   int next_request_id_ = 0;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   ScriptsExecutedNotification observer_;
 

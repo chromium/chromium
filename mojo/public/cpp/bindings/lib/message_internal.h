@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {
@@ -67,8 +66,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
   base::OnceCallback<void(const std::string&)> GetBadMessageCallback();
 
  private:
-  CheckedPtr<MessageDispatchContext> outer_context_;
-  CheckedPtr<Message> message_;
+  MessageDispatchContext* outer_context_;
+  Message* message_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageDispatchContext);
 };

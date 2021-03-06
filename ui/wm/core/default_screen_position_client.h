@@ -6,7 +6,6 @@
 #define UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -37,7 +36,7 @@ class WM_CORE_EXPORT DefaultScreenPositionClient
       const aura::Window* root_window) override;
 
  private:
-  CheckedPtr<aura::Window> root_window_;
+  aura::Window* root_window_;
 
   DISALLOW_COPY_AND_ASSIGN(DefaultScreenPositionClient);
 };

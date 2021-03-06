@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -105,8 +104,7 @@ class WallClockTimer : public base::PowerObserver {
   base::OneShotTimer timer_;
 
   // The clock used to calculate the run time for scheduled tasks.
-  const CheckedPtr<const base::Clock> clock_ =
-      base::DefaultClock::GetInstance();
+  const base::Clock* const clock_ = base::DefaultClock::GetInstance();
 };
 
 }  // namespace util

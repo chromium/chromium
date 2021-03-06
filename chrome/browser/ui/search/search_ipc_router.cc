@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
@@ -70,8 +69,7 @@ class EmbeddedSearchClientFactoryImpl
 
   // Used to bind incoming pending receivers to the implementation, which lives
   // in SearchIPCRouter.
-  CheckedPtr<mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>>
-      client_receiver_;
+  mojo::AssociatedReceiver<search::mojom::EmbeddedSearch>* client_receiver_;
 
   // Receivers used to listen to connection requests.
   content::WebContentsFrameReceiverSet<search::mojom::EmbeddedSearchConnector>

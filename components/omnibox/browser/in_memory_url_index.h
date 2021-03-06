@@ -15,7 +15,6 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -175,8 +174,7 @@ class InMemoryURLIndex : public KeyedService,
    private:
     ~RebuildPrivateDataFromHistoryDBTask() override;
 
-    CheckedPtr<InMemoryURLIndex>
-        index_;                   // Call back to this index at completion.
+    InMemoryURLIndex* index_;  // Call back to this index at completion.
     SchemeSet scheme_allowlist_;  // Schemes to be indexed.
     bool succeeded_;  // Indicates if the rebuild was successful.
     scoped_refptr<URLIndexPrivateData> data_;  // The rebuilt private data.

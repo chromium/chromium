@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
@@ -101,7 +100,7 @@ class FakeBaseTabStripController : public TabStripController {
  private:
   void SetActiveIndex(int new_index);
 
-  CheckedPtr<TabStrip> tab_strip_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
 
   int num_tabs_ = 0;
   int active_index_ = -1;

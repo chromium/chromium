@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -32,8 +31,8 @@ class SystemMenuModelDelegate : public ui::SimpleMenuModel::Delegate {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  const CheckedPtr<ui::AcceleratorProvider> provider_;  // weak
-  const CheckedPtr<Browser> browser_;                   // weak
+  ui::AcceleratorProvider* const provider_;  // weak
+  Browser* const browser_;                   // weak
 
   DISALLOW_COPY_AND_ASSIGN(SystemMenuModelDelegate);
 };

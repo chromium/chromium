@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/extension_allowlist.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_blocklist.h"
@@ -75,7 +74,7 @@ class ExtensionAllowlistUnitTest : public ExtensionServiceTestBase {
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
-  CheckedPtr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 };
 
 TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {

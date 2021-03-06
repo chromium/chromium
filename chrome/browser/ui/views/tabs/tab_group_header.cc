@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -74,8 +73,8 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const CheckedPtr<const views::View> chip_;
-  const CheckedPtr<const views::View> title_;
+  const views::View* const chip_;
+  const views::View* const title_;
 };
 
 }  // namespace

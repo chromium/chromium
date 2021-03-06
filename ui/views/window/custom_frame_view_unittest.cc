@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/views_test_base.h"
@@ -62,10 +61,10 @@ class CustomFrameViewTest : public ViewsTestBase {
   std::unique_ptr<WidgetDelegate> widget_delegate_;
 
   // Parent container for |custom_frame_view_|
-  CheckedPtr<Widget> widget_;
+  Widget* widget_;
 
   // Owned by |widget_|
-  CheckedPtr<CustomFrameView> custom_frame_view_;
+  CustomFrameView* custom_frame_view_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomFrameViewTest);
 };
