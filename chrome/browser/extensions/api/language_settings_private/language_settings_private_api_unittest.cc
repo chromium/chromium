@@ -189,6 +189,38 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
   EXPECT_EQ(expected, *actual);
 }
 
+TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs_ =
+      ChromeTranslateClient::CreateTranslatePrefs(profile()->GetPrefs());
+
+  EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "en");
+  EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
+
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("aa", "es");
+  // Use 'tl' as the translate language which is 'fil' as a Chrome language.
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("tl", "es");
+  std::vector<std::string> always_translate_languages =
+      translate_prefs_->GetAlwaysTranslateLanguages();
+  ASSERT_EQ(std::vector<std::string>({"aa", "af", "fil"}),
+            always_translate_languages);
+
+  auto function = base::MakeRefCounted<
+      LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction>();
+
+  std::unique_ptr<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
+                                                       profile());
+
+  ASSERT_NE(nullptr, result) << function->GetError();
+  EXPECT_TRUE(result->is_list());
+
+  ASSERT_EQ(result->GetList().size(), always_translate_languages.size());
+  for (size_t i = 0; i < result->GetList().size(); i++) {
+    EXPECT_EQ(result->GetList()[i].GetString(), always_translate_languages[i]);
+  }
+}
+
 TEST_F(LanguageSettingsPrivateApiTest, GetLanguageListTest) {
   translate::TranslateDownloadManager::GetInstance()->ResetForTesting();
   RunGetLanguageListTest();

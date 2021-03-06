@@ -26669,6 +26669,8 @@ Called by update_extension_histograms.py.-->
   <int value="1541" label="ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO"/>
   <int value="1542" label="SCRIPTING_REMOVECSS"/>
   <int value="1543" label="FILEMANAGERPRIVATEINTERNAL_GETVOLUMEROOT"/>
+  <int value="1544"
+      label="LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES"/>
 </enum>
 
 <enum name="ExtensionIconState">

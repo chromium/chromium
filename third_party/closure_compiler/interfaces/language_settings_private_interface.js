@@ -46,6 +46,12 @@ LanguageSettingsPrivate.prototype = {
   moveLanguage: function(languageCode, moveType) {},
 
   /**
+   * Gets languages that should always be automatically translated.
+   * @param {function(!Array<string>):void} callback
+   */
+  getAlwaysTranslateLanguages: function(callback) {},
+
+  /**
    * Gets the current status of the chosen spell check dictionaries.
    * @param {function(!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>):void}
    *     callback

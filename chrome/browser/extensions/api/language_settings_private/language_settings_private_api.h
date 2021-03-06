@@ -119,6 +119,28 @@ class LanguageSettingsPrivateMoveLanguageFunction : public ExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateMoveLanguageFunction);
 };
 
+// Implements the languageSettingsPrivate.getAlwaysTranslateLanguages method.
+class LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.getAlwaysTranslateLanguages",
+      LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES)
+
+ protected:
+  ~LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateGetAlwaysTranslateLanguagesFunction);
+};
+
 // Implements the languageSettingsPrivate.getSpellcheckDictionaryStatuses
 // method.
 class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction

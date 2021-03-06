@@ -233,6 +233,11 @@ Polymer({
       });
     }
 
+    // Get the list of language-codes to always translate.
+    promises[5] = new Promise(resolve => {
+      this.languageSettingsPrivate_.getAlwaysTranslateLanguages(resolve);
+    });
+
     if (cr.isWindows || cr.isChromeOS) {
       // Fetch the starting UI language, which affects which actions should be
       // enabled.
@@ -252,7 +257,8 @@ Polymer({
 
       // TODO(dpapad): Cleanup this code. It uses results[3] and results[4]
       // which only exist for ChromeOS.
-      this.createModel_(results[1], results[2], results[3], results[4]);
+      this.createModel_(
+          results[1], results[2], results[3], results[4], results[5]);
 
       // <if expr="not is_macosx">
       this.boundOnSpellcheckDictionariesChanged_ =
@@ -447,11 +453,13 @@ Polymer({
    *     supportedInputMethods Input methods (Chrome OS only).
    * @param {string|undefined} currentInputMethodId ID of the currently used
    *     input method (Chrome OS only).
+   * @param {!Array<string>} alwaysTranslateCodes Language codes of languages
+   *     that should always automatically translate.
    * @private
    */
   createModel_(
       supportedLanguages, translateTarget, supportedInputMethods,
-      currentInputMethodId) {
+      currentInputMethodId, alwaysTranslateCodes) {
     // Populate the hash map of supported languages.
     for (let i = 0; i < supportedLanguages.length; i++) {
       const language = supportedLanguages[i];
@@ -480,11 +488,15 @@ Polymer({
     const forcedSpellCheckLanguages =
         this.getForcedSpellCheckLanguages_(enabledLanguageStates);
 
+    const alwaysTranslateLangauges =
+        alwaysTranslateCodes.map(code => this.getLanguage(code));
+
     const model = /** @type {!LanguagesModel} */ ({
       supported: supportedLanguages,
       enabled: enabledLanguageStates,
       translateTarget: translateTarget,
       forcedSpellCheckLanguages: forcedSpellCheckLanguages,
+      alwaysTranslate: alwaysTranslateLangauges,
     });
 
     if (cr.isChromeOS || cr.isWindows) {

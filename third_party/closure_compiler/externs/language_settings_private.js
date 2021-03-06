@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,6 +101,12 @@ chrome.languageSettingsPrivate.setEnableTranslationForLanguage = function(langua
  * @param {!chrome.languageSettingsPrivate.MoveType} moveType
  */
 chrome.languageSettingsPrivate.moveLanguage = function(languageCode, moveType) {};
+
+/**
+ * Gets languages that should always be automatically translated.
+ * @param {function(!Array<string>): void} callback
+ */
+chrome.languageSettingsPrivate.getAlwaysTranslateLanguages = function(callback) {};
 
 /**
  * Gets the current status of the chosen spell check dictionaries.

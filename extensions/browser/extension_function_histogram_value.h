@@ -1604,6 +1604,7 @@ enum HistogramValue {
   ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO = 1541,
   SCRIPTING_REMOVECSS = 1542,
   FILEMANAGERPRIVATEINTERNAL_GETVOLUMEROOT = 1543,
+  LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES = 1544,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

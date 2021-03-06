@@ -138,6 +138,9 @@ cr.define('settings', function() {
         },
       ];
 
+      /** @type {!Array<string>} */
+      this.alwaysTranslateList = ['de, es, nl'];
+
       /** @type {!Array<!chrome.languageSettingsPrivate.InputMethod>} */
       this.componentExtensionImes = [
         {
@@ -206,6 +209,18 @@ cr.define('settings', function() {
         callback(
             /** @type {!Array<!chrome.languageSettingsPrivate.Language>} */ (
                 JSON.parse(JSON.stringify(this.languages))));
+      }.bind(this));
+    }
+
+    /**
+     * Gets languages that should always be automatically translated.
+     * @param {function(!Array<!string>)}
+     *     callback
+     */
+    getAlwaysTranslateLanguages(callback) {
+      setTimeout(function() {
+        callback(
+            /** @type {!Array<!string>} */ (this.alwaysTranslateList));
       }.bind(this));
     }
 
