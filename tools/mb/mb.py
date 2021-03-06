@@ -104,7 +104,7 @@ class MetaBuildWrapper(object):
     self.ParseArgs(args)
     try:
       ret = self.args.func()
-      if ret:
+      if ret != 0:
         self.DumpInputFiles()
       return ret
     except KeyboardInterrupt:
@@ -513,7 +513,7 @@ class MetaBuildWrapper(object):
       return 1
     if self.args.build:
       ret = self.Build(self.args.target)
-      if ret:
+      if ret != 0:
         return ret
     return self.RunGNIsolate(vals)
 
@@ -1115,7 +1115,7 @@ class MetaBuildWrapper(object):
       self.Print('python interpreter not under %s' % prefix)
 
     ret, output, _ = self.Run(cmd)
-    if ret:
+    if ret != 0:
       if self.args.json_output:
         # write errors to json.output
         self.WriteJSON({'output': output}, self.args.json_output)
@@ -1141,7 +1141,7 @@ class MetaBuildWrapper(object):
     build_dir = self.args.path
     ret, output, _ = self.Run(self.GNCmd('ls', build_dir),
                               force_verbose=False)
-    if ret:
+    if ret != 0:
       # If `gn ls` failed, we should exit early rather than trying to
       # generate isolates.
       self.Print('GN ls failed: %d' % ret)
@@ -1255,7 +1255,7 @@ class MetaBuildWrapper(object):
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
                                    runtime_deps, vals, extra_files)
-      if ret:
+      if ret != 0:
         return ret
     return 0
 
@@ -1342,7 +1342,7 @@ class MetaBuildWrapper(object):
     cmd = self.GNCmd('desc', build_dir, label, 'runtime_deps',
                      '--fail-on-unused-args')
     ret, out, _ = self.Call(cmd)
-    if ret:
+    if ret != 0:
       if out:
         self.Print(out)
       return ret
@@ -1351,7 +1351,7 @@ class MetaBuildWrapper(object):
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)
-    if ret:
+    if ret != 0:
       return ret
 
     ret, _, _ = self.Run([
@@ -1475,6 +1475,8 @@ class MetaBuildWrapper(object):
       },
       isolate_path + 'd.gen.json',
     )
+
+    return 0
 
   def MapTargetsToLabels(self, isolate_map, targets):
     labels = []
@@ -1722,7 +1724,7 @@ class MetaBuildWrapper(object):
     # Analyze runs before 'gn gen' now, so we need to run gn gen
     # in order to ensure that we have a build directory.
     ret = self.RunGNGen(vals, compute_inputs_for_analyze=True, check=False)
-    if ret:
+    if ret != 0:
       return ret
 
     build_path = self.args.path
@@ -1773,7 +1775,7 @@ class MetaBuildWrapper(object):
       self.WriteJSON(gn_inp, gn_input_path)
       cmd = self.GNCmd('analyze', build_path, gn_input_path, gn_output_path)
       ret, output, _ = self.Run(cmd, force_verbose=True)
-      if ret:
+      if ret != 0:
         if self.args.json_output:
           # write errors to json.output
           self.WriteJSON({'output': output}, self.args.json_output)
@@ -1927,7 +1929,7 @@ class MetaBuildWrapper(object):
 
     ret, out, err = self.Call(cmd, env=env, buffer_output=buffer_output)
     if self.args.verbose or force_verbose:
-      if ret:
+      if ret != 0:
         self.Print('  -> returned %d' % ret)
       if out:
         # This is the error seen on the logs
