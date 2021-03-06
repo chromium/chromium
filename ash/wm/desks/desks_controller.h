@@ -102,7 +102,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // new user's windows have been shown.
   void OnNewUserShown();
 
-  // Destroys any pending animations in preparation for shutdown.
+  // Destroys any pending animations in preparation for shutdown and save desk
+  // metrics.
   void Shutdown();
 
   void AddObserver(Observer* observer);
@@ -195,8 +196,15 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // users are not allowed to set empty names.
   void RestoreNameOfDeskAtIndex(base::string16 name, size_t index);
 
-  // Restores the metrics of the desk at |index|.
-  void RestoreMetricsOfDeskAtIndex(base::Time creation_time, size_t index);
+  // Restores the creation time of the desk at |index|.
+  void RestoreCreationTimeOfDeskAtIndex(base::Time creation_time, size_t index);
+
+  // Restores the visited metrics of the desk at |index|. If it has been more
+  // than one day since |last_day_visited|, record and reset the consecutive
+  // daily visits metrics.
+  void RestoreVisitedMetricsOfDeskAtIndex(int first_day_visited,
+                                          int last_day_visited,
+                                          size_t index);
 
   // Called explicitly by the RootWindowController when a root window has been
   // added or about to be removed in order to update all the available desks.

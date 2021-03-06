@@ -25,7 +25,8 @@ void RestorePrimaryUserDesks();
 ASH_EXPORT void UpdatePrimaryUserDeskNamesPrefs();
 
 // Called to update the desk metrics restore prefs for the primary user whenever
-// desks count changes or desks reordered.
+// desks count changes, desks order changes or during
+// `DesksController::Shutdown()`.
 ASH_EXPORT void UpdatePrimaryUserDeskMetricsPrefs();
 
 // Called to update the active desk restore prefs for the primary user whenever

@@ -634,13 +634,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
+    expires_after="2022-02-19">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a desk is destroyed or a user activates a desk they haven't
+    visited the prior day. In the former case, reports the number of consecutive
+    days a user visited the newly-closed desk. In the latter case, reports the
+    number of consecutive days a user visited the desk during the previous
+    visit. This metric is persisted across multiple sessions and restarts. I.e.
+    if a user logs out and logs back in their desk's consecutive daily visits
+    will be restored. This metric uses the user's local timezone so if they move
+    back in time via timezone change, this metric will be reset.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
     expires_after="2022-02-19">
   <owner>chinsenj@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
     The lifetime of the desk at index {DeskIndex} (1-indexed). Emitted when a
-    desk is removed. This metric is persisted across sessions.
+    desk is removed. This metric is persisted across multiple sessions and
+    restarts. I.e. if a user logs out and logs back in their desk's lifetime
+    will be restored.
   </summary>
   <token key="DeskIndex">
     <variant name="1" summary="1"/>
