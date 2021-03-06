@@ -1334,7 +1334,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
-  { key::kFetchKeepaliveDurationOnShutdown,
+  { key::kFetchKeepaliveDurationSecondsOnShutdown,
     prefs::kFetchKeepaliveDurationOnShutdown,
     base::Value::Type::INTEGER },
 #endif  // !defined(OS_ANDROID)
