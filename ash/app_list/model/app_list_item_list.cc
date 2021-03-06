@@ -71,14 +71,7 @@ void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
   // Update the position
   AppListItem* prev = to_index > 0 ? item_at(to_index - 1) : nullptr;
   AppListItem* next = to_index < item_count() ? item_at(to_index) : nullptr;
-  // TODO(https://crbug.com/1166011): Replace LOG(FATAL) with CHECK_NE() when
-  // root cause is found.
-  if (prev == next) {
-    LOG(FATAL) << "crbug.com/1166011 Move from " << from_index << " to "
-               << to_index << " count " << item_count() << " prev "
-               << (prev ? prev->position().ToDebugString() : "null") << " next "
-               << (next ? next->position().ToDebugString() : "null");
-  }
+  CHECK_NE(prev, next);
   syncer::StringOrdinal new_position;
   if (!prev) {
     new_position = next->position().CreateBefore();
