@@ -486,7 +486,6 @@
 <translation id="152913213824448541">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਵਾਲੇ ਸੰਪਰਕ</translation>
 <translation id="1529891865407786369">ਪਾਵਰ ਸਰੋਤ</translation>
 <translation id="1530838837447122178">ਮਾਊਸ ਅਤੇ ਟੱਚਪੈਡ ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
-<translation id="1531004739673299060">ਐਪਲੀਕੇਸ਼ਨ ਵਿੰਡੋ</translation>
 <translation id="1531275250079031713">'ਨਵਾਂ ਵਾਈ-ਫਾਈ ਸ਼ਾਮਲ ਕਰੋ' ਵਿੰਡੋ ਦਿਖਾਓ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ਉੱਚੀ ਅਵਾਜ਼</translation>
@@ -641,6 +640,7 @@
 <translation id="1692118695553449118">ਸਿੰਕ ਚਾਲੂ ਹੈ</translation>
 <translation id="1692210323591458290">ਗੂੜ੍ਹਾ ਜਾਮਨੀ</translation>
 <translation id="169279809881363536">ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਮਿਲੀ। ਨਵੇਂ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ ਕੈਮਰਾ ਵਰਤ ਕੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ ਜਾਂ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ।</translation>
+<translation id="169675691788639886">ਡੀਵਾਈਸ ਵਿੱਚ SSH ਸਰਵਰ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਸੰਵੇਦਨਸ਼ੀਲ ਖਾਤਿਆਂ ਨਾਲ ਸਾਈਨ-ਇਨ ਨਾ ਕਰੋ।</translation>
 <translation id="1697150536837697295">ਕਲਾ</translation>
 <translation id="1697686431566694143">ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="1698122934742150150">ਸਿਰਫ਼ ਵਰਤਮਾਨ ਇਨਕੋਗਨਿਟੋ ਸੈਸ਼ਨ</translation>
@@ -844,7 +844,6 @@
 <translation id="1909880997794698664">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਸਥਾਈ ਤੌਰ 'ਤੇ ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="1910721550319506122">ਸੁਆਗਤ ਹੈ!</translation>
 <translation id="1915073950770830761">ਕੈਨਰੀ</translation>
-<translation id="1916260783734263714">ਮੌਜੂਦਾ ਟੈਬ</translation>
 <translation id="1916502483199172559">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਲਾਲ ਅਵਤਾਰ</translation>
 <translation id="1918141783557917887">&amp;ਵੱਧ ਛੋਟਾ</translation>
 <translation id="1919345977826869612">ਵਿਗਿਆਪਨ</translation>
@@ -2818,6 +2817,7 @@
 <translation id="4115080753528843955">'ਕੁਝ ਸਮੱਗਰੀ ਸੇਵਾਵਾਂ' ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਨੂੰ ਅਧਿਕਾਰਿਤ ਕਰਨ ਦੇ ਮੰਤਵਾਂ ਲਈ ਵਿਲੱਖਣ ਪਛਾਣਕਰਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="4115378294792113321">ਮਜੈਂਟਾ</translation>
 <translation id="4118579674665737931">ਕਿਰਪਾ ਕਰਕੇ ਡੀਵਾਈਸ ਨੂੰ ਰੀਬੂਟ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="4118998393712575296">ਐਪ ਮਨਜੂਰੀ ਅਤੇ ਸਕ੍ਰੀਨ ਸਮਾਂ ਸੀਮਾਵਾਂ ਵਰਗੇ ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਬੱਚੇ ਕੋਲ ਅਜਿਹਾ Google ਖਾਤਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ ਜਿਸਦਾ ਪ੍ਰਬੰਧਨ ਮਾਂ-ਪਿਓ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੋਵੇ। ਸਕੂਲ ਖਾਤੇ ਨੂੰ Google Classroom ਵਰਗੀਆਂ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਨਾਲ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਾਅਦ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="4120388883569225797">ਇਸ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਰੀਸੈੱਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="4120817667028078560">ਪਾਥ ਬਹੁਤ ਲੰਮਾ ਹੈ</translation>
 <translation id="4124823734405044952">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
@@ -3089,7 +3089,6 @@
 <translation id="447252321002412580">Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4474155171896946103">ਸਾਰੀਆਂ ਟੈਬਾਂ ਬੁੱਕਮਾਰਕ ਕਰੋ...</translation>
-<translation id="4474461121892222090">ਮੋਬਾਈਲ ਡਾਟਾ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ ਵਿੱਚ 15 ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4475552974751346499">ਡਾਊਨਲੋਡਾਂ ਖੋਜੋ</translation>
 <translation id="4476590490540813026">ਐਥਲੀਟ</translation>
 <translation id="4476659815936224889">ਇਹ ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ, ਤੁਸੀਂ ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ QR ਸਕੈਨਰ ਐਪ, ਜਾਂ ਕੁਝ ਕੈਮਰਾ ਐਪਾਂ ਵਰਤ ਸਕਦੇ ਹੋ।</translation>
@@ -3879,6 +3878,7 @@
 <translation id="540296380408672091">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ ਕੁਕੀਜ਼ ਬਲੌਕ ਕਰੋ</translation>
 <translation id="540495485885201800">ਪਿਛਲੇ ਨਾਲ ਬਦਲੋ</translation>
 <translation id="5405146885510277940">ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
+<translation id="5407119150486192764">ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕੀਤੀ 8-ਅੰਕਾਂ ਦੀ ਅਣਬਲਾਕ ਕਰਨ ਦੀ ਕੁੰਜੀ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5408750356094797285">ਜ਼ੂਮ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ</translation>
 <translation id="5411472733320185105">ਇਹਨਾਂ ਹੋਸਟਾਂ ਅਤੇ ਡੋਮੇਨਾਂ ਲਈ ਪ੍ਰੌਕਸੀ ਸੈਟਿੰਗਾਂ ਨਾ ਵਰਤੋ:</translation>
@@ -4511,6 +4511,7 @@
 <translation id="6124213551517593835">ਇੰਝ ਕਰਨ ਨਾਲ <ph name="SITE_GROUP_NAME" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਇਸਦੇ ਅਧੀਨ ਮੌਜੂਦ ਕਿਸੇ ਵੀ ਸਾਈਟ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="6124650939968185064">ਅਨੁਸਰਣ ਐਕਸਟੈਂਸ਼ਨਾਂ ਇਸ ਐਕਸਟੈਂਸ਼ਨਾਂ 'ਤੇ ਨਿਰਭਰ ਹਨ:</translation>
 <translation id="6124698108608891449">ਇਸ ਸਾਈਟ ਨੂੰ ਹੋਰ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਹੈ।</translation>
+<translation id="6125442051901189730">ਕੋਈ ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ।</translation>
 <translation id="6125479973208104919">ਬਦਕਿਸਮਤੀ ਨਾਲ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਖਾਤੇ ਨੂੰ ਦੁਬਾਰਾ ਇਸ <ph name="DEVICE_TYPE" /> ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
 <translation id="6129691635767514872">ਚੁਣਿਆ ਗਿਆ ਡਾਟਾ Chrome ਅਤੇ ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਹਟਾਇਆ ਜਾ ਚੁੱਕਾ ਹੈ। ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਹੋਰ ਸੇਵਾਵਾਂ ਤੋਂ ਖੋਜਾਂ ਅਤੇ ਸਰਗਰਮੀ ਵਰਗਾ ਹੋਰ ਪ੍ਰਕਾਰ ਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਵੀ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6129938384427316298">Netscape ਪ੍ਰਮਾਣ-ਪੱਤਰ ਟਿੱਪਣੀ</translation>
@@ -4811,7 +4812,6 @@
 <translation id="6473842110411557830">ਪਾਵਰਵਾਸ਼ ਸਬੰਧੀ ਚਿੱਤਰ</translation>
 <translation id="6474498546677193336">ਸਾਂਝਾਕਰਨ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਫੋਲਡਰ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ। ਅਗਲੀ ਵਾਰ Linux ਬੰਦ ਹੋਣ 'ਤੇ ਫੋਲਡਰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6474884162850599008">'Google ਡਰਾਈਵ' ਖਾਤੇ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਚੁਣੋ ਕਿ ਤੁਸੀਂ ਕੀ ਕੁਝ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="6477822444490674459">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਫ਼ੋਨਾਂ ਲਈ ਸੂਚਨਾ ਸਮਕਾਲੀਕਰਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ਕੀ ਖਤਰਨਾਕ ਫ਼ਾਈਲ ਨੂੰ ਰੱਖਣਾ ਹੈ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਗਿਆ</translation>
@@ -5073,7 +5073,6 @@
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ਦੂਰ-ਦਰਾਡੇ ਤੋਂ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="6790820461102226165">ਵਿਅਕਤੀ ਜੋੜੋ...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਨੂੰ <ph name="TARGET_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਚੁਣੋ ਕਿ ਤੁਸੀਂ ਕੀ ਸਾਂਝਾ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ।</translation>
 <translation id="6793604637258913070">ਲਿਖਤ ਕੈਰੇਟ ਦੇ ਵਿਖਾਈ ਦੇਣ ਜਾਂ ਹਲਚਲ ਹੋਣ 'ਤੇ ਉਸਨੂੰ ਉਜਾਗਰ ਕਰੋ।</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ਨੂੰ ਪਹਿਲਾਂ ਹੀ '<ph name="ACTION" />' ਕਾਰਵਾਈ ਦੇ ਜ਼ਿੰਮੇ ਲਗਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਬਾਹਰ ਜਾਣ ਲਈ ਕਿਸੇ ਵੀ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="6795884519221689054">ਪਾਂਡਾ</translation>
@@ -6619,6 +6618,7 @@
 <translation id="8551588720239073785">ਤਾਰੀਖ ਅਤੇ ਸਮਾਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8553342806078037065">ਹੋਰਾਂ ਲੋਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8554899698005018844">ਕੋਈ ਭਾਸ਼ਾ ਨਹੀਂ</translation>
+<translation id="8555195867496021627">ਕੋਈ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਇੱਥੇ<ph name="END_LINK" /> ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="8557022314818157177">ਤੁਹਾਡੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੇ ਕੈਪਚਰ ਹੋਣ ਤੱਕ ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ</translation>
 <translation id="8557930019681227453">ਮੈਨੀਫ਼ੈਸਟ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ਸਾਰੇ &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}=1{&amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}other{ਸਾਰੇ ({COUNT}) &amp;ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ}}</translation>
@@ -6958,7 +6958,6 @@
 <translation id="8907906903932240086">Chrome ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਲਈ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੀ ਜਾਂਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ਨੂੰ ਅਣਸਥਾਪਤ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ</translation>
 <translation id="8909833622202089127">ਸਾਈਟ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੀ ਹੈ</translation>
-<translation id="8910146161325739742">ਆਪਣੀ ਸਕ੍ਰੀਨ ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="8910222113987937043">ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੀਤੀਆਂ ਤਬਦੀਲੀਆਂ ਹੁਣ ਤੁਹਾਡੇ Google ਖਾਤੇ 'ਤੇ ਸਮਕਾਲੀਕਰਨ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ। ਹਾਲਾਂਕਿ, ਤੁਹਾਡਾ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਡਾਟਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਰਹੇਗਾ ਅਤੇ ਇਸ ਨੂੰ <ph name="BEGIN_LINK" />Google ਡੈਸ਼ਬੋਰਡ<ph name="END_LINK" /> 'ਤੇ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8912362522468806198">Google ਖਾਤਾ</translation>
 <translation id="8912793549644936705">ਸਟ੍ਰੈਚ ਕਰੋ</translation>

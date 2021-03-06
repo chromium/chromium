@@ -486,7 +486,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="152913213824448541">Mga contact sa Nearby Share</translation>
 <translation id="1529891865407786369">Pinagmumulan ng kuryente</translation>
 <translation id="1530838837447122178">Buksan ang mga setting ng mouse at touchpad device</translation>
-<translation id="1531004739673299060">Window ng Application</translation>
 <translation id="1531275250079031713">Ipakita ang dialog na 'Magdagdag ng bagong Wi-Fi'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Malakas</translation>
@@ -845,7 +844,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1909880997794698664">Sigurado ka bang gusto mong permanenteng panatilihin sa kiosk mode ang device na ito?</translation>
 <translation id="1910721550319506122">Maligayang pagdating!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Kasalukuyang Tab</translation>
 <translation id="1916502483199172559">Default na pulang avatar</translation>
 <translation id="1918141783557917887">&amp;Mas maliit</translation>
 <translation id="1919345977826869612">Mga Ad</translation>
@@ -3093,7 +3091,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="447252321002412580">Tumulong sa pagpapahusay sa mga feature at performance ng Chrome</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4474155171896946103">I-bookmark ang lahat ng tab...</translation>
-<translation id="4474461121892222090">Puwede tumagal nang hanggang 15 minuto para makumpleto ang pag-activate ng mobile data.</translation>
 <translation id="4475552974751346499">Paghahanap ng mga pag-download</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para i-scan ang code na ito, puwede kang gumamit ng QR scanner app sa iyong telepono, o ilang camera app.</translation>
@@ -4817,7 +4814,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6473842110411557830">Paglalarawan ng powerwash</translation>
 <translation id="6474498546677193336">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Ia-unshare ang folder kapag na-shut down ang Linux.</translation>
 <translation id="6474884162850599008">Alisin sa pagkakakonekta ang Google Drive account</translation>
-<translation id="6475697075626596525">Gustong ibahagi ng <ph name="APP_NAME" /> ang mga content ng iyong screen. Piliin ang gusto mong ibahagi.</translation>
 <translation id="6477822444490674459">Hindi sinusuportahan ang pag-sync ng notification para sa mga teleponong nasa profile sa trabaho. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Gusto mo bang panatilihin ang mapanganib na file?</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6790497603648687708">Naidagdag mula sa malayo ang <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Magdagdag ng Tao...</translation>
-<translation id="6792072150955115067">Gustong ibahagi ng <ph name="APP_NAME" /> ang mga content ng iyong screen sa <ph name="TARGET_NAME" />. Piliin ang gusto mong ibahagi.</translation>
 <translation id="6793604637258913070">I-highlight ang text caret kapag lumabas o gumalaw ito</translation>
 <translation id="6793723358811598107">Nakatalaga na ang '<ph name="CURRENTKEY" />' sa pagkilos na '<ph name="ACTION" />.' Pumindot ng anumang key para lumabas.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6970,7 +6965,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8907906903932240086">Puwedeng suriin ng Chrome ang iyong computer para sa mapaminsalang software</translation>
 <translation id="8909298138148012791">Na-uninstall na ang <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Sinusubaybayan ng site ang iyong lokasyon</translation>
-<translation id="8910146161325739742">Ibahagi ang iyong screen</translation>
 <translation id="8910222113987937043">Hindi na isi-sync sa Google Account mo ang mga pagbabago sa iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store sa Google Account mo ang iyong kasalukuyang data at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912793549644936705">Naka-stretch</translation>

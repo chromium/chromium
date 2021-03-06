@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Inkognito rejimi tark etilsinmi?</translation>
 <translation id="8958424370300090006">Muayyan saytlar uchun cookie-fayllarni bloklang.</translation>
 <translation id="8959122750345127698">Sahifa topilmadi: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Olib tashlash</translation>
 <translation id="9019902583201351841">Ota-onangiz tomonidan boshqariladi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>

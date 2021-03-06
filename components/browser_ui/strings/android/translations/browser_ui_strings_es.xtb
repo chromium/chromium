@@ -304,6 +304,7 @@
 <translation id="894871326938397531">¿Salir del modo de incógnito?</translation>
 <translation id="8958424370300090006">Bloquear las cookies de un sitio específico.</translation>
 <translation id="8959122750345127698">No se puede realizar la navegación: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Dejar de recordar</translation>
 <translation id="9019902583201351841">Administrado por tus padres</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más}}</translation>

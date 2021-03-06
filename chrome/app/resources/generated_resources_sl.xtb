@@ -488,7 +488,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="152913213824448541">Stiki deljenja v bližini</translation>
 <translation id="1529891865407786369">Vir napajanja</translation>
 <translation id="1530838837447122178">Odpiranje nastavitev miške in sledilne ploščice v napravi</translation>
-<translation id="1531004739673299060">Okno aplikacije</translation>
 <translation id="1531275250079031713">Pokaži pogovorno okno »Dodajanje novega omrežja Wi-Fi«</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Glasno</translation>
@@ -847,7 +846,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1909880997794698664">Ali res želite, da je ta naprava trajno v načinu Kiosk?</translation>
 <translation id="1910721550319506122">Dobrodošli!</translation>
 <translation id="1915073950770830761">delovna različica</translation>
-<translation id="1916260783734263714">Trenutni zavihek</translation>
 <translation id="1916502483199172559">Privzeti rdeči avatar</translation>
 <translation id="1918141783557917887">&amp;Pomanjšaj</translation>
 <translation id="1919345977826869612">Oglasi</translation>
@@ -3095,7 +3093,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="447252321002412580">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4474155171896946103">Dodaj vse zavihke med zaznamke ...</translation>
-<translation id="4474461121892222090">Dokončanje aktiviranja prenosa podatkov v mobilnem omrežju lahko traja do 15 minut.</translation>
 <translation id="4475552974751346499">Iskanje v prenosih</translation>
 <translation id="4476590490540813026">Športnik</translation>
 <translation id="4476659815936224889">Če želite optično prebrati to kodo, lahko uporabite aplikacijo za optično branje kod QR v telefonu ali nekatere aplikacije fotoaparata.</translation>
@@ -4821,7 +4818,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6473842110411557830">Slika funkcije Powerwash</translation>
 <translation id="6474498546677193336">Skupne rabe mape ni bilo mogoče preklicati, ker jo uporablja določena aplikacija. Skupna raba mape bo preklicana ob naslednji zaustavitvi Linuxa.</translation>
 <translation id="6474884162850599008">Prekinitev povezave z računom za Google Drive</translation>
-<translation id="6475697075626596525">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona z drugimi. Izberite, kaj želite deliti.</translation>
 <translation id="6477822444490674459">Sinhroniziranje obvestil ni podprto za telefone v delovnem profilu. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Želite obdržati nevarno datoteko?</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
@@ -5083,7 +5079,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />: dodano na daljavo</translation>
 <translation id="6790820461102226165">Dodajanje osebe ...</translation>
-<translation id="6792072150955115067">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona s spletnim mestom <ph name="TARGET_NAME" />. Izberite, kaj želite deliti.</translation>
 <translation id="6793604637258913070">Označitev kazalke v besedilu, ko se pojavi ali premika</translation>
 <translation id="6793723358811598107">Tipka »<ph name="CURRENTKEY" />« je že dodeljena dejanju »<ph name="ACTION" />«. Pritisnite poljubno tipko, če želite zapreti.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6974,7 +6969,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8907906903932240086">Chrome lahko preveri, ali je v računalniku škodljiva programska oprema.</translation>
 <translation id="8909298138148012791">Aplikacija <ph name="APP_NAME" /> je odmeščena</translation>
 <translation id="8909833622202089127">Spletno mesto spremlja vašo lokacijo</translation>
-<translation id="8910146161325739742">Skupna raba zaslona</translation>
 <translation id="8910222113987937043">Spremembe zaznamkov, zgodovine, gesel in drugih nastavitev se ne bodo več sinhronizirale z Google Računom. Vaši obstoječi podatki bodo kljub temu še naprej shranjeni v Google Računu in jih bo mogoče upravljati na <ph name="BEGIN_LINK" />Google Nadzorni plošči<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Račun Google</translation>
 <translation id="8912793549644936705">Raztegni</translation>

@@ -488,7 +488,6 @@
 <translation id="152913213824448541">Контакти для функції "Передавання поблизу"</translation>
 <translation id="1529891865407786369">Джерело живлення</translation>
 <translation id="1530838837447122178">Відкрити налаштування миші та сенсорної панелі</translation>
-<translation id="1531004739673299060">додатка</translation>
 <translation id="1531275250079031713">Показати вікно "Додати нову мережу Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Голосно</translation>
@@ -847,7 +846,6 @@
 <translation id="1909880997794698664">Справді назавжди перевести цей пристрій у режим термінала?</translation>
 <translation id="1910721550319506122">Вітаємо!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Поточна вкладка</translation>
 <translation id="1916502483199172559">Стандартний червоний аватар</translation>
 <translation id="1918141783557917887">&amp;Малий</translation>
 <translation id="1919345977826869612">Оголошення</translation>
@@ -3095,7 +3093,6 @@
 <translation id="447252321002412580">Допоможіть покращити функції й ефективність Chrome</translation>
 <translation id="4472575034687746823">Початок роботи</translation>
 <translation id="4474155171896946103">Позначити закладками всі вкладки...</translation>
-<translation id="4474461121892222090">Активація мобільного передавання даних може зайняти до 15 хвилин.</translation>
 <translation id="4475552974751346499">Пошук завантажень</translation>
 <translation id="4476590490540813026">Спортсменка</translation>
 <translation id="4476659815936224889">Ви можете зісканувати цей код за допомогою QR-сканера на телефоні або в деяких додатках для камери.</translation>
@@ -4819,7 +4816,6 @@
 <translation id="6473842110411557830">Ілюстрація Powerwash</translation>
 <translation id="6474498546677193336">Не вдалося скасувати доступ, оскільки цю папку використовує додаток. Доступ до неї буде скасовано після завершення роботи Linux.</translation>
 <translation id="6474884162850599008">Від’єднати обліковий запис Google Диска</translation>
-<translation id="6475697075626596525">Додаток <ph name="APP_NAME" /> хоче показувати вміст вашого екрана. Виберіть, що показувати.</translation>
 <translation id="6477822444490674459">Синхронізація сповіщень не підтримується для телефонів у робочих профілях. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Завантажити небезпечний файл?</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
@@ -5081,7 +5077,6 @@
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6790497603648687708">Розширення <ph name="EXTENSION_NAME" /> додано віддалено</translation>
 <translation id="6790820461102226165">Додати користувача…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана в <ph name="TARGET_NAME" />. Виберіть, що показувати.</translation>
 <translation id="6793604637258913070">Виділяти місце введення тексту, коли воно з’являється або рухається</translation>
 <translation id="6793723358811598107">Клавіші "<ph name="CURRENTKEY" />" уже призначено дію "<ph name="ACTION" />". Щоб вийти, натисніть будь-яку клавішу.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6972,7 +6967,6 @@
 <translation id="8907906903932240086">Chrome може перевірити, чи встановлено на вашому комп'ютері шкідливе програмне забезпечення</translation>
 <translation id="8909298138148012791">Додаток <ph name="APP_NAME" /> видалено</translation>
 <translation id="8909833622202089127">Сайт відстежує місцезнаходження</translation>
-<translation id="8910146161325739742">Як показувати екран</translation>
 <translation id="8910222113987937043">Зміни в закладках, історії, паролях та інших налаштуваннях більше не синхронізуватимуться з вашим обліковим записом Google. Дані, які зберігаються в обліковому записі Google, не буде видалено. Ними можна керувати на <ph name="BEGIN_LINK" />Інформаційній панелі Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
 <translation id="8912793549644936705">Розтягнути</translation>

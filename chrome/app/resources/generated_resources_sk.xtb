@@ -487,7 +487,6 @@
 <translation id="152913213824448541">Kontakty pri zdieľaní nablízku</translation>
 <translation id="1529891865407786369">Zdroj napájania</translation>
 <translation id="1530838837447122178">Otvoriť nastavenia myši a touchpadu</translation>
-<translation id="1531004739673299060">Okno aplikácie</translation>
 <translation id="1531275250079031713">Zobraziť dialógové okno Pridať novú sieť Wi‑Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Hlasné</translation>
@@ -846,7 +845,6 @@
 <translation id="1909880997794698664">Naozaj chcete natrvalo udržiavať toto zariadenie v režime kiosku?</translation>
 <translation id="1910721550319506122">Vitajte!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Aktuálna karta</translation>
 <translation id="1916502483199172559">Predvolený červený avatar</translation>
 <translation id="1918141783557917887">&amp;Menší</translation>
 <translation id="1919345977826869612">Reklamy</translation>
@@ -3093,7 +3091,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4474155171896946103">Uložiť všetky karty ako záložky...</translation>
-<translation id="4474461121892222090">Dokončenie aktivácie mobilných dát môže trvať až 15 minút.</translation>
 <translation id="4475552974751346499">Hľadať stiahnuté súbory</translation>
 <translation id="4476590490540813026">Športovkyňa</translation>
 <translation id="4476659815936224889">Tento kód môžete naskenovať pomocou aplikácie na skenovanie QR kódov vo svojom telefóne alebo pomocou niektorých aplikácií fotoaparátu.</translation>
@@ -4817,7 +4814,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6473842110411557830">Ilustrácia obnovenia Powerwash</translation>
 <translation id="6474498546677193336">Zdieľanie sa nepodarilo zrušiť, pretože tento priečinok používa nejaká aplikácia. Jeho zdieľanie bude zrušené po ďalšom vypnutí systému Linux.</translation>
 <translation id="6474884162850599008">Odpojiť účet služby Disk Google</translation>
-<translation id="6475697075626596525">Aplikácia <ph name="APP_NAME" /> chce zdieľať obsah vašej obrazovky. Vyberte, čo chcete zdieľať.</translation>
 <translation id="6477822444490674459">Synchronizácia upozornení nie je podporovaná v pracovnom profile v telefóne. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Ponechať nebezpečný súbor?</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="6790497603648687708">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané vzdialene</translation>
 <translation id="6790820461102226165">Pridať osobu...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> chce zdieľať obsah vašej obrazovky s webom <ph name="TARGET_NAME" />. Vyberte, čo chcete zdieľať.</translation>
 <translation id="6793604637258913070">Zvýrazňovať textový kurzor, keď sa zobrazí alebo pohne</translation>
 <translation id="6793723358811598107">Kláves <ph name="CURRENTKEY" /> je už pridelený k akcii <ph name="ACTION" />. Ukončite stlačením ľubovoľného klávesa.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6968,7 +6963,6 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8907906903932240086">Chrome môže skontrolovať, či máte v počítači škodlivý softvér</translation>
 <translation id="8909298138148012791">Aplikácia <ph name="APP_NAME" /> bola odinštalovaná</translation>
 <translation id="8909833622202089127">Web sleduje vašu polohu</translation>
-<translation id="8910146161325739742">Zdieľanie obrazovky</translation>
 <translation id="8910222113987937043">Záložky, história, heslá a ďalšie nastavenia sa už nebudú ďalej synchronizovať do vášho účtu Google. Vaše existujúce údaje však zostanú uložené v účte Google a môžete ich spravovať pomocou panela <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">účtu Google</translation>
 <translation id="8912793549644936705">Roztiahnuť</translation>

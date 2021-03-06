@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Nearby सह शेअरिंग चे संपर्क</translation>
 <translation id="1529891865407786369">उर्जा स्रोत</translation>
 <translation id="1530838837447122178">माउस आणि टचपॅड डिव्हाइस सेटिंग्ज उघडा</translation>
-<translation id="1531004739673299060">ॲप्लिकेशन विंडो</translation>
 <translation id="1531275250079031713">'नवीन वाय-फाय जोडा' डायलॉग दाखवा</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">मोठा आवाज</translation>
@@ -842,7 +841,6 @@
 <translation id="1909880997794698664">तुम्हाला खात्री आहे की तुम्ही कियोस्क मोडमध्ये हे डिव्हाइस कायमचे ठेवू इच्छिता?</translation>
 <translation id="1910721550319506122">सुस्वागतम!</translation>
 <translation id="1915073950770830761">कॅनेरी</translation>
-<translation id="1916260783734263714">सध्याचा टॅब</translation>
 <translation id="1916502483199172559">डीफॉल्ट लाल अवतार</translation>
 <translation id="1918141783557917887">&amp;जरा लहान</translation>
 <translation id="1919345977826869612">जाहिराती</translation>
@@ -3087,7 +3085,6 @@
 <translation id="447252321002412580">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्स सुधारण्यात मदत करा</translation>
 <translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4474155171896946103">सर्व टॅब बुकमार्क करा...</translation>
-<translation id="4474461121892222090">मोबाइल डेटा ॲक्टिव्हेशन पूर्ण होण्यास सुमारे १५ मिनिटे लागू शकतात.</translation>
 <translation id="4475552974751346499">डाउनलोड शोधा</translation>
 <translation id="4476590490540813026">व्यायामपटू</translation>
 <translation id="4476659815936224889">हा कोड स्कॅन करण्यासाठी, तुम्ही तुमच्या फोनवरील QR स्कॅनर अ‍ॅप किंवा काही कॅमेरा अ‍ॅप्स वापरू शकता.</translation>
@@ -4810,7 +4807,6 @@
 <translation id="6473842110411557830">Powerwash चित्र</translation>
 <translation id="6474498546677193336">अनशेअर करता आले नाही कारण अ‍ॅप्लिकेशन हे फोल्डर वापरत आहे. पुढे Linux बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="6474884162850599008">Google ड्राइव्ह खाते डिस्कनेक्ट करा</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> तुमच्या स्क्रीनची आशय शेअर करू इच्छित आहे. तुम्ही शेअर करू इच्छित असलेले निवडा.</translation>
 <translation id="6477822444490674459">कार्य प्रोफाइलमध्ये फोनसाठी सूचना सिंक करणे सपोर्ट करत नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">धोकादायक फाईल ठेवायची?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
@@ -5072,7 +5068,6 @@
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> दूरस्थपणे जोडला</translation>
 <translation id="6790820461102226165">व्यक्ती जोडा...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> तुमच्या स्क्रीनची आशय <ph name="TARGET_NAME" /> सह शेअर करू इच्छित आहे. तुम्ही शेअर करू इच्छित असलेले निवडा.</translation>
 <translation id="6793604637258913070">मजकूर घालण्याचे स्थान दिसते किंवा हलते तेव्हा ते हायलाइट करा</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ही आधीपासून '<ph name="ACTION" />' या कृतीसाठी असाइन केलेली आहे. बाहेर पडण्यासाठी कोणतीही की दाबा.</translation>
 <translation id="6795884519221689054">पांडा</translation>
@@ -6958,7 +6953,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8907906903932240086">Chrome तुमच्या कॉंप्युटरमध्ये हानिकारक सॉफ्टवेअर तपासू शकते</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइंस्‍टॉल केले गेले आहे</translation>
 <translation id="8909833622202089127">साइट तुमचे स्थान ट्रॅक करत आहे</translation>
-<translation id="8910146161325739742">तुमची स्क्रीन शेअर करा</translation>
 <translation id="8910222113987937043">आपल्या बुकमार्क, इतिहास आणि अन्य सेटिंग्जसाठी बदल यापुढे आपल्या Google खात्यासह संकालित केले जाणार नाहीत. तथापि, तुमचा विद्यमान डेटा आपल्या Google खात्यामध्ये संग्रहित केलेला असेल आणि <ph name="BEGIN_LINK" />Google डॅशबोर्ड<ph name="END_LINK" /> वर व्यवस्थापित केला जाऊ शकतो.</translation>
 <translation id="8912362522468806198">Google खाते</translation>
 <translation id="8912793549644936705">पसरवा</translation>

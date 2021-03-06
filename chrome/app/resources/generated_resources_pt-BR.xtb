@@ -486,7 +486,6 @@
 <translation id="152913213824448541">Contatos do Compartilhar por proximidade</translation>
 <translation id="1529891865407786369">Fonte de energia</translation>
 <translation id="1530838837447122178">Abrir configurações do mouse e touchpad do dispositivo</translation>
-<translation id="1531004739673299060">Janela do aplicativo</translation>
 <translation id="1531275250079031713">Mostrar a caixa de diálogo "Adicionar novo Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Alto</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Você quer mesmo manter permanentemente este dispositivo no modo  quiosque?</translation>
 <translation id="1910721550319506122">Bem-vindo!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Guia atual</translation>
 <translation id="1916502483199172559">Avatar vermelho padrão</translation>
 <translation id="1918141783557917887">&amp;Menor</translation>
 <translation id="1919345977826869612">Anúncios</translation>
@@ -3094,7 +3092,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="447252321002412580">Ajude a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="4472575034687746823">Primeiros passos</translation>
 <translation id="4474155171896946103">Adicionar todas as guias aos favoritos...</translation>
-<translation id="4474461121892222090">A ativação dos dados móveis pode levar até 15 minutos.</translation>
 <translation id="4475552974751346499">Pesquisar downloads</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para ler esse código, você pode usar um app leitor de QR ou alguns apps de câmera no seu smartphone.</translation>
@@ -4819,7 +4816,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6473842110411557830">Executar Powerwash na ilustração</translation>
 <translation id="6474498546677193336">Não foi possível cancelar o compartilhamento porque um aplicativo está usando a pasta. O compartilhamento da pasta será cancelado assim que o Linux for desligado.</translation>
 <translation id="6474884162850599008">Desconectar a conta do Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> quer compartilhar o conteúdo da sua tela. Escolha o que você quer compartilhar.</translation>
 <translation id="6477822444490674459">A sincronização de notificações não é compatível com smartphones conectados a perfis de trabalho. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Manter arquivo perigoso?</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>
@@ -5081,7 +5077,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6790497603648687708">A extensão <ph name="EXTENSION_NAME" /> foi adicionada remotamente</translation>
 <translation id="6790820461102226165">Adicionar pessoa...</translation>
-<translation id="6792072150955115067">O <ph name="APP_NAME" /> deseja compartilhar o conteúdo da sua tela com <ph name="TARGET_NAME" />. Escolha o que você quer compartilhar.</translation>
 <translation id="6793604637258913070">Destacar o cursor de texto quando ele aparecer ou se mover</translation>
 <translation id="6793723358811598107">A tecla "<ph name="CURRENTKEY" />" já foi atribuída à ação "<ph name="ACTION" />". Pressione qualquer tecla para sair.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6970,7 +6965,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8907906903932240086">O Chrome pode verificar o computador em busca de softwares nocivos</translation>
 <translation id="8909298138148012791">O app <ph name="APP_NAME" /> foi desinstalado</translation>
 <translation id="8909833622202089127">O site está rastreando seu local</translation>
-<translation id="8910146161325739742">Compartilhar sua tela</translation>
 <translation id="8910222113987937043">As alterações feitas nos seus favoritos, histórico, senhas e outras configurações não serão mais sincronizadas com sua Conta do Google. No entanto, os dados já existentes permanecerão armazenados na sua conta e será possível gerenciá-los no <ph name="BEGIN_LINK" />Painel do Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8912793549644936705">Esticar</translation>

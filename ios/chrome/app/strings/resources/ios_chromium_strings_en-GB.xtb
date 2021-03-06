@@ -58,7 +58,6 @@
 3. Select Chromium.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
-<translation id="6604711459180487467">Get a better experience in Chromium based on your location.</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
@@ -75,6 +74,7 @@
 <translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
+<translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>

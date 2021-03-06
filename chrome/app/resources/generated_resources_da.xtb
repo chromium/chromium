@@ -486,7 +486,6 @@
 <translation id="152913213824448541">Kontakter til Deling tæt på</translation>
 <translation id="1529891865407786369">Strømkilde</translation>
 <translation id="1530838837447122178">Åbn indstillingerne for mus og touchplade på enheden</translation>
-<translation id="1531004739673299060">Appvindue</translation>
 <translation id="1531275250079031713">Vis dialogboksen "Tilføj nyt Wi-Fi-netværk"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Højt</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Er du sikker på, at du vil beholde denne enhed permanent i kiosktilstand?</translation>
 <translation id="1910721550319506122">Velkommen</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Aktuel fane</translation>
 <translation id="1916502483199172559">Rød standardavatar</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1919345977826869612">Annoncer</translation>
@@ -3093,7 +3091,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="447252321002412580">Vær med til at forbedre Chromes funktioner og ydeevne</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4474155171896946103">Tilføj alle faner som bogmærker...</translation>
-<translation id="4474461121892222090">Det kan tage op til 15 minutter, før mobildata er aktiveret.</translation>
 <translation id="4475552974751346499">Søg i downloads</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Du kan scanne denne kode ved at bruge en app til scanning af QR-koder på din telefon eller visse kameraapps.</translation>
@@ -4817,7 +4814,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6473842110411557830">Powerwash-illustration</translation>
 <translation id="6474498546677193336">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Linux lukkes.</translation>
 <translation id="6474884162850599008">Fjern tilknytningen af din Google Drev-konto</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> vil gerne dele indholdet af din skærm. Vælg det, du gerne vil dele.</translation>
 <translation id="6477822444490674459">Synkronisering af notifikationer understøttes ikke for telefoner med en arbejdsprofil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vil du beholde den farlige fil?</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> blev tilføjet eksternt</translation>
 <translation id="6790820461102226165">Tilføj person...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> vil gerne dele indholdet på din skærm med <ph name="TARGET_NAME" />. Vælg det, du gerne vil dele.</translation>
 <translation id="6793604637258913070">Fremhæv tekstmarkøren, når den vises eller flyttes</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" er allerede tildelt handlingen "<ph name="ACTION" />". Tryk på en vilkårlig tast for at afslutte.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6968,7 +6963,6 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8907906903932240086">Chrome kan scanne din computer for skadelig software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> er afinstalleret</translation>
 <translation id="8909833622202089127">Websitet sporer din placering</translation>
-<translation id="8910146161325739742">Del din skærm</translation>
 <translation id="8910222113987937043">Ændringer af bogmærker, historik, adgangskoder og andre indstillinger synkroniseres ikke længere med din Google-konto. Dine eksisterende data er dog stadig gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912793549644936705">Stræk</translation>

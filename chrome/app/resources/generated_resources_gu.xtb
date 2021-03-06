@@ -483,7 +483,6 @@
 <translation id="152913213824448541">'નજીકના શેર' સંપર્કો</translation>
 <translation id="1529891865407786369">પાવર સ્રોત</translation>
 <translation id="1530838837447122178">માઉસ અને ટચપેડ ઉપકરણ સેટિંગ્સ ખોલો</translation>
-<translation id="1531004739673299060">ઍપ્લિકેશન વિંડો</translation>
 <translation id="1531275250079031713">'નવું વાઇ-ફાઇ કનેક્શન ઉમેરો' સંવાદ બતાવો</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">મોટો અવાજ</translation>
@@ -637,6 +636,7 @@
 <translation id="1692118695553449118">સમન્વયન ચાલુ છે</translation>
 <translation id="1692210323591458290">ઘેરો જાંબલી</translation>
 <translation id="169279809881363536">કોઈ પ્રોફાઇલ મળી નથી. નવા નેટવર્કનું સેટઅપ કરવા માટે, ડિવાઇસના કૅમેરાનો ઉપયોગ કરીને QR કોડ સ્કૅન કરો અથવા તમારા મોબાઇલ ઑપરેટરે પ્રદાન કરેલો સક્રિયકરણનો કોડ દાખલ કરો.</translation>
+<translation id="169675691788639886">ડિવાઇસ માટે SSH સર્વર ગોઠવવામાં આવ્યું છે. સંવેદનશીલ એકાઉન્ટ વડે સાઇન ઇન કરશો નહીં.</translation>
 <translation id="1697150536837697295">કળા</translation>
 <translation id="1697686431566694143">ફાઇલમાં ફેરફાર કરો</translation>
 <translation id="1698122934742150150">ફક્ત વર્તમાન છૂપું સત્ર</translation>
@@ -840,7 +840,6 @@
 <translation id="1909880997794698664">શું તમે ખરેખર આ ઉપકરણને કાયમી માટે કિઓસ્ક મોડમાં રાખવા માંગો છો?</translation>
 <translation id="1910721550319506122">સ્વાગત!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">વર્તમાન ટૅબ</translation>
 <translation id="1916502483199172559">ડિફોલ્ટ લાલ અવતાર</translation>
 <translation id="1918141783557917887">&amp;નાનું</translation>
 <translation id="1919345977826869612">જાહેરાતો</translation>
@@ -2816,6 +2815,7 @@
 <translation id="4115080753528843955">કેટલીક કન્ટેન્ટ સેવાઓ, સુરક્ષિત કન્ટેન્ટની ઍક્સેસને અધિકૃત કરવાના ઉદ્દેશ્યો માટે અનન્ય ઓળખકર્તાઓનો ઉપયોગ કરે છે</translation>
 <translation id="4115378294792113321">કિરમજી</translation>
 <translation id="4118579674665737931">કૃપા કરીને ડિવાઇસને રીબૂટ કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="4118998393712575296">ઍપની મંજૂરી અને સ્ક્રીન સમયની મર્યાદાઓ જેવા માતાપિતાના યોગ્ય નિયંત્રણોનો ઉપયોગ કરવા માટે, માતાપિતા દ્વારા મેનેજ કરવામાં આવતું હોય એવું બાળકનું Google એકાઉન્ટ હોવું આવશ્યક છે. Google Classroom જેવી સાઇટ અને ઍપ સાથે ઉપયોગ કરવા માટે, પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરી શકાશે.</translation>
 <translation id="4120388883569225797">સુરક્ષા કોડ રીસેટ કરી શકાતો નથી</translation>
 <translation id="4120817667028078560">પાથ ખૂબ લાંબો છે</translation>
 <translation id="4124823734405044952">તમારો સુરક્ષા કોડ રીસેટ કરવામાં આવ્યો છે</translation>
@@ -3087,7 +3087,6 @@
 <translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="4472575034687746823">પ્રારંભ કરો</translation>
 <translation id="4474155171896946103">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
-<translation id="4474461121892222090">તેને મોબાઇલ ડેટા સક્રિયકરણ પૂરું કરવામાં કદાચ 15 મિનિટ સુધીનો સમય લાગી શકે છે.</translation>
 <translation id="4475552974751346499">ડાઉનલોડ્સ શોધો</translation>
 <translation id="4476590490540813026">ઍથ્લીટ</translation>
 <translation id="4476659815936224889">આ કોડ સ્કૅન કરવા માટે, તમે તમારા ફોન પર QR સ્કૅનર ઍપ અથવા અમુક કૅમેરા ઍપનો ઉપયોગ કરી શકો છો.</translation>
@@ -3877,6 +3876,7 @@
 <translation id="540296380408672091"><ph name="HOST" /> પર કુકીઝને હંમેશાં અવરોધિત કરો</translation>
 <translation id="540495485885201800">અગાઉની આઇટમ સાથે અદલાબદલી કરો</translation>
 <translation id="5405146885510277940">સેટિંગ રીસેટ કરો</translation>
+<translation id="5407119150486192764">તમારા મોબાઇલ ઑપરેટર દ્વારા આપવામાં આવેલી 8-અંકની પિન અનબ્લૉકિંગ કી દાખલ કરો</translation>
 <translation id="5408750356094797285">ઝૂમ કરો: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">તમારા Google એકાઉન્ટમાંથી</translation>
 <translation id="5411472733320185105">આ હોસ્ટ અને ડોમેન માટે પ્રૉક્સી સેટિંગનો ઉપયોગ કરશો નહીંં:</translation>
@@ -4511,6 +4511,7 @@ USB ડિવાઇસ</translation>
 <translation id="6124213551517593835">આમ કરવાથી <ph name="SITE_GROUP_NAME" /> અને તેની હેઠળ આવતી કોઈપણ સાઇટ દ્વારા સ્ટોર થયેલો બધો ડેટા અને કુકી સાફ કરવામાં આવશે</translation>
 <translation id="6124650939968185064">નીચેના એક્સ્ટેન્શન્સ આ એક્સ્ટેન્શન પર નિર્ભર કરે છે:</translation>
 <translation id="6124698108608891449">આ સાઇટ માટે વધુ પરવાનગીઓની જરૂર છે.</translation>
+<translation id="6125442051901189730">કોઈ સિમ પ્રોફાઇલ ઉપલબ્ધ નથી. <ph name="BEGIN_LINK" />અહીં<ph name="END_LINK" /> નવી પ્રોફાઇલનું સેટઅપ કરો.</translation>
 <translation id="6125479973208104919">કમનસીબે, તમને આ <ph name="DEVICE_TYPE" />માં તમારું એકાઉન્ટ ઉમેરવાની જરૂર પડશે.</translation>
 <translation id="6129691635767514872">પસંદ કરેલો ડેટા Chrome અને તમારા સિંક કરેલ ડિવાઇસમાંથી ડિલીટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને બીજા Google સેવાઓ પરની પ્રવૃત્તિઓ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર હોય શકે છે.</translation>
 <translation id="6129938384427316298">નેટસ્કેપ પ્રમાણપત્ર ટિપ્પણી</translation>
@@ -4811,7 +4812,6 @@ USB ડિવાઇસ</translation>
 <translation id="6473842110411557830">Powerwashનું ઉદાહરણ</translation>
 <translation id="6474498546677193336">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વાર Linux શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
 <translation id="6474884162850599008">Google ડ્રાઇવ એકાઉન્ટ ડિસ્કનેક્ટ કરો</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />, તમારી સ્ક્રીનની કન્ટેન્ટને શેર કરવા માગે છે. તમે શું શેર કરવા માગો છો તે પસંદ કરો.</translation>
 <translation id="6477822444490674459">ઑફિસની પ્રોફાઇલમાંના ફોન માટે નોટિફિકેશન સિંક કરવાની સુવિધાને સપોર્ટ કરવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">જોખમી ફાઇલ રાખીએ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -5073,7 +5073,6 @@ USB ડિવાઇસ</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> રિમોટ્લી ઉમેર્યું હતું</translation>
 <translation id="6790820461102226165">વ્યક્તિ ઉમેરો...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />, તમારી સ્ક્રીનની કન્ટેન્ટને <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે. તમે શું શેર કરવા માગો છો તે પસંદ કરો.</translation>
 <translation id="6793604637258913070">દેખાવા પર અથવા ખસેડવા પર ટેક્સ્ટ કૅરેટ હાઇલાઇટ કરો</translation>
 <translation id="6793723358811598107">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. બહાર નીકળવા માટે કોઈપણ કી દબાવો.</translation>
 <translation id="6795884519221689054">પાંડા</translation>
@@ -6616,6 +6615,7 @@ USB ડિવાઇસ</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553342806078037065">અન્ય લોકોને મેનેજ કરો</translation>
 <translation id="8554899698005018844">કોઈ ભાષા નથી</translation>
+<translation id="8555195867496021627">કોઈ ઇ-સિમ પ્રોફાઇલ ઉપલબ્ધ નથી. <ph name="BEGIN_LINK" />અહીં<ph name="END_LINK" /> નવી પ્રોફાઇલ ડાઉનલોડ કરો.</translation>
 <translation id="8557022314818157177">જ્યાં સુધી તમારી ફિંગરપ્રિન્ટ કૅપ્ચર ન થાય, ત્યાં સુધી તમારી સિક્યુરિટી કીનો સ્પર્શ કરતા રહો</translation>
 <translation id="8557930019681227453">સ્પષ્ટ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{તમામ URLને &amp;નવી વિન્ડોમાં ખોલો}=1{&amp;નવી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;નવી વિન્ડોમાં ખોલો}}</translation>
@@ -6955,7 +6955,6 @@ USB ડિવાઇસ</translation>
 <translation id="8907906903932240086">Chrome હાનિકારક સૉફ્ટવેર માટે તમારું કમ્પ્યુટર ચેક કરી શકે છે</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરવામાં આવી છે</translation>
 <translation id="8909833622202089127">સાઇટ તમારા સ્થાનને ટ્રૅક કરી રહી છે</translation>
-<translation id="8910146161325739742">તમારી સ્ક્રીન શેર કરો</translation>
 <translation id="8910222113987937043">તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ પરના ફેરફારો હવે તમારો અસ્તિત્વમાંનો ડેટા, તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે અને તે <ph name="BEGIN_LINK" />Google ડૅશબોર્ડ<ph name="END_LINK" /> પર મેનેજ કરવામાં આવી શકે છે.</translation>
 <translation id="8912362522468806198">Google એકાઉન્ટ</translation>
 <translation id="8912793549644936705">ખેંચો</translation>

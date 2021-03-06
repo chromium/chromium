@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Ezkutuko modutik irten?</translation>
 <translation id="8958424370300090006">Blokeatu webgune jakin bateko cookieak.</translation>
 <translation id="8959122750345127698">Ezin da joan <ph name="URL" /> orrira</translation>
+<translation id="8986362086234534611">Ahaztu</translation>
 <translation id="9019902583201351841">Gurasoek kudeatuta</translation>
 <translation id="9074739597929991885">Bluetooth-a</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>

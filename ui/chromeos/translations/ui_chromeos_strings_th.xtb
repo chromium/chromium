@@ -622,6 +622,7 @@
 <translation id="7628656427739290098">เสร็จแล้ว <ph name="PERCENT" />%</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7654209398114106148">กำลังย้าย <ph name="NUMBER_OF_ITEMS" />รายการ...</translation>
+<translation id="7655441028674523381">เข้าถึง Google Photos ได้ง่ายๆ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7663224033570512922">ฮินดี</translation>
 <translation id="7693909743393669729">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์และลบพาร์ติชันที่มีอยู่ทั้งหมด รวมถึงพาร์ติชันที่อาจมองไม่เห็น การดำเนินการนี้เลิกทำไม่ได้</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">ไฟล์ Tar</translation>
 <translation id="8475647382427415476">Google ไดรฟ์ไม่สามารถซิงค์ "<ph name="FILENAME" />" ได้ตอนนี้ Google ไดรฟ์จะลองใหม่ภายหลัง</translation>
 <translation id="8477649328507734757">หมุน</translation>
+<translation id="8484284835977497781">เลือกจากรูปภาพล่าสุด</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="8521441079177373948">สหราชอาณาจักร</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>

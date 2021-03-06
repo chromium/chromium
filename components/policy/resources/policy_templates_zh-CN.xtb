@@ -3333,13 +3333,13 @@
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
 <translation id="5636088574608432506">此政策旨在控制浏览器的登录行为。通过设置此政策，您可以指定用户能否使用其帐号登录 <ph name="PRODUCT_NAME" /> 并使用帐号相关服务（如 <ph name="PRODUCT_NAME" /> 同步）。
 
-      如果此政策设为“禁止登录浏览器”，用户便无法登录浏览器，也无法使用帐号相关服务。在这种情况下，用户将无法使用浏览器级功能（如 <ph name="PRODUCT_NAME" /> 同步），这些功能会处于不可用状态。在 <ph name="IOS_NAME" /> 上，如果在用户登录后将此政策设为“Disabled”，用户将会立即退出登录。在其他平台上，用户将会在下次运行 <ph name="PRODUCT_NAME" /> 时退出登录。在所有平台上，用户的本地个人资料数据（如书签、密码等）会被予以保留并且依然可用。用户仍能登录并使用 Google 网络服务（如 Gmail）。
+      如果此政策设为“禁止登录浏览器”，用户便无法登录浏览器，也无法使用帐号相关服务。在这种情况下，用户将无法使用多种浏览器级功能（如 <ph name="PRODUCT_NAME" /> 同步），这些功能会处于不可用状态。在 <ph name="IOS_NAME" /> 上，如果在用户登录后将此政策设为“Disabled”，用户将会立即退出登录。在其他平台上，用户将会在下次运行 <ph name="PRODUCT_NAME" /> 时退出登录。在所有平台上，用户的本地个人资料数据（如书签、密码等）会得到保留并且依然可用。用户仍能登录并使用 Google 网络服务（如 Gmail）。
 
       如果此政策设为“允许登录浏览器”，用户将可以登录浏览器。在除 <ph name="IOS_NAME" /> 之外的所有其他平台上，用户会在登录 Google 网络服务（如 Gmail）时自动登录浏览器。登录浏览器意味着浏览器将会保存用户的帐号信息，但并不意味着 <ph name="PRODUCT_NAME" /> 同步功能会默认开启；用户必须另行选择使用此功能。启用此政策会阻止用户关闭用于允许登录浏览器的设置。若要控制 <ph name="PRODUCT_NAME" /> 同步功能的可用性，请使用 <ph name="SYNC_POLICY_NAME" /> 政策。
 
-      如果此政策设为“强制登录浏览器”，系统将会向用户显示帐号选择对话框，而且用户必须选择并登录某个帐号才能使用浏览器。这样可确保针对受管理的帐号应用并强制执行与该帐号关联的政策。默认情况下，此设置会为帐号开启 <ph name="PRODUCT_NAME" /> 同步功能，除非 <ph name="PRODUCT_NAME" /> 同步功能已被网域管理员停用或已通过 <ph name="SYNC_POLICY_NAME" /> 政策停用。<ph name="GUEST_MODE_POLICY_NAME" /> 的默认值将会设为“Disabled”。请注意，启用此政策后，现有的未登录个人资料都会处于锁定且不可访问的状态。有关详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/a/answer/7572556。<ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 或 <ph name="IOS_NAME" /> 不支持此选项。如果您在 Linux、Android 和 iOS 上使用此选项，系统将改用“允许登录浏览器”。
+      如果此政策设为“强制登录浏览器”，系统将会向用户显示帐号选择对话框，而且用户必须选择并登录某个帐号才能使用浏览器。这样可确保针对受管理的帐号采用并强制执行与该帐号关联的政策。默认情况下，此设置会为帐号开启 <ph name="PRODUCT_NAME" /> 同步功能，除非 <ph name="PRODUCT_NAME" /> 同步功能已被网域管理员停用或已通过 <ph name="SYNC_POLICY_NAME" /> 政策停用。<ph name="GUEST_MODE_POLICY_NAME" /> 的默认值将会设为“Disabled”。请注意，启用此政策后，现有的未登录个人资料都会处于锁定且不可访问的状态。有关详情，请参阅这篇帮助中心文章：https://support.google.com/chrome/a/answer/7572556。<ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 或 <ph name="IOS_NAME" /> 不支持此选项。如果您在这些平台上使用此选项，系统将改用“允许登录浏览器”。
 
-      如果此政策未设置，用户可以自行决定是否要在 <ph name="PRODUCT_NAME" /> 设置中启用浏览器登录选项并酌情使用该选项。</translation>
+      如果此政策未设置，用户可以自行决定是否要在 <ph name="PRODUCT_NAME" /> 设置中启用浏览器登录选项并酌情使用登录功能。</translation>
 <translation id="5641279111657132737">此政策已被弃用，请改用“<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />”政策。
 
       通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
@@ -4922,7 +4922,7 @@
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
 <translation id="7774451488719504808">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架来源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
-       此政策允许覆盖这项更改。
+       此政策让您可以覆盖这项变更。
        如果此政策已启用或未设置，系统将会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
        如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
@@ -5042,7 +5042,7 @@
 <translation id="7904177352786629708">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
 
       如果此政策已停用或未设置，当生成 Kerberos SPN 时，CNAME 查找会决定服务器的规范名称。</translation>
-<translation id="7906983682927840536">在浏览器关闭时提取 keepalive 时长</translation>
+<translation id="7906983682927840536">浏览器关闭时的 Fetch keepalive 时长</translation>
 <translation id="7908384265697653397">如果 <ph name="PRODUCT_OS_NAME" />版本低于指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />，系统会在多少天后强制用户退出登录</translation>
 <translation id="7912255076272890813">配置允许的应用/扩展程序类型</translation>
 <translation id="791267408364877739">使用可能不安全的命令行标记时显示安全警告</translation>

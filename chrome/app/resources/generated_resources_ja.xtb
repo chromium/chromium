@@ -485,7 +485,6 @@
 <translation id="152913213824448541">ニアバイシェアの連絡先</translation>
 <translation id="1529891865407786369">電源</translation>
 <translation id="1530838837447122178">マウスとタッチパッドのデバイス設定を開く</translation>
-<translation id="1531004739673299060">アプリケーション ウィンドウ</translation>
 <translation id="1531275250079031713">[新しい Wi-Fi を追加] ダイアログを表示</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">大きい</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">このデバイスをキオスク モードに固定してもよろしいですか？</translation>
 <translation id="1910721550319506122">ようこそ！</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">現在のタブ</translation>
 <translation id="1916502483199172559">デフォルトの赤のアバター</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919345977826869612">広告</translation>
@@ -3092,7 +3090,6 @@
 <translation id="447252321002412580">Chrome の機能と動作の改善に協力する</translation>
 <translation id="4472575034687746823">利用を開始</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
-<translation id="4474461121892222090">モバイルデータの有効化が完了するまでには最大 15 分かかります。</translation>
 <translation id="4475552974751346499">ダウンロード検索</translation>
 <translation id="4476590490540813026">競技選手</translation>
 <translation id="4476659815936224889">このコードをスキャンするには、スマートフォンの QR スキャンアプリまたはカメラアプリを使用してください。</translation>
@@ -4816,7 +4813,6 @@
 <translation id="6473842110411557830">Powerwash の説明図</translation>
 <translation id="6474498546677193336">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Linux をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> が画面コンテンツの共有をリクエストしています。共有する部分を選択してください。</translation>
 <translation id="6477822444490674459">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">危険なファイルを保存しますか？</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
@@ -5078,7 +5074,6 @@
 <translation id="6790428901817661496">再生</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> がリモートで追加されました</translation>
 <translation id="6790820461102226165">ユーザーを追加...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> が <ph name="TARGET_NAME" /> との画面コンテンツの共有をリクエストしています。共有する部分を選択してください。</translation>
 <translation id="6793604637258913070">テキスト キャレットが表示されるか移動したときに強調表示する</translation>
 <translation id="6793723358811598107">「<ph name="CURRENTKEY" />」キーはすでに「<ph name="ACTION" />」に割り当てられています。終了するには、どれかキーを押してください。</translation>
 <translation id="6795884519221689054">パンダ</translation>
@@ -6966,7 +6961,6 @@
 <translation id="8907906903932240086">パソコン内の有害なソフトウェアを Chrome で確認できます</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> のアンインストールが完了しました</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
-<translation id="8910146161325739742">画面を共有する</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8912793549644936705">拡大</translation>

@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Выйти из режима инкогнито?</translation>
 <translation id="8958424370300090006">Блокировать файлы cookie для определенного сайта.</translation>
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Удалить</translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>

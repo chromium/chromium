@@ -487,7 +487,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="152913213824448541">Udostępnianie w pobliżu kontakty</translation>
 <translation id="1529891865407786369">Źródło zasilania</translation>
 <translation id="1530838837447122178">Otwórz ustawienia myszy i touchpada</translation>
-<translation id="1531004739673299060">Okno aplikacji</translation>
 <translation id="1531275250079031713">Pokaż okno „Dodaj nową sieć Wi-Fi”</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Głośno</translation>
@@ -842,7 +841,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1909880997794698664">Czy na pewno chcesz trwale utrzymywać to urządzenie w trybie kiosku?</translation>
 <translation id="1910721550319506122">Witamy!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Bieżąca karta</translation>
 <translation id="1916502483199172559">Domyślny czerwony awatar</translation>
 <translation id="1918141783557917887">&amp;Mniejszy</translation>
 <translation id="1919345977826869612">Reklamy</translation>
@@ -3090,7 +3088,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="447252321002412580">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4474155171896946103">Dodaj wszystkie karty do zakładek...</translation>
-<translation id="4474461121892222090">Aktywowanie mobilnej transmisji danych może potrwać do 15 minut.</translation>
 <translation id="4475552974751346499">Przeszukaj pobrane pliki</translation>
 <translation id="4476590490540813026">Sportowiec</translation>
 <translation id="4476659815936224889">Aby zeskanować ten kod, skorzystaj ze skanera kodów QR w telefonie lub z aplikacji aparatu.</translation>
@@ -4814,7 +4811,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6473842110411557830">Ilustracja: myjka ciśnieniowa</translation>
 <translation id="6474498546677193336">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu Linuksa.</translation>
 <translation id="6474884162850599008">Odłącz konto na Dysku Google</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> chce udostępnić zawartość Twojego ekranu. Wybierz elementy, które chcesz udostępnić.</translation>
 <translation id="6477822444490674459">Telefony używające profilu służbowego nie obsługują synchronizacji powiadomień. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Zachować niebezpieczny plik?</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
@@ -5076,7 +5072,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6790497603648687708">Dodano zdalnie: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Dodaj osobę...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> chce udostępnić zawartość Twojego ekranu stronie <ph name="TARGET_NAME" />. Wybierz elementy, które chcesz udostępnić.</translation>
 <translation id="6793604637258913070">Podświetlaj kursor tekstu, gdy się wyświetla lub porusza.</translation>
 <translation id="6793723358811598107">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, by zakończyć.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8907906903932240086">Chrome może sprawdzać, czy na komputerze nie ma szkodliwego oprogramowania</translation>
 <translation id="8909298138148012791">Aplikacja <ph name="APP_NAME" /> została odinstalowana</translation>
 <translation id="8909833622202089127">Strona śledzi Twoją lokalizację</translation>
-<translation id="8910146161325739742">Udostępnianie ekranu</translation>
 <translation id="8910222113987937043">Twoje zakładki, historia, hasła i inne ustawienia nie będą już synchronizowane z kontem Google. Wcześniejsze dane pozostaną zapisane na koncie Google. Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Panelu Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Konta Google</translation>
 <translation id="8912793549644936705">Rozciągnij</translation>

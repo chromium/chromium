@@ -482,7 +482,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="152913213824448541">Nearby Share-Kontakte</translation>
 <translation id="1529891865407786369">Stromquelle</translation>
 <translation id="1530838837447122178">Geräteeinstellungen für Maus und Touchpad öffnen</translation>
-<translation id="1531004739673299060">Anwendungsfenster</translation>
 <translation id="1531275250079031713">Dialogfeld "Anderes WLAN hinzufügen" anzeigen</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Laut</translation>
@@ -840,7 +839,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1909880997794698664">Möchten Sie das Gerät wirklich dauerhaft im Kioskmodus betreiben?</translation>
 <translation id="1910721550319506122">Willkommen!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Aktueller Tab</translation>
 <translation id="1916502483199172559">Roter Standardavatar</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1919345977826869612">Werbung</translation>
@@ -3086,7 +3084,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="447252321002412580">Helfen, die Funktionen und die Leistung von Chrome zu verbessern</translation>
 <translation id="4472575034687746823">Jetzt starten</translation>
 <translation id="4474155171896946103">Alle Tabs als Lesezeichen speichern...</translation>
-<translation id="4474461121892222090">Die Aktivierung der mobilen Daten kann bis zu 15 Minuten dauern.</translation>
 <translation id="4475552974751346499">In Downloads suchen</translation>
 <translation id="4476590490540813026">Athletin</translation>
 <translation id="4476659815936224889">Sie können eine QR-Scanner-App oder bestimmte Kamera-Apps auf Ihrem Smartphone verwenden, um diesen Code zu scannen.</translation>
@@ -4808,7 +4805,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6473842110411557830">Powerwash-Illustration</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> möchte den Inhalt Ihres Bildschirms teilen. Wählen Sie aus, was geteilt werden soll.</translation>
 <translation id="6477822444490674459">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Schädliche Datei beibehalten?</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
@@ -5070,7 +5066,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> wurde per Remotezugriff hinzugefügt</translation>
 <translation id="6790820461102226165">Person hinzufügen...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> möchte die Inhalte Ihres Bildschirms mit <ph name="TARGET_NAME" /> teilen. Wählen Sie aus, was geteilt werden soll.</translation>
 <translation id="6793604637258913070">Textcursor hervorheben, wenn er erscheint oder sich bewegt</translation>
 <translation id="6793723358811598107">„<ph name="CURRENTKEY" />“ wurde bereits der Aktion „<ph name="ACTION" />“ zugewiesen. Drücken Sie zum Beenden eine beliebige Taste.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6956,7 +6951,6 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8907906903932240086">Chrome kann Ihren Computer auf schädliche Software prüfen</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> wurde deinstalliert</translation>
 <translation id="8909833622202089127">Die Website verfolgt Ihren Standort</translation>
-<translation id="8910146161325739742">Bildschirm teilen</translation>
 <translation id="8910222113987937043">Änderungen an Ihrem Verlauf sowie an Ihren Lesezeichen, Passwörtern und sonstigen Einstellungen werden nicht mehr mit Ihrem Google-Konto synchronisiert. Bereits in Ihrem Google-Konto gespeicherte Daten bleiben dort erhalten und können über das <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> verwaltet werden.</translation>
 <translation id="8912362522468806198">Google-Konto</translation>
 <translation id="8912793549644936705">Strecken</translation>

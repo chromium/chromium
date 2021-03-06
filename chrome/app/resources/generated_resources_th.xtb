@@ -485,7 +485,6 @@
 <translation id="152913213824448541">รายชื่อติดต่อของการแชร์ใกล้เคียง</translation>
 <translation id="1529891865407786369">แหล่งพลังงาน</translation>
 <translation id="1530838837447122178">เปิดการตั้งค่าอุปกรณ์เมาส์และทัชแพด</translation>
-<translation id="1531004739673299060">หน้าต่างแอปพลิเคชัน</translation>
 <translation id="1531275250079031713">แสดงกล่องโต้ตอบ "เพิ่ม Wi-Fi ใหม่"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ดัง</translation>
@@ -640,6 +639,7 @@
 <translation id="1692118695553449118">การซิงค์เปิดอยู่</translation>
 <translation id="1692210323591458290">สีม่วงเข้ม</translation>
 <translation id="169279809881363536">ไม่พบโปรไฟล์ ในการตั้งค่าเครือข่ายใหม่ ให้สแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการให้มา</translation>
+<translation id="169675691788639886">อุปกรณ์กำหนดค่าเซิร์ฟเวอร์ SSH เอาไว้ อย่าลงชื่อเข้าใช้ด้วยบัญชีที่มีความละเอียดอ่อน</translation>
 <translation id="1697150536837697295">ศิลปะ</translation>
 <translation id="1697686431566694143">แก้ไขไฟล์</translation>
 <translation id="1698122934742150150">เซสชันไม่ระบุตัวตนปัจจุบันเท่านั้น</translation>
@@ -843,7 +843,6 @@
 <translation id="1909880997794698664">คุณต้องการเก็บอุปกรณ์นี้ไว้ในโหมดคีออสก์อย่างถาวรหรือไม่</translation>
 <translation id="1910721550319506122">ยินดีต้อนรับ!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">แท็บปัจจุบัน</translation>
 <translation id="1916502483199172559">รูปโปรไฟล์เริ่มต้นสีแดง</translation>
 <translation id="1918141783557917887">เ&amp;ล็กลง</translation>
 <translation id="1919345977826869612">โฆษณา</translation>
@@ -2819,6 +2818,7 @@
 <translation id="4115080753528843955">บริการเนื้อหาบางอย่างใช้ตัวระบุที่ไม่ซ้ำกันเพื่อการให้สิทธิ์เข้าถึงเนื้อหาที่มีการป้องกัน</translation>
 <translation id="4115378294792113321">สีม่วงแดง</translation>
 <translation id="4118579674665737931">โปรดเริ่มต้นอุปกรณ์ใหม่และลองอีกครั้ง</translation>
+<translation id="4118998393712575296">หากต้องการใช้การควบคุมโดยผู้ปกครอง เช่น การอนุมัติแอปและขีดจํากัดเวลาอยู่หน้าจอ บุตรหลานต้องมีบัญชี Google ที่จัดการโดยผู้ปกครอง คุณสามารถเพิ่มบัญชีโรงเรียนภายหลังเพื่อใช้กับเว็บไซต์และแอปต่างๆ เช่น Google Classroom</translation>
 <translation id="4120388883569225797">รีเซ็ตคีย์ความปลอดภัยนี้ไม่ได้</translation>
 <translation id="4120817667028078560">เส้นทางยาวเกินไป</translation>
 <translation id="4124823734405044952">รีเซ็ตคีย์ความปลอดภัยแล้ว</translation>
@@ -3090,7 +3090,6 @@
 <translation id="447252321002412580">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
 <translation id="4474155171896946103">บุ๊กมาร์กแท็บทั้งหมด...</translation>
-<translation id="4474461121892222090">การเปิดใช้งานอินเทอร์เน็ตมือถือให้เสร็จสมบูรณ์อาจใช้เวลาสูงสุด 15 นาที</translation>
 <translation id="4475552974751346499">ค้นสิ่งที่ดาวน์โหลดไว้</translation>
 <translation id="4476590490540813026">นักกีฬา</translation>
 <translation id="4476659815936224889">หากต้องการสแกนโค้ดนี้ คุณใช้แอปสแกนคิวอาร์โค้ดในโทรศัพท์หรือแอปกล้องถ่ายรูปบางแอปสแกนได้</translation>
@@ -3880,6 +3879,7 @@
 <translation id="540296380408672091">บล็อกคุกกี้เสมอบน <ph name="HOST" /></translation>
 <translation id="540495485885201800">สลับกับชั้นวางก่อนหน้า</translation>
 <translation id="5405146885510277940">รีเซ็ตการตั้งค่า</translation>
+<translation id="5407119150486192764">ป้อนคีย์การเลิกบล็อก PIN 8 หลักจากผู้ให้บริการ</translation>
 <translation id="5408750356094797285">ซูม: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">จากบัญชี Google</translation>
 <translation id="5411472733320185105">อย่าใช้การตั้งค่าพร็อกซีสำหรับโฮสต์และโดเมนเหล่านี้:</translation>
@@ -4512,6 +4512,7 @@
 <translation id="6124213551517593835">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ทั้งหมดที่ <ph name="SITE_GROUP_NAME" /> และเว็บไซต์ใดก็ตามภายใต้กลุ่มนี้จัดเก็บไว้</translation>
 <translation id="6124650939968185064">ส่วนขยายต่อไปนี้ต้องพึ่งพาส่วนขยายนี้:</translation>
 <translation id="6124698108608891449">เว็บไซต์นี้ต้องการสิทธิ์เพิ่มเติม</translation>
+<translation id="6125442051901189730">ไม่มีโปรไฟล์ SIM ที่ใช้ได้ ตั้งโปรไฟล์ใหม่<ph name="BEGIN_LINK" />ที่นี่<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">ขออภัย คุณจะต้องเพิ่มบัญชีของคุณลงใน <ph name="DEVICE_TYPE" /> นี้อีกครั้ง</translation>
 <translation id="6129691635767514872">นำข้อมูลที่เลือกออกจาก Chrome และอุปกรณ์ที่ซิงค์แล้ว บัญชี Google ของคุณอาจมีประวัติการท่องเว็บในรูปแบบอื่น เช่น การค้นหาและกิจกรรมจากบริการอื่นๆ ของ Google ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6129938384427316298">ความคิดเห็นเกี่ยวกับใบรับรองของ Netscape</translation>
@@ -4812,7 +4813,6 @@
 <translation id="6473842110411557830">ภาพประกอบการ Powerwash</translation>
 <translation id="6474498546677193336">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ จะเลิกแชร์โฟลเดอร์เมื่อมีการปิด Linux ครั้งต่อไป</translation>
 <translation id="6474884162850599008">ยกเลิกการเชื่อมต่อบัญชี Google ไดรฟ์</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาบนหน้าจอของคุณ เลือกส่วนที่คุณต้องการแชร์</translation>
 <translation id="6477822444490674459">การซิงค์การแจ้งเตือนใช้ไม่ได้กับโทรศัพท์ที่ใช้โปรไฟล์งาน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">เก็บไฟล์อันตรายไว้ไหม</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
@@ -5074,7 +5074,6 @@
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ได้รับการเพิ่มจากระยะไกล</translation>
 <translation id="6790820461102226165">เพิ่มบุคคล...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ต้องการแชร์เนื้อหาบนหน้าจอของคุณกับ <ph name="TARGET_NAME" /> เลือกส่วนที่คุณต้องการแชร์</translation>
 <translation id="6793604637258913070">ไฮไลต์เครื่องหมาย caret ของข้อความเมื่อปรากฏขึ้นหรือเคลื่อนที่</translation>
 <translation id="6793723358811598107">กำหนด "<ph name="CURRENTKEY" />" ให้กับการดำเนินการ "<ph name="ACTION" />" แล้ว กดแป้นใดก็ได้เพื่อออก</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
@@ -6623,6 +6622,7 @@
 <translation id="8551588720239073785">การตั้งค่าวันที่และเวลา</translation>
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>
 <translation id="8554899698005018844">ไม่มีภาษา</translation>
+<translation id="8555195867496021627">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้ ดาวน์โหลดโปรไฟล์ใหม่<ph name="BEGIN_LINK" />ที่นี่<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
 <translation id="8557930019681227453">ไฟล์ Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{เปิดทั้งหมดใน&amp;หน้าต่างใหม่}=1{เปิดใน&amp;หน้าต่างใหม่}other{เปิดทั้งหมด ({COUNT}) ใน&amp;หน้าต่างใหม่}}</translation>
@@ -6961,7 +6961,6 @@
 <translation id="8907906903932240086">Chrome ตรวจหาซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ได้</translation>
 <translation id="8909298138148012791">ถอนการติดตั้ง <ph name="APP_NAME" /> แล้ว</translation>
 <translation id="8909833622202089127">เว็บไซต์กำลังติดตามตำแหน่งของคุณ</translation>
-<translation id="8910146161325739742">แชร์หน้าจอของคุณ</translation>
 <translation id="8910222113987937043">การเปลี่ยนแปลงในบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะไม่ซิงค์กับบัญชี Google อีกต่อไป แต่ข้อมูลที่มีอยู่จะยังจัดเก็บไว้ในบัญชี Google และสามารถจัดการได้ใน<ph name="BEGIN_LINK" />แดชบอร์ด Google<ph name="END_LINK" /></translation>
 <translation id="8912362522468806198">บัญชี Google</translation>
 <translation id="8912793549644936705">ยืด</translation>

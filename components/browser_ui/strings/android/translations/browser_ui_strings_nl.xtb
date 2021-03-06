@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Incognitomodus verlaten?</translation>
 <translation id="8958424370300090006">Cookies voor een specifieke site blokkeren.</translation>
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Vergeten</translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>

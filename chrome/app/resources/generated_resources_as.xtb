@@ -483,7 +483,6 @@
 <translation id="152913213824448541">Nearby Shareৰ সম্পৰ্কসূচী</translation>
 <translation id="1529891865407786369">পাৱাৰৰ উৎস</translation>
 <translation id="1530838837447122178">মাউছ আৰু টাচ্চ্‌পেড ডিভাইচৰ ছেটিংসমূহ খোলক</translation>
-<translation id="1531004739673299060">এপ্লিকেশ্বন ৱিণ্ড’</translation>
 <translation id="1531275250079031713">’নতুন ৱাই-ফাই যোগ কৰক’ ডায়লগ দেখুৱাওক</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">তীব্ৰ</translation>
@@ -638,6 +637,7 @@
 <translation id="1692118695553449118">ছিংক অন হৈ আছে</translation>
 <translation id="1692210323591458290">গাঢ় বেঙুনীয়া</translation>
 <translation id="169279809881363536">কোনো প্ৰ’ফাইল বিচাৰি পোৱা হোৱা নাছিল। এটা নতুন নেটৱৰ্ক ছেটআপ কৰিবলৈ, ডিভাইচৰ কেমেৰা ব্যৱহাৰ কৰি কিউআৰ ক’ড স্কেন কৰক অথবা আপোনাৰ বাহকে প্ৰদান কৰা সক্ৰিয়কৰণৰ ক’ডটো দিয়ক।</translation>
+<translation id="169675691788639886">ডিভাইচটোত SSH ছার্ভাৰ কনফিগাৰ কৰা আছে। সংবেদনশীল একাউণ্টৰ জৰিয়তে ছাইন ইন নকৰিব।</translation>
 <translation id="1697150536837697295">কলা</translation>
 <translation id="1697686431566694143">ফাইল সম্পাদনা কৰক</translation>
 <translation id="1698122934742150150">কেৱল বর্তমানৰ ইনক’গনিট’ ছেশ্বন</translation>
@@ -841,7 +841,6 @@
 <translation id="1909880997794698664">আপুনি এই ডিভাইচটো স্থায়ীভাৱে কিঅ’স্ক ম’ডত ৰাখিব খোজে বুলি নিশ্চিতনে?</translation>
 <translation id="1910721550319506122">স্বাগতম!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">বৰ্তমান টেব</translation>
 <translation id="1916502483199172559">ডিফ’ল্ট ৰঙা অৱতাৰ</translation>
 <translation id="1918141783557917887">&amp;সৰু</translation>
 <translation id="1919345977826869612">বিজ্ঞাপনসমূহ</translation>
@@ -2814,6 +2813,7 @@
 <translation id="4115080753528843955">নিৰাপদ সমললৈ এক্সেছৰ কর্তৃত্ব প্ৰদান কৰিবলৈ কিছুমান সমলৰ সেৱাই ব্যতিক্ৰমী চিনাক্তকাৰী ব্যৱহাৰ কৰে</translation>
 <translation id="4115378294792113321">মেজেণ্টা</translation>
 <translation id="4118579674665737931">অনুগ্ৰহ কৰি ডিভাইচটো ৰিবুট কৰি আকৌ চেষ্টা কৰক।</translation>
+<translation id="4118998393712575296">এপৰ অনুমোদন আৰু ডিভাইচত অতিবাহিত কৰা সময়সীমাৰ দৰে অভিভাৱকীয় নিয়ন্ত্ৰণ ব্যৱহাৰ কৰিবলৈ, এগৰাকী শিশুৰ কোনো অভিভাৱকে তদাৰক কৰা এটা Google একাউণ্ট থাকিবই লাগিব। ছাইট আৰু Google Classroomৰ দৰে এপৰ জৰিয়তে ব্যৱহাৰ কৰিবলৈ পাছত এটা বিদ্যালয়ৰ একাউণ্ট যোগ দিব পৰা যায়।</translation>
 <translation id="4120388883569225797">এই সুৰক্ষা চাবিটো ৰিছেট কৰিব নোৱাৰি</translation>
 <translation id="4120817667028078560">পাথটো অতি দীঘল</translation>
 <translation id="4124823734405044952">আপোনাৰ সুৰক্ষা চাবি ৰিছেট কৰা হৈছে</translation>
@@ -3085,7 +3085,6 @@
 <translation id="447252321002412580">Chromeৰ সুবিধা আৰু প্ৰদৰ্শন উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4472575034687746823">আৰম্ভ কৰক</translation>
 <translation id="4474155171896946103">সকলো টেব বুকমাৰ্ক কৰক...</translation>
-<translation id="4474461121892222090">ম’বাইল ডেটা সক্রিয় কৰা প্ৰক্ৰিয়াটো সম্পূৰ্ণ হ’বলৈ ১৫মিনিটলৈকে লাগিব পাৰে।</translation>
 <translation id="4475552974751346499">ডাউনল’ড কৰা সমলৰ সন্ধান কৰক</translation>
 <translation id="4476590490540813026">ক্ৰীড়াবিদ</translation>
 <translation id="4476659815936224889">এই ক’ডটো স্কেন কৰিবলৈ আপুনি নিজৰ ফ’নটোত এটা কিউআৰ স্কেনাৰ এপ্‌ অথবা কোনো কেমেৰা এপ্‌ ব্যৱহাৰ কৰিব পাৰে।</translation>
@@ -3874,6 +3873,7 @@
 <translation id="540296380408672091"><ph name="HOST" />ত সদায় কুকী অৱৰোধ কৰা হয়</translation>
 <translation id="540495485885201800">পূৰ্বৰটোৰ সৈতে সলাওক</translation>
 <translation id="5405146885510277940">ছেটিংসমূহ ৰিছেট কৰক</translation>
+<translation id="5407119150486192764">আপোনাৰ বাহকে প্ৰদান কৰা ৮ টা অংকৰ অৱৰোধৰ পৰা আঁতৰোৱাৰ কীটো দিয়ক</translation>
 <translation id="5408750356094797285">জুম: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">আপোনাৰ Google একাউণ্টৰ পৰা</translation>
 <translation id="5411472733320185105">এই হ’ষ্ট আৰু ড’মেইনসমূহৰ বাবে প্ৰ’ক্সি ছেটিংসমূহ ব্যৱহাৰ নকৰে:</translation>
@@ -4504,6 +4504,7 @@
 <translation id="6124213551517593835">এই কাৰ্যই <ph name="SITE_GROUP_NAME" /> আৰু ইয়াৰ অধীনত থকা যিকোনো ছাইটে ষ্ট’ৰ কৰা সকলো ডেটা আৰু কুকি মচিব</translation>
 <translation id="6124650939968185064">তলত উল্লেখ কৰা এক্সটেনশ্বনসমূহে এই এক্সটেনশ্বনৰ ওপৰত নির্ভৰ কৰে :</translation>
 <translation id="6124698108608891449">এই ছাইটটোৰ বাবে অধিক অনুমতিৰ আৱশ্যক।</translation>
+<translation id="6125442051901189730">কোনো ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। <ph name="BEGIN_LINK" />ইয়াত<ph name="END_LINK" /> এটা নতুন প্ৰ’ফাইল ছেট আপ কৰক।</translation>
 <translation id="6125479973208104919">দুৰ্ভাগ্যবশতঃ, আপুনি নিজৰ একাউণ্ট <ph name="DEVICE_TYPE" />ত পুনৰ যোগ কৰিব লাগিব।</translation>
 <translation id="6129691635767514872">বাছনি কৰা ডেটাখিনি Chrome আৰু ছিংক কৰি থোৱা ডিভাইচসমূহৰ পৰা আঁতৰোৱা হৈছে। আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত Googleৰ অন্য সেৱাত কৰা সন্ধান আৰু অন্যান্য কাৰ্যকলাপৰ দৰে ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="6129938384427316298">নেটস্কে’প চাৰ্টিফিকেট কমেণ্ট</translation>
@@ -4803,7 +4804,6 @@
 <translation id="6473842110411557830">পাৱাৰৱাশ্বৰ সবিশেষ বর্ণনা</translation>
 <translation id="6474498546677193336">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ Linux বন্ধ হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>
 <translation id="6474884162850599008">Google Drive একাউণ্ট সংযোগৰ পৰা আঁতৰাওক</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />এ আপোনাৰ স্ক্ৰীণৰ সমলসমূহ শ্বেয়াৰ কৰিব খোজে। আপুনি কি শ্বেয়াৰ কৰিব খোজে সেয়া বাছনি কৰক।</translation>
 <translation id="6477822444490674459">জাননী ছিংক কৰাৰ সুবিধাটো কৰ্মস্থানৰ প্ৰ’ফাইলত থকা ফ’নৰ ক্ষেত্ৰত সমৰ্থিত নহয়। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">বিপজ্জনক ফাইলটো ৰাখিবনে?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
@@ -5063,7 +5063,6 @@
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> দূৰৰ পৰা যোগ কৰা হৈছে</translation>
 <translation id="6790820461102226165">অন্য লোকক যোগ কৰক...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />এ আপোনাৰ স্ক্ৰীণৰ সমল <ph name="TARGET_NAME" />ৰ সৈতে শ্বেয়াৰ কৰিবলৈ বিচাৰিছে৷ আপুনি কি শ্বেয়াৰ কৰিব বিচাৰে সেয়া বাছনি কৰক৷</translation>
 <translation id="6793604637258913070">পাঠৰ কাৰেট প্ৰদর্শিত হ’লে বা লৰচৰ কৰিলে সেইখিনি হাইলাইট কৰক</translation>
 <translation id="6793723358811598107">‘<ph name="ACTION" />’ কাৰ্যটোৰ বাবে ‘<ph name="CURRENTKEY" />’ ইতিমধ্যে আবণ্টন কৰা হৈছে। বাহিৰ হ’বলৈ যিকোনো কী টিপক।</translation>
 <translation id="6795884519221689054">পাণ্ডা</translation>
@@ -6607,6 +6606,7 @@
 <translation id="8551588720239073785">তাৰিখ আৰু সময়ৰ ছেটিংসমূহ</translation>
 <translation id="8553342806078037065">অন্য লোকসকলক পৰিচালনা কৰক</translation>
 <translation id="8554899698005018844">কোনো ভাষা নাই</translation>
+<translation id="8555195867496021627">কোনো ই-ছিমৰ প্ৰ'ফাইল উপলব্ধ নহয়। <ph name="BEGIN_LINK" />ইয়াত<ph name="END_LINK" /> এটা নতুন প্ৰ'ফাইল ডাউনল'ড কৰক।</translation>
 <translation id="8557022314818157177">আপোনাৰ ফিংগাৰপ্ৰিণ্টটো কেপশ্বাৰ নকৰা পর্যন্ত আপোনাৰ সুৰক্ষা চাবিটো স্পৰ্শ কৰি থাকক</translation>
 <translation id="8557930019681227453">মেনিফেষ্ট</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সকলো &amp;নতুন ৱিণ্ড’ত খোলক}=1{&amp;নতুন ৱিণ্ড’ত খোলক}one{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}other{সকলো ({COUNT} টা) &amp;নতুন ৱিণ্ড’ত খোলক}}</translation>
@@ -6946,7 +6946,6 @@
 <translation id="8907906903932240086">Chromeএ আপোনাৰ কম্পিউটাৰত ক্ষতিকাৰক ছফ্টৱেৰ আছেনে নাই পৰীক্ষা কৰিব পাৰে</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> আনইনষ্টল কৰা হ’ল</translation>
 <translation id="8909833622202089127">ছাইটটোৱে আপোনাৰ অৱস্থান ট্ৰেক কৰি আছে</translation>
-<translation id="8910146161325739742">আপোনাৰ স্ক্ৰীণ শ্বেয়াৰ কৰক</translation>
 <translation id="8910222113987937043">আপোনাৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিঙত কৰা সালসলনিসমূহ এতিয়া আৰু আপোনাৰ Google একাউণ্টত ছিংক কৰা নহ'ব। তথাপিও, আপোনাৰ ইতিমধ্যে থকা ডেটাখিনি আপোনাৰ Google একাউণ্টত ষ্ট'ৰ হৈ থাকিব আৰু সেইখিনি <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />ত পৰিচালনা কৰিব পাৰি।</translation>
 <translation id="8912362522468806198">Google একাউণ্ট</translation>
 <translation id="8912793549644936705">সম্প্ৰসাৰণ কৰক</translation>

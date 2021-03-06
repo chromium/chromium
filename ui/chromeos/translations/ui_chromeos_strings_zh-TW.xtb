@@ -622,6 +622,7 @@
 <translation id="7628656427739290098">已完成 <ph name="PERCENT" />%。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7654209398114106148">正在移動 <ph name="NUMBER_OF_ITEMS" /> 個項目...</translation>
+<translation id="7655441028674523381">輕鬆存取 Google 相簿</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">北印度文</translation>
 <translation id="7693909743393669729">將硬碟格式化會清除其中儲存的所有資料，並移除所有的現有分割區，包括未顯示的分割區。這項操作無法復原。</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Tar 封存</translation>
 <translation id="8475647382427415476">Google 雲端硬碟目前無法同步處理「<ph name="FILENAME" />」，將於稍後再試。</translation>
 <translation id="8477649328507734757">同心圓</translation>
+<translation id="8484284835977497781">請從最近的相片中選擇。</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8521441079177373948">英式配置</translation>
 <translation id="8525306231823319788">全螢幕</translation>

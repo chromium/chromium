@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Inaktivera inkognitoläget?</translation>
 <translation id="8958424370300090006">Blockera cookies för en enskild webbplats.</translation>
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Glöm</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till}}</translation>

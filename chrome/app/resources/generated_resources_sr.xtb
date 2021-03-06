@@ -484,7 +484,6 @@
 <translation id="152913213824448541">Контакти Дељења у близини</translation>
 <translation id="1529891865407786369">Извор напајања</translation>
 <translation id="1530838837447122178">Отвори подешавања уређаја за миш и тачпед</translation>
-<translation id="1531004739673299060">Прозор за апликацију</translation>
 <translation id="1531275250079031713">Прикажи дијалог „Додај нову WiFi мрежу“</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Гласно</translation>
@@ -843,7 +842,6 @@
 <translation id="1909880997794698664">Да ли стварно желите да трајно задржите овај уређај у киоск режиму?</translation>
 <translation id="1910721550319506122">Добро дошли!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Актуелна картица</translation>
 <translation id="1916502483199172559">Подразумевани црвени аватар</translation>
 <translation id="1918141783557917887">&amp;Мање</translation>
 <translation id="1919345977826869612">Огласи</translation>
@@ -3091,7 +3089,6 @@
 <translation id="447252321002412580">Помозите нам да побољшамо Chrome-ове функције и учинак</translation>
 <translation id="4472575034687746823">Започнимо</translation>
 <translation id="4474155171896946103">Обележи све картице...</translation>
-<translation id="4474461121892222090">Довршавање активације мобилних података може да потраје до 15 минута.</translation>
 <translation id="4475552974751346499">Претражите преузимања</translation>
 <translation id="4476590490540813026">Спортисткиња</translation>
 <translation id="4476659815936224889">Да бисте скенирали овај кôд, можете да користите апликацију скенера QR кодова на телефону или неке апликације за камеру.</translation>
@@ -4816,7 +4813,6 @@
 <translation id="6473842110411557830">Илустрација за Powerwash</translation>
 <translation id="6474498546677193336">Опозивање дељења није успело јер једна апликација користи овај директоријум. Дељење директоријума ће бити опозвано када се Linux следећи пут затвори.</translation>
 <translation id="6474884162850599008">Прекини везу са налогом Google диска</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> жели да дели садржај екрана. Изаберите шта желите да делите.</translation>
 <translation id="6477822444490674459">Синхронизовање обавештења није подржано за телефоне са пословним профилом. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Желите ли да задржите опасну датотеку?</translation>
 <translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6790497603648687708">Додатак <ph name="EXTENSION_NAME" /> је додат даљински</translation>
 <translation id="6790820461102226165">Додај особу...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> жели да дели садржај екрана са <ph name="TARGET_NAME" />. Изаберите шта желите да делите.</translation>
 <translation id="6793604637258913070">Истичи курсор за текст када се појави или креће</translation>
 <translation id="6793723358811598107">Тастер <ph name="CURRENTKEY" /> је већ додељен радњи <ph name="ACTION" />. Притисните било који тастер да бисте изашли.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6968,7 +6963,6 @@
 <translation id="8907906903932240086">Chrome може да провери да ли на рачунару има штетног софтвера</translation>
 <translation id="8909298138148012791">Апликација <ph name="APP_NAME" /> је деинсталирана</translation>
 <translation id="8909833622202089127">Сајт прати локацију</translation>
-<translation id="8910146161325739742">Делите екран</translation>
 <translation id="8910222113987937043">Промене обележивача, историје, лозинки и других подешавања се више неће синхронизовати са Google налогом. Међутим, постојећи подаци ће се и даље чувати на Google налогу и можете да управљате њима на <ph name="BEGIN_LINK" />Google контролној табли<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google налога</translation>
 <translation id="8912793549644936705">Растегни</translation>

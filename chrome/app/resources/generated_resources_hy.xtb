@@ -487,7 +487,6 @@
 <translation id="152913213824448541">Մոտակա սարքերի հետ փոխանակման կոնտակտներ</translation>
 <translation id="1529891865407786369">Սնուցման աղբյուր</translation>
 <translation id="1530838837447122178">Բացել մկնիկի և հպահարթակի կարգավորումները</translation>
-<translation id="1531004739673299060">Հավելվածի պատուհան</translation>
 <translation id="1531275250079031713">Ցուցադրել «Ավելացնել նոր Wi-Fi ցանց» պատուհանը</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Բարձր</translation>
@@ -846,7 +845,6 @@
 <translation id="1909880997794698664">Իսկապե՞ս այս սարքը մշտապես պահել kiosk ռեժիմում:</translation>
 <translation id="1910721550319506122">Ողջո՛ւյն:</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Ընթացիկ ներդիրը</translation>
 <translation id="1916502483199172559">Կանխադրված կարմիր ավատար</translation>
 <translation id="1918141783557917887">&amp;Ավելի փոքր</translation>
 <translation id="1919345977826869612">Գովազդ</translation>
@@ -3094,7 +3092,6 @@
 <translation id="447252321002412580">Օգնել ավել լավը դարձնել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="4472575034687746823">Սկսել աշխատանքը</translation>
 <translation id="4474155171896946103">Էջանշել բոլոր ներդիրները…</translation>
-<translation id="4474461121892222090">Բջջային ինտերնետն ակտիվացնելու համար կարող է պահանջվել մինչև 15 րոպե։</translation>
 <translation id="4475552974751346499">Որոնել ներբեռնումները</translation>
 <translation id="4476590490540813026">Մարզիկ</translation>
 <translation id="4476659815936224889">Դուք կարող եք սկանավորել այս կոդը հեռախոսի QR սկաների կամ տեսախցիկի որոշ հավելվածների միջոցով:</translation>
@@ -4821,7 +4818,6 @@
 <translation id="6473842110411557830">Powerwash պատկերազարդում</translation>
 <translation id="6474498546677193336">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ Լինուքսը հաջորդ անգամ անջատվի։</translation>
 <translation id="6474884162850599008">Google Drive հաշվի անջատում</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> հավելվածը ցանկանում է 3–րդ կողմին տրամադրել ձեր էկրանի բովանդակությունը: Նշեք՝ ինչ կցանկանայիք տրամադրել:</translation>
 <translation id="6477822444490674459">Ծանուցումների համաժամացումը չի աջակցվում աշխատանքային պրոֆիլների հեռախոսներում։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Պահե՞լ վտանգավոր ֆայլը:</translation>
 <translation id="6480327114083866287">Ադմինիստրատոր՝ <ph name="MANAGER" /></translation>
@@ -5083,7 +5079,6 @@
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6790497603648687708">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավելացվել է հեռակա կարգով</translation>
 <translation id="6790820461102226165">Ավելացնել անձ…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> հավելվածը ցանկանում է <ph name="TARGET_NAME" />-ի հետ կիսվել ձեր էկրանով։ Նշեք՝ ինչ բովանդակությունով եք ցանկանում կիսվել:</translation>
 <translation id="6793604637258913070">Ընդգծել տեքստի նշորդը, երբ այն հայտնվում կամ շարժվում է</translation>
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» ստեղնն արդեն նշանակված է «<ph name="ACTION" />» գործողության համար։ Սեղմեք որևէ ստեղն՝ դուրս գալու համար։</translation>
 <translation id="6795884519221689054">Պանդա</translation>
@@ -6970,7 +6965,6 @@
 <translation id="8907906903932240086">Chrome-ը կարող է ստուգել համակարգչում վնասաբեր ծրագրերի առկայությունը</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> հավելվածը հեռացվեց</translation>
 <translation id="8909833622202089127">Կայքին հայտնի է ձեր գտնվելու վայրը</translation>
-<translation id="8910146161325739742">Էկրանի համօգտագործում</translation>
 <translation id="8910222113987937043">Ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և այլ կարգավորումների փոփոխությունները չեն համաժամացվի ձեր Google հաշվի հետ: Այդուհանդերձ, ձեր առկա տվյալները կպահվեն Google հաշվում, և դրանք կարող եք կառավարել <ph name="BEGIN_LINK" />Google Dashboard-ում<ph name="END_LINK" />:</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
 <translation id="8912793549644936705">Ձգել</translation>

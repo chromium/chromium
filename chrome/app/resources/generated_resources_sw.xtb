@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Anwani katika kipengele cha Uhamishaji wa Karibu</translation>
 <translation id="1529891865407786369">Chanzo cha nishati</translation>
 <translation id="1530838837447122178">Fungua mipangilio ya kipanya na padi ya kugusa</translation>
-<translation id="1531004739673299060">Dirisha la Programu</translation>
 <translation id="1531275250079031713">Onyesha kidirisha cha 'Weka Wi-Fi mpya'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Ya juu</translation>
@@ -841,7 +840,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1909880997794698664">Una uhakika unataka kuweka kifaa hiki kiwe cha kudumu katika modi ya kioski?</translation>
 <translation id="1910721550319506122">Karibu!</translation>
 <translation id="1915073950770830761">jaribio</translation>
-<translation id="1916260783734263714">Kichupo cha Sasa</translation>
 <translation id="1916502483199172559">Ishara chaguomsingi nyekundu</translation>
 <translation id="1918141783557917887">&amp;Ndogo zaidi</translation>
 <translation id="1919345977826869612">Matangazo</translation>
@@ -3087,7 +3085,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="447252321002412580">Tusaidie tuboreshe utendaji na vipengele vya Chrome</translation>
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4474155171896946103">Alamisha vichupo vyote...</translation>
-<translation id="4474461121892222090">Huenda ikachukua hadi dakika 15 kukamilisha hatua ya kuwasha data ya mtandao wa simu.</translation>
 <translation id="4475552974751346499">Tafuta katika vipakuliwa</translation>
 <translation id="4476590490540813026">Mwanariadha</translation>
 <translation id="4476659815936224889">Ili uchanganue msimbo huu, unaweza kutumia programu ya kichanganuzi cha QR kwenye simu yako au baadhi ya programu za kamera.</translation>
@@ -4811,7 +4808,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6473842110411557830">Kielelezo cha Powerwash</translation>
 <translation id="6474498546677193336">Imeshindwa kughairi kushiriki kwa sababu programu inatumia folda hii. Itaghairi kushiriki folda wakati Linux imefungwa.</translation>
 <translation id="6474884162850599008">Ondoa akaunti ya Hifadhi ya Google</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> inataka kushiriki maudhui ya skrini yako. Chagua kile ambacho ungependa kushiriki.</translation>
 <translation id="6477822444490674459">Huwezi kusawazisha arifa kwenye simu zilizo na wasifu wa kazini. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Ungependa kuhifadhi faili hatari?</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
@@ -5073,7 +5069,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> iliongezwa kwa mbali</translation>
 <translation id="6790820461102226165">Ongeza Mwingine...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> inataka kushiriki maudhui ya skrini yako na <ph name="TARGET_NAME" />. Chagua kile ambacho ungependa kushiriki.</translation>
 <translation id="6793604637258913070">Angazia kareti ya maandishi inapoonekana au kusonga</translation>
 <translation id="6793723358811598107">Tayari '<ph name="CURRENTKEY" />' imekabidhiwa kwenye kitendo cha '<ph name="ACTION" />'. Bonyeza kitufe chochote ili ufunge.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6963,7 +6958,6 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="8907906903932240086">Chrome inaweza kukagua kama kompyuta yako ina programu hatari</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> imeondolewa</translation>
 <translation id="8909833622202089127">Tovuti inafuatilia mahali ulipo</translation>
-<translation id="8910146161325739742">Shiriki skrini yako</translation>
 <translation id="8910222113987937043">Mabadiliko ya alamisho, historia, manenosiri, na mipangilio yako mingine hayatasawazishwa kwenye Akaunti yako ya Google. Hata hivyo, data yako ya sasa itaendelea kuhifadhiwa katika Akaunti yako ya Google na inaweza kudhibitiwa kwenye <ph name="BEGIN_LINK" />Dashibodi ya Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Akaunti ya Google</translation>
 <translation id="8912793549644936705">Panua</translation>

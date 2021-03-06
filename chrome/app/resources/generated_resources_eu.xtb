@@ -485,7 +485,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="152913213824448541">Nearby Share-k erabilitako kontaktuak</translation>
 <translation id="1529891865407786369">Energia-iturria</translation>
 <translation id="1530838837447122178">Ireki saguaren eta ukipen-panelaren ezarpenak</translation>
-<translation id="1531004739673299060">Aplikazioaren leihoa</translation>
 <translation id="1531275250079031713">Erakutsi "Gehitu wifi-sare berri bat" leihoa</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Ozena</translation>
@@ -844,7 +843,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1909880997794698664">Ziur gailua kiosko moduan betiko izan nahi duzula?</translation>
 <translation id="1910721550319506122">Ongi etorri!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Fitxa hau</translation>
 <translation id="1916502483199172559">Abatar gorri lehenetsia</translation>
 <translation id="1918141783557917887">&amp;Txikiagoa</translation>
 <translation id="1919345977826869612">Iragarkiak</translation>
@@ -3092,7 +3090,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="447252321002412580">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4474155171896946103">Egin laster-markak fitxa guztiei…</translation>
-<translation id="4474461121892222090">Baliteke 15 minutu behar izatea datu-konexioa aktibatzeko.</translation>
 <translation id="4475552974751346499">Bilatu deskargak</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Kode hau eskaneatzeko, QR kodeak eskaneatzeko berariazko aplikazio bat edo kamera-aplikazio batzuk erabil ditzakezu.</translation>
@@ -4816,7 +4813,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6473842110411557830">Fabrikako ezarpenak Powerwash bidez berrezartzearen ilustrazioa</translation>
 <translation id="6474498546677193336">Ezin izan zaio utzi karpeta partekatzeari, aplikazio bat ari delako hura erabiltzen. Linux ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="6474884162850599008">Deskonektatu Google Drive-ko kontua</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> aplikazioak pantailan duzun edukia partekatu nahi du. Aukeratu zer partekatu nahi duzun.</translation>
 <translation id="6477822444490674459">Laneko profileko telefonoetan ezin dira sinkronizatu jakinarazpenak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Fitxategi arriskutsua gorde nahi duzu?</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6790497603648687708">Urrunetik gehitu da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Gehitu pertsona bat...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> aplikazioak pantailan duzun edukia <ph name="TARGET_NAME" /> fitxarekin partekatu nahi ditu. Aukeratu zer partekatu nahi duzun.</translation>
 <translation id="6793604637258913070">Agertzen edo mugitzen denean, nabarmendu testu-kurtsorea</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" tekla "<ph name="ACTION" />" ekintzari esleituta dago dagoeneko. Irteteko, sakatu edozein tekla.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6965,7 +6960,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8907906903932240086">Software kaltegarria bila dezake Chrome-k ordenagailuan</translation>
 <translation id="8909298138148012791">Desinstalatu da <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Webgunea zure kokapenaren jarraipena egiten ari da</translation>
-<translation id="8910146161325739742">Partekatu pantaila</translation>
 <translation id="8910222113987937043">Aurrerantzean, ez dira sinkronizatuko Google-ko kontuarekin laster-marketan, historian, pasahitzetan eta bestelako ezarpenetan egindako aldaketak. Hala ere, Google-ko kontuan biltegiratuko dira lehendik dauden datuak, eta <ph name="BEGIN_LINK" />Google-ren Panela<ph name="END_LINK" /> atalaren bidez kudea daitezke.</translation>
 <translation id="8912362522468806198">Google-ko kontua</translation>
 <translation id="8912793549644936705">Zabaldu</translation>

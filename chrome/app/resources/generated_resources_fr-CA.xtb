@@ -486,7 +486,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="152913213824448541">Contacts pour le partage à proximité</translation>
 <translation id="1529891865407786369">Source d'énergie</translation>
 <translation id="1530838837447122178">Ouvrir les paramètres de la souris et du pavé tactile de l'appareil</translation>
-<translation id="1531004739673299060">Fenêtre de l'application</translation>
 <translation id="1531275250079031713">Afficher la fenêtre « Ajouter un réseau Wi-Fi »</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Fort</translation>
@@ -844,7 +843,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1909880997794698664">Voulez-vous vraiment garder cet appareil en mode kiosque de manière permanente?</translation>
 <translation id="1910721550319506122">Bienvenue!</translation>
 <translation id="1915073950770830761">canari</translation>
-<translation id="1916260783734263714">Onglet actuel</translation>
 <translation id="1916502483199172559">Avatar rouge par défaut</translation>
 <translation id="1918141783557917887">Plu&amp;s petit</translation>
 <translation id="1919345977826869612">Annonces</translation>
@@ -3092,7 +3090,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="447252321002412580">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
-<translation id="4474461121892222090">L'activation du service de données cellulaires pourrait prendre jusqu'à 15 minutes.</translation>
 <translation id="4475552974751346499">Rechercher dans les téléchargements</translation>
 <translation id="4476590490540813026">Athlète</translation>
 <translation id="4476659815936224889">Pour numériser ce code, vous pouvez utiliser une application de numérisation de code QR sur votre téléphone ou certaines applications d'appareil photo.</translation>
@@ -4814,7 +4811,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6473842110411557830">Illustration de Powerwash</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Se déconnecter du compte Google Disque</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> souhaite partager le contenu de votre écran. Choisissez ce que vous voulez partager.</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas prise en charge sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conserver le fichier dangereux?</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -5076,7 +5072,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> a été ajoutée à distance</translation>
 <translation id="6790820461102226165">Ajouter un personne...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> souhaite partager les contenus de votre écran avec <ph name="TARGET_NAME" />. Choisissez ce que vous voulez partager.</translation>
 <translation id="6793604637258913070">Mettre le point d'insertion de texte en surbrillance lorsqu'il s'affiche ou se déplace</translation>
 <translation id="6793723358811598107">La touche « <ph name="CURRENTKEY" /> » est déjà attribuée à l'action « <ph name="ACTION" /> ». Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6963,7 +6958,6 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="8907906903932240086">Chrome peut vérifier la présence de logiciels nuisibles sur votre ordinateur</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> a été désinstallée</translation>
 <translation id="8909833622202089127">Le site effectue le suivi de votre position</translation>
-<translation id="8910146161325739742">Partager votre écran</translation>
 <translation id="8910222113987937043">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et autres paramètres ne seront plus synchronisés avec votre compte Google. Cependant, vos données existantes resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912793549644936705">Étirer</translation>

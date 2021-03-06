@@ -483,7 +483,6 @@
 <translation id="152913213824448541">नजिकैका यन्त्रसँग सेयर गर्ने सुविधामा भएको सम्पर्क ठेगाना नामक विकल्प</translation>
 <translation id="1529891865407786369">पावरको स्रोत</translation>
 <translation id="1530838837447122178">माउस र टचप्याड यन्त्र सम्बन्धी सेटिङहरू खोल्नुहोस्</translation>
-<translation id="1531004739673299060">एपको विन्डो</translation>
 <translation id="1531275250079031713">'नयाँ Wi-Fi थप्नुहोस्' नामक संवाद देखाउनुहोस्</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">चर्को</translation>
@@ -839,7 +838,6 @@
 <translation id="1909880997794698664">के तपाईं स्थायी रूपमा यो साधनलाई किस्क मोडमा राख्न चाहनुहुन्छ?</translation>
 <translation id="1910721550319506122">स्वागतम्!</translation>
 <translation id="1915073950770830761">क्यानरी</translation>
-<translation id="1916260783734263714">हालको ट्याब</translation>
 <translation id="1916502483199172559">पूर्वनिर्धारित रातो अवतार</translation>
 <translation id="1918141783557917887">&amp;थप सानो</translation>
 <translation id="1919345977826869612">विज्ञापनहरू</translation>
@@ -3086,7 +3084,6 @@
 <translation id="447252321002412580">Chrome का सुविधा तथा कार्यसम्पादन सुधार्न मद्दत गर्नुहोस्</translation>
 <translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4474155171896946103">सबै ट्याबहरूलाई बुकमार्क गर्नुहोस्...</translation>
-<translation id="4474461121892222090">मोबाइल डेटा सक्रिय गर्न १५ मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="4475552974751346499">डाउनलोडहरू खोज्नुहोस्</translation>
 <translation id="4476590490540813026">खेलाडी</translation>
 <translation id="4476659815936224889">यो कोड स्क्यान गर्न तपाईं आफ्नो फोनमा रहेको QR स्क्यानर एप वा केही क्यामेरा एप उपयोग गर्न सक्नुहुन्छ।</translation>
@@ -4807,7 +4804,6 @@
 <translation id="6473842110411557830">पावरवाशका चित्रणहरू</translation>
 <translation id="6474498546677193336">एउटा अनुप्रयोगले यो फोल्डर प्रयोग गरिरहेका कारण आदान प्रदान गर्ने कार्य रद्द गर्न सकिएन। अर्को पटक Linux बन्द हुँदा उक्त फोल्डरको आदान प्रदान रद्द गरिने छ।</translation>
 <translation id="6474884162850599008">Google ड्राइभ खाता बिच्छेद गर्नुहोस्</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> तपाईँको स्क्रिनका सामग्रीहरू आदान प्रदान गर्न चाहन्छ। आफूले आदान प्रदान गर्न चाहनुभएको कुरा छनौट गर्नुहोस्।</translation>
 <translation id="6477822444490674459">कार्य प्रोफाइल भएका फोनमा सूचना सिंक गर्ने सुविधा प्रयोग गर्न मिल्दैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फाइल राख्ने हो?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
@@ -5069,7 +5065,6 @@
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> लाई टाढैबाट थपिएको थियो</translation>
 <translation id="6790820461102226165">व्यक्ति थप्नुहोस्...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> तपाईँको स्क्रिनका सामग्रीहरू <ph name="TARGET_NAME" /> सँग आदान प्रदान गर्न चाहन्छ। आफूले आदान प्रदान गर्न चाहनुभएको कुरा छनौट गर्नुहोस्।</translation>
 <translation id="6793604637258913070">पाठको क्योरट देखा पर्दा वा गतिशील हुँदा त्यसलाई हाइलाइट गर्नुहोस्</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' की '<ph name="ACTION" />' कारबाहीका लागि तोकिसकिएको छ। बाहिर निस्कन कुनै पनि की थिच्नुहोस्।</translation>
 <translation id="6795884519221689054">पान्डा</translation>
@@ -6955,7 +6950,6 @@
 <translation id="8907906903932240086">Chrome ले तपाईंको कम्प्युटरमा हानिकारक सफ्टवेयर छन् कि छैनन् भनी जाँच्न सक्छ</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइन्स्टल गरिएको छ</translation>
 <translation id="8909833622202089127">साइटले तपाईंको स्थान ट्र्याक गर्दैछ</translation>
-<translation id="8910146161325739742">तपाईँको स्क्रिन सेयर गर्नुहोस्</translation>
 <translation id="8910222113987937043">तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूका परिवर्तनहरू अब उप्रान्त तपाईंको Google खातामा सिंक हुने छैनन्। तैपनि तपाईंको विद्यमान डेटा तपाईंको Google खातामा भण्डारण गरिएको अवस्थामा रहिरहनेछ र <ph name="BEGIN_LINK" />Google ड्यासबोर्ड<ph name="END_LINK" /> मा गई व्यवस्थित गर्न सकिन्छ।</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912793549644936705">तन्काउनुहोस्</translation>

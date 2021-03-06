@@ -484,7 +484,6 @@
 <translation id="152913213824448541">Contactos de Compartir por Nearby</translation>
 <translation id="1529891865407786369">Fonte de alimentación</translation>
 <translation id="1530838837447122178">Abrir a configuración do rato e do panel táctil do dispositivo</translation>
-<translation id="1531004739673299060">Ventá da aplicación</translation>
 <translation id="1531275250079031713">Mostrar cadro de diálogo Engadir nova wifi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> e <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Máximo</translation>
@@ -843,7 +842,6 @@
 <translation id="1909880997794698664">Seguro que queres que se utilice o modo de quiosco neste dispositivo de forma permanente?</translation>
 <translation id="1910721550319506122">Dámosche a benvida.</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Pestana actual</translation>
 <translation id="1916502483199172559">Avatar vermello predeterminado</translation>
 <translation id="1918141783557917887">&amp;Máis pequeno</translation>
 <translation id="1919345977826869612">Anuncios</translation>
@@ -3091,7 +3089,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="447252321002412580">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4474155171896946103">Engadir todas as pestanas a marcadores...</translation>
-<translation id="4474461121892222090">A activación dos datos móbiles pode tardar 15 minutos en completarse.</translation>
 <translation id="4475552974751346499">Buscar descargas</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para escanear este código, podes utilizar unha aplicación de escáner de QR do teu teléfono ou algunhas aplicacións de cámara.</translation>
@@ -4815,7 +4812,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6473842110411557830">Ilustración de Powerwash</translation>
 <translation id="6474498546677193336">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Linux se apague.</translation>
 <translation id="6474884162850599008">Desconectar a conta de Google Drive</translation>
-<translation id="6475697075626596525">A aplicación <ph name="APP_NAME" /> quere compartir o contido da túa pantalla. Escolle o que queres compartir.</translation>
 <translation id="6477822444490674459">Non se pode usar a sincronización das notificacións en teléfonos con perfil de traballo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Queres conservar o ficheiro perigoso?</translation>
 <translation id="6480327114083866287">Xestionado por <ph name="MANAGER" /></translation>
@@ -5077,7 +5073,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> engadiuse de forma remota</translation>
 <translation id="6790820461102226165">Engadir persoa...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> quere compartir o contido da túa pantalla con <ph name="TARGET_NAME" />. Decide o que queres compartir.</translation>
 <translation id="6793604637258913070">Destacar o cursor de texto cando apareza ou se mova</translation>
 <translation id="6793723358811598107">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme unha tecla calquera para saír.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6964,7 +6959,6 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="8907906903932240086">Chrome pode buscar software daniño no teu ordenador</translation>
 <translation id="8909298138148012791">Desinstalouse <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">O sitio está facendo un seguimento da túa localización</translation>
-<translation id="8910146161325739742">Comparar a túa pantalla</translation>
 <translation id="8910222113987937043">Os cambios nos marcadores, no historial, nos contrasinais e noutras opcións de configuración deixarán de sincronizarse coa túa conta de Google. Non obstante, os teus datos actuais permanecerán almacenados na túa conta de Google e poden xestionarse a través do <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Conta de Google</translation>
 <translation id="8912793549644936705">Estricar</translation>

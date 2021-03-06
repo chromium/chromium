@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Kontaktet e "Ndarjes në afërsi"</translation>
 <translation id="1529891865407786369">Burimi i energjisë</translation>
 <translation id="1530838837447122178">Hap cilësimet e miut dhe bllokut me prekje</translation>
-<translation id="1531004739673299060">Dritarja e aplikacionit</translation>
 <translation id="1531275250079031713">Shfaq dialogun "Shto Wi-Fi të ri"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">I lartë</translation>
@@ -841,7 +840,6 @@
 <translation id="1909880997794698664">Je i sigurt që do ta mbash këtë pajisje në modalitetin kioskë në mënyrë të përhershme?</translation>
 <translation id="1910721550319506122">Mirë se erdhe!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Skeda aktuale</translation>
 <translation id="1916502483199172559">Avatari i parazgjedhur i kuq</translation>
 <translation id="1918141783557917887">Më i vogël</translation>
 <translation id="1919345977826869612">Reklamat</translation>
@@ -3089,7 +3087,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="447252321002412580">Ndihmo në përmirësimin e funksioneve dhe cilësisë së funksionimit të Chrome</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
-<translation id="4474461121892222090">Mund të duhen deri në 15 minuta që të përfundojë aktivizimi i të dhënave celulare.</translation>
 <translation id="4475552974751346499">Kërko për shkarkimet</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Për ta skanuar këtë kod, mund të përdorësh një aplikacion skaneri të kodeve QR në telefon ose disa aplikacione për kamera.</translation>
@@ -4813,7 +4810,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6473842110411557830">Ilustrimi i rivendosjes në gjendjen e fabrikës</translation>
 <translation id="6474498546677193336">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Linux të ndalojë punën më pas.</translation>
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjet e ekranit tënd. Zgjidh se çfarë dëshiron të ndash.</translation>
 <translation id="6477822444490674459">Sinkronizimi i njoftimeve nuk mbështetet për telefonat në një profil pune. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Dëshiron ta mbash skedarin e rrezikshëm?</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
@@ -5075,7 +5071,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> u shtua në distancë</translation>
 <translation id="6790820461102226165">Shto person...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjet e ekranit tënd me <ph name="TARGET_NAME" />. Zgjidh se çfarë dëshiron të ndash.</translation>
 <translation id="6793604637258913070">Thekso kursorin e tekstit kur shfaqet ose lëviz.</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp çdo tast për të dalë.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6961,7 +6956,6 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="8907906903932240086">Chrome mund ta kontrollojë kompjuterin tënd për softuerë të dëmshëm</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> është çinstaluar</translation>
 <translation id="8909833622202089127">Sajti po gjurmon vendndodhjen tënde</translation>
-<translation id="8910146161325739742">Ndaj ekranin tënd</translation>
 <translation id="8910222113987937043">Ndryshimet te faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera nuk do të sinkronizohen më te llogaria jote e Google. Sidoqoftë, të dhënat e tua ekzistuese do të qëndrojnë të ruajtura te llogaria jote e Google dhe mund të menaxhohen në <ph name="BEGIN_LINK" />Panelin analitik të Google.<ph name="END_LINK" /></translation>
 <translation id="8912362522468806198">Llogaria e Google</translation>
 <translation id="8912793549644936705">Shtrij</translation>

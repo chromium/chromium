@@ -486,7 +486,6 @@
 <translation id="152913213824448541">Контакти на „Споделување во близина“</translation>
 <translation id="1529891865407786369">Извор на напојување</translation>
 <translation id="1530838837447122178">Отворете ги поставките на уредот за глувчето и подлогата за допир</translation>
-<translation id="1531004739673299060">Прозорец на апликацијата</translation>
 <translation id="1531275250079031713">Прикажи го дијалогот „Додајте нова Wi-Fi“</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Гласно</translation>
@@ -641,6 +640,7 @@
 <translation id="1692118695553449118">Синхронизацијата е вклучена</translation>
 <translation id="1692210323591458290">Темновиолетова</translation>
 <translation id="169279809881363536">Не се откриени профили. За да поставите нова мрежа, скенирајте го QR-кодот со камерата на уредот или внесете го кодот за активација од операторот.</translation>
+<translation id="169675691788639886">Уредот има конфигурирано сервер за SSH. Не најавувајте се со чувствителни сметки.</translation>
 <translation id="1697150536837697295">Уметност</translation>
 <translation id="1697686431566694143">Измени датотека</translation>
 <translation id="1698122934742150150">Само тековната инкогнито сесија</translation>
@@ -844,7 +844,6 @@
 <translation id="1909880997794698664">Дали сигурно сакате да го зачувате уредот во режим на киоск?</translation>
 <translation id="1910721550319506122">Добре дојдовте!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Моментална картичка</translation>
 <translation id="1916502483199172559">Стандарден црвен аватар</translation>
 <translation id="1918141783557917887">&amp;Помал</translation>
 <translation id="1919345977826869612">Реклами</translation>
@@ -2820,6 +2819,7 @@
 <translation id="4115080753528843955">Заради овластување пристап до заштитените содржини, некои услуги за содржини користат уникатни идентификатори</translation>
 <translation id="4115378294792113321">Магента</translation>
 <translation id="4118579674665737931">Рестартирајте го уредот и обидете се повторно.</translation>
+<translation id="4118998393712575296">За да користите родителски контроли, како што се одобрување апликации и ограничувања на времето поминато на уредот, детето мора да има сметка на Google управувана од родител. Училишна сметка може да се додаде подоцна за користење со сајтови и апликации како Google Classroom.</translation>
 <translation id="4120388883569225797">Безбедносниов клуч не може да се ресетира</translation>
 <translation id="4120817667028078560">Патеката е премногу долга</translation>
 <translation id="4124823734405044952">Вашиот безбедносен клуч е ресетиран</translation>
@@ -3091,7 +3091,6 @@
 <translation id="447252321002412580">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
-<translation id="4474461121892222090">Може да поминат и до 15 минути за да се заврши активацијата на мобилниот интернет.</translation>
 <translation id="4475552974751346499">Барај преземања</translation>
 <translation id="4476590490540813026">Атлетичарка</translation>
 <translation id="4476659815936224889">За да го скенирате кодов, може да користите апликација за QR-скенер на вашиот телефон или некои апликации за камера.</translation>
@@ -3881,6 +3880,7 @@
 <translation id="540296380408672091">Секогаш блокирај ги колачињата на <ph name="HOST" /></translation>
 <translation id="540495485885201800">Заменете ја со претходната</translation>
 <translation id="5405146885510277940">Ресетирање поставки</translation>
+<translation id="5407119150486192764">Внесете го 8-цифрениот клуч за одблокирање PIN обезбеден од операторот</translation>
 <translation id="5408750356094797285">Зумирај: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Од сметката на Google</translation>
 <translation id="5411472733320185105">Не користете ги поставките за прокси на овие домаќини и домени:</translation>
@@ -4513,6 +4513,7 @@
 <translation id="6124213551517593835">Ова ќе ги избрише сите податоци и колачиња складирани од сајтот <ph name="SITE_GROUP_NAME" /> и од сите негови подредени сајтови</translation>
 <translation id="6124650939968185064">Следните наставки зависат од оваа наставка:</translation>
 <translation id="6124698108608891449">Сајтов има потреба од повеќе дозволи.</translation>
+<translation id="6125442051901189730">Нема достапни SIM-профили. Поставете нов профил <ph name="BEGIN_LINK" />тука.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">За жал, ќе треба да ја додадете сметката на овој <ph name="DEVICE_TYPE" /> повторно.</translation>
 <translation id="6129691635767514872">Избраните податоци се отстранети од Chrome и синхронизираните уреди. Вашата сметка на Google можеби има други форми од историјата на прелистување, како на пр., пребарувања и активност од другите услуги на Google, на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Коментар на сертификат на Netscape</translation>
@@ -4813,7 +4814,6 @@
 <translation id="6473842110411557830">Илустрација на фабричко ресетирање</translation>
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> сака да ги сподели содржините на екранот. Одберете што би сакале да споделите.</translation>
 <translation id="6477822444490674459">Синхронизацијата на известувањата не е поддржана за телефоните во работен профил. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Да се задржи опасната датотека?</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
@@ -5075,7 +5075,6 @@
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> е додадена далечински</translation>
 <translation id="6790820461102226165">Додај лице...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> сака да ја сподели содржината на екранот со <ph name="TARGET_NAME" />. Одберете што би сакале да споделите.</translation>
 <translation id="6793604637258913070">Нагласување на каретот за текст кога се појавува или се движи</translation>
 <translation id="6793723358811598107">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете го кое било копче за да излезете.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6626,6 +6625,7 @@
 <translation id="8551588720239073785">Поставки за датум и време</translation>
 <translation id="8553342806078037065">Управувај со другите луѓе</translation>
 <translation id="8554899698005018844">Нема јазик</translation>
+<translation id="8555195867496021627">Нема достапни eSIM-профили. Преземете нов профил <ph name="BEGIN_LINK" />тука.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">Допирајте го безбедносниот клуч додека не се сними вашиот отпечаток</translation>
 <translation id="8557930019681227453">Манифест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
@@ -6965,7 +6965,6 @@
 <translation id="8907906903932240086">Chrome може да проверува дали има штетен софтвер на вашиот компјутер</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> е деинсталиран</translation>
 <translation id="8909833622202089127">Сајтот ја следи вашата локација</translation>
-<translation id="8910146161325739742">Споделете го екранот</translation>
 <translation id="8910222113987937043">Промените во обележувачите, историјата, лозинките и другите поставки нема веќе да се синхронизираат со вашата сметка на Google. Сепак, вашите податоци ќе останат складирани во сметката на Google и со нив може да управувате во <ph name="BEGIN_LINK" />„Контролната табла на Google“<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8912793549644936705">Растегни</translation>

@@ -488,7 +488,6 @@
 <translation id="152913213824448541">Абагульванне паблізу: кантакты</translation>
 <translation id="1529891865407786369">Крыніца сілкавання</translation>
 <translation id="1530838837447122178">Адкрыць налады мышы і сэнсарнай панэлі</translation>
-<translation id="1531004739673299060">Акно праграмы</translation>
 <translation id="1531275250079031713">Паказаць дыялогавае акно "Дадаць новую сетку Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Гучна</translation>
@@ -643,6 +642,7 @@
 <translation id="1692118695553449118">Сінхранізацыя ўключана</translation>
 <translation id="1692210323591458290">Цёмна-фіялетавы</translation>
 <translation id="169279809881363536">Профіляў не выяўлена. Каб наладзіць новую сетку, адсканіруйце QR-код камерай прылады або ўвядзіце код актывацыі, атрыманы ад аператара.</translation>
+<translation id="169675691788639886">На прыладзе быў наладжаны сервер SSH. Не выкарыстоўвайце для ўваходу ўліковыя запісы, у якіх ёсць канфідэнцыяльная інфармацыя.</translation>
 <translation id="1697150536837697295">Мастацтва</translation>
 <translation id="1697686431566694143">Змяніць файл</translation>
 <translation id="1698122934742150150">Толькі бягучы сеанс інкогніта</translation>
@@ -846,7 +846,6 @@
 <translation id="1909880997794698664">Вы ўпэўненыя, што рэжым кіёска павінен быць заўсёды ўключаны на прыладзе?</translation>
 <translation id="1910721550319506122">Вітаем!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Бягучая ўкладка</translation>
 <translation id="1916502483199172559">Стандартны чырвоны аватар</translation>
 <translation id="1918141783557917887">&amp;Паменшыць</translation>
 <translation id="1919345977826869612">Рэклама</translation>
@@ -2822,6 +2821,7 @@
 <translation id="4115080753528843955">Некаторыя пастаўшчыкі змесціва выкарыстоўваюць унікальныя ідэнтыфікатары ў мэтах аўтарызацыі доступу да абароненага змесціва</translation>
 <translation id="4115378294792113321">Пурпурны</translation>
 <translation id="4118579674665737931">Перазагрузіце прыладу і паўтарыце спробу.</translation>
+<translation id="4118998393712575296">Выкарыстоўваць функцыі бацькоўскага кантролю (напрыклад, ухваляць праграмы і задаваць абмежаванні часу карыстання прыладамі) можна толькі тады, калі ў дзіцяці ёсць Уліковы запіс Google, якім кіруюць бацькі. Пазней можна дадаць навучальны ўліковы запіс, каб выкарыстоўваць яго на сайтах і ў праграмах, такіх як Google Клас.</translation>
 <translation id="4120388883569225797">Не ўдалося скінуць гэты ключ бяспекі</translation>
 <translation id="4120817667028078560">Шлях занадта доўгі</translation>
 <translation id="4124823734405044952">Ключ бяспекі скінуты</translation>
@@ -3093,7 +3093,6 @@
 <translation id="447252321002412580">Дапамажыце палепшыць функцыі і прадукцыйнасць Chrome</translation>
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4474155171896946103">Дадаць у закладкі ўсе ўкладкі...</translation>
-<translation id="4474461121892222090">Актывацыя мабільнай перадачы даных можа заняць да 15 хвілін.</translation>
 <translation id="4475552974751346499">Пошук спамповак</translation>
 <translation id="4476590490540813026">Спартсменка</translation>
 <translation id="4476659815936224889">Гэты код можна адсканіраваць з дапамогай праграмы сканіравання QR-кодаў на тэлефоне або некаторых праграм для камеры.</translation>
@@ -3883,6 +3882,7 @@
 <translation id="540296380408672091">Заўсёды блакіраваць файлы cookie ад хоста <ph name="HOST" /></translation>
 <translation id="540495485885201800">Памяняць месцамі з папярэднім</translation>
 <translation id="5405146885510277940">Скінуць налады</translation>
+<translation id="5407119150486192764">Увядзіце 8-значны PUK-код, атрыманы ад аператара</translation>
 <translation id="5408750356094797285">Маштаб: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">З Уліковага запісу Google</translation>
 <translation id="5411472733320185105">Не выкарыстоўваць налады проксі-сервера для гэтых хостаў і даменаў:</translation>
@@ -4515,6 +4515,7 @@
 <translation id="6124213551517593835">Будуць выдалены файлы cookie і даныя, захаваныя групай сайтаў <ph name="SITE_GROUP_NAME" /></translation>
 <translation id="6124650939968185064">Наступныя пашырэнні залежаць ад гэтага пашырэння:</translation>
 <translation id="6124698108608891449">Гэтаму сайту патрэбны дадатковыя дазволы.</translation>
+<translation id="6125442051901189730">Даступных профіляў SIM няма. Наладзьце новы профіль <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">На жаль, вам трэба зноў дадаць ваш уліковы запіс на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6129691635767514872">Выбраныя даныя выдалены з браўзера Chrome і сінхранізаваных прылад. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць размешчаны іншыя формы гісторыі праглядаў сайтаў для вашага Уліковага запісу Google: напрыклад, пошукавыя запыты і дзеянні ў іншых сэрвісах Google.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
@@ -4815,7 +4816,6 @@
 <translation id="6473842110411557830">Ілюстрацыя Powerwash</translation>
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> запытвае дазвол на абагульванне змесціва экрана. Выберыце, што трэба абагульваць.</translation>
 <translation id="6477822444490674459">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Захаваць небяспечны файл?</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
@@ -5077,7 +5077,6 @@
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6790497603648687708">Праграма <ph name="EXTENSION_NAME" /> дададзена з сервера</translation>
 <translation id="6790820461102226165">Дадаць карыстальніка...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> запытвае дазвол на абагульванне змесціва экрана з <ph name="TARGET_NAME" />. Выберыце, што трэба абагульваць.</translation>
 <translation id="6793604637258913070">Указваць на курсор рэдагавання тэксту, калі ён з'яўляецца або рухаецца</translation>
 <translation id="6793723358811598107">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />" Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6625,6 +6624,7 @@
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8553342806078037065">Іншыя карыстальнікі</translation>
 <translation id="8554899698005018844">Мова не выбрана</translation>
+<translation id="8555195867496021627">Даступных профіляў eSIM няма. Спампуйце новы профіль <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Каб дадаць адбітак пальца, націскайце на ключ бяспекі</translation>
 <translation id="8557930019681227453">Маніфест</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
@@ -6966,7 +6966,6 @@
 <translation id="8907906903932240086">Браўзер Chrome можа правяраць ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння</translation>
 <translation id="8909298138148012791">Праграма <ph name="APP_NAME" /> выдалена</translation>
 <translation id="8909833622202089127">Сайт адсочвае ваша месцазнаходжанне</translation>
-<translation id="8910146161325739742">Абагульванне экрана</translation>
 <translation id="8910222113987937043">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Уліковы запіс Google</translation>
 <translation id="8912793549644936705">Расцягнуць</translation>

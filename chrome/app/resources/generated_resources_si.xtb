@@ -483,7 +483,6 @@
 <translation id="152913213824448541">ළඟ බෙදා ගැනීම් සම්බන්ධතා</translation>
 <translation id="1529891865407786369">බල මූලාශ්‍රය</translation>
 <translation id="1530838837447122178">මූසික සහ ස්පර්ශ පුවරු උපාංග සැකසීම් විවෘත කරන්න</translation>
-<translation id="1531004739673299060">යෙදුම් කවුළුව</translation>
 <translation id="1531275250079031713">'නව Wi-Fi එක් කරන්න' සංවාදය පෙන්වන්න</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ඝෝෂාකාරී</translation>
@@ -842,7 +841,6 @@
 <translation id="1909880997794698664">ඔබට මෙම උපාංගය ස්ථිරව කියෝස්ක් ප්‍රකාරය තුළ තබාගැනීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="1910721550319506122">ආයුබෝවන්!</translation>
 <translation id="1915073950770830761">කැනරි</translation>
-<translation id="1916260783734263714">වත්මන් ටැබය</translation>
 <translation id="1916502483199172559">පෙරනිමි රතු නියුරුව</translation>
 <translation id="1918141783557917887">වඩා කුඩා (&amp;S)</translation>
 <translation id="1919345977826869612">වෙළඳ දැන්වීම්</translation>
@@ -3091,7 +3089,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="447252321002412580">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4474155171896946103">සියලු ටැබ් පිටු සලකුණු කරන්න...</translation>
-<translation id="4474461121892222090">ජංගම දත්ත ක්‍රියාත්මක කිරීම සම්පූර්ණ කිරීමට විනාඩි 15 ක් දක්වා ගත විය හැක.</translation>
 <translation id="4475552974751346499">බාගැනීම් සොයන්න</translation>
 <translation id="4476590490540813026">මලල ක්‍රීඩක</translation>
 <translation id="4476659815936224889">මෙම කේතය ස්කෑන් කිරීමට, ඔබට ඔබේ දුරකථනය මත QR ස්කෑනර් යෙදුමක්, හෝ යම් කැමරා යෙදුම් භාවිත කළ හැක.</translation>
@@ -4816,7 +4813,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6473842110411557830">Powerwash නිදසුන</translation>
 <translation id="6474498546677193336">යෙදුමක් මෙම ෆෝල්ඩරය භාවිත කරන බැවින් බෙදා නොගත නොහැකි විය. ලිනක්ස් මීළඟ වරට වසා දැමෙන විට ෆෝල්ඩරය බෙදා නොගැනේ.</translation>
 <translation id="6474884162850599008">Google Drive ගිණුම විසන්ධි කරන්න</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> හට ඔබගේ තිරයේ අන්තර්ගතයන් බෙදා ගැනීමට අවශ්‍යයි. ඔබ බෙදා ගැනීමට කැමති කුමක්දැයි තෝරාගන්න.</translation>
 <translation id="6477822444490674459">කාර්යාල පැතිකඩක ඇති දුරකථන සඳහා දැනුම්දීම් සමමුහුර්තකරණය සහාය නොදක්වයි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">අනතුරුදායක ගොනුව තබා ගන්නවා ද?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ</translation>
@@ -5076,7 +5072,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> දුරස්ථව එක් කරන ලදී</translation>
 <translation id="6790820461102226165">පුද්ගලයා එක් කරන්න...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> හට ඔබගේ තිරයේ අන්තර්ගතය <ph name="TARGET_NAME" /> සමඟ බෙදා ගැනීමට අවශ්‍යයි. ඔබ බෙදා ගැනීමට කැමති කුමක්දැයි තෝරාගන්න.</translation>
 <translation id="6793604637258913070">දිස් වන විට හෝ චලනය වන විට පෙළ ලෝප විහ්නය උද්දීපනය කරන්න</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' දැනටමත් '<ph name="ACTION" />' ක්‍රියාව වෙත පවරා ඇත. පිටවීමට ඕනෑම යතුරක් ඔබන්න.</translation>
 <translation id="6795884519221689054">පැන්ඩා</translation>
@@ -6963,7 +6958,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8907906903932240086">Chrome හට හානිකර මෘදුකාංග සඳහා ඔබගේ පරිගණකය පරීක්ෂා කළ හැකිය</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> අස්ථාපන කර ඇත</translation>
 <translation id="8909833622202089127">අඩවිය ඔබේ ස්ථානය සොයමින්</translation>
-<translation id="8910146161325739742">ඔබේ තිරය බෙදා ගන්න</translation>
 <translation id="8910222113987937043">ඔබගේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම්වලට සිදු කරන වෙනස් කිරීම් ඔබගේ Google ගිණුම වෙත තව දුරටත් සමමුහුර්ත වන්නේ නැත. කෙසේ වෙතත්, ඔබගේ පවතින දත්ත ඔබගේ Google ගිණුමේ ගබඩා කර තිබෙනු ඇති අතර <ph name="BEGIN_LINK" />Google උපකරණ පුවරුව<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="8912362522468806198">Google ගිණුම</translation>
 <translation id="8912793549644936705">ඇදීම</translation>

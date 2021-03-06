@@ -486,7 +486,6 @@
 <translation id="152913213824448541">Contacts pour le partage à proximité</translation>
 <translation id="1529891865407786369">Source d'alimentation</translation>
 <translation id="1530838837447122178">Accéder aux paramètres de la souris et du pavé tactile</translation>
-<translation id="1531004739673299060">Fenêtre de l'application</translation>
 <translation id="1531275250079031713">Afficher la boîte de dialogue "Ajouter un réseau Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Fort</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Voulez-vous vraiment conserver cet appareil en mode Kiosque de manière permanente ?</translation>
 <translation id="1910721550319506122">Bienvenue !</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Onglet actif</translation>
 <translation id="1916502483199172559">Avatar rouge par défaut</translation>
 <translation id="1918141783557917887">Plu&amp;s petit</translation>
 <translation id="1919345977826869612">Annonces</translation>
@@ -3093,7 +3091,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="447252321002412580">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474155171896946103">Ajouter tous les onglets aux favoris...</translation>
-<translation id="4474461121892222090">Le processus d'activation des données mobiles peut prendre jusqu'à 15 minutes.</translation>
 <translation id="4475552974751346499">Rechercher dans les téléchargements</translation>
 <translation id="4476590490540813026">Athlète</translation>
 <translation id="4476659815936224889">Pour scanner ce code, vous pouvez utiliser une application de lecture de codes QR sur votre téléphone ou certaines applications d'appareil photo.</translation>
@@ -4818,7 +4815,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6473842110411557830">Illustration Powerwash</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Déconnecter le compte Google Drive</translation>
-<translation id="6475697075626596525">Une demande de partage du contenu de votre écran a été envoyée depuis <ph name="APP_NAME" />. Sélectionnez ce que vous souhaitez partager.</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas possible sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conserver le fichier dangereux ?</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -5080,7 +5076,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6790497603648687708">Ajout de l'extension <ph name="EXTENSION_NAME" /> effectué à distance</translation>
 <translation id="6790820461102226165">Ajouter un profil utilisateur…</translation>
-<translation id="6792072150955115067">Une demande de partage du contenu de votre écran avec <ph name="TARGET_NAME" /> a été envoyée depuis <ph name="APP_NAME" />. Sélectionnez les éléments que vous souhaitez partager.</translation>
 <translation id="6793604637258913070">Mettre en surbrillance le curseur lorsqu'il apparaît ou se déplace dans le texte</translation>
 <translation id="6793723358811598107">La touche <ph name="CURRENTKEY" /> est déjà associée à l'action "<ph name="ACTION" />". Appuyez sur n'importe quelle touche pour quitter.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6969,7 +6964,6 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="8907906903932240086">Chrome peut vérifier la présence de logiciels malveillants sur votre ordinateur</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> a été désinstallé</translation>
 <translation id="8909833622202089127">Le site vous localise</translation>
-<translation id="8910146161325739742">Partager votre écran</translation>
 <translation id="8910222113987937043">Les modifications apportées à vos favoris, à votre historique, à vos mots de passe et à d'autres paramètres ne seront plus synchronisées avec votre compte Google. Cependant, les données déjà stockées sur votre compte Google y seront conservées et pourront être gérées dans le <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Compte Google</translation>
 <translation id="8912793549644936705">Étirer</translation>

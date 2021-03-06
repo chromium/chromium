@@ -486,7 +486,6 @@
 <translation id="152913213824448541">Kontakti dijeljenja s Android uređajima</translation>
 <translation id="1529891865407786369">Izvor napajanja</translation>
 <translation id="1530838837447122178">Otvorite postavke miša i dodirne podloge na uređaju</translation>
-<translation id="1531004739673299060">Prozor aplikacije</translation>
 <translation id="1531275250079031713">Prikaži dijaloški okvir "Dodajte novi Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Glasno</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Jeste li sigurni da želite trajno zadržati ovaj uređaj u načinu kioska?</translation>
 <translation id="1910721550319506122">Dobro došli!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Trenutačna kartica</translation>
 <translation id="1916502483199172559">Zadani crveni avatar</translation>
 <translation id="1918141783557917887">&amp;Manji</translation>
 <translation id="1919345977826869612">Oglasi</translation>
@@ -3093,7 +3091,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="447252321002412580">Pomozite poboljšati Chromeove značajke i izvedbu</translation>
 <translation id="4472575034687746823">Početak korištenja</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
-<translation id="4474461121892222090">Aktivacija mobilnih podataka može potrajati do 15 minuta.</translation>
 <translation id="4475552974751346499">Pretraži preuzimanja</translation>
 <translation id="4476590490540813026">Sportaš</translation>
 <translation id="4476659815936224889">Taj kôd možete skenirati pomoću aplikacije za skeniranje QR kodova na svojem telefonu ili pomoću nekih aplikacija za kamere.</translation>
@@ -4817,7 +4814,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6473842110411557830">Ilustracija funkcije Powerwash</translation>
 <translation id="6474498546677193336">Prekid dijeljenja nije bio moguć jer jedna aplikacija koristi tu mapu. Dijeljenje mape prekinut će se kad se Linux isključi.</translation>
 <translation id="6474884162850599008">Prekini vezu računa Google diska</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona. Odaberite što želite dijeliti.</translation>
 <translation id="6477822444490674459">Sinkronizacija obavijesti nije podržana za telefone na poslovnom profilu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Želite li zadržati opasnu datoteku?</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6790428901817661496">Reproduciraj</translation>
 <translation id="6790497603648687708">Proširenje <ph name="EXTENSION_NAME" /> dodano je daljinski</translation>
 <translation id="6790820461102226165">Dodavanje osobe...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg zaslona s karticom <ph name="TARGET_NAME" />. Odaberite što želite dijeliti.</translation>
 <translation id="6793604637258913070">Istakni znak za umetanje teksta kada se pojavi ili kreće</translation>
 <translation id="6793723358811598107">Tipka "<ph name="CURRENTKEY" />" već je dodijeljena radnji "<ph name="ACTION" />". Pritisnite bilo koju tipku za izlaz.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6969,7 +6964,6 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu.</translation>
 <translation id="8907906903932240086">Chrome može provjeriti ima li na računalu štetnog softvera</translation>
 <translation id="8909298138148012791">Deinstalirana je aplikacija <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Web-lokacija prati vašu lokaciju</translation>
-<translation id="8910146161325739742">Dijeljenje zaslona</translation>
 <translation id="8910222113987937043">Promjene vaših oznaka, povijesti, zaporki i drugih postavki više se neće sinkronizirati s vašim Google računom. No vaši podaci ostat će pohranjeni na vašem Google računu i možete upravljati njima na <ph name="BEGIN_LINK" />Google nadzornoj ploči<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Račun</translation>
 <translation id="8912793549644936705">Rastegni</translation>

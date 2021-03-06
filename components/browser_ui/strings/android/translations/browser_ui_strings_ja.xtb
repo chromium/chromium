@@ -304,6 +304,7 @@
 <translation id="894871326938397531">シークレット モードを終了しますか？</translation>
 <translation id="8958424370300090006">特定のサイトの Cookie をブロックします。</translation>
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
+<translation id="8986362086234534611">削除</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>

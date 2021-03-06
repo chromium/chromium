@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Izklop načina brez belež. zgod.?</translation>
 <translation id="8958424370300090006">Blokiranje piškotkov za določeno spletno mesto.</translation>
 <translation id="8959122750345127698">Krmarjenje ni dosegljivo: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Pozabi</translation>
 <translation id="9019902583201351841">Upravljajo starši</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>

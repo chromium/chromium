@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Contatti Condivisione nelle vicinanze</translation>
 <translation id="1529891865407786369">Fonte di alimentazione</translation>
 <translation id="1530838837447122178">Apri le impostazioni di mouse e touchpad</translation>
-<translation id="1531004739673299060">Finestra dell'applicazione</translation>
 <translation id="1531275250079031713">Mostra la finestra di dialogo "Aggiungi nuova rete Wi-fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> e <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Alto</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Vuoi mantenere definitivamente questo dispositivo in modalità kiosk?</translation>
 <translation id="1910721550319506122">Benvenuto!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Scheda corrente</translation>
 <translation id="1916502483199172559">Avatar rosso predefinito</translation>
 <translation id="1918141783557917887">Più &amp;piccolo</translation>
 <translation id="1919345977826869612">Annunci</translation>
@@ -3091,7 +3089,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="447252321002412580">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4474155171896946103">Aggiungi tutte le schede ai Preferiti...</translation>
-<translation id="4474461121892222090">Potrebbero essere necessari fino a 15 minuti per completare l'attivazione dei dati mobili.</translation>
 <translation id="4475552974751346499">Cerca tra i file scaricati</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per eseguire la scansione di questo codice, puoi usare un'app scanner QR sul telefono oppure alcune app fotocamera.</translation>
@@ -4815,7 +4812,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6473842110411557830">Illustrazione Powerwash</translation>
 <translation id="6474498546677193336">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Linux.</translation>
 <translation id="6474884162850599008">Scollega account Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo. Scegli i contenuti che desideri condividere.</translation>
 <translation id="6477822444490674459">La sincronizzazione delle notifiche non è supportata per i telefoni in un profilo di lavoro. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conservare il file pericoloso?</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
@@ -5077,7 +5073,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />. Scegli i contenuti che desideri condividere.</translation>
 <translation id="6793604637258913070">Evidenzia il cursore di testo quando viene visualizzato o spostato</translation>
 <translation id="6793723358811598107">Il tasto "'<ph name="CURRENTKEY" />" è già stato assegnato all'azione "<ph name="ACTION" />". Premi un tasto qualsiasi per uscire.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6964,7 +6959,6 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8907906903932240086">Chrome può controllare l'eventuale presenza di software dannoso sul tuo computer</translation>
 <translation id="8909298138148012791">L'app <ph name="APP_NAME" /> è stata disinstallata</translation>
 <translation id="8909833622202089127">Il sito sta monitorando la tua posizione</translation>
-<translation id="8910146161325739742">Condividi lo schermo</translation>
 <translation id="8910222113987937043">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. I dati esistenti rimarranno invece memorizzati nel tuo Account Google e potranno essere gestiti su <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912793549644936705">Allunga</translation>

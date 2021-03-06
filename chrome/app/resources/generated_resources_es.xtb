@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Contactos de Compartir con Nearby</translation>
 <translation id="1529891865407786369">Fuente de alimentación</translation>
 <translation id="1530838837447122178">Abrir la configuración del ratón y del panel táctil</translation>
-<translation id="1531004739673299060">Ventana de la aplicación</translation>
 <translation id="1531275250079031713">Mostrar cuadro de diálogo "Añadir Wi‑Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Alto</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">¿Seguro que quieres que se utilice el modo de kiosco en este dispositivo de forma permanente?</translation>
 <translation id="1910721550319506122">¡Te damos la bienvenida!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Pestaña actual</translation>
 <translation id="1916502483199172559">Avatar rojo predeterminado</translation>
 <translation id="1918141783557917887">Meno&amp;r</translation>
 <translation id="1919345977826869612">Anuncios</translation>
@@ -3091,7 +3089,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="4472575034687746823">Empezar</translation>
 <translation id="4474155171896946103">Añadir todas las pestañas a marcadores...</translation>
-<translation id="4474461121892222090">Los datos móviles pueden tardar hasta 15 minutos en activarse.</translation>
 <translation id="4475552974751346499">Buscar descargas</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para escanear este código, puedes usar una aplicación de escaneo de QR de tu teléfono o algunas aplicaciones de cámara.</translation>
@@ -4815,7 +4812,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6473842110411557830">Ilustración de Powerwash</translation>
 <translation id="6474498546677193336">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. Se dejará de compartir la próxima vez que se apague Linux.</translation>
 <translation id="6474884162850599008">Desconectar cuenta de Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla. Elige lo que quieres compartir.</translation>
 <translation id="6477822444490674459">La sincronización de notificaciones no está disponible en teléfonos con un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">¿Quieres conservar el archivo peligroso?</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
@@ -5077,7 +5073,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6790497603648687708">Se ha añadido <ph name="EXTENSION_NAME" /> de forma remota</translation>
 <translation id="6790820461102226165">Añadir perfil...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> quiere compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />. Elige lo que quieres compartir.</translation>
 <translation id="6793604637258913070">Resaltar el símbolo de intercalación de texto cuando aparezca o se mueva</translation>
 <translation id="6793723358811598107">La tecla "<ph name="CURRENTKEY" />" ya está asignada a la acción "<ph name="ACTION" />". Pulsa cualquier tecla para salir.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6965,7 +6960,6 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8907906903932240086">Chrome puede comprobar si hay software dañino en tu ordenador</translation>
 <translation id="8909298138148012791">Se ha desinstalado <ph name="APP_NAME" />.</translation>
 <translation id="8909833622202089127">El sitio web está registrando tu ubicación</translation>
-<translation id="8910146161325739742">Compartir tu pantalla</translation>
 <translation id="8910222113987937043">Los cambios que realices en tus marcadores, tu historial, tus contraseñas y otros ajustes no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos actuales permanecerán almacenados en esa cuenta y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">cuenta de Google</translation>
 <translation id="8912793549644936705">Expandir</translation>

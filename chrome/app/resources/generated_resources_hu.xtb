@@ -485,7 +485,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="152913213824448541">Közeli megosztáshoz használható névjegyek</translation>
 <translation id="1529891865407786369">Áramforrás</translation>
 <translation id="1530838837447122178">Az egér és az érintőpad beállításainak megnyitása</translation>
-<translation id="1531004739673299060">Alkalmazásablak</translation>
 <translation id="1531275250079031713">Új Wi-Fi-hálózat hozzáadására szolgáló párbeszédpanel megjelenítése</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Hangos</translation>
@@ -844,7 +843,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1909880997794698664">Biztosan állandó kioszk módban szeretné tartani ezt az eszközt?</translation>
 <translation id="1910721550319506122">Üdvözöljük!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Jelenlegi lap</translation>
 <translation id="1916502483199172559">Alapértelmezett piros avatar</translation>
 <translation id="1918141783557917887">&amp;Kisebb</translation>
 <translation id="1919345977826869612">Hirdetések</translation>
@@ -3091,7 +3089,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="447252321002412580">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="4472575034687746823">Kezdő lépések</translation>
 <translation id="4474155171896946103">Összes lap hozzáadása a könyvjelzőkhöz...</translation>
-<translation id="4474461121892222090">A mobiladatok aktiválása akár 15 percet is igénybe vehet.</translation>
 <translation id="4475552974751346499">Letöltések keresése</translation>
 <translation id="4476590490540813026">Atléta</translation>
 <translation id="4476659815936224889">A kód beolvasásához használhat a telefonján QR-kódok olvasására szolgáló alkalmazást, illetve bizonyos kameraalkalmazásokat.</translation>
@@ -4817,7 +4814,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6473842110411557830">Powerwash művelet illusztrációja</translation>
 <translation id="6474498546677193336">Nem sikerült a megosztás visszavonása, mivel valamelyik alkalmazás használja ezt a mappát. A mappa megosztásának visszavonása a Linux következő leállításakor történik majd meg.</translation>
 <translation id="6474884162850599008">Google Drive-fiók leválasztása</translation>
-<translation id="6475697075626596525">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát. Válassza ki, hogy mit kíván megosztani.</translation>
 <translation id="6477822444490674459">Az értesítések szinkronizálása nem támogatott azoknál a telefonoknál, amelyek munkaprofilt használnak. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6478248366783946499">Megtartja a veszélyes fájlt?</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6790497603648687708">A(z) <ph name="EXTENSION_NAME" /> bővítményt távolról adták hozzá</translation>
 <translation id="6790820461102226165">Személy hozzáadása…</translation>
-<translation id="6792072150955115067">A(z) <ph name="APP_NAME" /> szeretné megosztani a képernyő tartalmát a következővel: <ph name="TARGET_NAME" />. Válassza ki, hogy mit szeretne megosztani.</translation>
 <translation id="6793604637258913070">Szövegbeszúrási pont kiemelése, amikor megjelenik vagy mozog</translation>
 <translation id="6793723358811598107">A(z) „<ph name="CURRENTKEY" />” már hozzá van rendelve a következő művelethez: <ph name="ACTION" />. A kilépéshez nyomja meg bármelyik billentyűt.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6967,7 +6962,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8907906903932240086">A Chrome ellenőrizheti, hogy vannak-e a számítógépén kártékony szoftverek</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> eltávolítva</translation>
 <translation id="8909833622202089127">A webhely nyomon követi a tartózkodási helyét</translation>
-<translation id="8910146161325739742">Képernyőmegosztás</translation>
 <translation id="8910222113987937043">A könyvjelzők, előzmények, jelszavak és egyéb beállítások módosításai nem lesznek szinkronizálva Google-fiókjával. Meglévő adatait azonban továbbra is tárolni fogja Google-fiókja, és azokat a <ph name="BEGIN_LINK" />Google Irányítópulton<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="8912362522468806198">Google Fiókjába</translation>
 <translation id="8912793549644936705">Nyújtva</translation>

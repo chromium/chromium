@@ -485,7 +485,6 @@
 <translation id="152913213824448541">鄰近分享功能聯絡人</translation>
 <translation id="1529891865407786369">電源</translation>
 <translation id="1530838837447122178">開啟滑鼠和觸控板裝置設定</translation>
-<translation id="1531004739673299060">應用程式視窗</translation>
 <translation id="1531275250079031713">顯示「新增 Wi-Fi」對話方塊</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">大聲</translation>
@@ -640,6 +639,7 @@
 <translation id="1692118695553449118">同步功能已啟用</translation>
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="169279809881363536">找不到任何設定檔。如要設定新網路，請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼。</translation>
+<translation id="169675691788639886">裝置有設定好的 SSH 伺服器。請勿使用敏感帳戶登入。</translation>
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698122934742150150">僅適用於目前的無痕模式工作階段</translation>
@@ -843,7 +843,6 @@
 <translation id="1909880997794698664">你確定要讓這個裝置永久使用 Kiosk 模式嗎？</translation>
 <translation id="1910721550319506122">歡迎使用！</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">目前的分頁</translation>
 <translation id="1916502483199172559">預設的紅色顯示圖片</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1919345977826869612">廣告</translation>
@@ -2817,6 +2816,7 @@
 <translation id="4115080753528843955">部分內容服務會使用專屬 ID 來授予受保護內容的存取權</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
+<translation id="4118998393712575296">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的網站和應用程式，可以之後再新增帳戶。</translation>
 <translation id="4120388883569225797">無法重設這個安全金鑰</translation>
 <translation id="4120817667028078560">路徑名稱過長</translation>
 <translation id="4124823734405044952">你的安全金鑰已重設</translation>
@@ -3088,7 +3088,6 @@
 <translation id="447252321002412580">協助改善 Chrome 的功能與效能</translation>
 <translation id="4472575034687746823">開始使用</translation>
 <translation id="4474155171896946103">將所有分頁加入書籤...</translation>
-<translation id="4474461121892222090">系統最多可能要 15 分鐘，才能完成行動數據啟用。</translation>
 <translation id="4475552974751346499">搜尋下載內容</translation>
 <translation id="4476590490540813026">運動員</translation>
 <translation id="4476659815936224889">如要掃描這個圖碼，你可以使用手機上的 QR 掃描器或相機應用程式。</translation>
@@ -3878,6 +3877,7 @@
 <translation id="540296380408672091">一律封鎖 <ph name="HOST" /> 的 Cookie</translation>
 <translation id="540495485885201800">與上一個交換</translation>
 <translation id="5405146885510277940">重設設定</translation>
+<translation id="5407119150486192764">輸入電信業者提供的 8 位數 PIN 碼解鎖金鑰</translation>
 <translation id="5408750356094797285">縮放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">從 Google 帳戶</translation>
 <translation id="5411472733320185105">不要對以下主機和網域使用 Proxy 設定：</translation>
@@ -4510,6 +4510,7 @@
 <translation id="6124213551517593835">這會清除 <ph name="SITE_GROUP_NAME" /> 和其底下網站儲存的所有資料和 Cookie</translation>
 <translation id="6124650939968185064">下列擴充功能與這個擴充功能之間有相依關係：</translation>
 <translation id="6124698108608891449">這個網站需要更多權限。</translation>
+<translation id="6125442051901189730">沒有可用的 SIM 卡設定檔。請在<ph name="BEGIN_LINK" />這裡<ph name="END_LINK" />設定新的設定檔。</translation>
 <translation id="6125479973208104919">很抱歉，你需要重新在 <ph name="DEVICE_TYPE" /> 上新增帳戶。</translation>
 <translation id="6129691635767514872">系統已將所選資料從 Chrome 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="6129938384427316298">Netscape 憑證評論</translation>
@@ -4810,7 +4811,6 @@
 <translation id="6473842110411557830">Powerwash 插圖</translation>
 <translation id="6474498546677193336">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享這個資料夾。</translation>
 <translation id="6474884162850599008">取消連結 Google 雲端硬碟帳戶</translation>
-<translation id="6475697075626596525">「<ph name="APP_NAME" />」要求分享畫面內容，請選擇你要分享的內容。</translation>
 <translation id="6477822444490674459">設有工作資料夾的手機不支援通知同步功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">要保留不安全的檔案嗎？</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -5072,7 +5072,6 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">「<ph name="EXTENSION_NAME" />」是從遠端新增的項目</translation>
 <translation id="6790820461102226165">新增使用者...</translation>
-<translation id="6792072150955115067">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享畫面內容，請選擇你要分享的內容。</translation>
 <translation id="6793604637258913070">文字插入點出現或移動時醒目顯示</translation>
 <translation id="6793723358811598107">「<ph name="CURRENTKEY" />」鍵已指派給「<ph name="ACTION" />」動作。請按下任何按鍵以離開。</translation>
 <translation id="6795884519221689054">熊貓</translation>
@@ -6620,6 +6619,7 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未指定語言</translation>
+<translation id="8555195867496021627">沒有可用的 eSIM 卡設定檔。請在<ph name="BEGIN_LINK" />這裡<ph name="END_LINK" />下載新的設定檔。</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557930019681227453">資訊清單</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
@@ -6958,7 +6958,6 @@
 <translation id="8907906903932240086">Chrome 可對電腦進行有害軟體檢測</translation>
 <translation id="8909298138148012791">已解除安裝「<ph name="APP_NAME" />」</translation>
 <translation id="8909833622202089127">網站正在追蹤你的位置</translation>
-<translation id="8910146161325739742">分享螢幕畫面</translation>
 <translation id="8910222113987937043">你的書籤、歷史記錄、密碼和其他設定的變更將不會再同步到你的 Google 帳戶。不過，你的現有資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8912793549644936705">延伸</translation>

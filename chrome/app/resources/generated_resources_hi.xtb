@@ -486,7 +486,6 @@
 <translation id="152913213824448541">आस-पास शेयर करने की सुविधा और संपर्क</translation>
 <translation id="1529891865407786369">पावर स्रोत</translation>
 <translation id="1530838837447122178">माउस और टचपैड डिवाइस सेटिंग खोलें</translation>
-<translation id="1531004739673299060">ऐप्लिकेशन विंडो</translation>
 <translation id="1531275250079031713">'नया वाई-फ़ाई जोड़ें' संवाद दिखाएं</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, और <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">तेज़</translation>
@@ -641,6 +640,7 @@
 <translation id="1692118695553449118">समन्वयन चालू है</translation>
 <translation id="1692210323591458290">गहरा बैंगनी</translation>
 <translation id="169279809881363536">कोई प्रोफ़ाइल नहीं मिली. नया नेटवर्क सेट अप करने के लिए, अपने डिवाइस के कैमरे से क्यूआर कोड को स्कैन करें या मोबाइल और इंटरनेट सेवा देने वाली कंपनी से मिला ऐक्टिवेशन कोड डालें.</translation>
+<translation id="169675691788639886">डिवाइस के लिए एसएसएच सर्वर कॉन्फ़िगर किया गया है. संवेदनशील खातों से साइन इन न करें.</translation>
 <translation id="1697150536837697295">कला</translation>
 <translation id="1697686431566694143">फ़ाइल में बदलाव करें</translation>
 <translation id="1698122934742150150">केवल वर्तमान गुप्त सत्र</translation>
@@ -844,7 +844,6 @@
 <translation id="1909880997794698664">क्या आप वाकई इस डिवाइस को स्थायी रूप से कियोस्क मोड में रखना चाहते हैं?</translation>
 <translation id="1910721550319506122">आपका स्वागत है!</translation>
 <translation id="1915073950770830761">कैनरी</translation>
-<translation id="1916260783734263714">मौजूदा टैब</translation>
 <translation id="1916502483199172559">डिफ़ॉल्ट लाल अवतार</translation>
 <translation id="1918141783557917887">&amp;छोटा</translation>
 <translation id="1919345977826869612">विज्ञापन</translation>
@@ -2819,6 +2818,7 @@
 <translation id="4115080753528843955">सुरक्षित कॉन्टेंट को ऐक्सेस करने की अनुमति देने के लिए, कुछ कॉन्टेंट सेवाएं विशेष पहचानकर्ताओं का इस्तेमाल करती हैं.</translation>
 <translation id="4115378294792113321">मैजेंटा</translation>
 <translation id="4118579674665737931">कृपया डिवाइस को फिर से चालू करें और दोबारा कोशिश करें.</translation>
+<translation id="4118998393712575296">'माता-पिता का कंट्रोल' सुविधा का इस्तेमाल करने के लिए, आपके बच्चे के पास ऐसा Google खाता होना ज़रूरी है जिसे आप मैनेज करते हों. 'माता-पिता का कंट्रोल' सुविधा में, किसी ऐप्लिकेशन को अनुमति देना और किसी डिवाइस के इस्तेमाल की समयसीमा तय करना भी शामिल है. Google Classroom जैसे ऐप्लिकेशन और साइटों के साथ इस्तेमाल करने के लिए, बाद में स्कूल वाला खाता जोड़ा जा सकता है.</translation>
 <translation id="4120388883569225797">यह सुरक्षा कुंजी रीसेट नहीं हो पा रही है</translation>
 <translation id="4120817667028078560">पाथ बहुत बड़ा है</translation>
 <translation id="4124823734405044952">आपकी सुरक्षा कुंजी रीसेट कर दी गई है</translation>
@@ -3090,7 +3090,6 @@
 <translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
 <translation id="4472575034687746823">शुरू करें</translation>
 <translation id="4474155171896946103">सभी टैब बुकमार्क करें...</translation>
-<translation id="4474461121892222090">मोबाइल डेटा को चालू होने में 15 मिनट तक लग सकते हैं.</translation>
 <translation id="4475552974751346499">डाउनलोड खोजें</translation>
 <translation id="4476590490540813026">एथलीट</translation>
 <translation id="4476659815936224889">इस कोड को स्कैन करने के लिए, आप अपने फ़ोन पर क्यूआर स्कैनर या कुछ कैमरा ऐप्लिकेशन का इस्तेमाल कर सकते हैं.</translation>
@@ -3880,6 +3879,7 @@
 <translation id="540296380408672091"><ph name="HOST" /> पर कुकी को हमेशा ब्लॉक करें</translation>
 <translation id="540495485885201800">पिछले आइटम से बदलें</translation>
 <translation id="5405146885510277940">सेटिंग रीसेट करें</translation>
+<translation id="5407119150486192764">आठ अंकों वाली पिन अनब्लॉकिंग कुंजी डालें. यह आपको, मोबाइल और इंटरनेट सेवा देने वाली कंपनी ने दी होगी</translation>
 <translation id="5408750356094797285">ज़ूम करें: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">आपके Google खाते से</translation>
 <translation id="5411472733320185105">इन होस्‍ट और डोमेन के लिए प्रॉक्‍सी सेटिंग का उपयोग न करें:</translation>
@@ -4512,6 +4512,7 @@
 <translation id="6124213551517593835">इससे वे सभी डेटा और कुकी मिट जाएंगे जिन्हें <ph name="SITE_GROUP_NAME" /> और इसके तहत आने वाली सभी साइटों ने सेव किया है</translation>
 <translation id="6124650939968185064">निम्न एक्सटेंशन इस एक्सटेंशन पर निर्भर हैं:</translation>
 <translation id="6124698108608891449">इस साइट को ज़्यादा अनुमतियां चाहिए.</translation>
+<translation id="6125442051901189730">कोई भी सिम प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> सेट अप करें.</translation>
 <translation id="6125479973208104919">दुर्भाग्यवश, आपको इस <ph name="DEVICE_TYPE" /> में अपना खाता फिर से जोड़ना होगा.</translation>
 <translation id="6129691635767514872">चुना गया डेटा Chrome और सिंक किए गए सभी डिवाइस से हटा दिया गया है. हो सकता है कि आपके Google खाते में खोजों और <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य Google सेवाओं की गतिविधि जैसे अन्य प्रकार के ब्राउज़िंग इतिहास मौजूद हों.</translation>
 <translation id="6129938384427316298">Netscape प्रमाणपत्र टिप्पणी</translation>
@@ -4812,7 +4813,6 @@
 <translation id="6473842110411557830">पावरवॉश का चित्रण</translation>
 <translation id="6474498546677193336">शेयर करना बंद नहीं किया जा सका, क्योंकि एक ऐप्लिकेशन इस फ़ोल्डर का इस्तेमाल कर रहा है. जब Linux अगली बार बंद होगा, तब इस फ़ोल्डर को शेयर करना बंद कर दिया जाएगा.</translation>
 <translation id="6474884162850599008">Google डिस्‍क खाता डिस्‍कनेक्‍ट करें</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद सामग्री को शेयर करना चाहता है. चुनें कि आप क्या शेयर करना चाहते हैं.</translation>
 <translation id="6477822444490674459">फ़ोन में वर्क प्रोफ़ाइल होने पर, सूचनाओं को सिंक करने की सुविधा काम नहीं करती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फ़ाइल रखें?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
@@ -5074,7 +5074,6 @@
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> को दूरस्थ रूप से जोड़ा गया है</translation>
 <translation id="6790820461102226165">व्‍यक्ति जोड़ें...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद सामग्री को <ph name="TARGET_NAME" /> से शेयर करना चाहता है. चुनें कि आप क्या शेयर करना चाहते हैं.</translation>
 <translation id="6793604637258913070">लेख कैरेट के दिखाई देने या उसके इधर-उधर जाने पर उसे हाइलाइट करें</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' को पहले ही '<ph name="ACTION" />' कार्रवाई के लिए असाइन किया जा चुका है. बाहर निकलने के लिए कोई भी बटन दबाएं.</translation>
 <translation id="6795884519221689054">पांडा</translation>
@@ -6622,6 +6621,7 @@
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
 <translation id="8554899698005018844">कोई भाषा नहीं</translation>
+<translation id="8555195867496021627">कोई भी ई-सिम प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> डाउनलोड करें.</translation>
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="8557930019681227453">मेनिफ़ेस्ट</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
@@ -6961,7 +6961,6 @@
 <translation id="8907906903932240086">Chrome यह जांच कर सकता है कि आपके कंप्यूटर में नुकसान पहुंचाने वाला सॉफ़्टवेयर है या नहीं</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> अनइंस्टॉल हो गया</translation>
 <translation id="8909833622202089127">साइट आपकी जगह को ट्रैक कर रही है</translation>
-<translation id="8910146161325739742">अपनी स्क्रीन शेयर करें</translation>
 <translation id="8910222113987937043">आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग में किए गए बदलाव अब आपके Google खाते से सिंक नहीं किए जाएंगे. हालांकि, आपका मौजूदा डेटा आपके Google खाते में संग्रहित रहेगा और <ph name="BEGIN_LINK" />Google डैशबोर्ड<ph name="END_LINK" /> पर प्रबंधित किया जा सकेगा.</translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8912793549644936705">खींचें</translation>

@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Ieși din modul incognito?</translation>
 <translation id="8958424370300090006">Blochează cookie-urile pentru un anumit site.</translation>
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Șterge</translation>
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>

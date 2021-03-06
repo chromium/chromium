@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Դուրս գա՞լ ինկոգնիտո ռեժիմից</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավարկումն անհասանելի է՝ <ph name="URL" /></translation>
+<translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>

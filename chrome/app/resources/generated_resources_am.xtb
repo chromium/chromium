@@ -486,7 +486,6 @@
 <translation id="152913213824448541">በአቅራቢያ አጋራ እውቂያዎች</translation>
 <translation id="1529891865407786369">የኃይል ምንጭ</translation>
 <translation id="1530838837447122178">የመዳፊት እና የመዳሰሻ መሣሪያ ቅንብሮችን ክፈት</translation>
-<translation id="1531004739673299060">የመተግበሪያ መስኮት</translation>
 <translation id="1531275250079031713">የ«አዲስ Wi-Fi አክል» መገናኛን አሳይ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" />፣ <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ጮክ ያለ</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">እርግጠኛ ነዎት ይህን መሣሪያ በኪዮስክ ሁነታ እስከመጨረሻው ማቆየት ይፈልጋሉ?</translation>
 <translation id="1910721550319506122">እንኳን ደህና መጡ!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">የአሁኑ ትር</translation>
 <translation id="1916502483199172559">ነባሪ ቀይ አምሳያ</translation>
 <translation id="1918141783557917887">&amp;አሳንስ</translation>
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
@@ -3090,7 +3088,6 @@
 <translation id="447252321002412580">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4474155171896946103">ለሁሉም ትሮች ዕልባት አብጅ...</translation>
-<translation id="4474461121892222090">የሞባይል ውሂብን ማግበር ማጠናቀቅ እስከ 15 ደቂቃዎች ድረስ ሊወስድ ይችላል።</translation>
 <translation id="4475552974751346499">የሚወርዱ ፈልግ</translation>
 <translation id="4476590490540813026">አትሌት</translation>
 <translation id="4476659815936224889">ይህን ኮድ ለመቃኘት በእርስዎ ስልክ ላይ ያለውን የQR መቃኛ መተግበሪያ ወይም አንዳንድ የካሜራ መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
@@ -4814,7 +4811,6 @@
 <translation id="6473842110411557830">የPowerwash ሥዕል</translation>
 <translation id="6474498546677193336">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። Linux በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>
 <translation id="6474884162850599008">የGoogle Drive መለያን አላቅቅ</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ማጋራት ይፈልጋል። ምን ማጋራት እንደሚፈልጉ ይምረጡ።</translation>
 <translation id="6477822444490674459">የማሳወቂያ ስምረት በሥራ መገለጫ ውስጥ ላሉ ስልኮች አይደገፍም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">አደገኛ ፋይል ይቀመጥ?</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>
@@ -5076,7 +5072,6 @@
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> በርቀት ታክሏል</translation>
 <translation id="6790820461102226165">ሰው አክል...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘት ለ<ph name="TARGET_NAME" /> ማጋራት ይፈልጋል። ምን ማጋራት እንደሚፈልጉ ይምረጡ።</translation>
 <translation id="6793604637258913070">የጽሑፍ ድፋቱ ሲታይ ወይም ሲንቀሳቀስ አድምቀው</translation>
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» ቀደም ብሎ ወደ «<ph name="ACTION" />» እርምጃ ተመድቧል። ለመውጣት ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="6795884519221689054">ፓንዳ</translation>
@@ -6969,7 +6964,6 @@ nil</translation>
 <translation id="8907906903932240086">Chrome ኮምፒውተርዎን ለጎጂ ሶፍትዌሮች ሊፈትሽ ይችላል</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ተራግፏል</translation>
 <translation id="8909833622202089127">ጣቢያ የእርስዎን አካባቢ እየተከታተለ ነው</translation>
-<translation id="8910146161325739742">የእርስዎን ገጸ ማያ ያጋሩ</translation>
 <translation id="8910222113987937043">በእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ላይ የሚደረጉ ለውጦች ከአሁን በኋላ ከGoogle መለያዎ ጋር አይሰምሩም። ይሁንና፣ የእርስዎ ነባር ውሂብ በGoogle መለያዎ ላይ እንደተከማቸ የሚቆይ እና በ<ph name="BEGIN_LINK" />Google ዳሽቦርድ<ph name="END_LINK" /> ላይ መቀናበር የሚችል ነው።</translation>
 <translation id="8912362522468806198">የGoogle መለያ</translation>
 <translation id="8912793549644936705">ወጥር</translation>

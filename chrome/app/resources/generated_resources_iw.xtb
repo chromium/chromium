@@ -484,7 +484,6 @@
 <translation id="152913213824448541">אנשי קשר לשיתוף בקרבת מקום</translation>
 <translation id="1529891865407786369">מקור חשמל</translation>
 <translation id="1530838837447122178">פתיחת הגדרות המכשיר של העכבר ולוח המגע</translation>
-<translation id="1531004739673299060">חלון אפליקציה</translation>
 <translation id="1531275250079031713">‏הצגת תיבת הדו-שיח 'הוספת רשת Wi-Fi חדשה'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">גבוהה</translation>
@@ -842,7 +841,6 @@
 <translation id="1909880997794698664">ברצונך באמת להשאיר מכשיר זה במצב קיוסק באופן קבוע?</translation>
 <translation id="1910721550319506122">ברוכים הבאים!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">הכרטיסייה הנוכחית</translation>
 <translation id="1916502483199172559">דמות ברירת מחדל אדומה</translation>
 <translation id="1918141783557917887">&amp;קטן יותר</translation>
 <translation id="1919345977826869612">מודעות</translation>
@@ -3090,7 +3088,6 @@
 <translation id="447252321002412580">‏עזרה בשיפור התכונות והביצועים של Chrome</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4474155171896946103">יצירת סימנייה לכל הכרטיסיות...</translation>
-<translation id="4474461121892222090">הפעלת חבילת הגלישה עשויה לארוך עד 15 דקות.</translation>
 <translation id="4475552974751346499">חיפוש בהורדות</translation>
 <translation id="4476590490540813026">ספורטאית</translation>
 <translation id="4476659815936224889">‏כדי לסרוק את הקוד הזה, ניתן להשתמש באפליקציה של סורק קודי ה-QR בטלפון או באפליקציות מצלמה מתאימות.</translation>
@@ -4812,7 +4809,6 @@
 <translation id="6473842110411557830">‏איור Powerwash</translation>
 <translation id="6474498546677193336">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של Linux.</translation>
 <translation id="6474884162850599008">‏ניתוק חשבון Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> רוצה לשתף את תוכן המסך שלך. יש לבחור את התוכן שברצונך לשתף.</translation>
 <translation id="6477822444490674459">אין תמיכה בסנכרון התראות בטלפונים שמחוברים לפרופיל עבודה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">להשאיר את הקובץ המסוכן?</translation>
 <translation id="6480327114083866287">מנוהל על ידי <ph name="MANAGER" /></translation>
@@ -5074,7 +5070,6 @@
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> נוסף מרחוק</translation>
 <translation id="6790820461102226165">הוספת משתמש...</translation>
-<translation id="6792072150955115067">מהאפליקציה <ph name="APP_NAME" /> נשלחה בקשה לשתף את תוכן המסך עם <ph name="TARGET_NAME" />. יש לבחור את התוכן שברצונך לשתף.</translation>
 <translation id="6793604637258913070">הדגשת סמן הטקסט כשהוא מופיע או זז</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי לצאת.</translation>
 <translation id="6795884519221689054">פנדה</translation>
@@ -6964,7 +6959,6 @@
 <translation id="8907906903932240086">‏Chrome יכול לבדוק אם יש תוכנות מזיקות במחשב שלך</translation>
 <translation id="8909298138148012791">האפליקציה <ph name="APP_NAME" /> הוסרה.</translation>
 <translation id="8909833622202089127">האתר עוקב אחרי המיקום שלך</translation>
-<translation id="8910146161325739742">שיתוף המסך שלך</translation>
 <translation id="8910222113987937043">‏שינויים בסימניות, בהיסטוריה, בסיסמאות ובהגדרות אחרות לא יסונכרנו עוד עם חשבון Google שלך. עם זאת, הנתונים הקיימים עדיין יישארו בחשבון Google וניתן לנהל אותם ב<ph name="BEGIN_LINK" />מרכז השליטה של Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8912793549644936705">מתח</translation>

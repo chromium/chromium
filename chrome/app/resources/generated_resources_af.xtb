@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Nabydeling: kontakte</translation>
 <translation id="1529891865407786369">Kragbron</translation>
 <translation id="1530838837447122178">Maak muis- en raakpaneeltoestelinstellings oop</translation>
-<translation id="1531004739673299060">Programvenster</translation>
 <translation id="1531275250079031713">Wys "Voeg nuwe Wi-Fi by"-dialoog</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Hard</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Is jy seker jy wil hierdie toestel permanent in kioskmodus hou?</translation>
 <translation id="1910721550319506122">Welkom!</translation>
 <translation id="1915073950770830761">kanarie</translation>
-<translation id="1916260783734263714">Huidige oortjie</translation>
 <translation id="1916502483199172559">Verstek- rooi avatar</translation>
 <translation id="1918141783557917887">Kleiner</translation>
 <translation id="1919345977826869612">Advertensies</translation>
@@ -3092,7 +3090,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="447252321002412580">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4474155171896946103">Boekmerk alle oortjies …</translation>
-<translation id="4474461121892222090">Dit kan tot 15 minute neem om die aktivering van mobiele data te voltooi.</translation>
 <translation id="4475552974751346499">Deursoek aflaaie</translation>
 <translation id="4476590490540813026">Atleet</translation>
 <translation id="4476659815936224889">Om hierdie kode te skandeer, moet jy 'n QR-skandeerderprogram op jou foon of sommige kameraprogramme gebruik.</translation>
@@ -4817,7 +4814,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6473842110411557830">Powerwash-illustrasie</translation>
 <translation id="6474498546677193336">Kon nie ontdeel nie want 'n program gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Linux weer afgeskakel word.</translation>
 <translation id="6474884162850599008">Ontkoppel Google Drive-rekening</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> wil die inhoud van jou skerm deel. Kies wat jy wil deel.</translation>
 <translation id="6477822444490674459">Kennisgewingsinkronisering word nie vir fone in 'n werkprofiel gesteun nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Hou gevaarlike lêer?</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> is oor 'n afstand bygevoeg</translation>
 <translation id="6790820461102226165">Voeg persoon by …</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> wil die inhoud van jou skerm met <ph name="TARGET_NAME" /> deel. Kies wat jy wil deel.</translation>
 <translation id="6793604637258913070">Lig die tekskaret uit wanneer dit verskyn of beweeg</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" is reeds toegewys aan die handeling "<ph name="ACTION" />". Druk enige sleutel om uit te gaan.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8907906903932240086">Chrome kan jou rekenaar vir skadelike sagteware nagaan</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is gedeïnstalleer</translation>
 <translation id="8909833622202089127">Werf spoor tans jou ligging na</translation>
-<translation id="8910146161325739742">Deel jou skerm</translation>
 <translation id="8910222113987937043">Veranderinge aan jou boekmerke, geskiedenis, wagwoorde en ander instellings sal nie meer met jou Google-rekening gesinkroniseer word nie. Jou bestaande data sal egter in jou Google-rekening geberg bly en kan op <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> bestuur word.</translation>
 <translation id="8912362522468806198">Google-rekening</translation>
 <translation id="8912793549644936705">Rek</translation>

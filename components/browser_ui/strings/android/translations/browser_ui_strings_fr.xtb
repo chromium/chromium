@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Quitter le mode navigation privée ?</translation>
 <translation id="8958424370300090006">Bloquez les cookies pour un site spécifique.</translation>
 <translation id="8959122750345127698">Impossible d'accéder à <ph name="URL" />.</translation>
+<translation id="8986362086234534611">Retirer</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>

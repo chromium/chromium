@@ -483,7 +483,6 @@
 <translation id="152913213824448541">مخاطبین «هم‌رسانی با اطراف»</translation>
 <translation id="1529891865407786369">منبع نیرو:</translation>
 <translation id="1530838837447122178">باز کردن تنظیمات موشواره و صفحه لمسی دستگاه</translation>
-<translation id="1531004739673299060">پنجره برنامه</translation>
 <translation id="1531275250079031713">‏نمایش کادر گفتگوی «افزودن Wi-Fi جدید»</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">بلند</translation>
@@ -842,7 +841,6 @@
 <translation id="1909880997794698664">آیا مطمئن هستید که می‌خواهید این دستگاه را برای همیشه در حالت کیوسک نگه دارید؟</translation>
 <translation id="1910721550319506122">خوش‌آمدید!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">برگه کنونی</translation>
 <translation id="1916502483199172559">چهره‌نمای پیش‌فرض قرمز</translation>
 <translation id="1918141783557917887">&amp;کوچک تر</translation>
 <translation id="1919345977826869612">آگهی‌ها</translation>
@@ -3090,7 +3088,6 @@
 <translation id="447252321002412580">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
 <translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4474155171896946103">نشانک‌گذاری همه برگه‌ها...</translation>
-<translation id="4474461121892222090">تکمیل فعال‌سازی داده تلفن همراه ممکن است حداکثر ۱۵ دقیقه طول بکشد.</translation>
 <translation id="4475552974751346499">جستجوی فایل‌های بارگیری‌شده</translation>
 <translation id="4476590490540813026">ورزشکار</translation>
 <translation id="4476659815936224889">‏برای اسکن کردن این کد، می‌توانید از برنامه اسکنر QR در تلفن یا دیگر برنامه‌های دوربین استفاده کنید.</translation>
@@ -4814,7 +4811,6 @@
 <translation id="6473842110411557830">‏تصویر Powerwash</translation>
 <translation id="6474498546677193336">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Linux را خاموش کنید، پوشه لغو هم‌رسانی می‌شود.</translation>
 <translation id="6474884162850599008">‏قطع ارتباط حساب Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه شما را به اشتراک بگذارد. آنچه را می‌خواهید به اشتراک بگذارید، انتخاب کنید.</translation>
 <translation id="6477822444490674459">همگام‌سازی اعلان در تلفن‌هایی که در نمایه کاری هستند پشتیبانی نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">فایل خطرناک حفظ شود؟</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
@@ -5076,7 +5072,6 @@
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ازراه‌دور اضافه شد</translation>
 <translation id="6790820461102226165">افزودن شخص...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه شما را با <ph name="TARGET_NAME" /> به اشتراک بگذارد. آنچه را می‌خواهید به اشتراک بگذارید، انتخاب کنید.</translation>
 <translation id="6793604637258913070">برجسته کردن نشانگر نوشتار درصورتی‌که ظاهر شود یا حرکت کند</translation>
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» قبلاً به کنش «<ph name="ACTION" />» اختصاص داده شده است. برای خروج، کلیدی را فشار دهید.</translation>
 <translation id="6795884519221689054">پاندا</translation>
@@ -6965,7 +6960,6 @@
 <translation id="8907906903932240086">‏Chrome می‌تواند رایانه‌تان را برای پیدا کردن نرم‌افزارهای مضر بررسی کند</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> حذف نصب شده است</translation>
 <translation id="8909833622202089127">سایت درحال ردیابی مکان شما است</translation>
-<translation id="8910146161325739742">اشتراک‌گذاری صفحه</translation>
 <translation id="8910222113987937043">‏تغییرات ایجادشده در نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات شما با حساب Google شما دیگر همگام‌سازی نخواهد شد. بااین‌وجود داده‌های قبلاً ذخیره‌شده در حساب Google شما در آنجا می‌مانند و در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> می‌توانید آن‌ها را مدیریت کنید.</translation>
 <translation id="8912362522468806198">‏حساب Google</translation>
 <translation id="8912793549644936705">گسترده کردن</translation>

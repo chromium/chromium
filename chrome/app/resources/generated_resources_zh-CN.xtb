@@ -482,7 +482,6 @@
 <translation id="152913213824448541">“附近分享”功能涉及的联系人</translation>
 <translation id="1529891865407786369">电源</translation>
 <translation id="1530838837447122178">打开鼠标和触控板设备设置</translation>
-<translation id="1531004739673299060">应用窗口</translation>
 <translation id="1531275250079031713">显示“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">大</translation>
@@ -637,6 +636,7 @@
 <translation id="1692118695553449118">同步功能已开启</translation>
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="169279809881363536">未发现任何个人资料。若要设置新网络，请使用设备的摄像头扫描二维码，或者输入您的运营商提供的激活码。</translation>
+<translation id="169675691788639886">设备已配置了 SSH 服务器。请勿使用敏感帐号登录。</translation>
 <translation id="1697150536837697295">艺术</translation>
 <translation id="1697686431566694143">修改文件</translation>
 <translation id="1698122934742150150">仅限当前的隐身会话</translation>
@@ -840,7 +840,6 @@
 <translation id="1909880997794698664">您确定要让此设备永远处于自助服务终端模式吗？</translation>
 <translation id="1910721550319506122">欢迎使用！</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">当前标签页</translation>
 <translation id="1916502483199172559">默认的红色头像</translation>
 <translation id="1918141783557917887">缩小(&amp;S)</translation>
 <translation id="1919345977826869612">广告</translation>
@@ -2455,7 +2454,7 @@
 <translation id="3732530910372558017">PIN 码不得超过 63 个字符</translation>
 <translation id="3732857534841813090">Google 助理相关信息</translation>
 <translation id="3733127536501031542">带有递升式验证机制的 SSL 服务器</translation>
-<translation id="3733296813637058299">我们将为您安装这些应用。您可在 Play 商店中找到更多适用于您的 <ph name="DEVICE_TYPE" />的应用。</translation>
+<translation id="3733296813637058299">我们将为您安装这些应用。您可在 Play 商店中找到更多适用于您的 <ph name="DEVICE_TYPE" /> 的应用。</translation>
 <translation id="3735740477244556633">排序依据</translation>
 <translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
@@ -2814,6 +2813,7 @@
 <translation id="4115080753528843955">有些内容服务会使用独一无二的标识符来授予对受保护内容的访问权限</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4118579674665737931">请重新启动此设备，然后重试。</translation>
+<translation id="4118998393712575296">如果您想使用家长控制功能（例如应用审批和设备使用时间），您的孩子必须有一个由家长管理的 Google 帐号。日后需要时，您还可添加学校帐号以用于访问相关网站和应用（例如 Google 课堂）。</translation>
 <translation id="4120388883569225797">无法重置此安全密钥</translation>
 <translation id="4120817667028078560">路径过长</translation>
 <translation id="4124823734405044952">您的安全密钥已重置完毕</translation>
@@ -3085,7 +3085,6 @@
 <translation id="447252321002412580">帮助我们改进 Chrome 的功能和性能</translation>
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4474155171896946103">为所有标签页添加书签...</translation>
-<translation id="4474461121892222090">移动数据激活最多可能需要 15 分钟才能完成。</translation>
 <translation id="4475552974751346499">搜索下载内容</translation>
 <translation id="4476590490540813026">运动员</translation>
 <translation id="4476659815936224889">要扫描此二维码，您可以使用手机上的二维码扫描器应用，也可以使用某些相机应用。</translation>
@@ -3875,6 +3874,7 @@
 <translation id="540296380408672091">始终禁止在 <ph name="HOST" /> 上设置 Cookie</translation>
 <translation id="540495485885201800">与前一项调换</translation>
 <translation id="5405146885510277940">重置设置</translation>
+<translation id="5407119150486192764">请输入您的运营商提供的 PIN 码解锁密钥（8 位数）</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
 <translation id="5411472733320185105">不要对以下主机和域使用代理设置：</translation>
@@ -4507,6 +4507,7 @@
 <translation id="6124213551517593835">此操作会清除 <ph name="SITE_GROUP_NAME" /> 及其下属所有网站存储的所有数据和 Cookie</translation>
 <translation id="6124650939968185064">需先安装此扩展程序，下列扩展程序才能正常使用：</translation>
 <translation id="6124698108608891449">此网站需要更多权限。</translation>
+<translation id="6125442051901189730">无可用的 SIM 卡个人资料。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />设置一份新的个人资料。</translation>
 <translation id="6125479973208104919">抱歉，您需要再次向此 <ph name="DEVICE_TYPE" /> 添加您的帐号。</translation>
 <translation id="6129691635767514872">系统已从 Chrome 和同步的设备中移除了您所选的数据。不过，您的 Google 帐号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能还有其他形式的浏览记录（例如，在其他 Google 服务中的搜索记录和活动记录）。</translation>
 <translation id="6129938384427316298">Netscape 证书评论</translation>
@@ -4807,7 +4808,6 @@
 <translation id="6473842110411557830">Powerwash 图解</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘帐号的关联</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />想要共享您屏幕上的内容。请选择您希望共享哪些内容。</translation>
 <translation id="6477822444490674459">设有工作资料的手机无法同步通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">要保留危险文件吗？</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -5069,7 +5069,6 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已远程添加“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6790820461102226165">添加用户…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />想要与 <ph name="TARGET_NAME" /> 共享您屏幕上的内容。请选择您希望共享哪些内容。</translation>
 <translation id="6793604637258913070">文本插入符号出现或移动时突出显示</translation>
 <translation id="6793723358811598107">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可退出。</translation>
 <translation id="6795884519221689054">熊猫</translation>
@@ -6617,6 +6616,7 @@
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
+<translation id="8555195867496021627">无可用的 eSIM 卡个人资料。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的个人资料。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
@@ -6955,7 +6955,6 @@
 <translation id="8907906903932240086">Chrome 可以检查您的计算机上是否存在有害软件</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
-<translation id="8910146161325739742">共享屏幕</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 帐号。但是，您的现有数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
 <translation id="8912362522468806198">Google 帐号</translation>
 <translation id="8912793549644936705">拉伸</translation>

@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Contacten dichtbij delen</translation>
 <translation id="1529891865407786369">Voedingsbron</translation>
 <translation id="1530838837447122178">Muis- en touchpadinstellingen van apparaat openen</translation>
-<translation id="1531004739673299060">App-venster</translation>
 <translation id="1531275250079031713">Dialoogvenster 'Nieuw wifi-netwerk toevoegen' weergeven</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Luid</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Weet je zeker dat je dit apparaat permanent in de kioskmodus wilt houden?</translation>
 <translation id="1910721550319506122">Welkom!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Huidig tabblad</translation>
 <translation id="1916502483199172559">Standaard rode avatar</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1919345977826869612">Advertenties</translation>
@@ -3092,7 +3090,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="447252321002412580">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
-<translation id="4474461121892222090">Het kan maximaal vijftien minuten duren voordat mobiele data is geactiveerd.</translation>
 <translation id="4475552974751346499">Zoek in downloads</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Je kunt een QR-scanner-app op je telefoon of sommige camera-apps gebruiken om deze code te scannen.</translation>
@@ -4816,7 +4813,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6473842110411557830">Powerwash-illustratie</translation>
 <translation id="6474498546677193336">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Linux weer wordt uitgeschakeld.</translation>
 <translation id="6474884162850599008">Google Drive-account ontkoppelen</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> wil de content op je scherm delen. Kies wat je wilt delen.</translation>
 <translation id="6477822444490674459">Synchronisatie van meldingen wordt niet ondersteund voor telefoons in een werkprofiel. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Gevaarlijk bestand behouden?</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> is op afstand toegevoegd</translation>
 <translation id="6790820461102226165">Persoon toevoegen...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> wil de content op je scherm delen met <ph name="TARGET_NAME" />. Kies wat je wilt delen.</translation>
 <translation id="6793604637258913070">Markeer het tekstinvoerpunt wanneer dit wordt weergegeven of wanneer het wordt verplaatst</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' is al toegewezen aan de actie '<ph name="ACTION" />'. Druk op een toets om af te sluiten.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="8907906903932240086">Chrome kan je computer checken op schadelijke software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> is verwijderd</translation>
 <translation id="8909833622202089127">Site houdt je locatie bij</translation>
-<translation id="8910146161325739742">Je scherm delen</translation>
 <translation id="8910222113987937043">Wijzigingen in je bookmarks, geschiedenis, wachtwoorden en andere instellingen worden niet meer gesynchroniseerd met je Google-account. Je bestaande gegevens blijven echter opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google-account</translation>
 <translation id="8912793549644936705">Uitrekken</translation>

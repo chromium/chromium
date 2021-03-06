@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Контакти за „Споделяне наблизо“</translation>
 <translation id="1529891865407786369">Източник на захранване</translation>
 <translation id="1530838837447122178">Отваряне на настройките за мишката и сензорния панел</translation>
-<translation id="1531004739673299060">Прозорец на приложението</translation>
 <translation id="1531275250079031713">Показване на диалоговия прозорец за добавяне на нова Wi-Fi мрежа</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Силно</translation>
@@ -841,7 +840,6 @@
 <translation id="1909880997794698664">Наистина ли искате това устройство да е постоянно в павилионен режим?</translation>
 <translation id="1910721550319506122">Добре дошли!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Текущ раздел</translation>
 <translation id="1916502483199172559">Стандартен червен аватар</translation>
 <translation id="1918141783557917887">&amp;По-малък</translation>
 <translation id="1919345977826869612">Реклами</translation>
@@ -3090,7 +3088,6 @@
 <translation id="447252321002412580">Помощ за подобряването на функциите и ефективността на Chrome</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4474155171896946103">Запазване на отметки към всички раздели…</translation>
-<translation id="4474461121892222090">Активирането на мобилните данни може да отнеме до 15 минути.</translation>
 <translation id="4475552974751346499">Търсене в изтеглените файлове</translation>
 <translation id="4476590490540813026">Спортист</translation>
 <translation id="4476659815936224889">За да сканирате този код, можете да използвате приложение за сканиране на QR кодове на телефона си или някои приложения за камера.</translation>
@@ -4815,7 +4812,6 @@
 <translation id="6473842110411557830">Илюстрация на Powerwash</translation>
 <translation id="6474498546677193336">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на устройството с Linux.</translation>
 <translation id="6474884162850599008">Прекратяване на връзката с профила в Google Диск</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> иска да сподели съдържанието на екрана ви. Изберете какво да се сподели.</translation>
 <translation id="6477822444490674459">Синхронизирането на известията не се поддържа за телефони, работещи със служебен потребителски профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Да се запази ли опасният файл?</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
@@ -5077,7 +5073,6 @@
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6790497603648687708">Разширението <ph name="EXTENSION_NAME" /> бе добавено отдалечено</translation>
 <translation id="6790820461102226165">Добавяне на човек...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> иска да сподели съдържанието на екрана ви с/ъс <ph name="TARGET_NAME" />. Изберете какво да се сподели.</translation>
 <translation id="6793604637258913070">Открояване на точката на вмъкване в текста, когато се показва или движи</translation>
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен бутон, за да излезете.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6965,7 +6960,6 @@
 <translation id="8907906903932240086">Chrome може да проверява компютъра ви за опасен софтуер</translation>
 <translation id="8909298138148012791">Деинсталирането на <ph name="APP_NAME" /> бе успешно</translation>
 <translation id="8909833622202089127">Сайтът следи местоположението ви</translation>
-<translation id="8910146161325739742">Споделяне на екрана ви</translation>
 <translation id="8910222113987937043">Промените във вашите отметки, история, пароли и други настройки повече няма да се синхронизират с профила ви в Google. Съществуващите ви данни обаче ще продължат да се съхраняват в него. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Профил в Google</translation>
 <translation id="8912793549644936705">Разтегляне</translation>

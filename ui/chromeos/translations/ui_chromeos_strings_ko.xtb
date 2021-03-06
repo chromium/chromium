@@ -622,6 +622,7 @@
 <translation id="7628656427739290098"><ph name="PERCENT" />% 완료</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7654209398114106148">항목 <ph name="NUMBER_OF_ITEMS" />개 이동 중...</translation>
+<translation id="7655441028674523381">Google 포토에 쉽게 액세스하세요</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7663224033570512922">힌디어</translation>
 <translation id="7693909743393669729">드라이브를 포맷하면 저장된 모든 데이터가 삭제되고 숨김 상태에 있는 파티션을 포함 기존 파티션이 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.</translation>
@@ -713,6 +714,7 @@
 <translation id="8466234950814670489">Tar 압축 파일</translation>
 <translation id="8475647382427415476">Google Drive에서 '<ph name="FILENAME" />'을(를) 동기화하지 못했습니다. Google Drive에서 나중에 다시 시도합니다.</translation>
 <translation id="8477649328507734757">회전</translation>
+<translation id="8484284835977497781">최근 사진 중에서 선택하세요.</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="8525306231823319788">전체화면</translation>

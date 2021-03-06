@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Inkognitomodus deaktivieren?</translation>
 <translation id="8958424370300090006">Cookies für eine bestimmte Website werden blockiert.</translation>
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
+<translation id="8986362086234534611">Entfernen</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere}}</translation>

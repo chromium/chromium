@@ -487,7 +487,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="152913213824448541">Kontakti za Dijeljenje u blizini</translation>
 <translation id="1529891865407786369">Izvor napajanja</translation>
 <translation id="1530838837447122178">Otvori postavke uređaja miša i dodirne podloge</translation>
-<translation id="1531004739673299060">Prozor aplikacije</translation>
 <translation id="1531275250079031713">Prikaži dijaloški okvir "Dodajte novi WiFi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Glasno</translation>
@@ -846,7 +845,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1909880997794698664">Jeste li sigurni da želite trajno držati ovaj uređaj u načinu rada kioska?</translation>
 <translation id="1910721550319506122">Dobro došli!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Trenutna kartica</translation>
 <translation id="1916502483199172559">Zadani crveni avatar</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
 <translation id="1919345977826869612">Oglasi</translation>
@@ -3094,7 +3092,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="447252321002412580">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="4472575034687746823">Započnite</translation>
 <translation id="4474155171896946103">Označi sve kartice...</translation>
-<translation id="4474461121892222090">Aktiviranje prijenosa podataka na mobilnoj mreži može potrajati do 15 minuta.</translation>
 <translation id="4475552974751346499">Pretraži preuzimanja</translation>
 <translation id="4476590490540813026">Sportistkinja</translation>
 <translation id="4476659815936224889">Da skenirate ovaj kôd, možete koristiti aplikaciju za skeniranje QR kodova na telefonu ili neke aplikacije s kamerom.</translation>
@@ -4818,7 +4815,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6473842110411557830">Ilustracija za Powerwash</translation>
 <translation id="6474498546677193336">Poništavanje dijeljenja nije uspjelo jer neka aplikacija koristi ovaj folder. Dijeljenje foldera će se poništiti nakon sljedećeg isključivanja Linuxa.</translation>
 <translation id="6474884162850599008">Prekini vezu s računom za Google Disk</translation>
-<translation id="6475697075626596525">Aplikacija <ph name="APP_NAME" /> želi dijeliti sadržaje vašeg ekrana. Odaberite šta želite dijeliti.</translation>
 <translation id="6477822444490674459">Sinhroniziranje obavještenja nije podržano za telefone na radnom profilu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Zadržati opasan fajl?</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
@@ -5080,7 +5076,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6790497603648687708">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana daljinskim putem</translation>
 <translation id="6790820461102226165">Dodaj osobu...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> želi dijeliti sadržaj vašeg ekrana s karticom <ph name="TARGET_NAME" />. Izaberite šta želite podijeliti.</translation>
 <translation id="6793604637258913070">Istakni znak za umetanje kada se pojavi ili pomakne</translation>
 <translation id="6793723358811598107">Tipka "<ph name="CURRENTKEY" />" je već dodijeljena radnji "<ph name="ACTION" />". Pritisnite bilo koju tipku da izađete.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6970,7 +6965,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8907906903932240086">Chrome može provjeravati postoji li štetni softver na vašem računaru</translation>
 <translation id="8909298138148012791">Aplikacija <ph name="APP_NAME" /> je deinstalirana</translation>
 <translation id="8909833622202089127">Web lokacija prati vašu lokaciju</translation>
-<translation id="8910146161325739742">Dijelite svoj ekran</translation>
 <translation id="8910222113987937043">Promjene vaših oznaka, historije, lozinki i drugih postavki neće se više sinhronizirati s vašim Google računom. Međutim, vaši postojeći podaci će ostati pohranjeni na vašem Google računu i njima možete upravljati na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google račun</translation>
 <translation id="8912793549644936705">Razvučeno</translation>

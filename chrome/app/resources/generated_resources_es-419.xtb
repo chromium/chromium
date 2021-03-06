@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Contactos de Google que usa Compartir con Nearby</translation>
 <translation id="1529891865407786369">Fuente de alimentación</translation>
 <translation id="1530838837447122178">Abrir configuración del mouse y el panel táctil</translation>
-<translation id="1531004739673299060">Ventana de la app</translation>
 <translation id="1531275250079031713">Mostrar el cuadro de diálogo para agregar Wi-Fi nueva</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Alto</translation>
@@ -841,7 +840,6 @@
 <translation id="1909880997794698664">¿Confirmas que deseas que este dispositivo se mantenga siempre en modo kiosco?</translation>
 <translation id="1910721550319506122">¡Bienvenido!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Pestaña actual</translation>
 <translation id="1916502483199172559">Avatar rojo predeterminado</translation>
 <translation id="1918141783557917887">Meno&amp;r</translation>
 <translation id="1919345977826869612">Anuncios</translation>
@@ -3089,7 +3087,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4474155171896946103">Agregar a favoritos todas las pestañas...</translation>
-<translation id="4474461121892222090">La activación de los datos móviles puede tardar hasta 15 minutos en completarse.</translation>
 <translation id="4475552974751346499">Buscar descargas</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Para escanear este código, puedes usar una app de lectura de código QR en tu teléfono o algunas apps de cámara.</translation>
@@ -4601,7 +4598,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6238923052227198598">Mantener la nota más reciente en la pantalla bloqueada</translation>
 <translation id="6239558157302047471">Volver a cargar &amp;marco</translation>
 <translation id="6240821072888636753">Preguntar siempre</translation>
-<translation id="6241530762627360640">Acceder a la información sobre los dispositivos Bluetooth sincronizados con el sistema y detectar dispositivos Bluetooth cercanos.</translation>
+<translation id="6241530762627360640">Acceder a la información sobre los dispositivos Bluetooth vinculados con el sistema y detectar dispositivos Bluetooth cercanos.</translation>
 <translation id="6241844896329831164">No se necesita acceso</translation>
 <translation id="6242574558232861452">Se está comprobando la descarga conforme a las políticas de seguridad de tu organización.</translation>
 <translation id="6242589501614145408">Restablecer tu llave de seguridad</translation>
@@ -4813,7 +4810,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6473842110411557830">Ilustración de Powerwash</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla. Elige lo que deseas compartir.</translation>
 <translation id="6477822444490674459">No se admite la sincronización de notificaciones para teléfonos que tengan un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">¿Deseas conservar el archivo peligroso?</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
@@ -5075,7 +5071,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> se agregó de forma remota</translation>
 <translation id="6790820461102226165">Agregar una persona…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />. Elige lo que deseas compartir.</translation>
 <translation id="6793604637258913070">Destacar el símbolo de intercalación de texto cuando aparece o se mueve</translation>
 <translation id="6793723358811598107">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para salir.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6963,7 +6958,6 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8907906903932240086">Chrome puede buscar software dañino en la computadora</translation>
 <translation id="8909298138148012791">Se desinstaló <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">El sitio está haciendo un seguimiento de tu ubicación</translation>
-<translation id="8910146161325739742">Compartir la pantalla</translation>
 <translation id="8910222113987937043">Los cambios en tus favoritos, historial, contraseñas y otras opciones de configuración ya no se sincronizarán con tu cuenta de Google. Sin embargo, tus datos existentes permanecerán almacenados en tu cuenta de Google y se podrán administrar en el <ph name="BEGIN_LINK" />Panel de control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Cuenta de Google</translation>
 <translation id="8912793549644936705">Expandir</translation>

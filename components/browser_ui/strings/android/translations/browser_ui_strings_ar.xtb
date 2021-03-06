@@ -304,6 +304,7 @@
 <translation id="894871326938397531">أتريد مغادرة وضع التصفح المتخفي؟</translation>
 <translation id="8958424370300090006">حظر ملفات تعريف الارتباط لموقع إلكتروني مُحدَّد.</translation>
 <translation id="8959122750345127698">التنقل غير قابل للوصول: <ph name="URL" /></translation>
+<translation id="8986362086234534611">حذف</translation>
 <translation id="9019902583201351841">يديره والداك</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذن واحد (<ph name="NUM_MORE" />) آخر}zero{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}two{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وإذنان (<ph name="NUM_MORE" />) آخران}few{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> أذونات أخرى}many{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذنًا آخر}other{<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="NUM_MORE" /> إذن آخر}}</translation>

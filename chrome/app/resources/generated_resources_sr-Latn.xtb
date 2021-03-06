@@ -484,7 +484,6 @@
 <translation id="152913213824448541">Kontakti Deljenja u blizini</translation>
 <translation id="1529891865407786369">Izvor napajanja</translation>
 <translation id="1530838837447122178">Otvori podešavanja uređaja za miš i tačped</translation>
-<translation id="1531004739673299060">Prozor za aplikaciju</translation>
 <translation id="1531275250079031713">Prikaži dijalog „Dodaj novu WiFi mrežu“</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Glasno</translation>
@@ -843,7 +842,6 @@
 <translation id="1909880997794698664">Da li stvarno želite da trajno zadržite ovaj uređaj u kiosk režimu?</translation>
 <translation id="1910721550319506122">Dobro došli!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Aktuelna kartica</translation>
 <translation id="1916502483199172559">Podrazumevani crveni avatar</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
 <translation id="1919345977826869612">Oglasi</translation>
@@ -3091,7 +3089,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="447252321002412580">Pomozite nam da poboljšamo Chrome-ove funkcije i učinak</translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4474155171896946103">Obeleži sve kartice...</translation>
-<translation id="4474461121892222090">Dovršavanje aktivacije mobilnih podataka može da potraje do 15 minuta.</translation>
 <translation id="4475552974751346499">Pretražite preuzimanja</translation>
 <translation id="4476590490540813026">Sportistkinja</translation>
 <translation id="4476659815936224889">Da biste skenirali ovaj kôd, možete da koristite aplikaciju skenera QR kodova na telefonu ili neke aplikacije za kameru.</translation>
@@ -4816,7 +4813,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6473842110411557830">Ilustracija za Powerwash</translation>
 <translation id="6474498546677193336">Opozivanje deljenja nije uspelo jer jedna aplikacija koristi ovaj direktorijum. Deljenje direktorijuma će biti opozvano kada se Linux sledeći put zatvori.</translation>
 <translation id="6474884162850599008">Prekini vezu sa nalogom Google diska</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> želi da deli sadržaj ekrana. Izaberite šta želite da delite.</translation>
 <translation id="6477822444490674459">Sinhronizovanje obaveštenja nije podržano za telefone sa poslovnim profilom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Želite li da zadržite opasnu datoteku?</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6790497603648687708">Dodatak <ph name="EXTENSION_NAME" /> je dodat daljinski</translation>
 <translation id="6790820461102226165">Dodaj osobu...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> želi da deli sadržaj ekrana sa <ph name="TARGET_NAME" />. Izaberite šta želite da delite.</translation>
 <translation id="6793604637258913070">Ističi kursor za tekst kada se pojavi ili kreće</translation>
 <translation id="6793723358811598107">Taster <ph name="CURRENTKEY" /> je već dodeljen radnji <ph name="ACTION" />. Pritisnite bilo koji taster da biste izašli.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6968,7 +6963,6 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="8907906903932240086">Chrome može da proveri da li na računaru ima štetnog softvera</translation>
 <translation id="8909298138148012791">Aplikacija <ph name="APP_NAME" /> je deinstalirana</translation>
 <translation id="8909833622202089127">Sajt prati lokaciju</translation>
-<translation id="8910146161325739742">Delite ekran</translation>
 <translation id="8910222113987937043">Promene obeleživača, istorije, lozinki i drugih podešavanja se više neće sinhronizovati sa Google nalogom. Međutim, postojeći podaci će se i dalje čuvati na Google nalogu i možete da upravljate njima na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google naloga</translation>
 <translation id="8912793549644936705">Rastegni</translation>

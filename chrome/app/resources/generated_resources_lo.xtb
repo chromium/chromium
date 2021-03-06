@@ -483,7 +483,6 @@
 <translation id="152913213824448541">ລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="1529891865407786369">ແຫຼ່ງພະລັງງານ</translation>
 <translation id="1530838837447122178">ເປີດການຕັ້ງຄ່າອຸປະກອນເມົ້າ ແລະ ແຜ່ນສຳຜັດ</translation>
-<translation id="1531004739673299060">ໜ້າຈໍແອັບພລິເຄຊັນ</translation>
 <translation id="1531275250079031713">ສະແດງກ່ອງໂຕ້ຕອບ 'ເພີ່ມ Wi-Fi ໃໝ່'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ດັງ</translation>
@@ -638,6 +637,7 @@
 <translation id="1692118695553449118">ຊິງຄ໌ເປີດຢູ່</translation>
 <translation id="1692210323591458290">ສີມ່ວງແກ່</translation>
 <translation id="169279809881363536">ບໍ່ພົບໂປຣໄຟລ໌ໃດ. ເພື່ອຕັ້ງຄ່າເຄືອຂ່າຍໃໝ່, ກະລຸນາສະແກນລະຫັດ QR ໂດຍໃຊ້ກ້ອງຂອງອຸປະກອນ ຫຼື ປ້ອນລະຫັດການເປີດນຳໃຊ້ທີ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານສະໜອງໃຫ້</translation>
+<translation id="169675691788639886">ອຸປະກອນມີການຕັ້ງຄ່າເຊີບເວີ SSH ແລ້ວ. ກະລຸນາຢ່າເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ລະອຽດອ່ອນ.</translation>
 <translation id="1697150536837697295">ສິນລະປະ</translation>
 <translation id="1697686431566694143">ແກ້ໄຂໄຟລ໌</translation>
 <translation id="1698122934742150150">ເຊດຊັນແບບບໍ່ເຜີຍຕົວຕົນໃນປັດຈຸບັນເທົ່ານັ້ນ</translation>
@@ -841,7 +841,6 @@
 <translation id="1909880997794698664">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຮັກສາເຄື່ອງນີ້ໄວ້ຢູ່ໃນໂໝດ kiosk ຢ່າງຖາວອນ?</translation>
 <translation id="1910721550319506122">ຍິນ​ດີ​ຕ້ອນ​ຮັບ​!</translation>
 <translation id="1915073950770830761">ຄານາຣີ</translation>
-<translation id="1916260783734263714">ແຖບປັດຈຸບັນ</translation>
 <translation id="1916502483199172559">ຮູບແທນຕົວສີແດງຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="1918141783557917887">ນ້ອຍ​ກ​່​ວາ</translation>
 <translation id="1919345977826869612">ໂຄສະນາ</translation>
@@ -2817,6 +2816,7 @@
 <translation id="4115080753528843955">ບາງການບໍລິການເນື້ອຫາໃຊ້ຕົວລະບຸສະເພາະເພື່ອຈຸດປະສົງອະນຸຍາດການເຂົ້າເຖິງເນື້ອຫາທີ່ມີການປົກປ້ອງ</translation>
 <translation id="4115378294792113321">ສີແດງມ່ວງ</translation>
 <translation id="4118579674665737931">ກະລຸນາປິດເປີດອຸປະກອນຄືນໃໝ່ ແລ້ວລອງອີກຄັ້ງ.</translation>
+<translation id="4118998393712575296">ເພື່ອໃຊ້ການ​ຄວບ​ຄຸມຂອງ​ພໍ່ແມ່ ເຊັ່ນ: ການອະນຸມັດແອັບ ແລະ ການຈຳກັດເວລາໜ້າຈໍ, ເດັກນ້ອຍຈະຕ້ອງມີບັນຊີ Google ທີ່ຈັດການໂດຍພໍ່ແມ່ກ່ອນ. ສາມາດເພີ່ມບັນຊີໂຮງຮຽນໄດ້ໃນພາຍຫຼັງເພື່ອໃຊ້ກັບເວັບໄຊ ແລະ ແອັບຕ່າງໆ ເຊັ່ນ: Google ຫ້ອງຮຽນ.</translation>
 <translation id="4120388883569225797">ບໍ່ສາມາດຣີເຊັດກະແຈຄວາມປອດໄພນີ້ໄດ້</translation>
 <translation id="4120817667028078560">ຊ່ອງທາງຍາວເກີນໄປ</translation>
 <translation id="4124823734405044952">ຣີເຊັດກະແຈຄວາມປອດໄພຂອງທ່ານແລ້ວ</translation>
@@ -3088,7 +3088,6 @@
 <translation id="447252321002412580">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
-<translation id="4474461121892222090">ມັນອາດຈະໃຊ້ເວລາເຖິງ 15 ນາທີໃນການເຮັດສຳເລັດການເປີດນຳໃຊ້ອິນເຕີເນັດມືຖື.</translation>
 <translation id="4475552974751346499">ຄົ້ນ​ຫາການດາວ​ໂຫຼດ​</translation>
 <translation id="4476590490540813026">ນັກກິລາ</translation>
 <translation id="4476659815936224889">ເພື່ອສະແກນລະຫັດນີ້, ທ່ານສາມາດໃຊ້ແອັບໂປຣແກຣມສະແກນ QR ໃນໂທລະສບຂອງທ່ານ ຫຼື ບາງແອັບກ້ອງຖ່າຍຮູບອື່ນ.</translation>
@@ -3878,6 +3877,7 @@
 <translation id="540296380408672091">ບລັອກຄຸກກີ້ຢູ່ເທິງ <ph name="HOST" /> ສະເໝີ</translation>
 <translation id="540495485885201800">ສະຫຼັບກັບຊັ້ນວາງກ່ອນໜ້າ</translation>
 <translation id="5405146885510277940">ຣິເຊັດການຕັ້ງຄ່າ</translation>
+<translation id="5407119150486192764">ລະບຸລະຫັດການປົດບລັອກ PIN ຈຳນວນ 8 ຕົວເລກທີ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານສະໜອງໃຫ້</translation>
 <translation id="5408750356094797285">ຊູມ: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">ຈາກບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="5411472733320185105">ຢ່າໃຊ້ການຕັ້ງຄ່າພຣັອກຊີສໍາລັບແມ່ຂ່າຍ ແລະໂດເມນເຫຼົ່ານີ້:</translation>
@@ -4510,6 +4510,7 @@
 <translation id="6124213551517593835">ນີ້ຈະລຶບລ້າງຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍ <ph name="SITE_GROUP_NAME" /> ແລະ ເວັບໄຊຕ່າງໆທີ່ຢູ່ພາຍໃຕ້ມັນ</translation>
 <translation id="6124650939968185064">ສ່ວນຂະຫຍາຍຕໍ່ໄປນີ້ຂຶ້ນກັບສ່ວນຂະຫຍາຍນີ້:</translation>
 <translation id="6124698108608891449">ເວັບໄຊນີ້ຕ້ອງການມີການອະນຸຍາດເພີ່ມເຕີມ.</translation>
+<translation id="6125442051901189730">ບໍ່ມີໂປຣໄຟລ໌ SIM ທີ່ສາມາດໃຊ້ໄດ້. ຕັ້ງຄ່າໂປຣໄຟລ໌ໃໝ່ <ph name="BEGIN_LINK" />ບ່ອນນີ້.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">ແນວໃດກໍຕາມ, ທ່ານຈະຈຳເປັນຕ້ອງເພີ່ມບັນຊີຂອງທ່ານໃສ່ <ph name="DEVICE_TYPE" /> ນີ້ອີກຄັ້ງ.</translation>
 <translation id="6129691635767514872">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chrome ແລະ ອຸປະກອນທີ່ຊິ້ງຂໍ້ມູນແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆ ເຊັ່ນວ່າ ການຊອກຫາ ແລະ ການເຄື່ອນໄຫວຈາກການບໍລິການອື່ນໆຂອງ Google ຢູ່ທີ່ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">ຄໍາຄິດເຫັນໃບຢັ້ງຢືນ Netscape</translation>
@@ -4810,7 +4811,6 @@
 <translation id="6473842110411557830">ຮູບສະແດງ Powerwash</translation>
 <translation id="6474498546677193336">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເພາະວ່າແອັບພລິເຄຊັນກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອປິດ Linux ໃນຄັ້ງຕໍ່ໄປ.</translation>
 <translation id="6474884162850599008">ຕັດ​ເຊື່ອມ​ຕໍ່​ບັນ​ຊີ Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໃນໜ້າຈໍຂອງທ່ານ. ໃຫ້ເລືອກສິ່ງທີ່ທ່ານຢາກແບ່ງປັນ.</translation>
 <translation id="6477822444490674459">ບໍ່ຮອງຮັບການຊິ້ງຂໍ້ມູນການແຈ້ງເຕືອນສຳລັບໂທລະສັບໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ເກັບໄຟລ໌ອັນຕະລາຍໄວ້ບໍ?</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
@@ -5072,7 +5072,6 @@
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ຖືກເພີ່ມເຂົ້າຈາກທາງໄກແລ້ວ</translation>
 <translation id="6790820461102226165">ເພີ່ມບຸກຄົນ...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໃນໜ້າຈໍຂອງທ່ານກັບ <ph name="TARGET_NAME" />. ໃຫ້ເລືອກສິ່ງທີ່ທ່ານຢາກແບ່ງປັນ.</translation>
 <translation id="6793604637258913070">ໝາຍເຄື່ອງໝາຍກຸບຂອງຂໍ້ຄວາມເມື່ອມັນປາກົດ ຫຼື ເຄື່ອນຍ້າຍ</translation>
 <translation id="6793723358811598107">ມີການກຳນົດ '<ph name="CURRENTKEY" />' ໃຫ້ຄຳສັ່ງ '<ph name="ACTION" />' ແລ້ວ. ກົດປຸ່ມໃດໆກໍໄດ້ເພື່ອອອກ.</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
@@ -6619,6 +6618,7 @@
 <translation id="8551588720239073785">ການຕັ້ງຄ່າວັນທີ ແລະ ເວລາ</translation>
 <translation id="8553342806078037065">ຈັດການບູກຄົນອື່ນ</translation>
 <translation id="8554899698005018844">ບໍ່ມີພາສາ</translation>
+<translation id="8555195867496021627">ບໍ່ມີໂປຣໄຟລ໌ eSIM ທີ່ສາມາດໃຊ້ໄດ້. ດາວໂຫຼດໂປຣໄຟລ໌ໃໝ່ <ph name="BEGIN_LINK" />ບ່ອນນີ້.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">ສືບຕໍ່ແຕະກະແຈຄວາມປອດໄພຈົນກວ່າວ່າໄດ້ບັນທຶກລາຍນິ້ວມືຂອງທ່ານໄວ້ແລ້ວ</translation>
 <translation id="8557930019681227453">ໃບລາຍການ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ເປີດທັງໝົດໃນ&amp;ໜ້າຈໍໃໝ່}=1{ເປີດໃນ&amp;ໜ້າຈໍໃໝ່}other{ເປີດທັງໝົດ ({COUNT}) ໃນ&amp;ໜ້າຈໍໃໝ່}}</translation>
@@ -6957,7 +6957,6 @@
 <translation id="8907906903932240086">Chrome ສາມາດກວດຄອມພິວເຕີຂອງທ່ານເພື່ອຫາຊອບແວອັນຕະລາຍໄດ້</translation>
 <translation id="8909298138148012791">ຖອນການຕິດຕັ້ງ <ph name="APP_NAME" /> ແລ້ວ</translation>
 <translation id="8909833622202089127">ເວັບໄຊກຳລັງຕິດຕາມສະຖານທີ່ຂອງທ່ານ</translation>
-<translation id="8910146161325739742">ແບ່ງ​ປັນ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານ</translation>
 <translation id="8910222113987937043">ການປ່ຽນແປງຕໍ່ກັບບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະບໍ່ຖືກຊິ້ງຂໍ້ມູນກັບບັນຊີ Google ຂອງທ່ານອີກຕໍ່ໄປ. ແນວໃດກໍຕາມ, ຂໍ້ມູນທີ່ມີຢູ່ຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">ບັນຊີ Google</translation>
 <translation id="8912793549644936705">ຢືດອອກ</translation>

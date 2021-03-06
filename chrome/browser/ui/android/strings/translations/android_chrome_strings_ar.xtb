@@ -55,7 +55,6 @@
 <translation id="1327257854815634930">يتم فتح سجلّ التنقُّل.</translation>
 <translation id="1331212799747679585">‏يتعذَّر تحديث Chrome. يُرجى الاطِّلاع على مزيد من الخيارات</translation>
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
-<translation id="133857033449832692">جارٍ تنزيل <ph name="LANG" />…</translation>
 <translation id="1344653310988386453">تضمين رابط يؤدي إلى النصوص التي تم تمييزها</translation>
 <translation id="1347468774581902829">إدارة النشاط</translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
@@ -948,7 +947,7 @@
 <translation id="7475688122056506577">‏لم يتم العثور على بطاقة SD. قد يكون بعض الملفات مفقودًا.</translation>
 <translation id="7479104141328977413">إدارة علامات التبويب</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
-<translation id="7481864133709957613">للبحث عن الكلمات في هذه الصفحة، انقر مع الاستمرار على الكلمات بدلاً من النقر عليها فقط.</translation>
+<translation id="7481864133709957613">لإجراء عمليات بحث من هذه الصفحة، انقر على الكلمات مع الاستمرار٬ ولا ترفع إصبعك بسرعة عنها.</translation>
 <translation id="7482656565088326534">علامة تبويب المعاينة</translation>
 <translation id="7484997419527351112">الاقتراحات - غير مفعّلة</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (تم التحديث منذ <ph name="TIME_SINCE_UPDATE" />)</translation>

@@ -304,6 +304,7 @@
 <translation id="894871326938397531">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਛੱਡੀਏ?</translation>
 <translation id="8958424370300090006">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਬਲਾਕ ਕਰੋ।</translation>
 <translation id="8959122750345127698">ਨੈਵੀਗੇਸ਼ਨ ਨਾਪਹੁੰਚਯੋਗ ਹੈ: <ph name="URL" /></translation>
+<translation id="8986362086234534611">ਭੁੱਲਣਾ</translation>
 <translation id="9019902583201351841">ਤੁਹਾਡੇ ਮਾਪਿਆਂ ਵੱਲੋਂ ਵਿਵਸਥਿਤ</translation>
 <translation id="9074739597929991885">ਬਲੂਟੁੱਥ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ਅਤੇ <ph name="NUM_MORE" /> ਹੋਰ}}</translation>

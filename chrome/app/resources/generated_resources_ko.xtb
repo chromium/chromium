@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Nearby Share 연락처</translation>
 <translation id="1529891865407786369">전원</translation>
 <translation id="1530838837447122178">마우스 및 터치패드 기기 설정 열기</translation>
-<translation id="1531004739673299060">애플리케이션 창</translation>
 <translation id="1531275250079031713">'새 Wi-Fi 추가' 대화상자 표시</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">크게</translation>
@@ -640,6 +639,7 @@
 <translation id="1692118695553449118">동기화 사용 중</translation>
 <translation id="1692210323591458290">진한 보라색</translation>
 <translation id="169279809881363536">발견된 프로필이 없습니다. 새 네트워크를 설정하려면 기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
+<translation id="169675691788639886">기기에 SSH 서버가 구성되어 있습니다. 민감한 계정을 사용하여 로그인하지 마세요.</translation>
 <translation id="1697150536837697295">예술</translation>
 <translation id="1697686431566694143">파일 수정</translation>
 <translation id="1698122934742150150">현재 시크릿 세션에만</translation>
@@ -843,7 +843,6 @@
 <translation id="1909880997794698664">이 기기를 영구적으로 키오스크 모드로 유지하시겠습니까?</translation>
 <translation id="1910721550319506122">반갑습니다!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">현재 탭</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
 <translation id="1918141783557917887">작게(&amp;S)</translation>
 <translation id="1919345977826869612">광고</translation>
@@ -2817,6 +2816,7 @@
 <translation id="4115080753528843955">일부 콘텐츠 서비스는 보호된 콘텐츠에 액세스 권한을 부여할 수 있도록 고유 식별자를 사용합니다.</translation>
 <translation id="4115378294792113321">자홍색</translation>
 <translation id="4118579674665737931">기기를 재부팅한 후 다시 시도해 주세요.</translation>
+<translation id="4118998393712575296">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 앱이나 사이트에서 사용할 수 있습니다</translation>
 <translation id="4120388883569225797">보안 키를 재설정할 수 없습니다.</translation>
 <translation id="4120817667028078560">경로가 너무 김</translation>
 <translation id="4124823734405044952">보안 키가 재설정되었습니다.</translation>
@@ -3088,7 +3088,6 @@
 <translation id="447252321002412580">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="4472575034687746823">시작하기</translation>
 <translation id="4474155171896946103">모든 탭 북마크...</translation>
-<translation id="4474461121892222090">모바일 데이터 활성화를 완료하는 데 최대 15분이 걸릴 수 있습니다.</translation>
 <translation id="4475552974751346499">다운로드 검색</translation>
 <translation id="4476590490540813026">운동선수</translation>
 <translation id="4476659815936224889">스마트폰의 QR 스캐너 앱 또는 일부 카메라 앱을 사용하여 이 코드를 스캔할 수 있습니다.</translation>
@@ -3878,6 +3877,7 @@
 <translation id="540296380408672091"><ph name="HOST" />에서 쿠키 항상 차단</translation>
 <translation id="540495485885201800">이전 항목과 교환</translation>
 <translation id="5405146885510277940">설정 초기화</translation>
+<translation id="5407119150486192764">이동통신사에서 제공하는 8자리 PIN을 입력하여 키 차단 해제</translation>
 <translation id="5408750356094797285">확대/축소: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google 계정에서 삭제</translation>
 <translation id="5411472733320185105">다음 호스트와 도메인에서 프록시 설정을 사용 안함:</translation>
@@ -4510,6 +4510,7 @@
 <translation id="6124213551517593835"><ph name="SITE_GROUP_NAME" /> 및 모든 하위 사이트에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="6124650939968185064">이 확장 프로그램에 종속되는 확장 프로그램:</translation>
 <translation id="6124698108608891449">추가 권한이 필요한 사이트입니다.</translation>
+<translation id="6125442051901189730">사용할 수 있는 SIM 프로필이 없습니다. <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />에서 새 프로필을 설정하세요.</translation>
 <translation id="6125479973208104919">이 <ph name="DEVICE_TYPE" />에 계정을 다시 추가해야 합니다.</translation>
 <translation id="6129691635767514872">선택한 데이터가 Chrome 및 동기화된 기기에서 삭제되었습니다. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />에서 검색이나 기타 Google 서비스에서의 활동 등 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>
 <translation id="6129938384427316298">Netscape Certificate Comment</translation>
@@ -4810,7 +4811,6 @@
 <translation id="6473842110411557830">파워워시 일러스트레이션</translation>
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="6474884162850599008">Google Drive 계정 연결 해제</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />에서 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
 <translation id="6477822444490674459">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">위험한 파일을 보관하시겠습니까?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
@@ -5072,7 +5072,6 @@
 <translation id="6790428901817661496">재생</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />이(가) 원격으로 추가됨</translation>
 <translation id="6790820461102226165">사용자 추가...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />에서 <ph name="TARGET_NAME" />에 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
 <translation id="6793604637258913070">텍스트 캐럿이 나타나거나 이동할 때 이를 강조표시합니다.</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="6795884519221689054">판다</translation>
@@ -6621,6 +6620,7 @@
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>
+<translation id="8555195867496021627">사용할 수 있는 eSIM 프로필이 없습니다. <ph name="BEGIN_LINK" />여기<ph name="END_LINK" />에서 새 프로필을 다운로드하세요.</translation>
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="8557930019681227453">매니페스트</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
@@ -6959,7 +6959,6 @@
 <translation id="8907906903932240086">Chrome에서 컴퓨터에 유해 소프트웨어가 있는지 확인할 수 있습니다.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
-<translation id="8910146161325739742">화면 공유하기</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8912793549644936705">늘이기</translation>

@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Kontak Berbagi Langsung</translation>
 <translation id="1529891865407786369">Sumber listrik</translation>
 <translation id="1530838837447122178">Buka setelan perangkat touchpad dan mouse</translation>
-<translation id="1531004739673299060">Jendela Aplikasi</translation>
 <translation id="1531275250079031713">Tampilkan dialog 'Tambahkan Wi-Fi baru'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Nyaring</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Yakin ingin menyimpan perangkat ini dalam mode kios secara permanen?</translation>
 <translation id="1910721550319506122">Selamat Datang!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Tab Saat Ini</translation>
 <translation id="1916502483199172559">Avatar merah default</translation>
 <translation id="1918141783557917887">&amp;Lebih kecil</translation>
 <translation id="1919345977826869612">Iklan</translation>
@@ -3092,7 +3090,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="447252321002412580">Bantu sempurnakan fitur dan performa Chrome</translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4474155171896946103">Bookmark semua tab...</translation>
-<translation id="4474461121892222090">Mungkin memerlukan 15 menit untuk menyelesaikan aktivasi data seluler.</translation>
 <translation id="4475552974751346499">Telusuri download</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Untuk memindai kode ini, Anda dapat menggunakan aplikasi pemindai QR di ponsel, atau beberapa aplikasi kamera.</translation>
@@ -4816,7 +4813,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6473842110411557830">Ilustrasi Powerwash</translation>
 <translation id="6474498546677193336">Tidak dapat mengurungkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan diurungkan saat berikutnya Linux dimatikan.</translation>
 <translation id="6474884162850599008">Memutuskan hubungan akun Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ingin membagikan konten layar Anda. Pilih yang ingin Anda bagikan.</translation>
 <translation id="6477822444490674459">Sinkronisasi notifikasi tidak didukung untuk ponsel dalam profil kerja. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Simpan file berbahaya?</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> telah ditambahkan dari jauh</translation>
 <translation id="6790820461102226165">Tambahkan Pengguna...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ingin membagikan konten layar Anda dengan <ph name="TARGET_NAME" />. Pilih konten yang ingin Anda bagikan.</translation>
 <translation id="6793604637258913070">Sorot tempat penyisipan teks saat muncul atau berpindah</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' telah ditetapkan untuk tindakan '<ph name="ACTION" />'. Tekan sembarang tombol untuk keluar.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="8907906903932240086">Chrome dapat memeriksa software berbahaya di komputer Anda</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> telah di-uninstal.</translation>
 <translation id="8909833622202089127">Situs sedang melacak lokasi Anda</translation>
-<translation id="8910146161325739742">Berbagi layar</translation>
 <translation id="8910222113987937043">Perubahan terhadap bookmark, histori, sandi, dan setelan lain sudah tidak disinkronkan ke Akun Google Anda. Namun, data yang sudah ada akan tetap disimpan di Akun Google dan dapat dikelola di <ph name="BEGIN_LINK" />Google Dasbor<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Akun Google</translation>
 <translation id="8912793549644936705">Meregang</translation>

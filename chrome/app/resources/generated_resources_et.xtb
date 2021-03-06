@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Läheduses jagamine – kontaktid</translation>
 <translation id="1529891865407786369">Toiteallikas</translation>
 <translation id="1530838837447122178">Hiire ja puuteplaadi seadme seadete avamine</translation>
-<translation id="1531004739673299060">Rakenduse aken</translation>
 <translation id="1531275250079031713">Kuva dialoog „Lisa uus WiFi-võrk”</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Vali</translation>
@@ -640,6 +639,7 @@
 <translation id="1692118695553449118">Sünkroonimine on sisse lülitatud</translation>
 <translation id="1692210323591458290">Tumelilla</translation>
 <translation id="169279809881363536">Ühtegi profiili ei leitud. Uue võrgu seadistamiseks skannige QR-kood seadme kaameraga või sisestage operaatorilt saadud aktiveerimiskood.</translation>
+<translation id="169675691788639886">Seadme puhul on seadistatud SSH-server. Ärge logige sisse tundlikku teavet sisaldava kontoga.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Muuda faili</translation>
 <translation id="1698122934742150150">Ainult praegune inkognito seanss</translation>
@@ -843,7 +843,6 @@
 <translation id="1909880997794698664">Kas soovite kindlasti jätta seadme jäädavalt kioskirežiimile?</translation>
 <translation id="1910721550319506122">Tere tulemast!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Praegune vaheleht</translation>
 <translation id="1916502483199172559">Punane vaikeavatar</translation>
 <translation id="1918141783557917887">&amp;Väiksemaks</translation>
 <translation id="1919345977826869612">Reklaamid</translation>
@@ -2819,6 +2818,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4115080753528843955">Mõned sisuteenused kasutavad kordumatuid identifikaatoreid, et kaitstud sisule juurdepääsu volitada</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Taaskäivitage seade ja proovige uuesti.</translation>
+<translation id="4118998393712575296">Kui soovite kasutada vanemlikku järelevalvet, nt rakenduste heakskiitmist ja ekraaniaja piiranguid, peab lapsel olema vanema hallatav Google'i konto. Koolikonto saab lisada hiljem, et seda kasutada saitide ja rakendustega, nagu Google Classroom.</translation>
 <translation id="4120388883569225797">Seda turvavõtit ei saa lähtestada</translation>
 <translation id="4120817667028078560">Tee on liiga pikk</translation>
 <translation id="4124823734405044952">Teie turvavõti lähtestati</translation>
@@ -3090,7 +3090,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="447252321002412580">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
 <translation id="4472575034687746823">Alustamine</translation>
 <translation id="4474155171896946103">Lisa kõik vahelehed järjehoidjatesse...</translation>
-<translation id="4474461121892222090">Mobiilse andmeside aktiveerimiseks võib kuluda kuni 15 minutit.</translation>
 <translation id="4475552974751346499">Otsi allalaadimisi</translation>
 <translation id="4476590490540813026">Sportlane</translation>
 <translation id="4476659815936224889">Selle koodi skannimiseks võite oma telefonis kasutada QR-skannerit või mõnda kaamerarakendust.</translation>
@@ -3880,6 +3879,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="540296380408672091">Blokeeri alati küpsisefailid saidil <ph name="HOST" /></translation>
 <translation id="540495485885201800">Vaheta eelmisega</translation>
 <translation id="5405146885510277940">Seadete lähtestamine</translation>
+<translation id="5407119150486192764">Sisestage operaatorilt saadud kaheksakohaline PUK-kood</translation>
 <translation id="5408750356094797285">Suum: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Teie Google'i kontolt</translation>
 <translation id="5411472733320185105">Ära kasuta puhverserveri seadeid nende hostide ja domeenide puhul:</translation>
@@ -4512,6 +4512,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6124213551517593835">See kustutab kõik saidi <ph name="SITE_GROUP_NAME" /> ning selle alla kuuluvate saitide salvestatud andmed ja küpsisefailid</translation>
 <translation id="6124650939968185064">Sellest laiendusest sõltuvad järgmised laiendused:</translation>
 <translation id="6124698108608891449">See sait vajab rohkem lube.</translation>
+<translation id="6125442051901189730">Saadaval ei ole ühtki SIM-kaardi profiili. Seadistage uus profiil <ph name="BEGIN_LINK" />siin<ph name="END_LINK" />.</translation>
 <translation id="6125479973208104919">Kahjuks peate oma konto seadmesse <ph name="DEVICE_TYPE" /> uuesti lisama.</translation>
 <translation id="6129691635767514872">Valitud andmed eemaldati Chrome'ist ja sünkroonitud seadmetest. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu, nt otsingud ja muudes Google'i teenustes toimunud tegevused.</translation>
 <translation id="6129938384427316298">Netscape'i sertifikaadi kommentaar</translation>
@@ -4812,7 +4813,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6473842110411557830">Powerwashi joonis</translation>
 <translation id="6474498546677193336">Jagamist ei saanud lõpetada, kuna rakendus kasutab seda kausta. Kausta jagamine lõpetatakse Linuxi väljalülitamisel.</translation>
 <translation id="6474884162850599008">Google Drive'i konto ühenduse katkestamine</translation>
-<translation id="6475697075626596525">Rakendus <ph name="APP_NAME" /> soovib jagada teie ekraani sisu. Valige, mida soovite jagada.</translation>
 <translation id="6477822444490674459">Tööprofiili kasutavate telefonide puhul märguannete sünkroonimist ei toetata. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Kas soovite ohtliku faili säilitada?</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
@@ -5074,7 +5074,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> lisati kaugühenduse kaudu</translation>
 <translation id="6790820461102226165">Lisa isik ...</translation>
-<translation id="6792072150955115067">Rakendus <ph name="APP_NAME" /> soovib jagada teie ekraani sisu aadressiga <ph name="TARGET_NAME" />. Valige, mida soovite jagada.</translation>
 <translation id="6793604637258913070">Kui tekstisisestusmärk ilmub või liigub, tõstetakse see esile</translation>
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> on juba määratud toimingu <ph name="ACTION" /> jaoks. Väljumiseks vajutage mis tahes klahvi.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6623,6 +6622,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8553342806078037065">Teiste inimeste haldamine</translation>
 <translation id="8554899698005018844">Keel puudub</translation>
+<translation id="8555195867496021627">Saadaval ei ole ühtki eSIM-i profiili. Laadige uus profiil alla <ph name="BEGIN_LINK" />siit<ph name="END_LINK" />.</translation>
 <translation id="8557022314818157177">Hoidke sõrme turvavõtmel, kuni sõrmejälg jäädvustatakse</translation>
 <translation id="8557930019681227453">Manifest</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Ava kõik &amp;uues aknas}=1{Ava &amp;uues aknas}other{Ava kõik ({COUNT}) &amp;uues aknas}}</translation>
@@ -6961,7 +6961,6 @@ Määratud toimingu eemaldamiseks vajutage määratud lülitit.</translation>
 <translation id="8907906903932240086">Chrome saab teie arvutist kahjulikku tarkvara otsida</translation>
 <translation id="8909298138148012791">Rakendus <ph name="APP_NAME" /> on desinstallitud</translation>
 <translation id="8909833622202089127">Sait jälgib teie asukohta</translation>
-<translation id="8910146161325739742">Oma ekraani jagamine</translation>
 <translation id="8910222113987937043">Teie järjehoidjate, ajaloo, paroolide ja muude seadete muudatusi ei sünkroonita enam teie Google'i kontoga. Teie olemasolevad andmed jäävad aga teie Google'i kontole alles ja neid saab hallata <ph name="BEGIN_LINK" />Google'i juhtpaneelil<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google'i konto</translation>
 <translation id="8912793549644936705">Venitatud</translation>

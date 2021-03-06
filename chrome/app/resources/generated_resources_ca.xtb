@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Contactes de Compartició Nearby</translation>
 <translation id="1529891865407786369">Font d'alimentació</translation>
 <translation id="1530838837447122178">Obre la configuració del ratolí i del ratolí tàctil</translation>
-<translation id="1531004739673299060">Finestra de l'aplicació</translation>
 <translation id="1531275250079031713">Mostra el diàleg Afegeix una Wi-Fi nova</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> i <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Alt</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Confirmeu que voleu establir permanentment el mode de quiosc en aquest dispositiu?</translation>
 <translation id="1910721550319506122">Us donem la benvinguda</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Pestanya actual</translation>
 <translation id="1916502483199172559">Avatar vermell predeterminat</translation>
 <translation id="1918141783557917887">&amp;Més petit</translation>
 <translation id="1919345977826869612">Anuncis</translation>
@@ -3090,7 +3088,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="447252321002412580">Ajuda a millorar les funcions i el rendiment de Chrome</translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4474155171896946103">Afegeix totes les pestanyes a les adreces d'interès...</translation>
-<translation id="4474461121892222090">És possible que les dades mòbils tardin fins a 15 minuts a activar-se.</translation>
 <translation id="4475552974751346499">Cerca baixades</translation>
 <translation id="4476590490540813026">Atleta</translation>
 <translation id="4476659815936224889">Per escanejar aquest codi, pots fer servir una aplicació d'escaneig QR al telèfon o algunes aplicacions de la càmera.</translation>
@@ -4816,7 +4813,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6473842110411557830">Il·lustració de Powerwash</translation>
 <translation id="6474498546677193336">No s'ha pogut deixar de compartir perquè una aplicació està utilitzant aquesta carpeta. La carpeta es deixarà de compartir la propera vegada que Linux s'apagui.</translation>
 <translation id="6474884162850599008">Desconnecta el compte de Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla. Tria què vols compartir.</translation>
 <translation id="6477822444490674459">La sincronització de notificacions no és compatible amb els telèfons que tenen un perfil de treball. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vols desar el fitxer perillós?</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> s'ha afegit de manera remota</translation>
 <translation id="6790820461102226165">Afegeix una persona...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla amb <ph name="TARGET_NAME" />. Tria què vols compartir.</translation>
 <translation id="6793604637258913070">Ressalta la marca d'inserció de text quan es mostri o es mogui</translation>
 <translation id="6793723358811598107">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per sortir.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="8907906903932240086">Chrome pot comprovar que no hi hagi programari nociu a l'ordinador</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> s'ha desinstal·lat</translation>
 <translation id="8909833622202089127">El lloc web està fent un seguiment de la teva ubicació</translation>
-<translation id="8910146161325739742">Compartiu la pantalla</translation>
 <translation id="8910222113987937043">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades i es podran gestionar al <ph name="BEGIN_LINK" />Tauler de control de Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Compte de Google</translation>
 <translation id="8912793549644936705">Amplia</translation>

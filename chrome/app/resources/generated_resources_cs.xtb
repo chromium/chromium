@@ -487,7 +487,6 @@
 <translation id="152913213824448541">Kontakty pro sdílení nablízko</translation>
 <translation id="1529891865407786369">Zdroj napájení</translation>
 <translation id="1530838837447122178">Otevřít nastavení myši a touchpadu</translation>
-<translation id="1531004739673299060">Okno aplikace</translation>
 <translation id="1531275250079031713">Zobrazit dialogové okno k přidání nové Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Hlasité</translation>
@@ -846,7 +845,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1909880997794698664">Opravdu chcete toto zařízení trvale ponechat v režimu veřejného terminálu?</translation>
 <translation id="1910721550319506122">Vítejte!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Aktuální karta</translation>
 <translation id="1916502483199172559">Výchozí červený avatar</translation>
 <translation id="1918141783557917887">Menší</translation>
 <translation id="1919345977826869612">Reklamy</translation>
@@ -3092,7 +3090,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="447252321002412580">Pomoci s vylepšováním funkcí a výkonu prohlížeče Chrome</translation>
 <translation id="4472575034687746823">Začít</translation>
 <translation id="4474155171896946103">Přidat do záložek všechny karty...</translation>
-<translation id="4474461121892222090">Dokončení aktivace mobilních dat může trvat až 15 minut.</translation>
 <translation id="4475552974751346499">Hledat stažené soubory</translation>
 <translation id="4476590490540813026">Sportovkyně</translation>
 <translation id="4476659815936224889">K naskenování tohoto kódu můžete použít aplikaci na skenování QR kódů na telefonu nebo některé aplikace pro fotografování.</translation>
@@ -4816,7 +4813,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6473842110411557830">Ilustrace funkce Powerwash</translation>
 <translation id="6474498546677193336">Sdílení se nepodařilo zrušit, protože tuto složku používá nějaká aplikace. Sdílení složky bude zrušeno při příštím vypnutí systému Linux.</translation>
 <translation id="6474884162850599008">Odpojit účet Disku Google</translation>
-<translation id="6475697075626596525">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky. Vyberte, co chcete sdílet.</translation>
 <translation id="6477822444490674459">U telefonů s pracovním profilem není synchronizace oznámení podporována. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Ponechat nebezpečný soubor?</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6790497603648687708">Rozšíření <ph name="EXTENSION_NAME" /> bylo přidáno vzdáleně</translation>
 <translation id="6790820461102226165">Přidat uživatele...</translation>
-<translation id="6792072150955115067">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky se stránkou <ph name="TARGET_NAME" />. Vyberte, co chcete sdílet.</translation>
 <translation id="6793604637258913070">Zvýraznit textový kurzor, když se zobrazí nebo pohne</translation>
 <translation id="6793723358811598107">Klávesa <ph name="CURRENTKEY" /> je už přiřazena k akci „<ph name="ACTION" />“. Ukončíte stisknutím libovolné klávesy.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6967,7 +6962,6 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8907906903932240086">Chrome může zkontrolovat, zda v počítači nemáte škodlivý software</translation>
 <translation id="8909298138148012791">Aplikace <ph name="APP_NAME" /> byla odinstalována.</translation>
 <translation id="8909833622202089127">Web sleduje vaši polohu</translation>
-<translation id="8910146161325739742">Sdílení obrazovky</translation>
 <translation id="8910222113987937043">Změny záložek, historie, hesel a dalších nastavení se již nebudou synchronizovat do účtu Google. Vaše existující data v účtu Google uložena zůstanou a lze je spravovat na <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Účet Google</translation>
 <translation id="8912793549644936705">Roztáhnout</translation>

@@ -483,7 +483,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="152913213824448541">Yaqin-atrofdagi kontaktlar</translation>
 <translation id="1529891865407786369">Quvvat manbai</translation>
 <translation id="1530838837447122178">Sichqoncha va sensorli panel sozlamalarini ochish</translation>
-<translation id="1531004739673299060">Ilova oynasi</translation>
 <translation id="1531275250079031713">“Yangi Wi-Fi kiritish” oynasini ochish</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Baland</translation>
@@ -842,7 +841,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1909880997794698664">Qurilma har doim kiosk rejimida ishga tushirilsinmi?</translation>
 <translation id="1910721550319506122">Xush kelibsiz!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Joriy varaq</translation>
 <translation id="1916502483199172559">Standart qizil avatar</translation>
 <translation id="1918141783557917887">&amp;Kichikroq</translation>
 <translation id="1919345977826869612">Reklamalar</translation>
@@ -3090,7 +3088,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="447252321002412580">Chrome funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
 <translation id="4472575034687746823">Boshlash</translation>
 <translation id="4474155171896946103">Barcha ichki oynalarni xatcho‘plarga qo‘shish...</translation>
-<translation id="4474461121892222090">Mobil internetni yoqish 15 daqiqa vaqt olishi mumkin.</translation>
 <translation id="4475552974751346499">Yuklamalardan qidirish</translation>
 <translation id="4476590490540813026">Sportchi</translation>
 <translation id="4476659815936224889">QR kodni telefoningizdagi mos autentifikator yoki kamera ilovasi yordamida skanerlang.</translation>
@@ -4814,7 +4811,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6473842110411557830">Powerwash illustratsiyasi</translation>
 <translation id="6474498546677193336">Bu jild bandligi sababli umumiy ruxsat bekor qilinmadi. Jildga umumiy ruxsat Linux qayta ishga tushganda bekor qilinadi.</translation>
 <translation id="6474884162850599008">Google Drive hisobini uzib qo‘yish</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ekraningizdan foydalanmoqchi. Namoyish qilmoqchi bo‘lgan oynani tanlang.</translation>
 <translation id="6477822444490674459">Ish profilidagi telefonlarda bildirishnomalar sinxronlanmaydi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Xavfli fayl yuklab olinsinmi?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
@@ -5076,7 +5072,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> kengaytmasi masofadan qo‘shildi</translation>
 <translation id="6790820461102226165">Foydalanuvchini qo‘shish...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ilovasi <ph name="TARGET_NAME" /> saytiga ekraningizdan foydalanishga ruxsat bermoqchi. Namoyish qilmoqchi bo‘lgan oynani tanlang.</translation>
 <translation id="6793604637258913070">Matnni kiritish nuqtasi paydo bo‘lganda yoki siljiganda ajratib ko‘rsatilsin.</translation>
 <translation id="6793723358811598107">“<ph name="CURRENTKEY" />” tugmasi allaqachon “<ph name="ACTION" />” amaliga biriktirilgan. Chiqish uchun istalgan tugmani bosing.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6962,7 +6957,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="8907906903932240086">Chrome kompyuteringizni zararli dasturlarni aniqlash uchun tekshira oladi</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> oʻchirib tashlandi</translation>
 <translation id="8909833622202089127">Sayt joylashuvingizni kuzatmoqda</translation>
-<translation id="8910146161325739742">Ekranni ulashish</translation>
 <translation id="8910222113987937043">Endi xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz Google hisobingizga sinxronlanmaydi. Shunday bo‘lsa-da, mavjud ma’lumotlaringiz Google hisobingizda saqlanib qoladi. Ular bilan <ph name="BEGIN_LINK" />Google Shaxsiy kabinet<ph name="END_LINK" /> orqali ishlash mumkin.</translation>
 <translation id="8912362522468806198">Google hisobi</translation>
 <translation id="8912793549644936705">Cho‘zish</translation>

@@ -303,6 +303,7 @@
 <translation id="894871326938397531">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হ’বনে?</translation>
 <translation id="8958424370300090006">কোনো বিশেষ ছাইটৰ বাবে কুকিসমূহ অৱৰোধ কৰক।</translation>
 <translation id="8959122750345127698">ইয়ালৈ নেভিগেশ্বন পাব পৰা অৱস্থাত নাই: <ph name="URL" /></translation>
+<translation id="8986362086234534611">পাহৰক</translation>
 <translation id="9019902583201351841">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}}</translation>

@@ -304,6 +304,7 @@
 <translation id="894871326938397531">要退出無痕模式嗎？</translation>
 <translation id="8958424370300090006">封鎖特定網站的 Cookie。</translation>
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>
+<translation id="8986362086234534611">清除</translation>
 <translation id="9019902583201351841">你的家長已停用這項功能</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>

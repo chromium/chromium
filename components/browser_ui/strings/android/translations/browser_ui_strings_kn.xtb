@@ -304,6 +304,7 @@
 <translation id="894871326938397531">ಅದೃಶ್ಯ ಮೋಡ್‌‌ ತೊರೆಯುವುದೇ?</translation>
 <translation id="8958424370300090006">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ ಒಂದಕ್ಕೆ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
 <translation id="8959122750345127698">ನ್ಯಾವಿಗೇಶನ್‌ ತಲುಪಲಾಗುವುದಿಲ್ಲ: <ph name="URL" /></translation>
+<translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>
 <translation id="9019902583201351841">ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಿದ್ದಾರೆ</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಮತ್ತು ಇನ್ನೂ <ph name="NUM_MORE" />}}</translation>

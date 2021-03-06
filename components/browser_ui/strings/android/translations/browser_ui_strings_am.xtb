@@ -304,6 +304,7 @@
 <translation id="894871326938397531">ከማንነት የማያሳውቅ ሁነታ ይውጣ?</translation>
 <translation id="8958424370300090006">የአንድ የተወሰነ ጣቢያ ኩኪዎችን ያግዱ።</translation>
 <translation id="8959122750345127698">ዳሰሳ ሊደረስበት አይችልም፦ <ph name="URL" /></translation>
+<translation id="8986362086234534611">እርሳ</translation>
 <translation id="9019902583201351841">በእርስዎ ወላጆች የሚቀናበር</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>

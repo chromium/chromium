@@ -487,7 +487,6 @@
 <translation id="152913213824448541">Обмен с окружением: контакты</translation>
 <translation id="1529891865407786369">Источник питания</translation>
 <translation id="1530838837447122178">Открыть настройки мыши и сенсорной панели</translation>
-<translation id="1531004739673299060">Окно программы</translation>
 <translation id="1531275250079031713">Открыть окно добавления сети Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> и <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Громко</translation>
@@ -846,7 +845,6 @@
 <translation id="1909880997794698664">Всегда запускать устройство в режиме киоска?</translation>
 <translation id="1910721550319506122">Добро пожаловать!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Текущая вкладка</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
 <translation id="1918141783557917887">&amp;Мельче</translation>
 <translation id="1919345977826869612">Реклама</translation>
@@ -3093,7 +3091,6 @@
 <translation id="447252321002412580">Помогать повышать производительность Chrome и улучшать функции</translation>
 <translation id="4472575034687746823">Начало работы</translation>
 <translation id="4474155171896946103">Добавить все вкладки в закладки…</translation>
-<translation id="4474461121892222090">Активация мобильного Интернета может занять до 15 минут.</translation>
 <translation id="4475552974751346499">Искать в скачанных файлах</translation>
 <translation id="4476590490540813026">Спортсмен</translation>
 <translation id="4476659815936224889">Этот код можно сканировать с помощью специального приложения или камеры на телефоне (если такая возможность поддерживается)</translation>
@@ -4817,7 +4814,6 @@
 <translation id="6473842110411557830">Иллюстрация Powerwash</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> хочет предоставить доступ к вашему экрану. Выберите окно, которое нужно показать.</translation>
 <translation id="6477822444490674459">Синхронизация уведомлений недоступна, если на телефоне используется рабочий профиль. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Сохранить опасный файл?</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
@@ -5079,7 +5075,6 @@
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6790497603648687708">Расширение "<ph name="EXTENSION_NAME" />" было добавлено удаленно</translation>
 <translation id="6790820461102226165">Добавить пользователя</translation>
-<translation id="6792072150955115067">Приложение "<ph name="APP_NAME" />" хочет предоставить сайту <ph name="TARGET_NAME" /> доступ к вашему экрану. Выберите, что можно показать.</translation>
 <translation id="6793604637258913070">Выделять курсор при его появлении или перемещении</translation>
 <translation id="6793723358811598107">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы выйти.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6969,7 +6964,6 @@
 <translation id="8907906903932240086">Браузер Chrome может проверить компьютер на наличие вредоносного ПО.</translation>
 <translation id="8909298138148012791">Плагин <ph name="APP_NAME" /> удален.</translation>
 <translation id="8909833622202089127">Сайт отслеживает ваше местоположение</translation>
-<translation id="8910146161325739742">Откройте доступ к экрану</translation>
 <translation id="8910222113987937043">Изменения, связанные с закладками, историей, паролями и настройками, больше не будут синхронизироваться с вашим аккаунтом Google. Тем не менее, данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912793549644936705">Растянуть</translation>

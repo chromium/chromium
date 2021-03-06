@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Zamknąć tryb incognito?</translation>
 <translation id="8958424370300090006">Blokuj pliki cookie z określonej strony internetowej.</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Zapomnij</translation>
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>

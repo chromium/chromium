@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Kontakter för Närdelning</translation>
 <translation id="1529891865407786369">Strömkälla</translation>
 <translation id="1530838837447122178">Öppna enhetsinställningarna för mus och styrplatta</translation>
-<translation id="1531004739673299060">Appfönster</translation>
 <translation id="1531275250079031713">Visa dialogrutan för att lägga till nytt Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Hög</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Är du säker på att du vill använda kioskläge på enheten permanent?</translation>
 <translation id="1910721550319506122">Välkommen!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Aktuell flik</translation>
 <translation id="1916502483199172559">Röd standardavatar</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1919345977826869612">Annonser</translation>
@@ -3092,7 +3090,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="447252321002412580">Bidra till att förbättra Chromes funktioner och prestanda</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4474155171896946103">Skapa bokmärken för alla flikar ...</translation>
-<translation id="4474461121892222090">Det kan ta upp till 15 minuter att slutföra aktiveringen av mobildata.</translation>
 <translation id="4475552974751346499">Sök i nedladdningar</translation>
 <translation id="4476590490540813026">Idrottare</translation>
 <translation id="4476659815936224889">Du kan skanna koden på telefonen med en app för att skanna QR-koder eller med vissa kameraappar.</translation>
@@ -4816,7 +4813,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6473842110411557830">Illustration av Powerwash</translation>
 <translation id="6474498546677193336">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen delas inte längre när Linux stängs av nästa gång.</translation>
 <translation id="6474884162850599008">Koppla från Google Drive-konto</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> vill dela det som visas på skärmen. Välj vad du vill dela.</translation>
 <translation id="6477822444490674459">Synkronisering av aviseringar stöds inte på telefoner med en jobbprofil. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vill du behålla den farliga filen?</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> har lagts till via fjärranslutning</translation>
 <translation id="6790820461102226165">Lägg till person …</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> vill dela det som visas på skärmen med <ph name="TARGET_NAME" />. Välj vad du vill dela.</translation>
 <translation id="6793604637258913070">Markera textmarkören när den visas eller flyttas</translation>
 <translation id="6793723358811598107"><ph name="CURRENTKEY" /> har redan tilldelats åtgärden <ph name="ACTION" />. Tryck på valfri tangent för att avsluta.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8907906903932240086">Chrome kan söka efter skadlig programvara på datorn</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> har avinstallerats</translation>
 <translation id="8909833622202089127">Webbplatsen spårar din plats</translation>
-<translation id="8910146161325739742">Dela skärmen</translation>
 <translation id="8910222113987937043">När bokmärken, historik, lösenord och andra inställningar ändras kommer dessa ändringar inte längre att synkroniseras med Google-kontot. Uppgifter som redan har sparats i Google-kontot finns däremot kvar och kan hanteras via <ph name="BEGIN_LINK" />Google Översikt<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912793549644936705">Förläng</translation>

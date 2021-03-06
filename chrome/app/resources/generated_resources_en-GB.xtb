@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Nearby Share contacts</translation>
 <translation id="1529891865407786369">Power source</translation>
 <translation id="1530838837447122178">Open mouse and touchpad device settings</translation>
-<translation id="1531004739673299060">Application Window</translation>
 <translation id="1531275250079031713">Show 'Add new Wi-Fi' dialogue</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Loud</translation>
@@ -844,7 +843,6 @@
 <translation id="1909880997794698664">Are you sure you want to permanently keep this device in kiosk mode?</translation>
 <translation id="1910721550319506122">Welcome!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Current tab</translation>
 <translation id="1916502483199172559">Default red avatar</translation>
 <translation id="1918141783557917887">&amp;Smaller</translation>
 <translation id="1919345977826869612">Ads</translation>
@@ -3092,7 +3090,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="447252321002412580">Help improve Chrome's features and performance</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4474155171896946103">Bookmark all tabs...</translation>
-<translation id="4474461121892222090">It might take up to 15 minutes to complete mobile data activation.</translation>
 <translation id="4475552974751346499">Search downloads</translation>
 <translation id="4476590490540813026">Athlete</translation>
 <translation id="4476659815936224889">To scan this code, you can use a QR scanner app on your phone, or some camera apps.</translation>
@@ -4816,7 +4813,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6473842110411557830">Powerwash illustration</translation>
 <translation id="6474498546677193336">Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.</translation>
 <translation id="6474884162850599008">Disconnect Google Drive account</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> wants to share the contents of your screen. Choose what you'd like to share.</translation>
 <translation id="6477822444490674459">Notification syncing is not supported for phones in a work profile. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Keep dangerous file?</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
@@ -5078,7 +5074,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6790428901817661496">Play</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> was added remotely</translation>
 <translation id="6790820461102226165">Add Person...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> would like to share the contents of your screen with <ph name="TARGET_NAME" />. Choose what you'd like to share.</translation>
 <translation id="6793604637258913070">Highlight the text caret when it appears or moves</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to exit.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6966,7 +6961,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8907906903932240086">Chrome can check your computer for harmful software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
 <translation id="8909833622202089127">Site is tracking your location</translation>
-<translation id="8910146161325739742">Share your screen</translation>
 <translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8912793549644936705">Stretch</translation>

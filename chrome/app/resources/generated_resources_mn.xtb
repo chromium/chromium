@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Ойролцоо хуваалцах харилцагчид</translation>
 <translation id="1529891865407786369">Эрчим хүчний эх үүсвэр</translation>
 <translation id="1530838837447122178">Хулгана, мэдрэгч самбарын төхөөрөмжийн тохиргоог нээх</translation>
-<translation id="1531004739673299060">Апп-н цонх</translation>
 <translation id="1531275250079031713">'Шинэ Wi-Fi нэмэх' харилцах цонхыг харуулах</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Чанга</translation>
@@ -840,7 +839,6 @@
 <translation id="1909880997794698664">Та энэ төхөөрөмжийг байнгын киоск горимд хадгалахыг хүсч байна уу?</translation>
 <translation id="1910721550319506122">Тавтай морилно уу!</translation>
 <translation id="1915073950770830761">канар бялзуухай</translation>
-<translation id="1916260783734263714">Одоогийн таб</translation>
 <translation id="1916502483199172559">Өгөгдмөл улаан аватар</translation>
 <translation id="1918141783557917887">&amp;Арай жижиг</translation>
 <translation id="1919345977826869612">Зар</translation>
@@ -3086,7 +3084,6 @@
 <translation id="447252321002412580">Chrome-н онцлог болон гүйцэтгэлийг сайжруулахад туслах</translation>
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4474155171896946103">Бүх цонхнуудыг хадгалж жагсаах ...</translation>
-<translation id="4474461121892222090">Таны мобайл датаг идэвхжүүлэхэд 15 хүртэл минут шаардагдаж болно.</translation>
 <translation id="4475552974751346499">Татаж авсан файлуудыг хайх</translation>
 <translation id="4476590490540813026">Тамирчин</translation>
 <translation id="4476659815936224889">Энэ кодыг скан хийхийн тулд утасныхаа QR кодын сканнерын аппыг эсвэл камерын зарим аппыг ашиглана уу.</translation>
@@ -4810,7 +4807,6 @@
 <translation id="6473842110411557830">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
 <translation id="6474498546677193336">Энэ фолдерыг апп ашиглаж байгаа тул хуваалцсаныг болиулж чадсангүй. Linux-г дараа нь унтраах үед фолдерын хуваалцсаныг болиулна.</translation>
 <translation id="6474884162850599008">Google Drive хаягийг үл холбох</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> таны дэлгэцийн агуулгыг хуваалцах хүсэлтэй байна. Хуваалцах зүйлээ сонгоно уу.</translation>
 <translation id="6477822444490674459">Ажлын профайл дахь утаснуудад мэдэгдэл синк хийхийг дэмждэггүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Аюултай файлыг хадгалах уу?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
@@ -5072,7 +5068,6 @@
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />-г алсаас нэмсэн</translation>
 <translation id="6790820461102226165">Хүн нэм...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> таны дэлгэцийн агуулгыг <ph name="TARGET_NAME" />-тай хуваалцах хүсэлтэй байна. Хуваалцах зүйлээ сонгоно уу.</translation>
 <translation id="6793604637258913070">Текст бичих тэмдгийг харагдах, эсвэл хөдлөх үед нь тодруулна уу</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. Гарахын тулд дурын товчийг дарна уу.</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
@@ -6954,7 +6949,6 @@
 <translation id="8907906903932240086">Chrome таны компьютерт хортой программ хангамж байгаа эсэхийг шалгах боломжтой</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" />-г устгасан</translation>
 <translation id="8909833622202089127">Сайт таны байршлыг шинжилж байна</translation>
-<translation id="8910146161325739742">Дэлгэцээ хуваалцах</translation>
 <translation id="8910222113987937043">Таны хавчуурга, түүх, нууц үг болон бусад тохиргоонд хийсэн өөрчлөлтийг цаашид Google бүртгэлд синк хийхгүй. Таны одоогийн өгөгдлийг Google бүртгэлд хадгалсан хэвээр байх бөгөөд <ph name="BEGIN_LINK" />Google Хяналтын самбарт<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="8912362522468806198">Google Бүртгэл</translation>
 <translation id="8912793549644936705">Сунгах</translation>

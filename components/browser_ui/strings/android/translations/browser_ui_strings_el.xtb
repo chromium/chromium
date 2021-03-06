@@ -304,6 +304,7 @@
 <translation id="894871326938397531">Έξοδος από την κατάσταση ανώνυμης περιήγησης;</translation>
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
+<translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="9019902583201351841">Διαχειρίζεται από τους γονείς σου</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}}</translation>

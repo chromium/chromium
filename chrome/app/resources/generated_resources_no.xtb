@@ -482,7 +482,6 @@
 <translation id="152913213824448541">Kontakter for nærdeling</translation>
 <translation id="1529891865407786369">Strømkilde</translation>
 <translation id="1530838837447122178">Åpne innstillingene for mus og styreflate</translation>
-<translation id="1531004739673299060">Programvindu</translation>
 <translation id="1531275250079031713">Vis dialogboksen «Legg til nytt Wi-Fi-nettverk»</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Høyt</translation>
@@ -841,7 +840,6 @@
 <translation id="1909880997794698664">Er du sikker på at du vil beholde denne enheten permanent i kioskmodus?</translation>
 <translation id="1910721550319506122">Velkommen!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Gjeldende fane</translation>
 <translation id="1916502483199172559">Rødt standardbrukerbilde</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1919345977826869612">Annonser</translation>
@@ -3087,7 +3085,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="447252321002412580">Hjelp til med å forbedre funksjonene og ytelsen til Chrome</translation>
 <translation id="4472575034687746823">Kom i gang</translation>
 <translation id="4474155171896946103">Bokmerk alle fanene</translation>
-<translation id="4474461121892222090">Det kan ta opptil 15 minutter å fullføre aktiveringen av mobildata.</translation>
 <translation id="4475552974751346499">Søk i nedlastinger</translation>
 <translation id="4476590490540813026">Idrettsutøver</translation>
 <translation id="4476659815936224889">For å skanne denne koden kan du bruke en QR-skanningsapp på telefonen eller enkelte kameraapper.</translation>
@@ -4811,7 +4808,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6473842110411557830">Illustrasjon av Powerwash</translation>
 <translation id="6474498546677193336">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Linux avsluttes.</translation>
 <translation id="6474884162850599008">Koble fra Google Disk-kontoen.</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> vil dele innholdet på skjermen din. Velg hva du vil dele.</translation>
 <translation id="6477822444490674459">Synkronisering av varsler støttes ikke for telefoner i jobbprofiler. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vil du beholde den farlige filen?</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
@@ -5073,7 +5069,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> er lagt til eksternt</translation>
 <translation id="6790820461102226165">Legg til person …</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> vil dele innholdet på skjermen din med <ph name="TARGET_NAME" />. Velg hva du vil dele.</translation>
 <translation id="6793604637258913070">Fremhev tekstinnsettingspunktet når det vises eller flyttes</translation>
 <translation id="6793723358811598107">«<ph name="CURRENTKEY" />» er allerede tilordnet handlingen «<ph name="ACTION" />» Trykk på en tast for å avslutte.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -6961,7 +6956,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8907906903932240086">Chrome kan skanne etter skadelig programvare på datamaskinen</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> er avinstallert</translation>
 <translation id="8909833622202089127">Nettstedet sporer posisjonen din</translation>
-<translation id="8910146161325739742">Del skjermen</translation>
 <translation id="8910222113987937043">Endringer i bokmerkene, loggen, passordene og andre innstillinger du har, blir ikke lenger synkronisert med Google-kontoen din. Data som allerede er lagret i Google-kontoen din, blir imidlertid værende og kan administreres ved hjelp av <ph name="BEGIN_LINK" />Google Oversikt<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google-konto</translation>
 <translation id="8912793549644936705">Strekk ut</translation>

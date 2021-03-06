@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Người liên hệ Chia sẻ lân cận</translation>
 <translation id="1529891865407786369">Nguồn điện</translation>
 <translation id="1530838837447122178">Mở cài đặt thiết bị chuột và bàn di chuột</translation>
-<translation id="1531004739673299060">Cửa sổ ứng dụng</translation>
 <translation id="1531275250079031713">Hiển thị hộp thoại "Thêm Wi-Fi mới"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Lớn</translation>
@@ -640,6 +639,7 @@
 <translation id="1692118695553449118">Đồng bộ hóa đang bật</translation>
 <translation id="1692210323591458290">Tím đậm</translation>
 <translation id="169279809881363536">Không phát hiện thấy hồ sơ nào. Để thiết lập một mạng mới, hãy quét mã QR bằng máy ảnh của thiết bị hoặc nhập mã kích hoạt do nhà mạng cung cấp.</translation>
+<translation id="169675691788639886">Thiết bị đã định cấu hình máy chủ SSH. Không đăng nhập bằng các tài khoản nhạy cảm.</translation>
 <translation id="1697150536837697295">Nghệ thuật</translation>
 <translation id="1697686431566694143">Chỉnh sửa tệp</translation>
 <translation id="1698122934742150150">Chỉ phiên ẩn danh hiện tại</translation>
@@ -843,7 +843,6 @@
 <translation id="1909880997794698664">Bạn có chắc chắn bạn muốn giữ vĩnh viễn thiết bị này ở chế độ kiosk không?</translation>
 <translation id="1910721550319506122">Chào mừng bạn!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Thẻ hiện tại</translation>
 <translation id="1916502483199172559">Hình đại diện màu đỏ mặc định</translation>
 <translation id="1918141783557917887">&amp;Nhỏ hơn</translation>
 <translation id="1919345977826869612">Quảng cáo</translation>
@@ -2819,6 +2818,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4115080753528843955">Một số dịch vụ nội dung sử dụng số nhận dạng duy nhất nhằm mục đích cho phép truy cập vào nội dung được bảo vệ</translation>
 <translation id="4115378294792113321">Đỏ thẫm</translation>
 <translation id="4118579674665737931">Vui lòng khởi động lại thiết bị và thử lại.</translation>
+<translation id="4118998393712575296">Để sử dụng các quyền kiểm soát của cha mẹ như phê duyệt ứng dụng và giới hạn thời gian sử dụng thiết bị, trẻ phải có một Tài khoản Google do cha mẹ quản lý. Bạn có thể thêm một tài khoản trường học vào lúc khác để sử dụng với các trang web và ứng dụng như Google Lớp học.</translation>
 <translation id="4120388883569225797">Không thể đặt lại khóa bảo mật này</translation>
 <translation id="4120817667028078560">Đường dẫn quá dài</translation>
 <translation id="4124823734405044952">Khóa bảo mật của bạn đã được đặt lại</translation>
@@ -3090,7 +3090,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="447252321002412580">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4474155171896946103">Đánh dấu tất cả các thẻ...</translation>
-<translation id="4474461121892222090">Có thể mất tối đa 15 phút để hoàn tất quá trình kích hoạt dữ liệu di động.</translation>
 <translation id="4475552974751346499">Tìm kiếm trong các tệp đã tải xuống</translation>
 <translation id="4476590490540813026">Vận động viên</translation>
 <translation id="4476659815936224889">Bạn có thể dùng ứng dụng trình quét QR trên điện thoại hoặc một số ứng dụng máy ảnh để quét mã này.</translation>
@@ -3880,6 +3879,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="540296380408672091">Luôn chặn cookie trên <ph name="HOST" /></translation>
 <translation id="540495485885201800">Hoán đổi với mục trước</translation>
 <translation id="5405146885510277940">Đặt lại các tùy chọn cài đặt</translation>
+<translation id="5407119150486192764">Nhập Khóa mở mã PIN gồm 8 chữ số do nhà mạng cung cấp</translation>
 <translation id="5408750356094797285">Thu phóng: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Từ Tài khoản Google của bạn</translation>
 <translation id="5411472733320185105">Không sử dụng cài đặt proxy cho các máy chủ và tên miền này:</translation>
@@ -4512,6 +4512,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6124213551517593835">Thao tác này sẽ xóa toàn bộ dữ liệu và cookie lưu trữ trong <ph name="SITE_GROUP_NAME" /> cũng như trong mọi trang web thuộc nhóm này</translation>
 <translation id="6124650939968185064">Các tiện ích sau phụ thuộc vào tiện ích này:</translation>
 <translation id="6124698108608891449">Trang web này cần các quyền khác.</translation>
+<translation id="6125442051901189730">Không có hồ sơ SIM nào. Hãy thiết lập một hồ sơ mới <ph name="BEGIN_LINK" />tại đây.<ph name="END_LINK" /></translation>
 <translation id="6125479973208104919">Rất tiếc, bạn sẽ cần phải thêm lại tài khoản của mình vào <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="6129691635767514872">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Nhận xét về Chứng chỉ Netscape</translation>
@@ -4812,7 +4813,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6473842110411557830">Minh họa Powerwash</translation>
 <translation id="6474498546677193336">Không thể ngừng chia sẻ vì một ứng dụng đang dùng thư mục này. Hệ thống sẽ ngừng chia sẻ thư mục này khi bạn tắt Linux vào lần tới.</translation>
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn. Chọn nội dung bạn muốn chia sẻ.</translation>
 <translation id="6477822444490674459">Không dùng được tính năng đồng bộ hóa thông báo trên điện thoại có hồ sơ công việc. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Giữ tệp nguy hiểm?</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
@@ -5074,7 +5074,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6790497603648687708">Đã thêm <ph name="EXTENSION_NAME" /> từ xa</translation>
 <translation id="6790820461102226165">Thêm người...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn với <ph name="TARGET_NAME" />. Chọn nội dung bạn muốn chia sẻ.</translation>
 <translation id="6793604637258913070">Đánh dấu điểm chèn văn bản khi điểm này xuất hiện hoặc di chuyển</translation>
 <translation id="6793723358811598107">Phím "<ph name="CURRENTKEY" />" đã được chỉ định cho thao tác "<ph name="ACTION" />". Hãy nhấn phím bất kỳ để thoát.</translation>
 <translation id="6795884519221689054">Gấu trúc</translation>
@@ -6623,6 +6622,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8551588720239073785">Cài đặt ngày và giờ</translation>
 <translation id="8553342806078037065">Quản lý những người khác</translation>
 <translation id="8554899698005018844">Không có ngôn ngữ nào</translation>
+<translation id="8555195867496021627">Không có hồ sơ eSIM nào. Hãy tải một hồ sơ mới xuống <ph name="BEGIN_LINK" />tại đây.<ph name="END_LINK" /></translation>
 <translation id="8557022314818157177">Chạm liên tục vào khóa bảo mật cho đến khi thiết bị ghi lại vân tay của bạn</translation>
 <translation id="8557930019681227453">Tệp kê khai</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Mở tất cả trong cửa sổ &amp;mới}=1{Mở trong cửa sổ &amp;mới}other{Mở tất cả ({COUNT}) trong cửa sổ &amp;mới}}</translation>
@@ -6955,13 +6955,12 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8899851313684471736">Mở liên kết bằng cửa sổ &amp;mới</translation>
 <translation id="8900413463156971200">Bật mạng di động</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này ngay hôm nay.}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này trước thời hạn.}}</translation>
-<translation id="8902667442496790482">Mở mục cài đặt chọn để nói</translation>
+<translation id="8902667442496790482">Mở mục cài đặt tính năng chọn để nói</translation>
 <translation id="8903263458134414071">Chọn một tài khoản để đăng nhập</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>
 <translation id="8907906903932240086">Chrome có thể kiểm tra máy tính của bạn để tìm phần mềm gây hại</translation>
 <translation id="8909298138148012791">Đã gỡ cài đặt <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">Trang web đang theo dõi vị trí của bạn</translation>
-<translation id="8910146161325739742">Chia sẻ màn hình của bạn</translation>
 <translation id="8910222113987937043">Các thay đổi đối với dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ không được đồng bộ hóa với Tài khoản Google của bạn nữa. Tuy nhiên, dữ liệu hiện có của bạn sẽ vẫn được lưu trữ trong Tài khoản Google và có thể được quản lý trên <ph name="BEGIN_LINK" />Trang tổng quan Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Tài khoản Google</translation>
 <translation id="8912793549644936705">Kéo dãn</translation>
