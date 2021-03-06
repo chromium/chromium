@@ -130,6 +130,16 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
       result = kNoSpareFile;
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
                    active_file, kAllocSize, kAllocId, kBrowserMetricsName)) {
+      // TODO(crbug.com/1176977): Remove this instrumentation when bug is fixed.
+      // We don't expect there to be any histograms in the file just opened. But
+      // if there are, log their hashes here to diagnose crbug.com/1176977.
+      base::PersistentHistogramAllocator::Iterator it(
+          base::GlobalHistogramAllocator::Get());
+      while (std::unique_ptr<base::HistogramBase> histogram = it.GetNext()) {
+        base::UmaHistogramSparse(
+            "UMA.PersistentHistograms.HistogramsInStartupFile",
+            static_cast<base::HistogramBase::Sample>(histogram->name_hash()));
+      }
       result = kMappedFileSuccess;
     } else {
       result = kMappedFileFailed;

@@ -430,6 +430,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="UMA.PersistentHistograms.HistogramsInStartupFile"
+    enum="HistogramNameHash" expires_after="2021-06-20">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Records which histograms were found initially in the .pma file used by the
+    browser process for persistent histograms. The expectation is there should
+    be no entries there, but this histogram is added to diagnose a problem we're
+    seeing where this could be the cause. See crbug.com/1176977 for details.
+  </summary>
+</histogram>
+
 <histogram name="UMA.PersistentHistograms.InitResult"
     enum="PersistentHistogramsInitResult" expires_after="2021-08-29">
   <owner>bcwhite@chromium.org</owner>
