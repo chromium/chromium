@@ -38,13 +38,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -57,7 +54,6 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.test.util.UiRestriction;
-import org.chromium.url.GURL;
 
 /** Integration tests for showing IPH bubbles for read later. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -118,29 +114,6 @@ public class ReadLaterIphTest {
         if (!threeButtonActionBarEnabled) {
             waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
         }
-    }
-
-    @Test
-    @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testShowBookmarksReadLaterIPH() throws Throwable {
-        mActivityTestRule.loadUrl(mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL));
-        ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
-        // Allow DiskWrites temporarily in main thread to avoid violation during copying under
-        // emulator environment.
-        try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
-            RevampedContextMenuUtils.selectContextMenuItem(
-                    InstrumentationRegistry.getInstrumentation(), activity, tab,
-                    CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
-        }
-
-        String linkUrl = mTestServer.getServer().getURL(
-                "/chrome/test/data/android/contextmenu/test_link.html");
-        CriteriaHelper.pollUiThread(() -> {
-            BookmarkModel bookmarkModel = new BookmarkModel();
-            return bookmarkModel.getReadingListItem(new GURL(linkUrl)) != null;
-        });
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
