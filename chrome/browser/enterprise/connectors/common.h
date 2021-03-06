@@ -36,6 +36,9 @@ constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyEnterpriseId[] = "enterprise_id";
 
+// A MIME type string that matches all MIME types.
+constexpr char kWildcardMimeType[] = "*";
+
 enum class ReportingConnector {
   SECURITY_EVENT,
 };

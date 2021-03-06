@@ -30,6 +30,12 @@ PrefService* PrefsFromDownloadItem(download::DownloadItem* item) {
   return context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
 }
 
+bool MimeTypeMatches(const std::set<std::string>& mime_types,
+                     const std::string& mime_type) {
+  return mime_types.count(kWildcardMimeType) != 0 ||
+         mime_types.count(mime_type) != 0;
+}
+
 }  // namespace
 
 const base::Feature kFileSystemConnectorEnabled{
@@ -41,10 +47,26 @@ base::Optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
   if (!base::FeatureList::IsEnabled(kFileSystemConnectorEnabled))
     return base::nullopt;
 
+  // Check to see if the download item matches any rules.  If the URL of the
+  // download itself does not match then check the URL of site on which the
+  // download is hosted.
   ConnectorsService* service = ConnectorsServiceFactory::GetForBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(download_item));
-  return service->GetFileSystemSettings(
+  auto settings = service->GetFileSystemSettings(
       download_item->GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
+  if (settings.has_value() &&
+      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
+    return settings;
+  }
+
+  settings = service->GetFileSystemSettings(
+      download_item->GetTabUrl(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
+  if (settings.has_value() &&
+      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
+    return settings;
+  }
+
+  return base::nullopt;
 }
 
 // static

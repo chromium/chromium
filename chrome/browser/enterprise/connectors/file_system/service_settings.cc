@@ -7,8 +7,6 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/policy/core/browser/url_util.h"
 
-constexpr char kWildcardMimeType[] = "*";
-
 namespace enterprise_connectors {
 
 FileSystemServiceSettings::FileSystemServiceSettings(

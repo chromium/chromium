@@ -153,6 +153,10 @@ void FakeDownloadItem::SetOriginalUrl(const GURL& url) {
   original_url_ = url;
 }
 
+void FakeDownloadItem::SetTabUrl(const GURL& url) {
+  tab_url_ = url;
+}
+
 const GURL& FakeDownloadItem::GetOriginalUrl() const {
   return original_url_;
 }
@@ -326,8 +330,7 @@ const GURL& FakeDownloadItem::GetSiteUrl() const {
 }
 
 const GURL& FakeDownloadItem::GetTabUrl() const {
-  NOTREACHED();
-  return dummy_url;
+  return tab_url_;
 }
 
 const GURL& FakeDownloadItem::GetTabReferrerUrl() const {

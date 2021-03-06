@@ -28,7 +28,7 @@ using testing::Invoke;
 
 namespace enterprise_connectors {
 
-constexpr char kNormalSendDownloadToCloudPref[] = R"([
+constexpr char kWildcardSendDownloadToCloudPref[] = R"([
   {
     "service_provider": "box",
     "enterprise_id": "1234567890",
@@ -41,13 +41,25 @@ constexpr char kNormalSendDownloadToCloudPref[] = R"([
   }
 ])";
 
-class FileSystemRenameHandlerCreateTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
- public:
-  FileSystemRenameHandlerCreateTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    if (enable_feature_flag()) {
+constexpr char kRenameSendDownloadToCloudPref[] = R"([
+  {
+    "service_provider": "box",
+    "enterprise_id": "1234567890",
+    "enable": [
+      {
+        "url_list": ["renameme.com"],
+        "mime_types": ["text/plain", "image/png", "application/zip"]
+      }
+    ]
+  }
+])";
+
+class RenameHandlerTestBase : public testing::Test {
+ protected:
+  Profile* profile() { return profile_; }
+
+  void Init(bool enable_feature_flag, const char* pref_value) {
+    if (enable_feature_flag) {
       scoped_feature_list_.InitWithFeatures({kFileSystemConnectorEnabled}, {});
     } else {
       scoped_feature_list_.InitWithFeatures({}, {kFileSystemConnectorEnabled});
@@ -59,23 +71,31 @@ class FileSystemRenameHandlerCreateTest
     // Set a dummy policy value to enable the rename handler.
     profile_->GetPrefs()->Set(
         ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
-        *base::JSONReader::Read(kNormalSendDownloadToCloudPref));
+        *base::JSONReader::Read(pref_value));
   }
-
-  bool enable_feature_flag() const { return GetParam(); }
-
-  Profile* profile() { return profile_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestingProfileManager profile_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   TestingProfile* profile_;
+};
+
+class FileSystemRenameHandlerCreateTest
+    : public RenameHandlerTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  FileSystemRenameHandlerCreateTest() {
+    Init(enable_feature_flag(), kWildcardSendDownloadToCloudPref);
+  }
+
+  bool enable_feature_flag() const { return GetParam(); }
 };
 
 TEST_P(FileSystemRenameHandlerCreateTest, Test) {
   content::FakeDownloadItem item;
-  item.SetURL(GURL("https://any.com"));
+  item.SetURL(GURL("https://renameme.com"));
+  item.SetMimeType("text/plain");
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
 
   auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
@@ -166,7 +186,7 @@ class FileSystemRenameHandlerTest : public testing::Test {
     // whether the rename handler is used or not is the feature flag.
     profile_->GetPrefs()->Set(
         ConnectorPref(FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD),
-        *base::JSONReader::Read(kNormalSendDownloadToCloudPref));
+        *base::JSONReader::Read(kWildcardSendDownloadToCloudPref));
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
 
@@ -485,4 +505,70 @@ TEST_F(FileSystemRenameHandlerTest,
   ASSERT_TRUE(atoken.empty());
   ASSERT_EQ(rtoken, RTokenForFetcher);
 }
+
+class RenameHandlerUrlTest : public RenameHandlerTestBase {
+ public:
+  RenameHandlerUrlTest() { Init(true, kRenameSendDownloadToCloudPref); }
+};
+
+TEST_F(RenameHandlerUrlTest, NoUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  ASSERT_EQ(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerUrlTest, FileUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://renameme.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerUrlTest, TabUrlMatchesPattern) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://renameme.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
+TEST_F(RenameHandlerUrlTest, DisallowByMimeType) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://renameme.com/file.json"));
+  item.SetTabUrl(GURL("https://renameme.com"));
+  item.SetMimeType("application/json");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  ASSERT_EQ(nullptr, handler.get());
+}
+
+class RenameHandlerWildcardTest : public RenameHandlerTestBase {
+ public:
+  RenameHandlerWildcardTest() { Init(true, kWildcardSendDownloadToCloudPref); }
+};
+
+TEST_F(RenameHandlerWildcardTest, AllowedByWildcard) {
+  content::FakeDownloadItem item;
+  item.SetURL(GURL("https://one.com/file.txt"));
+  item.SetTabUrl(GURL("https://two.com"));
+  item.SetMimeType("text/plain");
+  content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
+
+  auto handler = FileSystemRenameHandler::CreateIfNeeded(&item);
+  ASSERT_NE(nullptr, handler.get());
+}
+
 }  // namespace enterprise_connectors
