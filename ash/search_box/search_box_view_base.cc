@@ -531,7 +531,6 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
     // should reopen it.
     UpdateKeyboardVisibility();
   }
-  located_event->SetHandled();
 }
 
 // TODO(crbug.com/755219): Unify this with SetBackgroundColor.

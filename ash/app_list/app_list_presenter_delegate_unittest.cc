@@ -4553,4 +4553,35 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest,
   }
 }
 
+// Test that gesture tapping the app list search box correctly handles the event
+// by moving the textfield's cursor to the tapped position within the text.
+TEST_F(AppListPresenterDelegateTest, SearchBoxTextfieldGestureTap) {
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+
+  // Tap on the search box to focus and open it.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->GestureTapAt(GetPointInsideSearchbox());
+
+  // Set the text of the search box textfield.
+  views::Textfield* textfield =
+      GetAppListView()->search_box_view()->search_box();
+  textfield->SetText(base::ASCIIToUTF16("Test search box string"));
+
+  // The textfield's cursor position should start out at the end of the string.
+  size_t initial_cursor_position = textfield->GetCursorPosition();
+
+  // Gesture tap to move the cursor to the middle of the string.
+  gfx::Rect textfield_bounds = textfield->GetBoundsInScreen();
+  gfx::Rect cursor_bounds =
+      views::TextfieldTestApi(textfield).GetCursorViewRect();
+  EXPECT_GT(cursor_bounds.x(), 0);
+  gfx::Point touch_location(textfield_bounds.x() + cursor_bounds.x() / 2,
+                            textfield_bounds.y());
+  generator->GestureTapAt(touch_location);
+
+  // Cursor position should have changed after the gesture tap.
+  EXPECT_LT(textfield->GetCursorPosition(), initial_cursor_position);
+}
+
 }  // namespace ash
