@@ -361,7 +361,8 @@ const size_t kActionsAllowedInAppModeLength =
 
 const AcceleratorAction kActionsNeedingWindow[] = {
     // clang-format off
-    DESKS_MOVE_ACTIVE_ITEM,
+    DESKS_MOVE_ACTIVE_ITEM_LEFT,
+    DESKS_MOVE_ACTIVE_ITEM_RIGHT,
     MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS,
     ROTATE_WINDOW,
     TOGGLE_FULLSCREEN,

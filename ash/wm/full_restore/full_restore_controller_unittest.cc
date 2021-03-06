@@ -148,7 +148,7 @@ TEST_F(FullRestoreControllerTest, WindowMovedDesks) {
   // Move the window to the desk on the right. Test that we save the window in
   // the database.
   PerformAcceleratorAction(
-      DESKS_MOVE_ACTIVE_ITEM,
+      DESKS_MOVE_ACTIVE_ITEM_RIGHT,
       {ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN});
   ASSERT_NE(previous_parent, window->parent());
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));

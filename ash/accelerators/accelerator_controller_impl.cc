@@ -313,7 +313,7 @@ void HandleActivateDesk(const ui::Accelerator& accelerator,
   }
 }
 
-void HandleMoveActiveItem(const ui::Accelerator& accelerator) {
+void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
   auto* desks_controller = DesksController::Get();
   if (desks_controller->AreDesksBeingModified())
     return;
@@ -332,14 +332,10 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator) {
     return;
 
   Desk* target_desk = nullptr;
-  bool going_left = accelerator.key_code() == ui::VKEY_OEM_4 ||
-                    accelerator.key_code() == ui::VKEY_LEFT;
   if (going_left) {
     target_desk = desks_controller->GetPreviousDesk();
     base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowLeft"));
   } else {
-    DCHECK(accelerator.key_code() == ui::VKEY_OEM_6 ||
-           accelerator.key_code() == ui::VKEY_RIGHT);
     target_desk = desks_controller->GetNextDesk();
     base::RecordAction(base::UserMetricsAction("Accel_Desks_MoveWindowRight"));
   }
@@ -348,9 +344,8 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator) {
     return;
 
   if (!in_overview) {
-    desks_animations::PerformWindowMoveToDeskAnimation(
-        window_to_move,
-        /*going_left=*/going_left);
+    desks_animations::PerformWindowMoveToDeskAnimation(window_to_move,
+                                                       going_left);
   }
 
   if (!desks_controller->MoveWindowFromActiveDeskTo(
@@ -1941,7 +1936,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleCycleMru(accelerator);
     case DESKS_ACTIVATE_DESK_LEFT:
     case DESKS_ACTIVATE_DESK_RIGHT:
-    case DESKS_MOVE_ACTIVE_ITEM:
+    case DESKS_MOVE_ACTIVE_ITEM_LEFT:
+    case DESKS_MOVE_ACTIVE_ITEM_RIGHT:
     case DESKS_NEW_DESK:
     case DESKS_REMOVE_CURRENT_DESK:
       return true;
@@ -2145,8 +2141,11 @@ void AcceleratorControllerImpl::PerformAction(
     case DESKS_ACTIVATE_DESK_RIGHT:
       HandleActivateDesk(accelerator, /*activate_left=*/false);
       break;
-    case DESKS_MOVE_ACTIVE_ITEM:
-      HandleMoveActiveItem(accelerator);
+    case DESKS_MOVE_ACTIVE_ITEM_LEFT:
+      HandleMoveActiveItem(accelerator, /*going_left=*/true);
+      break;
+    case DESKS_MOVE_ACTIVE_ITEM_RIGHT:
+      HandleMoveActiveItem(accelerator, /*going_left=*/false);
       break;
     case DESKS_NEW_DESK:
       HandleNewDesk();
