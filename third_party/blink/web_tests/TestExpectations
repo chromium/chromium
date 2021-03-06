@@ -2050,20 +2050,21 @@ crbug.com/893490 [ Mac ] external/wpt/css/css-text/white-space/control-chars-09F
 crbug.com/1015331 external/wpt/css/css-text/white-space/eol-spaces-bidi-001.html [ Failure ]
 
 # needs implementation of test_driver_internal.action_sequence
-crbug.com/893480 external/wpt/editing/run/caretnavigation.html [ Failure Timeout ]
+# tests in this group need implementation of keyDown/keyUp
 crbug.com/893480 external/wpt/input-events/input-events-typing.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/eventOrder.html [ Timeout ]
-crbug.com/893480 external/wpt/infrastructure/testdriver/actions/elementTiming.html [ Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/multiDevice.html [ Failure Timeout ]
-crbug.com/893480 external/wpt/pointerevents/pointerevent_touch-action-keyboard.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/actionsWithKeyPressed.html [ Failure Timeout ]
-crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
-crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
-crbug.com/893480 external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/textEditCommands.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/input-events/input-events-cut-paste.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/html/semantics/forms/the-input-element/checkable-active-onblur.html [ Failure Timeout ]
+
+# needs implementation of test_driver_internal.action_sequence
+# for these tests there is an exception when scrolling: element click intercepted error
+crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
+crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
+
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
