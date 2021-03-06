@@ -159,6 +159,8 @@ void PowerMetricsReporter::ReportUKMs(
       ukm::GetExponentialBucketMinForUserTiming(
           usage_metrics.time_since_last_user_interaction_with_browser
               .InSeconds()));
+  builder.SetVideoCaptureSeconds(ukm::GetExponentialBucketMinForUserTiming(
+      usage_metrics.time_capturing_video.InSeconds()));
 
   builder.Record(ukm_recorder);
 }
