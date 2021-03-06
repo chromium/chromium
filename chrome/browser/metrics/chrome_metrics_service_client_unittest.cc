@@ -133,15 +133,16 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
 }  // namespace
 
 TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
-  // Test that UKM service has initialized its metrics providers.
-  // Currently there are 5 providers for all platform except ChromeOS.
+  // Test that UKM service has initialized its metrics providers. Currently
+  // there are 6 providers for all platform except ChromeOS.
   // NetworkMetricsProvider, GPUMetricsProvider, CPUMetricsProvider
-  // and ScreenInfoMetricsProvider.
-  size_t expected_providers = 5;
-
+  // ScreenInfoMetricsProvider, FieldTrialsProvider, and
+  // PrivacyBudgetMetricsProvider.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_providers++;  // ChromeOSMetricsProvider
-#endif                   // BUILDFLAG(IS_CHROMEOS_ASH)
+  const size_t expected_providers = 7;  // ChromeOSMetricsProvider
+#else
+  const size_t expected_providers = 6;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       ChromeMetricsServiceClient::Create(metrics_state_manager_.get());

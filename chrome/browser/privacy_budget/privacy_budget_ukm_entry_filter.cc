@@ -79,6 +79,6 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
 }
 
 void PrivacyBudgetUkmEntryFilter::OnStoreRecordingsInReport() {
-  identifiability_study_state_->ResetRecordedSurfaces();
+  identifiability_study_state_->ResetPerReportState();
   metadata_reported_ = false;
 }

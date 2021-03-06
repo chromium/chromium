@@ -12,6 +12,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/privacy_budget/inspectable_identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
@@ -19,31 +20,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-
-namespace test_utils {
-
-// This class is a friend of IdentifiabilityStudyState and can reach into the
-// internals. Use this as a last resort.
-class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
- public:
-  using IdentifiabilityStudyState::IdentifiableSurfaceSet;
-  using IdentifiabilityStudyState::IdentifiableSurfaceTypeSet;
-
-  explicit InspectableIdentifiabilityStudyState(PrefService* pref_service)
-      : IdentifiabilityStudyState(pref_service) {}
-
-  const IdentifiableSurfaceSet& active_surfaces() const {
-    return active_surfaces_;
-  }
-  const IdentifiableSurfaceSet& retired_surfaces() const {
-    return retired_surfaces_;
-  }
-  int max_active_surfaces() const { return max_active_surfaces_; }
-  int surface_selection_rate() const { return surface_selection_rate_; }
-  uint64_t prng_seed() const { return prng_seed_; }
-};
-
-}  // namespace test_utils
 
 namespace {
 
@@ -304,4 +280,21 @@ TEST(IdentifiabilityStudyStateStandaloneTest, Disabled) {
   EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface1));
   EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface2));
   EXPECT_FALSE(settings.ShouldRecordSurface(kRegularSurface3));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest, DisabledStudyDoesNotNukePrefs) {
+  auto params = test::ScopedPrivacyBudgetConfig::Parameters{};
+  params.enabled = false;
+  params.surface_selection_rate = 1;
+  test::ScopedPrivacyBudgetConfig config(params);
+
+  const std::string kSurfaces = "1,2,3";
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  pref_service.SetString(prefs::kPrivacyBudgetActiveSurfaces, kSurfaces);
+  test_utils::InspectableIdentifiabilityStudyState settings(&pref_service);
+
+  EXPECT_EQ(kSurfaces,
+            pref_service.GetString(prefs::kPrivacyBudgetActiveSurfaces));
 }

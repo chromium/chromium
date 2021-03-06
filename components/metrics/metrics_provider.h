@@ -25,7 +25,7 @@ class MetricsProvider {
   MetricsProvider();
   virtual ~MetricsProvider();
 
-  // Called after initialiazation of MetricsService and field trials.
+  // Called after initialization of MetricsService and field trials.
   virtual void Init();
 
   // Called during service initialization to allow the provider to start any
@@ -45,6 +45,14 @@ class MetricsProvider {
   // Called when metrics recording has been disabled.
   virtual void OnRecordingDisabled();
 
+  // Called when metrics client identifiers have been reset.
+  //
+  // Metrics providers should clean up any persisted state that could be used to
+  // associate the previous identifier with the new one.
+  //
+  // Currently this method is only invoked in UKM.
+  virtual void OnClientStateCleared();
+
   // Called when the application is going into background mode, on platforms
   // where applications may be killed when going into the background (Android,
   // iOS). Providers that buffer histogram data in memory should persist
@@ -59,7 +67,7 @@ class MetricsProvider {
   // Provides a complete and independent uma proto + metrics for uploading.
   // Called once every time HasIndependentMetrics() returns true. The passed in
   // |uma_proto| is by default filled with current session id and core system
-  // profile infomration. This function is called on main thread, but the
+  // profile information. This function is called on main thread, but the
   // provider can do async work to fill in |uma_proto| and run |done_callback|
   // on calling thread when complete. Ownership of the passed objects remains
   // with the caller and those objects will live until the callback is executed.

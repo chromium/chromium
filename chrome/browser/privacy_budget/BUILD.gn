@@ -6,6 +6,7 @@ source_set("headers") {
   sources = [
     "encountered_surface_tracker.h",
     "identifiability_study_state.h",
+    "privacy_budget_metrics_provider.h",
     "privacy_budget_prefs.h",
     "privacy_budget_ukm_entry_filter.h",
   ]
@@ -13,6 +14,7 @@ source_set("headers") {
   deps = [
     "//base",
     "//chrome/common/privacy_budget",
+    "//components/metrics",
     "//components/prefs",
     "//components/ukm",
     "//third_party/blink/public/common/privacy_budget",
@@ -23,6 +25,7 @@ source_set("privacy_budget") {
   sources = [
     "encountered_surface_tracker.cc",
     "identifiability_study_state.cc",
+    "privacy_budget_metrics_provider.cc",
     "privacy_budget_prefs.cc",
     "privacy_budget_ukm_entry_filter.cc",
   ]
@@ -47,6 +50,8 @@ source_set("unit_tests") {
   sources = [
     "encountered_surface_tracker_unittest.cc",
     "identifiability_study_state_unittest.cc",
+    "inspectable_identifiability_study_state.h",
+    "privacy_budget_metrics_provider_unittest.cc",
     "privacy_budget_ukm_entry_filter_unittest.cc",
   ]
 
@@ -67,11 +72,18 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    ":headers",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/metrics:test_support",
     "//chrome/common/privacy_budget:test_support",
+    "//chrome/test:sync_integration_test_support",
     "//chrome/test:test_support",
+    "//components/metrics_services_manager",
+    "//components/sync/test/fake_server",
     "//components/ukm:test_support",
     "//components/ukm:ukm_test_helper",
+    "//components/unified_consent",
     "//components/variations/service:buildflags",
     "//third_party/blink/public/common/privacy_budget",
   ]
