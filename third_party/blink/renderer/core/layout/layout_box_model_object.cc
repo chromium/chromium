@@ -1091,10 +1091,8 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   bool skip_right = false;
   bool skip_left = false;
   if (!StyleRef().Left().IsAuto() && !StyleRef().Right().IsAuto()) {
-    if (horizontal_offsets >
-            scroll_container_relative_containing_block_rect.Width() ||
-        horizontal_offsets + sticky_box_rect.Width() >
-            constraining_size.width) {
+    if (horizontal_offsets + sticky_box_rect.Width() >
+        constraining_size.width) {
       skip_right = StyleRef().IsLeftToRightDirection();
       skip_left = !skip_right;
     }
@@ -1120,10 +1118,8 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
       MinimumValueForLength(StyleRef().Top(), constraining_size.height) +
       MinimumValueForLength(StyleRef().Bottom(), constraining_size.height);
   if (!StyleRef().Top().IsAuto() && !StyleRef().Bottom().IsAuto()) {
-    if (vertical_offsets >
-            scroll_container_relative_containing_block_rect.Height() ||
-        vertical_offsets + sticky_box_rect.Height() >
-            constraining_size.height) {
+    if (vertical_offsets + sticky_box_rect.Height() >
+        constraining_size.height) {
       skip_bottom = true;
     }
   }
