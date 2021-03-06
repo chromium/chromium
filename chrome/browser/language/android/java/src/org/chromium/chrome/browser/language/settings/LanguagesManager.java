@@ -66,8 +66,10 @@ public class LanguagesManager {
     // LanguageSettingsPageType. Further actions can only be appended, existing
     // entries must not be overwritten.
     @IntDef({LanguageSettingsPageType.PAGE_MAIN, LanguageSettingsPageType.PAGE_ADD_LANGUAGE,
-            LanguageSettingsPageType.CHROME_LANGUAGE, LanguageSettingsPageType.TARGET_LANGUAGE,
-            LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS})
+            LanguageSettingsPageType.CHROME_LANGUAGE,
+            LanguageSettingsPageType.ADVANCED_LANGUAGE_SETTINGS,
+            LanguageSettingsPageType.TARGET_LANGUAGE,
+            LanguageSettingsPageType.LANGUAGE_OVERFLOW_MENU_OPENED})
     @Retention(RetentionPolicy.SOURCE)
     @interface LanguageSettingsPageType {
         int PAGE_MAIN = 0;
