@@ -150,6 +150,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::GEOLOCATION:
     case ContentSettingsType::NOTIFICATIONS:
+    case ContentSettingsType::MIDI:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::DURABLE_STORAGE:
     case ContentSettingsType::MEDIASTREAM_CAMERA:
