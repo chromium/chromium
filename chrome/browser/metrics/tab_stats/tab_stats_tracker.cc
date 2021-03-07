@@ -235,6 +235,8 @@ void TabStatsTracker::AddObserverAndSetInitialState(
       observer->OnTabAdded(wc);
       if (wc->GetCurrentlyPlayingVideoCount())
         observer->OnVideoStartedPlaying(wc);
+      if (wc->IsCurrentlyAudible())
+        observer->OnTabIsAudibleChanged(wc);
       if (wc->IsFullscreen() && wc->HasActiveEffectivelyFullscreenVideo())
         observer->OnMediaEffectivelyFullscreenChanged(wc, true);
     }
@@ -324,6 +326,13 @@ class TabStatsTracker::WebContentsUsageObserver
     tab_stats_tracker_->OnWebContentsDestroyed(web_contents());
     // The call above will free |this| and so nothing should be done on this
     // object starting from here.
+  }
+
+  void OnAudioStateChanged(bool audible) override {
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnTabIsAudibleChanged(web_contents());
+    }
   }
 
   void MediaEffectivelyFullscreenChanged(bool is_fullscreen) override {
@@ -416,20 +425,6 @@ void TabStatsTracker::OnTabStripModelChanged(
         replace->new_contents, std::make_unique<WebContentsUsageObserver>(
                                    replace->new_contents, this)));
     web_contents_usage_observers_.erase(replace->old_contents);
-  }
-}
-
-void TabStatsTracker::TabChangedAt(content::WebContents* web_contents,
-                                   int index,
-                                   TabChangeType change_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignore 'loading' changes, we're only interested in audio here.
-  if (change_type != TabChangeType::kAll)
-    return;
-  if (web_contents->IsCurrentlyAudible()) {
-    for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
-      tab_stats_observer.OnTabAudible(web_contents);
-    }
   }
 }
 

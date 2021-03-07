@@ -295,7 +295,6 @@ TEST_F(TabUsageScenarioTrackerTest, VisibleTabPlayingVideoRemoved) {
 
   // Pretend that |content1| is playing a video while being visible.
   tab_usage_scenario_tracker_->OnVideoStartedPlaying(contents1.get());
-  static constexpr base::TimeDelta kInterval = base::TimeDelta::FromMinutes(2);
   task_environment()->FastForwardBy(kInterval);
   UsageScenarioDataStore::IntervalData interval_data =
       usage_scenario_data_store_.ResetIntervalData();
@@ -305,6 +304,25 @@ TEST_F(TabUsageScenarioTrackerTest, VisibleTabPlayingVideoRemoved) {
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
+}
+
+TEST_F(TabUsageScenarioTrackerTest, TabPlayingAudio) {
+  // Create a tab and add it.
+  auto web_contents = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAdded(web_contents.get());
+
+  // Pretend that web_contents is playing audio.
+  content::WebContentsTester::For(web_contents.get())
+      ->SetIsCurrentlyAudible(true);
+  tab_usage_scenario_tracker_->OnTabIsAudibleChanged(web_contents.get());
+
+  task_environment()->FastForwardBy(kInterval);
+
+  // Grab the interval data and ensure that the time playing a video in the
+  // visible tab is properly recorded.
+  UsageScenarioDataStore::IntervalData interval_data =
+      usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_audio, kInterval);
 }
 
 TEST_F(TabUsageScenarioTrackerTest, UKMVisibility1tab) {

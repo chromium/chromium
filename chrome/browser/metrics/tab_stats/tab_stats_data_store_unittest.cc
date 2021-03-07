@@ -5,7 +5,6 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
 
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -25,13 +24,6 @@ class TabStatsDataStoreTest : public ChromeRenderViewHostTestHarness {
   TabStatsDataStoreTest() {
     TabStatsTracker::RegisterPrefs(pref_service_.registry());
     data_store_ = std::make_unique<TabStatsDataStore>(&pref_service_);
-  }
-
-  std::unique_ptr<content::WebContents> CreateTestWebContents() {
-    std::unique_ptr<content::WebContents> contents =
-        ChromeRenderViewHostTestHarness::CreateTestWebContents();
-    RecentlyAudibleHelper::CreateForWebContents(contents.get());
-    return contents;
   }
 
   TestingPrefServiceSimple pref_service_;
@@ -137,11 +129,10 @@ TEST_F(TabStatsDataStoreTest, TrackTabUsageDuringInterval) {
                    ->second.visible_or_audible_during_interval);
 
   // Make one of the WebContents audible.
-  auto* audible_helper_2 =
-      RecentlyAudibleHelper::FromWebContents(web_contents_vec[2].get());
-  audible_helper_2->SetRecentlyAudibleForTesting();
+  content::WebContentsTester::For(web_contents_vec[2].get())
+      ->SetIsCurrentlyAudible(true);
   data_store_->ResetIntervalData(interval_map);
-  data_store_->OnTabAudible(web_contents_vec[2].get());
+  data_store_->OnTabIsAudibleChanged(web_contents_vec[2].get());
   EXPECT_TRUE(interval_map->find(web_contents_id_vec[0])
                   ->second.visible_or_audible_during_interval);
   EXPECT_FALSE(interval_map->find(web_contents_id_vec[1])
@@ -201,10 +192,9 @@ TEST_F(TabStatsDataStoreTest, OnTabReplaced) {
   EXPECT_TRUE(interval_map->find(tab_id)->second.interacted_during_interval);
 
   // Mark the tab as audible and verify that the corresponding bit is set.
-  auto* audible_helper_2 =
-      RecentlyAudibleHelper::FromWebContents(web_contents_2.get());
-  audible_helper_2->SetNotRecentlyAudibleForTesting();
-  data_store_->OnTabAudible(web_contents_2.get());
+  content::WebContentsTester::For(web_contents_2.get())
+      ->SetIsCurrentlyAudible(true);
+  data_store_->OnTabIsAudibleChanged(web_contents_2.get());
   EXPECT_TRUE(
       interval_map->find(tab_id)->second.visible_or_audible_during_interval);
 

@@ -82,6 +82,8 @@ void TabUsageScenarioTracker::OnTabReplaced(
   // Start tracking |new_contents| if needed.
   if (new_contents->GetVisibility() == content::Visibility::VISIBLE)
     OnTabVisibilityChanged(new_contents);
+  if (new_contents->IsCurrentlyAudible())
+    usage_scenario_data_store_->OnAudioStarts();
 }
 
 void TabUsageScenarioTracker::OnTabVisibilityChanged(
@@ -112,6 +114,16 @@ void TabUsageScenarioTracker::OnTabInteraction(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_scenario_data_store_->OnUserInteraction();
+}
+
+void TabUsageScenarioTracker::OnTabIsAudibleChanged(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (web_contents->IsCurrentlyAudible()) {
+    usage_scenario_data_store_->OnAudioStarts();
+  } else {
+    usage_scenario_data_store_->OnAudioStops();
+  }
 }
 
 void TabUsageScenarioTracker::OnMediaEffectivelyFullscreenChanged(
@@ -257,6 +269,8 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
   if (video_iter != contents_playing_video_.end()) {
     contents_playing_video_.erase(video_iter);
   }
+  if (web_contents->IsCurrentlyAudible())
+    usage_scenario_data_store_->OnAudioStops();
 }
 
 void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(

@@ -64,6 +64,8 @@ class UsageScenarioDataStore
     base::TimeDelta time_capturing_video;
     // The time spent playing video in at least one visible tab.
     base::TimeDelta time_playing_video_in_visible_tab;
+    // The time spent playing audio in at least one tab.
+    base::TimeDelta time_playing_audio;
     // The time since the last user interaction with the browser at the end of
     // the interval. This time can exceed the length of the interval.
     base::TimeDelta time_since_last_user_interaction_with_browser;
@@ -127,6 +129,8 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnWebRTCConnectionClosed();
   void OnIsCapturingVideoStarted();
   void OnIsCapturingVideoEnded();
+  void OnAudioStarts();
+  void OnAudioStops();
 
   // Should be called when a video starts in a visible tab or when a non visible
   // tab playing video becomes visible.
@@ -205,6 +209,14 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   // |tabs_capturing_video_| to increase to 1. Reset to |now| when an internal
   // ends (when ResetIntervalData is called).
   base::TimeTicks capturing_video_since_;
+
+  // The number of tabs playing audio.
+  uint16_t tabs_playing_audio_ = 0;
+
+  // The timestamp of the beginning of an audio session that has caused
+  // |tabs_playing_audio_| to increase to 1. Reset to |now| when an interval
+  // ends (when ResetIntervalData is called).
+  base::TimeTicks playing_audio_since_;
 
   // The number of visible tabs playing at least one video.
   uint16_t visible_tabs_playing_video_ = 0;

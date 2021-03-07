@@ -23,6 +23,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/web_contents_tester.h"
+#include "media/base/media_switches.h"
+#include "media/base/test_data_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -101,6 +104,12 @@ class MockTabStatsTrackerDelegate : public TabStatsTrackerDelegate {
 class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
  public:
   TabStatsTrackerBrowserTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        switches::kAutoplayPolicy,
+        switches::autoplay::kNoUserGestureRequiredPolicy);
+  }
 
   void SetUpOnMainThread() override {
     tab_stats_tracker_ = TabStatsTracker::GetInstance();
@@ -358,7 +367,7 @@ class LenientMockTabStatsObserver : public TabStatsObserver {
                void(content::WebContents*, content::WebContents*));
   MOCK_METHOD1(OnMainFrameNavigationCommitted, void(content::WebContents*));
   MOCK_METHOD1(OnTabInteraction, void(content::WebContents*));
-  MOCK_METHOD1(OnTabAudible, void(content::WebContents*));
+  MOCK_METHOD1(OnTabIsAudibleChanged, void(content::WebContents*));
   MOCK_METHOD1(OnTabVisibilityChanged, void(content::WebContents*));
   MOCK_METHOD2(OnMediaEffectivelyFullscreenChanged,
                void(content::WebContents*, bool));
@@ -496,6 +505,60 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   tab_stats_tracker_->RemoveObserver(&count_observer);
   EXPECT_EQ(2U, count_observer.tab_count());
   EXPECT_EQ(1U, count_observer.window_count());
+}
+
+namespace {
+
+// Observes a WebContents and waits until it becomes audible.
+// both indicate that they are audible.
+class AudioStartObserver : public content::WebContentsObserver {
+ public:
+  AudioStartObserver(content::WebContents* web_contents,
+                     base::OnceClosure quit_closure)
+      : content::WebContentsObserver(web_contents),
+        quit_closure_(std::move(quit_closure)) {
+    DCHECK(!web_contents->IsCurrentlyAudible());
+  }
+  ~AudioStartObserver() override = default;
+
+  // WebContentsObserver:
+  void OnAudioStateChanged(bool audible) override {
+    DCHECK(audible);
+    std::move(quit_closure_).Run();
+  }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
+  // Set up the embedded test server to serve the test javascript file.
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      media::GetTestDataPath());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open the test JS file in the only WebContents.
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/webaudio_oscillator.html")));
+
+  // Start the audio.
+  base::RunLoop run_loop;
+  AudioStartObserver audio_start_observer(web_contents, run_loop.QuitClosure());
+  EXPECT_EQ("OK", EvalJsWithManualReply(web_contents, "StartOscillator();"));
+  run_loop.Run();
+
+  // Adding an observer now should receive the OnTabIsAudibleChanged() call.
+  MockTabStatsObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnWindowAdded());
+  EXPECT_CALL(mock_observer, OnTabAdded(web_contents));
+  EXPECT_CALL(mock_observer, OnTabIsAudibleChanged(web_contents));
+  tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+
+  // Clean up.
+  tab_stats_tracker_->RemoveObserver(&mock_observer);
 }
 
 }  // namespace metrics

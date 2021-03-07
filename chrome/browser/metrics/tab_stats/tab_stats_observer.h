@@ -47,8 +47,8 @@ class TabStatsObserver : public base::CheckedObserver {
   // type of interactions.
   virtual void OnTabInteraction(content::WebContents* web_contents) {}
 
-  // Records that a tab became audible.
-  virtual void OnTabAudible(content::WebContents* web_contents) {}
+  // Records that a tab's audible state changed.
+  virtual void OnTabIsAudibleChanged(content::WebContents* web_contents) {}
 
   // Records that a tab's visibility changed.
   virtual void OnTabVisibilityChanged(content::WebContents* web_contents) {}
