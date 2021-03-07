@@ -2290,4 +2290,53 @@ TEST_P(CompositingSimTest, FullCompositingUpdateForJustCreatedChunks) {
             PaintArtifactCompositor::PreviousUpdateType::kFull);
 }
 
+TEST_P(CompositingSimTest, FullCompositingUpdateForUncachableChunks) {
+  ScopedCompositeSVGForTest enable_feature(true);
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        rect {
+          width: 100px;
+          height: 100px;
+          fill: blue;
+          will-change: transform;
+        }
+        div {
+          width: 100px;
+          height: 100px;
+          background: lightblue;
+        }
+      </style>
+      <svg>
+        <rect id="rect"></rect>
+      </svg>
+      <div id="target"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  // Make the rect display item client uncachable. To avoid depending on when
+  // this occurs in practice (see: |DisplayItemCacheSkipper|), this is done
+  // directly.
+  auto* rect = GetElementById("rect");
+  auto* rect_client = static_cast<DisplayItemClient*>(rect->GetLayoutObject());
+  rect_client->Invalidate(PaintInvalidationReason::kUncacheable);
+  rect->setAttribute(html_names::kStyleAttr, "fill: green");
+  Compositor().BeginFrame();
+
+  // Initially, no update is needed.
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+
+  // Clear the previous update to ensure we record a new one in the next update.
+  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
+
+  // A full update should be required due to the presence of uncacheable
+  // paint chunks.
+  auto* target = GetElementById("target");
+  target->setAttribute(html_names::kStyleAttr, "background: lightgreen");
+  Compositor().BeginFrame();
+  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
+            PaintArtifactCompositor::PreviousUpdateType::kFull);
+}
+
 }  // namespace blink

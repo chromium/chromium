@@ -352,6 +352,8 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
   auto& paint_controller = GetPaintController();
 
   base::Optional<PaintChunkSubset> previous_chunks;
+  if (ShouldCreateLayersAfterPaint())
+    previous_chunks.emplace(paint_controller.GetPaintArtifactShared());
 
   PaintController::ScopedBenchmarkMode scoped_benchmark_mode(paint_controller,
                                                              benchmark_mode);
@@ -362,9 +364,6 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
                 paint_controller.ClientCacheIsValid(*this) &&
                 previous_interest_rect_ == new_interest_rect;
   if (!cached) {
-    if (ShouldCreateLayersAfterPaint())
-      previous_chunks.emplace(paint_controller.GetPaintArtifactShared());
-
     GraphicsContext context(paint_controller);
     DCHECK(layer_state_) << "No layer state for GraphicsLayer: " << DebugName();
     paint_controller.UpdateCurrentPaintChunkProperties(
@@ -385,6 +384,17 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
 
   PaintChunkSubset chunks(paint_controller.GetPaintArtifactShared());
   pre_composited_layers.push_back(PreCompositedLayerInfo{chunks, this});
+
+  if (ShouldCreateLayersAfterPaint()) {
+    if (auto* paint_artifact_compositor =
+            client_.GetPaintArtifactCompositor()) {
+      // This is checked even when |cached| is true because the paint controller
+      // may be fully cached while the PaintChunks within are marked as not
+      // cacheable.
+      paint_artifact_compositor->SetNeedsFullUpdateAfterPaintIfNeeded(
+          *previous_chunks, chunks);
+    }
+  }
 
   if (cached && !needs_check_raster_invalidation_ &&
       paint_controller.GetBenchmarkMode() !=
@@ -420,14 +430,6 @@ void GraphicsLayer::Paint(Vector<PreCompositedLayerInfo>& pre_composited_layers,
           cc::DisplayItemList::kTopLevelDisplayItemList,
           base::OptionalOrNullptr(raster_under_invalidation_params));
       raster_invalidated_ = false;
-    }
-  }
-
-  if (ShouldCreateLayersAfterPaint() && previous_chunks) {
-    if (auto* paint_artifact_compositor =
-            client_.GetPaintArtifactCompositor()) {
-      paint_artifact_compositor->SetNeedsFullUpdateAfterPaintIfNeeded(
-          *previous_chunks, chunks);
     }
   }
 
