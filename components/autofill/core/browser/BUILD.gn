@@ -350,6 +350,8 @@ static_library("browser") {
 
   if (is_ios || is_android) {
     sources += [
+      "autofill_save_address_profile_delegate_ios.cc",
+      "autofill_save_address_profile_delegate_ios.h",
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.cc",
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.h",
       "payments/autofill_offer_notification_infobar_delegate_mobile.cc",
@@ -717,6 +719,7 @@ source_set("unit_tests") {
 
   if (is_ios || is_android) {
     sources += [
+      "autofill_save_address_profile_delegate_ios_unittest.cc",
       "ui/mobile_label_formatter_unittest.cc",
       "ui/payments/card_expiration_date_fix_flow_controller_impl_unittest.cc",
       "ui/payments/card_name_fix_flow_controller_impl_unittest.cc",

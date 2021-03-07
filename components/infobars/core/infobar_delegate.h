@@ -173,6 +173,7 @@ class InfoBarDelegate {
     ROSETTA_REQUIRED_INFOBAR_DELEGATE = 103,
     // Removed: WEBID_PERMISSION_INFOBAR_DELEGATE = 104,
     AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE = 105,
+    AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS = 106,
   };
 
   // Describes navigation events, used to decide whether infobars should be
