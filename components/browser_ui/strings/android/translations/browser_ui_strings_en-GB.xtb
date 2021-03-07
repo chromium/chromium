@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Features on many sites may break</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1644574205037202324">History</translation>
+<translation id="1647582022260550163">Are you sure that you want to reset permissions, and clear cookies and site data?</translation>
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Clear site data?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more}}</translation>
 <translation id="913657688200966289">Turn on permissions for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Forget this site?</translation>
 <translation id="965817943346481315">Block if site shows intrusive or misleading ads (recommended)</translation>
 <translation id="967624055006145463">Data stored</translation>
 </translationbundle>

@@ -538,6 +538,8 @@ Try to use a unique password for every site.</translation>
 <translation id="6524918542306337007">Incognito mode is unavailable</translation>
 <translation id="6561262006871132942">Zoom in</translation>
 <translation id="6585618849026997638">You can get back to a page that's important to you by adding a bookmark</translation>
+<translation id="6603393121510733479">Your organisation turned off private browsing.
+<ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Translate Options</translation>
 <translation id="6620279676667515405">Cancel</translation>
 <translation id="6624219055418309072">Block in Incognito</translation>
@@ -582,6 +584,8 @@ Try to use a unique password for every site.</translation>
 <translation id="6988572888918530647">Manage your Google Account</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="6998989275928107238">To</translation>
+<translation id="7004032350256606903">Your organisation requires you to browse privately.
+<ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7006788746334555276">Content Settings</translation>
 <translation id="7015203776128479407">Initial sync setup was not finished. Sync is off.</translation>
@@ -743,6 +747,8 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8756969031206844760">Update password?</translation>
 <translation id="8775144690796719618">Invalid URL</translation>
 <translation id="8803639129939845298">Secure</translation>
+<translation id="8806823403540278281">Your organisation requires you to browse privately. Tabs aren't saved in Incognito mode.
+<ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">You won't be signed out of your Google Account.</translation>
 <translation id="8870413625673593573">Recently Closed</translation>

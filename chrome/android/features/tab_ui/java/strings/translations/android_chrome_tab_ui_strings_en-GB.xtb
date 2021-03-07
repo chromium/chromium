@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">You'll get an alert when there's a lower price in an open tab</translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
+<translation id="3882834874697329510">To get an alert when there's a lower price in an open tab, turn on notifications in Settings.</translation>
 <translation id="3940195383040445971">Track prices on tabs</translation>
 <translation id="3996880007329611795">Get notified</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
