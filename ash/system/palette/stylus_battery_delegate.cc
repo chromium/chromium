@@ -95,7 +95,8 @@ void StylusBatteryDelegate::OnAddingBattery(
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
-  battery_update_callback_.Run();
+  if (battery_update_callback_)
+    battery_update_callback_.Run();
 }
 
 void StylusBatteryDelegate::OnRemovingBattery(
@@ -106,7 +107,8 @@ void StylusBatteryDelegate::OnUpdatedBatteryLevel(
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_update_timestamp;
-  battery_update_callback_.Run();
+  if (battery_update_callback_)
+    battery_update_callback_.Run();
 }
 
 }  // namespace ash
