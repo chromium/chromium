@@ -23,10 +23,24 @@ async_test(t => {
   video.requestVideoFrameCallback(t.step_func(_ => {
     let frame = new VideoFrame(video);
     assert_true(!!frame);
+    assert_equals(frame.displayWidth, video.videoWidth);
+    assert_equals(frame.displayHeight, video.videoHeight);
+
+    let canvas = new OffscreenCanvas(frame.displayWidth, frame.displayHeight);
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    verifyFourColorsImage(video.videoWidth, video.videoHeight, ctx);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frame, 0, 0);
+    verifyFourColorsImage(frame.displayWidth, frame.displayHeight, ctx);
 
     let frame_copy = new VideoFrame(frame, {duration: 1234});
     assert_equals(frame.timestamp, frame_copy.timestamp);
     assert_equals(frame_copy.duration, 1234);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frame_copy, 0, 0);
+    verifyFourColorsImage(frame_copy.displayWidth, frame_copy.displayHeight,
+                          ctx);
     frame_copy.close();
 
     frame_copy = new VideoFrame(frame, {timestamp: 1234, duration: 456});
@@ -47,7 +61,7 @@ async_test(t => {
     frame.close();
     t.done();
   }));
-  video.src = 'vp9.mp4';
+  video.src = 'four-colors.mp4';
 }, '<video> and VideoFrame constructed VideoFrame');
 
 test(t => {

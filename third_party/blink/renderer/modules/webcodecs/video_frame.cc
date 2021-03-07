@@ -242,17 +242,19 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // We can't modify the timestamp or duration directly since there may be
     // other owners accessing these fields concurrently.
     if (init && (init->hasTimestamp() || init->hasDuration())) {
-      source_frame = media::VideoFrame::WrapVideoFrame(
+      auto wrapped_frame = media::VideoFrame::WrapVideoFrame(
           source_frame, source_frame->format(), source_frame->visible_rect(),
           source_frame->natural_size());
+      wrapped_frame->set_color_space(source_frame->ColorSpace());
       if (init->hasTimestamp()) {
-        source_frame->set_timestamp(
+        wrapped_frame->set_timestamp(
             base::TimeDelta::FromMicroseconds(init->timestamp()));
       }
       if (init->hasDuration()) {
-        source_frame->metadata().frame_duration =
+        wrapped_frame->metadata().frame_duration =
             base::TimeDelta::FromMicroseconds(init->duration());
       }
+      source_frame = std::move(wrapped_frame);
     }
 
     return MakeGarbageCollected<VideoFrame>(

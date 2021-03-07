@@ -45,92 +45,27 @@
 #include "ui/gfx/skia_util.h"
 
 // Skia internal format depends on a platform. On Android it is ABGR, on others
-// it is ARGB. Commented out lines below don't exist in libyuv yet and are
-// shown here to indicate where ideal conversions are currently missing.
+// it's ARGB. YUV_MATRIX(), YUV_ORDER() conditionally remap YUV to YVU for ABGR.
 #if SK_B32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_R32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 1
-#define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
-#define LIBYUV_I420_TO_ARGB libyuv::I420ToARGB
-#define LIBYUV_I422_TO_ARGB libyuv::I422ToARGB
-#define LIBYUV_I444_TO_ARGB libyuv::I444ToARGB
-
-#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToARGBMatrix
-
-#define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
-#define LIBYUV_J420_TO_ARGB libyuv::J420ToARGB
-#define LIBYUV_J422_TO_ARGB libyuv::J422ToARGB
-#define LIBYUV_J444_TO_ARGB libyuv::J444ToARGB
-
-#define LIBYUV_H420_TO_ARGB libyuv::H420ToARGB
-#define LIBYUV_H422_TO_ARGB libyuv::H422ToARGB
-#define LIBYUV_H444_TO_ARGB libyuv::H444ToARGB
-
-#define LIBYUV_U420_TO_ARGB libyuv::U420ToARGB
-#define LIBYUV_U422_TO_ARGB libyuv::U422ToARGB
-#define LIBYUV_U444_TO_ARGB libyuv::U444ToARGB
-
-#define LIBYUV_I010_TO_ARGB libyuv::I010ToARGB
-#define LIBYUV_I210_TO_ARGB libyuv::I210ToARGB
-// #define LIBYUV_I410_TO_ARGB libyuv::I410ToARGB
-
-// #define LIBYUV_J010_TO_ARGB libyuv::J010ToARGB
-// #define LIBYUV_J210_TO_ARGB libyuv::J210ToARGB
-// #define LIBYUV_J410_TO_ARGB libyuv::J410ToARGB
-
-#define LIBYUV_H010_TO_ARGB libyuv::H010ToARGB
-#define LIBYUV_H210_TO_ARGB libyuv::H210ToARGB
-// #define LIBYUV_H410_TO_ARGB libyuv::H410ToARGB
-
-#define LIBYUV_U010_TO_ARGB libyuv::U010ToARGB
-#define LIBYUV_U210_TO_ARGB libyuv::U210ToARGB
-// #define LIBYUV_U410_TO_ARGB libyuv::U410ToARGB
-
-#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToARGB
-
 #define LIBYUV_ABGR_TO_ARGB libyuv::ABGRToARGB
+#define YUV_MATRIX(matrix) matrix
+#define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (y), (y_stride), (u), (u_stride), (v), (v_stride)
+#define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (v), (v_stride), (y), (y_stride), (u), (u_stride)
+#define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV12ToARGBMatrix
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 0
-#define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
-#define LIBYUV_I420_TO_ARGB libyuv::I420ToABGR
-#define LIBYUV_I422_TO_ARGB libyuv::I422ToABGR
-#define LIBYUV_I444_TO_ARGB libyuv::I444ToABGR
-
-#define LIBYUV_I420ALPHA_TO_ARGB_MATRIX libyuv::I420AlphaToABGRMatrix
-
-#define LIBYUV_J400_TO_ARGB libyuv::J400ToARGB
-#define LIBYUV_J420_TO_ARGB libyuv::J420ToABGR
-#define LIBYUV_J422_TO_ARGB libyuv::J422ToABGR
-#define LIBYUV_J444_TO_ARGB libyuv::J444ToABGR
-
-#define LIBYUV_H420_TO_ARGB libyuv::H420ToABGR
-#define LIBYUV_H422_TO_ARGB libyuv::H422ToABGR
-#define LIBYUV_H444_TO_ARGB libyuv::H444ToABGR
-
-#define LIBYUV_U420_TO_ARGB libyuv::U420ToABGR
-#define LIBYUV_U422_TO_ARGB libyuv::U422ToABGR
-#define LIBYUV_U444_TO_ARGB libyuv::U444ToABGR
-
-#define LIBYUV_I010_TO_ARGB libyuv::I010ToABGR
-#define LIBYUV_I210_TO_ARGB libyuv::I210ToABGR
-// #define LIBYUV_I410_TO_ARGB libyuv::I410ToABGR
-
-// #define LIBYUV_J010_TO_ARGB libyuv::J010ToABGR
-// #define LIBYUV_J210_TO_ARGB libyuv::J210ToABGR
-// #define LIBYUV_J410_TO_ARGB libyuv::J410ToABGR
-
-#define LIBYUV_H010_TO_ARGB libyuv::H010ToABGR
-#define LIBYUV_H210_TO_ARGB libyuv::H210ToABGR
-// #define LIBYUV_H410_TO_ARGB libyuv::H410ToABGR
-
-#define LIBYUV_U010_TO_ARGB libyuv::H010ToABGR
-#define LIBYUV_U210_TO_ARGB libyuv::U210ToABGR
-// #define LIBYUV_U410_TO_ARGB libyuv::U410ToABGR
-
-#define LIBYUV_NV12_TO_ARGB libyuv::NV12ToABGR
-
 #define LIBYUV_ABGR_TO_ARGB libyuv::ARGBToABGR
+#define YUV_MATRIX(matrix) matrix##VU
+#define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (y), (y_stride), (v), (v_stride), (u), (u_stride)
+#define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
+  (u), (u_stride), (y), (y_stride), (v), (v_stride)
+#define LIBYUV_NV12_TO_ARGB_MATRIX libyuv::NV21ToARGBMatrix
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -340,6 +275,30 @@ size_t LCM(size_t a, size_t b) {
   return a / GCD(a, b) * b;
 }
 
+const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
+  switch (cs) {
+    case kJPEG_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvJPEGConstants);
+    case kRec601_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvI601Constants);
+    case kRec709_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvF709Constants);
+    case kRec709_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvH709Constants);
+    case kBT2020_8bit_Full_SkYUVColorSpace:
+    case kBT2020_10bit_Full_SkYUVColorSpace:
+    case kBT2020_12bit_Full_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuvV2020Constants);
+    case kBT2020_8bit_Limited_SkYUVColorSpace:
+    case kBT2020_10bit_Limited_SkYUVColorSpace:
+    case kBT2020_12bit_Limited_SkYUVColorSpace:
+      return &YUV_MATRIX(libyuv::kYuv2020Constants);
+    case kIdentity_SkYUVColorSpace:
+      NOTREACHED();
+      return nullptr;
+  };
+}
+
 void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                       void* rgb_pixels,
                                       size_t row_bytes,
@@ -384,6 +343,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
           .data = video_frame->visible_data(plane) +
                   video_frame->stride(plane) * (chunk_start * rows_per_chunk) /
                       VideoFrame::SampleSize(format, plane).height()};
+    } else {
+      plane_meta[plane] = {.stride = 0, .data = nullptr};
     }
   }
 
@@ -414,195 +375,96 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   }
 
   // TODO(crbug.com/828599): This should default to BT.709 color space.
-  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
-  video_frame->ColorSpace().ToSkYUVColorSpace(&color_space);
-
-  // Downgrade unsupported color spaces to supported ones. libyuv doesn't have
-  // support for these, so this is best effort.
-  if (color_space == kBT2020_8bit_Full_SkYUVColorSpace)
-    color_space = kBT2020_SkYUVColorSpace;
-  else if (color_space == kRec709_Full_SkYUVColorSpace)
-    color_space = kRec709_Limited_SkYUVColorSpace;
+  auto yuv_cs = kRec601_SkYUVColorSpace;
+  video_frame->ColorSpace().ToSkYUVColorSpace(&yuv_cs);
+  const libyuv::YuvConstants* matrix = GetYuvContantsForColorSpace(yuv_cs);
 
   if (!video_frame->data(VideoFrame::kUPlane) &&
       !video_frame->data(VideoFrame::kVPlane)) {
     DCHECK_EQ(format, PIXEL_FORMAT_I420);
-    auto func = (color_space == kJPEG_SkYUVColorSpace) ? LIBYUV_J400_TO_ARGB
-                                                       : LIBYUV_I400_TO_ARGB;
-    func(plane_meta[VideoFrame::kYPlane].data,
-         plane_meta[VideoFrame::kYPlane].stride, pixels, row_bytes, width,
-         rows);
+    // For monochrome content ARGB and ABGR are interchangeable.
+    libyuv::I400ToARGBMatrix(plane_meta[VideoFrame::kYPlane].data,
+                             plane_meta[VideoFrame::kYPlane].stride, pixels,
+                             row_bytes, matrix, width, rows);
     done->Run();
     return;
   }
 
-  auto convert_yuv = [&](auto&& func) {
-    func(plane_meta[VideoFrame::kYPlane].data,
-         plane_meta[VideoFrame::kYPlane].stride,
-         plane_meta[VideoFrame::kUPlane].data,
-         plane_meta[VideoFrame::kUPlane].stride,
-         plane_meta[VideoFrame::kVPlane].data,
-         plane_meta[VideoFrame::kVPlane].stride, pixels, row_bytes, width,
-         rows);
+  auto convert_yuv = [&](const libyuv::YuvConstants* matrix, auto&& func) {
+    func(YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                   plane_meta[VideoFrame::kYPlane].stride,
+                   plane_meta[VideoFrame::kUPlane].data,
+                   plane_meta[VideoFrame::kUPlane].stride,
+                   plane_meta[VideoFrame::kVPlane].data,
+                   plane_meta[VideoFrame::kVPlane].stride),
+         pixels, row_bytes, matrix, width, rows);
   };
 
-  auto convert_yuv16 = [&](auto&& func) {
-    func(
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kYPlane].data),
-        plane_meta[VideoFrame::kYPlane].stride / 2,
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kUPlane].data),
-        plane_meta[VideoFrame::kUPlane].stride / 2,
-        reinterpret_cast<const uint16_t*>(plane_meta[VideoFrame::kVPlane].data),
-        plane_meta[VideoFrame::kVPlane].stride / 2, pixels, row_bytes, width,
-        rows);
+  auto convert_yuv16 = [&](const libyuv::YuvConstants* matrix, auto&& func) {
+    func(YUV_ORDER(reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kYPlane].data),
+                   plane_meta[VideoFrame::kYPlane].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kUPlane].data),
+                   plane_meta[VideoFrame::kUPlane].stride / 2,
+                   reinterpret_cast<const uint16_t*>(
+                       plane_meta[VideoFrame::kVPlane].data),
+                   plane_meta[VideoFrame::kVPlane].stride / 2),
+         pixels, row_bytes, matrix, width, rows);
   };
 
   switch (format) {
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J420_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H420_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I420_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U420_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
+      convert_yuv(matrix, libyuv::I420ToARGBMatrix);
       break;
     case PIXEL_FORMAT_I422:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J422_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H422_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I422_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U422_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
+      convert_yuv(matrix, libyuv::I422ToARGBMatrix);
+      break;
+    case PIXEL_FORMAT_I444:
+      // Special case for 4:4:4 RGB encoded videos.
+      if (video_frame->ColorSpace().GetMatrixID() ==
+          gfx::ColorSpace::MatrixID::GBR) {
+        libyuv::MergeARGBPlane(
+            GBR_TO_RGB_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                             plane_meta[VideoFrame::kYPlane].stride,
+                             plane_meta[VideoFrame::kUPlane].data,
+                             plane_meta[VideoFrame::kUPlane].stride,
+                             plane_meta[VideoFrame::kVPlane].data,
+                             plane_meta[VideoFrame::kVPlane].stride),
+            plane_meta[VideoFrame::kAPlane].data,
+            plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, width,
+            rows);
+      } else {
+        convert_yuv(matrix, libyuv::I444ToARGBMatrix);
       }
+      break;
+    case PIXEL_FORMAT_YUV420P10:
+      convert_yuv16(matrix, libyuv::I010ToARGBMatrix);
+      break;
+    case PIXEL_FORMAT_YUV422P10:
+      convert_yuv16(matrix, libyuv::I210ToARGBMatrix);
       break;
 
     case PIXEL_FORMAT_I420A:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvJPEGConstants, width, rows, premultiply_alpha);
-          break;
-        case kRec709_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvH709Constants, width, rows, premultiply_alpha);
-          break;
-        case kRec601_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuvI601Constants, width, rows, premultiply_alpha);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          LIBYUV_I420ALPHA_TO_ARGB_MATRIX(
-              plane_meta[VideoFrame::kYPlane].data,
-              plane_meta[VideoFrame::kYPlane].stride,
-              plane_meta[VideoFrame::kUPlane].data,
-              plane_meta[VideoFrame::kUPlane].stride,
-              plane_meta[VideoFrame::kVPlane].data,
-              plane_meta[VideoFrame::kVPlane].stride,
-              plane_meta[VideoFrame::kAPlane].data,
-              plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes,
-              &libyuv::kYuv2020Constants, width, rows, premultiply_alpha);
-          break;
-        default:
-          NOTREACHED();
-      }
+      libyuv::I420AlphaToARGBMatrix(
+          YUV_ORDER(plane_meta[VideoFrame::kYPlane].data,
+                    plane_meta[VideoFrame::kYPlane].stride,
+                    plane_meta[VideoFrame::kUPlane].data,
+                    plane_meta[VideoFrame::kUPlane].stride,
+                    plane_meta[VideoFrame::kVPlane].data,
+                    plane_meta[VideoFrame::kVPlane].stride),
+          plane_meta[VideoFrame::kAPlane].data,
+          plane_meta[VideoFrame::kAPlane].stride, pixels, row_bytes, matrix,
+          width, rows, premultiply_alpha);
       break;
 
-    case PIXEL_FORMAT_I444:
-      switch (color_space) {
-        case kJPEG_SkYUVColorSpace:
-          convert_yuv(LIBYUV_J444_TO_ARGB);
-          break;
-        case kRec709_SkYUVColorSpace:
-          convert_yuv(LIBYUV_H444_TO_ARGB);
-          break;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv(LIBYUV_I444_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv(LIBYUV_U444_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
-      break;
-
-    case PIXEL_FORMAT_YUV420P10:
-      switch (color_space) {
-        case kRec709_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_H010_TO_ARGB);
-          break;
-        case kJPEG_SkYUVColorSpace:
-          FALLTHROUGH;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_I010_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_U010_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
-      break;
-    case PIXEL_FORMAT_YUV422P10:
-      switch (color_space) {
-        case kRec709_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_H210_TO_ARGB);
-          break;
-        case kJPEG_SkYUVColorSpace:
-          FALLTHROUGH;
-        case kRec601_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_I210_TO_ARGB);
-          break;
-        case kBT2020_SkYUVColorSpace:
-          convert_yuv16(LIBYUV_U210_TO_ARGB);
-          break;
-        default:
-          NOTREACHED();
-      }
+    case PIXEL_FORMAT_NV12:
+      LIBYUV_NV12_TO_ARGB_MATRIX(plane_meta[VideoFrame::kYPlane].data,
+                                 plane_meta[VideoFrame::kYPlane].stride,
+                                 plane_meta[VideoFrame::kUVPlane].data,
+                                 plane_meta[VideoFrame::kUVPlane].stride,
+                                 pixels, row_bytes, matrix, width, rows);
       break;
 
     case PIXEL_FORMAT_YUV420P9:
@@ -615,14 +477,6 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_Y16:
       NOTREACHED()
           << "These cases should be handled in ConvertVideoFrameToRGBPixels";
-      break;
-
-    case PIXEL_FORMAT_NV12:
-      LIBYUV_NV12_TO_ARGB(plane_meta[VideoFrame::kYPlane].data,
-                          plane_meta[VideoFrame::kYPlane].stride,
-                          plane_meta[VideoFrame::kUPlane].data,
-                          plane_meta[VideoFrame::kUPlane].stride, pixels,
-                          row_bytes, width, rows);
       break;
 
     case PIXEL_FORMAT_UYVY:
