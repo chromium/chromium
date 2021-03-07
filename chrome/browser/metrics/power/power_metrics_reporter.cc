@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -163,6 +164,7 @@ void PowerMetricsReporter::ReportUKMs(
               .InSeconds()));
   builder.SetVideoCaptureSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.time_capturing_video.InSeconds()));
+  builder.SetBrowserShuttingDown(browser_shutdown::HasShutdownStarted());
 
   builder.Record(ukm_recorder);
 }
