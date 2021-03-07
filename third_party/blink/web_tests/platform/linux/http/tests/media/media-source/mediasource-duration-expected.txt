@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Test seek starts on duration reduction below currentTime
+PASS Test appendBuffer completes previous seek to reduced duration
+PASS Test endOfStream completes previous seek to reduced duration
+FAIL Test setting same duration multiple times does not fire duplicate durationchange assert_equals: mediaElement duration matches expectedDuration expected 6.051 but got 6.042
+PASS Test duration reduction below highest buffered presentation time is disallowed
+Harness: the test ran to completion.
+

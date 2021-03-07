@@ -239,6 +239,18 @@ crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
 crbug.com/1183320 virtual/prerender/wpt_internal/prerender/state_and_event.html [ Timeout ]
 
 
+crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-iframe-root.html [ Pass Failure ]
+crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-root.html [ Pass Failure ]
+crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-transformed-root.html [ Pass Failure ]
+crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-will-change-root.html [ Pass Failure ]
+crbug.com/1185506 external/wpt/css/css-backgrounds/border-image-image-type-003.htm [ Pass Failure ]
+crbug.com/1185506 svg/text/textpath-pattern.svg [ Pass Failure ]
+crbug.com/1185506 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-margin-iframe-root.html [ Pass Failure ]
+crbug.com/1185506 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-margin-root.html [ Pass Failure ]
+crbug.com/1185506 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-margin-transformed-root.html [ Pass Failure ]
+crbug.com/1185506 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/background-margin-will-change-root.html [ Pass Failure ]
+crbug.com/1185506 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-image-image-type-003.htm [ Pass Failure ]
+
 crbug.com/807395 fast/multicol/mixed-opacity-test.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########
