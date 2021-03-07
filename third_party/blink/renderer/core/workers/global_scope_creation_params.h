@@ -65,7 +65,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           browser_interface_broker = mojo::NullRemote(),
       BeginFrameProviderParams begin_frame_provider_params = {},
-      const PermissionsPolicy* parent_feature_policy = nullptr,
+      const PermissionsPolicy* parent_permissions_policy = nullptr,
       base::UnguessableToken agent_cluster_id = {},
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId,
       const base::Optional<ExecutionContextToken>& parent_context_token =
@@ -163,7 +163,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   BeginFrameProviderParams begin_frame_provider_params;
 
-  std::unique_ptr<PermissionsPolicy> worker_feature_policy;
+  std::unique_ptr<PermissionsPolicy> worker_permissions_policy;
 
   // Set when the worker/worklet has the same AgentClusterID as the execution
   // context that created it (e.g. for a dedicated worker).

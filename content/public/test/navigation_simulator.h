@@ -275,7 +275,7 @@ class NavigationSimulator {
 
   // Simulate receiving Permissions-Policy headers.
   virtual void SetFeaturePolicyHeader(
-      blink::ParsedPermissionsPolicy feature_policy_header) = 0;
+      blink::ParsedPermissionsPolicy permissions_policy_header) = 0;
 
   // Provides the contents mime type to be set at commit. It should be
   // specified before calling |ReadyToCommit| or |Commit|.

@@ -165,8 +165,8 @@ bool SyncLoadContext::OnReceivedRedirect(
   if (removed_headers) {
     // TODO(yoav): Get the actual PermissionsPolicy here to support selective
     // removal for sync XHR.
-    FindClientHintsToRemove(nullptr /* feature_policy */, redirect_info.new_url,
-                            removed_headers);
+    FindClientHintsToRemove(nullptr /* permissions_policy */,
+                            redirect_info.new_url, removed_headers);
   }
 
   response_->url = redirect_info.new_url;

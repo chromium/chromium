@@ -133,7 +133,7 @@ bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
 
 // Add a list of Client Hints headers to be removed to the output vector, based
 // on PermissionsPolicy and the url's origin.
-void FindClientHintsToRemove(const PermissionsPolicy* feature_policy,
+void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
                              const GURL& url,
                              std::vector<std::string>* removed_headers) {
   DCHECK(removed_headers);
@@ -148,11 +148,11 @@ void FindClientHintsToRemove(const PermissionsPolicy* feature_policy,
     // * Permissions policy is null (we're in a sync XHR case) and the hint is
     // not sent by default.
     // * Permissions policy exists and doesn't allow for the hint.
-    if ((!feature_policy &&
+    if ((!permissions_policy &&
          !IsClientHintSentByDefault(
              static_cast<network::mojom::WebClientHintsType>(i))) ||
-        (feature_policy &&
-         !feature_policy->IsFeatureEnabledForOrigin(
+        (permissions_policy &&
+         !permissions_policy->IsFeatureEnabledForOrigin(
              blink::kClientHintsFeaturePolicyMapping[i], origin))) {
       removed_headers->push_back(blink::kClientHintsHeaderMapping[i]);
     }

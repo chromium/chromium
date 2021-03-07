@@ -73,7 +73,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
           std::make_unique<WorkerSettings>(window->GetFrame()->GetSettings()),
           mojom::blink::V8CacheOptions::kDefault, module_responses_map,
           mojo::NullRemote() /* browser_interface_broker */,
-          BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+          BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
           window->GetAgentClusterID(), ukm::kInvalidSourceId,
           window->GetExecutionContextToken(),
           window->CrossOriginIsolatedCapability());

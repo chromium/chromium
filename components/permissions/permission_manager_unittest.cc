@@ -42,10 +42,10 @@ class FakePermissionContext : public PermissionContextBase {
   FakePermissionContext(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::PermissionsPolicyFeature feature_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : PermissionContextBase(browser_context,
                               content_settings_type,
-                              feature_policy_feature) {}
+                              permissions_policy_feature) {}
 
   // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override { return true; }
@@ -56,10 +56,10 @@ class FakePermissionContextAlwaysAllow : public FakePermissionContext {
   FakePermissionContextAlwaysAllow(
       content::BrowserContext* browser_context,
       ContentSettingsType content_settings_type,
-      blink::mojom::PermissionsPolicyFeature feature_policy_feature)
+      blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
       : FakePermissionContext(browser_context,
                               content_settings_type,
-                              feature_policy_feature) {}
+                              permissions_policy_feature) {}
 
   // PermissionContextBase:
   ContentSetting GetPermissionStatusInternal(

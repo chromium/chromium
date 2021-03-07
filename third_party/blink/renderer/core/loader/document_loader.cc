@@ -478,7 +478,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // |response_| will use the newly committed response.
   // |load_type_| will use default kStandard value.
   // |replaces_current_history_item_| will be false.
-  // |feature_policy_| and |document_policy_| are set in CommitNavigation(),
+  // |permissions_policy_| and |document_policy_| are set in CommitNavigation(),
   // with the sandbox flags set in CalculateSandboxFlags().
   // |is_client_redirect_| and |redirect_chain_| are not copied since future
   // same-document navigations will clear the redirect chain anyways.
@@ -2069,7 +2069,7 @@ void DocumentLoader::CommitNavigation() {
     // |report_only_document_policy| does not block the page load. Its
     // initialization is delayed to
     // SecurityContextInit::InitializeDocumentPolicy(), similar to
-    // |report_only_feature_policy|.
+    // |report_only_permissions_policy|.
     security_init.ApplyDocumentPolicy(
         document_policy_,
         response_.HttpHeaderField(http_names::kDocumentPolicyReportOnly));

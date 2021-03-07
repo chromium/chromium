@@ -225,7 +225,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,
       nullptr /* worklet_module_respones_map */,
       std::move(browser_interface_broker), BeginFrameProviderParams(),
-      nullptr /* parent_feature_policy */,
+      nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
       worker_start_data->ukm_source_id);
 

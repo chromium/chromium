@@ -5755,12 +5755,12 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
-  const String feature_policy_error =
+  const String permissions_policy_error =
       "Setting `document.domain` is disabled by permissions policy.";
   if (!dom_window_->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kDocumentDomain,
-          ReportOptions::kReportOnFailure, feature_policy_error)) {
-    exception_state.ThrowSecurityError(feature_policy_error);
+          ReportOptions::kReportOnFailure, permissions_policy_error)) {
+    exception_state.ThrowSecurityError(permissions_policy_error);
     return;
   }
 

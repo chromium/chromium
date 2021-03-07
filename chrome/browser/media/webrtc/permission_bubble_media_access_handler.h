@@ -60,7 +60,7 @@ class PermissionBubbleMediaAccessHandler
       content::MediaStreamRequest request,
       const blink::MediaStreamDevices& devices,
       blink::mojom::MediaStreamRequestResult result,
-      bool blocked_by_feature_policy,
+      bool blocked_by_permissions_policy,
       ContentSetting audio_setting,
       ContentSetting video_setting);
   void OnAccessRequestResponse(content::WebContents* web_contents,

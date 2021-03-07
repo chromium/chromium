@@ -715,7 +715,7 @@ DetermineWhetherToForbidTrustTokenRedemption(
   if (!parent)
     return network::mojom::TrustTokenRedemptionPolicy::kPotentiallyPermit;
 
-  const blink::PermissionsPolicy* parent_policy = parent->feature_policy();
+  const blink::PermissionsPolicy* parent_policy = parent->permissions_policy();
   blink::ParsedPermissionsPolicy container_policy =
       commit_params.frame_policy.container_policy;
 
@@ -2768,7 +2768,7 @@ void RenderFrameHostImpl::DidNavigate(
     // local) when initializing child's security context, so the update to
     // proxies is needed.
     frame_tree_node()->UpdateFramePolicyHeaders(active_sandbox_flags_,
-                                                feature_policy_header_);
+                                                permissions_policy_header_);
     // Document policy's inheritance from parent frame's required document
     // policy is done at |HTMLFrameOwnerElement::UpdateRequiredPolicy|. Parent
     // frame owns both parent's required document policy and child frame's frame
@@ -3977,8 +3977,8 @@ void RenderFrameHostImpl::DetachForTesting() {
 
 bool RenderFrameHostImpl::IsFeatureEnabled(
     blink::mojom::PermissionsPolicyFeature feature) {
-  return feature_policy_ && feature_policy_->IsFeatureEnabledForOrigin(
-                                feature, GetLastCommittedOrigin());
+  return permissions_policy_ && permissions_policy_->IsFeatureEnabledForOrigin(
+                                    feature, GetLastCommittedOrigin());
 }
 
 void RenderFrameHostImpl::ViewSource() {
@@ -7762,10 +7762,10 @@ void RenderFrameHostImpl::CreateWebUsbService(
 void RenderFrameHostImpl::ResetFeaturePolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
-      parent_frame_host ? parent_frame_host->feature_policy() : nullptr;
+      parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
   blink::ParsedPermissionsPolicy container_policy =
       frame_tree_node()->effective_frame_policy().container_policy;
-  feature_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
+  permissions_policy_ = blink::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, container_policy, last_committed_origin_);
 }
 
@@ -8934,8 +8934,8 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   ResetFeaturePolicy();
   active_sandbox_flags_ = params.sandbox_flags;
-  feature_policy_header_ = params.feature_policy_header;
-  feature_policy_->SetHeaderPolicy(params.feature_policy_header);
+  permissions_policy_header_ = params.permissions_policy_header;
+  permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);
   document_policy_ = blink::DocumentPolicy::CreateWithHeaderPolicy({
       params.document_policy_header,  // document_policy_header
       {},                             // endpoint_map

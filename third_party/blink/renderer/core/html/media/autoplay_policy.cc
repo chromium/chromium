@@ -89,7 +89,7 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
   if (!document.GetFrame())
     return false;
 
-  bool feature_policy_enabled =
+  bool permissions_policy_enabled =
       document.GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAutoplay);
 
@@ -106,7 +106,7 @@ bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
       return true;
     }
 
-    if (!feature_policy_enabled)
+    if (!permissions_policy_enabled)
       return false;
   }
 
@@ -367,7 +367,7 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
 
   autoplay_initiated_ = true;
 
-  bool feature_policy_enabled =
+  bool permissions_policy_enabled =
       element_->GetExecutionContext() &&
       element_->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kAutoplay);
@@ -379,7 +379,7 @@ void AutoplayPolicy::MaybeSetAutoplayInitiated() {
       autoplay_initiated_ = false;
       break;
     }
-    if (!feature_policy_enabled)
+    if (!permissions_policy_enabled)
       break;
   }
 }

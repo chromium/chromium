@@ -16,8 +16,8 @@
 namespace blink {
 namespace {
 
-{% for feature in feature_policy_features %}
-const char k{{feature.name}}PolicyName[] = "{{feature.feature_policy_name}}";
+{% for feature in permissions_policy_features %}
+const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}";
 {% endfor %}
 
 }  // namespace
@@ -33,13 +33,13 @@ const char k{{feature.name}}PolicyName[] = "{{feature.feature_policy_name}}";
 const FeatureNameMap& GetDefaultFeatureNameMap() {
   DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
   if (default_feature_name_map.IsEmpty()) {
-    {% for feature in feature_policy_features %}
-    {% if not feature.depends_on or feature.name in fp_origin_trial_dependency_map %}
+    {% for feature in permissions_policy_features %}
+    {% if not feature.depends_on or feature.name in pp_origin_trial_dependency_map %}
     default_feature_name_map.Set(k{{feature.name}}PolicyName,
                                  mojom::PermissionsPolicyFeature::k{{feature.name}});
     {% endif %}
     {% endfor %}
-    {% for runtime_feature_name, dependent_features in runtime_to_feature_policy_map.items() | sort %}
+    {% for runtime_feature_name, dependent_features in runtime_to_permissions_policy_map.items() | sort %}
     if (RuntimeEnabledFeatures::{{runtime_feature_name}}Enabled()) {
       {% for feature in dependent_features %}
       default_feature_name_map.Set(k{{feature}}PolicyName,
@@ -86,7 +86,7 @@ const DocumentPolicyFeatureSet& GetAvailableDocumentPolicyFeatures() {
 // i.e. the feature is considered enabled by origin trial.
 bool DisabledByOriginTrial(const String& feature_name,
                            FeatureContext* feature_context) {
-  {% for feature_name, dependencies in fp_origin_trial_dependency_map.items() | sort %}
+  {% for feature_name, dependencies in pp_origin_trial_dependency_map.items() | sort %}
   if (feature_name == k{{feature_name}}PolicyName) {
     return
     {%- for dependency in dependencies %}
@@ -114,7 +114,7 @@ bool DisabledByOriginTrial(mojom::blink::DocumentPolicyFeature feature,
 
 String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature feature) {
   switch (feature) {
-    {% for feature in feature_policy_features %}
+    {% for feature in permissions_policy_features %}
     case mojom::blink::PermissionsPolicyFeature::k{{feature.name}}:
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endfor %}

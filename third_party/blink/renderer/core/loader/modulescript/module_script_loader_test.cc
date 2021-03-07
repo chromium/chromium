@@ -227,7 +227,7 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       mojom::blink::V8CacheOptions::kDefault,
       MakeGarbageCollected<WorkletModuleResponsesMap>(),
       mojo::NullRemote() /* browser_interface_broker */,
-      BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+      BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
       base::UnguessableToken::Create() /* agent_cluster_id */);
   creation_params->parent_context_token = GetFrame().GetLocalFrameToken();
   global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(

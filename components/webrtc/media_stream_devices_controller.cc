@@ -130,7 +130,7 @@ void MediaStreamDevicesController::RequestPermissions(
       if (permission_status.content_setting == CONTENT_SETTING_BLOCK) {
         controller->denial_reason_ =
             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-        controller->RunCallback(/*blocked_by_feature_policy=*/false);
+        controller->RunCallback(/*blocked_by_permissions_policy=*/false);
         return;
       }
 
@@ -374,7 +374,8 @@ MediaStreamDevices MediaStreamDevicesController::GetDevices(
   return devices;
 }
 
-void MediaStreamDevicesController::RunCallback(bool blocked_by_feature_policy) {
+void MediaStreamDevicesController::RunCallback(
+    bool blocked_by_permissions_policy) {
   CHECK(callback_);
 
   MediaStreamDevices devices;
@@ -397,8 +398,9 @@ void MediaStreamDevicesController::RunCallback(bool blocked_by_feature_policy) {
     request_result = denial_reason_;
   }
 
-  std::move(callback_).Run(devices, request_result, blocked_by_feature_policy,
-                           audio_setting_, video_setting_);
+  std::move(callback_).Run(devices, request_result,
+                           blocked_by_permissions_policy, audio_setting_,
+                           video_setting_);
 }
 
 ContentSetting MediaStreamDevicesController::GetContentSetting(
@@ -489,12 +491,12 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
     const std::vector<ContentSetting>& responses) {
   bool need_audio = ShouldRequestAudio();
   bool need_video = ShouldRequestVideo();
-  bool blocked_by_feature_policy = need_audio || need_video;
+  bool blocked_by_permissions_policy = need_audio || need_video;
   // The audio setting will always be the first one in the vector, if it was
   // requested.
   if (need_audio) {
     audio_setting_ = responses.front();
-    blocked_by_feature_policy &=
+    blocked_by_permissions_policy &=
         audio_setting_ == CONTENT_SETTING_BLOCK &&
         PermissionIsBlockedForReason(
             ContentSettingsType::MEDIASTREAM_MIC,
@@ -503,7 +505,7 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
 
   if (need_video) {
     video_setting_ = responses.at(need_audio ? 1 : 0);
-    blocked_by_feature_policy &=
+    blocked_by_permissions_policy &=
         video_setting_ == CONTENT_SETTING_BLOCK &&
         PermissionIsBlockedForReason(
             ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -519,7 +521,7 @@ void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
           blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED;
   }
 
-  RunCallback(blocked_by_feature_policy);
+  RunCallback(blocked_by_permissions_policy);
 }
 
 bool MediaStreamDevicesController::HasAvailableDevices(

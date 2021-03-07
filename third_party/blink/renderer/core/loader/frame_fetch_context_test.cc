@@ -121,17 +121,18 @@ class FrameFetchContextTest : public testing::Test {
  protected:
   void SetUp() override { RecreateFetchContext(); }
 
-  void RecreateFetchContext(const KURL& url = KURL(),
-                            const String& feature_policy_header = String()) {
+  void RecreateFetchContext(
+      const KURL& url = KURL(),
+      const String& permissions_policy_header = String()) {
     dummy_page_holder = nullptr;
     dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
     dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     if (url.IsValid()) {
       auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), url);
-      if (!feature_policy_header.IsEmpty()) {
+      if (!permissions_policy_header.IsEmpty()) {
         params->response.SetHttpHeaderField(http_names::kFeaturePolicy,
-                                            feature_policy_header);
+                                            permissions_policy_header);
       }
       dummy_page_holder->GetFrame().Loader().CommitNavigation(
           std::move(params), nullptr /* extra_data */);

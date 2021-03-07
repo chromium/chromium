@@ -905,10 +905,10 @@ void NavigationSimulatorImpl::SetIsSignedExchangeInnerResponse(
 }
 
 void NavigationSimulatorImpl::SetFeaturePolicyHeader(
-    blink::ParsedPermissionsPolicy feature_policy_header) {
+    blink::ParsedPermissionsPolicy permissions_policy_header) {
   CHECK_LE(state_, STARTED) << "The Feature-Policy headers cannot be set after "
                                "the navigation has committed or failed";
-  feature_policy_header_ = std::move(feature_policy_header);
+  permissions_policy_header_ = std::move(permissions_policy_header);
 }
 
 void NavigationSimulatorImpl::SetContentsMimeType(
@@ -1358,7 +1358,7 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
 
   CHECK(same_document || request_);
 
-  params->feature_policy_header = std::move(feature_policy_header_);
+  params->permissions_policy_header = std::move(permissions_policy_header_);
 
   // Simulate Blink assigning a item sequence number and document sequence
   // number to the navigation.

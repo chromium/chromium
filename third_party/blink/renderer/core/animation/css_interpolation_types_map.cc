@@ -119,9 +119,9 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       property.IsCSSProperty() ? property : PropertyHandle(css_property);
   // TODO(crbug.com/838263): Support site-defined list of acceptable properties
   // through permissions policy declarations.
-  bool property_maybe_blocked_by_feature_policy =
+  bool property_maybe_blocked_by_permissions_policy =
       LayoutAnimationsPolicy::AffectedCSSProperties().Contains(&css_property);
-  if (allow_all_animations_ || !property_maybe_blocked_by_feature_policy) {
+  if (allow_all_animations_ || !property_maybe_blocked_by_permissions_policy) {
     switch (css_property.PropertyID()) {
       case CSSPropertyID::kBaselineShift:
       case CSSPropertyID::kBorderBottomWidth:

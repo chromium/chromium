@@ -225,7 +225,7 @@ class ThreadedWorkletMessagingProxyForTest
             mojom::blink::V8CacheOptions::kDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),
             mojo::NullRemote() /* browser_interface_broker */,
-            BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+            BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
             GetExecutionContext()->GetAgentClusterID(), ukm::kInvalidSourceId,
             GetExecutionContext()->GetExecutionContextToken()),
         base::nullopt, base::nullopt);

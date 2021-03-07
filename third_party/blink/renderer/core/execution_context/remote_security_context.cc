@@ -41,11 +41,12 @@ void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
 void RemoteSecurityContext::InitializeFeaturePolicy(
     const ParsedPermissionsPolicy& parsed_header,
     const ParsedPermissionsPolicy& container_policy,
-    const PermissionsPolicy* parent_feature_policy) {
-  report_only_feature_policy_ = nullptr;
-  feature_policy_ = PermissionsPolicy::CreateFromParentPolicy(
-      parent_feature_policy, container_policy, security_origin_->ToUrlOrigin());
-  feature_policy_->SetHeaderPolicy(parsed_header);
+    const PermissionsPolicy* parent_permissions_policy) {
+  report_only_permissions_policy_ = nullptr;
+  permissions_policy_ = PermissionsPolicy::CreateFromParentPolicy(
+      parent_permissions_policy, container_policy,
+      security_origin_->ToUrlOrigin());
+  permissions_policy_->SetHeaderPolicy(parsed_header);
 }
 
 }  // namespace blink

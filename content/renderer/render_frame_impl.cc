@@ -1036,11 +1036,11 @@ void FillNavigationParamsOriginPolicy(
           WebString::FromUTF8(id));
     }
 
-    const base::Optional<std::string>& feature_policy =
-        head.origin_policy.value().contents->feature_policy;
-    if (feature_policy) {
-      navigation_params->origin_policy->feature_policy =
-          WebString::FromUTF8(*feature_policy);
+    const base::Optional<std::string>& permissions_policy =
+        head.origin_policy.value().contents->permissions_policy;
+    if (permissions_policy) {
+      navigation_params->origin_policy->permissions_policy =
+          WebString::FromUTF8(*permissions_policy);
     }
 
     for (const auto& csp :
@@ -3986,7 +3986,7 @@ void RenderFrameImpl::DidCommitNavigation(
     blink::WebHistoryCommitType commit_type,
     bool should_reset_browser_interface_broker,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedPermissionsPolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header) {
   CHECK_EQ(NavigationCommitState::kWillCommit, navigation_commit_state_);
   navigation_commit_state_ = NavigationCommitState::kDidCommit;
@@ -4098,7 +4098,7 @@ void RenderFrameImpl::DidCommitNavigation(
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
 
   DidCommitNavigationInternal(
-      commit_type, transition, sandbox_flags, feature_policy_header,
+      commit_type, transition, sandbox_flags, permissions_policy_header,
       document_policy_header,
       should_reset_browser_interface_broker
           ? mojom::DidCommitProvisionalLoadInterfaceParams::New(
@@ -4259,7 +4259,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   same_document_params->is_history_api_navigation = is_history_api_navigation;
   DidCommitNavigationInternal(
       commit_type, transition, network::mojom::WebSandboxFlags(),
-      blink::ParsedPermissionsPolicy(),     // feature_policy_header
+      blink::ParsedPermissionsPolicy(),     // permissions_policy_header
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
       std::move(same_document_params),
@@ -4727,7 +4727,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedPermissionsPolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     const base::Optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
@@ -4778,7 +4778,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->origin = frame_origin;
 
   params->sandbox_flags = sandbox_flags;
-  params->feature_policy_header = feature_policy_header;
+  params->permissions_policy_header = permissions_policy_header;
   params->document_policy_header = document_policy_header;
 
   params->insecure_request_policy = frame_->GetInsecureRequestPolicy();
@@ -5003,7 +5003,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
     blink::WebHistoryCommitType commit_type,
     ui::PageTransition transition,
     network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::ParsedPermissionsPolicy& feature_policy_header,
+    const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
@@ -5020,7 +5020,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
   // after the browser process has already been informed of the provisional
   // load committing.
   auto params = MakeDidCommitProvisionalLoadParams(
-      commit_type, transition, sandbox_flags, feature_policy_header,
+      commit_type, transition, sandbox_flags, permissions_policy_header,
       document_policy_header, embedding_token);
 
   if (same_document_params) {

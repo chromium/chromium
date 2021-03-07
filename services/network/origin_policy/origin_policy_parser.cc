@@ -91,7 +91,7 @@ void OriginPolicyParser::ParseFeatures(const base::Value& features) {
   const std::string* policy = features.FindStringKey("policy");
 
   if (policy) {
-    policy_contents_->feature_policy = *policy;
+    policy_contents_->permissions_policy = *policy;
   }
 }
 

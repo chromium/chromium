@@ -1091,8 +1091,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns the permissions policy which should be enforced on this
   // RenderFrame.
-  const blink::PermissionsPolicy* feature_policy() const {
-    return feature_policy_.get();
+  const blink::PermissionsPolicy* permissions_policy() const {
+    return permissions_policy_.get();
   }
 
   void ClearFocusedElement();
@@ -2493,7 +2493,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetLastCommittedOrigin(const url::Origin& origin);
 
   // Set the |last_committed_origin_|, |isolation_info_|, and
-  // |feature_policy_| of |this| frame, inheriting the origin from
+  // |permissions_policy_| of |this| frame, inheriting the origin from
   // |new_frame_creator| as appropriate (e.g. depending on whether |this| frame
   // should be sandboxed / should have an opaque origin instead).
   void SetOriginDependentStateOfNewFrame(const url::Origin& new_frame_creator);
@@ -3179,10 +3179,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Parsed permissions policy header. It is parsed from blink, received during
   // DidCommitProvisionalLoad. This is constant during the whole lifetime of
   // this document.
-  blink::ParsedPermissionsPolicy feature_policy_header_;
+  blink::ParsedPermissionsPolicy permissions_policy_header_;
 
   // Tracks the permissions policy which has been set on this frame.
-  std::unique_ptr<blink::PermissionsPolicy> feature_policy_;
+  std::unique_ptr<blink::PermissionsPolicy> permissions_policy_;
 
   // Tracks the document policy which has been set on this frame.
   std::unique_ptr<blink::DocumentPolicy> document_policy_;

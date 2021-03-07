@@ -731,7 +731,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
 
   if (!async_) {
     if (GetExecutionContext()->IsWindow()) {
-      bool sync_xhr_disabled_by_feature_policy =
+      bool sync_xhr_disabled_by_permissions_policy =
           !GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kSyncXHR,
               ReportOptions::kReportOnFailure,
@@ -745,7 +745,7 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
 
       // SyncXHR can be controlled by either permissions policy or document
       // policy during the migration period. See crbug.com/1146505.
-      if (sync_xhr_disabled_by_feature_policy ||
+      if (sync_xhr_disabled_by_permissions_policy ||
           sync_xhr_disabled_by_document_policy) {
         HandleNetworkError();
         ThrowForLoadFailureIfNeeded(exception_state, String());
@@ -1463,11 +1463,11 @@ void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
     return;
   }
 
-  bool operation_requires_feature_policy =
+  bool operation_requires_permissions_policy =
       params->type ==
           network::mojom::blink::TrustTokenOperationType::kRedemption ||
       params->type == network::mojom::blink::TrustTokenOperationType::kSigning;
-  if (operation_requires_feature_policy &&
+  if (operation_requires_permissions_policy &&
       !GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption)) {
     exception_state.ThrowDOMException(

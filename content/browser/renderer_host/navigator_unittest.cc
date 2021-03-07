@@ -1442,18 +1442,18 @@ TEST_F(NavigatorTest, FeaturePolicySameSiteNavigation) {
   contents()->NavigateAndCommit(kUrl1);
 
   // Check the permissions policy before navigation.
-  const blink::PermissionsPolicy* original_feature_policy =
-      main_test_rfh()->feature_policy();
-  ASSERT_TRUE(original_feature_policy);
+  const blink::PermissionsPolicy* original_permissions_policy =
+      main_test_rfh()->permissions_policy();
+  ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
   contents()->NavigateAndCommit(kUrl2);
 
   // Check the permissions policy after navigation.
-  const blink::PermissionsPolicy* final_feature_policy =
-      main_test_rfh()->feature_policy();
-  ASSERT_TRUE(final_feature_policy);
-  ASSERT_NE(original_feature_policy, final_feature_policy);
+  const blink::PermissionsPolicy* final_permissions_policy =
+      main_test_rfh()->permissions_policy();
+  ASSERT_TRUE(final_permissions_policy);
+  ASSERT_NE(original_permissions_policy, final_permissions_policy);
 }
 
 // Permissions Policy: Test that the permissions policy is not reset when
@@ -1465,17 +1465,17 @@ TEST_F(NavigatorTest, FeaturePolicyFragmentNavigation) {
   contents()->NavigateAndCommit(kUrl1);
 
   // Check the permissions policy before navigation.
-  const blink::PermissionsPolicy* original_feature_policy =
-      main_test_rfh()->feature_policy();
-  ASSERT_TRUE(original_feature_policy);
+  const blink::PermissionsPolicy* original_permissions_policy =
+      main_test_rfh()->permissions_policy();
+  ASSERT_TRUE(original_permissions_policy);
 
   // Navigate to the new URL.
   contents()->NavigateAndCommit(kUrl2);
 
   // Check the permissions policy after navigation.
-  const blink::PermissionsPolicy* final_feature_policy =
-      main_test_rfh()->feature_policy();
-  ASSERT_EQ(original_feature_policy, final_feature_policy);
+  const blink::PermissionsPolicy* final_permissions_policy =
+      main_test_rfh()->permissions_policy();
+  ASSERT_EQ(original_permissions_policy, final_permissions_policy);
 }
 
 // Permissions Policy: Test that the permissions policy is set correctly when
@@ -1491,10 +1491,10 @@ TEST_F(NavigatorTest, FeaturePolicyNewChild) {
       contents()->GetMainFrame()->AppendChild("child");
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl2, subframe_rfh);
 
-  const blink::PermissionsPolicy* subframe_feature_policy =
-      subframe_rfh->feature_policy();
-  ASSERT_TRUE(subframe_feature_policy);
-  ASSERT_FALSE(subframe_feature_policy->GetOriginForTest().opaque());
+  const blink::PermissionsPolicy* subframe_permissions_policy =
+      subframe_rfh->permissions_policy();
+  ASSERT_TRUE(subframe_permissions_policy);
+  ASSERT_FALSE(subframe_permissions_policy->GetOriginForTest().opaque());
 }
 
 TEST_F(NavigatorTest, TwoNavigationsRacingCommit) {

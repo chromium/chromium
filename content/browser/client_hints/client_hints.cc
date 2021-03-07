@@ -405,7 +405,7 @@ struct ClientHintsExtendedData {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree()->GetMainFrame();
       main_frame_url = main_frame->GetLastCommittedURL();
-      feature_policy = main_frame->feature_policy();
+      permissions_policy = main_frame->permissions_policy();
       is_1p_origin = resource_origin.IsSameOriginWith(
           main_frame->GetLastCommittedOrigin());
     }
@@ -417,7 +417,7 @@ struct ClientHintsExtendedData {
   url::Origin resource_origin;
   bool is_main_frame = false;
   GURL main_frame_url;
-  const blink::PermissionsPolicy* feature_policy = nullptr;
+  const blink::PermissionsPolicy* permissions_policy = nullptr;
   bool is_1p_origin = false;
 };
 
@@ -425,8 +425,8 @@ bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          network::mojom::WebClientHintsType type) {
   if (!IsFeaturePolicyForClientHintsEnabled() || data.is_main_frame)
     return data.is_1p_origin;
-  return data.feature_policy &&
-         data.feature_policy->IsFeatureEnabledForOrigin(
+  return data.permissions_policy &&
+         data.permissions_policy->IsFeatureEnabledForOrigin(
              blink::kClientHintsFeaturePolicyMapping[static_cast<int>(type)],
              data.resource_origin);
 }

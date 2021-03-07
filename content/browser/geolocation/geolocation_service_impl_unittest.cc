@@ -93,10 +93,11 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
     RenderViewHostImplTestHarness::TearDown();
   }
 
-  void CreateEmbeddedFrameAndGeolocationService(bool allow_via_feature_policy) {
+  void CreateEmbeddedFrameAndGeolocationService(
+      bool allow_via_permissions_policy) {
     const GURL kEmbeddedUrl("https://embeddables.com/someframe");
     blink::ParsedPermissionsPolicy frame_policy = {};
-    if (allow_via_feature_policy) {
+    if (allow_via_permissions_policy) {
       frame_policy.push_back(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            std::vector<url::Origin>{url::Origin::Create(kEmbeddedUrl)}, false,
@@ -142,7 +143,8 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
 
 TEST_F(GeolocationServiceTest, PermissionGrantedPolicyViolation) {
   // The embedded frame is not allowed.
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/false);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/false);
 
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
@@ -166,7 +168,8 @@ TEST_F(GeolocationServiceTest, PermissionGrantedPolicyViolation) {
 
 TEST_F(GeolocationServiceTest, PermissionGrantedNoPolicyViolation) {
   // Allow the embedded frame.
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
 
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
@@ -194,7 +197,8 @@ TEST_F(GeolocationServiceTest, PermissionGrantedNoPolicyViolation) {
 }
 
 TEST_F(GeolocationServiceTest, PermissionGrantedSync) {
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
         std::move(callback).Run(PermissionStatus::GRANTED);
@@ -221,7 +225,8 @@ TEST_F(GeolocationServiceTest, PermissionGrantedSync) {
 }
 
 TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
         std::move(callback).Run(PermissionStatus::DENIED);
@@ -243,7 +248,8 @@ TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
 }
 
 TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestId(42);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
@@ -273,7 +279,8 @@ TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
 }
 
 TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestId(42);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
@@ -298,7 +305,8 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
 }
 
 TEST_F(GeolocationServiceTest, ServiceClosedBeforePermissionResponse) {
-  CreateEmbeddedFrameAndGeolocationService(/*allow_via_feature_policy=*/true);
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
   permission_manager()->SetRequestId(42);
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(

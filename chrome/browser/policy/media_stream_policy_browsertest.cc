@@ -105,7 +105,7 @@ class MediaStreamDevicesControllerBrowserTest
 
   void Accept(const blink::MediaStreamDevices& devices,
               blink::mojom::MediaStreamRequestResult result,
-              bool blocked_by_feature_policy,
+              bool blocked_by_permissions_policy,
               ContentSetting audio_setting,
               ContentSetting video_setting) {
     if (policy_value_ || request_url_allowed_via_whitelist_) {

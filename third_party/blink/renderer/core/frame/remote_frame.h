@@ -258,7 +258,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   blink::FrameVisualProperties pending_visual_properties_;
   scoped_refptr<cc::Layer> cc_layer_;
   bool is_surface_layer_ = false;
-  ParsedPermissionsPolicy feature_policy_header_;
+  ParsedPermissionsPolicy permissions_policy_header_;
   String unique_name_;
 
   viz::FrameSinkId frame_sink_id_;

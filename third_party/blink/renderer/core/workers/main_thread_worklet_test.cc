@@ -74,7 +74,7 @@ class MainThreadWorkletTest : public PageTestBase {
         mojom::blink::V8CacheOptions::kDefault,
         MakeGarbageCollected<WorkletModuleResponsesMap>(),
         mojo::NullRemote() /* browser_interface_broker */,
-        BeginFrameProviderParams(), nullptr /* parent_feature_policy */,
+        BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
         window->GetAgentClusterID(), ukm::kInvalidSourceId,
         window->GetExecutionContextToken());
     global_scope_ = MakeGarbageCollected<FakeWorkletGlobalScope>(

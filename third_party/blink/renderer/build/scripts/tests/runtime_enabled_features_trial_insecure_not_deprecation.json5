@@ -30,7 +30,7 @@
       valid_type: "bool",
     },
 
-    feature_policy: {
+    permissions_policy: {
     },
   },
 

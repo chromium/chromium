@@ -432,13 +432,13 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
 
   // Trust token redemption and signing (but not issuance) require that the
   // trust-token-redemption permissions policy be present.
-  bool operation_requires_feature_policy =
+  bool operation_requires_permissions_policy =
       parsed_params->type ==
           network::mojom::blink::TrustTokenOperationType::kRedemption ||
       parsed_params->type ==
           network::mojom::blink::TrustTokenOperationType::kSigning;
 
-  if (operation_requires_feature_policy &&
+  if (operation_requires_permissions_policy &&
       (!GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption))) {
     GetExecutionContext()->AddConsoleMessage(

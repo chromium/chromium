@@ -88,7 +88,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
   void SetFeaturePolicyHeader(
-      blink::ParsedPermissionsPolicy feature_policy_header) override;
+      blink::ParsedPermissionsPolicy permissions_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) override;
@@ -286,7 +286,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  blink::ParsedPermissionsPolicy feature_policy_header_;
+  blink::ParsedPermissionsPolicy permissions_policy_header_;
   network::mojom::CSPDisposition should_check_main_world_csp_ =
       network::mojom::CSPDisposition::CHECK;
   net::HttpResponseInfo::ConnectionInfo http_connection_info_ =

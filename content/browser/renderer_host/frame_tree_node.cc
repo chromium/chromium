@@ -477,7 +477,7 @@ bool FrameTreeNode::CommitFramePolicy(
   }
 
   UpdateFramePolicyHeaders(new_frame_policy.sandbox_flags,
-                           replication_state_->feature_policy_header);
+                           replication_state_->permissions_policy_header);
   return did_change_flags || did_change_container_policy ||
          did_change_required_document_policy || did_change_document_access;
 }
@@ -733,8 +733,8 @@ bool FrameTreeNode::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& parsed_header) {
   bool changed = false;
-  if (replication_state_->feature_policy_header != parsed_header) {
-    replication_state_->feature_policy_header = parsed_header;
+  if (replication_state_->permissions_policy_header != parsed_header) {
+    replication_state_->permissions_policy_header = parsed_header;
     changed = true;
   }
   // TODO(iclelland): Kill the renderer if sandbox flags is not a subset of the

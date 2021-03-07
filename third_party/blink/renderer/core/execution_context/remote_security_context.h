@@ -27,14 +27,14 @@ class CORE_EXPORT RemoteSecurityContext final : public SecurityContext {
   //   * |parsed_header|: from the PermissionsPolicy part of the response
   //   headers.
   //   * |container_policy|: from <iframe>'s allow attribute.
-  //   * |parent_feature_policy|: which is the current state of feature
-  //   policies
-  //     in a parent browsing context (frame).
-  // Note that |parent_feature_policy| is null, and |container_policy| is
+  //   * |parent_permissions_policy|: which is the current state of permissions
+  //   policies in a parent browsing context (frame).
+  // Note that |parent_permissions_policy| is null, and |container_policy| is
   // empty for a top-level security context.
-  void InitializeFeaturePolicy(const ParsedPermissionsPolicy& parsed_header,
-                               const ParsedPermissionsPolicy& container_policy,
-                               const PermissionsPolicy* parent_feature_policy);
+  void InitializeFeaturePolicy(
+      const ParsedPermissionsPolicy& parsed_header,
+      const ParsedPermissionsPolicy& container_policy,
+      const PermissionsPolicy* parent_permissions_policy);
 };
 
 }  // namespace blink

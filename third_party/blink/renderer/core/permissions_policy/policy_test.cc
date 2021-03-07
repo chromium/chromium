@@ -29,19 +29,19 @@ class PolicyTest : public testing::Test {
 
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
-    auto feature_policy = PermissionsPolicy::CreateFromParentPolicy(
+    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
         nullptr, ParsedPermissionsPolicy(), origin->ToUrlOrigin());
     auto header = PermissionsPolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         /* permissions_policy_header */ g_empty_string, origin.get(),
         dummy_logger_, dummy_logger_);
-    feature_policy->SetHeaderPolicy(header);
+    permissions_policy->SetHeaderPolicy(header);
 
     auto& security_context =
         page_holder_->GetFrame().DomWindow()->GetSecurityContext();
     security_context.SetSecurityOriginForTesting(origin);
-    security_context.SetFeaturePolicy(std::move(feature_policy));
+    security_context.SetFeaturePolicy(std::move(permissions_policy));
   }
 
   DOMFeaturePolicy* GetPolicy() const { return policy_; }

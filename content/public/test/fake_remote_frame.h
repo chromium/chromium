@@ -78,7 +78,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void DidSetFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
       const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
-          parsed_feature_policy) override {}
+          parsed_permissions_policy) override {}
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override {}
   void UpdateOpener(
       const base::Optional<blink::FrameToken>& opener_frame_token) override;

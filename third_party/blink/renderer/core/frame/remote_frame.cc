@@ -473,7 +473,7 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
 
 void RemoteFrame::SetReplicatedFeaturePolicyHeader(
     const ParsedPermissionsPolicy& parsed_header) {
-  feature_policy_header_ = parsed_header;
+  permissions_policy_header_ = parsed_header;
   ApplyReplicatedFeaturePolicyHeader();
 }
 
@@ -735,7 +735,7 @@ void RemoteFrame::IntrinsicSizingInfoOfChildChanged(
 void RemoteFrame::DidSetFramePolicyHeaders(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const WTF::Vector<ParsedPermissionsPolicyDeclaration>&
-        parsed_feature_policy) {
+        parsed_permissions_policy) {
   SetReplicatedSandboxFlags(sandbox_flags);
   // Convert from WTF::Vector<ParsedPermissionsPolicyDeclaration>
   // to std::vector<ParsedPermissionsPolicyDeclaration>, since
@@ -743,11 +743,11 @@ void RemoteFrame::DidSetFramePolicyHeaders(
   //
   // TODO(crbug.com/1047273): Remove this conversion by switching
   // ParsedPermissionsPolicy to operate over Vector
-  ParsedPermissionsPolicy parsed_feature_policy_copy(
-      parsed_feature_policy.size());
-  for (size_t i = 0; i < parsed_feature_policy.size(); ++i)
-    parsed_feature_policy_copy[i] = parsed_feature_policy[i];
-  SetReplicatedFeaturePolicyHeader(parsed_feature_policy_copy);
+  ParsedPermissionsPolicy parsed_permissions_policy_copy(
+      parsed_permissions_policy.size());
+  for (size_t i = 0; i < parsed_permissions_policy.size(); ++i)
+    parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
+  SetReplicatedFeaturePolicyHeader(parsed_permissions_policy_copy);
 }
 
 // Update the proxy's FrameOwner with new sandbox flags and container policy
@@ -894,16 +894,16 @@ bool RemoteFrame::DetachChildren() {
 }
 
 void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
-  const PermissionsPolicy* parent_feature_policy = nullptr;
+  const PermissionsPolicy* parent_permissions_policy = nullptr;
   if (Frame* parent_frame = Parent()) {
-    parent_feature_policy =
+    parent_permissions_policy =
         parent_frame->GetSecurityContext()->GetFeaturePolicy();
   }
   ParsedPermissionsPolicy container_policy;
   if (Owner())
     container_policy = Owner()->GetFramePolicy().container_policy;
   security_context_.InitializeFeaturePolicy(
-      feature_policy_header_, container_policy, parent_feature_policy);
+      permissions_policy_header_, container_policy, parent_permissions_policy);
 }
 
 bool RemoteFrame::SynchronizeVisualProperties(bool propagate) {

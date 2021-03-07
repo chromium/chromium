@@ -98,7 +98,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::OriginPolicyState,
 
 IPC_STRUCT_TRAITS_BEGIN(network::OriginPolicyContents)
   IPC_STRUCT_TRAITS_MEMBER(ids)
-  IPC_STRUCT_TRAITS_MEMBER(feature_policy)
+  IPC_STRUCT_TRAITS_MEMBER(permissions_policy)
   IPC_STRUCT_TRAITS_MEMBER(content_security_policies)
   IPC_STRUCT_TRAITS_MEMBER(content_security_policies_report_only)
 IPC_STRUCT_TRAITS_END()

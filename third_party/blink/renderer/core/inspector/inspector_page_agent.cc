@@ -872,10 +872,10 @@ Response InspectorPageAgent::getPermissionsPolicyState(
   if (!frame)
     return Response::ServerError("No frame for given id found in this target");
 
-  const blink::PermissionsPolicy* feature_policy =
+  const blink::PermissionsPolicy* permissions_policy =
       frame->GetSecurityContext()->GetFeaturePolicy();
 
-  if (!feature_policy)
+  if (!permissions_policy)
     return Response::ServerError("Frame not ready");
 
   auto feature_states = std::make_unique<

@@ -100,10 +100,10 @@ const char PermissionContextBase::kPermissionsKillSwitchBlockedValue[] =
 PermissionContextBase::PermissionContextBase(
     content::BrowserContext* browser_context,
     ContentSettingsType content_settings_type,
-    blink::mojom::PermissionsPolicyFeature feature_policy_feature)
+    blink::mojom::PermissionsPolicyFeature permissions_policy_feature)
     : browser_context_(browser_context),
       content_settings_type_(content_settings_type),
-      feature_policy_feature_(feature_policy_feature) {
+      permissions_policy_feature_(permissions_policy_feature) {
   PermissionDecisionAutoBlocker::UpdateFromVariations();
 }
 
@@ -473,11 +473,11 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
 bool PermissionContextBase::PermissionAllowedByFeaturePolicy(
     content::RenderFrameHost* rfh) const {
   // Some features don't have an associated permissions policy yet. Allow those.
-  if (feature_policy_feature_ ==
+  if (permissions_policy_feature_ ==
       blink::mojom::PermissionsPolicyFeature::kNotFound)
     return true;
 
-  return rfh->IsFeatureEnabled(feature_policy_feature_);
+  return rfh->IsFeatureEnabled(permissions_policy_feature_);
 }
 
 }  // namespace permissions

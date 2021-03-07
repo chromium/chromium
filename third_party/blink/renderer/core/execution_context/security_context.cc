@@ -143,13 +143,13 @@ void SecurityContext::SetSandboxFlags(
 }
 
 void SecurityContext::SetFeaturePolicy(
-    std::unique_ptr<PermissionsPolicy> feature_policy) {
-  feature_policy_ = std::move(feature_policy);
+    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+  permissions_policy_ = std::move(permissions_policy);
 }
 
 void SecurityContext::SetReportOnlyFeaturePolicy(
-    std::unique_ptr<PermissionsPolicy> feature_policy) {
-  report_only_feature_policy_ = std::move(feature_policy);
+    std::unique_ptr<PermissionsPolicy> permissions_policy) {
+  report_only_permissions_policy_ = std::move(permissions_policy);
 }
 
 void SecurityContext::SetDocumentPolicy(
@@ -165,18 +165,19 @@ void SecurityContext::SetReportOnlyDocumentPolicy(
 bool SecurityContext::IsFeatureEnabled(
     mojom::blink::PermissionsPolicyFeature feature,
     bool* should_report) const {
-  DCHECK(feature_policy_);
-  bool feature_policy_result = feature_policy_->IsFeatureEnabled(feature);
-  bool report_only_feature_policy_result =
-      !report_only_feature_policy_ ||
-      report_only_feature_policy_->IsFeatureEnabled(feature);
+  DCHECK(permissions_policy_);
+  bool permissions_policy_result =
+      permissions_policy_->IsFeatureEnabled(feature);
+  bool report_only_permissions_policy_result =
+      !report_only_permissions_policy_ ||
+      report_only_permissions_policy_->IsFeatureEnabled(feature);
 
   if (should_report) {
     *should_report =
-        !feature_policy_result || !report_only_feature_policy_result;
+        !permissions_policy_result || !report_only_permissions_policy_result;
   }
 
-  return feature_policy_result;
+  return permissions_policy_result;
 }
 
 bool SecurityContext::IsFeatureEnabled(

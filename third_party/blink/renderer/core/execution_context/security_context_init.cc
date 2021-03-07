@@ -57,13 +57,13 @@ DocumentPolicy::ParsedDocumentPolicy FilterByOriginTrial(
 // TODO(domenic): we want to treat origin policy permissions policy as a single
 // permissions policy, not a header serialization, so it should be processed
 // differently.
-void MergeFeaturesFromOriginPolicy(WTF::StringBuilder& feature_policy,
+void MergeFeaturesFromOriginPolicy(WTF::StringBuilder& permissions_policy,
                                    const WebOriginPolicy& origin_policy) {
-  if (!origin_policy.feature_policy.IsNull()) {
-    if (!feature_policy.IsEmpty()) {
-      feature_policy.Append(',');
+  if (!origin_policy.permissions_policy.IsNull()) {
+    if (!permissions_policy.IsEmpty()) {
+      permissions_policy.Append(',');
     }
-    feature_policy.Append(origin_policy.feature_policy);
+    permissions_policy.Append(origin_policy.permissions_policy);
   }
 }
 
@@ -161,12 +161,12 @@ void SecurityContextInit::ApplyFeaturePolicy(
   if (!feature_policy_header.IsEmpty())
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);
 
-  feature_policy_header_ = PermissionsPolicyParser::ParseHeader(
+  permissions_policy_header_ = PermissionsPolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
       execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
-  ParsedPermissionsPolicy report_only_feature_policy_header =
+  ParsedPermissionsPolicy parsed_report_only_permissions_policy_header =
       PermissionsPolicyParser::ParseHeader(
           response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
           report_only_permissions_policy_header,
@@ -211,17 +211,17 @@ void SecurityContextInit::ApplyFeaturePolicy(
         container_policy);
   }
 
-  std::unique_ptr<PermissionsPolicy> feature_policy;
-  auto* parent_feature_policy =
+  std::unique_ptr<PermissionsPolicy> permissions_policy;
+  auto* parent_permissions_policy =
       frame->Tree().Parent()
           ? frame->Tree().Parent()->GetSecurityContext()->GetFeaturePolicy()
           : nullptr;
-  feature_policy = PermissionsPolicy::CreateFromParentPolicy(
-      parent_feature_policy, container_policy,
+  permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+      parent_permissions_policy, container_policy,
       execution_context_->GetSecurityOrigin()->ToUrlOrigin());
-  feature_policy->SetHeaderPolicy(feature_policy_header_);
+  permissions_policy->SetHeaderPolicy(permissions_policy_header_);
   execution_context_->GetSecurityContext().SetFeaturePolicy(
-      std::move(feature_policy));
+      std::move(permissions_policy));
 
   // Report-only permissions policy only takes effect when it is stricter than
   // enforced permissions policy, i.e. when enforced permissions policy allows a
@@ -231,12 +231,13 @@ void SecurityContextInit::ApplyFeaturePolicy(
   // permissions policy, there is no need to inherit parent policy and container
   // policy for report-only permissions policy. For inherited policies, the
   // behavior is dominated by enforced permissions policy.
-  if (!report_only_feature_policy_header.empty()) {
+  if (!parsed_report_only_permissions_policy_header.empty()) {
     std::unique_ptr<PermissionsPolicy> report_only_policy =
         PermissionsPolicy::CreateFromParentPolicy(
             nullptr /* parent_policy */, {} /* container_policy */,
             execution_context_->GetSecurityOrigin()->ToUrlOrigin());
-    report_only_policy->SetHeaderPolicy(report_only_feature_policy_header);
+    report_only_policy->SetHeaderPolicy(
+        parsed_report_only_permissions_policy_header);
     execution_context_->GetSecurityContext().SetReportOnlyFeaturePolicy(
         std::move(report_only_policy));
   }

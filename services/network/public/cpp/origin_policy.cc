@@ -24,11 +24,11 @@ OriginPolicyContents::OriginPolicyContents(const OriginPolicyContents& other) =
 
 OriginPolicyContents::OriginPolicyContents(
     const std::vector<std::string>& ids,
-    const base::Optional<std::string>& feature_policy,
+    const base::Optional<std::string>& permissions_policy,
     const std::vector<std::string>& content_security_policies,
     const std::vector<std::string>& content_security_policies_report_only)
     : ids(ids),
-      feature_policy(feature_policy),
+      permissions_policy(permissions_policy),
       content_security_policies(content_security_policies),
       content_security_policies_report_only(
           content_security_policies_report_only) {}
@@ -37,7 +37,7 @@ OriginPolicyContents& OriginPolicyContents::operator=(
     const OriginPolicyContents& other) = default;
 
 bool OriginPolicyContents::operator==(const OriginPolicyContents& other) const {
-  return ids == other.ids && feature_policy == other.feature_policy &&
+  return ids == other.ids && permissions_policy == other.permissions_policy &&
          content_security_policies == other.content_security_policies &&
          content_security_policies_report_only ==
              other.content_security_policies_report_only;

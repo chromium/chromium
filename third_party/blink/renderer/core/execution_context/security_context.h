@@ -134,10 +134,10 @@ class CORE_EXPORT SecurityContext {
   }
 
   const PermissionsPolicy* GetFeaturePolicy() const {
-    return feature_policy_.get();
+    return permissions_policy_.get();
   }
   const PermissionsPolicy* GetReportOnlyFeaturePolicy() const {
-    return report_only_feature_policy_.get();
+    return report_only_permissions_policy_.get();
   }
   void SetFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
   void SetReportOnlyFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
@@ -178,8 +178,8 @@ class CORE_EXPORT SecurityContext {
  protected:
   network::mojom::blink::WebSandboxFlags sandbox_flags_;
   scoped_refptr<SecurityOrigin> security_origin_;
-  std::unique_ptr<PermissionsPolicy> feature_policy_;
-  std::unique_ptr<PermissionsPolicy> report_only_feature_policy_;
+  std::unique_ptr<PermissionsPolicy> permissions_policy_;
+  std::unique_ptr<PermissionsPolicy> report_only_permissions_policy_;
   std::unique_ptr<DocumentPolicy> document_policy_;
   std::unique_ptr<DocumentPolicy> report_only_document_policy_;
 

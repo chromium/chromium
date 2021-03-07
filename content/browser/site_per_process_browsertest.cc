@@ -9120,7 +9120,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(CreateParsedPermissionsPolicy(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation},
                 {url.GetOrigin()}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
@@ -9138,7 +9138,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
   // overwrite the old one.
@@ -9146,12 +9146,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(CreateParsedPermissionsPolicyMatchesAll(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page without a policy, the replicated
   // policy header should be cleared.
   EXPECT_TRUE(NavigateToURL(shell(), second_nav_url));
-  EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
+  EXPECT_TRUE(
+      root->current_replication_state().permissions_policy_header.empty());
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
@@ -9169,7 +9170,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {start_url.GetOrigin()}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
   // overwrite the old one.
@@ -9177,12 +9178,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(CreateParsedPermissionsPolicyMatchesAll(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page without a policy, the replicated
   // policy header should be cleared.
   EXPECT_TRUE(NavigateToURL(shell(), second_nav_url));
-  EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
+  EXPECT_TRUE(
+      root->current_replication_state().permissions_policy_header.empty());
 }
 
 // Test that the replicated permissions policy header is correct in subframes as
@@ -9202,14 +9204,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
                 {main_url.GetOrigin(), GURL("http://example.com/")}),
-            root->current_replication_state().feature_policy_header);
+            root->current_replication_state().permissions_policy_header);
   EXPECT_EQ(1UL, root->child_count());
   EXPECT_EQ(
       CreateParsedPermissionsPolicy(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment},
           {main_url.GetOrigin()}),
-      root->child_at(0)->current_replication_state().feature_policy_header);
+      root->child_at(0)->current_replication_state().permissions_policy_header);
 
   // Navigate the iframe cross-site.
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
@@ -9217,13 +9219,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       CreateParsedPermissionsPolicyMatchesAll(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
-      root->child_at(0)->current_replication_state().feature_policy_header);
+      root->child_at(0)->current_replication_state().permissions_policy_header);
 
   // Navigate the iframe to another location, this one with no policy header
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), second_nav_url));
   EXPECT_TRUE(root->child_at(0)
                   ->current_replication_state()
-                  .feature_policy_header.empty());
+                  .permissions_policy_header.empty());
 
   // Navigate the iframe back to a page with a policy
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), first_nav_url));
@@ -9231,7 +9233,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       CreateParsedPermissionsPolicyMatchesAll(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
-      root->child_at(0)->current_replication_state().feature_policy_header);
+      root->child_at(0)->current_replication_state().permissions_policy_header);
 }
 
 // Test that the replicated permissions policy header is correct in remote
@@ -9248,11 +9250,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
+  EXPECT_TRUE(
+      root->current_replication_state().permissions_policy_header.empty());
   EXPECT_EQ(2UL, root->child_count());
   EXPECT_TRUE(root->child_at(1)
                   ->current_replication_state()
-                  .feature_policy_header.empty());
+                  .permissions_policy_header.empty());
 
   // Navigate the iframe to a page with a policy, and a nested cross-site iframe
   // (to the same site as a root->child_at(1) so that the render process already
@@ -9262,7 +9265,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       CreateParsedPermissionsPolicyMatchesNone(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment}),
-      root->child_at(1)->current_replication_state().feature_policy_header);
+      root->child_at(1)->current_replication_state().permissions_policy_header);
 
   EXPECT_EQ(1UL, root->child_at(1)->child_count());
 
@@ -9281,7 +9284,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), second_nav_url));
   EXPECT_TRUE(root->child_at(1)
                   ->current_replication_state()
-                  .feature_policy_header.empty());
+                  .permissions_policy_header.empty());
   EXPECT_EQ(1UL, root->child_at(1)->child_count());
 
   // Ask the deepest iframe to report the enabled state of the geolocation
@@ -9310,7 +9313,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
+  EXPECT_TRUE(
+      root->current_replication_state().permissions_policy_header.empty());
   EXPECT_EQ(1UL, root->child_count());
   // Verify that the child frame is sandboxed with an opaque origin.
   EXPECT_TRUE(root->child_at(0)
@@ -9371,7 +9375,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
-  EXPECT_TRUE(root->current_replication_state().feature_policy_header.empty());
+  EXPECT_TRUE(
+      root->current_replication_state().permissions_policy_header.empty());
   EXPECT_EQ(1UL, root->child_count());
   // Verify that the child frame has an opaque origin.
   EXPECT_TRUE(root->child_at(0)
