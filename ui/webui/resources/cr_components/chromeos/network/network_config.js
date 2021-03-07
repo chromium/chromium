@@ -1179,10 +1179,11 @@ Polymer({
         this.selectedServerCaHash_ = DEFAULT_HASH;
       } else if (!this.guid && this.serverCaCerts_[0]) {
         // For unconfigured networks, default to the first available
-        // certificate, or DO_NOT_CHECK (i.e. skip DEFAULT_HASH). See
-        /// onNetworkCertificatesChanged() for how certificates are added.
+        // certificate and fallback to DEFAULT_HASH. See
+        // onNetworkCertificatesChanged() for how certificates are added.
         let cert = this.serverCaCerts_[0];
-        if (cert.hash === DEFAULT_HASH && this.serverCaCerts_[1]) {
+        if (cert.hash === DEFAULT_HASH &&
+            this.isRealCertUsableForNetworkAuth_(this.serverCaCerts_[1])) {
           cert = this.serverCaCerts_[1];
         }
         this.selectedServerCaHash_ = cert.hash;
@@ -1207,7 +1208,17 @@ Polymer({
       }
     }
   },
-
+  /**
+   * Checks that the hash of the certificate is set and not one of the default
+   * special strings.
+   * @param {chromeos.networkConfig.mojom.NetworkCertificate|undefined} cert
+   * @return {boolean}
+   * @private
+   */
+  isRealCertUsableForNetworkAuth_(cert) {
+    return !!cert && cert.hash !== DO_NOT_CHECK_HASH &&
+        cert.hash !== DEFAULT_HASH;
+  },
   /**
    * @return {boolean}
    * @private
