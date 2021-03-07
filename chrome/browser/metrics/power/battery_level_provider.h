@@ -53,7 +53,8 @@ class BatteryLevelProvider {
   BatteryLevelProvider(const BatteryLevelProvider& other) = delete;
   BatteryLevelProvider& operator=(const BatteryLevelProvider& other) = delete;
 
-  // Returns the current battery state.
+  // Returns the current battery state. Since this causes blocking calls on
+  // windows, it should only be called on a sequence that's allowed to block.
   virtual BatteryState GetBatteryState();
 
  protected:
