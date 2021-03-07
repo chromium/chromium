@@ -47,7 +47,8 @@ namespace {
 
 const int kSimRetriesLeft = 3;
 const char kCellularDevicePath[] = "/device/stub_cellular_device";
-const char kCellularIccid[] = "iccid";
+const char kCellularTestIccid[] = "1234567890";
+const char kCellularTestEid[] = "1234567890";
 
 const char kCellularTestApn1[] = "TEST.APN1";
 const char kCellularTestApnName1[] = "Test Apn 1";
@@ -185,9 +186,10 @@ class CrosNetworkConfigTest : public testing::Test {
     helper().device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty, sim_value,
         /*notify_changed=*/false);
-    helper().device_test()->SetDeviceProperty(
-        kCellularDevicePath, shill::kIccidProperty, base::Value(kCellularIccid),
-        /*notify_changed=*/false);
+    helper().device_test()->SetDeviceProperty(kCellularDevicePath,
+                                              shill::kIccidProperty,
+                                              base::Value(kCellularTestIccid),
+                                              /*notify_changed=*/false);
     helper().device_test()->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMPresentProperty, base::Value(true),
         /*notify_changed=*/false);
@@ -206,8 +208,9 @@ class CrosNetworkConfigTest : public testing::Test {
         R"({"GUID": "cellular_guid", "Type": "cellular",  "State": "idle",
             "Strength": 0, "Cellular.NetworkTechnology": "LTE",
             "Cellular.ActivationState": "activated", "Cellular.ICCID": "%s",
-            "Profile": "%s"})",
-        kCellularIccid, NetworkProfileHandler::GetSharedProfilePath().c_str()));
+            "Cellular.EID": "%s", "Profile": "%s"})",
+        kCellularTestIccid, kCellularTestEid,
+        NetworkProfileHandler::GetSharedProfilePath().c_str()));
     helper().ConfigureService(
         R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
             "Provider": {"Type": "l2tpipsec"}})");
@@ -617,6 +620,8 @@ TEST_F(CrosNetworkConfigTest, GetNetworkState) {
   EXPECT_EQ(0, cellular->signal_strength);
   EXPECT_EQ("LTE", cellular->network_technology);
   EXPECT_EQ(mojom::ActivationStateType::kActivated, cellular->activation_state);
+  EXPECT_EQ(kCellularTestIccid, cellular->iccid);
+  EXPECT_EQ(kCellularTestEid, cellular->eid);
   EXPECT_EQ(mojom::OncSource::kDevice, network->source);
   EXPECT_TRUE(cellular->sim_locked);
 
