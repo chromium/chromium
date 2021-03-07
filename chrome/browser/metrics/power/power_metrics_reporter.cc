@@ -55,8 +55,10 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
   ReportHistograms(sampling_interval, interval_duration,
                    discharge_mode_and_rate.first,
                    discharge_mode_and_rate.second);
-  ReportUKMs(metrics, interval_duration, discharge_mode_and_rate.first,
-             discharge_mode_and_rate.second);
+  if (report_ukms_) {
+    ReportUKMs(metrics, interval_duration, discharge_mode_and_rate.first,
+               discharge_mode_and_rate.second);
+  }
 }
 
 void PowerMetricsReporter::ReportHistograms(
