@@ -999,12 +999,10 @@ PaintFlagsPaintFilter::PaintFlagsPaintFilter(PaintFlags flags,
     shader = SkShaders::Color(paint.getColor());
   }
 
-  // TODO(michaelludwig): Remove SkFilterQuality arg once all image shaders are
-  // created with explicit filter settings
   using Dither = SkImageFilters::Dither;
   cached_sk_filter_ = SkImageFilters::Shader(
       std::move(shader), paint.isDither() ? Dither::kYes : Dither::kNo,
-      paint.getFilterQuality(), crop_rect);
+      crop_rect);
 }
 
 PaintFlagsPaintFilter::~PaintFlagsPaintFilter() = default;

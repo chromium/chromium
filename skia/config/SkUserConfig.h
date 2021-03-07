@@ -220,8 +220,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define GR_OP_ALLOCATE_USE_NEW
 
-#define SK_SUPPORT_LEGACY_IMPLICIT_FILTERQUALITY
-
 // Staging for lowp::bilerp_clamp_8888, and for planned misc. others.
 #define SK_DISABLE_LOWP_BILERP_CLAMP_CLAMP_STAGE
 

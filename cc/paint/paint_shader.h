@@ -182,9 +182,13 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   explicit PaintShader(Type type);
 
-  sk_sp<SkShader> GetSkShader() const;
-  void CreateSkShader(const gfx::SizeF* raster_scale = nullptr,
-                      ImageProvider* image_provider = nullptr);
+  sk_sp<SkShader> GetSkShader(SkFilterQuality quality) const;
+
+  // If the type needs a resolve skia object (e.g. SkImage or SkPicture), this
+  // will create and cache it internally. Most types do not need this, but it
+  // is safe to call on any type.
+  void ResolveSkObjects(const gfx::SizeF* raster_scale = nullptr,
+                        ImageProvider* image_provider = nullptr);
 
   // Creates a PaintShader to be rasterized at the given ctm. |raster_scale| is
   // set to the scale at which the record should be rasterized when the shader
@@ -251,10 +255,9 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   std::vector<SkColor> colors_;
   std::vector<SkScalar> positions_;
 
-  // The |cached_shader_| can be derived/creates from other inputs present in
-  // the PaintShader but we always construct it at creation time to ensure that
-  // accesses to it are thread-safe.
-  sk_sp<SkShader> cached_shader_;
+  // Cached intermediates, for cc::Paint objects that may not be thread-safe
+  sk_sp<SkPicture> sk_cached_picture_;
+  sk_sp<SkImage> sk_cached_image_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
 };

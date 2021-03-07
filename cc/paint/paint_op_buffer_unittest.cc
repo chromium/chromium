@@ -3392,7 +3392,6 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   EXPECT_FLOAT_RECT_EQ(rect_op->rect, SkRect::MakeXYWH(1, 2, 3, 4));
   EXPECT_TRUE(rect_op->flags == flags);
   EXPECT_TRUE(*rect_op->flags.getShader() == *flags.getShader());
-  EXPECT_TRUE(!!rect_op->flags.getShader()->GetSkShader());
 }
 
 #if !defined(OS_ANDROID)
@@ -3696,7 +3695,7 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
 
   // Hold onto records so PaintShader pointer comparisons are valid.
   sk_sp<PaintRecord> records[5];
-  const SkShader* last_shader = nullptr;
+  SkPicture* last_shader = nullptr;
   std::vector<uint8_t> scratch_buffer;
   PaintOp::DeserializeOptions deserialize_options(
       transfer_cache, options_provider.service_paint_cache(),
@@ -3731,8 +3730,8 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
 
       // In every case, the shader in the op should get cached for future
       // use.
-      auto* op_skshader = op->flags.getShader()->GetSkShader().get();
-      EXPECT_EQ(op_skshader, entry->shader()->GetSkShader().get());
+      auto* op_skshader = op->flags.getShader()->sk_cached_picture_.get();
+      EXPECT_EQ(op_skshader, entry->shader()->sk_cached_picture_.get());
       switch (i) {
         case 0:
           // Nothing to check.

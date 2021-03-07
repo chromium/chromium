@@ -590,7 +590,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
 
   // All shader types but records are done.
   if (shader_type != PaintShader::Type::kPaintRecord) {
-    (*shader)->CreateSkShader();
+    (*shader)->ResolveSkObjects();
     return;
   }
 
@@ -607,10 +607,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   // side transfer cache to only having one entry per shader but this will hit
   // the common case of enabling Skia reuse.
   if (entry && entry->shader()->tile_ == ref.tile_) {
-    DCHECK(!ref.cached_shader_);
-    ref.cached_shader_ = entry->shader()->GetSkShader();
+    DCHECK(!ref.sk_cached_picture_);
+    ref.sk_cached_picture_ = entry->shader()->sk_cached_picture_;
   } else {
-    ref.CreateSkShader();
+    ref.ResolveSkObjects();
+    DCHECK(ref.sk_cached_picture_);
     options_.transfer_cache->CreateLocalEntry(
         shader_id, std::make_unique<ServiceShaderTransferCacheEntry>(
                        *shader, shader_size));

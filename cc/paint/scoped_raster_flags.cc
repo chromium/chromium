@@ -101,8 +101,8 @@ void ScopedRasterFlags::DecodeRecordShader(const SkMatrix& ctm,
   gfx::SizeF raster_scale(1.f, 1.f);
   auto decoded_shader = flags()->getShader()->CreateScaledPaintRecord(
       ctm, max_texture_size, &raster_scale);
-  decoded_shader->CreateSkShader(&raster_scale,
-                                 &*decode_stashing_image_provider_);
+  decoded_shader->ResolveSkObjects(&raster_scale,
+                                   &*decode_stashing_image_provider_);
   MutableFlags()->setShader(std::move(decoded_shader));
 }
 
