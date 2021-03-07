@@ -37,8 +37,6 @@ class PowerMetricsReporter
     return battery_state_;
   }
 
-  void EnableUKMReportingForTesting() { report_ukms_ = true; }
-
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
   // and ukm.xml
@@ -94,10 +92,6 @@ class PowerMetricsReporter
 
   // The first interval will start when this class gets created.
   base::TimeTicks interval_begin_ = base::TimeTicks::Now();
-
-  // Indicates if ukms should be reported upon OnAggregatedMetricsSampled().
-  // TODO(1153193): Remove once ukm is recorded.
-  bool report_ukms_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

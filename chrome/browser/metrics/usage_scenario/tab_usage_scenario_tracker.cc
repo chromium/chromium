@@ -66,18 +66,7 @@ void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
 
 void TabUsageScenarioTracker::OnTabRemoved(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto iter = visible_tabs_.find(web_contents);
-  DCHECK_EQ(iter != visible_tabs_.end(),
-            web_contents->GetVisibility() == content::Visibility::VISIBLE);
-  auto video_iter = contents_playing_video_.find(web_contents);
-  // If |web_contents| is tracked in the list of visible WebContents then a
-  // synthetic visibility change event should be emitted.
-  if (iter != visible_tabs_.end()) {
-    OnTabBecameHidden(&iter);
-  }
-  if (video_iter != contents_playing_video_.end()) {
-    contents_playing_video_.erase(video_iter);
-  }
+  OnWebContentsRemoved(web_contents);
   usage_scenario_data_store_->OnTabClosed();
 }
 
@@ -85,8 +74,14 @@ void TabUsageScenarioTracker::OnTabReplaced(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  OnWebContentsRemoved(old_contents);
   DCHECK(!base::Contains(visible_tabs_, old_contents));
   DCHECK(!base::Contains(contents_playing_video_, old_contents));
+  DCHECK_NE(content_with_media_playing_fullscreen_, old_contents);
+
+  // Start tracking |new_contents| if needed.
+  if (new_contents->GetVisibility() == content::Visibility::VISIBLE)
+    OnTabVisibilityChanged(new_contents);
 }
 
 void TabUsageScenarioTracker::OnTabVisibilityChanged(
@@ -216,18 +211,6 @@ void TabUsageScenarioTracker::OnDisplayRemoved(const display::Display& unused) {
   }
 }
 
-void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
-    content::WebContents* web_contents) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(visible_tabs_, web_contents));
-  auto iter = visible_tabs_.emplace(web_contents,
-                                    GetNavigationInfoForContents(web_contents));
-  if (iter.first->second.first != ukm::kInvalidSourceId) {
-    usage_scenario_data_store_->OnUkmSourceBecameVisible(
-        iter.first->second.first, iter.first->second.second);
-  }
-}
-
 void TabUsageScenarioTracker::OnContentStoppedPlayingMediaFullScreen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   usage_scenario_data_store_->OnFullScreenVideoEndsOnSingleMonitor();
@@ -257,6 +240,35 @@ void TabUsageScenarioTracker::OnTabBecameHidden(
 
   visible_tabs_.erase(*visible_tab_iter);
   usage_scenario_data_store_->OnWindowHidden();
+}
+
+void TabUsageScenarioTracker::OnWebContentsRemoved(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto iter = visible_tabs_.find(web_contents);
+  DCHECK_EQ(iter != visible_tabs_.end(),
+            web_contents->GetVisibility() == content::Visibility::VISIBLE);
+  auto video_iter = contents_playing_video_.find(web_contents);
+  // If |web_contents| is tracked in the list of visible WebContents then a
+  // synthetic visibility change event should be emitted.
+  if (iter != visible_tabs_.end()) {
+    OnTabBecameHidden(&iter);
+  }
+  if (video_iter != contents_playing_video_.end()) {
+    contents_playing_video_.erase(video_iter);
+  }
+}
+
+void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
+    content::WebContents* web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base::Contains(visible_tabs_, web_contents));
+  auto iter = visible_tabs_.emplace(web_contents,
+                                    GetNavigationInfoForContents(web_contents));
+  if (iter.first->second.first != ukm::kInvalidSourceId) {
+    usage_scenario_data_store_->OnUkmSourceBecameVisible(
+        iter.first->second.first, iter.first->second.second);
+  }
 }
 
 }  // namespace metrics
