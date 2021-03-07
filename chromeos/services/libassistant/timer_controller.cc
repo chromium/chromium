@@ -5,19 +5,19 @@
 #include "chromeos/services/libassistant/timer_controller.h"
 #include "base/thread_annotations.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 #include "libassistant/shared/internal_api/alarm_timer_manager.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_146S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
 #include "libassistant/shared/internal_api/alarm_timer_types.h"
-#endif  // ENABLE_LIBASSISTANT_146S
+#endif  // BUILD_LIBASSISTANT_146S
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
 #include "libassistant/shared/public/alarm_timer_types.h"
-#endif  // ENABLE_LIBASSISTANT_152S
+#endif  // BUILD_LIBASSISTANT_152S
 
 namespace chromeos {
 namespace libassistant {

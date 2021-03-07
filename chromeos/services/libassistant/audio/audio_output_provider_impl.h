@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "chromeos/services/libassistant/audio/audio_device_owner.h"
@@ -41,16 +41,16 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioOutputProvider overrides:
-#if BUILDFLAG(ENABLE_LIBASSISTANT_146S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
   assistant_client::AudioOutput* CreateAudioOutput(
       assistant_client::OutputStreamType type,
       const assistant_client::OutputStreamFormat& stream_format) override;
-#endif  // ENABLE_LIBASSISTANT_146S
+#endif  // BUILD_LIBASSISTANT_146S
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
   assistant_client::AudioOutput* CreateAudioOutput(
       assistant_client::OutputStreamMetadata metadata) override;
-#endif  // ENABLE_LIBASSISTANT_152S
+#endif  // BUILD_LIBASSISTANT_152S
 
   std::vector<assistant_client::OutputStreamEncoding>
   GetSupportedStreamEncodings() override;

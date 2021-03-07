@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
 
 namespace network {
@@ -32,9 +32,9 @@ class ChromiumApiDelegate : public assistant_client::FuchsiaApiDelegate {
   // assistant_client::FuchsiaApiDelegate overrides:
   assistant_client::HttpConnectionFactory* GetHttpConnectionFactory() override;
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
   void OverrideDoNotDisturb(bool do_not_disturb_enabled) override {}
-#endif  // ENABLE_LIBASSISTANT_152S
+#endif  // BUILD_LIBASSISTANT_152S
 
  private:
   ChromiumHttpConnectionFactory http_connection_factory_;

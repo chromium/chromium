@@ -8,10 +8,6 @@ declare_args() {
   # Enable a fake microphone, which can replay audio files as microphone input.
   # See chromeos/assistant/tools/send-audio.sh
   enable_fake_assistant_microphone = false
-
-  # Enable code path to implement the next version of libassistant. This is for
-  # development only.
-  enable_libassistant_next = false
 }
 
 declare_args() {
@@ -20,9 +16,4 @@ declare_args() {
   # server, which increases the library size, which is why we introduced this
   # flag to disable them in the release builds.
   enable_assistant_integration_tests = enable_cros_libassistant
-
-  # Temporary flags to enable different version of libassistant. Modify the
-  # version suffix accordingly.
-  enable_libassistant_146s = !enable_libassistant_next
-  enable_libassistant_152s = enable_libassistant_next
 }

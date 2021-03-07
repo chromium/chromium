@@ -178,21 +178,21 @@ void AudioOutputProviderImpl::Bind(
 AudioOutputProviderImpl::~AudioOutputProviderImpl() = default;
 
 // Called from the Libassistant thread.
-#if BUILDFLAG(ENABLE_LIBASSISTANT_146S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamType type,
     const assistant_client::OutputStreamFormat& stream_format) {
   return CreateAudioOutputInternal(type, stream_format);
 }
-#endif  // ENABLE_LIBASSISTANT_146S
+#endif  // BUILD_LIBASSISTANT_146S
 
-#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
 assistant_client::AudioOutput* AudioOutputProviderImpl::CreateAudioOutput(
     assistant_client::OutputStreamMetadata metadata) {
   return CreateAudioOutputInternal(metadata.type,
                                    metadata.buffer_stream_format);
 }
-#endif  // ENABLE_LIBASSISTANT_152S
+#endif  // BUILD_LIBASSISTANT_152S
 
 // Called from the Libassistant thread.
 std::vector<assistant_client::OutputStreamEncoding>

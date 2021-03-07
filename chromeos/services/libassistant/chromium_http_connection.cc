@@ -14,7 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/buildflag.h"
-#include "chromeos/assistant/buildflags.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/header_util.h"
@@ -152,7 +152,7 @@ void ChromiumHttpConnection::Start() {
     case Method::HEAD:
       resource_request->method = "HEAD";
       break;
-#if BUILDFLAG(ENABLE_LIBASSISTANT_152S)
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
     case Method::PATCH:
       resource_request->method = "PATCH";
       break;
@@ -162,7 +162,7 @@ void ChromiumHttpConnection::Start() {
     case Method::DELETE:
       resource_request->method = "DELETE";
       break;
-#endif  // ENABLE_LIBASSISTANT_152S
+#endif  // BUILD_LIBASSISTANT_152S
   }
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
