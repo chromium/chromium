@@ -1513,9 +1513,14 @@ class PreCompositedLayerPaintChunkFinder {
         pre_composited_layer_it_(pre_composited_layers_.begin()),
         subset_iterator_(pre_composited_layer_it_->chunks.begin()) {}
 
-  const PaintChunk& current_chunk() { return *subset_iterator_; }
+  const PaintChunk& current_chunk() {
+    CHECK(pre_composited_layer_it_ != pre_composited_layers_.end());
+    CHECK(subset_iterator_ != pre_composited_layer_it_->chunks.end());
+    return *subset_iterator_;
+  }
 
   const PaintArtifact& current_artifact() {
+    CHECK(pre_composited_layer_it_ != pre_composited_layers_.end());
     return pre_composited_layer_it_->chunks.GetPaintArtifact();
   }
 
@@ -1527,6 +1532,8 @@ class PreCompositedLayerPaintChunkFinder {
         ++subset_iterator_;
       }
       pre_composited_layer_it_++;
+      if (pre_composited_layer_it_ == pre_composited_layers_.end())
+        break;
       subset_iterator_ = pre_composited_layer_it_->chunks.begin();
     }
     // Unable to find a matching paint chunk.
