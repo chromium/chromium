@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
@@ -321,7 +322,13 @@ void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/1167062): Implement.
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAutofillAddressProfileSavePrompt));
+  auto delegate = std::make_unique<AutofillSaveAddressProfileDelegateIOS>(
+      profile, std::move(callback));
+  infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+      std::move(delegate)));
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
