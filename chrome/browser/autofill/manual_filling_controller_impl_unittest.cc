@@ -240,6 +240,23 @@ TEST_F(ManualFillingControllerLegacyTest,
   FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
 }
 
+TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableSearchField);
+
+  EXPECT_CALL(*view(), ShowWhenKeyboardIsVisible());
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  // Hiding autofill hides the accessory because fallbacks alone don't provide
+  // sufficient value and might be confusing.
+  EXPECT_CALL(*view(), Hide()).Times(1);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/false);
+}
+
 TEST_F(ManualFillingControllerTest,
        HidesAccessoryWithoutSuggestionsOnNonPasswordFields) {
   SetSuggestionsAndClearExpectations(

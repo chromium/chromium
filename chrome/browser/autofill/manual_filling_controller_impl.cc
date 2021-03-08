@@ -308,8 +308,12 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
              base::FeatureList::IsEnabled(
                  password_manager::features::kFillingPasswordsFromAnyOrigin);
 
-    // Even if there are suggestions, don't show on search fields and textareas.
+    // Fallbacks aren't really useful on search fields but autocomplete entries
+    // justify showing the accessory.
     case FocusedFieldType::kFillableSearchField:
+      return available_sources_.contains(FillingSource::AUTOFILL);
+
+    // Even if there are suggestions, don't show on textareas.
     case FocusedFieldType::kFillableTextArea:
       return false;  // TODO(https://crbug.com/965478): true on long-press.
 
