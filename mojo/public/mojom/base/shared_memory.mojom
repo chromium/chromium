@@ -20,6 +20,7 @@ struct WritableSharedMemoryRegion {
 // Wraps a shared memory handle with additional type information to convey that
 // the handle is always mappable to writable memory by any client which obtains
 // a handle duplicated from this one.
+[Stable]
 struct UnsafeSharedMemoryRegion {
   handle<shared_buffer> buffer;
 };

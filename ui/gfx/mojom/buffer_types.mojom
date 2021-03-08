@@ -45,11 +45,13 @@ struct BufferUsageAndFormat {
 };
 
 // gfx::GpuMemoryBufferId
+[Stable]
 struct GpuMemoryBufferId {
   int32 id;
 };
 
 // gfx::GpuMemoryBufferHandle
+[Stable]
 struct GpuMemoryBufferHandle {
   GpuMemoryBufferId id;
   uint32 offset;
