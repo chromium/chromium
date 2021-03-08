@@ -29,6 +29,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/common/utils/base_string.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -543,13 +544,7 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
   // On case-insensitive file systems we will load messages by matching them
   // with locale names (see LoadMessageCatalogs). Reversed comparison must still
   // work here, when we match locale name with file name.
-  auto find_iter = std::find_if(all_locales.begin(), all_locales.end(),
-                                [subdir](const std::string& locale) {
-                                  return base::CompareCaseInsensitiveASCII(
-                                             subdir, locale) == 0;
-                                });
-
-  if (find_iter == all_locales.end())
+  if (!extensions::ContainsStringIgnoreCaseASCII(all_locales, subdir))
     return true;
 
   return false;

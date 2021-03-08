@@ -32,6 +32,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/utils/base_string.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -139,7 +140,7 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
       std::move(indexed_ruleset_paths), extension->version(), source_type);
 }
 
-// Returns all locales, possibly with lowercasing them for case-insensitive OS.
+// Returns all locales.
 std::set<std::string> GetAllLocaleCandidates() {
   std::set<std::string> all_locales;
   // TODO(asargent) - see if we can cache this list longer to avoid
@@ -147,19 +148,8 @@ std::set<std::string> GetAllLocaleCandidates() {
   // browser. Maybe it can never change at runtime? (Or if it can, maybe
   // there is an event we can listen for to know to drop our cache).
   extension_l10n_util::GetAllLocales(&all_locales);
-  if (content_verifier_utils::IsFileAccessCaseSensitive())
-    return all_locales;
-
-  // Lower-case the locales candidate so we can search in
-  // case-insensitive manner for win/mac.
-  std::set<std::string> all_locales_candidate;
-  std::transform(
-      all_locales.begin(), all_locales.end(),
-      std::inserter(all_locales_candidate, all_locales_candidate.begin()),
-      [](const std::string& locale) { return base::ToLowerASCII(locale); });
-  return all_locales_candidate;
+  return all_locales;
 }
-
 }  // namespace
 
 struct ContentVerifier::CacheKey {
@@ -772,8 +762,9 @@ bool ContentVerifier::ShouldVerifyAnyPaths(
       // _locales/<some locale>/messages.json - if so then skip it.
       if (canonical_path.BaseName() == messages_file &&
           canonical_path.DirName().DirName() == locales_relative_dir &&
-          base::Contains(*all_locale_candidates,
-                         canonical_path.DirName().BaseName().MaybeAsASCII())) {
+          ContainsStringIgnoreCaseASCII(
+              *all_locale_candidates,
+              canonical_path.DirName().BaseName().MaybeAsASCII())) {
         continue;
       }
     }

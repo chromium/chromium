@@ -331,6 +331,8 @@ if (enable_extensions) {
       "url_pattern_set.h",
       "user_script.cc",
       "user_script.h",
+      "utils/base_string.cc",
+      "utils/base_string.h",
       "value_builder.cc",
       "value_builder.h",
       "value_counter.cc",
