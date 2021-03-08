@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_url_loader.h"
 #include "services/network/cors/preflight_controller.h"
@@ -496,6 +497,17 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     // Callers are expected to ensure that |method| follows RFC 7230.
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: invalid characters in method");
+    return false;
+  }
+
+  // Don't allow forbidden methods for any requests except RequestMode::kNoCors.
+  // Don't allow CONNECT method for any request.
+  if ((request.mode != mojom::RequestMode::kNoCors &&
+       cors::IsForbiddenMethod(request.method)) ||
+      (request.mode == mojom::RequestMode::kNoCors &&
+       base::EqualsCaseInsensitiveASCII(
+           request.method, net::HttpRequestHeaders::kConnectMethod))) {
+    mojo::ReportBadMessage("CorsURLLoaderFactory: Forbidden method");
     return false;
   }
 

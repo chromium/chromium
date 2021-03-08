@@ -25,6 +25,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
+#include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request_context.h"
@@ -457,6 +458,70 @@ TEST_F(CorsURLLoaderTest, NoCorsWithInvalidMethod) {
   EXPECT_THAT(bad_message_helper.bad_message_reports(),
               ::testing::ElementsAre(
                   "CorsURLLoaderFactory: invalid characters in method"));
+}
+
+TEST_F(CorsURLLoaderTest, ForbiddenMethods) {
+  const struct {
+    std::string forbidden_method;
+    bool expect_allowed_for_no_cors;
+  } kTestCases[] = {
+      // CONNECT is never allowed, while TRACE and TRACK are allowed only with
+      // RequestMode::kNoCors.
+      {"CONNECT", false},
+      {"TRACE", true},
+      {"TRACK", true},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.forbidden_method);
+    for (const mojom::RequestMode mode :
+         {mojom::RequestMode::kSameOrigin, mojom::RequestMode::kNoCors,
+          mojom::RequestMode::kCors,
+          mojom::RequestMode::kCorsWithForcedPreflight,
+          mojom::RequestMode::kNavigate}) {
+      SCOPED_TRACE(mode);
+
+      const url::Origin default_initiator_origin =
+          url::Origin::Create(GURL("https://example.com"));
+      ResetFactory(
+          url::Origin::Create(GURL("https://example.com")) /* initiator */,
+          mojom::kBrowserProcessId);
+
+      bool expect_allowed = (mode == mojom::RequestMode::kNoCors &&
+                             test_case.expect_allowed_for_no_cors);
+
+      ResourceRequest request;
+      request.mode = mode;
+      request.credentials_mode = mojom::CredentialsMode::kInclude;
+      request.url = GURL("https://example.com/");
+      request.request_initiator = url::Origin::Create(request.url);
+      request.method = test_case.forbidden_method;
+
+      BadMessageTestHelper bad_message_helper;
+      CreateLoaderAndStart(request);
+      if (expect_allowed) {
+        RunUntilCreateLoaderAndStartCalled();
+        NotifyLoaderClientOnReceiveResponse();
+        NotifyLoaderClientOnComplete(net::OK);
+      }
+      RunUntilComplete();
+
+      EXPECT_EQ(expect_allowed, IsNetworkLoaderStarted());
+      EXPECT_FALSE(client().has_received_redirect());
+      EXPECT_EQ(expect_allowed, client().has_received_response());
+      EXPECT_TRUE(client().has_received_completion());
+      if (expect_allowed) {
+        EXPECT_THAT(client().completion_status().error_code, net::test::IsOk());
+        EXPECT_THAT(bad_message_helper.bad_message_reports(),
+                    ::testing::IsEmptyMatcher());
+      } else {
+        EXPECT_THAT(client().completion_status().error_code,
+                    net::test::IsError(net::ERR_INVALID_ARGUMENT));
+        EXPECT_THAT(
+            bad_message_helper.bad_message_reports(),
+            ::testing::ElementsAre("CorsURLLoaderFactory: Forbidden method"));
+      }
+    }
+  }
 }
 
 TEST_F(CorsURLLoaderTest, SameOriginWithoutInitiator) {
