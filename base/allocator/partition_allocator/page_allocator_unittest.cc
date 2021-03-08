@@ -32,6 +32,9 @@
 
 #if defined(__ARM_FEATURE_MEMORY_TAGGING)
 #include <arm_acle.h>
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+#define MTE_KILLED_BY_SIGNAL_AVAILABLE
+#endif
 #endif
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -178,7 +181,7 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadExecuteConfirmCFI) {
 #endif
     return;
   }
-#if defined(ARCH_CPU_ARM64) && (defined(OS_LINUX) || defined(OS_ANDROID))
+#if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   // Next, map some read-write memory and copy the BTI-enabled function there.
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageReadWrite,
@@ -202,8 +205,8 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadExecuteConfirmCFI) {
       reinterpret_cast<int64_t (*)(int64_t)>(bufferi + invalid_offset);
   EXPECT_EQ(bti_enabled_fn(15), 18);
   // Next, attempt to call the function without the entrypoint.
-  EXPECT_EXIT({ bti_invalid_fn(15); }, testing::ExitedWithCode(1),
-              "");  // Should crash.
+  EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
+              "");  // Should crash with SIGILL.
   FreePages(buffer, PageAllocationGranularity());
 #else
   NOTREACHED();
@@ -223,7 +226,7 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
     return;
   }
 
-#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageReadWriteTagged,
                             PageTag::kChromium);
@@ -239,16 +242,13 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
   ASSERT_NE(buffer0, buffer1);
   EXPECT_EXIT(
       {
-        // Make absolutely sure that that we're in synchronous mode - we should
-        // be (since this stuff carries over on fork()) but if something changes
-        // in gtest, we need to make sure.
-        base::memory::ChangeMemoryTaggingModeForCurrentThread(
-            base::memory::TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
-        // should be delivered.
+        // should be delivered (the test should already be running in
+        // synchronous MTE mode due to AndroidManifest.xml or `am compat` (on
+        // Android) or test_runner.cc on Linux.
         *buffer0 = 42;
       },
-      testing::ExitedWithCode(1), "");
+      testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
 #else
   NOTREACHED();
@@ -267,7 +267,7 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
     return;
   }
 
-#if defined(__ARM_FEATURE_MEMORY_TAGGING)
+#if defined(MTE_KILLED_BY_SIGNAL_AVAILABLE)
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageReadWriteTagged,
                             PageTag::kChromium);
@@ -288,7 +288,7 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
         LOG(ERROR) << "=";  // Until we receive control back from the kernel
                             // (e.g. on a system call).
       },
-      testing::ExitedWithCode(1), "");
+      testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
 #else
   NOTREACHED();

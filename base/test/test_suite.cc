@@ -479,10 +479,18 @@ int TestSuite::Run() {
   test_listener_ios::RegisterTestEndListener();
 #endif
 
-  // Opts this test into synchronous MTE mode, where pointer mismatches
-  // will be detected immediately.
+#if defined(OS_LINUX)
+  // There's no standard way to opt processes into MTE on Linux just yet,
+  // so this call explicitly opts this test into synchronous MTE mode, where
+  // pointer mismatches are detected immediately.
   base::memory::ChangeMemoryTaggingModeForCurrentThread(
       base::memory::TagViolationReportingMode::kSynchronous);
+#elif defined(OS_ANDROID)
+    // On Android, the tests are opted into synchronous MTE mode by the
+    // memtagMode attribute in an AndroidManifest.xml file or via an `am compat`
+    // command, so and explicit call to ChangeMemoryTaggingModeForCurrentThread
+    // is not needed.
+#endif
 
   int result = RUN_ALL_TESTS();
 
