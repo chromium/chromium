@@ -81,6 +81,8 @@ void InitializeOneOffHelper(bool init_extensions) {
           impl = kGLImplementationEGLANGLE;
           base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
               switches::kUseANGLE, kANGLEImplementationSwiftShaderName);
+          base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+              switches::kUseCmdDecoder, kCmdDecoderValidatingName);
           break;
         }
       }
