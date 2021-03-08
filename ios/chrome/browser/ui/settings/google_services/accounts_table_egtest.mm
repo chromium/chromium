@@ -201,8 +201,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -227,8 +226,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -257,8 +255,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -286,8 +283,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];

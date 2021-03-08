@@ -31,6 +31,22 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
                     enableSync:(BOOL)enableSync;
 
 // Signs the primary account out of Chrome through the accounts list screen.
+// Taps the "Sign Out" button to begin flow. Note that managed accounts cannot
+// go through this flow. There will be a GREYAssert if the tools menus is open
+// when calling this method or if the account is not successfully signed out.
+// This method should be used until SimplifySignOutIOS is turned on. Otherwise,
+// |signOutWithConfirmationChoice:| should be used.
++ (void)signOut;
+
+// Signs the primary account out of Chrome through the accounts list screen.
+// Taps the "Sign out and clear data from this device" button to begin flow.
+// There will be a GREYAssert if the tools menus is open when calling this
+// method or if the account is not successfully signed out.
+// This method should be used until SimplifySignOutIOS is turned on. Otherwise,
+// |signOutWithConfirmationChoice:| should be used.
++ (void)signOutAndClearDataFromDevice;
+
+// Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button, and then validated the confirmation dialog
 // according to |confirmation|.
 // This method should be used only if SimplifySignOutIOS is turned on.
