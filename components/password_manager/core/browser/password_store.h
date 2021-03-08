@@ -156,10 +156,10 @@ class PasswordStore : protected PasswordStoreSync,
 
   // Sets the affiliation-based match |helper| that will be used by subsequent
   // GetLogins() calls to return credentials stored not only for the requested
-  // sign-on realm, but also for affiliated Android applications. If |helper| is
-  // null, clears the the currently set helper if any. Unless a helper is set,
-  // affiliation-based matching is disabled. The passed |helper| must already be
-  // initialized if it is non-null.
+  // sign-on realm, but also for affiliated Android applications and Web realms.
+  // If |helper| is null, clears the the currently set helper if any. Unless a
+  // helper is set, affiliation-based matching is disabled. The passed |helper|
+  // must already be initialized if it is non-null.
   void SetAffiliatedMatchHelper(std::unique_ptr<AffiliatedMatchHelper> helper);
   AffiliatedMatchHelper* affiliated_match_helper() const {
     return affiliated_match_helper_.get();
@@ -764,21 +764,22 @@ class PasswordStore : protected PasswordStoreSync,
   std::vector<std::unique_ptr<PasswordForm>> GetAllLoginsImpl();
 
   // Extended version of GetLoginsImpl that also returns credentials stored for
-  // the specified affiliated Android applications. That is, it finds all
-  // PasswordForms with a signon_realm that is either:
+  // the specified affiliated Android applications and Web realms. That is, it
+  // finds all PasswordForms with a signon_realm that is either:
   //  * equal to that of |form|,
   //  * is a PSL-match to the realm of |form|,
-  //  * is one of those in |additional_android_realms|,
+  //  * is one of those in |additional_affiliated_realms|,
   // and returns the result.
   std::vector<std::unique_ptr<PasswordForm>> GetLoginsWithAffiliationsImpl(
       const FormDigest& form,
-      const std::vector<std::string>& additional_android_realms);
+      const std::vector<std::string>& additional_affiliated_realms);
 
   // Extended version of GetMatchingInsecureCredentialsImpl that also returns
-  // credentials stored for the specified affiliated Android applications.
+  // credentials stored for the specified affiliated Android applications or Web
+  // realms.
   std::vector<InsecureCredential> GetInsecureCredentialsWithAffiliationsImpl(
       const std::string& signon_realm,
-      const std::vector<std::string>& additional_android_realms);
+      const std::vector<std::string>& additional_affiliated_realms);
 
   // Retrieves and fills in affiliation and branding information for Android
   // credentials in |forms| and invokes |callback| with the result. Called on
@@ -793,14 +794,14 @@ class PasswordStore : protected PasswordStoreSync,
       base::WeakPtr<PasswordStoreConsumer> consumer,
       const PasswordStore::FormDigest& form,
       base::Time cutoff,
-      const std::vector<std::string>& additional_android_realms);
+      const std::vector<std::string>& additional_affiliated_realms);
 
   // Schedules GetInsecureCredentialsWithAffiliationsImpl() to be run on the
   // background sequence.
   void ScheduleGetInsecureCredentialsWithAffiliations(
       base::WeakPtr<InsecureCredentialsConsumer> consumer,
       const std::string& signon_realm,
-      const std::vector<std::string>& additional_android_realms);
+      const std::vector<std::string>& additional_affiliated_realms);
 
   // Retrieves the currently stored form, if any, with the same primary key as
   // |form|, that is, with the same signon_realm, url, username_element,

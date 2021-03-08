@@ -1179,10 +1179,10 @@ std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetAllLoginsImpl() {
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStore::GetLoginsWithAffiliationsImpl(
     const FormDigest& form,
-    const std::vector<std::string>& additional_android_realms) {
+    const std::vector<std::string>& additional_affiliated_realms) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   std::vector<std::unique_ptr<PasswordForm>> results(FillMatchingLogins(form));
-  for (const std::string& realm : additional_android_realms) {
+  for (const std::string& realm : additional_affiliated_realms) {
     std::vector<std::unique_ptr<PasswordForm>> more_results(
         FillMatchingLogins({PasswordForm::Scheme::kHtml, realm, GURL()}));
     for (auto& result : more_results)
@@ -1198,11 +1198,11 @@ PasswordStore::GetLoginsWithAffiliationsImpl(
 std::vector<InsecureCredential>
 PasswordStore::GetInsecureCredentialsWithAffiliationsImpl(
     const std::string& signon_realm,
-    const std::vector<std::string>& additional_android_realms) {
+    const std::vector<std::string>& additional_affiliated_realms) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   std::vector<InsecureCredential> results(
       GetMatchingInsecureCredentialsImpl(signon_realm));
-  for (const std::string& realm : additional_android_realms) {
+  for (const std::string& realm : additional_affiliated_realms) {
     std::vector<InsecureCredential> more_results(
         GetMatchingInsecureCredentialsImpl(realm));
     results.insert(results.end(), std::make_move_iterator(more_results.begin()),
@@ -1228,12 +1228,12 @@ void PasswordStore::ScheduleGetFilteredLoginsWithAffiliations(
     base::WeakPtr<PasswordStoreConsumer> consumer,
     const PasswordStore::FormDigest& form,
     base::Time cutoff,
-    const std::vector<std::string>& additional_android_realms) {
+    const std::vector<std::string>& additional_affiliated_realms) {
   if (consumer) {
     PostLoginsTaskAndReplyToConsumerWithProcessedResult(
         "PasswordStore::GetLogins", consumer.get(),
         base::BindOnce(&PasswordStore::GetLoginsWithAffiliationsImpl, this,
-                       form, additional_android_realms),
+                       form, additional_affiliated_realms),
         base::BindOnce(FilterLogins, cutoff));
   }
 }
@@ -1241,13 +1241,13 @@ void PasswordStore::ScheduleGetFilteredLoginsWithAffiliations(
 void PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations(
     base::WeakPtr<InsecureCredentialsConsumer> consumer,
     const std::string& signon_realm,
-    const std::vector<std::string>& additional_android_realms) {
+    const std::vector<std::string>& additional_affiliated_realms) {
   if (consumer) {
     PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
         consumer.get(),
         base::BindOnce(
             &PasswordStore::GetInsecureCredentialsWithAffiliationsImpl, this,
-            signon_realm, additional_android_realms));
+            signon_realm, additional_affiliated_realms));
   }
 }
 

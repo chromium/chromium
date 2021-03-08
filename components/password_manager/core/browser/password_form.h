@@ -290,8 +290,7 @@ struct PasswordForm {
   // If true, this match was found using public suffix matching.
   bool is_public_suffix_match = false;
 
-  // If true, this is a credential saved through an Android application, and
-  // found using affiliation-based match.
+  // If true, this is a credential found using affiliation-based match.
   bool is_affiliation_based_match = false;
 
   // The type of the event that was taken as an indication that this form is
