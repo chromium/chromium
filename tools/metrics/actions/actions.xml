@@ -7741,6 +7741,15 @@ should be able to be added at any place in this file.
   <description>The user opened incognito menu.</description>
 </action>
 
+<action name="IncognitoMode_Started">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <description>
+    An Incognito session is started. Recorded when an Incognito profile is
+    created.
+  </description>
+</action>
+
 <action name="IncompatibleApplicationsPage.ApplicationRemoved">
   <owner>pmonette@chromium.org</owner>
   <description>
