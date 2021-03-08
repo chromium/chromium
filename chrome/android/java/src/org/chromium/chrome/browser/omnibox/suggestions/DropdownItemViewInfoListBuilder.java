@@ -252,12 +252,14 @@ class DropdownItemViewInfoListBuilder {
         final int suggestionsCount = autocompleteResult.getSuggestionsList().size();
 
         // When Adaptive Suggestions are set, perform partial grouping by search vs url.
-        if (suggestionsCount > 0 && mEnableAdaptiveSuggestionsCount) {
+        // Take action only if we have more suggestions to offer than just a default match and
+        // one suggestion (otherwise no need to perform grouping).
+        if (suggestionsCount > 2 && mEnableAdaptiveSuggestionsCount) {
             final int numVisibleSuggestions = getVisibleSuggestionsCount(autocompleteResult);
             // TODO(crbug.com/1073169): this should either infer the count from UI height or supply
             // the default value if height is not known. For the time being we group the entire list
             // to mimic the native behavior.
-            autocompleteResult.groupSuggestionsBySearchVsURL(0, numVisibleSuggestions);
+            autocompleteResult.groupSuggestionsBySearchVsURL(1, numVisibleSuggestions);
             if (numVisibleSuggestions < suggestionsCount) {
                 mBuiltListHasFullyConcealedElements = true;
                 autocompleteResult.groupSuggestionsBySearchVsURL(
