@@ -20067,6 +20067,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="BookmarkPage" label=""/>
   <suffix name="Cast" label=""/>
   <suffix name="ChromeOSRestart" label=""/>
+  <suffix name="ChromeTips" label=""/>
   <suffix name="ClearBrowsingData" label=""/>
   <suffix name="Copy" label=""/>
   <suffix name="CopyUrl" label=""/>
