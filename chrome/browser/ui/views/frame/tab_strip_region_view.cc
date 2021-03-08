@@ -9,6 +9,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -20,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -44,13 +46,21 @@ gfx::Size TabScrollContainerFlexRule(const views::View* tab_strip,
 
 std::unique_ptr<views::ImageButton> CreateScrollButton(
     views::Button::PressedCallback callback) {
+  // TODO(tbergquist): These have a lot in common with the NTB and the tab
+  // search buttons. Could probably extract a base class.
   auto scroll_button =
       std::make_unique<views::ImageButton>(std::move(callback));
   scroll_button->SetImageVerticalAlignment(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+  scroll_button->SetImageHorizontalAlignment(
+      views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   scroll_button->SetHasInkDropActionOnClick(true);
   scroll_button->SetInkDropMode(views::Button::InkDropMode::ON);
   scroll_button->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  scroll_button->SetPreferredSize(gfx::Size(28, 28));
+  views::HighlightPathGenerator::Install(
+      scroll_button.get(),
+      std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
   return scroll_button;
 }
 
@@ -197,6 +207,18 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                       tab_strip_container_flex_spec);
   }
 
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
+    leading_scroll_button_ = AddChildView(CreateScrollButton(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
+                            base::Unretained(this))));
+    trailing_scroll_button_ = AddChildView(CreateScrollButton(
+        base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
+                            base::Unretained(this))));
+    // Add 8dp of padding between the scroll buttons and the NTB.
+    trailing_scroll_button_->SetProperty(views::kMarginsKey,
+                                         gfx::Insets(0, 0, 0, 8));
+  }
+
   new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
       tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                       base::Unretained(tab_strip_))));
@@ -209,15 +231,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
       std::make_unique<views::ViewTargeter>(new_tab_button_));
 
   UpdateNewTabButtonBorder();
-
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
-    leading_scroll_button_ = AddChildView(CreateScrollButton(
-        base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
-                            base::Unretained(this))));
-    trailing_scroll_button_ = AddChildView(CreateScrollButton(
-        base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
-                            base::Unretained(this))));
-  }
 
   reserved_grab_handle_space_ =
       AddChildView(std::make_unique<FrameGrabHandle>());
