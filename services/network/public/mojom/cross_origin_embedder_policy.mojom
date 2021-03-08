@@ -10,6 +10,7 @@ import "services/network/public/mojom/fetch_api.mojom";
 // https://mikewest.github.io/corpp/#integration-html
 enum CrossOriginEmbedderPolicyValue {
   kNone,
+  kCorsOrCredentialless,
   kRequireCorp,
 };
 

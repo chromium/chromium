@@ -10,35 +10,54 @@
 #include "base/strings/string_piece.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network {
 
 namespace {
-constexpr char kRequireCorp[] = "require-corp";
 constexpr char kHeaderName[] = "cross-origin-embedder-policy";
 constexpr char kReportOnlyHeaderName[] =
     "cross-origin-embedder-policy-report-only";
 
 std::pair<mojom::CrossOriginEmbedderPolicyValue, base::Optional<std::string>>
 Parse(base::StringPiece header_value) {
-  constexpr auto kNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   using Item = net::structured_headers::Item;
   const auto item = net::structured_headers::ParseItem(header_value);
-  if (!item || item->item.Type() != Item::kTokenType ||
-      item->item.GetString() != kRequireCorp) {
-    return std::make_pair(kNone, base::nullopt);
+  if (!item || item->item.Type() != net::structured_headers::Item::kTokenType) {
+    return {
+        mojom::CrossOriginEmbedderPolicyValue::kNone,
+        base::nullopt,
+    };
   }
+
   base::Optional<std::string> endpoint;
-  auto it = std::find_if(item->params.cbegin(), item->params.cend(),
-                         [](const std::pair<std::string, Item>& param) {
-                           return param.first == "report-to";
-                         });
-  if (it != item->params.end() && it->second.Type() == Item::kStringType) {
-    endpoint = it->second.GetString();
+  for (const auto& it : item->params) {
+    if (it.first == "report-to" && it.second.Type() == Item::kStringType)
+      endpoint = it.second.GetString();
   }
-  return std::make_pair(mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-                        std::move(endpoint));
+
+  if (item->item.GetString() == "require-corp") {
+    return {
+        mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+        std::move(endpoint),
+    };
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kCrossOriginEmbedderPolicyCredentialless) &&
+      item->item.GetString() == "cors-or-credentialless") {
+    return {
+        mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless,
+        std::move(endpoint),
+    };
+  }
+
+  return {
+      mojom::CrossOriginEmbedderPolicyValue::kNone,
+      base::nullopt,
+  };
 }
+
 }  // namespace
 
 CrossOriginEmbedderPolicy ParseCrossOriginEmbedderPolicy(
