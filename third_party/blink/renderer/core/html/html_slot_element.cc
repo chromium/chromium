@@ -762,7 +762,7 @@ bool HTMLSlotElement::HasAssignedNodesSlow() const {
 }
 
 void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
-  Element::ChildrenChanged(change);
+  HTMLElement::ChildrenChanged(change);
   if (SupportsAssignment())
     SetShadowRootNeedsAssignmentRecalc();
 }
