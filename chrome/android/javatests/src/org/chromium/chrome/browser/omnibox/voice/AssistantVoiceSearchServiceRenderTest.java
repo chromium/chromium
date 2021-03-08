@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
+import android.os.Build.VERSION_CODES;
 import android.support.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,7 +85,10 @@ public class AssistantVoiceSearchServiceRenderTest {
     @MediumTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/true"})
     @Feature({"RenderTest"})
-    public void testAssistantColorfulMic() throws IOException {
+    @DisableIf.Build(message = "Flaky on Android M runners, see https://crbug.com/1185744",
+            sdk_is_less_than = VERSION_CODES.O)
+    public void
+    testAssistantColorfulMic() throws IOException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.ntp_content),
