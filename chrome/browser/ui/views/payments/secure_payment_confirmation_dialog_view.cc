@@ -142,6 +142,7 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_label());
   SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_enabled());
 
+  SetAccessibleTitle(model_->title());
   UpdateLabelView(DialogViewID::TITLE, model_->title());
   UpdateLabelView(DialogViewID::MERCHANT_LABEL, model_->merchant_label());
   UpdateLabelView(DialogViewID::MERCHANT_VALUE, model_->merchant_value());

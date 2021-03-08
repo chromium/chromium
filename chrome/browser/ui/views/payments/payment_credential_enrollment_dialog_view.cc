@@ -116,6 +116,7 @@ void PaymentCredentialEnrollmentDialogView::OnModelUpdated() {
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_label());
   SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_enabled());
 
+  SetAccessibleTitle(model_->title());
   UpdateLabelView(DialogViewID::TITLE, model_->title());
   UpdateLabelView(DialogViewID::DESCRIPTION, model_->description());
 
