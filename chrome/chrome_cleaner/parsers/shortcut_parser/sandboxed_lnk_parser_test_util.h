@@ -25,6 +25,7 @@ base::win::ScopedHandle CreateAndOpenShortcutInTempDir(
 
 bool CheckParsedShortcut(const ParsedLnkFile& parsed_shortcut,
                          base::FilePath expected_target_path,
+                         base::FilePath expected_working_dir,
                          std::wstring expected_arguments,
                          base::FilePath expected_icon_location,
                          const int32_t icon_index);
@@ -33,7 +34,8 @@ void OnLnkParseDone(
     mojom::LnkParsingResult* out_result_code,
     base::OnceClosure callback,
     mojom::LnkParsingResult result_code,
-    const base::Optional<std::wstring>& optional_file_path,
+    const base::Optional<std::wstring>& optional_target_path,
+    const base::Optional<std::wstring>& optional_working_dir,
     const base::Optional<std::wstring>& optional_command_line_arguments,
     const base::Optional<std::wstring>& optional_icon_location,
     int32_t optional_icon_index);

@@ -100,9 +100,11 @@ class ResetShortcutsComponentTest : public base::MultiProcessTest {
   FilePathSet fake_chrome_exe_file_path_set_;
 
   base::ScopedTempDir temp_dir_with_chrome_lnk_;
+  base::ScopedTempDir temp_dir_with_other_chrome_lnk_;
   std::vector<base::FilePath> temp_dirs_paths_;
   base::ScopedTempDir temp_dir_without_chrome_lnk_;
   base::FilePath fake_chrome_path_;
+  base::FilePath fake_other_chrome_path_;
 
   base::test::TaskEnvironment task_environment_;
 
@@ -143,6 +145,8 @@ TEST_F(ResetShortcutsComponentTest,
             L"--app=app --app-id=appId --profile-directory=tmp/directory");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, ResetShortcutNoArguments) {
@@ -162,6 +166,48 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutNoArguments) {
   EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
+}
+
+TEST_F(ResetShortcutsComponentTest, ResetShortcutMultipleChromeExe) {
+  base::win::ShortcutProperties properties;
+  properties.set_target(fake_chrome_path_);
+  ASSERT_TRUE(temp_dir_with_chrome_lnk_.CreateUniqueTempDir());
+  base::win::ScopedHandle unused_lnk_handle = CreateAndOpenShortcutInTempDir(
+      "Google Chrome.lnk", properties, &temp_dir_with_chrome_lnk_);
+  ASSERT_TRUE(unused_lnk_handle.IsValid());
+  temp_dirs_paths_.push_back(temp_dir_with_chrome_lnk_.GetPath());
+  fake_chrome_exe_file_path_set_.Insert(fake_chrome_path_);
+
+  base::win::ShortcutProperties other_properties;
+  other_properties.set_target(fake_chrome_path_);
+  ASSERT_TRUE(temp_dir_with_other_chrome_lnk_.CreateUniqueTempDir());
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(
+      temp_dir_with_other_chrome_lnk_.GetPath(), &fake_other_chrome_path_));
+  base::win::ScopedHandle unused_other_lnk_handle =
+      CreateAndOpenShortcutInTempDir("Google Chrome.lnk", other_properties,
+                                     &temp_dir_with_other_chrome_lnk_);
+  ASSERT_TRUE(unused_other_lnk_handle.IsValid());
+  temp_dirs_paths_.push_back(temp_dir_with_other_chrome_lnk_.GetPath());
+  fake_chrome_exe_file_path_set_.Insert(fake_other_chrome_path_);
+
+  ResetShortcuts();
+  std::vector<ShortcutInformation> found_shortcuts = component_->GetShortcuts();
+
+  // It should find shortcuts pointing to the first path. The working directory
+  // should be the first path's directory.
+  ASSERT_EQ(found_shortcuts.size(), 2u);
+  EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
+                        base::FilePath(found_shortcuts[1].target_path)));
+  ASSERT_TRUE(
+      PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                base::FilePath(found_shortcuts[0].target_path).DirName()));
+  EXPECT_EQ(found_shortcuts[1].command_line_arguments, L"");
+  ASSERT_TRUE(
+      PathEqual(base::FilePath(found_shortcuts[1].working_dir),
+                base::FilePath(found_shortcuts[1].target_path).DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, ResetShortcutDifferentName) {
@@ -183,6 +229,8 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutDifferentName) {
   EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, ResetShortcutFlagsNoParameters) {
@@ -207,6 +255,8 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutFlagsNoParameters) {
             L"--app --app-id --profile-directory");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, ResetShortcutBadBinary) {
@@ -233,6 +283,8 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutBadBinary) {
   EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, NoResetNonChromeShortcut) {
@@ -265,6 +317,8 @@ TEST_F(ResetShortcutsComponentTest, NoResetNonChromeShortcut) {
   EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
 }
 
 TEST_F(ResetShortcutsComponentTest, ResetShortcutPreserveIconLocation) {
@@ -293,6 +347,8 @@ TEST_F(ResetShortcutsComponentTest, ResetShortcutPreserveIconLocation) {
   EXPECT_EQ(found_shortcuts[0].command_line_arguments, L"");
   ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].target_path),
                         fake_chrome_path_));
+  ASSERT_TRUE(PathEqual(base::FilePath(found_shortcuts[0].working_dir),
+                        fake_chrome_path_.DirName()));
   EXPECT_EQ(found_shortcuts[0].icon_location, icon_path.value());
   EXPECT_EQ(found_shortcuts[0].icon_index, 2);
 }

@@ -773,12 +773,13 @@ void ReportShortcutModifications(ShortcutParserAPI* shortcut_parser) {
   base::WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                             WaitableEvent::InitialState::NOT_SIGNALED);
 
-  std::set<base::FilePath> chrome_exe_paths;
-  ListChromeExePaths(&chrome_exe_paths);
+  std::set<base::FilePath> chrome_exe_directories;
+  ListChromeExeDirectories(&chrome_exe_directories);
 
+  const std::wstring kChromeExecutableName = L"chrome.exe";
   FilePathSet chrome_exe_file_path_set;
-  for (const auto& path : chrome_exe_paths)
-    chrome_exe_file_path_set.Insert(path);
+  for (const auto& path : chrome_exe_directories)
+    chrome_exe_file_path_set.Insert(path.Append(kChromeExecutableName));
 
   shortcut_parser->FindAndParseChromeShortcutsInFoldersAsync(
       paths_to_explore, chrome_exe_file_path_set,
@@ -794,7 +795,6 @@ void ReportShortcutModifications(ShortcutParserAPI* shortcut_parser) {
 
   InitializeFilePathSanitization();
 
-  const std::wstring kChromeExecutableName = L"chrome.exe";
   for (const ShortcutInformation& shortcut : shortcuts_found) {
     base::FilePath target_path(shortcut.target_path);
 
