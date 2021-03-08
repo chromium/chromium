@@ -205,6 +205,10 @@ ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
   clipboard_history_->RemoveObserver(this);
 }
 
+void ClipboardHistoryControllerImpl::Shutdown() {
+  nudge_controller_.reset();
+}
+
 void ClipboardHistoryControllerImpl::AddObserver(
     ClipboardHistoryController::Observer* observer) const {
   observers_.AddObserver(observer);

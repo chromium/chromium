@@ -261,4 +261,22 @@ TEST_F(ClipboardNudgeControllerTest, ShowZeroStateNudgeAfterOngoingNudge) {
   EXPECT_EQ(ClipboardNudgeType::kZeroStateNudge, nudge->nudge_type());
 }
 
+// Verifies that the nudge cleans up properly during shutdown while it is
+// animating to hide.
+TEST_F(ClipboardNudgeControllerTest, NudgeClosingDuringShutdown) {
+  nudge_controller_->ShowNudge(ClipboardNudgeType::kOnboardingNudge);
+
+  ClipboardNudge* nudge = nudge_controller_->GetClipboardNudgeForTesting();
+  views::Widget* nudge_widget = nudge->widget();
+  EXPECT_FALSE(nudge_widget->IsClosed());
+  EXPECT_EQ(ClipboardNudgeType::kOnboardingNudge, nudge->nudge_type());
+
+  // Slow down the duration of the nudge
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+
+  nudge_controller_->FireHideNudgeTimerForTesting();
+  ASSERT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
+}
+
 }  // namespace ash

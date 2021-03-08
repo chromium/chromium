@@ -696,6 +696,10 @@ Shell::~Shell() {
   // since it might be accessed during this process.
   tablet_mode_controller_->Shutdown();
 
+  // Shutdown the clipboard history controller to clean up the child windows and
+  // widgets that may be animating out.
+  clipboard_history_controller_->Shutdown();
+
   // Destroy UserSettingsEventLogger before |system_tray_model_| and
   // |video_detector_| which it observes.
   ml::UserSettingsEventLogger::DeleteInstance();

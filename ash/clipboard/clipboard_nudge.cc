@@ -164,7 +164,7 @@ ClipboardNudge::ClipboardNudge(ClipboardNudgeType nudge_type)
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = "ClipboardContextualNudge";
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent =
@@ -189,7 +189,7 @@ void ClipboardNudge::OnHotseatStateChanged(HotseatState old_state,
 }
 
 void ClipboardNudge::Close() {
-  widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  widget_.reset();
 }
 
 void ClipboardNudge::CalculateAndSetWidgetBounds() {

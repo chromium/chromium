@@ -15,6 +15,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/compositor/layer_animation_observer.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -76,12 +77,18 @@ class ASH_EXPORT ClipboardNudgeController
   // Shows the nudge widget.
   void ShowNudge(ClipboardNudgeType nudge_type);
 
+  // Ensure the destruction of a clipboard nudge that is animating.
+  void ForceCloseAnimatingNudge();
+
   // Test methods for overriding and resetting the clock used by GetTime.
   void OverrideClockForTesting(base::Clock* test_clock);
   void ClearClockOverrideForTesting();
 
   const ClipboardState& GetClipboardStateForTesting();
   ClipboardNudge* GetClipboardNudgeForTesting() { return nudge_.get(); }
+
+  // Test method for triggering the nudge timer to hide.
+  void FireHideNudgeTimerForTesting();
 
  private:
   // Gets the number of times the nudge has been shown.
@@ -122,6 +129,8 @@ class ASH_EXPORT ClipboardNudgeController
 
   // Timer to hide the clipboard nudge.
   base::OneShotTimer hide_nudge_timer_;
+
+  std::unique_ptr<ui::ImplicitAnimationObserver> hide_nudge_animation_observer_;
 
   base::WeakPtrFactory<ClipboardNudgeController> weak_ptr_factory_{this};
 };
