@@ -14,6 +14,12 @@ import androidx.annotation.Nullable;
  * Should only be called on the UI thread.
  */
 public interface SurfaceScopeDependencyProvider {
+    /** Returns the application context. */
+    @Nullable
+    default Context getApplicationContext() {
+        return null;
+    }
+
     /** Returns the activity context hosting the surface. */
     @Nullable
     default Context getActivityContext() {
@@ -48,5 +54,26 @@ public interface SurfaceScopeDependencyProvider {
     /** Returns the signed-out session id */
     default String getSignedOutSessionId() {
         return "";
+    }
+
+    /** User-set preference for when videos are eligible to autoplay. */
+    public enum AutoplayPreference {
+        /** Autoplay is disabled. */
+        AUTOPLAY_DISABLED,
+        /** Autoplay only occurs on Wi-Fi. */
+        AUTOPLAY_ON_WIFI_ONLY,
+        /** Autoplay will occur on both Wi-Fi and mobile data. */
+        AUTOPLAY_ON_WIFI_AND_MOBILE_DATA
+    }
+
+    /** Returns the user-set preferences for when videos are eligible to autoplay. */
+    default AutoplayPreference getAutoplayPreference() {
+        return AutoplayPreference.AUTOPLAY_DISABLED;
+    }
+
+    /** Returns the video player to play a specific video. */
+    @Nullable
+    default WebVideoPlayer createWebVideoPlayer(String videoId, String webPlayerUrl) {
+        return null;
     }
 }
