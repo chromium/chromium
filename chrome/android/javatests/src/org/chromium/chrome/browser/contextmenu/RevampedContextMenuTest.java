@@ -25,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
@@ -89,6 +90,24 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     private static final String FILENAME_WEBM = "test.webm";
     private static final String TEST_GIF_IMAGE_FILE_EXTENSION = ".gif";
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
+
+    // Test chip delegate that always returns valid chip render params.
+    private static final ChipDelegate FAKE_CHIP_DELEGATE = new ChipDelegate() {
+        @Override
+        public void getChipRenderParams(Callback<ChipRenderParams> callback) {
+            // Do nothing.
+        }
+
+        @Override
+        public void onMenuClosed() {
+            // Do nothing.
+        }
+
+        @Override
+        public boolean isValidChipRenderParams(ChipRenderParams chipRenderParams) {
+            return true;
+        }
+    };
 
     private static final String[] TEST_FILES =
             new String[] {FILENAME_GIF, FILENAME_PNG, FILENAME_WEBM};
@@ -452,6 +471,35 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
                         RevampedContextMenuChipController.ChipEvent.CLICKED));
         Assert.assertFalse("Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS})
+    public void testLensChipNotShowingAfterMenuDismissed() throws Throwable {
+        // Required to avoid runtime error.
+        Looper.prepare();
+
+        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
+        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
+        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
+
+        RevampedContextMenuCoordinator menuCoordinator =
+                RevampedContextMenuUtils.openContextMenu(tab, "testImage");
+        // Dismiss context menu.
+        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
+                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+        // Needs to run on UI thread so creation happens on same thread as dismissal.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChipRenderParams chipRenderParams =
+                    menuCoordinator.simulateImageClassificationForTesting();
+            menuCoordinator.getChipRenderParamsCallbackForTesting(FAKE_CHIP_DELEGATE)
+                    .bind(chipRenderParams)
+                    .run();
+            Assert.assertNull("Chip popoup was initialized.",
+                    menuCoordinator.getCurrentPopupWindowForTesting());
+        });
     }
 
     // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
