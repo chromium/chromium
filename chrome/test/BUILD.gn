@@ -3452,6 +3452,16 @@ group("telemetry_perf_webview_tests") {
   deps = [ "//chrome/test:telemetry_perf_tests" ]
 }
 
+config("unit_tests_thinlto_flags") {
+  if (is_linux && use_thin_lto) {
+    # This build target has so many inputs the LLD will run into the default
+    # vm.max_map_count limit of 65530 memory mappings when using the ThinLTO
+    # cache.
+    # TODO (crbug.com/1183211): Re-enable once the linker has been fixed.
+    ldflags = [ "-Wl,--thinlto-cache-dir=" ]
+  }
+}
+
 test("unit_tests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -4120,6 +4130,7 @@ test("unit_tests") {
   }
 
   configs += [ "//build/config:precompiled_headers" ]
+  configs += [ ":unit_tests_thinlto_flags" ]
 
   data_deps = [
     "//chrome/test/data/media/engagement/preload:generate_preload_list",
