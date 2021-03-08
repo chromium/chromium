@@ -1450,7 +1450,19 @@ bool AXNodeObject::IsProgressIndicator() const {
 }
 
 bool AXNodeObject::IsRichlyEditable() const {
+  // This check is necessary to support the richlyEditable and editable states
+  // in canvas fallback, for contenteditable elements.
+  // TODO(accessiblity) Support on descendants of the fallback element that
+  // has contenteditable set.
   return HasContentEditableAttributeSet();
+}
+
+bool AXNodeObject::IsEditable() const {
+  if (IsNativeTextControl())
+    return true;
+
+  // Support editable states in canvas fallback content.
+  return AXNodeObject::IsRichlyEditable();
 }
 
 bool AXNodeObject::IsSlider() const {

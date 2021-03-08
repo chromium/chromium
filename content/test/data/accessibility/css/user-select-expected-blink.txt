@@ -20,7 +20,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='• '
 ++++++++++staticText name='One'
 ++++++++++++inlineTextBox name='One'
-++++++genericContainer ignored notUserSelectableStyle=true
+++++++genericContainer ignored
 ++++++++genericContainer notUserSelectableStyle=true
 ++++++++++staticText name='Inner' notUserSelectableStyle=true
 ++++++++++++inlineTextBox name='Inner'

@@ -1095,6 +1095,53 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   DCHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
 
+  // Serialize a few things that we need even for ignored nodes.
+  bool is_focusable = CanSetFocusAttribute();
+  if (is_focusable)
+    node_data->AddState(ax::mojom::blink::State::kFocusable);
+
+  bool is_visible = IsVisible();
+  if (!is_visible)
+    node_data->AddState(ax::mojom::blink::State::kInvisible);
+
+  if (is_visible || is_focusable) {
+    // Preserve continuity in subtrees of richly editable content by including
+    // richlyEditable state even if ignored.
+    if (IsEditable()) {
+      node_data->AddState(ax::mojom::blink::State::kEditable);
+      if (IsEditableRoot()) {
+        node_data->AddBoolAttribute(
+            ax::mojom::blink::BoolAttribute::kEditableRoot, true);
+      }
+      if (IsRichlyEditable())
+        node_data->AddState(ax::mojom::blink::State::kRichlyEditable);
+    }
+  }
+
+  if (accessibility_mode.has_mode(ui::AXMode::kHTML))
+    SerializeHTMLTagAndClass(node_data);  // Used for test readability.
+
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+    SerializeColorAttributes(node_data);  // Blends using all nodes' values.
+
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
+      accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+    SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
+  }
+
+  if (AccessibilityIsIgnored()) {
+    node_data->AddState(ax::mojom::blink::State::kIgnored);
+    // Early return for ignored, unfocusable nodes, avoiding unnecessary work.
+    if (!is_focusable)
+      return;
+  }
+
+  SerializeUnignoredAttributes(node_data, accessibility_mode);
+}
+
+// Attributes that don't need to be serialized on ignored nodes.
+void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
+                                            ui::AXMode accessibility_mode) {
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -1102,9 +1149,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     else if (expanded == kExpandedExpanded)
       node_data->AddState(ax::mojom::blink::State::kExpanded);
   }
-
-  if (CanSetFocusAttribute())
-    node_data->AddState(ax::mojom::blink::State::kFocusable);
 
   if (HasPopup() != ax::mojom::blink::HasPopup::kFalse)
     node_data->SetHasPopup(HasPopup());
@@ -1126,9 +1170,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (IsHovered())
     node_data->AddState(ax::mojom::blink::State::kHovered);
 
-  if (!IsVisible())
-    node_data->AddState(ax::mojom::blink::State::kInvisible);
-
   if (IsLinked())
     node_data->AddState(ax::mojom::blink::State::kLinked);
 
@@ -1144,9 +1185,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (IsRequired())
     node_data->AddState(ax::mojom::blink::State::kRequired);
 
-  if (IsEditable())
-    node_data->AddState(ax::mojom::blink::State::kEditable);
-
   if (IsSelected() != blink::kSelectedStateUndefined) {
     node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kSelected,
                                 IsSelected() == blink::kSelectedStateTrue);
@@ -1160,9 +1198,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
         ax::mojom::blink::BoolAttribute::kNotUserSelectableStyle, true);
   }
 
-  if (IsRichlyEditable())
-    node_data->AddState(ax::mojom::blink::State::kRichlyEditable);
-
   if (IsVisited())
     node_data->AddState(ax::mojom::blink::State::kVisited);
 
@@ -1170,9 +1205,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     node_data->AddState(ax::mojom::blink::State::kVertical);
   else if (Orientation() == blink::kAccessibilityOrientationHorizontal)
     node_data->AddState(ax::mojom::blink::State::kHorizontal);
-
-  if (AccessibilityIsIgnored())
-    node_data->AddState(ax::mojom::blink::State::kIgnored);
 
   if (GetTextAlign() != ax::mojom::blink::TextAlign::kNone) {
     node_data->SetTextAlign(GetTextAlign());
@@ -1216,16 +1248,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
           ax::mojom::blink::IntAttribute::kHierarchicalLevel, HeadingLevel());
     }
 
-    AXObject* parent = ParentObject();
-    if (Language().length()) {
-      // TODO(chrishall): should we still trim redundant languages off here?
-      if (!parent || parent->Language() != Language()) {
-        TruncateAndAddStringAttribute(
-            node_data, ax::mojom::blink::StringAttribute::kLanguage,
-            Language().Utf8());
-      }
-    }
-
     SerializeListAttributes(node_data);
     SerializeTableAttributes(node_data);
   }
@@ -1266,12 +1288,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   SerializeSparseAttributes(node_data);
 
   if (Element* element = this->GetElement()) {
-    if (const AtomicString& class_name = element->GetClassAttribute()) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kClassName,
-          class_name.Utf8());
-    }
-
     if (const AtomicString& aria_role =
             GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole)) {
       TruncateAndAddStringAttribute(node_data,
@@ -1287,11 +1303,6 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
 
     if (IsEditable()) {
-      if (IsEditableRoot()) {
-        node_data->AddBoolAttribute(
-            ax::mojom::blink::BoolAttribute::kEditableRoot, true);
-      }
-
       if (IsNativeTextControl()) {
         // Selection offsets are only used for plain text controls, (input of a
         // text field type, and textarea). Rich editable areas, such as
@@ -1432,11 +1443,25 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
   }
 }
 
-void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
   Element* element = GetElement();
+  if (!element)
+    return;
+
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,
                                 element->tagName().LowerASCII().Utf8());
+
+  if (const AtomicString& class_name = element->GetClassAttribute()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kClassName,
+                                  class_name.Utf8());
+  }
+}
+
+void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
+  Element* element = GetElement();
+  DCHECK(element);
   for (const Attribute& attr : element->Attributes()) {
     std::string name = attr.LocalName().LowerASCII().Utf8();
     if (name == "class") {  // class already in kClassName
@@ -1458,18 +1483,18 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
 #endif
 }
 
-void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
+void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
   // Text attributes.
-  if (BackgroundColor()) {
+  if (RGBA32 bg_color = BackgroundColor()) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kBackgroundColor,
-                               BackgroundColor());
+                               bg_color);
   }
 
-  if (GetColor()) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor,
-                               GetColor());
-  }
+  if (RGBA32 color = GetColor())
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kColor, color);
+}
 
+void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
   AXObject* parent = ParentObjectUnignored();
   if (FontFamily().length()) {
     if (!parent || parent->FontFamily() != FontFamily()) {
@@ -1573,6 +1598,18 @@ void AXObject::SerializeSparseAttributes(ui::AXNodeData* node_data) {
 
     if (callback)
       callback.Run(this, node_data, internals_attributes.at(attr));
+  }
+}
+
+void AXObject::SerializeLangAttribute(ui::AXNodeData* node_data) {
+  AXObject* parent = ParentObject();
+  if (Language().length()) {
+    // TODO(chrishall): should we still trim redundant languages off here?
+    if (!parent || parent->Language() != Language()) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kLanguage,
+          Language().Utf8());
+    }
   }
 }
 
@@ -2118,6 +2155,10 @@ bool AXObject::IsInertOrAriaHidden() const {
   return cached_is_inert_or_aria_hidden_;
 }
 
+bool AXObject::IsAriaHidden() const {
+  return IsInertOrAriaHidden() && AriaHiddenRoot();
+}
+
 bool AXObject::ComputeIsInertOrAriaHidden(
     IgnoredReasons* ignored_reasons) const {
   if (GetNode()) {
@@ -2439,7 +2480,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // Allow the browser side ax tree to access "aria-hidden" nodes.
   // This is useful for APIs that return the node referenced by
   // aria-labeledby and aria-describedby.
-  if (GetLayoutObject() && IsInertOrAriaHidden() && AriaHiddenRoot())
+  if (GetLayoutObject() && IsAriaHidden())
     return true;
 
   // Preserve SVG grouping elements.

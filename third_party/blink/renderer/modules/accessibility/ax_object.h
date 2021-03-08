@@ -529,6 +529,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AXObjectInclusion DefaultObjectInclusion(
       IgnoredReasons* = nullptr) const;
   bool IsInertOrAriaHidden() const;
+  bool IsAriaHidden() const;
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInertOrAriaHidden(IgnoredReasons* = nullptr) const;
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
@@ -1303,14 +1304,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* TableParent() const;
 
   // Helpers for serialization.
+  void SerializeColorAttributes(ui::AXNodeData* node_data);
   void SerializeStyleAttributes(ui::AXNodeData* node_data);
   void SerializeSparseAttributes(ui::AXNodeData* node_data);
   void SerializeTableAttributes(ui::AXNodeData* node_data);
+  void SerializeLangAttribute(ui::AXNodeData* node_data);
   void SerializeListAttributes(ui::AXNodeData* node_data);
   void SerializeScrollAttributes(ui::AXNodeData* node_data);
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);
-  void SerializeElementAttributes(ui::AXNodeData* dst);
-  void SerializeHTMLAttributes(ui::AXNodeData* dst);
+  void SerializeElementAttributes(ui::AXNodeData* node_data);
+  void SerializeHTMLTagAndClass(ui::AXNodeData* node_data);
+  void SerializeHTMLAttributes(ui::AXNodeData* node_data);
+  void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
+                                    ui::AXMode accessibility_mode);
 
   // Serialization implemented in specific subclasses.
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;

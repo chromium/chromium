@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored invisible
 ++++++section ignored invisible
 ++++++++dialog ignored invisible
-++++++++popUpButton collapsed ignored invisible value='This should be pruned out of the tree.'
+++++++++popUpButton ignored invisible
 ++++++++++menuListPopup ignored invisible
 ++++++button ignored invisible name='This button should not be in the tree.'
 ++++++dialog ignored invisible
