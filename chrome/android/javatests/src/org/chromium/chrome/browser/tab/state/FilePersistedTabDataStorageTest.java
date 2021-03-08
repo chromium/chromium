@@ -60,7 +60,8 @@ public class FilePersistedTabDataStorageTest {
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            persistedTabDataStorage.save(TAB_ID_1, DATA_ID_1, DATA_A, semaphore::release);
+            persistedTabDataStorage.save(
+                    TAB_ID_1, DATA_ID_1, () -> { return DATA_A; }, semaphore::release);
         });
         semaphore.acquire();
         ThreadUtils.runOnUiThreadBlocking(() -> {
@@ -86,14 +87,18 @@ public class FilePersistedTabDataStorageTest {
     public void testRedundantSaveDropped() throws InterruptedException {
         FilePersistedTabDataStorage storage = new FilePersistedTabDataStorage();
         final Semaphore semaphore = new Semaphore(0);
-        storage.addSaveRequest(storage.new FileSaveRequest(TAB_ID_1, DATA_ID_1, DATA_A, (res) -> {
-            Assert.fail("First request should not have been executed as there is a subsequent "
-                    + "request in the queue with the same Tab ID/Data ID combination");
-        }));
-        storage.addSaveRequest(
-                storage.new FileSaveRequest(TAB_ID_2, DATA_ID_2, DATA_A, semaphore::release));
-        storage.addSaveRequest(
-                storage.new FileSaveRequest(TAB_ID_1, DATA_ID_1, DATA_B, semaphore::release));
+        storage.addSaveRequest(storage.new FileSaveRequest(TAB_ID_1, DATA_ID_1,
+                ()
+                        -> { return DATA_A; },
+                (res) -> {
+                    Assert.fail(
+                            "First request should not have been executed as there is a subsequent "
+                            + "request in the queue with the same Tab ID/Data ID combination");
+                }));
+        storage.addSaveRequest(storage.new FileSaveRequest(
+                TAB_ID_2, DATA_ID_2, () -> { return DATA_A; }, semaphore::release));
+        storage.addSaveRequest(storage.new FileSaveRequest(
+                TAB_ID_1, DATA_ID_1, () -> { return DATA_B; }, semaphore::release));
         ThreadUtils.runOnUiThreadBlocking(() -> {
             storage.processNextItemOnQueue();
             storage.processNextItemOnQueue();

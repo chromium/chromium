@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 
 import java.util.Locale;
@@ -24,14 +25,15 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
     private static final String TAG = "EFPTDS";
 
     @Override
-    public void save(int tabId, String dataId, byte[] data) {
-        save(tabId, dataId, data, NO_OP_CALLBACK);
+    public void save(int tabId, String dataId, Supplier<byte[]> dataSupplier) {
+        save(tabId, dataId, dataSupplier, NO_OP_CALLBACK);
     }
 
     @Override
     @VisibleForTesting
-    protected void save(int tabId, String dataId, byte[] data, Callback<Integer> callback) {
-        super.save(tabId, dataId, encrypt(data), callback);
+    protected void save(
+            int tabId, String dataId, Supplier<byte[]> data, Callback<Integer> callback) {
+        super.save(tabId, dataId, () -> { return encrypt(data.get()); }, callback);
     }
 
     @Override

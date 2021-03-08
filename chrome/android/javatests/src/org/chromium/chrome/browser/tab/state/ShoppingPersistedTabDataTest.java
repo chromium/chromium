@@ -102,7 +102,7 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.setPriceMicros(
                 ShoppingPersistedTabDataTestUtils.PRICE_MICROS, null);
-        byte[] serialized = shoppingPersistedTabData.serialize();
+        byte[] serialized = shoppingPersistedTabData.getSerializeSupplier().get();
         ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
         deserialized.deserialize(serialized);
         Assert.assertEquals(
@@ -482,7 +482,7 @@ public class ShoppingPersistedTabDataTest {
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         shoppingPersistedTabData.setPriceMicros(42_000_000L, null);
-        byte[] serialized = shoppingPersistedTabData.serialize();
+        byte[] serialized = shoppingPersistedTabData.getSerializeSupplier().get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         ShoppingPersistedTabData deserialized =
