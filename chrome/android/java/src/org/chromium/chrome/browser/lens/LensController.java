@@ -32,6 +32,14 @@ public class LensController {
     }
 
     /**
+     * Set the Lens Controller instance for testing.
+     * @param lensController the instance to be set.
+     */
+    public static void setInstanceForTesting(LensController lensController) {
+        sInstance = lensController;
+    }
+
+    /**
      * Whether the Lens SDK is available.
      * @return Whether the Lens SDK is available.
      */

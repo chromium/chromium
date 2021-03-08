@@ -21,8 +21,10 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_S
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
@@ -177,6 +179,29 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTasksViewPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false));
         assertFalse(isViewVisible(R.id.voice_search_button));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetLensButtonVisibilityAndClickListener() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+            mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
+        });
+        assertTrue(isViewVisible(R.id.lens_camera_button));
+
+        mViewClicked.set(false);
+        onView(withId(R.id.lens_camera_button)).perform(click());
+        assertFalse(mViewClicked.get());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
+        });
+        onView(withId(R.id.lens_camera_button)).perform(click());
+        assertTrue(mViewClicked.get());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, false));
+        assertFalse(isViewVisible(R.id.lens_camera_button));
     }
 
     @Test

@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -134,7 +135,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils);
+                windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
+                LensController.getInstance());
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -569,6 +571,10 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
     public void onUrlChangedForTesting() {
         mLocationBarMediator.onUrlChanged();
+    }
+
+    public void setLensControllerForTesting(LensController lensController) {
+        mLocationBarMediator.setLensControllerForTesting(lensController);
     }
 
     private boolean isPhoneLayout() {

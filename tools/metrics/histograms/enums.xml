@@ -13118,6 +13118,10 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="ContextMenuLensSupportStatus">
+  <obsolete>
+    Deprecated. Switch to use LensSupportStatus to support all Lens entry
+    points.
+  </obsolete>
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>
   <int value="1" label="Not Google Search Engine"/>
@@ -13130,8 +13134,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Lens Search And Shop Supported"/>
   <int value="9" label="Camera Not Available"/>
   <int value="10" label="Low End Device"/>
-  <int value="11" label="Lens Camera Assisted Search Supported"/>
-  <int value="12" label="Lens Translate Supported"/>
 </enum>
 
 <enum name="ContextMenuOption">
@@ -42326,6 +42328,24 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Query payload missing image"/>
   <int value="6" label="Query image failed to resolve"/>
   <int value="7" label="Classification error"/>
+</enum>
+
+<enum name="LensSupportStatus">
+  <summary>Whether lens is supported and if not the reason why.</summary>
+  <int value="0" label="Lens Search Supported"/>
+  <int value="1" label="Not Google Search Engine"/>
+  <int value="2" label="Activity Not Accessible"/>
+  <int value="3" label="Out of Date"/>
+  <int value="4" label="Search by Image Unavailable"/>
+  <int value="5" label="OS Below Android O"/>
+  <int value="6" label="Invalid Package"/>
+  <int value="7" label="Lens Shop Supported"/>
+  <int value="8" label="Lens Search And Shop Supported"/>
+  <int value="9" label="Camera Not Available"/>
+  <int value="10" label="Disabled on Low End Device"/>
+  <int value="11" label="Disabled by Feature Flag"/>
+  <int value="12" label="AGSA Version Not Supported"/>
+  <int value="13" label="Disabled on Incognito"/>
 </enum>
 
 <enum name="LevelDBCorruptionRestoreValue">

@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.video_tutorials.NewTabPageVideoIPHManager;
@@ -354,9 +355,12 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
 
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
+        updateLensButtonVisibility();
         // TODO(b/181067692): Report user action for this click.
-        mSearchBoxCoordinator.addLensButtonClickListener(
-                v -> mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE));
+        mSearchBoxCoordinator.addLensButtonClickListener(v -> {
+            mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
+            RecordUserAction.record("NewTabPage.SearchBox.Lens");
+        });
         if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
             // View is 48dp, image is 24dp. Increasing the padding from 4dp -> 8dp will split the
             // remaining 16dp evenly between start/end resulting in a paddingEnd of 8dp.

@@ -15,16 +15,15 @@ import java.lang.annotation.RetentionPolicy;
  * Static utility methods to support UMA logging for Lens entry points.
  */
 public class LensUma {
-    // Note: these values must match the ContextMenuLensSupportStatus enum in enums.xml.
+    // Note: these values must match the LensSupportStatus enum in enums.xml.
     // Only add new values at the end, right before NUM_ENTRIES.
     @IntDef({LensSupportStatus.LENS_SEARCH_SUPPORTED, LensSupportStatus.NON_GOOGLE_SEARCH_ENGINE,
             LensSupportStatus.ACTIVITY_NOT_ACCESSIBLE, LensSupportStatus.OUT_OF_DATE,
             LensSupportStatus.SEARCH_BY_IMAGE_UNAVAILABLE, LensSupportStatus.LEGACY_OS,
             LensSupportStatus.INVALID_PACKAGE, LensSupportStatus.LENS_SHOP_SUPPORTED,
             LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED,
-            LensSupportStatus.CAMERA_NOT_AVAILABLE, LensSupportStatus.LOW_END_DEVICE,
-            LensSupportStatus.LENS_CAMERA_ASSISTED_SEARCH_SUPPORTED,
-            LensSupportStatus.LENS_TRANSLATE_SUPPORTED})
+            LensSupportStatus.CAMERA_NOT_AVAILABLE, LensSupportStatus.DISABLED_ON_LOW_END_DEVICE,
+            LensSupportStatus.AGSA_VERSION_NOT_SUPPORTED, LensSupportStatus.DISABLED_ON_INCOGNITO})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface LensSupportStatus {
         int LENS_SEARCH_SUPPORTED = 0;
@@ -37,9 +36,9 @@ public class LensUma {
         int LENS_SHOP_SUPPORTED = 7;
         int LENS_SHOP_AND_SEARCH_SUPPORTED = 8;
         int CAMERA_NOT_AVAILABLE = 9;
-        int LOW_END_DEVICE = 10;
-        int LENS_CAMERA_ASSISTED_SEARCH_SUPPORTED = 11;
-        int LENS_TRANSLATE_SUPPORTED = 12;
+        int DISABLED_ON_LOW_END_DEVICE = 10;
+        int AGSA_VERSION_NOT_SUPPORTED = 11;
+        int DISABLED_ON_INCOGNITO = 12;
         int NUM_ENTRIES = 13;
     }
 
@@ -47,5 +46,33 @@ public class LensUma {
             String histogramName, @LensSupportStatus int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName, reason, LensSupportStatus.NUM_ENTRIES);
+    }
+
+    public static String getSupportStatusHistogramNameByEntryPoint(
+            @LensEntryPoint int lensEntryPoint) {
+        String histogramName = null;
+        switch (lensEntryPoint) {
+            case LensEntryPoint.NEW_TAB_PAGE:
+                histogramName = "NewTabPage.LensSupportStatus";
+                break;
+            case LensEntryPoint.OMNIBOX:
+                histogramName = "Omnibox.LensSupportStatus";
+                break;
+            case LensEntryPoint.TASKS_SURFACE:
+                histogramName = "NewTabPage.TasksSurface.LensSupportStatus";
+                break;
+            case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
+            case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
+                histogramName = "ContextMenu.LensSupportStatus";
+                break;
+            case LensEntryPoint.CONTEXT_MENU_CHIP:
+            default:
+                assert false : "Method not implemented.";
+        }
+        return histogramName;
+    }
+
+    public static void recordTimeSpentInLens(String histogramName, long timeSpentInLensMs) {
+        RecordHistogram.recordLongTimesHistogram(histogramName, timeSpentInLensMs);
     }
 }
