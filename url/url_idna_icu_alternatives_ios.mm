@@ -14,7 +14,7 @@ namespace url {
 
 // Only allow ASCII to avoid ICU dependency. Use NSString+IDN
 // to convert non-ASCII URL prior to passing to API.
-bool IDNToASCII(const base::char16* src, int src_len, CanonOutputW* output) {
+bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
   if (base::IsStringASCII(base::StringPiece16(src, src_len))) {
     output->Append(src, src_len);
     return true;

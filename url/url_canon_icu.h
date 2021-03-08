@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(URL) ICUCharsetConverter : public CharsetConverter {
 
   ~ICUCharsetConverter() override;
 
-  void ConvertFromUTF16(const base::char16* input,
+  void ConvertFromUTF16(const char16_t* input,
                         int input_len,
                         CanonOutput* output) override;
 

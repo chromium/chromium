@@ -236,14 +236,14 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
 
   for (size_t i = 0; i < base::size(decode_cases); i++) {
     const char* input = decode_cases[i].input;
-    RawCanonOutputT<base::char16> output;
+    RawCanonOutputT<char16_t> output;
     DecodeURLEscapeSequences(input, strlen(input),
                              DecodeURLMode::kUTF8OrIsomorphic, &output);
     EXPECT_EQ(decode_cases[i].output,
               base::UTF16ToUTF8(base::string16(output.data(),
                                                output.length())));
 
-    RawCanonOutputT<base::char16> output_utf8;
+    RawCanonOutputT<char16_t> output_utf8;
     DecodeURLEscapeSequences(input, strlen(input), DecodeURLMode::kUTF8,
                              &output_utf8);
     EXPECT_EQ(decode_cases[i].output,
@@ -253,7 +253,7 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
 
   // Our decode should decode %00
   const char zero_input[] = "%00";
-  RawCanonOutputT<base::char16> zero_output;
+  RawCanonOutputT<char16_t> zero_output;
   DecodeURLEscapeSequences(zero_input, strlen(zero_input), DecodeURLMode::kUTF8,
                            &zero_output);
   EXPECT_NE("%00", base::UTF16ToUTF8(
@@ -262,8 +262,8 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
   // Test the error behavior for invalid UTF-8.
   struct Utf8DecodeCase {
     const char* input;
-    std::vector<base::char16> expected_iso;
-    std::vector<base::char16> expected_utf8;
+    std::vector<char16_t> expected_iso;
+    std::vector<char16_t> expected_utf8;
   } utf8_decode_cases[] = {
       // %e5%a5%bd is a valid UTF-8 sequence. U+597D
       {"%e4%a0%e5%a5%bd",
@@ -279,13 +279,13 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
 
   for (const auto& test : utf8_decode_cases) {
     const char* input = test.input;
-    RawCanonOutputT<base::char16> output_iso;
+    RawCanonOutputT<char16_t> output_iso;
     DecodeURLEscapeSequences(input, strlen(input),
                              DecodeURLMode::kUTF8OrIsomorphic, &output_iso);
     EXPECT_EQ(base::string16(test.expected_iso.data()),
               base::string16(output_iso.data(), output_iso.length()));
 
-    RawCanonOutputT<base::char16> output_utf8;
+    RawCanonOutputT<char16_t> output_utf8;
     DecodeURLEscapeSequences(input, strlen(input), DecodeURLMode::kUTF8,
                              &output_utf8);
     EXPECT_EQ(base::string16(test.expected_utf8.data()),

@@ -167,8 +167,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // Note that we use the more general url::Replacements type to give
   // callers extra flexibility rather than our override.
   GURL ReplaceComponents(const url::Replacements<char>& replacements) const;
-  GURL ReplaceComponents(
-      const url::Replacements<base::char16>& replacements) const;
+  GURL ReplaceComponents(const url::Replacements<char16_t>& replacements) const;
 
   // A helper function that is equivalent to replacing the path with a slash
   // and clearing out everything after that. We sometimes need to know just the

@@ -134,7 +134,7 @@ bool FindAndCompareScheme(const char* str,
                           const char* compare,
                           Component* found_scheme);
 COMPONENT_EXPORT(URL)
-bool FindAndCompareScheme(const base::char16* str,
+bool FindAndCompareScheme(const char16_t* str,
                           int str_len,
                           const char* compare,
                           Component* found_scheme);
@@ -156,7 +156,7 @@ inline bool FindAndCompareScheme(const base::string16& str,
 COMPONENT_EXPORT(URL)
 bool IsStandard(const char* spec, const Component& scheme);
 COMPONENT_EXPORT(URL)
-bool IsStandard(const base::char16* spec, const Component& scheme);
+bool IsStandard(const char16_t* spec, const Component& scheme);
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of allowed schemes for referrers (see AddReferrerScheme).
@@ -171,7 +171,7 @@ bool GetStandardSchemeType(const char* spec,
                            const Component& scheme,
                            SchemeType* type);
 COMPONENT_EXPORT(URL)
-bool GetStandardSchemeType(const base::char16* spec,
+bool GetStandardSchemeType(const char16_t* spec,
                            const Component& scheme,
                            SchemeType* type);
 
@@ -213,7 +213,7 @@ bool Canonicalize(const char* spec,
                   CanonOutput* output,
                   Parsed* output_parsed);
 COMPONENT_EXPORT(URL)
-bool Canonicalize(const base::char16* spec,
+bool Canonicalize(const char16_t* spec,
                   int spec_len,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
@@ -243,7 +243,7 @@ COMPONENT_EXPORT(URL)
 bool ResolveRelative(const char* base_spec,
                      int base_spec_len,
                      const Parsed& base_parsed,
-                     const base::char16* relative,
+                     const char16_t* relative,
                      int relative_length,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
@@ -265,7 +265,7 @@ COMPONENT_EXPORT(URL)
 bool ReplaceComponents(const char* spec,
                        int spec_len,
                        const Parsed& parsed,
-                       const Replacements<base::char16>& replacements,
+                       const Replacements<char16_t>& replacements,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* out_parsed);

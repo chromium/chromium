@@ -248,7 +248,7 @@ GURL GURL::ReplaceComponents(
 
 // Note: code duplicated above (it's inconvenient to use a template here).
 GURL GURL::ReplaceComponents(
-    const url::Replacements<base::char16>& replacements) const {
+    const url::Replacements<char16_t>& replacements) const {
   GURL result;
 
   // Not allowed for invalid URLs.

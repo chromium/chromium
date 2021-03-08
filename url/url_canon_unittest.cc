@@ -1165,7 +1165,7 @@ typedef bool (*CanonFunc8Bit)(const char*,
                               const Component&,
                               CanonOutput*,
                               Component*);
-typedef bool (*CanonFunc16Bit)(const base::char16*,
+typedef bool (*CanonFunc16Bit)(const char16_t*,
                                const Component&,
                                CanonOutput*,
                                Component*);
@@ -2116,9 +2116,9 @@ TEST(URLCanonTest, _itow_s) {
   // We fill the buffer with 0xff to ensure that it's getting properly
   // null-terminated. We also allocate one byte more than what we tell
   // _itoa_s about, and ensure that the extra byte is untouched.
-  base::char16 buf[6];
+  char16_t buf[6];
   const char fill_mem = 0xff;
-  const base::char16 fill_char = 0xffff;
+  const char16_t fill_char = 0xffff;
   memset(buf, fill_mem, sizeof(buf));
   EXPECT_EQ(0, _itow_s(12, buf, sizeof(buf) / 2 - 1, 10));
   EXPECT_EQ(base::UTF8ToUTF16("12"), base::string16(buf));
@@ -2373,7 +2373,7 @@ TEST(URLCanonTest, ReplacementOverflow) {
 
   // Override two components, the path with something short, and the query with
   // something long enough to trigger the bug.
-  Replacements<base::char16> repl;
+  Replacements<char16_t> repl;
   base::string16 new_query;
   for (int i = 0; i < 4800; i++)
     new_query.push_back('a');

@@ -83,7 +83,7 @@ UIDNA* GetUIDNA() {
 // conversions in our code. In addition, consider using icu::IDNA's UTF-8/ASCII
 // version with StringByteSink. That way, we can avoid C wrappers and additional
 // string conversion.
-bool IDNToASCII(const base::char16* src, int src_len, CanonOutputW* output) {
+bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
   DCHECK(output->length() == 0);  // Output buffer is assumed empty.
 
   UIDNA* uidna = GetUIDNA();

@@ -28,7 +28,7 @@ inline base::string16 TruncateWStringToUTF16(const wchar_t* src) {
   base::string16 str;
   int length = static_cast<int>(wcslen(src));
   for (int i = 0; i < length; ++i) {
-    str.push_back(static_cast<base::char16>(src[i]));
+    str.push_back(static_cast<char16_t>(src[i]));
   }
   return str;
 }

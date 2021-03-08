@@ -751,11 +751,10 @@ bool FindIPv4Components(const char* spec,
   return DoFindIPv4Components<char, unsigned char>(spec, host, components);
 }
 
-bool FindIPv4Components(const base::char16* spec,
+bool FindIPv4Components(const char16_t* spec,
                         const Component& host,
                         Component components[4]) {
-  return DoFindIPv4Components<base::char16, base::char16>(
-      spec, host, components);
+  return DoFindIPv4Components<char16_t, char16_t>(spec, host, components);
 }
 
 void CanonicalizeIPAddress(const char* spec,
@@ -770,15 +769,15 @@ void CanonicalizeIPAddress(const char* spec,
     return;
 }
 
-void CanonicalizeIPAddress(const base::char16* spec,
+void CanonicalizeIPAddress(const char16_t* spec,
                            const Component& host,
                            CanonOutput* output,
                            CanonHostInfo* host_info) {
-  if (DoCanonicalizeIPv4Address<base::char16, base::char16>(
-          spec, host, output, host_info))
+  if (DoCanonicalizeIPv4Address<char16_t, char16_t>(spec, host, output,
+                                                    host_info))
     return;
-  if (DoCanonicalizeIPv6Address<base::char16, base::char16>(
-          spec, host, output, host_info))
+  if (DoCanonicalizeIPv6Address<char16_t, char16_t>(spec, host, output,
+                                                    host_info))
     return;
 }
 
@@ -789,12 +788,12 @@ CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
   return DoIPv4AddressToNumber<char>(spec, host, address, num_ipv4_components);
 }
 
-CanonHostInfo::Family IPv4AddressToNumber(const base::char16* spec,
+CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
                                           const Component& host,
                                           unsigned char address[4],
                                           int* num_ipv4_components) {
-  return DoIPv4AddressToNumber<base::char16>(
-      spec, host, address, num_ipv4_components);
+  return DoIPv4AddressToNumber<char16_t>(spec, host, address,
+                                         num_ipv4_components);
 }
 
 bool IPv6AddressToNumber(const char* spec,
@@ -803,17 +802,17 @@ bool IPv6AddressToNumber(const char* spec,
   return DoIPv6AddressToNumber<char, unsigned char>(spec, host, address);
 }
 
-bool IPv6AddressToNumber(const base::char16* spec,
+bool IPv6AddressToNumber(const char16_t* spec,
                          const Component& host,
                          unsigned char address[16]) {
-  return DoIPv6AddressToNumber<base::char16, base::char16>(spec, host, address);
+  return DoIPv6AddressToNumber<char16_t, char16_t>(spec, host, address);
 }
 
 HostSafetyStatus CheckHostnameSafety(const char* spec, const Component& host) {
   return DoCheckHostnameSafety(spec, host);
 }
 
-HostSafetyStatus CheckHostnameSafety(const base::char16* spec,
+HostSafetyStatus CheckHostnameSafety(const char16_t* spec,
                                      const Component& host) {
   return DoCheckHostnameSafety(spec, host);
 }

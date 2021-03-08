@@ -17,7 +17,7 @@ namespace url {
 
 // This uses the JDK's conversion function, which uses IDNA 2003, unlike the
 // ICU implementation.
-bool IDNToASCII(const base::char16* src, int src_len, CanonOutputW* output) {
+bool IDNToASCII(const char16_t* src, int src_len, CanonOutputW* output) {
   DCHECK_EQ(0, output->length());  // Output buffer is assumed empty.
 
   JNIEnv* env = base::android::AttachCurrentThread();
