@@ -29,9 +29,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * LongScreenshotsMediator is responsible for retrieving the long screenshot Bitmaps
- * via {@link LongScreenshotsEntryManager} and displaying them in the area selection
- * dialog.
+ * LongScreenshotsMediator is responsible for retrieving the long screenshot Bitmaps via
+ * {@link LongScreenshotsEntryManager} and displaying them in the area selection dialog.
  */
 public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListener {
     private Dialog mDialog;
@@ -110,14 +109,17 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         LongScreenshotsEntry newEntry = mEntryManager.getNextEntry(mCurrentEntry.getId());
         if (newEntry == null) {
             return;
+        } else if (newEntry.getStatus() == EntryStatus.BOUNDS_BELOW_CAPTURE) {
+            // TODO(crbug/1153969): Disable the down button and show a toast
+            return;
         }
-        mPendingEntry = newEntry;
-        mPendingEntry.setListener(this);
 
+        mPendingEntry = newEntry;
         // Next entry is already generated/available.
         if (mPendingEntry.getStatus() == EntryStatus.BITMAP_GENERATED) {
-            mPendingEntry.setListener(null);
             onResult(EntryStatus.BITMAP_GENERATED);
+        } else {
+            mPendingEntry.setListener(this);
         }
     }
 
@@ -131,14 +133,17 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         LongScreenshotsEntry newEntry = mEntryManager.getPreviousEntry(mCurrentEntry.getId());
         if (newEntry == null) {
             return;
+        } else if (newEntry.getStatus() == EntryStatus.BOUNDS_ABOVE_CAPTURE) {
+            // TODO(crbug/1153969): Disable the down button and show a toast
+            return;
         }
-        mPendingEntry = newEntry;
-        mPendingEntry.setListener(this);
 
+        mPendingEntry = newEntry;
         // Next entry is already generated/available.
         if (mPendingEntry.getStatus() == EntryStatus.BITMAP_GENERATED) {
-            mPendingEntry.setListener(null);
             onResult(EntryStatus.BITMAP_GENERATED);
+        } else {
+            mPendingEntry.setListener(this);
         }
     }
 
@@ -179,8 +184,10 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                     ++mAnimationsComplete;
                     finishAnimation();
                 }
+
                 @Override
                 public void onAnimationStart(Animation animation) {}
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {}
             });
@@ -190,8 +197,10 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                     ++mAnimationsComplete;
                     finishAnimation();
                 }
+
                 @Override
                 public void onAnimationStart(Animation animation) {}
+
                 @Override
                 public void onAnimationRepeat(Animation animation) {}
             });

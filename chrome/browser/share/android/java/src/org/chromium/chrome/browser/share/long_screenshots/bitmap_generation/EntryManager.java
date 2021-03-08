@@ -84,7 +84,8 @@ public class EntryManager {
 
         Rect bounds = mBoundsManager.calculateClipBoundsAbove(mEntries.get(0).getId());
         if (bounds == null) {
-            return null;
+            return LongScreenshotsEntry.createEntryWithStatus(
+                    null, bounds, EntryStatus.BOUNDS_ABOVE_CAPTURE);
         }
 
         // found = 0
@@ -120,7 +121,8 @@ public class EntryManager {
 
         Rect bounds = mBoundsManager.calculateClipBoundsBelow(newStartY);
         if (bounds == null) {
-            return null;
+            return LongScreenshotsEntry.createEntryWithStatus(
+                    null, bounds, EntryStatus.BOUNDS_BELOW_CAPTURE);
         }
 
         LongScreenshotsEntry newEntry = new LongScreenshotsEntry(mGenerator, bounds);

@@ -36,7 +36,8 @@ public class LongScreenshotsEntry {
 
     @IntDef({EntryStatus.UNKNOWN, EntryStatus.INSUFFICIENT_MEMORY, EntryStatus.GENERATION_ERROR,
             EntryStatus.BITMAP_GENERATED, EntryStatus.CAPTURE_COMPLETE,
-            EntryStatus.CAPTURE_IN_PROGRESS, EntryStatus.BITMAP_GENERATION_IN_PROGRESS})
+            EntryStatus.CAPTURE_IN_PROGRESS, EntryStatus.BITMAP_GENERATION_IN_PROGRESS,
+            EntryStatus.BOUNDS_ABOVE_CAPTURE, EntryStatus.BOUNDS_BELOW_CAPTURE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EntryStatus {
         int UNKNOWN = 0;
@@ -46,6 +47,8 @@ public class LongScreenshotsEntry {
         int CAPTURE_COMPLETE = 4;
         int CAPTURE_IN_PROGRESS = 5;
         int BITMAP_GENERATION_IN_PROGRESS = 6;
+        int BOUNDS_ABOVE_CAPTURE = 7;
+        int BOUNDS_BELOW_CAPTURE = 8;
     }
 
     /**
@@ -62,12 +65,18 @@ public class LongScreenshotsEntry {
 
     /**
      * @param generator BitmapGenerator to be used to capture and composite the website.
-     * @param generatingAbove Whether to use the yAxisRef as the top (generatingAbove = false) or
-     *            bottom yAxis coordinate (generatingAbove = true);
+     * @param bounds The bounds of the entry.
      */
     public LongScreenshotsEntry(BitmapGenerator generator, Rect bounds) {
         mRect = bounds;
         mGenerator = generator;
+    }
+
+    public static LongScreenshotsEntry createEntryWithStatus(
+            BitmapGenerator generator, Rect bounds, @EntryStatus int status) {
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(generator, bounds);
+        entry.updateStatus(status);
+        return entry;
     }
 
     /**
@@ -87,11 +96,11 @@ public class LongScreenshotsEntry {
      * @return the id of this entry.
      */
     public int getId() {
-        return mRect.top;
+        return mRect == null ? -1 : mRect.top;
     }
 
     public int getEndYAxis() {
-        return mRect.bottom;
+        return mRect == null ? -1 : mRect.bottom;
     }
 
     public void generateBitmap() {
