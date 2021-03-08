@@ -8,12 +8,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
@@ -97,6 +99,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
+        recordHomeButtonUserPerProfileType();
         if (mOverrideHomePageSupplier.get()) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
                 // While some other element is handling the routing of this click event, something
@@ -137,5 +140,17 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (UrlUtilities.isNTPUrl(homepageUrl)) {
             tracker.notifyEvent(EventConstants.NTP_HOME_BUTTON_CLICKED);
         }
+    }
+
+    private void recordHomeButtonUserPerProfileType() {
+        Tab tab = mTabSupplier.get();
+        if (tab == null) return;
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        if (profile == null) return;
+
+        @BrowserProfileType
+        int type = Profile.getBrowserProfileTypeFromProfile(profile);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.HomeButton.PerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
     }
 }
