@@ -189,6 +189,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   }
   views::ScrollView* GetScrollViewForTesting() const { return scroll_view_; }
 
+  // Get drag view for test.
+  const DeskMiniView* GetDragDeskMiniViewForTesting() const {
+    return drag_view_;
+  }
+
  private:
   friend class BentoDesksBarLayout;
   friend class BentoDesksBarScrollViewLayout;

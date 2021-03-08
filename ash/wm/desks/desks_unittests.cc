@@ -4994,10 +4994,43 @@ TEST_F(DesksBentoTest, ClickTargetLocationOfDroppedDesk) {
   // Drop the desk and click on the mini view.
   event_generator->ReleaseLeftButton();
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
-  ClickOnView(mini_view, event_generator);
+  ClickOnView(desks_bar_view->mini_views()[0], event_generator);
 }
 
-// TODO(zxdan): Add a test for crbug/1181089.
+// Tests that while reordering desks by drag & drop, when a desk is snapping
+// back, dragging a desk preview on the shelf will start a new drag.
+TEST_F(DesksBentoTest, DragNewDeskWhileSnappingBack) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  // Add a desk.
+  NewDesk();
+
+  // Cache the desks' mini views.
+  DeskMiniView* mini_view_1 = desks_bar_view->mini_views()[0];
+  DeskMiniView* mini_view_2 = desks_bar_view->mini_views()[1];
+
+  auto* event_generator = GetEventGenerator();
+
+  // Drag the second desk away from the desk bar.
+  StartDragDeskPreview(mini_view_2, event_generator);
+  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_2);
+
+  event_generator->MoveMouseBy(0, desks_bar_view->height());
+
+  ui::ScopedAnimationDurationScaleMode normal_anim(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Drop the desk and drag first desk.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_2);
+  StartDragDeskPreview(mini_view_1, event_generator);
+  EXPECT_EQ(desks_bar_view->GetDragDeskMiniViewForTesting(), mini_view_1);
+}
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
