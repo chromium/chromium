@@ -123,120 +123,122 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
     // Avatar
     case NativeTheme::kColorId_AvatarHeaderArt:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_AvatarIconGuest:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_AvatarIconIncognito:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
 
     // Border
     case NativeTheme::kColorId_UnfocusedBorderColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_FocusedBorderColor: {
-      const SkColor accent = base_theme->GetSystemColor(
+      const SkColor accent = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
       return SkColorSetA(accent, 0x4D);
     }
 
     // Bubble
     case NativeTheme::kColorId_BubbleBackground:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_BubbleFooterBackground:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_HighlightedMenuItemBackgroundColor,
           color_scheme);
     case NativeTheme::kColorId_FootnoteContainerBorder:
       return gfx::kGoogleGrey200;
     case NativeTheme::kColorId_BubbleBorder:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
 
     // Button
     case NativeTheme::kColorId_ButtonColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_TextOnProminentButtonColor:
-      return color_utils::GetColorWithMaxContrast(base_theme->GetSystemColor(
-          NativeTheme::kColorId_ProminentButtonColor, color_scheme));
+      return color_utils::GetColorWithMaxContrast(
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_ProminentButtonColor, color_scheme));
     case NativeTheme::kColorId_ProminentButtonDisabledColor:
     case NativeTheme::kColorId_DisabledButtonBorderColor: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return color_utils::BlendForMinContrast(bg, bg, base::nullopt, 1.2f)
           .color;
     }
     case NativeTheme::kColorId_ButtonBorderColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_ButtonDisabledColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelDisabledColor, color_scheme);
     case NativeTheme::kColorId_ButtonUncheckedColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_PaddedButtonInkDropColor:
-      return color_utils::GetColorWithMaxContrast(base_theme->GetSystemColor(
-          NativeTheme::kColorId_WindowBackground, color_scheme));
+      return color_utils::GetColorWithMaxContrast(
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_WindowBackground, color_scheme));
     case NativeTheme::kColorId_ProminentButtonFocusedColor: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
       return color_utils::BlendForMinContrast(bg, bg, base::nullopt, 1.3f)
           .color;
     }
     case NativeTheme::kColorId_ButtonCheckedColor:
     case NativeTheme::kColorId_ButtonEnabledColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue600;
 
     // Custom tab bar
     case NativeTheme::kColorId_CustomTabBarBackgroundColor: {
-      const SkColor fg = base_theme->GetSystemColor(
+      const SkColor fg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_CustomTabBarForegroundColor, color_scheme);
       return color_utils::GetColorWithMaxContrast(fg);
     }
     case NativeTheme::kColorId_CustomTabBarForegroundColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelTextSelectionColor, color_scheme);
     case NativeTheme::kColorId_CustomTabBarSecurityChipWithCertColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelDisabledColor, color_scheme);
     case NativeTheme::kColorId_CustomTabBarSecurityChipSecureColor:
     case NativeTheme::kColorId_CustomTabBarSecurityChipDefaultColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_CustomTabBarSecurityChipDangerousColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_AlertSeverityHigh,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_AlertSeverityHigh, color_scheme);
 
     // Dialog
     case NativeTheme::kColorId_DialogBackground:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_DialogForeground:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
 
     // Dropdown
     case NativeTheme::kColorId_DropdownBackgroundColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_DropdownSelectedBackgroundColor: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return color_utils::BlendForMinContrast(bg, bg, base::nullopt, 1.67f)
           .color;
     }
     case NativeTheme::kColorId_DropdownForegroundColor:
     case NativeTheme::kColorId_DropdownSelectedForegroundColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
 
     // Frame
     case NativeTheme::kColorId_CustomFrameActiveColor:
@@ -246,19 +248,19 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
     // Icon
     case NativeTheme::kColorId_DefaultIconColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_DisabledIconColor: {
-      const SkColor icon = base_theme->GetSystemColor(
+      const SkColor icon = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
       return SkColorSetA(icon, gfx::kDisabledControlAlpha);
     }
 
     // Label
     case NativeTheme::kColorId_LabelDisabledColor: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
-      const SkColor fg = base_theme->GetSystemColor(
+      const SkColor fg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelEnabledColor, color_scheme);
       return color_utils::BlendForMinContrast(gfx::kGoogleGrey600, bg, fg)
           .color;
@@ -268,49 +270,49 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_LabelEnabledColor:
       return gfx::kGoogleGrey900;
     case NativeTheme::kColorId_LabelTextSelectionColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
     case NativeTheme::kColorId_LabelTextSelectionBackgroundFocused:
       return gfx::kGoogleBlue200;
 
     // Link
     case NativeTheme::kColorId_LinkDisabled:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelDisabledColor, color_scheme);
     case NativeTheme::kColorId_LinkEnabled:
     case NativeTheme::kColorId_LinkPressed:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
 
     // Menu
     case NativeTheme::kColorId_MenuBackgroundColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_HighlightedMenuItemBackgroundColor:
       return gfx::kGoogleGrey050;
     case NativeTheme::kColorId_MenuBorderColor:
     case NativeTheme::kColorId_MenuSeparatorColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_FocusedMenuItemBackgroundColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_DropdownSelectedBackgroundColor, color_scheme);
     case NativeTheme::kColorId_DisabledMenuItemForegroundColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelDisabledColor, color_scheme);
     case NativeTheme::kColorId_MenuIconColor:
     case NativeTheme::kColorId_MenuItemMinorTextColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_EnabledMenuItemForegroundColor:
     case NativeTheme::kColorId_HighlightedMenuItemForegroundColor:
     case NativeTheme::kColorId_MenuDropIndicator:
     case NativeTheme::kColorId_SelectedMenuItemForegroundColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
     case NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor:
     case NativeTheme::kColorId_MenuItemTargetAlertBackgroundColor: {
-      const SkColor accent = base_theme->GetSystemColor(
+      const SkColor accent = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
       constexpr auto kInitial =
           NativeTheme::kColorId_MenuItemInitialAlertBackgroundColor;
@@ -321,8 +323,8 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     // Notification
     case NativeTheme::kColorId_NotificationDefaultBackground:
     case NativeTheme::kColorId_NotificationColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case NativeTheme::kColorId_NotificationButtonBackground:
       return SkColorSetA(SK_ColorWHITE, 0.9 * 0xff);
@@ -331,12 +333,12 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return SkColorSetA(SK_ColorWHITE, gfx::kDisabledControlAlpha);
     case NativeTheme::kColorId_NotificationActionsRowBackground:
     case NativeTheme::kColorId_NotificationInlineSettingsBackground: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return color_utils::BlendTowardMaxContrast(bg, 0x14);
     }
     case NativeTheme::kColorId_NotificationLargeImageBackground: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return color_utils::BlendTowardMaxContrast(bg, 0x0C);
     }
@@ -348,7 +350,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     // Scrollbar
     case NativeTheme::kColorId_OverlayScrollbarThumbFill:
     case NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill: {
-      SkColor fill = base_theme->GetSystemColor(
+      SkColor fill = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_CustomTabBarForegroundColor, color_scheme);
       fill = color_utils::IsDark(fill) ? SK_ColorBLACK : SK_ColorWHITE;
       const bool hovered =
@@ -357,7 +359,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     }
     case NativeTheme::kColorId_OverlayScrollbarThumbStroke:
     case NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke: {
-      SkColor stroke = base_theme->GetSystemColor(
+      SkColor stroke = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_CustomTabBarBackgroundColor, color_scheme);
       stroke = color_utils::IsDark(stroke) ? SK_ColorBLACK : SK_ColorWHITE;
       const bool hovered =
@@ -381,26 +383,26 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
     // Sync info container
     case NativeTheme::kColorId_SyncInfoContainerNoPrimaryAccount:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_HighlightedMenuItemBackgroundColor,
           color_scheme);
     case NativeTheme::kColorId_SyncInfoContainerPaused:
       return SkColorSetA(
-          base_theme->GetSystemColor(NativeTheme::kColorId_ProminentButtonColor,
-                                     color_scheme),
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_ProminentButtonColor, color_scheme),
           0x10);
     case NativeTheme::kColorId_SyncInfoContainerError:
       return SkColorSetA(
-          base_theme->GetSystemColor(NativeTheme::kColorId_AlertSeverityHigh,
-                                     color_scheme),
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_AlertSeverityHigh, color_scheme),
           0x10);
 
     // Tabbed pane
     case NativeTheme::kColorId_TabBottomBorder:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_TabTitleColorInactive:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_TabHighlightBackground:
       return gfx::kGoogleBlue050;
@@ -408,49 +410,49 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return gfx::kGoogleBlue100;
     case NativeTheme::kColorId_TabTitleColorActive:
     case NativeTheme::kColorId_TabSelectedBorderColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
 
     // Table
     case NativeTheme::kColorId_TableBackground:
     case NativeTheme::kColorId_TableBackgroundAlternate:
     case NativeTheme::kColorId_TableHeaderBackground:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_TableGroupingIndicatorColor:
     case NativeTheme::kColorId_TableSelectionBackgroundFocused:
     case NativeTheme::kColorId_TableSelectionBackgroundUnfocused:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_DropdownSelectedBackgroundColor, color_scheme);
     case NativeTheme::kColorId_TableHeaderSeparator:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_SeparatorColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_SeparatorColor, color_scheme);
     case NativeTheme::kColorId_TableHeaderText:
     case NativeTheme::kColorId_TableSelectedText:
     case NativeTheme::kColorId_TableSelectedTextUnfocused:
     case NativeTheme::kColorId_TableText:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
 
     // Textfield
     case NativeTheme::kColorId_TextfieldReadOnlyBackground:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_TextfieldDefaultBackground: {
-      const SkColor fg = base_theme->GetSystemColor(
+      const SkColor fg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelEnabledColor, color_scheme);
       return color_utils::GetColorWithMaxContrast(fg);
     }
     case NativeTheme::kColorId_TextfieldPlaceholderColor:
     case NativeTheme::kColorId_TextfieldReadOnlyColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelDisabledColor, color_scheme);
     case NativeTheme::kColorId_TextfieldDefaultColor:
     case NativeTheme::kColorId_TextfieldSelectionColor:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
     case NativeTheme::kColorId_TextfieldSelectionBackgroundFocused:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelTextSelectionBackgroundFocused,
           color_scheme);
 
@@ -458,14 +460,14 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_ThrobberWaitingColor:
       return SkColorSetRGB(0xA6, 0xA6, 0xA6);
     case NativeTheme::kColorId_ThrobberSpinningColor:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
 
     // Toggle button
     case NativeTheme::kColorId_ToggleButtonShadowColor:
       return SkColorSetA(
-          base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                     color_scheme),
+          base_theme->GetUnprocessedSystemColor(
+              NativeTheme::kColorId_LabelEnabledColor, color_scheme),
           0x99);
     case ui::NativeTheme::kColorId_ToggleButtonTrackColorOff:
     case ui::NativeTheme::kColorId_ToggleButtonTrackColorOn: {
@@ -474,19 +476,20 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
               ? ui::NativeTheme::kColorId_LabelEnabledColor
               : ui::NativeTheme::kColorId_ProminentButtonColor;
       return SkColorSetA(
-          base_theme->GetSystemColor(base_color_id, color_scheme), 0x66);
+          base_theme->GetUnprocessedSystemColor(base_color_id, color_scheme),
+          0x66);
     }
 
     // Tooltip
     case NativeTheme::kColorId_TooltipBackground: {
-      const SkColor bg = base_theme->GetSystemColor(
+      const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return SkColorSetA(bg, 0xCC);
     }
     case NativeTheme::kColorId_TooltipIcon:
       return SkColorSetA(gfx::kGoogleGrey800, 0xBD);
     case NativeTheme::kColorId_TooltipText: {
-      const SkColor text = base_theme->GetSystemColor(
+      const SkColor text = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelEnabledColor, color_scheme);
       return SkColorSetA(text, 0xDE);
     }
@@ -495,17 +498,17 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
     // Tree
     case NativeTheme::kColorId_TreeBackground:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_WindowBackground,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_WindowBackground, color_scheme);
     case NativeTheme::kColorId_TreeSelectionBackgroundFocused:
     case NativeTheme::kColorId_TreeSelectionBackgroundUnfocused:
-      return base_theme->GetSystemColor(
+      return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_DropdownSelectedBackgroundColor, color_scheme);
     case NativeTheme::kColorId_TreeSelectedText:
     case NativeTheme::kColorId_TreeSelectedTextUnfocused:
     case NativeTheme::kColorId_TreeText:
-      return base_theme->GetSystemColor(NativeTheme::kColorId_LabelEnabledColor,
-                                        color_scheme);
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_LabelEnabledColor, color_scheme);
 
     // Window
     case NativeTheme::kColorId_WindowBackground:

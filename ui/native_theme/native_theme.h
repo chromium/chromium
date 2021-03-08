@@ -397,6 +397,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
       ColorId color_id,
       ColorScheme color_scheme = ColorScheme::kDefault) const;
 
+  // Returns an un-tinted or unprocessed color from the system theme before
+  // processing.
+  virtual SkColor GetUnprocessedSystemColor(ColorId color_id,
+                                            ColorScheme color_scheme) const;
+
   // Returns a shared instance of the native theme that should be used for web
   // rendering. Do not use it in a normal application context (i.e. browser).
   // The returned object should not be deleted by the caller. This function is

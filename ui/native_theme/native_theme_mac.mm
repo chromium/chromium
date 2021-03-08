@@ -154,8 +154,9 @@ SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
   return color;
 }
 
-SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
-                                       ColorScheme color_scheme) const {
+SkColor NativeThemeMac::GetSystemColorImpl(ColorId color_id,
+                                           ColorScheme color_scheme,
+                                           bool apply_tint) const {
   if (color_scheme == ColorScheme::kDefault)
     color_scheme = GetDefaultSystemColorScheme();
 
@@ -179,8 +180,19 @@ SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
   if (os_color.has_value())
     return os_color.value();
 
-  return ApplySystemControlTint(
-      NativeTheme::GetSystemColor(color_id, color_scheme));
+  SkColor color = NativeTheme::GetSystemColor(color_id, color_scheme);
+  return apply_tint ? ApplySystemControlTint(color) : color;
+}
+
+SkColor NativeThemeMac::GetSystemColor(ColorId color_id,
+                                       ColorScheme color_scheme) const {
+  return GetSystemColorImpl(color_id, color_scheme, /* apply_tint = */ true);
+}
+
+SkColor NativeThemeMac::GetUnprocessedSystemColor(
+    ColorId color_id,
+    ColorScheme color_scheme) const {
+  return GetSystemColorImpl(color_id, color_scheme, /* apply_tint = */ false);
 }
 
 base::Optional<SkColor> NativeThemeMac::GetOSColor(

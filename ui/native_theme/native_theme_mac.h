@@ -37,17 +37,15 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // an appropriate gray.
   static SkColor ApplySystemControlTint(SkColor color);
 
-  // Overridden from NativeTheme:
+  // NativeTheme:
   SkColor GetSystemColor(ColorId color_id,
                          ColorScheme color_scheme) const override;
-
-  // Overridden from NativeTheme:
+  SkColor GetUnprocessedSystemColor(ColorId color_id,
+                                    ColorScheme color_scheme) const override;
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
-
-  // Overridden from NativeTheme:
   PreferredContrast CalculatePreferredContrast() const override;
 
-  // Overridden from NativeThemeBase:
+  // NativeThemeBase:
   void Paint(cc::PaintCanvas* canvas,
              Part part,
              State state,
@@ -130,6 +128,10 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // to make sure the NSAppearance can be set in a scoped way.
   base::Optional<SkColor> GetOSColor(ColorId color_id,
                                      ColorScheme color_scheme) const;
+
+  SkColor GetSystemColorImpl(ColorId color_id,
+                             ColorScheme color_scheme,
+                             bool apply_tint) const;
 
   enum ScrollbarPart {
     kThumb,

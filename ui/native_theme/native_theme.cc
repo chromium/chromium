@@ -194,6 +194,11 @@ SkColor NativeTheme::GetSystemColor(ColorId color_id,
   return GetAuraColor(color_id, this, color_scheme);
 }
 
+SkColor NativeTheme::GetUnprocessedSystemColor(ColorId color_id,
+                                               ColorScheme color_scheme) const {
+  return GetSystemColor(color_id, color_scheme);
+}
+
 SkColor NativeTheme::GetSystemButtonPressedColor(SkColor base_color) const {
   return base_color;
 }
