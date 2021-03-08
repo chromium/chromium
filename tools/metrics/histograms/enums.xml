@@ -23817,6 +23817,8 @@ Called by update_document_policy_enum.py.-->
   <int value="830" label="DeviceBorealisAllowed"/>
   <int value="831" label="UserBorealisAllowed"/>
   <int value="832" label="LacrosSecondaryProfilesAllowed"/>
+  <int value="833" label="GaiaLockScreenOfflineSigninTimeLimitDays"/>
+  <int value="834" label="SamlLockScreenOfflineSigninTimeLimitDays"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

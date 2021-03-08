@@ -17,6 +17,8 @@ namespace {
 constexpr int kDefaultGaiaOfflineSigninTimeLimitDays = -1;
 constexpr int kDefaultSAMLOfflineSigninTimeLimit =
     base::TimeDelta::FromDays(14).InSeconds();
+constexpr int kDefaultGaiaLockScreenOfflineSigninTimeLimitDays = -1;
+constexpr int kDefaultSamlLockScreenOfflineSigninTimeLimitDays = -1;
 
 // In-session password-change feature (includes password expiry notifications).
 const bool kDefaultSamlInSessionPasswordChangeEnabled = false;
@@ -33,13 +35,21 @@ void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
   // All SAML prefs are not syncable by default. In order to make a new pref
   // syncable across user devices SYNCABLE_PREF must be set in the optional
   // flags argument of RegisterPref.
+  registry->RegisterIntegerPref(prefs::kGaiaOfflineSigninTimeLimitDays,
+                                kDefaultGaiaOfflineSigninTimeLimitDays);
+  registry->RegisterTimePref(prefs::kGaiaLastOnlineSignInTime, base::Time());
+
   registry->RegisterIntegerPref(prefs::kSAMLOfflineSigninTimeLimit,
                                 kDefaultSAMLOfflineSigninTimeLimit);
   registry->RegisterTimePref(prefs::kSAMLLastGAIASignInTime, base::Time());
 
-  registry->RegisterIntegerPref(prefs::kGaiaOfflineSigninTimeLimitDays,
-                                kDefaultGaiaOfflineSigninTimeLimitDays);
-  registry->RegisterTimePref(prefs::kGaiaLastOnlineSignInTime, base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+      kDefaultGaiaLockScreenOfflineSigninTimeLimitDays);
+
+  registry->RegisterIntegerPref(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+      kDefaultSamlLockScreenOfflineSigninTimeLimitDays);
 
   registry->RegisterBooleanPref(prefs::kSamlInSessionPasswordChangeEnabled,
                                 kDefaultSamlInSessionPasswordChangeEnabled);
