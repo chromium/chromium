@@ -22,7 +22,7 @@ function loadCommonComponents() {
 // <include src="../gaia_input_form.js">
 
 // <include src="../oobe_a11y_option.js">
-// <include src="../network_select_login.js">
+// <include src="../components/network_select_login.js">
 // <include src="../checking_downloading_update.js">
 
 // <include src="../screen_gaia_signin.js">

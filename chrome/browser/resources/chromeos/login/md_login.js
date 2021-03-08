@@ -13,7 +13,7 @@
 
 // <include src="login_ui_tools.js">
 // <include src="cr_ui.js">
-// <include src="oobe_select.js">
+// <include src="components/oobe_select.js">
 
 // <include src="../../gaia_auth_host/authenticator.js">
 
