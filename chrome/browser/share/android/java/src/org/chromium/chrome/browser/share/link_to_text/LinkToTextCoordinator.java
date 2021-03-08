@@ -9,6 +9,7 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.TextFragmentSelectorProducer;
 import org.chromium.chrome.R;
@@ -46,6 +47,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final ChromeShareExtras mChromeShareExtras;
     private final long mShareStartTime;
     private final ShareParams mShareTextParams;
+    private final long mRequestSelectorStartTime;
 
     private ShareParams mShareLinkParams;
     private TextFragmentSelectorProducer mProducer;
@@ -64,6 +66,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mChromeShareExtras = null;
         mShareStartTime = 0;
         mShareTextParams = null;
+        mRequestSelectorStartTime = System.currentTimeMillis();
 
         requestSelector();
     }
@@ -83,6 +86,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mCancelRequest = false;
         mContext = null;
 
+        mRequestSelectorStartTime = System.currentTimeMillis();
         requestSelector();
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
     }
@@ -97,6 +101,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public void onSelectorReady(String selector) {
+        RecordHistogram.recordTimesHistogram(
+                "Sharing.SharingHubAndroid.SharedHighlights.TimeToGetLinkToText",
+                System.currentTimeMillis() - mRequestSelectorStartTime);
         if (mCancelRequest) return;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
