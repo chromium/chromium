@@ -270,8 +270,7 @@ class ContextMenuJsFindElementAtPointTest : public PlatformTest {
 #pragma mark - Image without link
 
 // Tests that the correct src and referrer are found for an image.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest, FLAKY_FindImageElementAtPoint) {
+TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementAtPoint) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
   ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
 
@@ -286,9 +285,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FLAKY_FindImageElementAtPoint) {
 }
 
 // Tests that the correct title is found for an image.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindImageElementWithTitleAtPoint) {
+TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementWithTitleAtPoint) {
   const char image_title[] = "Hello world!";
   NSString* html = GetHtmlForPage(
       /*head=*/nil,
@@ -309,9 +306,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that image details are not returned for a point outside of the document
 // margins.
-// TODO(crbug.com/1046580): this test is flaky.
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindImageElementAtPointOutsideDocument) {
+       FindImageElementAtPointOutsideDocument) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
   ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
 
@@ -323,9 +319,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 }
 
 // Tests that image details are not returned for a point outside of the element.
-// TODO(crbug.com/1046580): this test is flaky.
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindImageElementAtPointOutsideElement) {
+       FindImageElementAtPointOutsideElement) {
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForImage());
   ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
 
@@ -340,9 +335,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link returns details for both the image and the link
 // destination when the image source is a file:// url.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindLinkImageAtPointForFileUrl) {
+TEST_F(ContextMenuJsFindElementAtPointTest, FindLinkImageAtPointForFileUrl) {
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
@@ -361,9 +354,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link does not return image and link details for a point
 // outside the document.
-// TODO(crbug.com/1046580): this test is flaky.
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindLinkImageAtPointOutsideDocument) {
+       FindLinkImageAtPointOutsideDocument) {
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
@@ -378,9 +370,8 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that an image link does not return image and link details for a point
 // outside the element.
-// TODO(crbug.com/1046580): this test is flaky.
 TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_FindLinkImageAtPointOutsideElement) {
+       FindLinkImageAtPointOutsideElement) {
   const char image_link[] = "file:///linky";
   NSString* html = GetHtmlForPage(
       /*head=*/nil, GetHtmlForLink(image_link, GetHtmlForImage()));
@@ -517,8 +508,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 
 // Tests that only the parent link details are returned for an image with
 // "-webkit-touch-callout:none" style and a parent link.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest, FLAKY_LinkOfImageWithCalloutNone) {
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfImageWithCalloutNone) {
   const char image_link[] = "http://destination/";
   NSString* image_html =
       GetHtmlForImage(kImageSource, kImageAlt, /*title=*/nullptr,
@@ -556,8 +546,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPoint) {
 }
 
 // Tests that an SVG shape xlink returns details for the link.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest, FLAKY_FindSvgXlinkAtPoint) {
+TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgXlinkAtPoint) {
   const char link[] = "file:///linky";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
   ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
@@ -610,8 +599,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, TextAreaStopsProximity) {
 
 // Tests that __gCrWeb.findElementAtPoint reports "never" as the referrer
 // policy for pages that have an unsupported policy in a meta tag.
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest, FLAKY_UnsupportedReferrerPolicy) {
+TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
   // A page with an unsupported referrer meta tag and an image.
   NSString* const head =
       @"<meta name=\"referrer\" content=\"unsupported-value\">";
@@ -700,9 +688,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest, PointOutsideShadowDomLink) {
 // Tests that a callout information about a link is displayed when
 // -webkit-touch-callout property is not specified. Please see:
 // https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-touch-callout
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_LinkOfTextWithoutCalloutProperty) {
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithoutCalloutProperty) {
   const char link[] = "http://destination/";
   NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForLink(link, @"link"));
 
@@ -721,9 +707,7 @@ TEST_F(ContextMenuJsFindElementAtPointTest,
 // Tests that a callout information about a link is displayed when
 // -webkit-touch-callout property is set to default. Please see:
 // https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-touch-callout
-// TODO(crbug.com/1046580): this test is flaky.
-TEST_F(ContextMenuJsFindElementAtPointTest,
-       FLAKY_LinkOfTextWithCalloutDefault) {
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutDefault) {
   const char link[] = "http://destination/";
   const char link_style[] = "-webkit-touch-callout:default;";
   NSString* html =
