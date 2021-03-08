@@ -13,3 +13,11 @@ information in the internal announcements and landing site.
 
 Periodic updates and FAQs will be sent to chromium-dev@chromium.org
 and updated on this page.
+
+## FAQS
+
+Q: Do I need a reviewer to merge CL's to another branch, even though they were
+already reviewed on main?
+
+A: Yes, but within 7 days of the original change you can add the Rubber-Stamper
+bot (rubber-stamper@appspot.gserviceaccount.com) as the reviewer.
