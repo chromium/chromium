@@ -120,6 +120,8 @@ void ClipboardNudgeController::OnClipboardHistoryItemAdded(
 void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!prefs)
+    return;
   const int shown_count = GetNewFeatureBadgeShownCount(prefs);
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kNewFeatureBadgeCount, shown_count + 1);
@@ -128,6 +130,8 @@ void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
 bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!prefs)
+    return false;
   int badge_shown_count = GetNewFeatureBadgeShownCount(prefs);
   // We should not show more nudges after hitting the limit.
   return badge_shown_count < kContextMenuBadgeShowLimit;
@@ -136,7 +140,7 @@ bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
 void ClipboardNudgeController::OnClipboardDataRead() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode() ||
+  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode() || !prefs ||
       !ShouldShowNudge(prefs)) {
     return;
   }
@@ -257,6 +261,8 @@ void ClipboardNudgeController::HandleNudgeShown() {
   clipboard_state_ = ClipboardState::kInit;
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!prefs)
+    return;
   const int shown_count = GetShownCount(prefs);
   DictionaryPrefUpdate update(prefs, prefs::kMultipasteNudges);
   update->SetIntPath(kShownCount, shown_count + 1);
