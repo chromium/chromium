@@ -386,10 +386,19 @@ class FrameSchedulerImplTest : public testing::Test {
     return GetTaskQueue(FrameSchedulerImpl::ThrottleableTaskQueueTraits());
   }
 
-  scoped_refptr<MainThreadTaskQueue> JavaScriptTimerTaskQueue() {
+  scoped_refptr<MainThreadTaskQueue>
+  JavaScriptTimerNormalThrottleableTaskQueue() {
     return GetTaskQueue(
         FrameSchedulerImpl::ThrottleableTaskQueueTraits().SetPrioritisationType(
             PrioritisationType::kJavaScriptTimer));
+  }
+
+  scoped_refptr<MainThreadTaskQueue>
+  JavaScriptTimerIntensivelyThrottleableTaskQueue() {
+    return GetTaskQueue(
+        FrameSchedulerImpl::ThrottleableTaskQueueTraits()
+            .SetPrioritisationType(PrioritisationType::kJavaScriptTimer)
+            .SetCanBeIntensivelyThrottled(true));
   }
 
   scoped_refptr<MainThreadTaskQueue> JavaScriptTimerNonThrottleableTaskQueue() {
@@ -819,19 +828,16 @@ void RePostTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 
 }  // namespace
 
-// Verify that tasks in a throttled task queue cause 1 wake up per second, when
-// intensive wake up throttling is disabled. Disable the kStopInBackground
-// feature because it hides the effect of intensive wake up throttling.
+// Verify that tasks in a throttled task queue cause:
+// - Before intensive wake up throttling kicks in: 1 wake up per second
+// - After intensive wake up throttling kick in:
+//    - Low nesting level: 1 wake up per second
+//    - High nesting level: 1 wake up per minute
+// Disable the kStopInBackground feature because it hides the effect of
+// intensive wake up throttling.
 TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   constexpr auto kTaskPeriod = base::TimeDelta::FromSeconds(1);
 
-  // This test posts enough tasks to run past the default intensive wake up
-  // throttling grace period. This allows verifying that intensive wake up
-  // throttling is disabled by default.
-  constexpr int kNumTasks =
-      base::TimeDelta::FromSeconds(
-          kIntensiveWakeUpThrottling_GracePeriodSeconds_Default * 2)
-          .IntDiv(kTaskPeriod);
   // This TaskRunner is throttled.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(GetParam());
@@ -840,8 +846,12 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   EXPECT_TRUE(page_scheduler_->IsPageVisible());
   page_scheduler_->SetPageVisible(false);
 
-  // Post an initial task.
-  int num_remaining_tasks = kNumTasks;
+  // Schedule tasks with a short delay, during the intensive wake up throttling
+  // grace period.
+  int num_remaining_tasks =
+      base::TimeDelta::FromSeconds(
+          kIntensiveWakeUpThrottling_GracePeriodSeconds_Default)
+          .IntDiv(kTaskPeriod);
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RePostTask, task_runner, kShortDelay,
@@ -852,6 +862,29 @@ TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
   while (num_remaining_tasks > 0) {
     int previous_num_remaining_tasks = num_remaining_tasks;
     task_environment_.FastForwardBy(kTaskPeriod);
+    EXPECT_EQ(previous_num_remaining_tasks - 1, num_remaining_tasks);
+  }
+
+  // Schedule tasks with a short delay, after the intensive wake up throttling
+  // grace period.
+  num_remaining_tasks = 5;
+  task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&RePostTask, task_runner, kShortDelay,
+                     base::Unretained(&num_remaining_tasks)),
+      kShortDelay);
+
+  // Task run every minute if the nesting level is high, or every second
+  // otherwise.
+  const base::TimeDelta expected_period_after_grace_period =
+      (GetParam() == TaskType::kJavascriptTimerDelayedLowNesting)
+          ? kTaskPeriod
+          : base::TimeDelta::FromSeconds(
+                kIntensiveWakeUpThrottling_DurationBetweenWakeUpsSeconds_Default);
+
+  while (num_remaining_tasks > 0) {
+    int previous_num_remaining_tasks = num_remaining_tasks;
+    task_environment_.FastForwardBy(expected_period_after_grace_period);
     EXPECT_EQ(previous_num_remaining_tasks - 1, num_remaining_tasks);
   }
 }
@@ -2313,11 +2346,11 @@ TEST_F(FrameSchedulerImplTest, TaskTypeToTaskQueueMapping) {
   // expected. This test will fail if these task types are moved to different
   // default queues.
   EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerDelayedLowNesting),
-            JavaScriptTimerTaskQueue());
+            JavaScriptTimerNormalThrottleableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerDelayedHighNesting),
-            JavaScriptTimerTaskQueue());
-    EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerImmediate),
-              JavaScriptTimerNonThrottleableTaskQueue());
+            JavaScriptTimerIntensivelyThrottleableTaskQueue());
+  EXPECT_EQ(GetTaskQueue(TaskType::kJavascriptTimerImmediate),
+            JavaScriptTimerNonThrottleableTaskQueue());
 
   EXPECT_EQ(GetTaskQueue(TaskType::kWebSocket), DeferrableTaskQueue());
   EXPECT_EQ(GetTaskQueue(TaskType::kDatabaseAccess), PausableTaskQueue());

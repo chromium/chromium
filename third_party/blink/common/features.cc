@@ -257,11 +257,16 @@ const base::Feature kWebRtcIgnoreUnspecifiedColorSpace{
 //
 // Feature tracking bug: https://crbug.com/1075553
 //
-// Note that the base::Feature should not be read from;
-// rather the provided accessors should be used, which also take into account
-// the managed policy override of the feature.
+// The base::Feature should not be read from; rather the provided accessors
+// should be used, which also take into account the managed policy override of
+// the feature.
+//
+// The base::Feature is enabled by default on all platforms. However, on
+// Android, it has no effect because page freezing kicks in at the same time. It
+// would have an effect if the grace period ("grace_period_seconds" param) was
+// reduced.
 const base::Feature kIntensiveWakeUpThrottling{
-    "IntensiveWakeUpThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IntensiveWakeUpThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Name of the parameter that controls the grace period during which there is no
 // intensive wake up throttling after a page is hidden. Defined here to allow
