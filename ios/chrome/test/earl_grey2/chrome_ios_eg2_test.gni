@@ -33,13 +33,6 @@ template("chrome_ios_eg2_test_app_host") {
       if (ios_chrome_info_plist_additions != []) {
         info_plists += ios_chrome_info_plist_additions
       }
-      if (ios_enable_multi_window) {
-        info_plists +=
-            [ "//ios/chrome/app/resources/MultiWindowEnabled+Info.plist" ]
-      } else if (ios_enable_scene_startup) {
-        info_plists +=
-            [ "//ios/chrome/app/resources/MultiWindowDisabled+Info.plist" ]
-      }
       if (ios_chrome_info_plist_addition_targets != []) {
         if (!defined(deps)) {
           deps = []

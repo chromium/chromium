@@ -184,6 +184,7 @@ source_set("main") {
     "//components/translate/core/browser",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/resources:base_scene_storyboard",
     "//ios/chrome/app/resources:launchscreen_xib",
     "//ios/chrome/browser",
     "//ios/chrome/browser/app_launcher",
@@ -232,10 +233,6 @@ source_set("main") {
     "//ios/public/provider/chrome/browser",
     "//net",
   ]
-
-  if (ios_enable_multi_window || ios_enable_scene_startup) {
-    deps += [ "//ios/chrome/app/resources:base_scene_storyboard" ]
-  }
 
   public_deps = [
     ":browser_interface_provider",

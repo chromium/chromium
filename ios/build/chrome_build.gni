@@ -29,14 +29,6 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
-  # Enable use of SceneDelegate-driven startup flow in
-  # Info.plist.
-  ios_enable_scene_startup = false
-
-  # Enable multi-window configuration in Info.plist. Includes all the effects of
-  # setting |ios_enable_scene_startup| to |true|.
-  ios_enable_multi_window = true
-
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = true
 

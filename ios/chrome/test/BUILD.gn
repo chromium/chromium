@@ -155,10 +155,7 @@ bundle_data_ib_file("base_scene_storyboard") {
 }
 
 test("ios_chrome_unittests") {
-  # Use the plist with the scene manifest if either multiwindow flag is enabled
-  if (ios_enable_multi_window || ios_enable_scene_startup) {
-    info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
-  }
+  info_plist = "//ios/chrome/test/unittest-scene-lifecycle-Info.plist"
 
   deps = [
     # Ensure that all unit tests are run, use fake hooks and pack resources.

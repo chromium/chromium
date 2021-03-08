@@ -100,11 +100,6 @@ tweak_info_plist("info_plist") {
   if (ios_encryption_export_compliance_code != "") {
     info_plists += [ "resources/EncryptionExportCompliance+Info.plist" ]
   }
-  if (ios_enable_multi_window) {
-    info_plists += [ "resources/MultiWindowEnabled+Info.plist" ]
-  } else if (ios_enable_scene_startup) {
-    info_plists += [ "resources/MultiWindowDisabled+Info.plist" ]
-  }
   if (ios_chrome_info_plist_addition_targets != []) {
     if (!defined(deps)) {
       deps = []
@@ -187,7 +182,6 @@ source_set("app_internal") {
     ":blocking_scene_commands",
     ":content_suggestions_scheduler_app_state_agent",
     ":mode",
-    ":multi_window_buildflags",
     ":tests_hook",
     "//base",
     "//build:branding_buildflags",
@@ -318,11 +312,6 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/ui/main:scene",
   ]
-}
-
-buildflag_header("multi_window_buildflags") {
-  header = "multi_window_buildflags.h"
-  flags = [ "IOS_MULTIWINDOW_ENABLED=$ios_enable_multi_window" ]
 }
 
 source_set("blocking_scene_commands") {

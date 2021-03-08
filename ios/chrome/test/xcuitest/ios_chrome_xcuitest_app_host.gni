@@ -20,7 +20,6 @@ template("ios_chrome_xcuitest_app_host") {
     info_plists = [
       "//ios/chrome/app/resources/Info.plist",
       "//ios/chrome/app/resources/ChromeAddition+Info.plist",
-      "//ios/chrome/app/resources/MultiWindowEnabled+Info.plist",
     ]
   }
 

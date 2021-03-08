@@ -20,7 +20,6 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/app/multi_window_buildflags.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -235,7 +234,6 @@ const int kMainIntentCheckDelay = 1;
   [_memoryHelper handleMemoryPressure];
 }
 
-#if BUILDFLAG(IOS_MULTIWINDOW_ENABLED)
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
     API_AVAILABLE(ios(13)) {
@@ -244,7 +242,6 @@ const int kMainIntentCheckDelay = 1;
       ->ApplicationDidDiscardSceneSessions(sceneSessions);
   [_appState application:application didDiscardSceneSessions:sceneSessions];
 }
-#endif  // BUILDFLAG(IOS_MULTIWINDOW_ENABLED)
 
 #pragma mark - Scenes lifecycle
 
