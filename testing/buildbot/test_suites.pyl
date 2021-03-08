@@ -480,6 +480,9 @@
         'resultdb': {
           'enable': False,
         },
+        'args': [
+          '--platform=android',
+        ],
         'swarming': {
           "dimension_sets": [
             {
