@@ -282,11 +282,12 @@ struct BASE_EXPORT PartitionRoot {
   // posix_memalign() for POSIX systems). The returned pointer may include
   // padding, and can be passed to |Free()| later.
   //
-  // NOTE: This is incompatible with anything that adds extra data to the
-  // allocations, such as cookies (with DCHECK_IS_ON()), or reference counts.
+  // NOTE: This is incompatible with anything that adds extras before the
+  // returned pointer, such as cookies (with DCHECK_IS_ON()), or reference
+  // count.
   ALWAYS_INLINE void* AlignedAllocFlags(int flags,
                                         size_t alignment,
-                                        size_t size);
+                                        size_t requested_size);
 
   ALWAYS_INLINE void* Alloc(size_t requested_size, const char* type_name);
   ALWAYS_INLINE void* AllocFlags(int flags,
@@ -1339,45 +1340,56 @@ template <bool thread_safe>
 ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
     int flags,
     size_t alignment,
-    size_t size) {
+    size_t requested_size) {
   // Aligned allocation support relies on the natural alignment guarantees of
-  // PartitionAlloc. Since cookies and ref-count are layered on top of
-  // PartitionAlloc, they change the guarantees. As a consequence, forbid both.
-  PA_DCHECK(!allow_cookies && !allow_ref_count);
-
+  // PartitionAlloc. Specifically, it relies on the fact that slot spans are
+  // partition-page aligned, and slots within are aligned to slot size, from
+  // the beginning of the span. As a conseqneuce, allocations of sizes that are
+  // a power of two, up to partition page size, will always be aligned to its
+  // size. The code below adjusts the request size to be a power of two.
+  // TODO(bartekn): Handle requests larger than partition page.
+  //
+  // Extras before the allocation are forbidden as they shit the returned
+  // allocation from the beginning of the slot, thus messing up alignment.
+  // Extras after the allocation are acceptable, but they have to be taken into
+  // account in the request size calculation to avoid crbug.com/1185484.
+  PA_DCHECK(!extras_offset);
   // This is mandated by |posix_memalign()|, so should never fire.
   PA_CHECK(base::bits::IsPowerOfTwo(alignment));
 
-  size_t requested_size;
+  size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   // Handle cases such as size = 16, alignment = 64.
   // Wastes memory when a large alignment is requested with a small size, but
   // this is hard to avoid, and should not be too common.
-  if (UNLIKELY(size < alignment)) {
-    requested_size = alignment;
+  if (UNLIKELY(raw_size < alignment)) {
+    raw_size = alignment;
   } else {
     // PartitionAlloc only guarantees alignment for power-of-two sized
     // allocations. To make sure this applies here, round up the allocation
     // size.
-    requested_size =
-        static_cast<size_t>(1)
-        << (sizeof(size_t) * 8 - base::bits::CountLeadingZeroBits(size - 1));
+    raw_size = static_cast<size_t>(1)
+               << (sizeof(size_t) * 8 -
+                   base::bits::CountLeadingZeroBits(raw_size - 1));
   }
+  PA_DCHECK(base::bits::IsPowerOfTwo(raw_size));
+  // Adjust back, because AllocFlagsNoHooks/Alloc will adjust it again.
+  size_t adjusted_size = AdjustSizeForExtrasSubtract(raw_size);
 
-  // Overflow check. requested_size must be larger or equal to size.
-  if (requested_size < size) {
+  // Overflow check. adjusted_size must be larger or equal to requested_size.
+  if (UNLIKELY(adjusted_size < requested_size)) {
     if (flags & PartitionAllocReturnNull)
       return nullptr;
     // OutOfMemoryDeathTest.AlignedAlloc requires
     // base::TerminateBecauseOutOfMemory (invoked by
     // PartitionExcessiveAllocationSize).
-    internal::PartitionExcessiveAllocationSize(size);
+    internal::PartitionExcessiveAllocationSize(requested_size);
     // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
     NOTREACHED();
   }
 
   bool no_hooks = flags & PartitionAllocNoHooks;
-  void* ptr = no_hooks ? AllocFlagsNoHooks(0, requested_size)
-                       : Alloc(requested_size, "");
+  void* ptr =
+      no_hooks ? AllocFlagsNoHooks(0, adjusted_size) : Alloc(adjusted_size, "");
 
   // |alignment| is a power of two, but the compiler doesn't necessarily know
   // that. A regular % operation is very slow, make sure to use the equivalent,
