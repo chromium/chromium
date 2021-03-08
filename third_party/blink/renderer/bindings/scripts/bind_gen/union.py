@@ -555,12 +555,14 @@ def make_tov8value_function(cg_context):
     func_decl = CxxFuncDeclNode(name="ToV8Value",
                                 arg_decls=["ScriptState* script_state"],
                                 return_type="v8::MaybeLocal<v8::Value>",
+                                const=True,
                                 override=True)
 
     func_def = CxxFuncDefNode(name="ToV8Value",
                               arg_decls=["ScriptState* script_state"],
                               return_type="v8::MaybeLocal<v8::Value>",
-                              class_name=cg_context.class_name)
+                              class_name=cg_context.class_name,
+                              const=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
     body = func_def.body
     body.add_template_vars({"script_state": "script_state"})

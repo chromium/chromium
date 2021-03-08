@@ -114,6 +114,10 @@ def collect_forward_decls_and_include_headers(idl_types):
                 source_include_headers.add(
                     PathManager(type_def_obj).api_path(ext="h"))
         elif idl_type.union_definition_object:
+            union_def_obj = idl_type.new_union_definition_object
+            header_forward_decls.add(blink_class_name(union_def_obj))
+            source_include_headers.add(
+                PathManager(union_def_obj).api_path(ext="h"))
             union_def_obj = idl_type.union_definition_object
             header_include_headers.add(
                 PathManager(union_def_obj).api_path(ext="h"))
