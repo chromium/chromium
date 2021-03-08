@@ -2755,11 +2755,10 @@ class AssistantInteractionHelper
     result_.SetKey("openUrl", base::Value(url.possibly_invalid_spec()));
   }
 
-  bool OnOpenAppResponse(
+  void OnOpenAppResponse(
       const chromeos::assistant::AndroidAppInfo& app_info) override {
     result_.SetKey("openAppResponse", base::Value(app_info.package_name));
     CheckResponseIsValid(__FUNCTION__);
-    return false;
   }
 
   void OnSpeechRecognitionFinalResult(

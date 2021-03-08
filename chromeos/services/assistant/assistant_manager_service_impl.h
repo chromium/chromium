@@ -175,8 +175,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // AssistantActionObserver overrides:
   void OnScheduleWait(int id, int time_ms) override;
   void OnShowNotification(const action::Notification& notification) override;
-  void OnOpenAndroidApp(const AndroidAppInfo& app_info,
-                        const InteractionInfo& interaction) override;
   void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
                           const InteractionInfo& interaction) override;
   void OnModifyDeviceSetting(

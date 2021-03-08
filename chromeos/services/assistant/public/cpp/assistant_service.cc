@@ -28,10 +28,5 @@ AssistantService::~AssistantService() {
   g_instance = nullptr;
 }
 
-bool AssistantInteractionSubscriber::OnOpenAppResponse(
-    const AndroidAppInfo& app_info) {
-  return false;
-}
-
 }  // namespace assistant
 }  // namespace chromeos

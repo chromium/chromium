@@ -584,25 +584,6 @@ void AssistantManagerServiceImpl::OnShowNotification(
       std::move(assistant_notification));
 }
 
-void AssistantManagerServiceImpl::OnOpenAndroidApp(
-    const AndroidAppInfo& app_info,
-    const InteractionInfo& interaction) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnOpenAndroidApp, app_info,
-                     interaction);
-  bool success = false;
-  for (auto& it : interaction_subscribers_)
-    success |= it.OnOpenAppResponse(app_info);
-
-  std::string interaction_proto = CreateOpenProviderResponseInteraction(
-      interaction.interaction_id, success);
-  assistant_client::VoicelessOptions options;
-  options.obfuscated_gaia_id = interaction.user_id;
-
-  assistant_manager_internal()->SendVoicelessInteraction(
-      interaction_proto, /*description=*/"open_provider_response", options,
-      [](auto) {});
-}
-
 void AssistantManagerServiceImpl::OnVerifyAndroidApp(
     const std::vector<AndroidAppInfo>& apps_info,
     const InteractionInfo& interaction) {

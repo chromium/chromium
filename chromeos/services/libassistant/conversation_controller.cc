@@ -349,6 +349,29 @@ void ConversationController::OnOpenUrl(const std::string& url,
     observer->OnOpenUrlResponse(GURL(url), in_background);
 }
 
+void ConversationController::OnOpenAndroidApp(
+    const chromeos::assistant::AndroidAppInfo& app_info,
+    const chromeos::assistant::InteractionInfo& interaction) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnOpenAndroidApp, app_info,
+                      interaction);
+
+  for (auto& observer : observers_)
+    observer->OnOpenAppResponse(app_info);
+
+  // Note that we will always set |provider_found| to true since the preceding
+  // OnVerifyAndroidApp() should already confirm that the requested provider is
+  // available on the device.
+  std::string interaction_proto =
+      assistant::CreateOpenProviderResponseInteraction(
+          interaction.interaction_id, /*provider_found=*/true);
+  assistant_client::VoicelessOptions options;
+  options.obfuscated_gaia_id = interaction.user_id;
+
+  assistant_manager_internal()->SendVoicelessInteraction(
+      interaction_proto, /*description=*/"open_provider_response", options,
+      [](auto) {});
+}
+
 void ConversationController::SendVoicelessInteraction(
     const std::string& interaction,
     const std::string& description,

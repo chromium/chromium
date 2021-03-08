@@ -90,10 +90,9 @@ void AssistantInteractionLogger::OnOpenUrlResponse(const GURL& url,
   LOG_INTERACTION() << "with url '" << url.possibly_invalid_spec() << "'";
 }
 
-bool AssistantInteractionLogger::OnOpenAppResponse(
+void AssistantInteractionLogger::OnOpenAppResponse(
     const AndroidAppInfo& app_info) {
   LOG_INTERACTION() << "with app '" << app_info.package_name << "'";
-  return false;
 }
 
 void AssistantInteractionLogger::OnSpeechRecognitionStarted() {

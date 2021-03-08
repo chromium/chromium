@@ -43,7 +43,7 @@ class MockAssistantInteractionSubscriber
               (override));
   MOCK_METHOD(void, OnTextResponse, (const std::string&), (override));
   MOCK_METHOD(void, OnOpenUrlResponse, (const ::GURL&, bool), (override));
-  MOCK_METHOD(bool, OnOpenAppResponse, (const AndroidAppInfo&), (override));
+  MOCK_METHOD(void, OnOpenAppResponse, (const AndroidAppInfo&), (override));
   MOCK_METHOD(void, OnSpeechRecognitionStarted, (), (override));
   MOCK_METHOD(void,
               OnSpeechRecognitionIntermediateResult,

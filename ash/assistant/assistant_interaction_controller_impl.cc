@@ -724,20 +724,20 @@ void AssistantInteractionControllerImpl::OnOpenUrlResponse(const GURL& url,
   AssistantController::Get()->OpenUrl(url, in_background, /*from_server=*/true);
 }
 
-bool AssistantInteractionControllerImpl::OnOpenAppResponse(
+void AssistantInteractionControllerImpl::OnOpenAppResponse(
     const chromeos::assistant::AndroidAppInfo& app_info) {
   if (!HasActiveInteraction()) {
     DVLOG(1) << "Assistant: Dropping response outside of active interaction";
-    return false;
+    return;
   }
 
   auto* android_helper = AndroidIntentHelper::GetInstance();
   if (!android_helper)
-    return false;
+    return;
 
   auto intent = android_helper->GetAndroidAppLaunchIntent(app_info);
   if (!intent.has_value())
-    return false;
+    return;
 
   // Common Android intent might starts with intent scheme "intent://" or
   // Android app scheme "android-app://". But it might also only contains
@@ -752,7 +752,6 @@ bool AssistantInteractionControllerImpl::OnOpenAppResponse(
   }
   AssistantController::Get()->OpenUrl(GURL(intent_str), /*in_background=*/false,
                                       /*from_server=*/true);
-  return true;
 }
 
 void AssistantInteractionControllerImpl::OnDialogPlateButtonPressed(

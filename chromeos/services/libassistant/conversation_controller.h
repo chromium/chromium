@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnShowSuggestions(
       const std::vector<assistant::action::Suggestion>& suggestions) override;
   void OnOpenUrl(const std::string& url, bool in_background) override;
+  void OnOpenAndroidApp(
+      const chromeos::assistant::AndroidAppInfo& app_info,
+      const chromeos::assistant::InteractionInfo& interaction) override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;

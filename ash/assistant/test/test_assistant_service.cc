@@ -65,10 +65,9 @@ class LibassistantContractChecker : public AssistantInteractionSubscriber {
     CheckResponse();
   }
 
-  bool OnOpenAppResponse(
+  void OnOpenAppResponse(
       const chromeos::assistant::AndroidAppInfo& app_info) override {
     CheckResponse();
-    return false;
   }
 
  private:

@@ -38,10 +38,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
       const AssistantInteractionSubscriber&) = delete;
   ~AssistantInteractionSubscriber() override = default;
 
-  // Assistant got open Android app response from server. Returns if the app is
-  // opened.
-  virtual bool OnOpenAppResponse(const AndroidAppInfo& app_info);
-
   // Assistant speech recognition has started.
   virtual void OnSpeechRecognitionStarted() {}
 

@@ -4,6 +4,7 @@
 
 module chromeos.libassistant.mojom;
 
+import "chromeos/services/libassistant/public/mojom/android_app_info.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
@@ -37,6 +38,9 @@ interface ConversationObserver{
   // Assistant got open URL response from server. If |in_background| is true,
   // the url will be opened in the background without closing the Assistant UI.
   OnOpenUrlResponse(url.mojom.Url url, bool in_background);
+
+  // Assistant got open Android app response from server.
+  OnOpenAppResponse(AndroidAppInfo app_info);
 
   // Libassistant is removing the notification with the given id.
   OnNotificationRemoved(string id);

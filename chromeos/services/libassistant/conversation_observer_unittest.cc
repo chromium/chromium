@@ -9,6 +9,7 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
+#include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "chromeos/services/libassistant/test_support/libassistant_service_tester.h"
 #include "libassistant/shared/public/conversation_state_listener.h"
@@ -51,6 +52,12 @@ class CrosActionModuleHelper {
       observer->OnOpenUrl(url, in_background);
   }
 
+  void OpenAndroidApp(const assistant::AndroidAppInfo& app_info) {
+    assistant::InteractionInfo info{};
+    for (auto* observer : action_observers())
+      observer->OnOpenAndroidApp(app_info, info);
+  }
+
  private:
   const std::vector<assistant::action::AssistantActionObserver*>&
   action_observers() {
@@ -86,6 +93,9 @@ class ConversationObserverMock : public mojom::ConversationObserver {
               OnSuggestionsResponse,
               (const std::vector<assistant::AssistantSuggestion>& suggestions));
   MOCK_METHOD(void, OnOpenUrlResponse, (const GURL& url, bool in_background));
+  MOCK_METHOD(void,
+              OnOpenAppResponse,
+              (const chromeos::assistant::AndroidAppInfo& app_info));
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -216,6 +226,28 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnOpenUrlResponse) {
               OnOpenUrlResponse(GURL(fake_url), /*in_background=*/false));
 
   action_module_helper().OpenUrl(fake_url, /*in_background=*/false);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnOpenAppResponse) {
+  assistant::AndroidAppInfo fake_app_info;
+  fake_app_info.package_name = "fake package name";
+  fake_app_info.version = 123;
+  fake_app_info.localized_app_name = "fake localized name";
+  fake_app_info.action = "fake action";
+  fake_app_info.intent = "fake intent";
+  fake_app_info.status = assistant::AppStatus::kUnknown;
+
+  EXPECT_CALL(observer_mock(), OnOpenAppResponse)
+      .WillOnce(testing::Invoke([&](const assistant::AndroidAppInfo& app_info) {
+        EXPECT_EQ("fake package name", app_info.package_name);
+        EXPECT_EQ(123, app_info.version);
+        EXPECT_EQ("fake localized name", app_info.localized_app_name);
+        EXPECT_EQ("fake action", app_info.action);
+        EXPECT_EQ(assistant::AppStatus::kUnknown, app_info.status);
+      }));
+
+  action_module_helper().OpenAndroidApp(fake_app_info);
   observer_mock().FlushForTesting();
 }
 
