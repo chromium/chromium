@@ -387,6 +387,8 @@ class IdlInterface(object):
                 self.process_stringifier()
             elif child_class == 'Iterable':
                 self.iterable = IdlIterable(child)
+            elif child_class == 'AsyncIterable':
+                pass  # 'async iterable' is not implemented.
             elif child_class == 'Maplike':
                 self.maplike = IdlMaplike(child)
             elif child_class == 'Setlike':
