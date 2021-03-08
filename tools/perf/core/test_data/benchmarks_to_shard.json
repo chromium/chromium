@@ -99,6 +99,7 @@
       "move-down-with-hidden-elements.html",
       "move-up-with-hidden-elements.html",
       "remove_child_with_selection.html",
+      "replace-text-with-dir-auto.html",
       "select-multiple-add.html",
       "select-single-add.html",
       "select-single-remove.html",
