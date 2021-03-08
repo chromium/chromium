@@ -321,7 +321,9 @@ void ModulesInitializer::NotifyOrientationChanged(LocalFrame& frame) {
 void ModulesInitializer::NotifyScreensChanged(LocalFrame& frame) {
   if (auto* supplement =
           Supplement<LocalDOMWindow>::From<WindowScreens>(*frame.DomWindow())) {
-    supplement->screens()->ScreenInfosChanged();
+    // screens() may be null if permission has not been granted.
+    if (auto* screens = supplement->screens())
+      screens->ScreenInfosChanged();
   }
 }
 
