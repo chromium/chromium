@@ -5005,13 +5005,13 @@
     No, continue without ChromeVox
   </message>
   <message name="IDS_OOBE_CHROMEVOX_HINT_TEXT" desc="Text content in the ChromeVox hint dialog, asking the user if they would like to activate ChromeVox.">
-    Do you want to activate ChromeVox, the built-in screenreader for Chrome OS?
+    Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?
   </message>
   <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP" desc="The string spoken when the ChromeVox hint is activated when the device is in laptop mode." is_accessibility_with_no_ui="true">
-    Do you want to activate ChromeVox, the built-in screenreader for Chrome OS? If so, press the space bar.
+    Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press the space bar.
   </message>
   <message name="IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET" desc="The string spoken when the ChromeVox hint is activated when the device is in tablet mode." is_accessibility_with_no_ui="true">
-    Do you want to activate ChromeVox, the built-in screenreader for Chrome OS? If so, press and hold both volume keys for five seconds.
+    Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press and hold both volume keys for five seconds.
   </message>
 
   <!-- Mojo service names (displayed in task manager) -->
