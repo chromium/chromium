@@ -151,11 +151,9 @@ ExtensionMessagePort::ExtensionMessagePort(
 ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
-    const ExtensionId& extension_id,
     content::BrowserContext* browser_context)
     : weak_channel_delegate_(channel_delegate),
       port_id_(port_id),
-      extension_id_(extension_id),
       browser_context_(browser_context) {}
 
 // static
@@ -174,9 +172,7 @@ std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
   // NOTE: We don't want all the workers within the extension, so we cannot
   // reuse other constructor from above.
   std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
-      channel_delegate, port_id, extension_id, endpoint.browser_context()));
-  port->frame_tracker_ = std::make_unique<FrameTracker>(port.get());
-  port->frame_tracker_->TrackExtensionProcessFrames();
+      channel_delegate, port_id, endpoint.browser_context()));
   port->RegisterWorker(endpoint.GetWorkerId());
   return port;
 }
