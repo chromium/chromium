@@ -1026,11 +1026,6 @@ class Browser : public TabStripModelObserver,
   // search direction.
   void FindInPage(bool find_next, bool forward_direction);
 
-  // Closes the frame.
-  // TODO(beng): figure out if we need this now that the frame itself closes
-  //             after a return to the message loop.
-  void CloseFrame();
-
   void TabDetachedAtImpl(content::WebContents* contents,
                          bool was_active,
                          DetachType type);

@@ -1247,8 +1247,12 @@ void Browser::TabStripEmpty() {
   //       times. This is because it does not close the window if tabs are
   //       still present.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Browser::CloseFrame, weak_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<Browser> browser) {
+                       if (browser)
+                         browser->window()->Close();
+                     },
+                     weak_factory_.GetWeakPtr()));
 
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.
@@ -2731,10 +2735,6 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
     content_translate_driver->RemoveTranslationObserver(this);
     BookmarkTabHelper::FromWebContents(web_contents)->RemoveObserver(this);
   }
-}
-
-void Browser::CloseFrame() {
-  window_->Close();
 }
 
 void Browser::TabDetachedAtImpl(content::WebContents* contents,
