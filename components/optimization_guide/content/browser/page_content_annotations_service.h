@@ -8,12 +8,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/content/browser/page_content_annotations.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/content/browser/bert_model_executor.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -22,6 +19,7 @@ class WebContents;
 namespace optimization_guide {
 
 class OptimizationGuideDecider;
+class PageContentAnnotationsModelManager;
 
 // The information used by HistoryService to identify a visit.
 struct HistoryVisit {
@@ -50,7 +48,7 @@ class PageContentAnnotationsService : public KeyedService {
   // History Service.
   //
   // Virtualized for testing.
-  virtual void Annotate(const HistoryVisit& visit, const base::string16& text);
+  virtual void Annotate(const HistoryVisit& visit, const std::string& text);
 
   // Returns the version of the page topics model that is currently being used
   // to annotate page content. Will return |base::nullopt| if no model is being
@@ -58,14 +56,13 @@ class PageContentAnnotationsService : public KeyedService {
   base::Optional<int64_t> GetPageTopicsModelVersion() const;
 
  private:
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Invoked when the page topics model has finished executing.
-  void OnPageTopicsModelExecutionCompleted(
+  // Callback invoked when |visit| has been annotated.
+  void OnPageContentAnnotated(
       const HistoryVisit& visit,
-      const base::Optional<std::vector<tflite::task::core::Category>>& output);
+      const base::Optional<PageContentAnnotations>& page_content_annotations);
 
-  // The model executor responsible for executing the page topics model.
-  std::unique_ptr<BertModelExecutor> page_topics_model_executor_;
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;
 #endif
 
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};

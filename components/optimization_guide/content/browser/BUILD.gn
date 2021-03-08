@@ -10,6 +10,8 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "optimization_guide_decider.h",
+    "page_content_annotations.cc",
+    "page_content_annotations.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
     "page_content_annotations_web_contents_helper.cc",
@@ -24,6 +26,8 @@ static_library("browser") {
       "bert_model_executor.cc",
       "bert_model_executor.h",
       "optimization_target_model_executor.h",
+      "page_content_annotations_model_manager.cc",
+      "page_content_annotations_model_manager.h",
     ]
   }
 

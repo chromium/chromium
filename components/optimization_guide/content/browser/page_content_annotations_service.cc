@@ -5,12 +5,13 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 
 #include "base/metrics/histogram_macros_local.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/task_traits.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
+#endif
 
 namespace optimization_guide {
 
@@ -18,44 +19,39 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     OptimizationGuideDecider* optimization_guide_decider) {
   DCHECK(optimization_guide_decider);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  page_topics_model_executor_ = std::make_unique<BertModelExecutor>(
-      optimization_guide_decider, proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
-      /*model_metadata=*/base::nullopt,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+  model_manager_ = std::make_unique<PageContentAnnotationsModelManager>(
+      optimization_guide_decider);
 #endif
 }
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
 
 void PageContentAnnotationsService::Annotate(const HistoryVisit& visit,
-                                             const base::string16& text) {
+                                             const std::string& text) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  page_topics_model_executor_->ExecuteModelWithInput(
-      base::BindOnce(
-          &PageContentAnnotationsService::OnPageTopicsModelExecutionCompleted,
-          weak_ptr_factory_.GetWeakPtr(), visit),
-      base::UTF16ToUTF8(text));
+  model_manager_->Annotate(
+      text,
+      base::BindOnce(&PageContentAnnotationsService::OnPageContentAnnotated,
+                     weak_ptr_factory_.GetWeakPtr(), visit));
 #endif
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-void PageContentAnnotationsService::OnPageTopicsModelExecutionCompleted(
+void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
-    const base::Optional<std::vector<tflite::task::core::Category>>& output) {
+    const base::Optional<PageContentAnnotations>& page_content_annotations) {
   // TODO(crbug/1177102): If success, then populate to history service.
   LOCAL_HISTOGRAM_BOOLEAN(
-      "OptimizationGuide.PageContentAnnotationsService.PageTopicsModelExecuted."
-      "HasOutput",
-      output.has_value());
+      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
+      page_content_annotations.has_value());
 }
-#endif
 
 base::Optional<int64_t>
 PageContentAnnotationsService::GetPageTopicsModelVersion() const {
-  // TODO(crbug/1177102): Extract this from |page_topics_model_executor| if
-  /// building with tflite lib.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  return model_manager_->GetPageTopicsModelVersion();
+#else
   return base::nullopt;
+#endif
 }
 
 // static

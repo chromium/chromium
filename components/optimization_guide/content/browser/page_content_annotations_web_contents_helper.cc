@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
 
 #include "base/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -65,7 +66,7 @@ PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
 void PageContentAnnotationsWebContentsHelper::OnTextDumpReceived(
     const HistoryVisit& visit,
     const base::string16& text) {
-  page_content_annotations_service_->Annotate(visit, text);
+  page_content_annotations_service_->Annotate(visit, base::UTF16ToUTF8(text));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsHelper)

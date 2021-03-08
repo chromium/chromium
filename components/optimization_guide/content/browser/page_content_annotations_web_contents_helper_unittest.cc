@@ -38,19 +38,17 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       : PageContentAnnotationsService(optimization_guide_decider) {}
   ~FakePageContentAnnotationsService() override = default;
 
-  void Annotate(const HistoryVisit& visit,
-                const base::string16& text) override {
+  void Annotate(const HistoryVisit& visit, const std::string& text) override {
     last_annotation_request_.emplace(std::make_pair(visit, text));
   }
 
-  base::Optional<std::pair<HistoryVisit, base::string16>>
-  last_annotation_request() const {
+  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request()
+      const {
     return last_annotation_request_;
   }
 
  private:
-  base::Optional<std::pair<HistoryVisit, base::string16>>
-      last_annotation_request_;
+  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request_;
 };
 
 class PageContentAnnotationsWebContentsHelperTest
@@ -149,11 +147,11 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest,
   // Invoke OnTextDumpReceived.
   std::move(request->callback).Run(base::ASCIIToUTF16("some text"));
 
-  base::Optional<std::pair<HistoryVisit, base::string16>>
-      last_annotation_request = service()->last_annotation_request();
+  base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+      service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
   EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));
-  EXPECT_EQ(last_annotation_request->second, base::ASCIIToUTF16("some text"));
+  EXPECT_EQ(last_annotation_request->second, "some text");
 }
 
 }  // namespace optimization_guide

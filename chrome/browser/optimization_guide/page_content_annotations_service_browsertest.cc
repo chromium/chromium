@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "content/public/test/browser_test.h"
@@ -100,6 +101,7 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         ->OverrideTargetModelFileForTesting(
             proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
             /*model_metadata=*/base::nullopt, model_file_path);
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
@@ -120,20 +122,24 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #endif
   RetryForHistogramUntilCountReached(
       histogram_tester,
-      "OptimizationGuide.PageContentAnnotationsService.PageTopicsModelExecuted."
-      "HasOutput",
+      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
       expected_count);
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PageContentAnnotationsService.PageTopicsModelExecuted."
-      "HasOutput",
+      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
       expected_count);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotationsService.PageTopicsModelExecuted."
-      "HasOutput",
+      "OptimizationGuide.PageContentAnnotationsService.PageContentAnnotated",
       true, 1);
 #endif
+
+  PageContentAnnotationsService* service =
+      PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
+
+  // TODO(crbug/1177102): Make sure this propagates from model if building with
+  // TFLite.
+  EXPECT_FALSE(service->GetPageTopicsModelVersion().has_value());
 }
 
 }  // namespace optimization_guide
