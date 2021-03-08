@@ -9,6 +9,8 @@ import("//ui/base/ui_features.gni")
 
 visibility = [ "//ui/ozone/*" ]
 
+assert(is_linux || is_chromeos)
+
 source_set("x11") {
   sources = [
     "client_native_pixmap_factory_x11.cc",

@@ -12,6 +12,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/wayland/features.gni")
 import("//ui/ozone/platform/wayland/wayland.gni")
 
+assert(is_linux || is_chromeos_lacros)
+
 source_set("wayland") {
   sources = [
     "client_native_pixmap_factory_wayland.cc",
@@ -212,10 +214,6 @@ source_set("wayland") {
     "//ui/platform_window",
     "//ui/platform_window/wm",
   ]
-
-  if (is_linux || is_chromeos_lacros) {
-    deps += [ "//ui/base/ime/linux" ]
-  }
 
   if (use_gtk) {
     sources += [
