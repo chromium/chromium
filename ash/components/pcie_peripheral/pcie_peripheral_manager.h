@@ -36,6 +36,17 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
     virtual void OnGuestModeNotificationReceived(bool is_thunderbolt_only) = 0;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum PciePeripheralConnectivityResults {
+    kTBTSupportedAndAllowed = 0,
+    kTBTOnlyAndBlockedByPciguard = 1,
+    kTBTOnlyAndBlockedInGuestSession = 2,
+    kAltModeFallbackDueToPciguard = 3,
+    kAltModeFallbackInGuestSession = 4,
+    kMaxValue = kAltModeFallbackInGuestSession,
+  };
+
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize(bool is_guest_profile, bool is_pcie_tunneling_allowed);
 

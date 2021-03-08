@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/typecd/fake_typecd_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,6 +92,8 @@ class PciePeripheralManagerTest : public testing::Test {
     return fake_observer_.is_current_guest_device_tbt_only();
   }
 
+  base::HistogramTester histogram_tester_;
+
  private:
   chromeos::FakeTypecdClient* fake_typecd_client_;
   PciePeripheralManager* manager_ = nullptr;
@@ -112,6 +115,11 @@ TEST_F(PciePeripheralManagerTest, LimitedPerformanceNotification) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kAltModeFallbackDueToPciguard,
+      0);
 
   // Simulate emitting D-Bus signal.
   fake_typecd_client()->EmitThunderboltDeviceConnectedSignal(
@@ -121,6 +129,11 @@ TEST_F(PciePeripheralManagerTest, LimitedPerformanceNotification) {
   EXPECT_EQ(1u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kAltModeFallbackDueToPciguard,
+      1);
 }
 
 TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
@@ -130,6 +143,11 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTSupportedAndAllowed,
+      0);
 
   // Simulate emitting D-Bus signal.
   fake_typecd_client()->EmitThunderboltDeviceConnectedSignal(
@@ -138,6 +156,11 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTSupportedAndAllowed,
+      1);
 
   // Simulate emitting a new D-Bus signal, this time with |is_thunderbolt_only|
   // set to true.
@@ -148,6 +171,38 @@ TEST_F(PciePeripheralManagerTest, NoNotificationShown) {
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   // No observer was called, therefore don't expect this to be updated.
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTSupportedAndAllowed,
+      2);
+}
+
+TEST_F(PciePeripheralManagerTest, TBTOnlyAndBlockedByPciguard) {
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+
+  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
+  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
+  EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTOnlyAndBlockedByPciguard,
+      0);
+
+  // Simulate emitting D-Bus signal.
+  fake_typecd_client()->EmitThunderboltDeviceConnectedSignal(
+      /*is_thunderbolt_only=*/true);
+  // Pcie tunneling allowed, we do not show any notifications for this case.
+  EXPECT_EQ(1u, GetNumLimitedPerformanceObserverCalls());
+  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
+  EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTOnlyAndBlockedByPciguard,
+      1);
 }
 
 TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
@@ -157,6 +212,11 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kAltModeFallbackInGuestSession,
+      0);
 
   // Simulate emitting D-Bus signal.
   fake_typecd_client()->EmitThunderboltDeviceConnectedSignal(
@@ -166,6 +226,11 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationLimitedPerformance) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(1u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kAltModeFallbackInGuestSession,
+      1);
 }
 
 TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
@@ -175,6 +240,11 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTOnlyAndBlockedInGuestSession,
+      0);
 
   // Simulate emitting D-Bus signal.
   fake_typecd_client()->EmitThunderboltDeviceConnectedSignal(
@@ -184,6 +254,11 @@ TEST_F(PciePeripheralManagerTest, GuestNotificationRestricted) {
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(1u, GetNumGuestModeNotificationObserverCalls());
   EXPECT_TRUE(GetIsCurrentGuestDeviceTbtOnly());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.PciePeripheral.ConnectivityResults",
+      PciePeripheralManager::PciePeripheralConnectivityResults::
+          kTBTOnlyAndBlockedInGuestSession,
+      1);
 }
 
 }  // namespace ash

@@ -5,11 +5,18 @@
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 
 namespace {
 PciePeripheralManager* g_instance = nullptr;
+
+void RecordConnectivityMetric(
+    PciePeripheralManager::PciePeripheralConnectivityResults results) {
+  base::UmaHistogramEnumeration("Ash.PciePeripheral.ConnectivityResults",
+                                results);
+}
 }  // namespace
 
 PciePeripheralManager::PciePeripheralManager(bool is_guest_profile,
@@ -54,13 +61,27 @@ void PciePeripheralManager::OnThunderboltDeviceConnected(
     bool is_thunderbolt_only) {
   if (is_guest_profile_) {
     NotifyGuestModeNotificationReceived(is_thunderbolt_only);
+    RecordConnectivityMetric(is_thunderbolt_only
+                                 ? PciePeripheralConnectivityResults::
+                                       kTBTOnlyAndBlockedInGuestSession
+                                 : PciePeripheralConnectivityResults::
+                                       kAltModeFallbackInGuestSession);
     return;
   }
 
   // Only show notifications if the peripheral is operating at limited
   // performance.
-  if (!is_pcie_tunneling_allowed_)
+  if (!is_pcie_tunneling_allowed_) {
     NotifyLimitedPerformancePeripheralReceived();
+    RecordConnectivityMetric(
+        is_thunderbolt_only
+            ? PciePeripheralConnectivityResults::kTBTOnlyAndBlockedByPciguard
+            : PciePeripheralConnectivityResults::kAltModeFallbackDueToPciguard);
+    return;
+  }
+
+  RecordConnectivityMetric(
+      PciePeripheralConnectivityResults::kTBTSupportedAndAllowed);
 }
 
 void PciePeripheralManager::SetPcieTunnelingAllowedState(
