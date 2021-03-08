@@ -403,8 +403,10 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     HeapVector<Member<AXObject>> related_sources;
     GetReverseRelated(current_node, related_sources);
     for (AXObject* related : related_sources) {
-      if (related)
-        object_cache_->MarkAXObjectDirty(related, /*subtree=*/false);
+      if (related) {
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(related,
+                                                        /*subtree=*/false);
+      }
     }
 
     // Ancestors that may derive their accessible name from descendant content
@@ -412,7 +414,7 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
     if (current_node != node) {
       AXObject* obj = Get(current_node);
       if (obj && obj->SupportsNameFromContents(/*recursive=*/false))
-        object_cache_->MarkAXObjectDirty(obj, /*subtree=*/false);
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
     }
 
     // Forward relation via <label for="[id]">.
@@ -474,7 +476,7 @@ void AXRelationCache::LabelChanged(Node* node) {
     all_previously_seen_label_target_ids_.insert(id);
     if (auto* control = To<HTMLLabelElement>(node)->control()) {
       if (AXObject* obj = Get(control))
-        object_cache_->MarkAXObjectDirty(obj, /*subtree=*/false);
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(obj, /*subtree=*/false);
     }
   }
 }

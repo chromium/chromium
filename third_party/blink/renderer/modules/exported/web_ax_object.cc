@@ -586,6 +586,13 @@ bool WebAXObject::PerformAction(const ui::AXActionData& action_data) const {
   if (IsDetached())
     return false;
 
+  Document* document = private_->GetDocument();
+  if (!document)
+    return false;
+
+  document->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
+
   ScopedActionAnnotator annotater(private_.Get());
   return private_->PerformAction(action_data);
 }

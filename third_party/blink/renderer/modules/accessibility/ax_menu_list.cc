@@ -143,9 +143,11 @@ AccessibilityExpanded AXMenuList::IsExpanded() const {
   return kExpandedExpanded;
 }
 
-void AXMenuList::DidUpdateActiveOption(int option_index) {
-  bool suppress_notifications =
-      (GetNode() && !GetNode()->IsFinishedParsingChildren());
+void AXMenuList::DidUpdateActiveOption() {
+  if (!GetNode())
+    return;
+
+  bool suppress_notifications = !GetNode()->IsFinishedParsingChildren();
 
   // TODO(aleventhal) The  NeedsToUpdateChildren() check is necessary to avoid a
   // illegal lifecycle while adding children, since this can be called at any
@@ -155,6 +157,9 @@ void AXMenuList::DidUpdateActiveOption(int option_index) {
     if (!child_objects.IsEmpty()) {
       DCHECK_EQ(child_objects.size(), 1ul);
       DCHECK(IsA<AXMenuListPopup>(child_objects[0].Get()));
+      HTMLSelectElement* select = To<HTMLSelectElement>(GetNode());
+      DCHECK(select);
+      int option_index = select->selectedIndex();
 
       if (auto* popup = DynamicTo<AXMenuListPopup>(child_objects[0].Get()))
         popup->DidUpdateActiveOption(option_index, !suppress_notifications);

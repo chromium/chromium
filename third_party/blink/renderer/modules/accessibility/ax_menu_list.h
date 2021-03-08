@@ -42,7 +42,7 @@ class AXMenuList final : public AXLayoutObject {
   void ClearChildren() override;
   void Detach() override;
 
-  void DidUpdateActiveOption(int option_index);
+  void DidUpdateActiveOption();
   void DidShowPopup();
   void DidHidePopup();
 

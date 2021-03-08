@@ -529,8 +529,7 @@ void MenuListSelectType::DidUpdateActiveOption(HTMLOptionElement* option) {
     return;
   }
 
-  document.ExistingAXObjectCache()->HandleUpdateActiveMenuOption(
-      select_->GetLayoutObject(), option_index);
+  document.ExistingAXObjectCache()->HandleUpdateActiveMenuOption(select_);
 }
 
 HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {

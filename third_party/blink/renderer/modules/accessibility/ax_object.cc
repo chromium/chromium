@@ -2117,6 +2117,11 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   cached_aria_row_index_ = ComputeAriaRowIndex();
 
   if (included_in_tree_changed) {
+    DCHECK(!ax_object_cache_->IsFrozen())
+        << "Attempting to change children on an ancestor is dangerous during "
+           "serialization, because the ancestor may have already been visited. "
+           "Reaching this line indicates that AXObjectCacheImpl did not handle "
+           "a signal and call ChilldrenChanged() earlier.";
     if (AXObject* parent = CachedParentObject()) {
       // Defer this ChildrenChanged(), otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.

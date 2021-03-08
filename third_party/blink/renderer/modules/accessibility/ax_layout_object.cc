@@ -1252,7 +1252,7 @@ void AXLayoutObject::HandleActiveDescendantChanged() {
 
     // Mark this node dirty. AXEventGenerator will automatically infer
     // that the active descendant changed.
-    AXObjectCache().MarkAXObjectDirty(this, false);
+    AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this, false);
   }
 }
 
