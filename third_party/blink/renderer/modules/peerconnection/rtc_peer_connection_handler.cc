@@ -1762,6 +1762,12 @@ RTCPeerConnectionHandler::AddTransceiverWithTrack(
                                 blink::TransceiverStateUpdateMode::kAll);
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
       std::move(transceiver);
+  if (peer_connection_tracker_) {
+    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver.get());
+    peer_connection_tracker_->TrackAddTransceiver(
+        this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTransceiver,
+        *platform_transceiver.get(), transceiver_index);
+  }
   return platform_transceiver;
 }
 
@@ -1817,6 +1823,12 @@ RTCPeerConnectionHandler::AddTransceiverWithKind(
                                 blink::TransceiverStateUpdateMode::kAll);
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
       std::move(transceiver);
+  if (peer_connection_tracker_) {
+    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver.get());
+    peer_connection_tracker_->TrackAddTransceiver(
+        this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTransceiver,
+        *platform_transceiver.get(), transceiver_index);
+  }
   return std::move(platform_transceiver);
 }
 
