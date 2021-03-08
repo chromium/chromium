@@ -13,7 +13,7 @@ namespace android {
 enum CustomTabsVisibilityHistogram {
   VISIBLE_CUSTOM_TAB,
   VISIBLE_CHROME_TAB,
-  CUSTOM_TABS_VISIBILITY_MAX
+  kMaxValue = VISIBLE_CHROME_TAB,
 };
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.flags
@@ -26,7 +26,7 @@ enum class ActivityType {
   kMaxValue = kWebApk,
 };
 
-CustomTabsVisibilityHistogram GetCustomTabsVisibleValue();
+CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(ActivityType type);
 
 ActivityType GetActivityType();
 
