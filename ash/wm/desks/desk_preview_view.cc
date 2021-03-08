@@ -441,21 +441,18 @@ void DeskPreviewView::Layout() {
   Button::Layout();
 }
 
+bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
+  if (features::IsBentoEnabled())
+    mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
+
+  return Button::OnMousePressed(event);
+}
+
 bool DeskPreviewView::OnMouseDragged(const ui::MouseEvent& event) {
-  if (!features::IsBentoEnabled())
-    return Button::OnMouseDragged(event);
+  if (features::IsBentoEnabled())
+    mini_view_->owner_bar()->HandleDragEvent(mini_view_, event);
 
-  DesksBarView* owner_bar = mini_view_->owner_bar();
-
-  if (!owner_bar->IsDraggingDesk()) {
-    owner_bar->HandleStartDragEvent(mini_view_, event);
-    return true;
-  }
-
-  if (!owner_bar->HandleDragEvent(mini_view_, event))
-    return Button::OnMouseDragged(event);
-
-  return true;
+  return Button::OnMouseDragged(event);
 }
 
 void DeskPreviewView::OnMouseReleased(const ui::MouseEvent& event) {
@@ -472,15 +469,16 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
   DesksBarView* owner_bar = mini_view_->owner_bar();
 
   switch (event->type()) {
+    // Only long press can trigger drag & drop.
     case ui::ET_GESTURE_LONG_PRESS:
-      owner_bar->HandleStartDragEvent(mini_view_, *event);
+      owner_bar->HandleLongPressEvent(mini_view_, *event);
       event->SetHandled();
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       FALLTHROUGH;
     case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (owner_bar->HandleDragEvent(mini_view_, *event))
-        event->SetHandled();
+      owner_bar->HandleDragEvent(mini_view_, *event);
+      event->SetHandled();
       break;
     case ui::ET_GESTURE_END:
       if (owner_bar->HandleReleaseEvent(mini_view_, *event))

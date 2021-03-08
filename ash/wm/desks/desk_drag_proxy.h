@@ -28,6 +28,14 @@ class DesksBarView;
 // between DeskPreviewView and DesksBarView after M89.
 class DeskDragProxy : public ui::ImplicitAnimationObserver {
  public:
+  enum class State {
+    kInitialized,   // A desk preview is clicked, but not dragged.
+    kStarted,       // Drag started.
+    kSnappingBack,  // A desk is dropped and snapping back to the target
+                    // position.
+    kEnded,         // The drag and drop finished.
+  };
+
   DeskDragProxy(DesksBarView* desks_bar_view,
                 DeskMiniView* drag_view,
                 const gfx::Vector2dF& init_offset);
@@ -40,15 +48,17 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
 
   gfx::Point GetPositionInScreen() const;
 
-  // Perform and animate scaling up of drag proxy. Move drag proxy to
+  // Drag is started. Create a drag proxy widget, scale it up and move it to
   // |location_in_screen|.
-  void ScaleAndMoveTo(const gfx::PointF& location_in_screen);
+  void InitAndScaleAndMoveTo(const gfx::PointF& location_in_screen);
 
   // Move drag proxy to |location_in_screen|.
   void DragTo(const gfx::PointF& location_in_screen);
 
   // Perform and animate snapping back to drag view.
   void SnapBackToDragView();
+
+  State state() const { return state_; }
 
  private:
   DesksBarView* desks_bar_view_ = nullptr;
@@ -60,6 +70,8 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   gfx::Vector2dF init_offset_;
   // The widget of drag proxy.
   views::UniqueWidgetPtr drag_widget_;
+  // The state of the drag proxy.
+  State state_ = State::kInitialized;
 };
 
 }  // namespace ash
