@@ -170,8 +170,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     public static @ContentSettingsType int getHighestPriorityPermission(
             @ContentSettingsType @NonNull int[] types) {
-        if (types.length == 1) return types[0];
-
         for (@ContentSettingsType int setting : SETTINGS_ORDER) {
             for (@ContentSettingsType int type : types) {
                 if (setting == type) {
