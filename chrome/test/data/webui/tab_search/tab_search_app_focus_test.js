@@ -6,7 +6,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
 
-import {assertEquals, assertGT} from '../../chai_assert.js';
+import {assertEquals, assertGT, assertNotEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
 
 import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
@@ -117,4 +117,39 @@ suite('TabSearchAppFocusTest', () => {
       assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, i);
     }
   });
+
+  test('Search field input element focused when revealed ', async () => {
+    await setupTest(sampleData());
+
+    // Set the current focus to the search input element.
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    const searchInput = /** @type {!HTMLInputElement} */
+        (searchField.shadowRoot.querySelector('#searchInput'));
+    searchInput.focus();
+    assertEquals(searchInput, getDeepActiveElement());
+
+    // Focus an item in the list, search input should not be focused.
+    const tabSearchItem = /** @type {!HTMLElement} */ (
+        tabSearchApp.shadowRoot.querySelector('#tabsList')
+            .querySelector('tab-search-item'));
+    tabSearchItem.focus();
+    assertEquals(tabSearchItem, getDeepActiveElement());
+    assertNotEquals(searchInput, getDeepActiveElement());
+
+    // When hidden visibilitychange should revert focus to the search input.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    assertEquals(searchInput, getDeepActiveElement());
+
+    // When visible the focused element should still be the search input.
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'visible', writable: true});
+    document.dispatchEvent(new Event('visibilitychange'));
+    await flushTasks();
+    assertEquals(searchInput, getDeepActiveElement());
+  });
+
 });
