@@ -438,7 +438,7 @@ try_.chromium_android_builder(
     main_list_view = "try",
     use_clang_coverage = True,
     tryjob = try_.job(
-        experiment_percentage = 4,
+        experiment_percentage = 3,
     ),
 )
 
