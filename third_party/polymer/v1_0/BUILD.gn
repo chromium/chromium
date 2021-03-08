@@ -9,7 +9,6 @@ generate_grd("build_grdp") {
   grd_prefix = "polymer_1_0"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   input_files = [
-    "font-roboto/roboto.html",
     "iron-a11y-announcer/iron-a11y-announcer-extracted.js",
     "iron-a11y-announcer/iron-a11y-announcer.html",
     "iron-a11y-keys-behavior/iron-a11y-keys-behavior-extracted.js",

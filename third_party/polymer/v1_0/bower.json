@@ -2,7 +2,6 @@
   "name": "chromium",
   "private": true,
   "dependencies": {
-    "font-roboto": "PolymerElements/font-roboto#1.0.1",
     "html-imports": "webcomponents/html-imports#1.2.0",
     "iron-a11y-announcer": "PolymerElements/iron-a11y-announcer#2.1.0",
     "iron-a11y-keys-behavior": "PolymerElements/iron-a11y-keys-behavior#2.1.1",

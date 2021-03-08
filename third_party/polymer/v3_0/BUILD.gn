@@ -9,7 +9,6 @@ generate_grd("build_grdp") {
   grd_prefix = "polymer_3_0"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   input_files = [
-    "font-roboto/roboto.js",
     "iron-a11y-announcer/iron-a11y-announcer.js",
     "iron-a11y-keys-behavior/iron-a11y-keys-behavior.js",
     "iron-a11y-keys/iron-a11y-keys.js",
@@ -45,7 +44,6 @@ generate_grd("build_grdp") {
     "paper-spinner/paper-spinner-styles.js",
     "paper-styles/color.js",
     "paper-styles/shadow.js",
-    "paper-styles/typography.js",
     "paper-tooltip/paper-tooltip.js",
     "polymer/polymer_bundled.min.js",
   ]

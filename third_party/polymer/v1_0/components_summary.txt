@@ -1,9 +1,3 @@
-Name: font-roboto
-Repository: https://github.com/PolymerElements/font-roboto.git
-Tree: v1.0.1
-Revision: 21ce9b51a417fa9995cf6606e886aba0728f70a1
-Tree link: https://github.com/PolymerElements/font-roboto/tree/v1.0.1
-
 Name: html-imports
 Repository: https://github.com/webcomponents/html-imports.git
 Tree: v1.2.0

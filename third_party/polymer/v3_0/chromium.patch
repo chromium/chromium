@@ -1,16 +1,3 @@
-diff --git a/components-chromium/font-roboto/roboto.js b/components-chromium/font-roboto/roboto.js
-index 02aebd81b0df..342d26d6f797 100644
---- a/components-chromium/font-roboto/roboto.js
-+++ b/components-chromium/font-roboto/roboto.js
-@@ -17,7 +17,6 @@ if (!window.polymerSkipLoadingFontRoboto) {
-   link.rel = 'stylesheet';
-   link.type = 'text/css';
-   link.crossOrigin = 'anonymous';
--  link.href =
--      'https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,300,300italic,400italic,500,500italic,700,700italic';
-+  link.href = 'chrome://resources/css/roboto.css';
-   document.head.appendChild(link);
- }
 --- a/components-chromium/iron-a11y-announcer/iron-a11y-announcer.js
 +++ b/components-chromium/iron-a11y-announcer/iron-a11y-announcer.js
 @@ -46,7 +46,7 @@ Note: announcements are only audible if you have a screen reader enabled.
