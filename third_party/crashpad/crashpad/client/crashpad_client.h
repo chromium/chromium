@@ -472,16 +472,21 @@ class CrashpadClient {
   //!
   //! A handler must have already been installed before calling this method.
   //! This method should be called when an application is ready to start
-  //! processing previously created intermediate dumps and begin uploading.
-  //! Processing will block, so this should not be called on the main UI thread.
-  //! No intermediate dumps will be processed (and therefore no minidumps will
-  //! uploaded) until this method (or DumpWithoutCrash) is called.
+  //! processing previously created intermediate dumps. Processing will block,
+  //! so this should not be called on the main UI thread. No intermediate dumps
+  //! will be processed until this method is called.
   //!
   //! \param[in] annotations Process annotations to set in each crash report.
   //!     Useful when adding crash annotations detected on the next run after a
   //!     crash but before upload.
   void ProcessIntermediateDumps(
       const std::map<std::string, std::string>& annotations = {});
+
+  //! \brief Requests that the handler begin in-process uploading of any
+  //! pending reports.
+  //!
+  //! A handler must have already been installed before calling this method.
+  void EnableUploading();
 
   // TODO(justincohen): This method is purely for bringing up iOS interfaces.
   //! \brief Requests that the handler capture a dump even though there hasn't

@@ -234,6 +234,11 @@ void CrashpadClient::ProcessIntermediateDumps(
 }
 
 // static
+void CrashpadClient::EnableUploading() {
+  // TODO(justincohen): Start the CrashReportUploadThread.
+}
+
+// static
 void CrashpadClient::DumpWithoutCrash(NativeCPUContext* context) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
