@@ -320,7 +320,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      *                                  be fulfilled when feature TOOLBAR_IPH_ANDROID is enabled.
      * @param windowAndroid The {@link WindowAndroid} associated with the ToolbarManager.
      * @param isInOverviewModeSupplier Supplies whether the app is currently in overview mode.
-     * @param isCustomTab Whether the toolbar is for a custom tab.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param statusBarColorController The {@link StatusBarColorController} for the app.
      * @param appMenuDelegate Allows interacting with the app menu.
@@ -346,7 +345,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier, WindowAndroid windowAndroid,
-            Supplier<Boolean> isInOverviewModeSupplier, boolean isCustomTab,
+            Supplier<Boolean> isInOverviewModeSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             StatusBarColorController statusBarColorController, AppMenuDelegate appMenuDelegate,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -449,13 +448,15 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
+        boolean isCustomTab = toolbarLayout instanceof CustomTabToolbar;
+        ThemeColorProvider menuButtonThemeColorProvider =
+                isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
         mMenuButtonCoordinator = new MenuButtonCoordinator(appMenuCoordinatorSupplier,
                 mControlsVisibilityDelegate, mWindowAndroid,
                 (focus, type)
                         -> setUrlBarFocus(focus, type),
                 requestFocusRunnable, shouldShowUpdateBadge, isInOverviewModeSupplier,
-                isCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider,
-                R.id.menu_button_wrapper);
+                menuButtonThemeColorProvider, R.id.menu_button_wrapper);
         MenuButtonCoordinator startSurfaceMenuButtonCoordinator = new MenuButtonCoordinator(
                 appMenuCoordinatorSupplier, mControlsVisibilityDelegate, mWindowAndroid,
                 (focus, type)
@@ -476,7 +477,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mActionModeController.setTabStripHeight(mToolbar.getTabStripHeight());
 
-        if (toolbarLayout instanceof CustomTabToolbar) {
+        if (isCustomTab) {
             CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
             mLocationBar = customTabToolbar.createLocationBar(mLocationBarModel,
                     mActionModeController.getActionModeCallback(), modalDialogManagerSupplier);

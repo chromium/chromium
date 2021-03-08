@@ -674,8 +674,7 @@ public class RootUiCoordinator
                     shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier, mStartSurfaceSupplier,
                     mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
                     mPromoShownOneshotSupplier, mActivity.getWindowAndroid(),
-                    mActivity::isInOverviewMode, mActivity.isCustomTab(),
-                    mActivity.getModalDialogManagerSupplier(),
+                    mActivity::isInOverviewMode, mActivity.getModalDialogManagerSupplier(),
                     mActivity.getStatusBarColorController(),
                     /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
                     mStartSurfaceParentTabSupplier);
