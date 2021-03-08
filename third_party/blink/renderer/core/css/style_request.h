@@ -74,6 +74,9 @@ class StyleRequest {
         scrollbar(nullptr) {}
 };
 
+// TODO(andruud): Callers should use StyleRequest directly.
+using PseudoElementStyleRequest = StyleRequest;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_REQUEST_H_

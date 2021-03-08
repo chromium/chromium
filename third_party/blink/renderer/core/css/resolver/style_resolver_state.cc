@@ -38,7 +38,7 @@ StyleResolverState::StyleResolverState(
     Document& document,
     Element& element,
     PseudoElement* pseudo_element,
-    StyleRequest::RequestType pseudo_request_type,
+    PseudoElementStyleRequest::RequestType pseudo_request_type,
     ElementType element_type,
     const ComputedStyle* parent_style,
     const ComputedStyle* layout_parent_style)
@@ -75,7 +75,7 @@ StyleResolverState::StyleResolverState(Document& document,
     : StyleResolverState(document,
                          element,
                          nullptr /* pseudo_element */,
-                         StyleRequest::kForRenderer,
+                         PseudoElementStyleRequest::kForRenderer,
                          ElementType::kElement,
                          parent_style,
                          layout_parent_style) {}
@@ -84,7 +84,7 @@ StyleResolverState::StyleResolverState(
     Document& document,
     Element& element,
     PseudoId pseudo_id,
-    StyleRequest::RequestType pseudo_request_type,
+    PseudoElementStyleRequest::RequestType pseudo_request_type,
     const ComputedStyle* parent_style,
     const ComputedStyle* layout_parent_style)
     : StyleResolverState(document,
@@ -124,7 +124,7 @@ void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
 
 scoped_refptr<ComputedStyle> StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
-      pseudo_request_type_ == StyleRequest::kForRenderer) {
+      pseudo_request_type_ == PseudoElementStyleRequest::kForRenderer) {
     return nullptr;
   }
   return std::move(style_);
@@ -162,7 +162,7 @@ void StyleResolverState::SetLayoutParentStyle(
 }
 
 void StyleResolverState::LoadPendingResources() {
-  if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
+  if (pseudo_request_type_ == PseudoElementStyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
       (StyleRef().Display() == EDisplay::kNone &&
        !GetElement().LayoutObjectIsNeeded(StyleRef())) ||
