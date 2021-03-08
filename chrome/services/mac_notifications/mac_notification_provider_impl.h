@@ -17,8 +17,14 @@ namespace mac_notifications {
 
 class MacNotificationProviderImpl : public mojom::MacNotificationProvider {
  public:
+  // Constructs a MacNotificationProviderImpl which will be bound to some
+  // externally owned Receiver like |mojo::MakeSelfOwnedReceiver()|.
+  MacNotificationProviderImpl();
+
+  // Constructs a MacNotificationProviderImpl bound to |receiver|.
   explicit MacNotificationProviderImpl(
       mojo::PendingReceiver<mojom::MacNotificationProvider> binding);
+
   MacNotificationProviderImpl(const MacNotificationProviderImpl&) = delete;
   MacNotificationProviderImpl& operator=(const MacNotificationProviderImpl&) =
       delete;
@@ -31,7 +37,7 @@ class MacNotificationProviderImpl : public mojom::MacNotificationProvider {
       override;
 
  private:
-  mojo::Receiver<mojom::MacNotificationProvider> binding_;
+  mojo::Receiver<mojom::MacNotificationProvider> binding_{this};
   std::unique_ptr<mojom::MacNotificationService> service_;
 };
 

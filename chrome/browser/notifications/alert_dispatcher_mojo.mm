@@ -167,7 +167,8 @@
     _mojoService.reset([[NotificationAlertServiceBridge alloc]
         initWithDisconnectHandler:std::move(onDisconnect)
                     actionHandler:std::move(onAction)
-                         provider:_providerFactory->LaunchProvider()]);
+                         provider:_providerFactory->LaunchProvider(
+                                      /*in_process=*/false)]);
   }
   return _mojoService.get();
 }

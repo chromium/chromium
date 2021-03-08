@@ -77,7 +77,8 @@ class FakeMacNotificationProviderFactory
 
   // MacNotificationProviderFactory:
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
-  LaunchProvider() override {
+  LaunchProvider(bool in_process) override {
+    EXPECT_FALSE(in_process);
     mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
     provider_receiver_.Bind(remote.BindNewPipeAndPassReceiver());
     provider_receiver_.set_disconnect_handler(std::move(on_disconnect_));

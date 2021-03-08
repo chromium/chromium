@@ -17,6 +17,8 @@
 
 namespace mac_notifications {
 
+MacNotificationProviderImpl::MacNotificationProviderImpl() = default;
+
 MacNotificationProviderImpl::MacNotificationProviderImpl(
     mojo::PendingReceiver<mojom::MacNotificationProvider> binding)
     : binding_(this, std::move(binding)) {}

@@ -19,7 +19,7 @@ class MacNotificationProviderFactory {
 
   // Launches a new provider. Virtual so it can be overridden in tests.
   virtual mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
-  LaunchProvider();
+  LaunchProvider(bool in_process);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_PROVIDER_FACTORY_H_
