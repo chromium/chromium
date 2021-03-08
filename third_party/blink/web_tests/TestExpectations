@@ -5730,3 +5730,5 @@ crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.h
 crbug.com/1092462 [ Linux ] virtual/synchronous_html_parser/media/video-seek-past-end-paused.html [ Pass Failure ]
 crbug.com/1185675 [ Mac ] virtual/gpu-rasterization/images/color-profile-object.html [ Pass Failure ]
 crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Pass Failure ]
+
+crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
