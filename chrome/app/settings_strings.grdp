@@ -2421,19 +2421,19 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_BLOCK" desc="The block label for serial ports in site settings.">
     Do not allow any sites to access serial ports
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE" desc="Label for native file system write permission, which enables sites to save changes to the original files that were selected by the user.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE" desc="Label for File System Access write permission, which enables sites to save changes to the original files that were selected by the user.">
     File editing
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_MID_SENTENCE" desc="Label for native file system write permission when used mid-sentence, which enables sites to save changes to the original files that were selected by the user.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE" desc="Label for File System Access write permission when used mid-sentence, which enables sites to save changes to the original files that were selected by the user.">
     file editing
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_ASK" desc="The ask label for native file system write permission in site settings.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK" desc="The ask label for File System Access write permission in site settings.">
     Ask when a site wants to edit files or folders on your device
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_ASK_RECOMMENDED" desc="The ask label for native file system write permission in site settings (with the 'recommended' suffix).">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_ASK_RECOMMENDED" desc="The ask label for File System Access write permission in site settings (with the 'recommended' suffix).">
     Ask when a site wants to edit files or folders on your device (recommended)
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_BLOCK" desc="The block label for native file system write permission in site settings.">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_ACCESS_WRITE_BLOCK" desc="The block label for File System Access write permission in site settings.">
     Do not allow any sites to edit files or folders on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_ZOOM_LEVEL" desc="Title tooltip and accessibility text for the button to remove zoom levels in site settings">
