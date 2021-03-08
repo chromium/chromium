@@ -401,7 +401,7 @@ void BrowserTestBase::SetUp() {
   // to be obtained and used to launch lacros-chrome so that a mojo connection
   // between lacros-chrome and ash-chrome can be established.
   // For more details, please see:
-  // //chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h.
+  // //chrome/browser/ash/crosapi/test_mojo_connection_manager.h.
   {
     // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
     // //ash/constants/ash_switches.h.

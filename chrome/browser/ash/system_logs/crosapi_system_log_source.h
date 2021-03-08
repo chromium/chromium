@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/crosapi/browser_manager_observer.h"
+#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace system_logs {

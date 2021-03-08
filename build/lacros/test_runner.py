@@ -287,7 +287,7 @@ def _RunTestWithAshChrome(args, forward_args):
     tmp_ash_data_dir_name = tempfile.mkdtemp()
 
     # Please refer to below file for how mojo connection is set up in testing.
-    # //chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h
+    # //chrome/browser/ash/crosapi/test_mojo_connection_manager.h
     lacros_mojo_socket_file = '%s/lacros.sock' % tmp_ash_data_dir_name
     lacros_mojo_socket_arg = ('--lacros-mojo-socket-for-testing=%s' %
                               lacros_mojo_socket_file)

@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/bind.h"
-#include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"

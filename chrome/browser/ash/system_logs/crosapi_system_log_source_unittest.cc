@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/crosapi/fake_browser_manager.h"
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

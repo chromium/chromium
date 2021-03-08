@@ -48,7 +48,7 @@ Cocoa, but much smaller. It's also mostly asynchronous for performance reasons.
 The API lives in
 [//chromeos/crosapi](https://chromium.googlesource.com/chromium/src.git/+/master/chromeos/crosapi).
 The ash-side implementation lives in
-[//chrome/browser/chromeos/crosapi](https://chromium.googlesource.com/chromium/src.git/+/master/chrome/browser/chromeos/crosapi).
+[//chrome/browser/ash/crosapi](https://chromium.googlesource.com/chromium/src.git/+/master/chrome/browser/ash/crosapi).
 
 Code can be conditionally compiled into lacros via
 BUILDFLAG(IS_CHROMEOS_LACROS).

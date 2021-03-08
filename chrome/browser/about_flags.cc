@@ -213,7 +213,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_switches.h"
-#include "chrome/browser/chromeos/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/arc/arc_features.h"

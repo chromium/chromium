@@ -33,9 +33,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/lacros_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_limit_interface.h"
-#include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/supervised_user/grit/supervised_user_unscaled_resources.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"

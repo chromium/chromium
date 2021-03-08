@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/policy/cached_policy_key_loader_chromeos.h"
 #include "chrome/browser/chromeos/policy/value_validation/onc_user_policy_value_validator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
