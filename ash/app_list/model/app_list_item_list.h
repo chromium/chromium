@@ -19,6 +19,10 @@
 
 namespace ash {
 
+namespace test {
+class AppsGridViewTest;
+}  // namespace test
+
 class AppListItem;
 
 // Class to manage items in the app list. Used both by AppListModel and
@@ -67,6 +71,7 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
  private:
   friend class AppListItemListTest;
   friend class AppListModel;
+  friend class test::AppsGridViewTest;
 
   // Returns a unique, valid StringOrdinal immediately before |position| or at
   // the end of the list if |position| is invalid.

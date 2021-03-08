@@ -139,9 +139,14 @@ void PagedViewStructure::Add(AppListItemView* view,
                              bool clear_overflow,
                              bool clear_empty_pages) {
   const int view_structure_size = total_pages();
-  CHECK((target_index.page < view_structure_size &&
-         target_index.slot <= items_on_page(target_index.page)) ||
-        (target_index.page == view_structure_size && target_index.slot == 0));
+  if (target_index.page < view_structure_size) {
+    // Adding to an existing page.
+    CHECK_LE(target_index.slot, items_on_page(target_index.page));
+  } else {
+    // Adding to a new page at the end.
+    CHECK_EQ(target_index.page, view_structure_size);
+    CHECK_EQ(target_index.slot, 0);
+  }
 
   if (target_index.page == view_structure_size)
     pages_.emplace_back();
@@ -273,7 +278,7 @@ int PagedViewStructure::GetTargetItemIndexForMove(
     ++current_index.page;
     current_index.slot = 0;
   }
-  DCHECK(current_index == index);
+  DCHECK_EQ(current_index, index);
   return current_item_index - offset;
 }
 

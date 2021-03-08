@@ -75,8 +75,8 @@ size_t AppListItem::ChildItemCount() const {
 }
 
 std::string AppListItem::ToDebugString() const {
-  return id().substr(0, 8) + " '" + name() + "'" + " [" +
-         position().ToDebugString() + "]";
+  return id().substr(0, 8) + " '" + (is_page_break() ? "page_break" : name()) +
+         "'" + " [" + position().ToDebugString() + "]";
 }
 
 // Protected methods

@@ -2555,9 +2555,11 @@ void AppsGridView::MoveItemInModel(AppListItemView* item_view,
                                    const GridIndex& target,
                                    bool clear_overflow) {
   int current_model_index = view_model_.GetIndexOfView(item_view);
-  size_t current_item_list_index;
-  item_list_->FindItemIndex(item_view->item()->id(), &current_item_list_index);
-  DCHECK_GE(current_model_index, 0);
+  CHECK_GE(current_model_index, 0);
+  size_t current_item_list_index = 0;
+  bool found = item_list_->FindItemIndex(item_view->item()->id(),
+                                         &current_item_list_index);
+  CHECK(found);
 
   int target_model_index = GetTargetModelIndexForMove(item_view, target);
   size_t target_item_list_index = GetTargetItemIndexForMove(item_view, target);
@@ -2565,6 +2567,10 @@ void AppsGridView::MoveItemInModel(AppListItemView* item_view,
   // item visual index here.
   if (!folder_delegate_)
     view_structure_.Move(item_view, target, clear_overflow);
+
+  DVLOG(1) << "MoveItemInModel: view model: " << current_model_index << " -> "
+           << target_model_index << ", item list: " << current_item_list_index
+           << " -> " << target_item_list_index;
 
   // Reorder the app list item views in accordance with |view_model_|.
   items_container_->ReorderChildView(item_view, target_model_index);

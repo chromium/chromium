@@ -426,6 +426,16 @@ class AppsGridViewTest : public views::ViewsTestBase,
     return drag_view_center;
   }
 
+  // Calls the private method.
+  static void DeleteItemAt(AppListItemList* item_list, size_t index) {
+    item_list->DeleteItemAt(index);
+  }
+
+  // Calls the private method.
+  void MoveItemInModel(AppListItemView* item_view, const GridIndex& target) {
+    apps_grid_view_->MoveItemInModel(item_view, target);
+  }
+
   AppListView* app_list_view_ = nullptr;    // Owned by native widget.
   AppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
   ContentsView* contents_view_ = nullptr;   // Owned by |app_list_view_|.
@@ -1336,6 +1346,30 @@ TEST_P(AppsGridViewTest, MouseDragWithCancelDeleteAddItem) {
   EXPECT_EQ(std::string("Item 0,Item 1,Item 3,Extra"),
             model_->GetModelContent());
   test_api_->LayoutToIdealBounds();
+}
+
+// Regression test for crash bug. https://crbug.com/1166011.
+TEST_F(AppsGridViewTest, MoveItemInModelPastEndOfList) {
+  model_->PopulateApps(20);
+
+  // I speculate that the item list is missing an item, but PagedViewStructure
+  // doesn't know about it. This could happen if an item was deleted during a
+  // period that AppsGridView was not observing the list.
+  AppListItemList* item_list = model_->top_level_item_list();
+  item_list->RemoveObserver(apps_grid_view_);
+  DeleteItemAt(item_list, 19);
+  item_list->AddObserver(apps_grid_view_);
+  ASSERT_EQ(19u, item_list->item_count());
+
+  // Try to move the first item to the end of the page. PagedViewStructure is
+  // out of sync with AppListItemList, so it will return a target item list
+  // index off the end of the list.
+  AppListItemView* first_item = GetItemViewInTopLevelGrid(0);
+  MoveItemInModel(first_item, GridIndex(0, 19));
+
+  // No crash. Item moved to the end.
+  ASSERT_EQ(19u, item_list->item_count());
+  EXPECT_EQ("Item 0", item_list->item_at(18)->id());
 }
 
 // Test that control+arrow swaps app within the same page.
