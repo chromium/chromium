@@ -102,6 +102,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "a11y_page/captions_browser_proxy.js",
     "appearance_page/appearance_browser_proxy.js",
+    "appearance_page/fonts_browser_proxy.js",
     "autofill_page/merge_exceptions_store_copies_behavior.js",
     "autofill_page/merge_passwords_store_copies_behavior.js",
     "autofill_page/multi_store_exception_entry.js",
@@ -174,7 +175,6 @@ preprocess_if_expr("preprocess_generated") {
     "about_page/about_page.js",
     "appearance_page/appearance_fonts_page.js",
     "appearance_page/appearance_page.js",
-    "appearance_page/fonts_browser_proxy.m.js",
     "appearance_page/home_url_input.js",
     "autofill_page/autofill_page.js",
     "autofill_page/avatar_icon.js",
@@ -368,7 +368,6 @@ group("closure_compile") {
     ":local_resources",
     "a11y_page:closure_compile",
     "about_page:closure_compile",
-    "appearance_page:closure_compile",
     "controls:closure_compile",
     "languages_page:closure_compile",
     "people_page:closure_compile",

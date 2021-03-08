@@ -7,19 +7,6 @@ import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":fonts_browser_proxy" ]
-}
-
-js_library("fonts_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
@@ -27,7 +14,7 @@ js_type_check("closure_compile_module") {
     ":appearance_browser_proxy",
     ":appearance_fonts_page",
     ":appearance_page",
-    ":fonts_browser_proxy.m",
+    ":fonts_browser_proxy",
     ":home_url_input",
   ]
 }
@@ -45,7 +32,7 @@ js_library("appearance_browser_proxy") {
 
 js_library("appearance_fonts_page") {
   deps = [
-    ":fonts_browser_proxy.m",
+    ":fonts_browser_proxy",
     "../controls:settings_dropdown_menu.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
@@ -68,10 +55,8 @@ js_library("appearance_page") {
   ]
 }
 
-js_library("fonts_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.m.js" ]
+js_library("fonts_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("home_url_input") {
@@ -86,22 +71,10 @@ js_library("home_url_input") {
   ]
 }
 
-group("web_components") {
-  public_deps = [
-    ":modulize",
-    ":web_components_local",
-  ]
-}
-
-html_to_js("web_components_local") {
+html_to_js("web_components") {
   js_files = [
     "appearance_fonts_page.js",
     "appearance_page.js",
     "home_url_input.js",
   ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "fonts_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }
