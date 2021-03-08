@@ -7202,12 +7202,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             "document.querySelector('iframe').onload = "
                             "    function() { document.title = 'loaded'; };"));
 
+  // The blocked url reported in the console message should only contain the
+  // origin, in order to avoid sensitive data being leaked to the parent frame.
+  //
+  // TODO(https://crbug.com/1146651): We should not leak any information at all
+  // to the parent frame. Instead, we should send a message directly to Devtools
+  // (without passing through a renderer): that can also contain more
+  // information (like the full blocked url).
+  GURL reported_blocked_url = embedded_test_server()->GetURL("b.com", "/");
   const struct {
     const char* url;
     bool use_error_page;
+    std::string expected_console_message;
   } kTestCases[] = {
-      {"/frame-ancestors-none.html", false},
-      {"/x-frame-options-deny.html", true},
+      {"/frame-ancestors-none.html", false,
+       "Refused to frame '" + reported_blocked_url.spec() +
+           "' because an ancestor violates the following Content Security "
+           "Policy directive: \"frame-ancestors 'none'\".\n"},
+      {"/x-frame-options-deny.html", true,
+       "Refused to display '" + reported_blocked_url.spec() +
+           "' in a frame because it set 'X-Frame-Options' to 'deny'."},
   };
 
   for (const auto& test : kTestCases) {
@@ -7215,6 +7229,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     EXPECT_TRUE(ExecuteScript(shell(), "document.title = 'not loaded';"));
     base::string16 expected_title(base::UTF8ToUTF16("loaded"));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern("Refused to*");
 
     // Navigate the subframe to a blocked URL.
     TestNavigationObserver load_observer(shell()->web_contents());
@@ -7242,6 +7259,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
     // The blocked frame should still fire a load event in its parent's process.
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+    EXPECT_EQ(console_observer.GetMessageAt(0u), test.expected_console_message);
 
     // Check that the current RenderFrameHost has stopped loading.
     EXPECT_FALSE(root->child_at(0)->current_frame_host()->is_loading());

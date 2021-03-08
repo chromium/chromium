@@ -273,12 +273,20 @@ void AncestorThrottle::ParseXFrameOptionsError(const std::string& value,
         "Refused to display '%s' in a frame because it set multiple "
         "'X-Frame-Options' headers with conflicting values "
         "('%s'). Falling back to 'deny'.",
-        navigation_handle()->GetURL().spec().c_str(), value.c_str());
+        url::Origin::Create(navigation_handle()->GetURL())
+            .GetURL()
+            .spec()
+            .c_str(),
+        value.c_str());
   } else {
     message = base::StringPrintf(
         "Invalid 'X-Frame-Options' header encountered when loading '%s': "
         "'%s' is not a recognized directive. The header will be ignored.",
-        navigation_handle()->GetURL().spec().c_str(), value.c_str());
+        url::Origin::Create(navigation_handle()->GetURL())
+            .GetURL()
+            .spec()
+            .c_str(),
+        value.c_str());
   }
 
   // Log a console error in the parent of the current RenderFrameHost (as
@@ -299,11 +307,19 @@ void AncestorThrottle::ConsoleErrorXFrameOptions(
   std::string message = base::StringPrintf(
       "Refused to display '%s' in a frame because it set 'X-Frame-Options' "
       "to '%s'.",
-      navigation_handle()->GetURL().spec().c_str(),
+      url::Origin::Create(navigation_handle()->GetURL())
+          .GetURL()
+          .spec()
+          .c_str(),
       disposition == HeaderDisposition::DENY ? "deny" : "sameorigin");
 
   // Log a console error in the parent of the current RenderFrameHost (as
   // the current RenderFrameHost itself doesn't yet have a document).
+  //
+  // TODO(https://crbug.com/1146651): We should not leak any information at all
+  // to the parent frame. Send a message directly to Devtools instead (without
+  // passing through a renderer): that can also contain more information (like
+  // the full blocked url).
   auto* frame = static_cast<RenderFrameHostImpl*>(
       navigation_handle()->GetRenderFrameHost());
   ParentOrOuterDelegate(frame)->AddMessageToConsole(
