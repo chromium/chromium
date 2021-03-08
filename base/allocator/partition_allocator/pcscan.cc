@@ -339,6 +339,157 @@ class StatsCollector final {
 #undef FOR_ALL_PCSCAN_MUTATOR_SCOPES
 #undef FOR_ALL_PCSCAN_SCANNER_SCOPES
 
+// Internal singleton that keeps cold data.
+class PCScanInternal final {
+ public:
+  using Root = PartitionRoot<ThreadSafe>;
+
+  static constexpr size_t kMaxNumberOfRoots = 8u;
+  class Roots final : private std::array<Root*, kMaxNumberOfRoots> {
+    using Base = std::array<Root*, kMaxNumberOfRoots>;
+
+   public:
+    using typename Base::const_iterator;
+    using typename Base::iterator;
+
+    // Explicitly value-initialize Base{} as otherwise the default
+    // (aggregate) initialization won't be considered as constexpr.
+    constexpr Roots() : Base{} {}
+
+    iterator begin() { return Base::begin(); }
+    const_iterator begin() const { return Base::begin(); }
+
+    iterator end() { return begin() + current_; }
+    const_iterator end() const { return begin() + current_; }
+
+    void Add(Root* root);
+
+    size_t size() const { return current_; }
+
+    void ClearForTesting();  // IN-TEST
+
+   private:
+    size_t current_ = 0u;
+  };
+
+  static PCScanInternal& Instance() {
+    // Since the data that PCScanInternal holds is cold, it's fine to have the
+    // runtime check for thread-safe local static initialization.
+    static PCScanInternal instance;
+    return instance;
+  }
+
+  PCScanInternal(const PCScanInternal&) = delete;
+  PCScanInternal& operator=(const PCScanInternal&) = delete;
+
+  void RegisterScannableRoot(Root* root);
+  void RegisterNonScannableRoot(Root* root);
+
+  Roots& scannable_roots() { return scannable_roots_; }
+  const Roots& scannable_roots() const { return scannable_roots_; }
+
+  Roots& nonscannable_roots() { return nonscannable_roots_; }
+  const Roots& nonscannable_roots() const { return nonscannable_roots_; }
+
+  void SetProcessName(const char* name);
+  const char* process_name() const { return process_name_; }
+
+  // Get size of all committed pages from scannable and nonscannable roots.
+  size_t CalculateTotalHeapSize() const;
+
+  void ClearRootsForTesting();  // IN-TEST
+
+ private:
+  PCScanInternal();
+
+  Roots scannable_roots_{};
+  Roots nonscannable_roots_{};
+  const char* process_name_ = nullptr;
+};
+
+void PCScanInternal::Roots::Add(Root* root) {
+  PA_CHECK(std::find(begin(), end(), root) == end());
+  (*this)[current_] = root;
+  ++current_;
+  PA_CHECK(current_ != kMaxNumberOfRoots)
+      << "Exceeded number of allowed partition roots";
+}
+
+void PCScanInternal::Roots::ClearForTesting() {
+  std::fill(begin(), end(), nullptr);
+  current_ = 0;
+}
+
+PCScanInternal::PCScanInternal() {
+#if defined(PA_HAS_64_BITS_POINTERS)
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    PartitionAddressSpace::Init();
+    RecommitSystemPages(
+        reinterpret_cast<void*>(PartitionAddressSpace::NormalBucketPoolBase()),
+        sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
+  }
+#endif
+}
+
+void CommitQuarantineBitmaps(PartitionRoot<ThreadSafe>& root) {
+  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
+  for (auto* super_page_extent = root.first_extent; super_page_extent;
+       super_page_extent = super_page_extent->next) {
+    for (char* super_page = super_page_extent->super_page_base;
+         super_page != super_page_extent->super_pages_end;
+         super_page += kSuperPageSize) {
+      RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
+                          quarantine_bitmaps_size_to_commit, PageReadWrite,
+                          PageUpdatePermissions);
+    }
+  }
+}
+
+void PCScanInternal::RegisterScannableRoot(Root* root) {
+  PA_DCHECK(root);
+  PA_CHECK(root->IsQuarantineAllowed());
+  typename Root::ScopedGuard guard(root->lock_);
+  if (root->IsScanEnabled())
+    return;
+  PA_CHECK(!root->IsQuarantineEnabled());
+  CommitQuarantineBitmaps(*root);
+  root->scan_mode = Root::ScanMode::kEnabled;
+  root->quarantine_mode = Root::QuarantineMode::kEnabled;
+  scannable_roots_.Add(root);
+}
+
+void PCScanInternal::RegisterNonScannableRoot(Root* root) {
+  PA_DCHECK(root);
+  PA_CHECK(root->IsQuarantineAllowed());
+  typename Root::ScopedGuard guard(root->lock_);
+  if (root->IsQuarantineEnabled())
+    return;
+  CommitQuarantineBitmaps(*root);
+  root->quarantine_mode = Root::QuarantineMode::kEnabled;
+  nonscannable_roots_.Add(root);
+}
+
+void PCScanInternal::SetProcessName(const char* process_name) {
+  PA_DCHECK(process_name);
+  PA_DCHECK(!process_name_);
+  process_name_ = process_name;
+}
+
+size_t PCScanInternal::CalculateTotalHeapSize() const {
+  const auto acc = [](size_t size, Root* root) {
+    return size + root->get_total_size_of_committed_pages();
+  };
+  return std::accumulate(scannable_roots_.begin(), scannable_roots_.end(), 0u,
+                         acc) +
+         std::accumulate(nonscannable_roots_.begin(), nonscannable_roots_.end(),
+                         0u, acc);
+}
+
+void PCScanInternal::ClearRootsForTesting() {
+  scannable_roots_.ClearForTesting();     // IN-TEST
+  nonscannable_roots_.ClearForTesting();  // IN-TEST
+}
+
 }  // namespace
 
 // This class is responsible for performing the entire PCScan task.
@@ -849,7 +1000,7 @@ template <bool thread_safe>
 PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
     : pcscan_(pcscan),
       pcscan_epoch_(pcscan.quarantine_data_.epoch()),
-      stats_(pcscan_.process_name_) {
+      stats_(PCScanInternal::Instance().process_name()) {
   // Threshold for which bucket size it is worthwhile in checking whether the
   // object is a quarantined object and can be skipped.
   static constexpr size_t kLargeScanAreaThreshold = 8192;
@@ -857,7 +1008,9 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
   static constexpr size_t kScanAreasReservationSize = 128;
   scan_areas_.reserve(kScanAreasReservationSize);
 
-  for (Root* root : pcscan.scannable_roots_) {
+  auto& pcscan_internal = PCScanInternal::Instance();
+
+  for (Root* root : pcscan_internal.scannable_roots()) {
     typename Root::ScopedGuard guard(root->lock_);
 
     // Take a snapshot of all super pages and scannable slot spans.
@@ -904,9 +1057,9 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
       }
     }
   }
-  for (Root* root : pcscan.nonscannable_roots_) {
+  for (Root* root : pcscan_internal.nonscannable_roots()) {
     typename Root::ScopedGuard guard(root->lock_);
-    // Take a snapshot of all super pages and scannable slot spans.
+    // Take a snapshot of all super pages and nonscannable slot spans.
     for (auto* super_page_extent = root->first_extent; super_page_extent;
          super_page_extent = super_page_extent->next) {
       for (char* super_page = super_page_extent->super_page_base;
@@ -940,7 +1093,8 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   LogStats(swept_bytes, pcscan_.quarantine_data_.last_size(),
            new_quarantine_size);
 
-  const size_t total_pa_heap_size = pcscan_.CalculateTotalHeapSize();
+  const size_t total_pa_heap_size =
+      PCScanInternal::Instance().CalculateTotalHeapSize();
 
   pcscan_.quarantine_data_.Account(new_quarantine_size);
   pcscan_.quarantine_data_.GrowLimitIfNeeded(total_pa_heap_size);
@@ -1020,52 +1174,18 @@ void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
 }
 
 template <bool thread_safe>
-void PCScan<thread_safe>::Roots::Add(Root* root) {
-  PA_CHECK(std::find(begin(), end(), root) == end());
-  (*this)[current_] = root;
-  ++current_;
-  PA_CHECK(current_ != kMaxNumberOfPartitions)
-      << "Exceeded number of allowed partitions";
-}
-
-template <bool thread_safe>
-void PCScan<thread_safe>::Roots::ClearForTesting() {
-  std::fill(begin(), end(), nullptr);
-  current_ = 0;
-}
-
-template <bool thread_safe>
-void PCScan<thread_safe>::Initialize() {
-  if (initialized_)
-    return;
-
-#if defined(PA_HAS_64_BITS_POINTERS)
-  if (features::IsPartitionAllocGigaCageEnabled()) {
-    PartitionAddressSpace::Init();
-    RecommitSystemPages(
-        reinterpret_cast<void*>(PartitionAddressSpace::NormalBucketPoolBase()),
-        sizeof(QuarantineCardTable), PageReadWrite, PageUpdatePermissions);
-  }
-#endif
-
-  initialized_ = true;
-}
-
-template <bool thread_safe>
-void PCScan<thread_safe>::UninitializeForTesting() {
-  PA_DCHECK(initialized_);
-  initialized_ = false;
-}
-
-template <bool thread_safe>
 void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
-  PA_DCHECK(initialized_);
-  PA_DCHECK(scannable_roots_.size() > 0);
-  PA_DCHECK(std::all_of(scannable_roots_.begin(), scannable_roots_.end(),
+#if DCHECK_IS_ON()
+  const auto& internal = PCScanInternal::Instance();
+  const auto& scannable_roots = internal.scannable_roots();
+  const auto& nonscannable_roots = internal.nonscannable_roots();
+  PA_DCHECK(scannable_roots.size() > 0);
+  PA_DCHECK(std::all_of(scannable_roots.begin(), scannable_roots.end(),
                         [](Root* root) { return root->IsScanEnabled(); }));
   PA_DCHECK(
-      std::all_of(nonscannable_roots_.begin(), nonscannable_roots_.end(),
+      std::all_of(nonscannable_roots.begin(), nonscannable_roots.end(),
                   [](Root* root) { return root->IsQuarantineEnabled(); }));
+#endif
 
   if (in_progress_.exchange(true, std::memory_order_acq_rel)) {
     // Bail out if PCScan is already in progress.
@@ -1089,7 +1209,7 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
 
 template <bool thread_safe>
 void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
-  if (!scannable_roots_.size())
+  if (!PCScanInternal::Instance().scannable_roots().size())
     return;
   if (invocation_mode == InvocationMode::kForcedBlocking ||
       quarantine_data_.MinimumScanningThresholdReached())
@@ -1097,70 +1217,61 @@ void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
 }
 
 template <bool thread_safe>
-size_t PCScan<thread_safe>::CalculateTotalHeapSize() const {
-  const auto acc = [](size_t size, Root* root) {
-    return size + root->get_total_size_of_committed_pages();
-  };
-  return std::accumulate(scannable_roots_.begin(), scannable_roots_.end(), 0u,
-                         acc) +
-         std::accumulate(nonscannable_roots_.begin(), nonscannable_roots_.end(),
-                         0u, acc);
-}
-
-namespace {
-template <bool thread_safe>
-void CommitQuarantineBitmaps(PartitionRoot<thread_safe>& root) {
-  size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
-  for (auto* super_page_extent = root.first_extent; super_page_extent;
-       super_page_extent = super_page_extent->next) {
-    for (char* super_page = super_page_extent->super_page_base;
-         super_page != super_page_extent->super_pages_end;
-         super_page += kSuperPageSize) {
-      RecommitSystemPages(internal::SuperPageQuarantineBitmaps(super_page),
-                          quarantine_bitmaps_size_to_commit, PageReadWrite,
-                          PageUpdatePermissions);
-    }
-  }
-}
-}  // namespace
-
-template <bool thread_safe>
 void PCScan<thread_safe>::RegisterScannableRoot(Root* root) {
-  PA_DCHECK(root);
-  PA_CHECK(root->IsQuarantineAllowed());
-  typename Root::ScopedGuard guard(root->lock_);
-  if (root->IsScanEnabled())
-    return;
-  PA_CHECK(!root->IsQuarantineEnabled());
-  CommitQuarantineBitmaps(*root);
-  root->scan_mode = Root::ScanMode::kEnabled;
-  root->quarantine_mode = Root::QuarantineMode::kEnabled;
-  scannable_roots_.Add(root);
+  PCScanInternal::Instance().RegisterScannableRoot(root);
 }
 
 template <bool thread_safe>
 void PCScan<thread_safe>::RegisterNonScannableRoot(Root* root) {
-  PA_DCHECK(root);
-  PA_CHECK(root->IsQuarantineAllowed());
-  typename Root::ScopedGuard guard(root->lock_);
-  if (root->IsQuarantineEnabled())
-    return;
-  CommitQuarantineBitmaps(*root);
-  root->quarantine_mode = Root::QuarantineMode::kEnabled;
-  nonscannable_roots_.Add(root);
+  PCScanInternal::Instance().RegisterNonScannableRoot(root);
 }
 
 template <bool thread_safe>
 void PCScan<thread_safe>::SetProcessName(const char* process_name) {
-  PA_DCHECK(process_name);
-  PA_DCHECK(!process_name_);
-  process_name_ = process_name;
+  PCScanInternal::Instance().SetProcessName(process_name);
 }
 
 template <bool thread_safe>
 void PCScan<thread_safe>::ClearRootsForTesting() {
-  scannable_roots_.ClearForTesting();     // IN-TEST
-  nonscannable_roots_.ClearForTesting();  // IN-TEST
+  PCScanInternal::Instance().ClearRootsForTesting();  // IN-TEST
+}
+
+// TODO(bikineev): Untemplatize the main PCScan class when chromium clang plugin
+// is fixed. To reduce the number of internal templates, explicitly specialize
+// all non-thread safe function members to immediately crash.
+
+// These not-thread-safe classes are never instantiated so just explicitly
+// specialize them to be incomplete.
+template <>
+class PCScan<NotThreadSafe>::PCScanTask;
+template <>
+class PCScan<NotThreadSafe>::PCScanThread;
+
+// These not-thread-safe functions are still instantiated, so make sure they are
+// never called.
+template <>
+void PCScan<NotThreadSafe>::PerformScan(InvocationMode) {
+  PA_CHECK(false);
+}
+template <>
+void PCScan<NotThreadSafe>::PerformScanIfNeeded(InvocationMode) {
+  PA_CHECK(false);
+}
+template <>
+void PCScan<NotThreadSafe>::RegisterScannableRoot(Root*) {
+  PA_CHECK(false);
+}
+template <>
+void PCScan<NotThreadSafe>::RegisterNonScannableRoot(Root*) {
+  PA_CHECK(false);
+}
+template <>
+void PCScan<NotThreadSafe>::SetProcessName(const char*) {
+  PA_CHECK(false);
+}
+template <>
+void PCScan<NotThreadSafe>::ClearRootsForTesting() {
+  PA_CHECK(false);
 }
 
 template <bool thread_safe>

@@ -21,7 +21,6 @@ class PCScanTest : public testing::Test {
  public:
   PCScanTest() {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
-    PCScan<ThreadSafe>::Instance().Initialize();
     allocator_.init({PartitionOptions::Alignment::kRegular,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
@@ -31,7 +30,6 @@ class PCScanTest : public testing::Test {
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                    PartitionPurgeDiscardUnusedSystemPages);
-    PCScan<ThreadSafe>::Instance().UninitializeForTesting();
     PartitionAllocGlobalUninitForTesting();
   }
 

@@ -60,10 +60,6 @@ class BASE_EXPORT PCScan final {
     return instance_;
   }
 
-  // Perform initialization for global PCScan object. This commits memory for
-  // the quarantine card table in case GigaCage is enabled.
-  void Initialize();
-
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
@@ -87,7 +83,6 @@ class BASE_EXPORT PCScan final {
   void SetProcessName(const char* name);
 
   void ClearRootsForTesting();
-  void UninitializeForTesting();
 
  private:
   class PCScanTask;
@@ -121,53 +116,16 @@ class BASE_EXPORT PCScan final {
     size_t last_size_ = 0;
   };
 
-  static constexpr size_t kMaxNumberOfPartitions = 8u;
-
-  // A custom constexpr container class that avoids dynamic initialization.
-  // Constexprness is required to const-initialize the global PCScan.
-  class Roots final : private std::array<Root*, kMaxNumberOfPartitions> {
-    using Base = std::array<Root*, kMaxNumberOfPartitions>;
-
-   public:
-    using typename Base::const_iterator;
-    using typename Base::iterator;
-
-    // Explicitly value-initialize Base{} as otherwise the default
-    // (aggregate) initialization won't be considered as constexpr.
-    constexpr Roots() : Base{} {}
-
-    iterator begin() { return Base::begin(); }
-    const_iterator begin() const { return Base::begin(); }
-
-    iterator end() { return begin() + current_; }
-    const_iterator end() const { return begin() + current_; }
-
-    void Add(Root* root);
-
-    size_t size() const { return current_; }
-
-    void ClearForTesting();
-
-   private:
-    size_t current_ = 0u;
-  };
-
   constexpr PCScan() = default;
 
   // Performs scanning unconditionally.
   void PerformScan(InvocationMode invocation_mode);
 
-  // Get size of all committed pages from scannable and nonscannable roots.
-  size_t CalculateTotalHeapSize() const;
-
+  // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
   static PCScan instance_ PA_CONSTINIT;
 
-  Roots scannable_roots_{};
-  Roots nonscannable_roots_{};
   QuarantineData quarantine_data_{};
   std::atomic<bool> in_progress_{false};
-  const char* process_name_ = nullptr;
-  bool initialized_ = false;
 };
 
 template <bool thread_safe>
