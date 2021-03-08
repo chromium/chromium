@@ -882,12 +882,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
   }
 }
 
-static FloatPoint3D TransformOrigin(const LayoutBox& box) {
-  const ComputedStyle& style = box.StyleRef();
+static FloatPoint3D TransformOrigin(const ComputedStyle& style,
+                                    PhysicalSize size) {
   // Transform origin has no effect without a transform or motion path.
   if (!style.HasTransform())
     return FloatPoint3D();
-  FloatSize border_box_size(box.Size());
+  FloatSize border_box_size(size);
   return FloatPoint3D(
       FloatValueForLength(style.TransformOriginX(), border_box_size.Width()),
       FloatValueForLength(style.TransformOriginY(), border_box_size.Height()),
@@ -948,9 +948,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
 
       if (object_.IsBox()) {
         auto& box = To<LayoutBox>(object_);
+        // Each individual fragment should have its own transform origin, based
+        // on the fragment size. We'll do that, unless the fragments aren't to
+        // be stitched together.
+        PhysicalSize size(
+            !pre_paint_info_ || RequiresFragmentStitching()
+                ? PhysicalSize(box.Size())
+                : pre_paint_info_->iterator->BoxFragment()->Size());
         TransformationMatrix matrix;
         style.ApplyTransform(
-            matrix, box.Size(), ComputedStyle::kExcludeTransformOrigin,
+            matrix, size.ToLayoutSize(), ComputedStyle::kExcludeTransformOrigin,
             ComputedStyle::kIncludeMotionPath,
             ComputedStyle::kIncludeIndependentTransformProperties);
         // If we are running transform animation on compositor, we should
@@ -966,7 +973,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
             matrix.IsIdentityOr2DTranslation()) {
           state.transform_and_origin = {matrix.To2DTranslation()};
         } else {
-          state.transform_and_origin = {matrix, TransformOrigin(box)};
+          state.transform_and_origin = {matrix,
+                                        TransformOrigin(box.StyleRef(), size)};
         }
 
         // TODO(trchen): transform-style should only be respected if a
@@ -979,6 +987,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
               PtrHash<const LayoutObject>::GetHash(&object_);
         }
 
+        // TODO(crbug.com/1185254): Make this work correctly for block
+        // fragmentation. It's the size of each individual NGPhysicalBoxFragment
+        // that's interesting, not the total LayoutBox size.
         state.flags.animation_is_axis_aligned =
             UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
                 box, full_context_.direct_compositing_reasons);
