@@ -151,6 +151,7 @@ void ShutdownDBus() {
   IpPeripheralServiceClient::Shutdown();
   hermes_clients::Shutdown();
   DlcserviceClient::Shutdown();
+  DlpClient::Shutdown();
   CupsProxyClient::Shutdown();
   CryptohomeClient::Shutdown();
   CrosHealthdClient::Shutdown();
