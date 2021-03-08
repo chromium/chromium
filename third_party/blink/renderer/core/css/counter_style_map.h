@@ -29,7 +29,6 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
   CounterStyle* FindCounterStyleAcrossScopes(const AtomicString& name) const;
 
   void AddCounterStyles(const RuleSet&);
-  void SetIsPredefined();
 
   void ResolveReferences(HeapHashSet<Member<CounterStyleMap>>& resolved_maps);
   static void ResolveAllReferences(Document&,
@@ -49,6 +48,9 @@ class CORE_EXPORT CounterStyleMap : public GarbageCollected<CounterStyleMap> {
 
   void ResolveExtendsFor(CounterStyle&);
   void ResolveFallbackFor(CounterStyle&);
+
+  static CounterStyleMap* CreateUACounterStyleMap();
+  CounterStyle& CreateUACounterStyle(const AtomicString& name);
 
   // Null means these are user-agent rules.
   Member<Document> owner_document_;

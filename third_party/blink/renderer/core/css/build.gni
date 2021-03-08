@@ -607,6 +607,7 @@ blink_core_sources_css = [
   "style_traversal_root.h",
   "tree_scope_style_sheet_collection.cc",
   "tree_scope_style_sheet_collection.h",
+  "ua_counter_style_map.cc",
   "vision_deficiency.cc",
   "vision_deficiency.h",
   "zoom_adjusted_pixel_value.h",

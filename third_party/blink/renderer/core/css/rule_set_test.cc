@@ -331,16 +331,4 @@ TEST(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData) {
   EXPECT_EQ(1u, rule_set->RuleCount());
 }
 
-TEST(RuleSetTest, UACounterStyleRules) {
-  ScopedCSSAtRuleCounterStyleForTest enabled_scope(true);
-
-  RuleSet* default_counter_style_rule_set =
-      CSSDefaultStyleSheets::Instance().DefaultCounterStyle();
-  ASSERT_TRUE(default_counter_style_rule_set);
-  ASSERT_FALSE(default_counter_style_rule_set->CounterStyleRules().IsEmpty());
-
-  EXPECT_EQ("decimal",
-            default_counter_style_rule_set->CounterStyleRules()[0]->GetName());
-}
-
 }  // namespace blink

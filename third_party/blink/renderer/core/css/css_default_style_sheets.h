@@ -43,6 +43,8 @@ class CSSDefaultStyleSheets final
  public:
   CORE_EXPORT static CSSDefaultStyleSheets& Instance();
 
+  static StyleSheetContents* ParseUASheet(const String&);
+
   CSSDefaultStyleSheets();
   CSSDefaultStyleSheets(const CSSDefaultStyleSheets&) = delete;
   CSSDefaultStyleSheets& operator=(const CSSDefaultStyleSheets&) = delete;
@@ -68,7 +70,6 @@ class CSSDefaultStyleSheets final
   RuleSet* DefaultMediaControlsStyle() {
     return default_media_controls_style_.Get();
   }
-  CORE_EXPORT RuleSet* DefaultCounterStyle();
 
   StyleSheetContents* EnsureMobileViewportStyleSheet();
   StyleSheetContents* EnsureTelevisionViewportStyleSheet();
@@ -123,7 +124,6 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_forced_color_style_;
   Member<RuleSet> default_pseudo_element_style_;
   Member<RuleSet> default_media_controls_style_;
-  Member<RuleSet> default_counter_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
   Member<StyleSheetContents> mobile_viewport_style_sheet_;
@@ -138,7 +138,6 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> webxr_overlay_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
-  Member<StyleSheetContents> counter_style_sheet_;
 
   std::unique_ptr<UAStyleSheetLoader> media_controls_style_sheet_loader_;
 };
