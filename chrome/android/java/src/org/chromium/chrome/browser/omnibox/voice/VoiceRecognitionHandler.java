@@ -158,7 +158,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
     @IntDef({VoiceInteractionSource.OMNIBOX, VoiceInteractionSource.NTP,
             VoiceInteractionSource.SEARCH_WIDGET, VoiceInteractionSource.TASKS_SURFACE,
@@ -171,13 +171,27 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         int TOOLBAR = 4;
 
         // Be sure to also update enums.xml when updating these values.
-        int HISTOGRAM_BOUNDARY = 5;
+        int NUM_ENTRIES = 5;
+    }
+
+    /**
+     * VoiceIntentTarget defined in tools/metrics/histograms/enums.xml.
+     *
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     */
+    @IntDef({VoiceIntentTarget.SYSTEM, VoiceIntentTarget.ASSISTANT})
+    public @interface VoiceIntentTarget {
+        int SYSTEM = 0;
+        int ASSISTANT = 1;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 2;
     }
 
     /**
      * AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
     @IntDef({AssistantActionPerformed.UNKNOWN, AssistantActionPerformed.TRANSCRIPTION,
             AssistantActionPerformed.TRANSLATE, AssistantActionPerformed.READOUT})
@@ -188,7 +202,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         int READOUT = 3;
 
         // Be sure to also update enums.xml when updating these values.
-        int HISTOGRAM_BOUNDARY = 4;
+        int NUM_ENTRIES = 4;
     }
 
     /**
@@ -411,27 +425,32 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         @VoiceInteractionSource
         private final int mSource;
 
+        @VoiceIntentTarget
+        private final int mTarget;
+
         private boolean mCallbackComplete;
 
-        public VoiceRecognitionCompleteCallback(@VoiceInteractionSource int source) {
+        public VoiceRecognitionCompleteCallback(
+                @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
             mSource = source;
+            mTarget = target;
         }
 
         // WindowAndroid.IntentCallback implementation:
         @Override
         public void onIntentCompleted(WindowAndroid window, int resultCode, Intent data) {
             if (mCallbackComplete) {
-                recordVoiceSearchUnexpectedResultSource(mSource);
+                recordVoiceSearchUnexpectedResult(mSource, mTarget);
                 return;
             }
 
             mCallbackComplete = true;
             if (resultCode == Activity.RESULT_CANCELED) {
-                recordVoiceSearchDismissedEventSource(mSource);
+                recordVoiceSearchDismissedEvent(mSource, mTarget);
                 return;
             }
             if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
-                recordVoiceSearchFailureEventSource(mSource);
+                recordVoiceSearchFailureEvent(mSource, mTarget);
                 return;
             }
 
@@ -443,7 +462,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 actionPerformed = getActionPerformed(data.getExtras());
             }
 
-            recordSuccessMetrics(mSource, actionPerformed);
+            recordSuccessMetrics(mSource, mTarget, actionPerformed);
 
             if (actionPerformed == AssistantActionPerformed.TRANSCRIPTION) {
                 handleTranscriptionResult(data);
@@ -465,18 +484,18 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             VoiceResult topResult =
                     (voiceResults != null && voiceResults.size() > 0) ? voiceResults.get(0) : null;
             if (topResult == null) {
-                recordVoiceSearchResult(false);
+                recordVoiceSearchResult(mTarget, false);
                 return;
             }
 
             String topResultQuery = topResult.getMatch();
             if (TextUtils.isEmpty(topResultQuery)) {
-                recordVoiceSearchResult(false);
+                recordVoiceSearchResult(mTarget, false);
                 return;
             }
 
-            recordVoiceSearchResult(true);
-            recordVoiceSearchConfidenceValue(topResult.getConfidence());
+            recordVoiceSearchResult(mTarget, true);
+            recordVoiceSearchConfidenceValue(mTarget, topResult.getConfidence());
 
             if (topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
                 mDelegate.setSearchQuery(topResultQuery);
@@ -519,7 +538,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         }
     }
 
-    /** Returns the action performed by Assistant from the Assistant Intent callback bundle. */
+    /**
+     * Returns the action performed by Assistant from the Assistant Intent callback bundle.
+     *
+     * If the extra is unavailable, assume TRANSCRIPTION.
+     */
     private static @AssistantActionPerformed int getActionPerformed(Bundle extras) {
         assert extras != null;
         String actionPerformed = extras.getString(EXTRA_ACTION_PERFORMED);
@@ -567,6 +590,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 return "Unknown";
         }
     }
+
     /**
      * Returns a String for use as a histogram suffix for histograms split by
      * VoiceInteractionSource.
@@ -589,6 +613,23 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 return "Toolbar";
             default:
                 assert false : "Unknown VoiceInteractionSource: " + source;
+                return null;
+        }
+    }
+
+    /**
+     * Returns a String for use as a histogram suffix for histograms split by VoiceIntentTarget.
+     * @param target The target of the voice search intent.
+     * @return The histogram suffix for the given target. No '.' separator is included.
+     */
+    private static String getHistogramSuffixForTarget(@VoiceIntentTarget int target) {
+        switch (target) {
+            case VoiceIntentTarget.SYSTEM:
+                return "System";
+            case VoiceIntentTarget.ASSISTANT:
+                return "Assistant";
+            default:
+                assert false : "Unknown VoiceIntentTarget: " + target;
                 return null;
         }
     }
@@ -726,11 +767,11 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
                 activity.getComponentName().flattenToString());
         intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
 
-        if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
+        if (!showSpeechRecognitionIntent(windowAndroid, intent, source, VoiceIntentTarget.SYSTEM)) {
             // Requery whether or not the recognition intent can be handled.
             isRecognitionIntentPresent(false);
             notifyVoiceAvailabilityImpacted();
-            recordVoiceSearchFailureEventSource(source);
+            recordVoiceSearchFailureEvent(source, VoiceIntentTarget.SYSTEM);
 
             return false;
         }
@@ -801,9 +842,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             }
         }
 
-        if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
+        if (!showSpeechRecognitionIntent(
+                    windowAndroid, intent, source, VoiceIntentTarget.ASSISTANT)) {
             notifyVoiceAvailabilityImpacted();
-            recordVoiceSearchFailureEventSource(source);
+            recordVoiceSearchFailureEvent(source, VoiceIntentTarget.ASSISTANT);
 
             return false;
         }
@@ -901,15 +943,18 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
      *
      * @param windowAndroid The {@link WindowAndroid} associated with the current {@link Tab}.
      * @param intent The speech recognition {@link Intent}.
-     * @param source Where the request to launch this @link Intent} originated, such as NTP or
+     * @param source Where the request to launch this {@link Intent} originated, such as NTP or
      *        omnibox.
+     * @param target The intended destination of this {@link Intent}, such as the system voice
+     *        transcription service or Assistant.
      * @return True if showing the {@link Intent} was successful.
      */
-    private boolean showSpeechRecognitionIntent(
-            WindowAndroid windowAndroid, Intent intent, @VoiceInteractionSource int source) {
-        recordVoiceSearchStartEventSource(source);
+    private boolean showSpeechRecognitionIntent(WindowAndroid windowAndroid, Intent intent,
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
+        recordVoiceSearchStartEvent(source, target);
         return windowAndroid.showCancelableIntent(intent,
-                       new VoiceRecognitionCompleteCallback(source), R.string.voice_search_error)
+                       new VoiceRecognitionCompleteCallback(source, target),
+                       R.string.voice_search_error)
                 >= 0;
     }
 
@@ -953,16 +998,16 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
 
     /** Record metrics that are only logged for successful intent responses. */
     @VisibleForTesting
-    protected void recordSuccessMetrics(
-            @VoiceInteractionSource int source, @AssistantActionPerformed int action) {
+    protected void recordSuccessMetrics(@VoiceInteractionSource int source,
+            @VoiceIntentTarget int target, @AssistantActionPerformed int action) {
         // Defensive check to guard against onIntentResult being called more than once. This only
         // happens with assistant experiments. See crbug.com/1116927 for details.
         if (mQueryStartTimeMs == null) return;
         long elapsedTimeMs = SystemClock.elapsedRealtime() - mQueryStartTimeMs;
         mQueryStartTimeMs = null;
 
-        recordVoiceSearchFinishEventSource(source);
-        recordVoiceSearchOpenDuration(elapsedTimeMs);
+        recordVoiceSearchFinishEvent(source, target);
+        recordVoiceSearchOpenDuration(target, elapsedTimeMs);
 
         // We should only record per-action metrics when the page URL feature is enabled. When
         // disabled, only transcription should occur.
@@ -977,55 +1022,80 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
      * Records the source of a voice search initiation.
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
      *        enum VoiceInteractionEventSource in enums.xml.
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchStartEventSource(@VoiceInteractionSource int source) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.StartEventSource", source,
-                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+    protected void recordVoiceSearchStartEvent(
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.StartEventSource", source, VoiceInteractionSource.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.StartEventTarget", target, VoiceIntentTarget.NUM_ENTRIES);
     }
 
     /**
      * Records the source of a successful voice search completion.
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
      *        enum VoiceInteractionEventSource in enums.xml.
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchFinishEventSource(@VoiceInteractionSource int source) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.FinishEventSource", source,
-                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+    protected void recordVoiceSearchFinishEvent(
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.FinishEventSource", source, VoiceInteractionSource.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.FinishEventTarget", target, VoiceIntentTarget.NUM_ENTRIES);
     }
 
     /**
      * Records the source of a dismissed voice search.
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
      *        enum VoiceInteractionEventSource in enums.xml.
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchDismissedEventSource(@VoiceInteractionSource int source) {
+    protected void recordVoiceSearchDismissedEvent(
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
         RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.DismissedEventSource", source,
-                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+                VoiceInteractionSource.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.DismissedEventTarget", target, VoiceIntentTarget.NUM_ENTRIES);
     }
 
     /**
      * Records the source of a failed voice search.
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
      *        enum VoiceInteractionEventSource in enums.xml.
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchFailureEventSource(@VoiceInteractionSource int source) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.FailureEventSource", source,
-                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+    protected void recordVoiceSearchFailureEvent(
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.FailureEventSource", source, VoiceInteractionSource.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.FailureEventTarget", target, VoiceIntentTarget.NUM_ENTRIES);
     }
 
     /**
      * Records the source of an unexpected voice search result. Ideally this will always be 0.
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
      *        enum VoiceInteractionEventSource in enums.xml.
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchUnexpectedResultSource(@VoiceInteractionSource int source) {
+    protected void recordVoiceSearchUnexpectedResult(
+            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
         RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.UnexpectedResultSource", source,
-                VoiceInteractionSource.HISTOGRAM_BOUNDARY);
+                VoiceInteractionSource.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.UnexpectedResultTarget", target, VoiceIntentTarget.NUM_ENTRIES);
     }
 
     /**
@@ -1040,35 +1110,73 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         if (sourceSuffix != null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "VoiceInteraction.AssistantActionPerformed." + sourceSuffix, action,
-                    AssistantActionPerformed.HISTOGRAM_BOUNDARY);
+                    AssistantActionPerformed.NUM_ENTRIES);
         }
     }
 
     /**
      * Records the result of a voice search.
+     *
+     * This also records submetrics split by the intent target.
+     *
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      * @param result The result of a voice search, true if results were successfully returned.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchResult(boolean result) {
+    protected void recordVoiceSearchResult(@VoiceIntentTarget int target, boolean result) {
         RecordHistogram.recordBooleanHistogram("VoiceInteraction.VoiceSearchResult", result);
+
+        String targetSuffix = getHistogramSuffixForTarget(target);
+        if (targetSuffix != null) {
+            RecordHistogram.recordBooleanHistogram(
+                    "VoiceInteraction.VoiceSearchResult." + targetSuffix, result);
+        }
     }
 
     /**
      * Records the voice search confidence value as a percentage, instead of the 0.0 to 1.0 range
      * we receive.
+     *
+     * This also records submetrics split by the intent target.
+     *
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
      * @param value The voice search confidence value we received from 0.0 to 1.0.
      */
     @VisibleForTesting
-    protected void recordVoiceSearchConfidenceValue(float value) {
+    protected void recordVoiceSearchConfidenceValue(@VoiceIntentTarget int target, float value) {
         int percentage = Math.round(value * 100f);
         RecordHistogram.recordPercentageHistogram(
                 "VoiceInteraction.VoiceResultConfidenceValue", percentage);
+
+        String targetSuffix = getHistogramSuffixForTarget(target);
+        if (targetSuffix != null) {
+            RecordHistogram.recordPercentageHistogram(
+                    "VoiceInteraction.VoiceResultConfidenceValue." + targetSuffix, percentage);
+        }
     }
 
-    /** Records the end-to-end voice search duration. */
-    private void recordVoiceSearchOpenDuration(long openDurationMs) {
+    /**
+     * Records the end-to-end voice search duration.
+     *
+     * This also records submetrics split by the intent target.
+     *
+     * @param target The intended recipient of the intent, such as the system voice transcription
+     *        service or Assistant.
+     * @param openDurationMs The duration, in milliseconds, between when a voice intent was
+     *        initiated and when its result was returned.
+     */
+    private void recordVoiceSearchOpenDuration(@VoiceIntentTarget int target, long openDurationMs) {
         RecordHistogram.recordMediumTimesHistogram(
                 "VoiceInteraction.QueryDuration.Android", openDurationMs);
+
+        String targetSuffix = getHistogramSuffixForTarget(target);
+        if (targetSuffix != null) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "VoiceInteraction.QueryDuration.Android.Target." + targetSuffix,
+                    openDurationMs);
+        }
     }
 
     /** Records end-to-end voice search duration split by the action performed. */

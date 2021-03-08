@@ -79208,6 +79208,14 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Evicted"/>
 </enum>
 
+<enum name="VoiceIntentTarget">
+<!-- This must be kept in sync with the VoiceIntentTarget variants in
+others/histograms.xml -->
+
+  <int value="0" label="System"/>
+  <int value="1" label="Assistant"/>
+</enum>
+
 <enum name="VoiceInteractionEventSource">
 <!-- This must be kept in sync with VoiceInteraction.AssistantActionPerformed in
 others/histograms.xml -->
