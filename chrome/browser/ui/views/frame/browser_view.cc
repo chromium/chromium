@@ -649,8 +649,14 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #if defined(OS_WIN)
   // Create a custom JumpList and add it to an observer of TabRestoreService
   // so we can update the custom JumpList when a tab is added or removed.
-  if (JumpList::Enabled())
-    load_complete_listener_ = std::make_unique<LoadCompleteListener>(this);
+  // JumpList is created asynchronously with a low priority to not delay the
+  // startup.
+  if (JumpList::Enabled()) {
+    content::BrowserThread::PostBestEffortTask(
+        FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
+        base::BindOnce(&BrowserView::CreateJumpList,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 }
 
@@ -3110,13 +3116,13 @@ void BrowserView::LoadingAnimationCallback() {
   }
 }
 
-void BrowserView::OnLoadCompleted() {
 #if defined(OS_WIN)
+void BrowserView::CreateJumpList() {
   // Ensure that this browser's Profile has a JumpList so that the JumpList is
   // kept up to date.
   JumpListFactory::GetForProfile(browser_->profile());
-#endif
 }
+#endif
 
 BrowserViewLayout* BrowserView::GetBrowserViewLayout() const {
   return static_cast<BrowserViewLayout*>(GetLayoutManager());
