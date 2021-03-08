@@ -13,12 +13,14 @@
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /**
- * Keeps in sync with LanguageSettingsActionType
- * in tools/metrics/histograms/enums.xml.
+ * These values are persisted to LanguageSettingsActionType
+ * in tools/metrics/histograms/enums.xml. Entries should not be renumbered and
+ * should never be reused.
  * @enum {number}
  */
 export const LanguageSettingsActionType = {
-  CLICK_ON_ADD_LANGUAGE: 1,
+  // CLICK_ON_ADD_LANGUAGE: 1, // Deprecated, use ADD_LANGUAGE in
+  // LanguageSettingsPageImpression
   LANGUAGE_ADDED: 2,
   LANGUAGE_REMOVED: 3,
   DISABLE_TRANSLATE_GLOBALLY: 4,
@@ -28,6 +30,22 @@ export const LanguageSettingsActionType = {
   LANGUAGE_LIST_REORDERED: 8,
 };
 
+/**
+ * These values are persisted to LanguageSettingsPageImpression
+ * in tools/metrics/histograms/enums.xml. Entries should not be renumbered and
+ * should never be reused.
+ * @enum {number}
+ */
+export const LanguageSettingsPageImpressionType = {
+  MAIN: 0,
+  ADD_LANGUAGE: 1,
+  // LANGUAGE_DETAILS: 2, // iOS only
+  CHROME_LANGUAGE: 3,
+  ADVANCED_LANGUAGE_SETTINGS: 4,
+  TARGET_LANGUAGE: 5,
+  LANGUAGE_OVERFLOW_MENU_OPENED: 6,
+};
+
 /** @interface */
 export class LanguageSettingsMetricsProxy {
   /**
@@ -35,6 +53,12 @@ export class LanguageSettingsMetricsProxy {
    * @param {!LanguageSettingsActionType} interaction
    */
   recordSettingsMetric(interaction) {}
+
+  /**
+   * Records the interaction to enumerated histogram.
+   * @param {!LanguageSettingsPageImpressionType} interaction
+   */
+  recordPageImpressionMetric(interaction) {}
 }
 
 /** @implements {LanguageSettingsMetricsProxy} */
@@ -44,6 +68,13 @@ export class LanguageSettingsMetricsProxyImpl {
     chrome.metricsPrivate.recordEnumerationValue(
         'LanguageSettings.Actions', interaction,
         Object.keys(LanguageSettingsActionType).length);
+  }
+
+  /** @override */
+  recordPageImpressionMetric(interaction) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'LanguageSettings.PageImpression', interaction,
+        Object.keys(LanguageSettingsPageImpressionType).length);
   }
 }
 
