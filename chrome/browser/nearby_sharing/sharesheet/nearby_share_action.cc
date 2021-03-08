@@ -147,6 +147,10 @@ bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
   if (!nearby_share_service) {
     return false;
   }
+  // TODO(crbug.com/1185633): Add support for text share.
+  if (!intent->file_urls) {
+    return false;
+  }
   return !nearby_share_service->GetSettings()->IsDisabledByPolicy();
 }
 
