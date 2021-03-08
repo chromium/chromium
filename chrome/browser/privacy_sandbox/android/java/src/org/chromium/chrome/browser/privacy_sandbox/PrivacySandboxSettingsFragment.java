@@ -21,6 +21,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -34,8 +35,9 @@ import org.chromium.ui.widget.ChromeBulletSpan;
  */
 public class PrivacySandboxSettingsFragment
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
-    public static final String PRIVACY_SANDBOX_URL =
-            "https://www.google.com/chrome/privacy-sandbox";
+    public static final String PRIVACY_SANDBOX_DEFAULT_URL =
+            "https://web.dev/digging-into-the-privacy-sandbox/";
+    public static final String EXPERIMENT_URL_PARAM = "website-url";
     // Key for the argument with which the PrivacySandbox fragment will be launched. The value for
     // this argument should be part of the PrivacySandboxReferrer enum, which contains all points of
     // entry to the Privacy Sandbox UI.
@@ -69,7 +71,7 @@ public class PrivacySandboxSettingsFragment
                         getContext().getString(R.string.privacy_sandbox_description),
                         new SpanInfo("<link>", "</link>",
                                 new NoUnderlineClickableSpan(getContext().getResources(),
-                                        (widget) -> openUrlInCct(PRIVACY_SANDBOX_URL)))));
+                                        (widget) -> openUrlInCct(getPrivacySandboxUrl())))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)
                 .setSummary(SpanApplier.applySpans(
@@ -120,7 +122,7 @@ public class PrivacySandboxSettingsFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
             // Action for the question mark button.
-            openUrlInCct(PRIVACY_SANDBOX_URL);
+            openUrlInCct(getPrivacySandboxUrl());
             return true;
         }
         return false;
@@ -141,6 +143,14 @@ public class PrivacySandboxSettingsFragment
             if (!TOGGLE_PREFERENCE.equals(preference.getKey())) return false;
             return PrivacySandboxBridge.isPrivacySandboxManaged();
         };
+    }
+
+    private String getPrivacySandboxUrl() {
+        // Get the URL from Finch, if defined.
+        String url = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS, EXPERIMENT_URL_PARAM);
+        if (url == null || url.isEmpty()) return PRIVACY_SANDBOX_DEFAULT_URL;
+        return url;
     }
 
     private void openUrlInCct(String url) {

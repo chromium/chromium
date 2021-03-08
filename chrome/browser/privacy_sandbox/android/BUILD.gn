@@ -20,6 +20,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
