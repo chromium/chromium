@@ -80,11 +80,13 @@ class BASE_EXPORT StaticString final {
 //   TRACE_EVENT_BEGIN("cat", "Name", perfetto::Track(1234), time_ticks);
 
 // Begin a slice under |category| with the title |name|.
+// Defaults to the current thread's track.
 #define TRACE_EVENT_BEGIN(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_BEGIN, category, name, \
                                    ##__VA_ARGS__)
 
-// End a thread-scoped slice under |category|.
+// End a slice under |category|.
+// Defaults to the current thread's track.
 #define TRACE_EVENT_END(category, ...)                                       \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_END, category,          \
                                    trace_event_internal::kTraceEventEndName, \
@@ -101,6 +103,7 @@ class BASE_EXPORT StaticString final {
   TRACING_INTERNAL_SCOPED_ADD_TRACE_EVENT(category, name, ##__VA_ARGS__)
 
 // Emit a single slice with title |name| and zero duration.
+// Defaults to the current thread's track.
 #define TRACE_EVENT_INSTANT(category, name, ...)                              \
   TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_INSTANT, category, name, \
                                    ##__VA_ARGS__)
