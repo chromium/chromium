@@ -665,7 +665,6 @@ crbug.com/782317 [ mac intel ] conformance/rendering/rendering-stencil-large-vie
 crbug.com/1039465 [ mac intel ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 crbug.com/1018028 [ mac intel ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1082455 [ mac intel ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
-crbug.com/1144207 [ mac intel-0x3e9b angle-opengl ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1144207 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 
 # Mac Intel No-Passthrough

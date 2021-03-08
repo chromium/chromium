@@ -425,9 +425,7 @@ crbug.com/929009 [ mac amd ] conformance/glsl/misc/shader-with-non-reserved-word
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
 
 # Mac Intel ANGLE and native OpenGL
-crbug.com/1144247 [ mac intel-0x3e9b angle-opengl ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
 crbug.com/1144247 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
-crbug.com/1144207 [ mac intel-0x3e9b angle-opengl ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1144207 [ mac intel-0x3e9b angle-disabled ] conformance/extensions/webgl-multi-draw.html [ Failure ]
 crbug.com/1018028 [ mac intel angle-disabled ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/886970 [ mac intel-0xa2e angle-disabled ] conformance/rendering/canvas-alpha-bug.html [ Failure ]
