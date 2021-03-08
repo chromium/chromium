@@ -8,7 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromecast/browser/accessibility/accessibility_manager.h"
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"
+#include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
@@ -305,6 +307,8 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     // value will result in queueing up the values and speak out one by one.
     // Here we handle the tts natively.
     HandleNativeTTS();
+
+    HandleVirtualKeyboardNodes();
   }
 
   // Need to refocus
@@ -475,6 +479,21 @@ void AXTreeSourceFlutter::Reset() {
   if (!event_router_)
     return;
   event_router_->DispatchTreeDestroyedEvent(ax_tree_id(), browser_context_);
+}
+
+void AXTreeSourceFlutter::HandleVirtualKeyboardNodes() {
+  gfx::Rect bounds;
+  for (const auto& it : tree_map_) {
+    FlutterSemanticsNode* node_info = it.second.get();
+    if (!node_info->IsKeyboardNode())
+      continue;
+    bounds.Union(node_info->GetBounds());
+  }
+
+  if (bounds != keyboard_bounds_) {
+    keyboard_bounds_ = bounds;
+    delegate_->OnVirtualKeyboardBoundsChange(keyboard_bounds_);
+  }
 }
 
 void AXTreeSourceFlutter::HandleNativeTTS() {

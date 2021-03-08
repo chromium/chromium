@@ -55,6 +55,7 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
    public:
     virtual ~Delegate() {}
     virtual void OnAction(const ui::AXActionData& data) = 0;
+    virtual void OnVirtualKeyboardBoundsChange(const gfx::Rect& bounds) = 0;
   };
 
   AXTreeSourceFlutter(
@@ -152,6 +153,9 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
   // Detects rapidly changing nodes and use native TTS instead.
   void HandleNativeTTS();
 
+  // Handle the virtual keyboard nodes and calculate the bounds of it.
+  void HandleVirtualKeyboardNodes();
+
   // Depth first search for a node under 'parent' with names route flag.
   FlutterSemanticsNode* FindRoutesNode(FlutterSemanticsNode* parent);
 
@@ -205,6 +209,9 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
   gallium::castos::OnAccessibilityEventRequest last_event_data_;
 
   bool accessibility_enabled_ = false;
+
+  // The bounds of virtual keyboard.
+  gfx::Rect keyboard_bounds_;
 };
 
 }  // namespace accessibility

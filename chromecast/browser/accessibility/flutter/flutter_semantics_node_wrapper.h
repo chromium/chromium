@@ -50,6 +50,7 @@ class FlutterSemanticsNodeWrapper : public FlutterSemanticsNode {
   std::string GetLabelHint() const override;
   bool HasValue() const override;
   std::string GetValue() const override;
+  bool IsKeyboardNode() const override;
 
   const SemanticsNode* node() { return node_ptr_; }
 

@@ -44,6 +44,7 @@ class FlutterSemanticsNode {
   virtual std::string GetLabelHint() const = 0;
   virtual bool HasValue() const = 0;
   virtual std::string GetValue() const = 0;
+  virtual bool IsKeyboardNode() const = 0;
 };
 
 }  // namespace accessibility

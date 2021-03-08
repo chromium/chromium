@@ -75,6 +75,11 @@ bool FlutterSemanticsNodeWrapper::HasNamesRoute() const {
   return boolean_properties.names_route();
 }
 
+bool FlutterSemanticsNodeWrapper::IsKeyboardNode() const {
+  const BooleanProperties& boolean_properties = node_ptr_->boolean_properties();
+  return boolean_properties.is_lift_to_type();
+}
+
 bool FlutterSemanticsNodeWrapper::CanBeAccessibilityFocused() const {
   // In Chrome, this means:
   // a node with a non-generic role and:

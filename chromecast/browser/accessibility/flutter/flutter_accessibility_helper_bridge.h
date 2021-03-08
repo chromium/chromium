@@ -55,6 +55,7 @@ class FlutterAccessibilityHelperBridge : public AXTreeSourceFlutter::Delegate {
   // AXTreeSourceArc::Delegate implementation:
   // Dispatch a chrome accessibility action to flutter.
   void OnAction(const ui::AXActionData& data) override;
+  void OnVirtualKeyboardBoundsChange(const gfx::Rect& bounds) override;
 
   void AccessibilityStateChanged(bool value);
 

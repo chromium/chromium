@@ -192,6 +192,13 @@ void FlutterAccessibilityHelperBridge::OnAction(const ui::AXActionData& data) {
   bridge_delegate_->SendAccessibilityAction(request);
 }
 
+void FlutterAccessibilityHelperBridge::OnVirtualKeyboardBoundsChange(
+    const gfx::Rect& bounds) {
+  chromecast::shell::CastBrowserProcess::GetInstance()
+      ->accessibility_manager()
+      ->SetVirtualKeyboardBounds(bounds);
+}
+
 }  // namespace accessibility
 }  // namespace gallium
 }  // namespace chromecast

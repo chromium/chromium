@@ -207,8 +207,15 @@ class AXTreeSourceFlutterTest : public testing::Test,
     return new_node;
   }
 
+  gfx::Rect GetVirtualKeyboardBounds() const {
+    return virtual_keyboard_bounds_;
+  }
+
  private:
   void OnAction(const ui::AXActionData& data) override {}
+  void OnVirtualKeyboardBoundsChange(const gfx::Rect& bounds) override {
+    virtual_keyboard_bounds_ = bounds;
+  }
 
   // Required for the TestBrowserContext.
   content::BrowserTaskEnvironment task_environment_;
@@ -217,6 +224,7 @@ class AXTreeSourceFlutterTest : public testing::Test,
   std::unique_ptr<AXTreeSourceFlutter> tree_;
   content::MockContentBrowserClient mock_content_browser_client_;
   content::MockContentClient client_;
+  gfx::Rect virtual_keyboard_bounds_;
 };
 
 TEST_F(AXTreeSourceFlutterTest, AccessibleNameComputation) {
@@ -778,6 +786,44 @@ TEST_F(AXTreeSourceFlutterTest, Announce) {
 
   // Cleanup since the mock will expire at the end of this test.
   tts_controller->SetTtsPlatform(content::TtsPlatform::GetInstance());
+}
+
+TEST_F(AXTreeSourceFlutterTest, KeyboardBounds) {
+  OnAccessibilityEventRequest event;
+  event.set_source_id(1);
+  event.set_window_id(1);
+  event.set_event_type(OnAccessibilityEventRequest_EventType_FOCUSED);
+
+  SemanticsNode* root = event.add_node_data();
+  root->set_node_id(10);
+  root->add_child_node_ids(1);
+  root->add_child_node_ids(2);
+
+  // Add child nodes.
+  SemanticsNode* node1 = event.add_node_data();
+  node1->set_node_id(1);
+  node1->set_label("text 1");
+  Rect* bounds1 = node1->mutable_bounds_in_screen();
+  SetRect(bounds1, 0, 0, 320, 200);
+
+  SemanticsNode* node2 = event.add_node_data();
+  node2->set_node_id(2);
+  node2->set_label("text 2");
+  Rect* bounds2 = node2->mutable_bounds_in_screen();
+  SetRect(bounds2, 320, 200, 640, 400);
+
+  // No keyboard nodes.
+  CallNotifyAccessibilityEvent(&event);
+  EXPECT_EQ(gfx::Rect(), GetVirtualKeyboardBounds());
+
+  // node 1 and node 2 are keyboard nodes.
+  BooleanProperties* boolean_properties;
+  boolean_properties = node1->mutable_boolean_properties();
+  boolean_properties->set_is_lift_to_type(true);
+  boolean_properties = node2->mutable_boolean_properties();
+  boolean_properties->set_is_lift_to_type(true);
+  CallNotifyAccessibilityEvent(&event);
+  EXPECT_EQ(gfx::Rect(0, 0, 640, 400), GetVirtualKeyboardBounds());
 }
 
 }  // namespace accessibility
