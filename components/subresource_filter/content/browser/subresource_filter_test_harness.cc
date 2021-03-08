@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -17,18 +16,24 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace subresource_filter {
 
 constexpr char const SubresourceFilterTestHarness::kDefaultAllowedSuffix[];
 constexpr char const SubresourceFilterTestHarness::kDefaultDisallowedSuffix[];
@@ -37,22 +42,24 @@ constexpr char const SubresourceFilterTestHarness::kDefaultDisallowedUrl[];
 SubresourceFilterTestHarness::SubresourceFilterTestHarness() = default;
 SubresourceFilterTestHarness::~SubresourceFilterTestHarness() = default;
 
-// ChromeRenderViewHostTestHarness:
+// content::RenderViewHostTestHarness:
 void SubresourceFilterTestHarness::SetUp() {
-  ChromeRenderViewHostTestHarness::SetUp();
+  content::RenderViewHostTestHarness::SetUp();
+
+  // Set up prefs-related state needed by various tests.
+  if (!DisableSettingPrefServiceInUserPrefs())
+    user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
 
   // Ensure correct features.
-  scoped_configuration_.ResetConfiguration(subresource_filter::Configuration(
-      subresource_filter::mojom::ActivationLevel::kEnabled,
-      subresource_filter::ActivationScope::ACTIVATION_LIST,
-      subresource_filter::ActivationList::SUBRESOURCE_FILTER));
+  scoped_configuration_.ResetConfiguration(Configuration(
+      mojom::ActivationLevel::kEnabled, ActivationScope::ACTIVATION_LIST,
+      ActivationList::SUBRESOURCE_FILTER));
 
   NavigateAndCommit(GURL("https://example.first"));
 
   // Set up the ruleset service.
   ASSERT_TRUE(ruleset_service_dir_.CreateUniqueTempDir());
-  subresource_filter::IndexedRulesetVersion::RegisterPrefs(
-      pref_service_.registry());
+  IndexedRulesetVersion::RegisterPrefs(pref_service_.registry());
   // TODO(csharrison): having separated blocking and background task runners
   // for |ContentRulesetService| and |RulesetService| would be a good idea, but
   // external unit tests code implicitly uses knowledge that blocking and
@@ -63,32 +70,32 @@ void SubresourceFilterTestHarness::SetUp() {
   // 2. Navigation simulator uses this knowledge. It knows that
   //    |AsyncDocumentSubresourceFilter| posts core initialization tasks on
   //    blocking task runner and this it is the current thread task runner.
-  ruleset_service_ = std::make_unique<subresource_filter::RulesetService>(
+  ruleset_service_ = std::make_unique<RulesetService>(
       &pref_service_, base::ThreadTaskRunnerHandle::Get(),
       ruleset_service_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
 
   // Publish the test ruleset.
-  subresource_filter::testing::TestRulesetCreator ruleset_creator;
-  subresource_filter::testing::TestRulesetPair test_ruleset_pair;
+  testing::TestRulesetCreator ruleset_creator;
+  testing::TestRulesetPair test_ruleset_pair;
   ruleset_creator.CreateRulesetWithRules(
-      {subresource_filter::testing::CreateSuffixRule(kDefaultDisallowedSuffix),
-       subresource_filter::testing::CreateAllowlistSuffixRule(
-           kDefaultAllowedSuffix)},
+      {testing::CreateSuffixRule(kDefaultDisallowedSuffix),
+       testing::CreateAllowlistSuffixRule(kDefaultAllowedSuffix)},
       &test_ruleset_pair);
-  subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
-      ruleset_service_.get());
+  testing::TestRulesetPublisher test_ruleset_publisher(ruleset_service_.get());
   ASSERT_NO_FATAL_FAILURE(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 
-  subresource_filter::VerifiedRulesetDealer::Handle* dealer =
+  VerifiedRulesetDealer::Handle* dealer =
       ruleset_service_.get()->GetRulesetDealer();
-  auto client =
-      std::make_unique<subresource_filter::TestSubresourceFilterClient>(
-          web_contents());
+  auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
   client_ = client.get();
   client_->CreateSafeBrowsingDatabaseManager();
-  subresource_filter::ContentSubresourceFilterThrottleManager::
-      CreateForWebContents(web_contents(), std::move(client), dealer);
+  ContentSubresourceFilterThrottleManager::CreateForWebContents(
+      web_contents(), std::move(client), dealer);
+
+  // Observe web_contents() to add subresource filter navigation throttles at
+  // the start of navigations.
+  Observe(web_contents());
 
   base::RunLoop().RunUntilIdle();
 }
@@ -96,7 +103,25 @@ void SubresourceFilterTestHarness::SetUp() {
 void SubresourceFilterTestHarness::TearDown() {
   ruleset_service_.reset();
 
-  ChromeRenderViewHostTestHarness::TearDown();
+  content::RenderViewHostTestHarness::TearDown();
+}
+
+// content::WebContentsObserver:
+void SubresourceFilterTestHarness::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (DisableAddingNavigationThrottles())
+    return;
+
+  if (navigation_handle->IsSameDocument())
+    return;
+
+  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
+      ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
+
+  for (auto& it : throttles) {
+    navigation_handle->RegisterThrottleForTesting(std::move(it));
+  }
 }
 
 // Will return nullptr if the navigation fails.
@@ -133,14 +158,23 @@ void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
   fake_safe_browsing_database()->RemoveBlocklistedUrl(url);
 }
 
-subresource_filter::SubresourceFilterContentSettingsManager*
+SubresourceFilterContentSettingsManager*
 SubresourceFilterTestHarness::GetSettingsManager() {
   return client_->profile_context()->settings_manager();
 }
 
 void SubresourceFilterTestHarness::TagSubframeAsAd(
     content::RenderFrameHost* render_frame_host) {
-  subresource_filter::ContentSubresourceFilterThrottleManager::FromWebContents(
-      web_contents())
+  ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
       ->SetFrameAsAdSubframeForTesting(render_frame_host);
 }
+
+bool SubresourceFilterTestHarness::DisableSettingPrefServiceInUserPrefs() {
+  return false;
+}
+
+bool SubresourceFilterTestHarness::DisableAddingNavigationThrottles() {
+  return false;
+}
+
+}  // namespace subresource_filter

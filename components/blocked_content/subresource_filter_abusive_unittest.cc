@@ -7,16 +7,18 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace blocked_content {
 
 using safe_browsing::SubresourceFilterLevel;
 
@@ -55,7 +57,7 @@ using MetadataInfo = std::tuple<MetadataLevel, MetadataLevel, bool>;
 // This class tests the interaction between subresource_filter enforcement and
 // abusive enforcement.
 class SubresourceFilterAbusiveTest
-    : public SubresourceFilterTestHarness,
+    : public subresource_filter::SubresourceFilterTestHarness,
       public ::testing::WithParamInterface<MetadataInfo> {
  public:
   SubresourceFilterAbusiveTest() {
@@ -72,7 +74,11 @@ class SubresourceFilterAbusiveTest
 
   // SubresourceFilterTestHarness:
   void SetUp() override {
-    SubresourceFilterTestHarness::SetUp();
+    subresource_filter::SubresourceFilterTestHarness::SetUp();
+
+    blocked_content::SafeBrowsingTriggeredPopupBlocker::RegisterProfilePrefs(
+        pref_service()->registry());
+
     std::vector<subresource_filter::Configuration> configs{
         subresource_filter::Configuration::
             MakePresetForLiveRunOnPhishingSites(),
@@ -114,10 +120,10 @@ class SubresourceFilterAbusiveTest
 };
 
 TEST_P(SubresourceFilterAbusiveTest, ConfigCombination) {
-  SCOPED_TRACE(testing::Message() << "Abusive Level: " << abusive_level_
-                                  << ", BAS Level: " << bas_level_
-                                  << ", Enable AdBlock on Abusive Sites: "
-                                  << enable_adblock_on_abusive_sites_);
+  SCOPED_TRACE(::testing::Message() << "Abusive Level: " << abusive_level_
+                                    << ", BAS Level: " << bas_level_
+                                    << ", Enable AdBlock on Abusive Sites: "
+                                    << enable_adblock_on_abusive_sites_);
   const GURL url("https://example.test/");
   ConfigureUrl(url);
   SimulateNavigateAndCommit(url, main_rfh());
@@ -160,3 +166,5 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(METADATA_WARN, METADATA_ENFORCE, METADATA_NONE),
         ::testing::Values(METADATA_WARN, METADATA_ENFORCE, METADATA_NONE),
         ::testing::Values(false, true)));
+
+}  // namespace blocked_content

@@ -4,7 +4,7 @@
 
 #include <tuple>
 
-#include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
+#include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/activation_scope.h"
@@ -12,9 +12,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using subresource_filter::ActivationList;
-using subresource_filter::ActivationScope;
-using subresource_filter::mojom::ActivationLevel;
+namespace subresource_filter {
+
+using mojom::ActivationLevel;
 
 using FlattenedConfig =
     std::tuple<ActivationScope, ActivationList, ActivationLevel>;
@@ -37,7 +37,7 @@ TEST_P(SubresourceFilterConfigurationTest,
 
   const GURL url("https://example.test/");
   scoped_configuration().ResetConfiguration(
-      subresource_filter::Configuration(level, scope, activation_list));
+      Configuration(level, scope, activation_list));
   SimulateNavigateAndCommit(url, main_rfh());
   if (!CreateAndNavigateDisallowedSubframe(main_rfh())) {
     EXPECT_EQ(scope, ActivationScope::ALL_SITES);
@@ -56,7 +56,7 @@ TEST_P(SubresourceFilterConfigurationTest, DISABLED_OneListActivation) {
   const GURL url("https://example.test/");
   ConfigureAsSubresourceFilterOnlyURL(url);
   scoped_configuration().ResetConfiguration(
-      subresource_filter::Configuration(level, scope, activation_list));
+      Configuration(level, scope, activation_list));
   SimulateNavigateAndCommit(url, main_rfh());
   if (!CreateAndNavigateDisallowedSubframe(main_rfh())) {
     EXPECT_TRUE(scope == ActivationScope::ALL_SITES ||
@@ -79,3 +79,5 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(ActivationLevel::kEnabled,
                           ActivationLevel::kDisabled,
                           ActivationLevel::kDryRun)));
+
+}  // namespace subresource_filter

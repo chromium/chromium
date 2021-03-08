@@ -24,7 +24,7 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/frame_data.h"
-#include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
@@ -37,6 +37,7 @@
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
+#include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/global_request_id.h"
@@ -442,7 +443,7 @@ class FrameRemoteTester : public content::FakeLocalFrame {
 }  // namespace
 
 class AdsPageLoadMetricsObserverTest
-    : public SubresourceFilterTestHarness,
+    : public subresource_filter::SubresourceFilterTestHarness,
       public blocklist::OptOutBlocklistDelegate {
  public:
   AdsPageLoadMetricsObserverTest()
@@ -803,6 +804,12 @@ class AdsPageLoadMetricsObserverTest
   }
 
  private:
+  // SubresourceFilterTestHarness:
+  // TODO(crbug.com/1116095): Remove these methods altogether when this test is
+  // componentized.
+  bool DisableSettingPrefServiceInUserPrefs() override { return true; }
+  bool DisableAddingNavigationThrottles() override { return true; }
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
         /*heavy_ad_service=*/nullptr, clock_.get(), test_blocklist_.get());
@@ -819,6 +826,14 @@ class AdsPageLoadMetricsObserverTest
       ui::ScopedVisibilityTracker visibility_tracker(clock_.get(), true);
       tracker->SetVisibilityTrackerForTesting(visibility_tracker);
     }
+  }
+
+  // TODO(crbug.com/1116095): Eliminate this override once this test is
+  // componentized; it's present only to satisfy a unit_tests DCHECK that all
+  // BrowserContexts are subclasses of Profile.
+  // content::RenderViewHostTestHarness:
+  std::unique_ptr<content::BrowserContext> CreateBrowserContext() final {
+    return TestingProfile::Builder().Build();
   }
 
   std::unique_ptr<HeavyAdBlocklist> test_blocklist_;

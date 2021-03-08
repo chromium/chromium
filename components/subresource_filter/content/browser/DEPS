@@ -6,6 +6,7 @@ include_rules = [
   "+components/safe_browsing/core/db",
   "+components/sync_preferences",
   "+components/ukm",
+  "+components/user_prefs",
   "+content/public/browser",
   "+content/public/test",
   "+mojo/public",

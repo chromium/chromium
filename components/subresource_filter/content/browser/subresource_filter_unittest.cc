@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
@@ -14,6 +13,7 @@
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
+#include "components/subresource_filter/content/browser/subresource_filter_test_harness.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -25,6 +25,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace subresource_filter {
 
 class SubresourceFilterTest : public SubresourceFilterTestHarness {};
 
@@ -40,9 +42,8 @@ TEST_F(SubresourceFilterTest, SimpleAllowedLoad) {
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
-  histogram_tester.ExpectBucketCount(
-      kSubresourceFilterActionsHistogram,
-      subresource_filter::SubresourceFilterAction::kUIShown, 0);
+  histogram_tester.ExpectBucketCount(kSubresourceFilterActionsHistogram,
+                                     SubresourceFilterAction::kUIShown, 0);
 }
 
 TEST_F(SubresourceFilterTest, SimpleDisallowedLoad) {
@@ -52,9 +53,8 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad) {
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
 
-  histogram_tester.ExpectBucketCount(
-      kSubresourceFilterActionsHistogram,
-      subresource_filter::SubresourceFilterAction::kUIShown, 1);
+  histogram_tester.ExpectBucketCount(kSubresourceFilterActionsHistogram,
+                                     SubresourceFilterAction::kUIShown, 1);
 }
 
 TEST_F(SubresourceFilterTest, DeactivateUrl_ChangeSiteActivationToFalse) {
@@ -87,10 +87,9 @@ TEST_F(SubresourceFilterTest, ActivationToDryRun_ChangeSiteActivationToFalse) {
 
   // If the site later activates as DRYRUN due to e.g. a configuration change,
   // it should also be removed from the metadata.
-  scoped_configuration().ResetConfiguration(subresource_filter::Configuration(
-      subresource_filter::mojom::ActivationLevel::kDryRun,
-      subresource_filter::ActivationScope::ACTIVATION_LIST,
-      subresource_filter::ActivationList::SUBRESOURCE_FILTER));
+  scoped_configuration().ResetConfiguration(Configuration(
+      mojom::ActivationLevel::kDryRun, ActivationScope::ACTIVATION_LIST,
+      ActivationList::SUBRESOURCE_FILTER));
 
   // Navigate to |url| again and expect the site's activation to be set to
   // false.
@@ -120,18 +119,17 @@ TEST_F(SubresourceFilterTest, SimpleAllowedLoad_WithObserver) {
   GURL url("https://example.test");
   ConfigureAsSubresourceFilterOnlyURL(url);
 
-  subresource_filter::TestSubresourceFilterObserver observer(web_contents());
+  TestSubresourceFilterObserver observer(web_contents());
   SimulateNavigateAndCommit(url, main_rfh());
 
-  EXPECT_EQ(subresource_filter::mojom::ActivationLevel::kEnabled,
+  EXPECT_EQ(mojom::ActivationLevel::kEnabled,
             observer.GetPageActivation(url).value());
 
   GURL allowed_url("https://example.test/foo");
   auto* subframe =
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   SimulateNavigateAndCommit(GURL(allowed_url), subframe);
-  EXPECT_EQ(subresource_filter::LoadPolicy::ALLOW,
-            *observer.GetSubframeLoadPolicy(allowed_url));
+  EXPECT_EQ(LoadPolicy::ALLOW, *observer.GetSubframeLoadPolicy(allowed_url));
   EXPECT_FALSE(observer.GetIsAdSubframe(subframe->GetFrameTreeNodeId()));
 }
 
@@ -139,10 +137,10 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
   GURL url("https://example.test");
   ConfigureAsSubresourceFilterOnlyURL(url);
 
-  subresource_filter::TestSubresourceFilterObserver observer(web_contents());
+  TestSubresourceFilterObserver observer(web_contents());
   SimulateNavigateAndCommit(url, main_rfh());
 
-  EXPECT_EQ(subresource_filter::mojom::ActivationLevel::kEnabled,
+  EXPECT_EQ(mojom::ActivationLevel::kEnabled,
             observer.GetPageActivation(url).value());
 
   GURL disallowed_url(SubresourceFilterTest::kDefaultDisallowedUrl);
@@ -156,7 +154,7 @@ TEST_F(SubresourceFilterTest, SimpleDisallowedLoad_WithObserver) {
       SimulateNavigateAndCommit(GURL(kDefaultDisallowedUrl), subframe));
   navigation_observer.WaitForNavigationFinished();
 
-  EXPECT_EQ(subresource_filter::LoadPolicy::DISALLOW,
+  EXPECT_EQ(LoadPolicy::DISALLOW,
             *observer.GetSubframeLoadPolicy(disallowed_url));
   EXPECT_TRUE(observer.GetIsAdSubframe(subframe->GetFrameTreeNodeId()));
 }
@@ -166,6 +164,7 @@ TEST_F(SubresourceFilterTest, RefreshMetadataOnActivation) {
   ConfigureAsSubresourceFilterOnlyURL(url);
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
+
   EXPECT_TRUE(GetSettingsManager()->GetSiteActivationFromMetadata(url));
 
   // Allowlist via content settings.
@@ -195,52 +194,51 @@ TEST_F(SubresourceFilterTest, NotifySafeBrowsing) {
   const struct {
     AdBlockOnAbusiveSitesTest adblock_on_abusive_sites;
     safe_browsing::SubresourceFilterMatch match;
-    subresource_filter::ActivationList expected_activation;
+    ActivationList expected_activation;
     bool expected_warning;
   } kTestCases[]{
       // AdBlockOnAbusiveSitesTest::kDisabled
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {},
-       subresource_filter::ActivationList::SUBRESOURCE_FILTER,
+       ActivationList::SUBRESOURCE_FILTER,
        false},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::ABUSIVE, Level::ENFORCE}},
-       subresource_filter::ActivationList::NONE,
+       ActivationList::NONE,
        false},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::ABUSIVE, Level::WARN}},
-       subresource_filter::ActivationList::NONE,
+       ActivationList::NONE,
        false},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::BETTER_ADS, Level::ENFORCE}},
-       subresource_filter::ActivationList::BETTER_ADS,
+       ActivationList::BETTER_ADS,
        false},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::BETTER_ADS, Level::WARN}},
-       subresource_filter::ActivationList::BETTER_ADS,
+       ActivationList::BETTER_ADS,
        true},
       {AdBlockOnAbusiveSitesTest::kDisabled,
        {{Type::BETTER_ADS, Level::ENFORCE}, {Type::ABUSIVE, Level::ENFORCE}},
-       subresource_filter::ActivationList::BETTER_ADS,
+       ActivationList::BETTER_ADS,
        false},
       // AdBlockOnAbusiveSitesTest::kEnabled
       {AdBlockOnAbusiveSitesTest::kEnabled,
        {{Type::ABUSIVE, Level::ENFORCE}},
-       subresource_filter::ActivationList::ABUSIVE,
+       ActivationList::ABUSIVE,
        false},
       {AdBlockOnAbusiveSitesTest::kEnabled,
        {{Type::ABUSIVE, Level::WARN}},
-       subresource_filter::ActivationList::ABUSIVE,
+       ActivationList::ABUSIVE,
        true}};
 
   const GURL url("https://example.test");
   for (const auto& test_case : kTestCases) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureState(
-        subresource_filter::kFilterAdsOnAbusiveSites,
-        test_case.adblock_on_abusive_sites ==
-            AdBlockOnAbusiveSitesTest::kEnabled);
-    subresource_filter::TestSubresourceFilterObserver observer(web_contents());
+        kFilterAdsOnAbusiveSites, test_case.adblock_on_abusive_sites ==
+                                      AdBlockOnAbusiveSitesTest::kEnabled);
+    TestSubresourceFilterObserver observer(web_contents());
     auto threat_type =
         safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER;
     safe_browsing::ThreatMetadata metadata;
@@ -250,17 +248,15 @@ TEST_F(SubresourceFilterTest, NotifySafeBrowsing) {
     SimulateNavigateAndCommit(url, main_rfh());
     bool warning = false;
     EXPECT_EQ(test_case.expected_activation,
-              subresource_filter::GetListForThreatTypeAndMetadata(
-                  threat_type, metadata, &warning));
+              GetListForThreatTypeAndMetadata(threat_type, metadata, &warning));
     EXPECT_EQ(warning, test_case.expected_warning);
   }
 }
 
 TEST_F(SubresourceFilterTest, WarningSite_NoMetadata) {
-  subresource_filter::Configuration config(
-      subresource_filter::mojom::ActivationLevel::kEnabled,
-      subresource_filter::ActivationScope::ACTIVATION_LIST,
-      subresource_filter::ActivationList::BETTER_ADS);
+  Configuration config(mojom::ActivationLevel::kEnabled,
+                       ActivationScope::ACTIVATION_LIST,
+                       ActivationList::BETTER_ADS);
   scoped_configuration().ResetConfiguration(std::move(config));
   const GURL url("https://example.test/");
   safe_browsing::ThreatMetadata metadata;
@@ -274,3 +270,5 @@ TEST_F(SubresourceFilterTest, WarningSite_NoMetadata) {
   SimulateNavigateAndCommit(url, main_rfh());
   EXPECT_FALSE(GetSettingsManager()->GetSiteActivationFromMetadata(url));
 }
+
+}  // namespace subresource_filter
