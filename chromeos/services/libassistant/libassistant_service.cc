@@ -9,16 +9,6 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "chromeos/services/libassistant/audio_input_controller.h"
-#include "chromeos/services/libassistant/conversation_controller.h"
-#include "chromeos/services/libassistant/conversation_state_listener_impl.h"
-#include "chromeos/services/libassistant/display_controller.h"
-#include "chromeos/services/libassistant/media_controller.h"
-#include "chromeos/services/libassistant/platform_api.h"
-#include "chromeos/services/libassistant/service_controller.h"
-#include "chromeos/services/libassistant/settings_controller.h"
-#include "chromeos/services/libassistant/speaker_id_enrollment_controller.h"
-#include "chromeos/services/libassistant/timer_controller.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -27,49 +17,39 @@ LibassistantService::LibassistantService(
     mojo::PendingReceiver<mojom::LibassistantService> receiver,
     assistant::AssistantManagerServiceDelegate* delegate)
     : receiver_(this, std::move(receiver)),
-      platform_api_(std::make_unique<PlatformApi>()),
-      audio_input_controller_(std::make_unique<AudioInputController>()),
-      service_controller_(
-          std::make_unique<ServiceController>(delegate, platform_api_.get())),
-      conversation_controller_(
-          std::make_unique<ConversationController>(service_controller_.get())),
+      platform_api_(),
+      audio_input_controller_(),
+      service_controller_(delegate, &platform_api_),
+      conversation_controller_(&service_controller_),
       conversation_state_listener_(
-          std::make_unique<ConversationStateListenerImpl>(
-              &speech_recognition_observers_,
-              conversation_controller_->conversation_observers(),
-              audio_input_controller_.get())),
-      display_controller_(
-          std::make_unique<DisplayController>(&speech_recognition_observers_)),
-      media_controller_(std::make_unique<MediaController>()),
-      settings_controller_(std::make_unique<SettingsController>()),
-      speaker_id_enrollment_controller_(
-          std::make_unique<SpeakerIdEnrollmentController>(
-              audio_input_controller_.get())),
-      timer_controller_(std::make_unique<TimerController>()) {
-  service_controller_->AddAndFireAssistantManagerObserver(
-      conversation_controller_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      conversation_state_listener_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      display_controller_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      media_controller_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      speaker_id_enrollment_controller_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      settings_controller_.get());
-  service_controller_->AddAndFireAssistantManagerObserver(
-      timer_controller_.get());
+          &speech_recognition_observers_,
+          conversation_controller_.conversation_observers(),
+          &audio_input_controller_),
+      display_controller_(&speech_recognition_observers_),
+      media_controller_(),
+      settings_controller_(),
+      speaker_id_enrollment_controller_(&audio_input_controller_),
+      timer_controller_() {
+  service_controller_.AddAndFireAssistantManagerObserver(
+      &conversation_controller_);
+  service_controller_.AddAndFireAssistantManagerObserver(
+      &conversation_state_listener_);
+  service_controller_.AddAndFireAssistantManagerObserver(&display_controller_);
+  service_controller_.AddAndFireAssistantManagerObserver(&media_controller_);
+  service_controller_.AddAndFireAssistantManagerObserver(
+      &speaker_id_enrollment_controller_);
+  service_controller_.AddAndFireAssistantManagerObserver(&settings_controller_);
+  service_controller_.AddAndFireAssistantManagerObserver(&timer_controller_);
 
-  platform_api_->SetAudioInputProvider(
-      &audio_input_controller_->audio_input_provider());
+  platform_api_.SetAudioInputProvider(
+      &audio_input_controller_.audio_input_provider());
 }
 
 LibassistantService::~LibassistantService() {
   // We explicitly stop the Libassistant service before destroying anything,
   // to prevent use-after-free bugs.
-  service_controller_->Stop();
-  service_controller_->RemoveAllAssistantManagerObservers();
+  service_controller_.Stop();
+  service_controller_.RemoveAllAssistantManagerObservers();
 }
 
 void LibassistantService::Bind(
@@ -88,21 +68,21 @@ void LibassistantService::Bind(
     mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
     mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) {
   platform_delegate_.Bind(std::move(platform_delegate));
-  audio_input_controller_->Bind(std::move(audio_input_controller),
-                                platform_delegate_.get());
-  conversation_controller_->Bind(std::move(conversation_controller));
-  display_controller_->Bind(std::move(display_controller));
-  media_controller_->Bind(std::move(media_controller),
-                          std::move(media_delegate));
-  platform_api_->Bind(std::move(audio_output_delegate),
-                      platform_delegate_.get());
-  settings_controller_->Bind(std::move(settings_controller));
-  service_controller_->Bind(std::move(service_controller),
-                            settings_controller_.get());
-  speaker_id_enrollment_controller_->Bind(
+  audio_input_controller_.Bind(std::move(audio_input_controller),
+                               platform_delegate_.get());
+  conversation_controller_.Bind(std::move(conversation_controller));
+  display_controller_.Bind(std::move(display_controller));
+  media_controller_.Bind(std::move(media_controller),
+                         std::move(media_delegate));
+  platform_api_.Bind(std::move(audio_output_delegate),
+                     platform_delegate_.get());
+  settings_controller_.Bind(std::move(settings_controller));
+  service_controller_.Bind(std::move(service_controller),
+                           &settings_controller_);
+  speaker_id_enrollment_controller_.Bind(
       std::move(speaker_id_enrollment_controller));
-  timer_controller_->Bind(std::move(timer_controller),
-                          std::move(timer_delegate));
+  timer_controller_.Bind(std::move(timer_controller),
+                         std::move(timer_delegate));
 }
 
 void LibassistantService::AddSpeechRecognitionObserver(
