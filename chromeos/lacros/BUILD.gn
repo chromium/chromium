@@ -48,6 +48,23 @@ template("lacros_smoke_tast_tests") {
   }
 }
 
+template("lacros_all_tast_tests") {
+  forward_variables_from(invoker, [ "override_board" ])
+  assert(defined(override_board), "override_board is required")
+  lacros_tast_test(target_name) {
+    # The following expression filters out all non-critical tests. See the link
+    # below for more details:
+    # https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+    tast_attr_expr = "\"group:mainline\" && \"dep:lacros\""
+
+    tast_disabled_tests = [
+      # Chromium CI/CQ is meant to test the tip of the trunk or branch, but
+      # test tests again the live Lacros on Omaha, so it's not applicable here.
+      "lacros.ShelfLaunch.omaha",
+    ]
+  }
+}
+
 # "cros_board" set in the GN args defines the board used to build lacros-chrome,
 # while the "override_board" here defines the board on which to test the built
 # binary, for more details, please refer to the "generate_runner_script"
@@ -69,6 +86,9 @@ if (is_chromeos_device) {
       if (!matched && b1 == b2) {
         b1_underscore = string_replace(b1, "-", "_")
         lacros_smoke_tast_tests("lacros_smoke_tast_tests_${b1_underscore}") {
+          override_board = b1
+        }
+        lacros_all_tast_tests("lacros_all_tast_tests_${b1_underscore}") {
           override_board = b1
         }
         matched = true
