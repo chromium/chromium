@@ -109,6 +109,9 @@ DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
   }
 #endif
 
+  if (!base::FeatureList::IsEnabled(media::kExposeSwDecodersToWebRTC))
+    return supported_configs;
+
 #if BUILDFLAG(ENABLE_LIBVPX)
   SupportedVideoDecoderConfigs vpx_configs =
       VpxVideoDecoder::SupportedConfigs();

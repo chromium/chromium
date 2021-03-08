@@ -280,6 +280,11 @@ const base::Feature kUseAndroidOverlayAggressively{
 const base::Feature kUseDecoderStreamForWebRTC{
     "UseDecoderStreamForWebRTC", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, when RTCVideoDecoderAdapter is used then SW decoders will be
+// exposed directly to WebRTC.
+const base::Feature kExposeSwDecodersToWebRTC{
+    "ExposeSwDecodersToWebRTC", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Let video without audio be paused when it is playing in the background.
 const base::Feature kBackgroundVideoPauseOptimization{
     "BackgroundVideoPauseOptimization", base::FEATURE_ENABLED_BY_DEFAULT};
