@@ -46,7 +46,6 @@ TabSearchPageHandler::TabSearchPageHandler(
     ui::MojoBubbleWebUIController* webui_controller)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      browser_(chrome::FindLastActive()),
       web_ui_(web_ui),
       webui_controller_(webui_controller),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
@@ -55,7 +54,6 @@ TabSearchPageHandler::TabSearchPageHandler(
           base::BindRepeating(&TabSearchPageHandler::NotifyTabsChanged,
                               base::Unretained(this)))) {
   Observe(web_ui_->GetWebContents());
-  DCHECK(browser_);
   browser_tab_strip_tracker_.Init();
 }
 
@@ -132,7 +130,10 @@ void TabSearchPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
 }
 
 void TabSearchPageHandler::ShowFeedbackPage() {
-  chrome::ShowFeedbackPage(browser_,
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+  chrome::ShowFeedbackPage(browser,
                            chrome::FeedbackSource::kFeedbackSourceTabSearch,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,
@@ -162,12 +163,15 @@ void TabSearchPageHandler::ShowUI() {
 
 tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   auto profile_data = tab_search::mojom::ProfileData::New();
+  Browser* active_browser = chrome::FindLastActive();
+  if (!active_browser)
+    return profile_data;
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!ShouldTrackBrowser(browser))
       continue;
     TabStripModel* tab_strip_model = browser->tab_strip_model();
     auto window = tab_search::mojom::Window::New();
-    window->active = (browser == browser_);
+    window->active = (browser == active_browser);
     window->height = browser->window()->GetContentsSize().height();
     for (int i = 0; i < tab_strip_model->count(); ++i) {
       window->tabs.push_back(
@@ -261,7 +265,7 @@ void TabSearchPageHandler::NotifyTabsChanged() {
 }
 
 bool TabSearchPageHandler::ShouldTrackBrowser(Browser* browser) {
-  return browser->profile() == browser_->profile() &&
+  return browser->profile() == Profile::FromWebUI(web_ui_) &&
          browser->type() == Browser::Type::TYPE_NORMAL;
 }
 
