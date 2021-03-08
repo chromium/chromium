@@ -1957,6 +1957,21 @@
             ]
         }
     ],
+    "ContentLanguagesInLanguagePicker": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentLanguagesInLanguagePicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextMenuGoogleLensChip": [
         {
             "platforms": [
