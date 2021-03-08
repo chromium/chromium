@@ -38,7 +38,6 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/public/renderer/render_thread.h"
-#include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/discardable_memory_utils.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -59,6 +58,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/web/web_memory_statistics.h"
 #include "ui/gfx/native_widget_types.h"
@@ -262,7 +262,7 @@ class CONTENT_EXPORT RenderThreadImpl
     return cors_exempt_header_list_;
   }
 
-  URLLoaderThrottleProvider* url_loader_throttle_provider() const {
+  blink::URLLoaderThrottleProvider* url_loader_throttle_provider() const {
     return url_loader_throttle_provider_.get();
   }
 
@@ -492,7 +492,8 @@ class CONTENT_EXPORT RenderThreadImpl
   // These objects live solely on the render thread.
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   std::unique_ptr<RendererBlinkPlatformImpl> blink_platform_impl_;
-  std::unique_ptr<URLLoaderThrottleProvider> url_loader_throttle_provider_;
+  std::unique_ptr<blink::URLLoaderThrottleProvider>
+      url_loader_throttle_provider_;
 
   std::vector<std::string> cors_exempt_header_list_;
 

@@ -20,9 +20,9 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
-#include "content/public/renderer/url_loader_throttle_provider.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/supported_types.h"
+#include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
@@ -380,12 +380,13 @@ class CONTENT_EXPORT ContentRendererClient {
   // suspended after a period of inactivity.
   virtual bool IsIdleMediaSuspendEnabled();
 
-  // Allows the embedder to return a (possibly null) URLLoaderThrottleProvider
-  // for a frame or worker. For frames this is called on the main thread, and
-  // for workers it's called on the main or worker threads depending on
-  // http://crbug.com/692909.
-  virtual std::unique_ptr<URLLoaderThrottleProvider>
-  CreateURLLoaderThrottleProvider(URLLoaderThrottleProviderType provider_type);
+  // Allows the embedder to return a (possibly null)
+  // blink::URLLoaderThrottleProvider for a frame or worker. For frames this is
+  // called on the main thread, and for workers it's called on the main or
+  // worker threads depending on http://crbug.com/692909.
+  virtual std::unique_ptr<blink::URLLoaderThrottleProvider>
+  CreateURLLoaderThrottleProvider(
+      blink::URLLoaderThrottleProviderType provider_type);
 
   // Called when Blink cannot find a frame with the given name in the frame's
   // browsing instance.  This gives the embedder a chance to return a frame

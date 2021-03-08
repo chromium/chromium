@@ -160,6 +160,7 @@ source_set("blink_headers") {
     "platform/task_type.h",
     "platform/tracked_child_url_loader_factory_bundle.h",
     "platform/url_conversion.h",
+    "platform/url_loader_throttle_provider.h",
     "platform/user_metrics_action.h",
     "platform/weak_wrapper_resource_load_info_notifier.h",
     "platform/web_audio_bus.h",

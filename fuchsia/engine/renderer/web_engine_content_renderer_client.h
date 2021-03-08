@@ -35,9 +35,9 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
       std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
       override;
   bool IsSupportedVideoType(const media::VideoType& type) override;
-  std::unique_ptr<content::URLLoaderThrottleProvider>
+  std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
-      content::URLLoaderThrottleProviderType type) override;
+      blink::URLLoaderThrottleProviderType type) override;
   bool DeferMediaLoad(content::RenderFrame* render_frame,
                       bool has_played_media_before,
                       base::OnceClosure closure) override;

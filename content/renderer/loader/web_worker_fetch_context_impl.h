@@ -32,6 +32,7 @@
 
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
+class URLLoaderThrottleProvider;
 class WeakWrapperResourceLoadInfoNotifier;
 class WebFrameRequestBlocker;
 class WebSocketHandshakeThrottleProvider;
@@ -40,7 +41,6 @@ class WebSocketHandshakeThrottleProvider;
 namespace content {
 
 class ServiceWorkerProviderContext;
-class URLLoaderThrottleProvider;
 
 // This class is used for fetching resource requests from workers (dedicated
 // worker and shared worker). This class is created on the main thread and
@@ -206,7 +206,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
           pending_fallback_factory,
       mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
           pending_subresource_loader_updater,
-      std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
+      std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider,
       std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
           websocket_handshake_throttle_provider,
       const std::vector<std::string>& cors_exempt_header_list,
@@ -343,7 +343,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // Blink by GetURLLoaderFactory().
   std::unique_ptr<Factory> web_loader_factory_;
 
-  std::unique_ptr<URLLoaderThrottleProvider> throttle_provider_;
+  std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider_;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;
 

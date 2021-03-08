@@ -20,11 +20,11 @@
 
 namespace blink {
 class InternetDisconnectedWebURLLoaderFactory;
+class URLLoaderThrottleProvider;
 class WebSocketHandshakeThrottleProvider;
 }
 
 namespace content {
-class URLLoaderThrottleProvider;
 
 class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
     : public blink::WebServiceWorkerFetchContext,
@@ -49,7 +49,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_script_loader_factory,
       const GURL& script_url_to_skip_throttling,
-      std::unique_ptr<URLLoaderThrottleProvider> throttle_provider,
+      std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider,
       std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
           websocket_handshake_throttle_provider,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
@@ -121,7 +121,7 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   // classic/module main script, module imported scripts, or importScripts()).
   std::unique_ptr<blink::WebURLLoaderFactory> web_script_loader_factory_;
 
-  std::unique_ptr<URLLoaderThrottleProvider> throttle_provider_;
+  std::unique_ptr<blink::URLLoaderThrottleProvider> throttle_provider_;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
       websocket_handshake_throttle_provider_;
 

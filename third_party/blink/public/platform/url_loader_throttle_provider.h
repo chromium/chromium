@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_RENDERER_URL_LOADER_THROTTLE_PROVIDER_H_
-#define CONTENT_PUBLIC_RENDERER_URL_LOADER_THROTTLE_PROVIDER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_URL_LOADER_THROTTLE_PROVIDER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_URL_LOADER_THROTTLE_PROVIDER_H_
 
 #include <memory>
-#include <vector>
 
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_vector.h"
 
-namespace content {
+namespace blink {
 
 enum class URLLoaderThrottleProviderType {
   // Used for requests from frames. Please note that the requests could be
@@ -24,7 +24,7 @@ enum class URLLoaderThrottleProviderType {
   kWorker
 };
 
-class CONTENT_EXPORT URLLoaderThrottleProvider {
+class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
  public:
   virtual ~URLLoaderThrottleProvider() {}
 
@@ -35,13 +35,14 @@ class CONTENT_EXPORT URLLoaderThrottleProvider {
   // service workers call it on the worker thread. |render_frame_id| will be set
   // to the corresponding frame for frame and dedicated worker requests,
   // otherwise it will be MSG_ROUTING_NONE.
-  virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateThrottles(int render_frame_id, const blink::WebURLRequest& request) = 0;
+  virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
+      int render_frame_id,
+      const WebURLRequest& request) = 0;
 
   // Set the network status online state as specified in |is_online|.
   virtual void SetOnline(bool is_online) = 0;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_PUBLIC_RENDERER_URL_LOADER_THROTTLE_PROVIDER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_URL_LOADER_THROTTLE_PROVIDER_H_

@@ -47,7 +47,6 @@ target(link_target_type, "renderer_sources") {
     "render_view.h",
     "render_view_visitor.h",
     "renderer_ppapi_host.h",
-    "url_loader_throttle_provider.h",
     "v8_value_converter.h",
     "video_encode_accelerator.cc",
     "video_encode_accelerator.h",
