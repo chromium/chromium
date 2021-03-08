@@ -5,8 +5,8 @@
 // https://github.com/WICG/handwriting-recognition/blob/main/explainer.md
 
 dictionary HandwritingPoint {
-  double x;
-  double y;
+  required double x;
+  required double y;
   // Timestamp in ms since the start of the current drawing.
   DOMTimeStamp t;
 };
