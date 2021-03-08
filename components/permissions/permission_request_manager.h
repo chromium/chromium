@@ -14,7 +14,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/time/time.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_uma_util.h"
@@ -312,10 +311,6 @@ class PermissionRequestManager
   // Whether the view for the current |requests_| has been shown to the user at
   // least once.
   bool current_request_already_displayed_ = false;
-
-  // When the view for the current |requests_| has been first shown to the user,
-  // or zero if not at all.
-  base::Time current_request_first_display_time_;
 
   // Whether to use the normal or quiet UI to display the current permission
   // |requests_|, and whether to show warnings. This will be nullopt if we are

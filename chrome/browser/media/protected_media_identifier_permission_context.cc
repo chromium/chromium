@@ -93,7 +93,7 @@ void ProtectedMediaIdentifierPermissionContext::DecidePermission(
                          OnPlatformVerificationConsentResponse,
                      weak_factory_.GetWeakPtr(), web_contents, id,
                      requesting_origin, embedding_origin, user_gesture,
-                     base::Time::Now(), repeating_callback));
+                     repeating_callback));
 
   // This could happen when the permission is requested from an extension. See
   // http://crbug.com/728534
@@ -225,7 +225,6 @@ void ProtectedMediaIdentifierPermissionContext::
         const GURL& requesting_origin,
         const GURL& embedding_origin,
         bool user_gesture,
-        base::Time dialog_show_time,
         permissions::BrowserPermissionCallback callback,
         PlatformVerificationDialog::ConsentResponse response) {
   // Prepare function to report metrics.
@@ -241,7 +240,6 @@ void ProtectedMediaIdentifierPermissionContext::
 
     permissions::PermissionUmaUtil::PermissionPromptResolved(
         {permission_request.get()}, web_contents, permission_action,
-        base::Time::Now() - dialog_show_time,
         permissions::PermissionPromptDisposition::CUSTOM_MODAL_DIALOG,
         /*ui_reason=*/base::nullopt,
         /*predicted_grant_likelihood=*/base::nullopt);

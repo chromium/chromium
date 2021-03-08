@@ -529,10 +529,6 @@ void ContentSettingSingleRadioGroup::CommitChanges() {
     ContentSetting setting = selected_item() == kAllowButtonIndex
                                  ? CONTENT_SETTING_ALLOW
                                  : block_setting_;
-    permissions::PermissionUmaUtil::ScopedRevocationReporter
-        scoped_revocation_reporter(
-            GetProfile(), bubble_content().radio_group.url, GURL(),
-            content_type(), permissions::PermissionSourceUI::PAGE_ACTION);
     SetNarrowestContentSetting(setting);
   }
 }
@@ -1374,11 +1370,6 @@ ContentSettingDownloadsBubbleModel::~ContentSettingDownloadsBubbleModel() {}
 
 void ContentSettingDownloadsBubbleModel::CommitChanges() {
   if (selected_item() != bubble_content().radio_group.default_item) {
-    permissions::PermissionUmaUtil::ScopedRevocationReporter
-        scoped_revocation_reporter(
-            GetProfile(), bubble_content().radio_group.url, GURL(),
-            ContentSettingsType::AUTOMATIC_DOWNLOADS,
-            permissions::PermissionSourceUI::PAGE_ACTION);
     ContentSetting setting = selected_item() == kAllowButtonIndex
                                  ? CONTENT_SETTING_ALLOW
                                  : CONTENT_SETTING_BLOCK;

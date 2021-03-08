@@ -717,7 +717,6 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-  ASSERT_TRUE(profile()->CreateHistoryService());
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
 
