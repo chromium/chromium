@@ -3186,7 +3186,7 @@ void PwnMessageHelper::FileSystemWrite(RenderProcessHost* process,
 
 void PwnMessageHelper::OpenURL(RenderFrameHost* render_frame_host,
                                const GURL& url) {
-  auto params = content::mojom::OpenURLParams::New();
+  auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = false;

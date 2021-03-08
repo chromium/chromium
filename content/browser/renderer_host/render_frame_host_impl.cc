@@ -5104,7 +5104,7 @@ void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
   frame_tree_->controller().UpdateStateForFrame(this, state);
 }
 
-void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
+void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // Verify and unpack the Mojo payload.
   GURL validated_url;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;

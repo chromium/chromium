@@ -199,7 +199,7 @@ class MockFrameHost : public mojom::FrameHost {
     is_page_state_updated_ = true;
   }
 
-  void OpenURL(mojom::OpenURLParamsPtr params) override {
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override {
     is_url_opened_ = true;
   }
 

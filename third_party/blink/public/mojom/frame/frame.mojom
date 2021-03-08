@@ -16,6 +16,7 @@ import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -47,6 +48,7 @@ import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
 import "third_party/blink/public/mojom/modal_close_watcher/modal_close_listener.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/portal/portal.mojom";
 import "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom";
@@ -153,6 +155,45 @@ struct TextAutosizerPageInfo {
   int32 main_frame_layout_width;
 
   float device_scale_adjustment;
+};
+
+// This struct holds parameters included in the OpenURL method sent by the
+// renderer to the browser, |is_history_navigation_in_new_child_frame| is true
+// in the case that the browser process should look for an existing history item
+// for the frame.
+struct OpenURLParams {
+  // The main URL to open.
+  url.mojom.Url url;
+  url.mojom.Origin initiator_origin;
+
+  // The token of the RenderFrameHost that initiated the navigation. It might
+  // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
+  // the browser process.
+  blink.mojom.LocalFrameToken? initiator_frame_token;
+
+  network.mojom.URLRequestBody? post_body;
+  string extra_headers;
+  blink.mojom.Referrer referrer;
+
+  // The window position to open the URL.
+  ui.mojom.WindowOpenDisposition disposition;
+  bool should_replace_current_entry;
+  bool user_gesture;
+
+  // Extra information about the triggering of the OpenURL.
+  blink.mojom.TriggeringEventInfo triggering_event_info;
+  pending_remote<blink.mojom.BlobURLToken>? blob_url_token;
+  string href_translate;
+  Impression? impression;
+  NavigationDownloadPolicy download_policy;
+
+  // Passing the |initiator_policy_container_keep_alive_handle| is just a mean
+  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
+  // kept alive, even if the RenderFrameHost itself has already been deleted in
+  // the meantime. If this can be ensured in other ways, it is safe to pass a
+  // mojo::NullRemote here.
+  pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
+      initiator_policy_container_keep_alive_handle;
 };
 
 // An opaque handle that keeps alive the associated render process even after

@@ -2228,7 +2228,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CancelInitialHistoryLoad() override;
   void UpdateEncoding(const std::string& encoding) override;
   void UpdateState(const blink::PageState& state) override;
-  void OpenURL(mojom::OpenURLParamsPtr params) override;
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;
 
 #if defined(OS_ANDROID)

@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This struct represents std::bitset of navigation types which aliases
+// to blink::NavigationDownloadPolicy::NavigationDownloadTypes.
+// TODO(https://crbug.com/1082291): Change to bitset when mojom supports
+// explicit bitset types.
+struct NavigationDownloadTypes {
+  bool view_source;
+  bool interstitial;
+  bool opener_cross_origin;
+  bool ad_frame_no_gesture;
+  bool ad_frame;
+  bool sandbox;
+  bool no_gesture;
+};
+
+// This struct represents blink::NavigationDownloadPolicy.
+struct NavigationDownloadPolicy {
+  // A bitset of navigation types observed that may be of interest to the
+  // download-related metrics to be reported at download-discovery time.
+  NavigationDownloadTypes observed_types;
+
+  // A bitset of navigation types observed where if the navigation turns into
+  // a download, the download should be dropped.
+  NavigationDownloadTypes disallowed_types;
+
+  bool blocking_downloads_in_sandbox_enabled = false;
+};

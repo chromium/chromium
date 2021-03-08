@@ -335,7 +335,7 @@ void RenderFrameProxy::Navigate(
   // The request must always have a valid initiator origin.
   DCHECK(!request.RequestorOrigin().IsNull());
 
-  auto params = mojom::OpenURLParams::New();
+  auto params = blink::mojom::OpenURLParams::New();
   params->url = request.Url();
   params->initiator_origin = request.RequestorOrigin();
   params->post_body = blink::GetRequestBodyForWebURLRequest(request);

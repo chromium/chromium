@@ -75,15 +75,17 @@ struct BLINK_COMMON_EXPORT NavigationDownloadPolicy {
   // Record the download policy to histograms from |observed_types|.
   void RecordHistogram() const;
 
+  // An alias of a bitset of navigation types.
+  using NavigationDownloadTypes =
+      std::bitset<static_cast<size_t>(NavigationDownloadType::kMaxValue) + 1>;
+
   // A bitset of navigation types observed that may be of interest to the
   // download-related metrics to be reported at download-discovery time.
-  std::bitset<static_cast<size_t>(NavigationDownloadType::kMaxValue) + 1>
-      observed_types;
+  NavigationDownloadTypes observed_types;
 
   // A bitset of navigation types observed where if the navigation turns into
   // a download, the download should be dropped.
-  std::bitset<static_cast<size_t>(NavigationDownloadType::kMaxValue) + 1>
-      disallowed_types;
+  NavigationDownloadTypes disallowed_types;
 
   bool blocking_downloads_in_sandbox_enabled = false;
 };

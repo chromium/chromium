@@ -38,8 +38,8 @@ const char kAddIframeScript[] =
     "frame.src = $1;\n"
     "document.body.appendChild(frame);\n";
 
-content::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
-  auto params = content::mojom::OpenURLParams::New();
+blink::mojom::OpenURLParamsPtr CreateOpenURLParams(const GURL& url) {
+  auto params = blink::mojom::OpenURLParams::New();
   params->url = url;
   params->disposition = WindowOpenDisposition::CURRENT_TAB;
   params->should_replace_current_entry = false;

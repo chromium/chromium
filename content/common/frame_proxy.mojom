@@ -4,8 +4,8 @@
 
 module content.mojom;
 
+import "third_party/blink/public/mojom/frame/frame.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
-import "content/common/frame.mojom";
 
 // Mojo interface for communicating from RenderFrameProxy to
 // RenderFrameProxyHost. Implemented by the browser process, called by renderer
@@ -15,7 +15,7 @@ interface RenderFrameProxyHost {
   // blink::RemoteFrameHost but we might still need this.
 
   // Requests that the given URL be opened in the specified manner.
-  OpenURL(OpenURLParams params);
+  OpenURL(blink.mojom.OpenURLParams params);
 };
 
 // Mojo interface for communicating from RenderFrameProxyHost to

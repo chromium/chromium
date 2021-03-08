@@ -117,6 +117,7 @@ mojom("mojom_platform") {
     "mime/mime_registry.mojom",
     "modal_close_watcher/modal_close_listener.mojom",
     "native_io/native_io.mojom",
+    "navigation/navigation_policy.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
     "oom_intervention/oom_intervention.mojom",
@@ -340,6 +341,19 @@ mojom("mojom_platform") {
       ]
       traits_headers =
           [ "//third_party/blink/common/frame/frame_policy_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.NavigationDownloadPolicy"
+          cpp = "::blink::NavigationDownloadPolicy"
+        },
+        {
+          mojom = "blink.mojom.NavigationDownloadTypes"
+          cpp = "::blink::NavigationDownloadPolicy::NavigationDownloadTypes"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/navigation/navigation_policy_mojom_traits.h" ]
     },
     {
       types = [

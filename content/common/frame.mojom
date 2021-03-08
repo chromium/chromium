@@ -591,45 +591,6 @@ struct CreateNewWindowReply {
   blink.mojom.PolicyContainer policy_container;
 };
 
-// This struct holds parameters included in the OpenURL method sent by the
-// renderer to the browser, |is_history_navigation_in_new_child_frame| is true
-// in the case that the browser process should look for an existing history item
-// for the frame.
-struct OpenURLParams {
-  // The main URL to open.
-  url.mojom.Url url;
-  url.mojom.Origin initiator_origin;
-
-  // The token of the RenderFrameHost that initiated the navigation. It might
-  // refer to a RenderFrameHost that doesn't exist anymore when the IPC reaches
-  // the browser process.
-  blink.mojom.LocalFrameToken? initiator_frame_token;
-
-  network.mojom.URLRequestBody? post_body;
-  string extra_headers;
-  blink.mojom.Referrer referrer;
-
-  // The window position to open the URL.
-  ui.mojom.WindowOpenDisposition disposition;
-  bool should_replace_current_entry;
-  bool user_gesture;
-
-  // Extra information about the triggering of the OpenURL.
-  blink.mojom.TriggeringEventInfo triggering_event_info;
-  pending_remote<blink.mojom.BlobURLToken>? blob_url_token;
-  string href_translate;
-  Impression? impression;
-  NavigationDownloadPolicy download_policy;
-
-  // Passing the |initiator_policy_container_keep_alive_handle| is just a mean
-  // to ensure that the PolicyContainerHost of the initiator RenderFrameHost is
-  // kept alive, even if the RenderFrameHost itself has already been deleted in
-  // the meantime. If this can be ensured in other ways, it is safe to pass a
-  // mojo::NullRemote here.
-  pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
-      initiator_policy_container_keep_alive_handle;
-};
-
 // Implemented by the frame server (i.e. the browser process). For messages that
 // must be associated with the IPC channel.
 interface FrameHost {
@@ -788,7 +749,7 @@ interface FrameHost {
   UpdateState(PageState state);
 
   // Requests that the given URL be opened in the specified manner.
-  OpenURL(OpenURLParams params);
+  OpenURL(blink.mojom.OpenURLParams params);
 
   // Called when the renderer is done loading a frame.
   DidStopLoading();

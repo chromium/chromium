@@ -201,7 +201,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void RouteCloseEvent() override;
 
   // mojom::RenderFrameProxyHost:
-  void OpenURL(mojom::OpenURLParamsPtr params) override;
+  void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
 
   // Returns associated remote for the content::mojom::RenderFrameProxy Mojo
   // interface.

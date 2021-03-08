@@ -681,7 +681,7 @@ void RenderFrameProxyHost::RouteCloseEvent() {
   }
 }
 
-void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
+void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // Verify and unpack IPC payload.
   GURL validated_url;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
