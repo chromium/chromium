@@ -25,10 +25,11 @@ class WebContents;
 
 namespace ui {
 class AXTreeID;
-class AXEventBundleSink;
 }  // namespace ui
 
 namespace extensions {
+
+class AutomationEventRouterInterface;
 
 class AutomationInternalApiDelegate {
  public:
@@ -63,8 +64,10 @@ class AutomationInternalApiDelegate {
   // Gets the active user context, if multiple contexts are managed by
   // the delegate. Otherwise, may return null.
   virtual content::BrowserContext* GetActiveUserContext() = 0;
-  // Sets the event bundle sink that should be set on the automation manager.
-  virtual void SetEventBundleSink(ui::AXEventBundleSink* sink) = 0;
+  // Sets the automation event router interface that should be set on the
+  // automation manager.
+  virtual void SetAutomationEventRouterInterface(
+      AutomationEventRouterInterface* router) = 0;
 };
 
 }  // namespace extensions

@@ -43,7 +43,7 @@ AutomationEventRouter::AutomationEventRouter()
   // Not reset because |this| is leaked.
   ExtensionsAPIClient::Get()
       ->GetAutomationInternalApiDelegate()
-      ->SetEventBundleSink(this);
+      ->SetAutomationEventRouterInterface(this);
 #endif
 }
 
@@ -62,7 +62,7 @@ void AutomationEventRouter::RegisterListenerWithDesktopPermission(
   Register(extension_id, listener_process_id, ui::AXTreeIDUnknown(), true);
 }
 
-void AutomationEventRouter::DispatchAccessibilityEvents(
+void AutomationEventRouter::DispatchAccessibilityEventsInternal(
     const ExtensionMsg_AccessibilityEventBundleParams& event_bundle) {
   content::BrowserContext* active_context =
       ExtensionsAPIClient::Get()
@@ -117,6 +117,8 @@ void AutomationEventRouter::DispatchTreeDestroyedEvent(
       api::automation_internal::OnAccessibilityTreeDestroyed::kEventName,
       std::move(args), browser_context);
   EventRouter::Get(browser_context)->BroadcastEvent(std::move(event));
+
+  ui::AXTreeIDRegistry::GetInstance()->RemoveAXTreeID(tree_id);
 }
 
 void AutomationEventRouter::DispatchActionResult(
@@ -231,7 +233,7 @@ void AutomationEventRouter::DispatchAccessibilityEvents(
   event_bundle.mouse_location = mouse_location;
   event_bundle.events = std::move(events);
 
-  DispatchAccessibilityEvents(event_bundle);
+  DispatchAccessibilityEventsInternal(event_bundle);
 }
 
 void AutomationEventRouter::RenderProcessExited(

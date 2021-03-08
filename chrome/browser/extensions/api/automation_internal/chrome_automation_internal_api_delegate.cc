@@ -108,10 +108,11 @@ ui::AXTreeID ChromeAutomationInternalApiDelegate::GetAXTreeID() {
 #endif
 }
 
-void ChromeAutomationInternalApiDelegate::SetEventBundleSink(
-    ui::AXEventBundleSink* sink) {
+void ChromeAutomationInternalApiDelegate::SetAutomationEventRouterInterface(
+    AutomationEventRouterInterface* router) {
 #if defined(USE_AURA)
-  AutomationManagerAura::GetInstance()->set_event_bundle_sink(sink);
+  AutomationManagerAura::GetInstance()->set_automation_event_router_interface(
+      router);
 #else
   NOTIMPLEMENTED();
 #endif

@@ -46,19 +46,22 @@ using AXWindowStringProperty = mojom::AccessibilityWindowStringProperty;
 class MockAutomationEventRouter
     : public extensions::AutomationEventRouterInterface {
  public:
-  MockAutomationEventRouter() {}
-  ~MockAutomationEventRouter() override = default;
+  MockAutomationEventRouter() = default;
+  virtual ~MockAutomationEventRouter() = default;
 
   ui::AXTree* tree() { return &tree_; }
 
-  void DispatchAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events) override {
-    for (auto&& event : events.events) {
+  // extensions::AutomationEventRouterInterface:
+  void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
+                                   std::vector<ui::AXTreeUpdate> updates,
+                                   const gfx::Point& mouse_location,
+                                   std::vector<ui::AXEvent> events) override {
+    for (auto&& event : events) {
       event_count_[event.event_type]++;
       last_event_type_ = event.event_type;
     }
 
-    for (const auto& update : events.updates)
+    for (const auto& update : updates)
       tree_.Unserialize(update);
   }
 

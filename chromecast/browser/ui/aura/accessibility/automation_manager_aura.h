@@ -27,8 +27,8 @@ template <typename T>
 class NoDestructor;
 }  // namespace base
 
-namespace ui {
-class AXEventBundleSink;
+namespace extensions {
+class AutomationEventRouterInterface;
 }
 
 namespace views {
@@ -69,8 +69,9 @@ class AutomationManagerAura : public ui::AXActionHandler,
   // views::AXEventObserver:
   void OnViewEvent(views::View* view, ax::mojom::Event event_type) override;
 
-  void set_event_bundle_sink(ui::AXEventBundleSink* sink) {
-    event_bundle_sink_ = sink;
+  void set_automation_event_router_interface(
+      extensions::AutomationEventRouterInterface* router) {
+    automation_event_router_interface_ = router;
   }
 
   int32_t GetIDFromWindow(aura::Window* window) { return cache_.GetID(window); }
@@ -114,7 +115,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
 
   // The handler for AXEvents (e.g. the extensions subsystem in production, or
   // a fake for tests).
-  ui::AXEventBundleSink* event_bundle_sink_ = nullptr;
+  extensions::AutomationEventRouterInterface*
+      automation_event_router_interface_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
 
