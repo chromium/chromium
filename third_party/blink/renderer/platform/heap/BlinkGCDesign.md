@@ -28,7 +28,8 @@ Assigning to a `CrossThreadPersistent` requires a global lock, meaning it might
 block waiting for garbage collection to end on all other threads.
 
 Threads that want to allocate Oilpan objects must be "attached" to Oilpan
-(typically through `WebThreadSupportingGC`).
+(typically by `blink::Thread::CreateThread()` and set the`support_gc` field of
+`blink::ThreadCreationParams` as `true`).
 
 ## Heap partitioning
 
