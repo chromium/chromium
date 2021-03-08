@@ -147,6 +147,78 @@ class OmniboxPedalRunChromeSafetyCheck : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalManageSecuritySettings : public OmniboxPedal {
+ public:
+  OmniboxPedalManageSecuritySettings()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_SECURITY_SETTINGS,
+            OmniboxPedal::LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_SECURITY_SETTINGS),
+            GURL("chrome://settings/security")) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalManageCookies : public OmniboxPedal {
+ public:
+  OmniboxPedalManageCookies()
+      : OmniboxPedal(OmniboxPedalId::MANAGE_COOKIES,
+                     OmniboxPedal::LabelStrings(
+                         IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_HINT,
+                         IDS_OMNIBOX_PEDAL_MANAGE_COOKIES_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_COOKIES),
+                     GURL("chrome://settings/cookies")) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalManageAddresses : public OmniboxPedal {
+ public:
+  OmniboxPedalManageAddresses()
+      : OmniboxPedal(OmniboxPedalId::MANAGE_ADDRESSES,
+                     OmniboxPedal::LabelStrings(
+                         IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_HINT,
+                         IDS_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_ADDRESSES),
+                     GURL("chrome://settings/addresses")) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalManageSync : public OmniboxPedal {
+ public:
+  OmniboxPedalManageSync()
+      : OmniboxPedal(OmniboxPedalId::MANAGE_SYNC,
+                     OmniboxPedal::LabelStrings(
+                         IDS_OMNIBOX_PEDAL_MANAGE_SYNC_HINT,
+                         IDS_OMNIBOX_PEDAL_MANAGE_SYNC_SUGGESTION_CONTENTS,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC_SUFFIX,
+                         IDS_ACC_OMNIBOX_PEDAL_MANAGE_SYNC),
+                     GURL("chrome://settings/syncSetup/advanced")) {}
+};
+
+// =============================================================================
+
+class OmniboxPedalManageSiteSettings : public OmniboxPedal {
+ public:
+  OmniboxPedalManageSiteSettings()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_SITE_SETTINGS,
+            OmniboxPedal::LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_SITE_SETTINGS),
+            GURL("chrome://settings/content")) {}
+};
+
+// =============================================================================
+
 std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
 GetPedalImplementations() {
   std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>> pedals;
@@ -162,6 +234,13 @@ GetPedalImplementations() {
   if (OmniboxFieldTrial::IsPedalsBatch2Enabled()) {
     add(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK,
         new OmniboxPedalRunChromeSafetyCheck());
+    add(OmniboxPedalId::MANAGE_SECURITY_SETTINGS,
+        new OmniboxPedalManageSecuritySettings());
+    add(OmniboxPedalId::MANAGE_COOKIES, new OmniboxPedalManageCookies());
+    add(OmniboxPedalId::MANAGE_ADDRESSES, new OmniboxPedalManageAddresses());
+    add(OmniboxPedalId::MANAGE_SYNC, new OmniboxPedalManageSync());
+    add(OmniboxPedalId::MANAGE_SITE_SETTINGS,
+        new OmniboxPedalManageSiteSettings());
   }
   return pedals;
 }
