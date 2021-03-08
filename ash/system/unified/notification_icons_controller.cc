@@ -52,6 +52,8 @@ class SeparatorTrayItemView : public TrayItemView {
         AshColorProvider::ContentLayerType::kSeparatorColor));
     separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
     AddChildView(separator);
+
+    set_use_scale_in_animation(false);
   }
   ~SeparatorTrayItemView() override = default;
   SeparatorTrayItemView(const SeparatorTrayItemView&) = delete;
