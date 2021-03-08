@@ -89,6 +89,12 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
     return nullptr;
   }
 
+  if (source->WouldTaintOrigin()) {
+    exception_state.ThrowSecurityError(
+        "VideoFrames can't be created from tainted ImageBitmaps.");
+    return nullptr;
+  }
+
   gfx::Size size(source->width(), source->height());
   gfx::Rect rect(size);
   base::TimeDelta timestamp =
