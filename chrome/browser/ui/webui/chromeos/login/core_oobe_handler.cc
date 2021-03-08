@@ -91,22 +91,6 @@ void CoreOobeHandler::DeclareLocalizedValues(
   builder->Add("productName", IDS_SHORT_PRODUCT_NAME);
   builder->Add("learnMore", IDS_LEARN_MORE);
 
-  // Strings for the device requisition prompt.
-  builder->Add("deviceRequisitionPromptCancel",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_CANCEL);
-  builder->Add("deviceRequisitionPromptOk",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_OK);
-  builder->Add("deviceRequisitionPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_TEXT);
-  builder->Add("deviceRequisitionRemoraPromptCancel",
-               IDS_CONFIRM_MESSAGEBOX_NO_BUTTON_LABEL);
-  builder->Add("deviceRequisitionRemoraPromptOk",
-               IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL);
-  builder->Add("deviceRequisitionRemoraPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT);
-  builder->Add("deviceRequisitionSharkPromptText",
-               IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
-
 
   // Strings for Asset Identifier shown in version string.
   builder->Add("assetIdLabel", IDS_OOBE_ASSET_ID_LABEL);

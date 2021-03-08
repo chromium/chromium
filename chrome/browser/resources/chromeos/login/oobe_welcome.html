@@ -2,6 +2,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
@@ -319,6 +320,36 @@
         <oobe-text-button inverse on-click="onDemoModeDialogConfirmTap_"
             id="okButton"
             text-key="enableDemoModeDialogConfirm"></oobe-text-button>
+      </div>
+    </oobe-modal-dialog>
+
+    <!-- Remora requisition dialog -->
+    <oobe-modal-dialog id="remoraRequisitionDialog">
+      <div slot="title">
+        [[i18nDynamic(locale, 'deviceRequisitionRemoraPromptText')]]
+      </div>
+      <div slot="buttons">
+        <oobe-text-button border on-click="onRemoraCancel_"
+            text-key="deviceRequisitionRemoraPromptCancel"></oobe-text-button>
+        <oobe-text-button inverse on-click="onRemoraConfirm_"
+            text-key="deviceRequisitionRemoraPromptOk"></oobe-text-button>
+      </div>
+    </oobe-modal-dialog>
+
+    <!-- Edit requisition dialog -->
+    <oobe-modal-dialog id="editRequisitionDialog">
+      <div slot="title">
+        [[i18nDynamic(locale, 'deviceRequisitionPromptText')]]
+      </div>
+      <cr-input id="editRequisitionInput" slot="content"
+          placeholder="[[i18nDynamic(locale,
+              'advancedOptionsDeviceRequisitionTitle')]]">
+      </cr-input>
+      <div slot="buttons">
+        <oobe-text-button border on-click="onEditRequisitionCancel_"
+            text-key="deviceRequisitionPromptCancel"></oobe-text-button>
+        <oobe-text-button inverse on-click="onEditRequisitionConfirm_"
+            text-key="deviceRequisitionPromptOk"></oobe-text-button>
       </div>
     </oobe-modal-dialog>
   </template>

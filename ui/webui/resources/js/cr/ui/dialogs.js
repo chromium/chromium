@@ -377,71 +377,11 @@ cr.define('cr.ui.dialogs', function() {
 
   ConfirmDialog.prototype = {__proto__: BaseDialog.prototype};
 
-  /**
-   * PromptDialog contains a message, a text input, an ok button, and a
-   * cancel button.
-   * @constructor
-   * @extends {cr.ui.dialogs.BaseDialog}
-   */
-  /* #export */ function PromptDialog(parentNode) {
-    BaseDialog.call(this, parentNode);
-    this.input_ = this.document_.createElement('input');
-    this.input_.setAttribute('type', 'text');
-    this.input_.addEventListener('focus', this.onInputFocus.bind(this));
-    this.input_.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.initialFocusElement_ = this.input_;
-    this.frame.insertBefore(this.input_, this.text.nextSibling);
-  }
-
-  PromptDialog.prototype = {__proto__: BaseDialog.prototype};
-
-  PromptDialog.prototype.onInputFocus = function(event) {
-    this.input_.select();
-  };
-
-  /** @private */
-  PromptDialog.prototype.onKeyDown_ = function(event) {
-    if (event.keyCode === 13) {  // Enter
-      this.onOkClick_(event);
-      event.preventDefault();
-    }
-  };
-
-  /**
-   * @param {string} message
-   * @param {?} defaultValue
-   * @param {Function=} opt_onOk
-   * @param {Function=} opt_onCancel
-   * @param {Function=} opt_onShow
-   * @suppress {checkTypes}
-   * TODO(fukino): remove suppression if there is a better way to avoid warning
-   * about overriding method with different signature.
-   */
-  PromptDialog.prototype.show = function(
-      message, defaultValue, opt_onOk, opt_onCancel, opt_onShow) {
-    this.input_.value = defaultValue || '';
-    return BaseDialog.prototype.show.call(
-        this, message, opt_onOk, opt_onCancel, opt_onShow);
-  };
-
-  PromptDialog.prototype.getValue = function() {
-    return this.input_.value;
-  };
-
-  /** @private */
-  PromptDialog.prototype.onOkClick_ = function(event) {
-    this.hide();
-    if (this.onOk_) {
-      this.onOk_(this.getValue());
-    }
-  };
-
   // #cr_define_end
   console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     BaseDialog: BaseDialog,
     AlertDialog: AlertDialog,
     ConfirmDialog: ConfirmDialog,
-    PromptDialog: PromptDialog
   };
 });

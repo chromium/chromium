@@ -204,6 +204,22 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_LAPTOP);
   builder->Add("chromeVoxHintAnnouncementTextTablet",
                IDS_OOBE_CHROMEVOX_HINT_ANNOUNCEMENT_TEXT_TABLET);
+
+  // Strings for the device requisition prompt.
+  builder->Add("deviceRequisitionPromptCancel",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_CANCEL);
+  builder->Add("deviceRequisitionPromptOk",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_OK);
+  builder->Add("deviceRequisitionPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_PROMPT_TEXT);
+  builder->Add("deviceRequisitionRemoraPromptCancel",
+               IDS_CONFIRM_MESSAGEBOX_NO_BUTTON_LABEL);
+  builder->Add("deviceRequisitionRemoraPromptOk",
+               IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL);
+  builder->Add("deviceRequisitionRemoraPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_REMORA_PROMPT_TEXT);
+  builder->Add("deviceRequisitionSharkPromptText",
+               IDS_ENTERPRISE_DEVICE_REQUISITION_SHARK_PROMPT_TEXT);
 }
 
 void WelcomeScreenHandler::DeclareJSCallbacks() {
