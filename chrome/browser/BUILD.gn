@@ -4975,6 +4975,8 @@ static_library("browser") {
       "hang_monitor/hang_crash_dump_mac.cc",
       "icon_loader_mac.mm",
       "lifetime/application_lifetime_mac.mm",
+      "mac/auth_session_request.h",
+      "mac/auth_session_request.mm",
       "mac/bluetooth_utility.h",
       "mac/bluetooth_utility.mm",
       "mac/dock.h",
@@ -5065,6 +5067,7 @@ static_library("browser") {
       "SecurityInterface.framework",
     ]
     weak_frameworks = [
+      "AuthenticationServices.framework",  # macOS 10.15
       "SafariServices.framework",  # macOS 10.12
       "UserNotifications.framework",  # macOS 10.14
     ]

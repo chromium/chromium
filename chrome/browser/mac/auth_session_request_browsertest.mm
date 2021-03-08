@@ -1,0 +1,210 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "base/mac/scoped_nsobject.h"
+#import "chrome/browser/app_controller_mac.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
+#include "net/base/mac/url_conversions.h"
+#include "testing/gtest_mac.h"
+#include "ui/base/page_transition_types.h"
+
+using AuthSessionBrowserTest = InProcessBrowserTest;
+
+@interface MockASWebAuthenticationSessionRequest : NSObject {
+  base::scoped_nsobject<NSUUID> _uuid;
+
+  base::scoped_nsobject<NSURL> _callbackURL;
+  base::scoped_nsobject<NSError> _cancellationError;
+}
+
+// ASWebAuthenticationSessionRequest:
+
+@property(readonly, nonatomic) NSURL* URL;
+@property(readonly, nonatomic) BOOL shouldUseEphemeralSession;
+@property(nullable, readonly, nonatomic, copy) NSString* callbackURLScheme;
+@property(readonly, nonatomic) NSUUID* UUID;
+
+- (void)completeWithCallbackURL:(NSURL*)url;
+- (void)cancelWithError:(NSError*)error;
+
+// Utilities:
+
+@property(readonly, nonatomic) NSURL* callbackURL;
+@property(readonly, nonatomic) NSError* cancellationError;
+
+@end
+
+@implementation MockASWebAuthenticationSessionRequest
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _uuid.reset([[NSUUID alloc] init]);
+  }
+  return self;
+}
+
+- (NSURL*)URL {
+  return [NSURL URLWithString:@"about:blank"];
+}
+
+- (BOOL)shouldUseEphemeralSession {
+  return false;
+}
+
+- (NSString*)callbackURLScheme {
+  return @"makeitso";
+}
+
+- (NSUUID*)UUID {
+  return _uuid.get();
+}
+
+- (void)completeWithCallbackURL:(NSURL*)url {
+  _callbackURL.reset(url, base::scoped_policy::RETAIN);
+}
+
+- (void)cancelWithError:(NSError*)error {
+  _cancellationError.reset(error, base::scoped_policy::RETAIN);
+}
+
+- (NSURL*)callbackURL {
+  return _callbackURL.get();
+}
+
+- (NSError*)cancellationError {
+  return _cancellationError.get();
+}
+
+@end
+
+// Tests that an OS request to cancel an auth session works.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, OSCancellation) {
+  if (@available(macOS 10.15, *)) {
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc] init]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+
+    // Ask the app controller to start handling our session request.
+
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect a browser window to be opened.
+
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_EQ(start_browser_count + 1, browser_list->size());
+
+    // Ask the app controller to stop handling our session request.
+
+    [session_handler cancelWebAuthenticationSessionRequest:request];
+
+    // Expect the browser window to close.
+
+    ui_test_utils::WaitForBrowserToClose(browser);
+    EXPECT_EQ(start_browser_count, browser_list->size());
+
+    // Expect there to not have been any callbacks.
+
+    EXPECT_EQ(nil, session_request.get().callbackURL);
+    EXPECT_EQ(nil, session_request.get().cancellationError);
+  }
+}
+
+// Tests that a user request to cancel an auth session works.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserCancellation) {
+  if (@available(macOS 10.15, *)) {
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc] init]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+
+    // Ask the app controller to start handling our session request.
+
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect a browser window to be opened.
+
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_EQ(start_browser_count + 1, browser_list->size());
+
+    // Simulate the user closing the window.
+
+    browser->window()->Close();
+
+    // Expect the browser window to close.
+
+    ui_test_utils::WaitForBrowserToClose(browser);
+    EXPECT_EQ(start_browser_count, browser_list->size());
+
+    // Expect there to have been the user cancellation callback.
+
+    EXPECT_EQ(nil, session_request.get().callbackURL);
+    ASSERT_NE(nil, session_request.get().cancellationError);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorDomain,
+              session_request.get().cancellationError.domain);
+    EXPECT_EQ(ASWebAuthenticationSessionErrorCodeCanceledLogin,
+              session_request.get().cancellationError.code);
+  }
+}
+
+// Tests that a successful auth session works.
+IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, UserSuccess) {
+  if (@available(macOS 10.15, *)) {
+    auto* browser_list = BrowserList::GetInstance();
+    size_t start_browser_count = browser_list->size();
+
+    base::scoped_nsobject<MockASWebAuthenticationSessionRequest>
+        session_request([[MockASWebAuthenticationSessionRequest alloc] init]);
+    id<ASWebAuthenticationSessionWebBrowserSessionHandling> session_handler =
+        ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+            .sessionHandler;
+    ASSERT_NE(nil, session_handler);
+
+    // Ask the app controller to start handling our session request.
+
+    id request = session_request.get();
+    [session_handler beginHandlingWebAuthenticationSessionRequest:request];
+
+    // Expect a browser window to be opened.
+
+    Browser* browser = ui_test_utils::WaitForBrowserToOpen();
+    EXPECT_EQ(start_browser_count + 1, browser_list->size());
+
+    // Simulate the user successfully logging in.
+
+    GURL callback_url("makeitso://enterprise");
+    browser->tab_strip_model()->GetWebContentsAt(0)->GetController().LoadURL(
+        callback_url, content::Referrer(), ui::PAGE_TRANSITION_GENERATED,
+        std::string());
+
+    // Expect the browser window to close.
+
+    ui_test_utils::WaitForBrowserToClose(browser);
+    EXPECT_EQ(start_browser_count, browser_list->size());
+
+    // Expect there to have been the success callback.
+
+    ASSERT_NE(nil, session_request.get().callbackURL);
+    EXPECT_EQ(nil, session_request.get().cancellationError);
+    EXPECT_NSEQ(net::NSURLWithGURL(callback_url),
+                session_request.get().callbackURL);
+  }
+}

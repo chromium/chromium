@@ -7,6 +7,7 @@
 
 #if defined(__OBJC__)
 
+#import <AuthenticationServices/AuthenticationServices.h>
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -36,9 +37,11 @@ class TabMenuBridge;
 // The application controller object, created by loading the MainMenu nib.
 // This handles things like responding to menus when there are no windows
 // open, etc and acts as the NSApplication delegate.
-@interface AppController : NSObject<NSUserInterfaceValidations,
-                                    NSMenuDelegate,
-                                    NSApplicationDelegate> {
+@interface AppController
+    : NSObject <NSUserInterfaceValidations,
+                NSMenuDelegate,
+                NSApplicationDelegate,
+                ASWebAuthenticationSessionWebBrowserSessionHandling> {
  @private
   // Manages the state of the command menu items.
   std::unique_ptr<CommandUpdater> _menuState;

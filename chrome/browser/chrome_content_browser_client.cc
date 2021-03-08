@@ -398,6 +398,7 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
+#include "chrome/browser/mac/auth_session_request.h"
 #include "components/soda/constants.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
@@ -4141,6 +4142,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   MaybeAddThrottle(
       ash::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
+#endif
+
+#if defined(OS_MAC)
+  if (__builtin_available(macOS 10.15, *)) {
+    MaybeAddThrottle(MaybeCreateAuthSessionThrottleFor(handle), &throttles);
+  }
 #endif
 
   auto* performance_manager_registry =

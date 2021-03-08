@@ -4,6 +4,7 @@
 
 #import "chrome/browser/app_controller_mac.h"
 
+#include <dispatch/dispatch.h>
 #include <stddef.h>
 
 #include <memory>
@@ -46,6 +47,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/mac/auth_session_request.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -875,6 +877,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
   _handoff_active_url_observer_bridge.reset(
       new HandoffActiveURLObserverBridge(self));
+
+  if (@available(macOS 10.15, *)) {
+    ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
+        .sessionHandler = self;
+  }
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Disable fatal OOM to hack around an OS bug https://crbug.com/654695.
@@ -1841,6 +1848,25 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
 - (void)handoffActiveURLChanged:(content::WebContents*)webContents {
   [self updateHandoffManager:webContents];
+}
+
+#pragma mark - ASWebAuthenticationSessionWebBrowserSessionHandling
+
+// Note that both of these WebAuthenticationSession calls come in on a random
+// worker thread, so it's important to hop to the main thread.
+
+- (void)beginHandlingWebAuthenticationSessionRequest:
+    (ASWebAuthenticationSessionRequest*)request API_AVAILABLE(macos(10.15)) {
+  dispatch_async(dispatch_get_main_queue(), ^(void) {
+    AuthSessionRequest::StartNewAuthSession(request, [self lastProfile]);
+  });
+}
+
+- (void)cancelWebAuthenticationSessionRequest:
+    (ASWebAuthenticationSessionRequest*)request API_AVAILABLE(macos(10.15)) {
+  dispatch_async(dispatch_get_main_queue(), ^(void) {
+    AuthSessionRequest::CancelAuthSession(request);
+  });
 }
 
 @end  // @implementation AppController
