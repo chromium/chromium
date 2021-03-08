@@ -44,8 +44,8 @@ class FileManagerApp {
    */
   async run() {
     await Promise.all([
-        new ScriptLoader('file_manager_private_fakes.js').load(),
-        new ScriptLoader('file_manager_fakes.js').load(),
+      new ScriptLoader('file_manager_private_fakes.js').load(),
+      new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load(),
     ]);
 
     // Temporarily remove window.cr while the foreground script bundle loads.
@@ -55,8 +55,7 @@ class FileManagerApp {
     window.loadTimeData.data_ = null;
 
     await Promise.all([
-      new ScriptLoader('foreground/js/elements_importer.js').load(),
-      new ScriptLoader('foreground/js/main_scripts.js', {defer: true}).load(),
+      new ScriptLoader('foreground/js/main.m.js', {type: 'module'}).load(),
     ]);
     // Restore the window.cr object.
     Object.assign(window.cr, origCr);

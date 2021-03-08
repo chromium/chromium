@@ -31,6 +31,9 @@ def GenerateSwaMainHtml(source, target):
     # Add <meta> charset="utf-8" attribute.
     elif line.find('<meta ') >= 0:
       sys.stdout.write(line.replace('<meta ', '<meta charset="utf-8" '))
+    # Ignore HTML Imports and its polyfil.
+    elif 'rel="import"' in line or 'html-imports' in line:
+      continue
     # Remove files app foreground/js <script> tags: SWA app must load
     # them after the SWA app has initialized needed resources.
     elif line.find('<script src="foreground/js/') == -1:
