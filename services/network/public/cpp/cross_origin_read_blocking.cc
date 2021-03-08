@@ -325,6 +325,18 @@ const auto& GetNeverSniffedMimeTypes() {
 }  // namespace
 
 // static
+bool CrossOriginReadBlocking::IsJavascriptMimeType(
+    base::StringPiece mime_type) {
+  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
+  for (const std::string& suffix : kJavaScriptSuffixes) {
+    if (base::EndsWith(mime_type, suffix, kCaseInsensitive))
+      return true;
+  }
+
+  return false;
+}
+
+// static
 MimeType CrossOriginReadBlocking::GetCanonicalMimeType(
     base::StringPiece mime_type) {
   // Checking for image/svg+xml and application/dash+xml early ensures that they
@@ -788,9 +800,13 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
   // Requests from foo.example.com will consult foo.example.com's service worker
   // first (if one has been registered).  The service worker can handle requests
   // initiated by foo.example.com even if they are cross-origin (e.g. requests
-  // for bar.example.com).  This is okay and should not be blocked by CORB,
-  // unless the initiator opted out of CORS / opted into receiving an opaque
-  // response.  See also https://crbug.com/803672.
+  // for bar.example.com).  This is okay, because there is no security boundary
+  // between foo.example.com and the service worker of foo.example.com + because
+  // the response data is "conjured" within the service worker of
+  // foo.example.com (rather than being fetched from bar.example.com).
+  // Therefore such responses should not be blocked by CORB, unless the
+  // initiator opted out of CORS / opted into receiving an opaque response.  See
+  // also https://crbug.com/803672.
   if (response.was_fetched_via_service_worker) {
     switch (response.response_type) {
       case network::mojom::FetchResponseType::kBasic:
@@ -902,17 +918,6 @@ CrossOriginReadBlocking::ResponseAnalyzer::ShouldBlockBasedOnHeaders(
 }
 
 // static
-bool CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(
-    const network::mojom::URLResponseHead& response) {
-  if (!response.headers)
-    return false;
-  std::string nosniff_header;
-  response.headers->GetNormalizedHeader("x-content-type-options",
-                                        &nosniff_header);
-  return base::LowerCaseEqualsASCII(nosniff_header, "nosniff");
-}
-
-// static
 bool CrossOriginReadBlocking::ResponseAnalyzer::SeemsSensitiveFromCORSHeuristic(
     const network::mojom::URLResponseHead& response) {
   // Check if the response has an Access-Control-Allow-Origin with a value other
@@ -984,15 +989,13 @@ CrossOriginReadBlocking::ResponseAnalyzer::GetMimeTypeBucket(
 
   // Javascript is assumed public. See also
   // https://mimesniff.spec.whatwg.org/#javascript-mime-type.
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  for (const std::string& suffix : kJavaScriptSuffixes) {
-    if (base::EndsWith(mime_type, suffix, kCaseInsensitive)) {
-      return kPublic;
-    }
+  if (IsJavascriptMimeType(mime_type)) {
+    return kPublic;
   }
 
   // Images are assumed public. See also
   // https://mimesniff.spec.whatwg.org/#image-mime-type.
+  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
   if (base::StartsWith(mime_type, "image", kCaseInsensitive)) {
     return kPublic;
   }
@@ -1184,6 +1187,17 @@ void CrossOriginReadBlocking::ResponseAnalyzer::LogBlockedResponse() {
   UMA_HISTOGRAM_ENUMERATION(
       "SiteIsolation.XSD.Browser.Blocked.CanonicalMimeType",
       canonical_mime_type_);
+}
+
+// static
+bool CrossOriginReadBlocking::ResponseAnalyzer::HasNoSniff(
+    const network::mojom::URLResponseHead& response) {
+  if (!response.headers)
+    return false;
+  std::string nosniff_header;
+  response.headers->GetNormalizedHeader("x-content-type-options",
+                                        &nosniff_header);
+  return base::LowerCaseEqualsASCII(nosniff_header, "nosniff");
 }
 
 // static

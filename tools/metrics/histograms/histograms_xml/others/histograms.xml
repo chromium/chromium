@@ -14241,6 +14241,48 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.Decision"
+    enum="OpaqueResponseBlocking_ResponseHeadersHeuristic" expires_after="M92">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The approximation of a route that Opaque Response Blocking (ORB) algorithm
+    would have taken to decide whether to block the response or not. The logged
+    value is based on heuristics that only look at the HTTP response headers,
+    and attempt to approximate if the full ORB algorithm would need to parse the
+    response body as Javascript (vs also reaching a decision purely based on the
+    HTTP response headers).
+
+    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
+    multimedia sniffing and/or 206-response processing is done). This means that
+    the results overestimate how many responses need Javascript parsing.
+
+    Logged for each final HTTP/HTTPS response processed by the NetworkService.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.{OrbDecision}"
+    enum="RequestDestination" expires_after="M92">
+  <owner>creis@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <summary>
+    The request destination (e.g. script vs image) of a response that Opaque
+    Response Blocking (ORB) algorithm processed {OrbDecision}.
+
+    Note that only partial ORB algorithm is used for logging the UMA (e.g. no
+    multimedia sniffing and/or 206-response processing is done). This means that
+    the results overestimate how many responses need Javascript parsing.
+
+    Logged for each final HTTP/HTTPS response processed by the NetworkService.
+  </summary>
+  <token key="OrbDecision">
+    <variant name="ProcessedBasedOnHeaders"
+        summary="based on HTTP response headers"/>
+    <variant name="RequiresJavascriptParsing"
+        summary="with required Javascript parsing"/>
+  </token>
+</histogram>
+
 <histogram name="SiteIsolation.OutOfProcessIframes" units="units"
     expires_after="2021-09-30">
   <owner>alexmos@chromium.org</owner>

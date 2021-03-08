@@ -56618,6 +56618,31 @@ Called by update_net_trust_anchors.py.-->
       label="Missing glyph path, but a fallback was found (deprecated)"/>
 </enum>
 
+<enum name="OpaqueResponseBlocking_ResponseHeadersHeuristic">
+  <summary>
+    Initial decision taken by Opaque Response Blocking (ORB, see also
+    https://github.com/annevk/orb) based on just the response headers.
+  </summary>
+  <int value="0" label="NonOpaqueResponse">
+    ORB only applies to opaque respones - the NonOpaqueResponse value covers:
+    mode != no-cors (e.g. mode=navigate or mode=cors) and browser-initiated
+    requests.
+  </int>
+  <int value="1" label="ProcessedBasedOnHeaders">
+    ORB algorithm is *surely* able to make a decision based on the response
+    headers. The ProcessedBasedOnHeaders enum value covers all subresource
+    requests: scripts, images, video, etc. (both same-origin and cross-origin
+    requests).
+  </int>
+  <int value="2" label="RequiresJavascriptParsing">
+    ORB algorithm *might* requires parsing the response body as Javascript.
+
+    This might be a false positive if the response: 1) sniffs as an
+    audio/image/video format 2) represents a valid range response for a media
+    element
+  </int>
+</enum>
+
 <enum name="OpenBrowserType">
   <summary>App categories for the app that opens the browser.</summary>
   <int value="0" label="Arc"/>
