@@ -282,8 +282,14 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {start_url_});
 }
 
+// Flaky on Linux, crbug.com/1185680
+#if defined(OS_LINUX)
+#define MAYBE_CaptureLinksNewClient DISABLED_CaptureLinksNewClient
+#else
+#define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
-                       CaptureLinksNewClient) {
+                       MAYBE_CaptureLinksNewClient) {
   InstallTestApp("/web_apps/capture_links_new_client.html",
                  /*await_metric=*/true);
 
