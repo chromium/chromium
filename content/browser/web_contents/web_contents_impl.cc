@@ -2378,6 +2378,15 @@ void WebContentsImpl::DidActivatePortal(
   GetDelegate()->WebContentsBecamePortal(predecessor_web_contents);
 }
 
+void WebContentsImpl::NotifyPrerenderingPageActivated() {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::NotifyPrerenderingPageActivated");
+  ExecutePageBroadcastMethod(base::BindRepeating([](RenderViewHostImpl* rvh) {
+    if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
+      broadcast->ActivatePrerender();
+  }));
+}
+
 void WebContentsImpl::NotifyInsidePortal(bool inside_portal) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyInsidePortal",
                         "inside_portal", inside_portal);

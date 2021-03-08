@@ -8435,8 +8435,11 @@ void Document::ActivateForPrerendering() {
   // TODO(bokan): Portals will change this assumption since they mean an active
   // document can be "adopted" into a portal.
   DCHECK(is_prerendering_);
-
   is_prerendering_ = false;
+
+  if (DocumentLoader* loader = Loader())
+    loader->NotifyPrerenderingDocumentActivated();
+
   DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
 }
 

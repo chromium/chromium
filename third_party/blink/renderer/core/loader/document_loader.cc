@@ -2485,6 +2485,12 @@ bool DocumentLoader::ConsumeTextFragmentToken() {
   return token_value;
 }
 
+void DocumentLoader::NotifyPrerenderingDocumentActivated() {
+  DCHECK(!frame_->GetDocument()->IsPrerendering());
+  DCHECK(is_prerendering_);
+  is_prerendering_ = false;
+}
+
 ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
 

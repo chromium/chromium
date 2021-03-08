@@ -63,7 +63,7 @@ if (!run_test) {
     writeValueToServer(activate_key, 'did_load');
   });
 
-  addEventListener('prerenderingchange', (e) => {
+  document.addEventListener('prerenderingchange', (e) => {
     result.eventBubbles = e.bubbles;
     result.eventCancelable = e.cancelable;
 
