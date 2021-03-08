@@ -11,11 +11,6 @@
 namespace security_state {
 namespace features {
 
-// This feature enables security warning UI treatments for sites that use legacy
-// TLS version (TLS 1.0 or 1.1).
-COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
-extern const base::Feature kLegacyTLSWarnings;
-
 // This feature enables Safety Tip warnings on possibly-risky sites.
 COMPONENT_EXPORT(SECURITY_STATE_FEATURES)
 extern const base::Feature kSafetyTipUI;

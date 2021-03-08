@@ -337,11 +337,6 @@ PageInfo::~PageInfo() {
                                                 safety_tip_info_.status),
       base::TimeTicks::Now() - start_time_,
       base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
-  base::UmaHistogramCustomTimes(
-      security_state::GetLegacyTLSHistogramName(
-          kPageInfoTimePrefix, visible_security_state_for_metrics_),
-      base::TimeTicks::Now() - start_time_,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1), 100);
 
   if (did_perform_action_) {
     base::UmaHistogramCustomTimes(
@@ -356,12 +351,6 @@ PageInfo::~PageInfo() {
         base::TimeTicks::Now() - start_time_,
         base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
         100);
-    base::UmaHistogramCustomTimes(
-        security_state::GetLegacyTLSHistogramName(
-            kPageInfoTimeActionPrefix, visible_security_state_for_metrics_),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
   } else {
     base::UmaHistogramCustomTimes(
         security_state::GetSecurityLevelHistogramName(
@@ -372,12 +361,6 @@ PageInfo::~PageInfo() {
     base::UmaHistogramCustomTimes(
         security_state::GetSafetyTipHistogramName(kPageInfoTimeNoActionPrefix,
                                                   safety_tip_info_.status),
-        base::TimeTicks::Now() - start_time_,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
-        100);
-    base::UmaHistogramCustomTimes(
-        security_state::GetLegacyTLSHistogramName(
-            kPageInfoTimeNoActionPrefix, visible_security_state_for_metrics_),
         base::TimeTicks::Now() - start_time_,
         base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(1),
         100);
@@ -453,11 +436,6 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
       security_state::GetSafetyTipHistogramName(
           "Security.SafetyTips.PageInfo.Action", safety_tip_info_.status),
       action, PAGE_INFO_COUNT);
-
-  base::UmaHistogramEnumeration(security_state::GetLegacyTLSHistogramName(
-                                    "Security.LegacyTLS.PageInfo.Action",
-                                    visible_security_state_for_metrics_),
-                                action, PAGE_INFO_COUNT);
 
   std::string histogram_name;
   if (site_url_.SchemeIsCryptographic()) {
@@ -841,7 +819,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
           subject_name));
     }
 
-    if (visible_security_state.connection_used_legacy_tls) {
+    if (visible_security_state.cert_status & net::CERT_STATUS_LEGACY_TLS) {
       site_connection_status_ = SITE_CONNECTION_STATUS_LEGACY_TLS;
     }
 

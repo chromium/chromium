@@ -4758,11 +4758,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "show-legacy-tls-warnings",
-    "owners": [ "cthomp" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb" ],
     "expiry_milestone": 92

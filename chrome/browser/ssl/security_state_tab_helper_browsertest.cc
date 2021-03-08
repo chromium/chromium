@@ -1709,67 +1709,26 @@ IN_PROC_BROWSER_TEST_F(DidChangeVisibleSecurityStateTest,
   EXPECT_TRUE(observer.latest_explanations().info_explanations.empty());
 }
 
-const char kResponseFilePath[] = "chrome/test/data/title1.html";
-const int kObsoleteTLSVersion = net::SSL_CONNECTION_VERSION_TLS1_1;
-// ECDHE_RSA + AES_128_CBC with HMAC-SHA1
-const uint16_t kObsoleteCipherSuite = 0xc013;
-
-// These tests handle the case where we warn on legacy TLS pages but do not
-// enforce a full page interstitial (i.e., M-79 behavior).
+// Tests that legacy TLS pages show the correct security descriptions.
 class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
     : public InProcessBrowserTest {
  public:
-  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings() {
-    std::vector<base::Feature> enabled_features{
-        security_state::features::kLegacyTLSWarnings};
-    std::vector<base::Feature> disabled_features{
-        net::features::kLegacyTLSEnforced};
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    cert_ =
-        net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-    ASSERT_TRUE(cert_);
-  }
+  BrowserTestNonsecureURLRequestWithLegacyTLSWarnings() {}
 
   void SetUpOnMainThread() override {
-    // Create URLLoaderInterceptor to mock a TLS connection with obsolete TLS
-    // settings specified in kObsoleteTLSVersion and kObsoleteCipherSuite.
-    url_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
-        base::BindLambdaForTesting(
-            [&](content::URLLoaderInterceptor::RequestParams* params) {
-              // Ignore non-test URLs.
-              if (params->url_request.url.host() != kLegacyTLSHost) {
-                return false;
-              }
-
-              // Set SSLInfo to reflect an obsolete connection.
-              base::Optional<net::SSLInfo> ssl_info;
-              if (params->url_request.url.SchemeIsCryptographic()) {
-                ssl_info = net::SSLInfo();
-                net::SSLConnectionStatusSetVersion(
-                    kObsoleteTLSVersion, &ssl_info->connection_status);
-                net::SSLConnectionStatusSetCipherSuite(
-                    kObsoleteCipherSuite, &ssl_info->connection_status);
-                ssl_info->cert = cert_;
-              }
-
-              // Write the response.
-              content::URLLoaderInterceptor::WriteResponse(
-                  kResponseFilePath, params->client.get(), nullptr,
-                  std::move(ssl_info));
-
-              return true;
-            }));
+    net::SSLServerConfig config;
+    config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_1;
+    config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_1;
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK, config);
+    ASSERT_TRUE(https_server()->Start());
   }
 
-  void TearDownOnMainThread() override { url_interceptor_.reset(); }
+ protected:
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
-  scoped_refptr<net::X509Certificate> cert_ = nullptr;
-  std::unique_ptr<content::URLLoaderInterceptor> url_interceptor_;
-  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings);
 };
@@ -1779,14 +1738,16 @@ class BrowserTestNonsecureURLRequestWithLegacyTLSWarnings
 IN_PROC_BROWSER_TEST_F(
     BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
     DidChangeVisibleSecurityStateObserverObsoleteTLSSettings) {
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  SecurityStyleTestObserver observer(tab);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  SecurityStyleTestObserver observer(web_contents);
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("/ssl/google.html"));
+  WaitForInterstitial(tab);
+  ProceedThroughInterstitial(tab);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-
-  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecureBroken,
+            observer.latest_security_style());
 
   for (const auto& explanation :
        observer.latest_explanations().secure_explanations) {
@@ -1808,44 +1769,20 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(std::string::npos, explanation.recommendations[1].find("GCM"));
 }
 
-
 // Tests that a connection with legacy TLS versions (TLS 1.0/1.1) gets
 // downgraded to SecurityLevel WARNING and |connection_used_legacy_tls| is set.
 IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
                        LegacyTLSDowngradesSecurityLevel) {
-
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* helper = SecurityStateTabHelper::FromWebContents(tab);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server()->GetURL("/ssl/google.html"));
+  WaitForInterstitial(tab);
+  ProceedThroughInterstitial(tab);
 
-  EXPECT_TRUE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
+  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
 }
-
-
-// Tests that the SSLVersionMin policy can disable the Legacy TLS security
-// warning.
-IN_PROC_BROWSER_TEST_F(BrowserTestNonsecureURLRequestWithLegacyTLSWarnings,
-                       LegacyTLSPolicyDisabledWarning) {
-  // Set up the local state prefs::kSSLVersionMin to "tls1.0".
-  std::string original_pref =
-      g_browser_process->local_state()->GetString(prefs::kSSLVersionMin);
-  g_browser_process->local_state()->SetString(prefs::kSSLVersionMin,
-                                              switches::kSSLVersionTLSv1);
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* helper = SecurityStateTabHelper::FromWebContents(web_contents);
-
-  ui_test_utils::NavigateToURL(browser(), GURL(kLegacyTLSURL));
-
-  EXPECT_FALSE(helper->GetVisibleSecurityState()->connection_used_legacy_tls);
-  EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
-
-  g_browser_process->local_state()->SetString(prefs::kSSLVersionMin,
-                                              original_pref);
-}
-
 
 // Tests that the Not Secure chip does not show for error pages on http:// URLs.
 // Regression test for https://crbug.com/760647.

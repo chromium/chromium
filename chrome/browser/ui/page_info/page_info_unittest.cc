@@ -48,6 +48,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -948,24 +949,20 @@ TEST_F(PageInfoTest, HTTPSSHA1) {
 #endif
 }
 
-#if !defined(OS_ANDROID)
-// Tests that the site connection status is correctly set for Legacy TLS sites
-// when the kLegacyTLSWarnings feature is enabled.
+// Tests that the site connection status is correctly set for Legacy TLS sites.
 TEST_F(PageInfoTest, LegacyTLS) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      security_state::features::kLegacyTLSWarnings);
+  scoped_feature_list.InitAndEnableFeature(net::features::kLegacyTLSEnforced);
 
   security_level_ = security_state::WARNING;
   visible_security_state_.url = GURL("https://scheme-is-cryptographic.test");
   visible_security_state_.certificate = cert();
-  visible_security_state_.cert_status = 0;
+  visible_security_state_.cert_status = net::CERT_STATUS_LEGACY_TLS;
   int status = 0;
   status = SetSSLVersion(status, net::SSL_CONNECTION_VERSION_TLS1);
   status = SetSSLVersion(status, CR_TLS_RSA_WITH_AES_256_CBC_SHA256);
   visible_security_state_.connection_status = status;
   visible_security_state_.connection_info_initialized = true;
-  visible_security_state_.connection_used_legacy_tls = true;
 
   SetDefaultUIExpectations(mock_ui());
 
@@ -974,7 +971,6 @@ TEST_F(PageInfoTest, LegacyTLS) {
   EXPECT_EQ(PageInfo::SITE_IDENTITY_STATUS_CERT,
             page_info()->site_identity_status());
 }
-#endif
 
 #if !defined(OS_ANDROID)
 TEST_F(PageInfoTest, NoInfoBar) {
@@ -1340,106 +1336,6 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
     } else {
       histograms.ExpectTotalCount(
           kHistogramPrefix + "NoAction." + test.safety_tip_status_name, 1);
-    }
-  }
-
-  // PageInfoTest expects a valid PageInfo instance to exist at end of test.
-  ResetMockUI();
-  SetDefaultUIExpectations(mock_ui());
-  page_info();
-}
-
-// Tests that metrics are recorded on a PageInfo for pages with
-// various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const std::string histogram_suffix;
-  } kTestCases[] = {
-      {true, "LegacyTLS_Triggered"},
-      {false, "LegacyTLS_NotTriggered"},
-  };
-
-  const std::string kHistogramPrefix("Security.LegacyTLS.PageInfo.Action");
-  const char kGenericHistogram[] = "WebsiteSettings.Action";
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kGenericHistogram, 0);
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                0);
-
-    page_info()->RecordPageInfoAction(PageInfo::PAGE_INFO_OPENED);
-
-    // RecordPageInfoAction() is called during PageInfo creation in addition to
-    // the explicit RecordPageInfoAction() call, so it is called twice in total.
-    histograms.ExpectTotalCount(kGenericHistogram, 2);
-    histograms.ExpectBucketCount(kGenericHistogram, PageInfo::PAGE_INFO_OPENED,
-                                 2);
-
-    histograms.ExpectTotalCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                2);
-    histograms.ExpectBucketCount(kHistogramPrefix + "." + test.histogram_suffix,
-                                 PageInfo::PAGE_INFO_OPENED, 2);
-  }
-}
-
-// Tests that the duration of time the PageInfo is open is recorded for pages
-// with various Legacy TLS statuses.
-TEST_F(PageInfoTest, LegacyTLSTimeOpenMetrics) {
-  const struct TestCase {
-    const bool connection_used_legacy_tls;
-    const std::string legacy_tls_status_name;
-    const PageInfo::PageInfoAction action;
-  } kTestCases[] = {
-      // PAGE_INFO_COUNT used as shorthand for "take no action".
-      {true, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_COUNT},
-      {false, "LegacyTLS_NotTriggered", PageInfo::PAGE_INFO_COUNT},
-      {true, "LegacyTLS_Triggered", PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-      {false, "LegacyTLS_NotTriggered",
-       PageInfo::PAGE_INFO_SITE_SETTINGS_OPENED},
-  };
-
-  const std::string kHistogramPrefix("Security.PageInfo.TimeOpen.");
-
-  for (const auto& test : kTestCases) {
-    base::HistogramTester histograms;
-    SetURL("https://example.test");
-    visible_security_state_.connection_used_legacy_tls =
-        test.connection_used_legacy_tls;
-    ResetMockUI();
-    ClearPageInfo();
-    SetDefaultUIExpectations(mock_ui());
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "Action." + test.legacy_tls_status_name, 0);
-    histograms.ExpectTotalCount(
-        kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 0);
-
-    PageInfo* test_page_info = page_info();
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      test_page_info->RecordPageInfoAction(test.action);
-    }
-    ClearPageInfo();
-
-    histograms.ExpectTotalCount(kHistogramPrefix + test.legacy_tls_status_name,
-                                1);
-
-    if (test.action != PageInfo::PAGE_INFO_COUNT) {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "Action." + test.legacy_tls_status_name, 1);
-    } else {
-      histograms.ExpectTotalCount(
-          kHistogramPrefix + "NoAction." + test.legacy_tls_status_name, 1);
     }
   }
 

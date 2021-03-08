@@ -829,9 +829,6 @@ extern const char kKerberosSettingsSectionDescription[];
 extern const char kLegacyTLSEnforcedName[];
 extern const char kLegacyTLSEnforcedDescription[];
 
-extern const char kLegacyTLSWarningsName[];
-extern const char kLegacyTLSWarningsDescription[];
-
 extern const char kLensCameraAssistedSearchName[];
 extern const char kLensCameraAssistedSearchDescription[];
 

@@ -455,10 +455,6 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
   state->contained_mixed_form =
       !!(ssl.content_status &
          content::SSLStatus::DISPLAYED_FORM_WITH_INSECURE_ACTION);
-  state->connection_used_legacy_tls =
-      !!(net::ObsoleteSSLStatus(ssl.connection_status,
-                                ssl.peer_signature_algorithm) &
-         net::OBSOLETE_SSL_MASK_PROTOCOL);
 
   SSLStatusInputEventData* input_events =
       static_cast<SSLStatusInputEventData*>(ssl.user_data.get());

@@ -159,10 +159,6 @@ void DownloadUIController::OnDownloadCreated(content::DownloadManager* manager,
           "Security.SafetyTips.DownloadStarted",
           security_state_tab_helper->GetVisibleSecurityState()
               ->safety_tip_info.status);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Security.LegacyTLS.DownloadStarted",
-          security_state::GetLegacyTLSWarningStatus(
-              *security_state_tab_helper->GetVisibleSecurityState()));
     }
   }
 

@@ -6199,12 +6199,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kElasticOverscrollWin)},
 #endif
 
-#if !defined(OS_ANDROID)
-    {"show-legacy-tls-warnings", flag_descriptions::kLegacyTLSWarningsName,
-     flag_descriptions::kLegacyTLSWarningsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(security_state::features::kLegacyTLSWarnings)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-assistant-aec", flag_descriptions::kEnableGoogleAssistantAecName,
      flag_descriptions::kEnableGoogleAssistantAecDescription, kOsCrOS,

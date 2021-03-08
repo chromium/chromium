@@ -107,35 +107,6 @@ TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {
                                 security_state::WARNING, 1);
 }
 
-// Tests that form submission histograms are recorded correctly on a page that
-// uses legacy TLS (TLS 1.0/1.1).
-TEST_F(SecurityStateTabHelperHistogramTest, LegacyTLSFormSubmissionHistogram) {
-  base::HistogramTester histograms;
-
-  auto navigation =
-      CreateLegacyTLSNavigation(GURL(kLegacyTLSURL), web_contents());
-  navigation->Commit();
-
-  StartNavigation(/*is_form=*/true, /*is_main_frame=*/true);
-
-  histograms.ExpectUniqueSample("Security.LegacyTLS.FormSubmission", true, 1);
-}
-
-// Tests that form submission histograms are recorded as not coming from a page
-// that triggered legacy TLS warnings for a page that uses modern TLS.
-TEST_F(SecurityStateTabHelperHistogramTest,
-       LegacyTLSGoodSiteFormSubmissionHistogram) {
-  base::HistogramTester histograms;
-
-  auto navigation =
-      CreateNonlegacyTLSNavigation(GURL("https://good.test"), web_contents());
-  navigation->Commit();
-
-  StartNavigation(/*is_form=*/true, /*is_main_frame=*/true);
-
-  histograms.ExpectUniqueSample("Security.LegacyTLS.FormSubmission", false, 1);
-}
-
 // Tests that insecure mainframe form submission histograms are recorded
 // correctly.
 TEST_F(SecurityStateTabHelperHistogramTest,

@@ -1384,12 +1384,6 @@ const char kLegacyTLSEnforcedDescription[] =
     "versions (TLS 1.0 and TLS 1.1), which are deprecated and will be removed "
     " in the future.";
 
-const char kLegacyTLSWarningsName[] =
-    "Show security warnings for sites using legacy TLS versions";
-const char kLegacyTLSWarningsDescription[] =
-    "Show security warnings for sites that use legacy TLS versions (TLS 1.0 "
-    "and TLS 1.1), which are deprecated and will be removed in the future.";
-
 const char kLensCameraAssistedSearchName[] =
     "Google Lens in Omnibox and New Tab Page";
 const char kLensCameraAssistedSearchDescription[] =
