@@ -4,6 +4,7 @@
 
 #include "ash/projector/ui/projector_bar_view.h"
 
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -15,6 +16,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -38,16 +40,17 @@ constexpr int kStopRecordingButtonColorViewRadius = 2;
 
 }  // namespace
 
-ProjectorBarView::ProjectorBarView(ProjectorUiController* ui_controller)
-    : ui_controller_(ui_controller) {
+ProjectorBarView::ProjectorBarView(
+    ProjectorControllerImpl* projector_controller)
+    : projector_controller_(projector_controller) {
   InitLayout();
 }
 
 ProjectorBarView::~ProjectorBarView() = default;
 
 views::UniqueWidgetPtr ProjectorBarView::Create(
-    ProjectorUiController* ui_controller) {
-  auto bar_view = std::make_unique<ProjectorBarView>(ui_controller);
+    ProjectorControllerImpl* projector_controller) {
+  auto bar_view = std::make_unique<ProjectorBarView>(projector_controller);
 
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
@@ -137,7 +140,8 @@ void ProjectorBarView::OnStopButtonPressed() {
 }
 
 void ProjectorBarView::OnKeyIdeaButtonPressed() {
-  ui_controller_->OnKeyIdeaMarked();
+  DCHECK(projector_controller_);
+  projector_controller_->MarkKeyIdea();
 }
 
 BEGIN_METADATA(ProjectorBarView, views::View)

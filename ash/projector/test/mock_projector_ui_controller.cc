@@ -7,7 +7,9 @@
 
 namespace ash {
 
-MockProjectorUiController::MockProjectorUiController() = default;
+MockProjectorUiController::MockProjectorUiController(
+    ProjectorControllerImpl* projector_controller)
+    : ProjectorUiController(projector_controller) {}
 
 MockProjectorUiController::~MockProjectorUiController() = default;
 

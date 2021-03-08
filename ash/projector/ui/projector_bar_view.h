@@ -6,27 +6,30 @@
 #define ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 
 #include "ash/projector/model/projector_ui_model.h"
-#include "ash/projector/projector_ui_controller.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/projector/ui/projector_image_button.h"
 #include "ui/views/view.h"
 
 namespace views {
 class ImageView;
+class UniqueWidgetPtr;
 }  // namespace views
 
 namespace ash {
+
+class ProjectorControllerImpl;
 
 class ProjectorBarView : public views::View {
  public:
   METADATA_HEADER(ProjectorBarView);
 
-  explicit ProjectorBarView(ProjectorUiController* ui_controller);
+  explicit ProjectorBarView(ProjectorControllerImpl* projector_controller);
   ProjectorBarView(const ProjectorBarView&) = delete;
   ProjectorBarView& operator=(const ProjectorBarView&) = delete;
   ~ProjectorBarView() override;
 
-  static views::UniqueWidgetPtr Create(ProjectorUiController* ui_controller);
+  static views::UniqueWidgetPtr Create(
+      ProjectorControllerImpl* projector_controller);
 
   // views::View:
   void OnThemeChanged() override;
@@ -46,7 +49,7 @@ class ProjectorBarView : public views::View {
   ProjectorColorButton* stop_button_ = nullptr;
   ProjectorButton* key_idea_button_ = nullptr;
 
-  ProjectorUiController* ui_controller_ = nullptr;
+  ProjectorControllerImpl* projector_controller_ = nullptr;
 };
 
 }  // namespace ash

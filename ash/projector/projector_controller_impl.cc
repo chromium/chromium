@@ -13,7 +13,7 @@
 namespace ash {
 
 ProjectorControllerImpl::ProjectorControllerImpl()
-    : ui_controller_(std::make_unique<ash::ProjectorUiController>()),
+    : ui_controller_(std::make_unique<ash::ProjectorUiController>(this)),
       metadata_controller_(
           std::make_unique<ash::ProjectorMetadataController>()) {}
 

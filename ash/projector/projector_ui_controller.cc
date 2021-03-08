@@ -17,26 +17,33 @@ namespace ash {
 namespace {
 
 constexpr char kMarkedKeyIdeaToastId[] = "projector_marked_key_idea";
+constexpr base::TimeDelta kToastDuration =
+    base::TimeDelta::FromMilliseconds(2500);
 
-void ShowToast(const std::string& id, int message_id, int32_t duration_ms) {
+void ShowToast(const std::string& id,
+               int message_id,
+               base::TimeDelta duration) {
   DCHECK(Shell::Get());
   DCHECK(Shell::Get()->toast_manager());
 
-  ToastData toast(id, l10n_util::GetStringUTF16(message_id), duration_ms,
+  ToastData toast(id, l10n_util::GetStringUTF16(message_id),
+                  duration.InMilliseconds(),
                   l10n_util::GetStringUTF16(IDS_ASH_TOAST_DISMISS_BUTTON));
   Shell::Get()->toast_manager()->Show(toast);
 }
 
 }  // namespace
 
-ProjectorUiController::ProjectorUiController() = default;
+ProjectorUiController::ProjectorUiController(
+    ProjectorControllerImpl* projector_controller)
+    : projector_controller_(projector_controller) {}
 
 ProjectorUiController::~ProjectorUiController() = default;
 
 void ProjectorUiController::ShowToolbar() {
   if (!projector_bar_widget_) {
     // Create the toolbar.
-    projector_bar_widget_ = ProjectorBarView::Create(this);
+    projector_bar_widget_ = ProjectorBarView::Create(projector_controller_);
   }
 
   projector_bar_widget_->ShowInactive();
@@ -58,7 +65,7 @@ void ProjectorUiController::ToggleToolbar() {
 
 void ProjectorUiController::OnKeyIdeaMarked() {
   ShowToast(kMarkedKeyIdeaToastId, IDS_ASH_PROJECTOR_KEY_IDEA_MARKED,
-            ToastData::kInfiniteDuration);
+            kToastDuration);
 }
 
 void ProjectorUiController::OnTranscription(const std::string& transcription,

@@ -14,10 +14,12 @@
 
 namespace ash {
 
+class ProjectorControllerImpl;
+
 // The controller in charge of UI.
 class ASH_EXPORT ProjectorUiController {
  public:
-  ProjectorUiController();
+  explicit ProjectorUiController(ProjectorControllerImpl* projector_controller);
   ProjectorUiController(const ProjectorUiController&) = delete;
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;
   virtual ~ProjectorUiController();
@@ -39,6 +41,8 @@ class ASH_EXPORT ProjectorUiController {
  private:
   ProjectorUiModel model_;
   views::UniqueWidgetPtr projector_bar_widget_;
+
+  ProjectorControllerImpl* projector_controller_ = nullptr;
 };
 
 }  // namespace ash
