@@ -36,28 +36,22 @@ public class PageLoadMetricsTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final int PAGE_LOAD_METRICS_TIMEOUT_MS = 6000;
+    private static final String PAGE_PREFIX = "/chrome/test/data/android/google.html";
 
-    // TODO(pasko): Replace the similar string constants with a single prefix and an array of
-    // server-provided URLs.
-    private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
-    private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
-    private static final String TEST_PAGE_3 = "/chrome/test/data/android/google.html?q=3";
-    private static final String TEST_PAGE_4 = "/chrome/test/data/android/test.html?q=4";
-
-    private String mTestPage;
-    private String mTestPage2;
-    private String mTestPage3;
-    private String mTestPage4;
     private EmbeddedTestServer mTestServer;
+    private int mLoadCount;
+
+    // Provide the next URL to test with. To eliminate a potential source of flakiness each observed
+    // URL is unique.
+    private String getNextLoadUrl() {
+        int i = mLoadCount++;
+        return mTestServer.getURL(PAGE_PREFIX + "?q=" + i);
+    }
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mTestPage = mTestServer.getURL(TEST_PAGE);
-        mTestPage2 = mTestServer.getURL(TEST_PAGE_2);
-        mTestPage3 = mTestServer.getURL(TEST_PAGE_3);
-        mTestPage4 = mTestServer.getURL(TEST_PAGE_4);
     }
 
     @After
@@ -140,10 +134,10 @@ public class PageLoadMetricsTest {
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver));
 
-        mActivityTestRule.loadUrl(mTestPage);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver);
 
-        mActivityTestRule.loadUrl(mTestPage2);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.removeObserver(metricsObserver));
     }
@@ -154,13 +148,13 @@ public class PageLoadMetricsTest {
         PageLoadMetricsTestObserver metricsObserver = new PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver));
-        mActivityTestRule.loadUrl(mTestPage3);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver);
 
         PageLoadMetricsTestObserver metricsObserver2 = new PageLoadMetricsTestObserver();
         TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(metricsObserver2));
-        mActivityTestRule.loadUrl(mTestPage4);
+        mActivityTestRule.loadUrl(getNextLoadUrl());
         assertMetricsEmitted(metricsObserver2);
 
         Assert.assertNotEquals("Subsequent navigations should have different navigation ids",
