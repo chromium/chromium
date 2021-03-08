@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from base_generator import Modes
 from css_generator import CSSStyleGenerator
 from proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from views_generator import ViewsStyleGenerator
@@ -41,11 +42,14 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 
     def testCustomDarkModeSelector(self):
         expected_file_name = 'colors_test_custom_dark_toggle_expected.css'
-        self.generator.out_file_path = ('tools/style_variable_generator/' +
-                                        expected_file_name)
         self.generator.generator_options = {
             'dark_mode_selector': 'html[dark]:not(body)'
         }
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+    def testCustomDarkModeSelector(self):
+        expected_file_name = 'colors_test_dark_only_expected.css'
+        self.generator.generate_single_mode = Modes.DARK
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 
