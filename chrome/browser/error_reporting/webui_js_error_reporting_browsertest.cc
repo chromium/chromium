@@ -267,22 +267,7 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest,
 
   MockCrashEndpoint::Report report = endpoint.WaitForReport();
 
-  // Temporary workaround for https://crbug.com/1183025. The new tab page is
-  // spitting out errors which confuse this test. Skip the known error in the
-  // JS function onModulesLoadedAndVisibilityDeterminedChange().
-  // TODO(https://crbug.com/1183025) Remove workaround
-  if (endpoint.all_reports().size() == 3) {
-    // When we get an error from NTP, it happens during browser startup, so
-    // |report| is still the error we want. Make sure that the extra error was
-    // the NTP error we expect.
-    EXPECT_THAT(
-        endpoint.all_reports(),
-        Contains(
-            Field(&MockCrashEndpoint::Report::content,
-                  HasSubstr("onModulesLoadedAndVisibilityDeterminedChange"))));
-  } else {
-    EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
-  }
+  EXPECT_THAT(endpoint.all_reports(), SizeIs(2));
   EXPECT_THAT(report.query, HasSubstr(kPageLoadMessage)) << report;
 }
 
