@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/ui/signin/profile_colors_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -191,6 +194,25 @@ base::Value DiceWebSigninInterceptHandler::GetInterceptionParametersValue() {
   return parameters;
 }
 
+bool DiceWebSigninInterceptHandler::ShouldShowManagedDeviceVersion() const {
+  // This checks if the current profile is managed, which is a conservative
+  // approximation of whether the new profile will be managed (this is because
+  // the current profile may have policies coming from Sync, but the new profile
+  // won't have Sync enabled, at least initially).
+  // There are two possible improvements of this approximation:
+  // - checking the browser policies that are not specific to this profile (e.g.
+  //   by supporting the nullptr profile in BrowserManagementService)
+  // - or anticipating that the user may enable Sync in the new profile and
+  //   check the cloud policies attached to the intercepted account (requires
+  //   network requests).
+  return policy::PlatformManagementService::GetInstance()
+                 .GetManagementAuthorityTrustworthiness() >
+             policy::ManagementAuthorityTrustworthiness::NONE ||
+         policy::BrowserManagementService(Profile::FromWebUI(web_ui()))
+                 .GetManagementAuthorityTrustworthiness() >
+             policy::ManagementAuthorityTrustworthiness::NONE;
+}
+
 std::string DiceWebSigninInterceptHandler::GetHeaderText() {
   switch (bubble_parameters_.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
@@ -241,13 +263,22 @@ std::string DiceWebSigninInterceptHandler::GetBodyTitle() {
 std::string DiceWebSigninInterceptHandler::GetBodyText() {
   switch (bubble_parameters_.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      return l10n_util::GetStringFUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
-          base::UTF8ToUTF16(primary_account().email));
+      return ShouldShowManagedDeviceVersion()
+                 ? l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+                       base::UTF8ToUTF16(intercepted_account().email))
+                 : l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
+                       base::UTF8ToUTF16(primary_account().email));
     case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
-      return l10n_util::GetStringFUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
-          base::UTF8ToUTF16(primary_account().given_name));
+      return ShouldShowManagedDeviceVersion()
+                 ? l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
+                       base::UTF8ToUTF16(primary_account().given_name),
+                       base::UTF8ToUTF16(intercepted_account().email))
+                 : l10n_util::GetStringFUTF8(
+                       IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
+                       base::UTF8ToUTF16(primary_account().given_name));
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
       return l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_SWITCH_BUBBLE_DESC);
