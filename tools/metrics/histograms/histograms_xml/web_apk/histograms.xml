@@ -109,6 +109,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebApk.Install.RequestTokenDuration" units="ms"
     expires_after="2021-07-18">
+  <obsolete>
+    Removed 03/2021
+  </obsolete>
   <owner>hartmanng@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>
@@ -124,15 +127,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Install.RequestTokenDurationV2" units="ms"
-    expires_after="2021-07-18">
+    expires_after="2021-11-18">
   <owner>hartmanng@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
   </owner>
   <summary>
-    Same as WebApk.Install.RequestTokenDuration, but for WebAPKs minted using
-    the new architecture (v2).
+    Records the amount of time which has elapsed from the &quot;install infobar
+    showing&quot; to the &quot;install request being sent to Google Play&quot;.
+    This time includes the time that it takes to request the WebAPK token and
+    the time that it takes to compute the hashes for the launcher icon and the
+    badge icon.
   </summary>
 </histogram>
 
