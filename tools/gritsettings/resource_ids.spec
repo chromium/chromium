@@ -118,7 +118,7 @@
     "includes": [1365],
   },
   "chrome/browser/resources/chromeos/login/oobe_resources.grd": {
-    "META": {"sizes": {"includes": [20], "structures": [100]}},
+    "META": {"sizes": {"includes": [50], "structures": [200]}},
     "includes": [1367],
     "structures": [1368],
   },
