@@ -52,6 +52,8 @@ constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
 base::Optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
     const media::VideoDecoderConfig& config) {
   switch (config.codec()) {
+    case media::VideoCodec::kCodecAV1:
+      return webrtc::SdpVideoFormat("AV1X");
     case media::VideoCodec::kCodecVP8:
       return webrtc::SdpVideoFormat("VP8");
     case media::VideoCodec::kCodecVP9: {

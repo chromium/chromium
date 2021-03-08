@@ -23,6 +23,8 @@ media::VideoRotation WebRtcToMediaVideoRotation(
 
 media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
   switch (codec) {
+    case webrtc::kVideoCodecAV1:
+      return media::kCodecAV1;
     case webrtc::kVideoCodecVP8:
       return media::kCodecVP8;
     case webrtc::kVideoCodecVP9:
