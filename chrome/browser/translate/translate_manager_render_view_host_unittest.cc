@@ -118,35 +118,6 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
 
 }  // namespace
 
-// An observer that keeps track of whether a navigation entry was committed.
-class NavEntryCommittedObserver : public content::NotificationObserver {
- public:
-  explicit NavEntryCommittedObserver(content::WebContents* web_contents) {
-    registrar_.Add(this,
-                   content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-                   content::Source<content::NavigationController>(
-                       &web_contents->GetController()));
-  }
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK(type == content::NOTIFICATION_NAV_ENTRY_COMMITTED);
-    details_ =
-        *(content::Details<content::LoadCommittedDetails>(details).ptr());
-  }
-
-  const content::LoadCommittedDetails& load_committed_details() const {
-    return details_;
-  }
-
- private:
-  content::LoadCommittedDetails details_;
-  content::NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavEntryCommittedObserver);
-};
-
 class TranslateManagerRenderViewHostTest
     : public ChromeRenderViewHostTestHarness,
       public infobars::InfoBarManager::Observer {
@@ -350,21 +321,12 @@ class TranslateManagerRenderViewHostTest
 #endif  // defined(USE_AURA) && !defined(OS_MAC)
 
   void ReloadAndWait(bool successful_reload) {
-    NavEntryCommittedObserver nav_observer(web_contents());
     if (successful_reload) {
       content::NavigationSimulator::Reload(web_contents());
     } else {
       content::NavigationSimulator::ReloadAndFail(web_contents(),
                                                   net::ERR_TIMED_OUT);
     }
-
-    // Ensures it is really handled a reload.
-    const content::LoadCommittedDetails& nav_details =
-        nav_observer.load_committed_details();
-    EXPECT_TRUE(nav_details.entry);  // There was a navigation.
-    EXPECT_TRUE(ui::PageTransitionCoreTypeIs(
-        ui::PAGE_TRANSITION_RELOAD, nav_details.entry->GetTransitionType()));
-
     // The TranslateManager class processes the navigation entry committed
     // notification in a posted task; process that task.
     base::RunLoop().RunUntilIdle();
