@@ -1483,16 +1483,21 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
     // include the changed property value so we can ignore this update.
     return;
   }
+  const bool was_scanning = device->scanning();
   if (!device->PropertyChanged(key, value))
     return;
 
   LogPropertyUpdated(device, key, value);
   NotifyDevicePropertiesUpdated(device);
 
-  if (key == shill::kScanningProperty && device->scanning() == false) {
-    if (device->type() == shill::kTypeWifi)
+  if (key == shill::kScanningProperty && was_scanning != device->scanning()) {
+    if (device->scanning())
+      NotifyScanStarted(device);
+    else
+      NotifyScanCompleted(device);
+
+    if (device->type() == shill::kTypeWifi && !device->scanning())
       UpdateManagedWifiNetworkAvailable();
-    NotifyScanCompleted(device);
   }
   if (key == shill::kEapAuthenticationCompletedProperty) {
     // Notify a change for each Ethernet service using this device.

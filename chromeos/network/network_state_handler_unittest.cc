@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -163,9 +164,20 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
     scan_requests_.push_back(type);
   }
 
+  void ScanStarted(const DeviceState* device) override {
+    DCHECK(device);
+    scan_started_count_++;
+    if (run_loop_scan_started_) {
+      run_loop_scan_started_->Quit();
+    }
+  }
+
   void ScanCompleted(const DeviceState* device) override {
     DCHECK(device);
     scan_completed_count_++;
+    if (run_loop_scan_completed_) {
+      run_loop_scan_completed_->Quit();
+    }
   }
 
   void HostnameChanged(const std::string& hostname) override {
@@ -184,6 +196,7 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   const std::vector<NetworkTypePattern>& scan_requests() {
     return scan_requests_;
   }
+  size_t scan_started_count() { return scan_started_count_; }
   size_t scan_completed_count() { return scan_completed_count_; }
   const std::string& hostname() { return hostname_; }
   void reset_change_counts() {
@@ -193,6 +206,7 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
     device_list_changed_count_ = 0;
     network_list_changed_count_ = 0;
     scan_requests_.clear();
+    scan_started_count_ = 0;
     scan_completed_count_ = 0;
     connection_state_changes_.clear();
   }
@@ -228,6 +242,20 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
     return network_connection_state_[service_path];
   }
 
+  void WaitForScanStarted() {
+    DCHECK(!run_loop_scan_started_);
+    run_loop_scan_started_.emplace();
+    run_loop_scan_started_->Run();
+    run_loop_scan_started_.reset();
+  }
+
+  void WaitForScanCompleted() {
+    DCHECK(!run_loop_scan_completed_);
+    run_loop_scan_completed_.emplace();
+    run_loop_scan_completed_->Run();
+    run_loop_scan_completed_.reset();
+  }
+
  private:
   NetworkStateHandler* handler_;
   size_t active_network_change_count_ = 0;
@@ -237,6 +265,7 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   size_t network_list_changed_count_ = 0;
   size_t network_count_ = 0;
   std::vector<NetworkTypePattern> scan_requests_;
+  size_t scan_started_count_ = 0;
   size_t scan_completed_count_ = 0;
   std::string hostname_;
   std::vector<std::string> active_network_paths_;
@@ -247,6 +276,8 @@ class TestObserver final : public chromeos::NetworkStateHandlerObserver {
   std::map<std::string, int> device_property_updates_;
   std::map<std::string, int> connection_state_changes_;
   std::map<std::string, std::string> network_connection_state_;
+  base::Optional<base::RunLoop> run_loop_scan_started_;
+  base::Optional<base::RunLoop> run_loop_scan_completed_;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
@@ -901,6 +932,7 @@ TEST_F(NetworkStateHandlerTest, TetherScanningState) {
           NetworkTypePattern::Tether());
   EXPECT_TRUE(tether_device_state);
   EXPECT_FALSE(tether_device_state->scanning());
+  EXPECT_EQ(0u, test_observer_->scan_started_count());
   EXPECT_EQ(0u, test_observer_->scan_completed_count());
 
   network_state_handler_->SetTetherScanState(true /* is_scanning */);
@@ -908,6 +940,7 @@ TEST_F(NetworkStateHandlerTest, TetherScanningState) {
       NetworkTypePattern::Tether());
   EXPECT_TRUE(tether_device_state);
   EXPECT_TRUE(tether_device_state->scanning());
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
   EXPECT_EQ(0u, test_observer_->scan_completed_count());
 
   network_state_handler_->SetTetherScanState(false /* is_scanning */);
@@ -915,6 +948,7 @@ TEST_F(NetworkStateHandlerTest, TetherScanningState) {
       NetworkTypePattern::Tether());
   EXPECT_TRUE(tether_device_state);
   EXPECT_FALSE(tether_device_state->scanning());
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
   EXPECT_EQ(1u, test_observer_->scan_completed_count());
 }
 
@@ -1998,6 +2032,43 @@ TEST_F(NetworkStateHandlerTest, DeviceListChanged) {
                                   base::Value(true), /*notify_changed=*/true);
   UpdateManagerProperties();
   EXPECT_EQ(1, test_observer_->PropertyUpdatesForDevice(wifi_device));
+}
+
+TEST_F(NetworkStateHandlerTest, ScanPropertyChanges) {
+  EXPECT_EQ(0u, test_observer_->scan_started_count());
+  EXPECT_EQ(0u, test_observer_->scan_completed_count());
+
+  device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
+                                  shill::kScanningProperty, base::Value(true),
+                                  /*notify_changed=*/true);
+  test_observer_->WaitForScanStarted();
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
+  EXPECT_EQ(0u, test_observer_->scan_completed_count());
+
+  // A redundant shill property change notification does not send out additional
+  // ScanStarted notifications.
+  device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
+                                  shill::kScanningProperty, base::Value(true),
+                                  /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
+  EXPECT_EQ(0u, test_observer_->scan_completed_count());
+
+  device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
+                                  shill::kScanningProperty, base::Value(false),
+                                  /*notify_changed=*/true);
+  test_observer_->WaitForScanCompleted();
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
+  EXPECT_EQ(1u, test_observer_->scan_completed_count());
+
+  // A redundant shill property change notification does not send out additional
+  // ScanStarted notifications.
+  device_test_->SetDeviceProperty(kShillManagerClientStubWifiDevice,
+                                  shill::kScanningProperty, base::Value(false),
+                                  /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, test_observer_->scan_started_count());
+  EXPECT_EQ(1u, test_observer_->scan_completed_count());
 }
 
 TEST_F(NetworkStateHandlerTest, IPConfigChanged) {
