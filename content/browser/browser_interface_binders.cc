@@ -986,6 +986,13 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
         base::BindRepeating(&DedicatedWorkerHost::BindWebOTPServiceReceiver,
                             base::Unretained(host)));
   }
+
+  map->Add<blink::mojom::FileUtilitiesHost>(
+      base::BindRepeating(FileUtilitiesHostImpl::Create,
+                          host->GetProcessHost()->GetID()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
+
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWebUsbService, base::Unretained(host)));
   map->Add<blink::mojom::WebSocketConnector>(base::BindRepeating(
@@ -1080,6 +1087,13 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
     map->Add<blink::mojom::AppCacheBackend>(base::BindRepeating(
         &SharedWorkerHost::CreateAppCacheBackend, base::Unretained(host)));
   }
+
+  map->Add<blink::mojom::FileUtilitiesHost>(
+      base::BindRepeating(FileUtilitiesHostImpl::Create,
+                          host->GetProcessHost()->GetID()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
+
   map->Add<blink::mojom::QuicTransportConnector>(base::BindRepeating(
       &SharedWorkerHost::CreateQuicTransportConnector, base::Unretained(host)));
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
