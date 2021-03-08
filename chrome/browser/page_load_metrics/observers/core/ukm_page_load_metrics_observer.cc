@@ -1216,8 +1216,7 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
     builder.SetAllowUserZoom(false);
 
   if (mf.small_text_ratio != -1) {
-    builder.SetSmallTextRatio(
-        ukm::GetExponentialBucketMin(mf.small_text_ratio, 1.2));
+    builder.SetSmallTextRatio(mf.small_text_ratio);
   }
 
   if (mf.viewport_initial_scale_x10 != -1) {
