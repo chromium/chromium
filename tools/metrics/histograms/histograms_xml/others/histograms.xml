@@ -13581,12 +13581,25 @@ should be kept until we remove incident reporting. -->
   <summary>Win32 APIs that error out during setup.</summary>
 </histogram>
 
-<histogram name="SharedHighlights.LinkGenerated" units="BooleanSuccess"
+<histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
     expires_after="2021-07-11">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
-    Indicates whether text fragment selector generation was successful.
+    Indicates number of iterations it took for AsyncFindBuffer to finish the
+    search. AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
+    expires_after="2021-07-11">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Time it took in milliseconds for AsyncFindBuffer to finish the search.
+    AsyncFindBuffer is used only for validating generated text fragment
+    selectors for Shared Highlighting.
   </summary>
 </histogram>
 
@@ -13595,7 +13608,9 @@ should be kept until we remove incident reporting. -->
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
-    Indicates error that caused text fragment selector generation to fail.
+    Records errors that caused text fragment selector generation to fail.
+    Recorded for all the failed link generation runs. This histogram is a
+    superset of |SharedHighlights.LinkGenerated.Error.Requested|.
   </summary>
 </histogram>
 
@@ -13606,6 +13621,16 @@ should be kept until we remove incident reporting. -->
   <summary>
     Indicates number of iterations it took for the unsuccessful text fragment
     selector generation run.
+  </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated.Error.Requested"
+    enum="LinkGenerationError" expires_after="2021-07-11">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Records errors that caused text fragment selector generation to fail.
+    Recorded only for failure cases that were requested by users.
   </summary>
 </histogram>
 
@@ -13669,6 +13694,23 @@ should be kept until we remove incident reporting. -->
     How long it took in milliseconds to successfully generate text fragment
     selector.
   </summary>
+</histogram>
+
+<histogram name="SharedHighlights.LinkGenerated{Requested}"
+    units="BooleanSuccess" expires_after="2021-07-11">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-shared-highlighting@google.com</owner>
+  <summary>
+    Indicates whether text fragment selector generation was successful for
+    {Requested}.
+  </summary>
+  <token key="Requested">
+    <variant name="" summary="all cases"/>
+    <variant name=".RequestedAfterReady"
+        summary="cases when selector is requested after its ready."/>
+    <variant name=".RequestedBeforeReady"
+        summary="cases when selector is requested before its ready."/>
+  </token>
 </histogram>
 
 <histogram name="SharedMemory.MapBlockedForSecurity" enum="BooleanBlocked"
