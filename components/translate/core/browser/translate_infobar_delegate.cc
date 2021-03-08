@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/language/core/common/language_experiments.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
@@ -81,11 +82,16 @@ void TranslateInfoBarDelegate::Create(
   if (step != translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
     DCHECK(TranslateDownloadManager::IsSupportedLanguage(target_language));
     if (!TranslateDownloadManager::IsSupportedLanguage(source_language)) {
-      // The source language can only be "unknown" for the "translating"
+      // If the detected source language experiment is active, then the source
+      // language can be unknown at any translate step. If it is disabled, then
+      // the source language can only be unknown for the "translating"
       // infobar, which is the case when the user started a translation from the
       // context menu.
-      DCHECK(step == translate::TRANSLATE_STEP_TRANSLATING ||
-             step == translate::TRANSLATE_STEP_AFTER_TRANSLATE);
+      if (!base::FeatureList::IsEnabled(
+              language::kDetectedSourceLanguageOption)) {
+        DCHECK(step == translate::TRANSLATE_STEP_TRANSLATING ||
+               step == translate::TRANSLATE_STEP_AFTER_TRANSLATE);
+      }
       DCHECK_EQ(translate::kUnknownLanguageCode, source_language);
     }
   }
