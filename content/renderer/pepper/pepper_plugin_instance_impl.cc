@@ -121,6 +121,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -1950,7 +1951,7 @@ bool PepperPluginInstanceImpl::GetPrintPresetOptionsFromDocument(
   preset_options->copies = options.copies;
   preset_options->is_page_size_uniform =
       PP_ToBool(options.is_page_size_uniform);
-  preset_options->uniform_page_size = blink::WebSize(
+  preset_options->uniform_page_size = gfx::Size(
       options.uniform_page_size.width, options.uniform_page_size.height);
 
   return true;

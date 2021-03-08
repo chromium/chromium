@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "printing/mojom/print.mojom-shared.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -41,7 +42,7 @@ struct WebPrintPresetOptions {
   bool is_page_size_uniform;
 
   // Only valid if the page sizes are uniform. The page size in points.
-  WebSize uniform_page_size;
+  gfx::Size uniform_page_size;
 };
 
 }  // namespace blink
