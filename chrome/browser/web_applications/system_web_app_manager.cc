@@ -231,6 +231,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
             GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl),
             base::BindRepeating(
                 &CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp)));
+    infos.at(SystemAppType::CONNECTIVITY_DIAGNOSTICS).show_in_launcher = false;
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::ECHE)) {
