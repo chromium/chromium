@@ -47,8 +47,8 @@ void OnSignalConnected(const std::string& interface_name,
   DCHECK(success);
 }
 
-// "Real" implementation of KerberosClient taking to the Kerberos daemon on the
-// Chrome OS side.
+// "Real" implementation of KerberosClient talking to the Kerberos daemon on
+// the Chrome OS side.
 class KerberosClientImpl : public KerberosClient {
  public:
   KerberosClientImpl() = default;
