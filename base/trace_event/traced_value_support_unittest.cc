@@ -87,5 +87,20 @@ TEST(TracedValueSupportTest, UnguessableToken) {
   EXPECT_EQ(perfetto::TracedValueToString(token), token.ToString());
 }
 
+TEST(TracedValueSupportTest, UTF16String) {
+  EXPECT_EQ(perfetto::TracedValueToString(u"utf-16"), "utf-16");
+  EXPECT_EQ(perfetto::TracedValueToString(
+                static_cast<const base::char16*>(u"utf-16")),
+            "utf-16");
+  EXPECT_EQ(perfetto::TracedValueToString(std::u16string(u"utf-16")), "utf-16");
+}
+
+TEST(TracedValueSupportTest, WideString) {
+  EXPECT_EQ(perfetto::TracedValueToString(L"wide"), "wide");
+  EXPECT_EQ(perfetto::TracedValueToString(static_cast<const wchar_t*>(L"wide")),
+            "wide");
+  EXPECT_EQ(perfetto::TracedValueToString(std::wstring(L"wide")), "wide");
+}
+
 }  // namespace trace_event
 }  // namespace base

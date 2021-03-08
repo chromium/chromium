@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -111,6 +112,60 @@ struct TraceFormatTraits<::base::UnguessableToken> {
   static void WriteIntoTracedValue(perfetto::TracedValue context,
                                    const ::base::UnguessableToken& value) {
     return std::move(context).WriteString(value.ToString());
+  }
+};
+
+// UTF-16 string support.
+template <>
+struct TraceFormatTraits<std::u16string> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const std::u16string& value) {
+    return std::move(context).WriteString(::base::UTF16ToUTF8(value));
+  }
+};
+
+template <size_t N>
+struct TraceFormatTraits<::base::char16[N]> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const ::base::char16 value[N]) {
+    return std::move(context).WriteString(
+        ::base::UTF16ToUTF8(::base::StringPiece16(value)));
+  }
+};
+
+template <>
+struct TraceFormatTraits<const ::base::char16*> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const ::base::char16* value) {
+    return std::move(context).WriteString(
+        ::base::UTF16ToUTF8(::base::StringPiece16(value)));
+  }
+};
+
+// Wide string support.
+template <>
+struct TraceFormatTraits<std::wstring> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const std::wstring& value) {
+    return std::move(context).WriteString(::base::WideToUTF8(value));
+  }
+};
+
+template <size_t N>
+struct TraceFormatTraits<wchar_t[N]> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const wchar_t value[N]) {
+    return std::move(context).WriteString(
+        ::base::WideToUTF8(::base::WStringPiece(value)));
+  }
+};
+
+template <>
+struct TraceFormatTraits<const wchar_t*> {
+  static void WriteIntoTracedValue(perfetto::TracedValue context,
+                                   const wchar_t* value) {
+    return std::move(context).WriteString(
+        ::base::WideToUTF8(::base::WStringPiece(value)));
   }
 };
 
