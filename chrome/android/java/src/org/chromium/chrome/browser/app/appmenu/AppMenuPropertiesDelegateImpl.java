@@ -990,12 +990,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     private boolean shouldShowRegroupedMenu() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
+        return false;/*CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);*/
     }
 
     private static boolean shouldShowThreeButtonActionBar() {
-        return CachedFeatureFlags.isEnabled(
-                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
+        return false;/*CachedFeatureFlags.isEnabled(
+                ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);*/
     }
 
     private boolean shouldShowShareInMenu() {

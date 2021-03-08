@@ -57,7 +57,8 @@ public class NotificationUmaTracker {
             SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT,
             SystemNotificationType.CHROME_REENGAGEMENT_1,
             SystemNotificationType.CHROME_REENGAGEMENT_2,
-            SystemNotificationType.CHROME_REENGAGEMENT_3, SystemNotificationType.PRICE_DROP_ALERTS})
+            SystemNotificationType.CHROME_REENGAGEMENT_3, SystemNotificationType.PRICE_DROP_ALERTS,
+            SystemNotificationType.SHOPPING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
         int UNKNOWN = -1;
@@ -90,8 +91,9 @@ public class NotificationUmaTracker {
         int CHROME_REENGAGEMENT_2 = 26;
         int CHROME_REENGAGEMENT_3 = 27;
         int PRICE_DROP_ALERTS = 28;
+        int SHOPPING = 29;
 
-        int NUM_ENTRIES = 29;
+        int NUM_ENTRIES = 30;
     }
 
     /*

@@ -3060,6 +3060,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_BOOKMARK_SHOW_IN_FOLDER" desc="Menu item text for opening the folder which contains the bookmark of interest. [CHAR-LIMIT=24]">
         Show in folder
       </message>
+      <message name="IDS_BOOKMARK_ITEM_VIEW" desc="The link text to view a bookmark in the folder that it was added to. [CHAR-LIMIT=24]">
+        View
+      </message>
       <message name="IDS_BOOKMARK_ADD_FOLDER" desc="Title for button to add a new bookmark folder [CHAR-LIMIT=32]">
         New folder…
       </message>
@@ -3170,6 +3173,50 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_READING_LIST_EMPTY_LIST_TITLE" desc="The text on reading list page when there are no reading list items informing user that reading list is supposed to appear on this surface.">
         You’ll find your reading list here
+      </message>
+
+      <!-- Shopping -->
+      <message name="IDS_SHOPPING_TITLE" desc="The title shown in the top toolbar of the shopping surface.">
+        Shopping
+      </message>
+      <message name="IDS_SHOPPING_SEARCH_PLACEHOLDER" desc="The placeholder text shown in the search bar on the shopping surface.">
+        Search your shopping folder
+      </message>
+      <message name="IDS_SHOPPING_SAVED_PRODUCTS" desc="The title for the section that lists products that the user has saved.">
+        Saved Products
+      </message>
+      <message name="IDS_SHOPPING_ALL_CHIP" desc="The title for the chip that shows all of the products the user has saved.">
+        all
+      </message>
+      <message name="IDS_SHOPPING_OTHER_CHIP" desc="The title for the chip for products that do not have any other category.">
+        other
+      </message>
+
+      <!--message name="IDS_SHOPPING_PRICE_DROP_TITLE" desc="The title for the notification telling the user about a price drop for a product.">
+        <ph name="PRICE">%1$s<ex>$100</ex></ph> price drop on <ph name="PRODUCT">%2$s<ex>gaming laptop</ex></ph>
+      </message>
+      <message name="IDS_SHOPPING_PRICE_DROP_SUBTITLE" desc="The subtitle for the notification telling the user about a proce drop for a product.">
+        Now <ph name="PRICE">%1$s<ex>$100</ex></ph> on <ph name="DOMAIN">%2$s<ex>example.com</ex></ph>
+      </message-->
+
+      <message name="IDS_SHOPPING_PRICE_RANGE_TITLE" desc="The title for the notification telling the user a product is within a certain price range.">
+        <ph name="PRODUCT">%1$s<ex>gaming laptop</ex></ph> is within the <ph name="RANGE">%2$s<ex>$100 - $200</ex></ph> price range.
+      </message>
+      <message name="IDS_SHOPPING_PRICE_RANGE_SUBTITLE" desc="The subtitle for the notification telling the user that a product is within a price range and that the notification will bring them to the product page.">
+        View on <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
+      </message>
+      <message name="IDS_SHOPPING_NOTIFICATION_VIEW_IN_FOLDER" desc="The subtitle for the notification telling the user that tapping the notification will bring them to the shopping folder.">
+        View in shopping folder
+      </message>
+
+      <!--message name="IDS_SHOPPING_VISIT_SITE" desc="The text for a button in the shopping notification that will bring the user to the web page a product is from.">
+        Visit Site
+      </message>
+      <message name="IDS_SHOPPING_TURN_OFF_ALERT" desc="The text for a button in the shopping notification to turn off alerts for the specified product.">
+        Turn off alert
+      </message-->
+      <message name="IDS_SHOPPING_CHANNEL_NAME" desc="The channel name for notifications about shopping, including recommendations and price changes.">
+        Shopping
       </message>
 
       <!-- Offline pages -->

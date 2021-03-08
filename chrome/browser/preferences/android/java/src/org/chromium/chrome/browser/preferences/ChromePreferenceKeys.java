@@ -676,6 +676,10 @@ public final class ChromePreferenceKeys {
     public static final String SHARING_LAST_SHARED_CLASS_NAME = "last_shared_class_name";
     public static final String SHARING_LAST_SHARED_PACKAGE_NAME = "last_shared_package_name";
 
+    public static final String SHOPPING_CACHE = "shopping.meta_cache";
+
+    public static final String SHOPPING_CURRENT_NOTIFICATION = "shopping.notification_id";
+
     public static final String SIGNIN_ACCOUNTS_CHANGED = "prefs_sync_accounts_changed";
 
     /**
@@ -908,6 +912,8 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
+                SHOPPING_CACHE,
+                SHOPPING_CURRENT_NOTIFICATION,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,

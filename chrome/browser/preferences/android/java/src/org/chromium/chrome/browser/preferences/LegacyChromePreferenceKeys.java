@@ -148,6 +148,8 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION,
                 ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME,
                 ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME,
+                ChromePreferenceKeys.SHOPPING_CACHE,
+                ChromePreferenceKeys.SHOPPING_CURRENT_NOTIFICATION,
                 ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED,
                 ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED,
                 ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX,

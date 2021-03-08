@@ -50,6 +50,7 @@ enum class TaskIds {
   FEEDV2_REFRESH_JOB_ID = 107,
   OFFLINE_MEASUREMENT_JOB_ID = 108,
   WEBFEEDS_REFRESH_JOB_ID = 109,
+  SHOPPING_SEND_NOTIFICATION_ID = 110,
 };
 
 }  // namespace background_task

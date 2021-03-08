@@ -505,4 +505,9 @@
     <dimen name="long_screenshots_button_size">24dp</dimen>
     <dimen name="long_screenshots_button_padding">17dp</dimen>
 
+    <!-- Shopping -->
+    <dimen name="shopping_chip_side_margin">4dp</dimen>
+    <dimen name="shopping_notification_icon_size">24dp</dimen>
+    <dimen name="shopping_thumbnail_corner_radius">12dp</dimen>
+
 </resources>

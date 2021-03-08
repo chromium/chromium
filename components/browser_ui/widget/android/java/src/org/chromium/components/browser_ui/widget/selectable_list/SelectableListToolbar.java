@@ -98,6 +98,7 @@ public class SelectableListToolbar<E>
 
     private boolean mIsSearching;
     private boolean mHasSearchView;
+    private boolean mSearchAlwaysVisible;
     private LinearLayout mSearchView;
     private EditText mSearchEditText;
     private ImageButton mClearTextButton;
@@ -230,7 +231,22 @@ public class SelectableListToolbar<E>
      */
     public void initializeSearchView(
             SearchDelegate searchDelegate, int hintStringResId, int searchMenuItemId) {
+        initializeSearchView(searchDelegate, false, hintStringResId, searchMenuItemId);
+    }
+
+    /**
+     * Inflates and initializes the search view.
+     * @param searchDelegate The delegate that will handle performing searches.
+     * @param alwaysVisible Whether the search view is always shown below the normal toolbar.
+     * @param hintStringResId The hint text to show in the search view's EditText box.
+     * @param searchMenuItemId The menu item used to activate the search view. This item will be
+     *                         hidden when selection is enabled or if the list of selectable items
+     *                         associated with this toolbar is empty.
+     */
+    public void initializeSearchView(SearchDelegate searchDelegate, boolean alwaysVisible,
+            int hintStringResId, int searchMenuItemId) {
         mHasSearchView = true;
+        mSearchAlwaysVisible = alwaysVisible;
         mSearchDelegate = searchDelegate;
         mSearchMenuItemId = searchMenuItemId;
         mSearchBackgroundColor = Color.WHITE;
@@ -238,6 +254,13 @@ public class SelectableListToolbar<E>
         LayoutInflater.from(getContext()).inflate(R.layout.search_toolbar, this);
 
         mSearchView = findViewById(R.id.search_view);
+        if (mSearchAlwaysVisible) {
+            mSearchView.setVisibility(View.VISIBLE);
+            Toolbar.LayoutParams params = new Toolbar.LayoutParams(mSearchView.getLayoutParams());
+            params.topMargin = 200;
+            mSearchView.setLayoutParams(params);
+            // DO TOP PADDING HERE--------------------------------------------------------------------
+        }
         mSearchEditText = mSearchView.findViewById(R.id.search_text);
         mSearchEditText.setHint(hintStringResId);
         mSearchEditText.setOnEditorActionListener(this);
@@ -396,7 +419,7 @@ public class SelectableListToolbar<E>
      * @param searchEnabled Whether the search button should be enabled.
      */
     public void setSearchEnabled(boolean searchEnabled) {
-        if (mHasSearchView) {
+        if (mHasSearchView && !mSearchAlwaysVisible) {
             mSearchEnabled = searchEnabled;
             updateSearchMenuItem();
         }
@@ -494,7 +517,7 @@ public class SelectableListToolbar<E>
         mViewType = ViewType.NORMAL_VIEW;
         getMenu().setGroupVisible(mNormalGroupResId, true);
         getMenu().setGroupVisible(mSelectedGroupResId, false);
-        if (mHasSearchView) {
+        if (mHasSearchView && !mSearchAlwaysVisible) {
             mSearchView.setVisibility(View.GONE);
             updateSearchMenuItem();
         }
@@ -516,7 +539,7 @@ public class SelectableListToolbar<E>
         getMenu().setGroupVisible(mNormalGroupResId, false);
         getMenu().setGroupVisible(mSelectedGroupResId, true);
         getMenu().setGroupEnabled(mSelectedGroupResId, !selectedItems.isEmpty());
-        if (mHasSearchView) mSearchView.setVisibility(View.GONE);
+        if (mHasSearchView && !mSearchAlwaysVisible) mSearchView.setVisibility(View.GONE);
 
         setNavigationButton(NAVIGATION_BUTTON_SELECTION_BACK);
         setBackgroundColor(mSelectionBackgroundColor);
@@ -545,7 +568,7 @@ public class SelectableListToolbar<E>
     }
 
     private void updateSearchMenuItem() {
-        if (!mHasSearchView) return;
+        if (!mHasSearchView || mSearchAlwaysVisible) return;
         MenuItem searchMenuItem = getMenu().findItem(mSearchMenuItemId);
         if (searchMenuItem != null) {
             searchMenuItem.setVisible(mSearchEnabled && !mIsSelectionEnabled && !mIsSearching);

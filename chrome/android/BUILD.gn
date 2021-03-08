@@ -313,6 +313,7 @@ android_library("chrome_java") {
     "//chrome/browser/download/android:file_provider_java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/download/android:java_resources",
+    "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/enterprise/util:java",
     "//chrome/browser/feed/android:java",
     "//chrome/browser/feedback/android:java",

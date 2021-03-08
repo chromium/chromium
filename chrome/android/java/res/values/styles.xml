@@ -624,4 +624,12 @@
         <item name="drawableHeight">24dp</item>
     </style>
 
+    <!-- Shopping -->
+    <style name="ShoppingChip" parent="InputChip">
+        <item name="android:minHeight">32dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+
 </resources>

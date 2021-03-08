@@ -8,6 +8,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
+import org.chromium.chrome.browser.bookmarks.shopping.ShoppingNotificationService;
 import org.chromium.chrome.browser.download.DownloadResumptionBackgroundTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBackgroundTask;
@@ -96,6 +97,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
             case TaskIds.WEBFEEDS_REFRESH_JOB_ID:
                 return new ProxyNativeTask();
+            case TaskIds.SHOPPING_SEND_NOTIFICATION_ID:
+                return new ShoppingNotificationService.ShoppingSendNotificationTask();
             // When adding a new job id with a BackgroundTask, remember to add a specific case for
             // it here.
             // If the job id corresponds to a native task, use {@link ProxyNativeTask} as the task

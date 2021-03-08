@@ -3,9 +3,17 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/selectable_list"
+    android:id="@+id/bookmark_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg_color" />
+    android:background="@color/default_bg_color">
+
+    <org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
+        android:id="@+id/selectable_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/default_bg_color" />
+
+</FrameLayout>

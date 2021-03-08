@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.shopping.ShoppingCoordinator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -456,6 +458,12 @@ public class RootUiCoordinator
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
         }
+
+        // Ensure the shopping folder is there to add to on startup.
+        // TODO(mdjones): Gate this on AndroidSyncSettings.get().isSyncEnabled().
+        BookmarkUtils.findOrCreateShoppingFolder((id) -> {
+            android.util.Log.w("mdjones", "RUIC: created/found shopping folder...");
+        }, null);
     }
 
     /**

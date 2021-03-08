@@ -7785,6 +7785,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="0" label="Normal"/>
   <int value="1" label="Partner"/>
   <int value="2" label="ReadingList"/>
+  <int value="3" label="Shopping"/>
 </enum>
 
 <enum name="Boolean">
@@ -74940,6 +74941,7 @@ would be helpful to identify which type is being sent.
   <int value="26" label="Chrome Reengagement 2"/>
   <int value="27" label="Chrome Reengagement 3"/>
   <int value="28" label="Price Drop Alerts"/>
+  <int value="29" label="Shopping"/>
 </enum>
 
 <enum name="TabBackgroundLoadStatus">

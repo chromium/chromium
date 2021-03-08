@@ -5,16 +5,21 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * The activity that displays the bookmark UI on the phone. It keeps a {@link BookmarkManager}
@@ -38,6 +43,7 @@ public class BookmarkActivity extends SnackbarActivity {
                 true, isIncognito, getSnackbarManager());
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
+        mBookmarkManager.setStartupIntent(getIntent());
         mBookmarkManager.updateForUrl(url);
         setContentView(mBookmarkManager.getView());
     }

@@ -145,14 +145,19 @@ void EndpointFetcher::OnAuthTokenFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
+  LOG(WARNING) << "mdjones: OAuth fetch complete... ";
   access_token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
+    LOG(WARNING) << "mdjones:    OAuth error state: " << error.ToString();
+    LOG(WARNING) << "mdjones:    OAuth error state: " << error.state();
+    LOG(WARNING) << "mdjones:    OAuth error message: " << error.error_message();
     auto response = std::make_unique<EndpointResponse>();
     response->response = "There was an authentication error";
     // TODO(crbug.com/993393) Add more detailed error messaging
     std::move(endpoint_fetcher_callback).Run(std::move(response));
     return;
   }
+  LOG(WARNING) << "mdjones:    OAuth token length: " << access_token_info.token.length();
   PerformRequest(std::move(endpoint_fetcher_callback),
                  access_token_info.token.c_str());
 }
@@ -215,6 +220,9 @@ void EndpointFetcher::PerformRequest(
 void EndpointFetcher::OnResponseFetched(
     EndpointFetcherCallback endpoint_fetcher_callback,
     std::unique_ptr<std::string> response_body) {
+
+  LOG(WARNING) << "mdjones: net error info: " << net::ErrorToString(simple_url_loader_->NetError());
+
   simple_url_loader_.reset();
   if (response_body) {
     if (sanitize_response_) {
@@ -231,6 +239,8 @@ void EndpointFetcher::OnResponseFetched(
   } else {
     auto response = std::make_unique<EndpointResponse>();
     // TODO(crbug.com/993393) Add more detailed error messaging
+
+    LOG(WARNING) << "mdjones:    Response error; empty response body... ";
     response->response = "There was a response error";
     std::move(endpoint_fetcher_callback).Run(std::move(response));
   }
