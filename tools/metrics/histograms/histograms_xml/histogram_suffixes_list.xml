@@ -8093,6 +8093,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="For the quiet notification prompts feature."/>
   <suffix name="IPH_ReadingListDiscovery"
       label="In product help for first time a tab is added to reading list."/>
+  <suffix name="IPH_ReadingListEntryPoint"
+      label="In product help to educate users to click the star icon to add a
+             tab to reading list."/>
   <suffix name="IPH_ReopenTab"
       label="In product help for reopening closed tabs."/>
   <suffix name="IPH_TabGroupsDragAndDrop"

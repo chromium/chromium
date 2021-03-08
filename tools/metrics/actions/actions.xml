@@ -27806,6 +27806,8 @@ should be able to be added at any place in this file.
       label="For the quiet notification prompts feature."/>
   <suffix name="ReadingListDiscovery"
       label="For ReadingListDiscoveryFeature feature."/>
+  <suffix name="ReadingListEntryPoint"
+      label="For ReadingListEntryPoint feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="TabGroupsDragAndDrop" label="For drop-to-merge in tab group."/>
   <suffix name="TabGroupsQuicklyComparePages"

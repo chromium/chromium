@@ -26,6 +26,8 @@ const base::Feature kIPHPasswordsAccountStorageFeature{
     "IPH_PasswordsAccountStorage", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReadingListDiscoveryFeature{
     "IPH_ReadingListDiscovery", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHReadingListEntryPointFeature{
+    "IPH_ReadingListEntryPoint", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHReopenTabFeature{"IPH_ReopenTab",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHWebUITabStripFeature{"IPH_WebUITabStrip",
