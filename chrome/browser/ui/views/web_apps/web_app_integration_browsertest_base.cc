@@ -52,8 +52,8 @@ namespace web_app {
 
 namespace {
 
-const std::string kExpectationsFilename = "TestExpectations";
-const std::string kPlatformName =
+constexpr char kExpectationsFilename[] = "TestExpectations";
+constexpr char kPlatformName[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "ChromeOS";
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -373,7 +373,9 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
   } else if (action_string == "close_pwa") {
     ClosePWA();
   } else if (action_string == "install_create_shortcut_tabbed") {
-    InstallCreateShortcutTabbed();
+    InstallCreateShortcut(/*open_in_window=*/false);
+  } else if (action_string == "install_create_shortcut_windowed") {
+    InstallCreateShortcut(/*open_in_window=*/true);
   } else if (base::StartsWith(action_string, "install_internal_windowed")) {
     InstallOmniboxOrMenu();
   } else if (action_string == "install_locally_internal") {
@@ -427,13 +429,15 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
   } else if (action_string ==
              "assert_manifest_display_mode_standalone_internal") {
     AssertManifestDisplayModeInternal(DisplayMode::kStandalone);
+  } else if (action_string == "assert_no_crash") {
+  } else if (action_string == "assert_tab_created") {
+    AssertTabCreated();
   } else if (action_string == "assert_user_display_mode_browser_internal") {
     AssertUserDisplayModeInternal(DisplayMode::kBrowser);
   } else if (action_string == "assert_user_display_mode_standalone_internal") {
     AssertUserDisplayModeInternal(DisplayMode::kStandalone);
-  } else if (action_string == "assert_no_crash") {
-  } else if (action_string == "assert_tab_created") {
-    AssertTabCreated();
+  } else if (action_string == "assert_window_closed") {
+    AssertWindowClosed();
   } else if (action_string == "assert_window_created") {
     AssertWindowCreated();
   } else {
@@ -485,9 +489,11 @@ void WebAppIntegrationBrowserTestBase::ClosePWA() {
   ui_test_utils::WaitForBrowserToClose(app_browser_);
 }
 
-void WebAppIntegrationBrowserTestBase::InstallCreateShortcutTabbed() {
-  chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
-                                              /*auto_open_in_window=*/false);
+void WebAppIntegrationBrowserTestBase::InstallCreateShortcut(
+    bool open_in_window) {
+  chrome::SetAutoAcceptWebAppDialogForTesting(
+      /*auto_accept=*/true,
+      /*auto_open_in_window=*/open_in_window);
   WebAppInstallObserver observer(profile());
   CHECK(chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT));
   active_app_id_ = observer.AwaitNextInstall();
@@ -705,24 +711,6 @@ void WebAppIntegrationBrowserTestBase::AssertAppNotInList() {
   ASSERT_FALSE(app_state.has_value());
 }
 
-void WebAppIntegrationBrowserTestBase::AssertManifestDisplayModeInternal(
-    DisplayMode display_mode) {
-  DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
-  ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(display_mode, app_state->effective_display_mode);
-}
-
-void WebAppIntegrationBrowserTestBase::AssertUserDisplayModeInternal(
-    DisplayMode display_mode) {
-  DCHECK(after_action_state_);
-  base::Optional<AppState> app_state =
-      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
-  ASSERT_TRUE(app_state.has_value());
-  EXPECT_EQ(display_mode, app_state->user_display_mode);
-}
-
 void WebAppIntegrationBrowserTestBase::AssertInstallable() {
   DCHECK(after_action_state_);
   base::Optional<BrowserState> browser_state =
@@ -767,6 +755,15 @@ void WebAppIntegrationBrowserTestBase::AssertLaunchIconNotShown() {
   EXPECT_FALSE(browser_state->launch_icon_shown);
 }
 
+void WebAppIntegrationBrowserTestBase::AssertManifestDisplayModeInternal(
+    DisplayMode display_mode) {
+  DCHECK(after_action_state_);
+  base::Optional<AppState> app_state =
+      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_EQ(display_mode, app_state->effective_display_mode);
+}
+
 void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
   DCHECK(before_action_state_);
   DCHECK(after_action_state_);
@@ -783,6 +780,28 @@ void WebAppIntegrationBrowserTestBase::AssertTabCreated() {
       GetStateForActiveTab(most_recent_browser_state.value());
   ASSERT_TRUE(active_tab.has_value());
   EXPECT_EQ(GetInstallableAppURL(), active_tab->url);
+}
+
+void WebAppIntegrationBrowserTestBase::AssertUserDisplayModeInternal(
+    DisplayMode display_mode) {
+  DCHECK(after_action_state_);
+  base::Optional<AppState> app_state =
+      GetStateForAppId(after_action_state_.get(), profile(), active_app_id_);
+  ASSERT_TRUE(app_state.has_value());
+  EXPECT_EQ(display_mode, app_state->user_display_mode);
+}
+
+void WebAppIntegrationBrowserTestBase::AssertWindowClosed() {
+  DCHECK(before_action_state_);
+  DCHECK(after_action_state_);
+  base::Optional<ProfileState> after_action_profile =
+      GetStateForProfile(after_action_state_.get(), profile());
+  base::Optional<ProfileState> before_action_profile =
+      GetStateForProfile(before_action_state_.get(), profile());
+  ASSERT_TRUE(after_action_profile.has_value());
+  ASSERT_TRUE(before_action_profile.has_value());
+  EXPECT_LT(after_action_profile->browsers.size(),
+            before_action_profile->browsers.size());
 }
 
 void WebAppIntegrationBrowserTestBase::AssertWindowCreated() {

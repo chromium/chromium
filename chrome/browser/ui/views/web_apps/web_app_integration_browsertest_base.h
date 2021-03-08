@@ -140,7 +140,7 @@ class WebAppIntegrationBrowserTestBase {
   // Automated Testing Actions
   void AddPolicyAppInternal(base::Value default_launch_container);
   void ClosePWA();
-  void InstallCreateShortcutTabbed();
+  void InstallCreateShortcut(bool open_in_window);
   void InstallLocally();
   web_app::AppId InstallOmniboxOrMenu();
   void LaunchInternal();
@@ -159,14 +159,15 @@ class WebAppIntegrationBrowserTestBase {
   // Assert Actions
   void AssertAppNotLocallyInstalledInternal();
   void AssertAppNotInList();
-  void AssertManifestDisplayModeInternal(DisplayMode display_mode);
-  void AssertUserDisplayModeInternal(DisplayMode display_mode);
   void AssertInstallable();
   void AssertInstallIconShown();
   void AssertInstallIconNotShown();
   void AssertLaunchIconShown();
   void AssertLaunchIconNotShown();
+  void AssertManifestDisplayModeInternal(DisplayMode display_mode);
   void AssertTabCreated();
+  void AssertUserDisplayModeInternal(DisplayMode display_mode);
+  void AssertWindowClosed();
   void AssertWindowCreated();
 
   // Helpers
