@@ -47,6 +47,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1185176
   "arc.Optin",
 
+  # crbug.com/1185654
+  "arc.Optin.vm",
+
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
 ]
