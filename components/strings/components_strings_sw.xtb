@@ -539,6 +539,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3037605927509011580">Lo!</translation>
 <translation id="3041612393474885105">Maelezo ya Cheti</translation>
 <translation id="3060227939791841287">C9 (Bahasha)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza kichupo cha 'Tab' kisha 'Enter' ili ufanye Ukaguzi wa Usalama katika mipangilio ya Chrome</translation>
 <translation id="3061707000357573562">Huduma ya Kurekebisha</translation>
 <translation id="3064966200440839136">Inaacha hali fiche ili kulipa kupitia programu ya nje. Je, ungependa kuendelea?</translation>
 <translation id="3080254622891793721">Picha</translation>
@@ -776,6 +777,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3964661563329879394">{COUNT,plural, =0{Hamna}=1{Kutoka kwenye tovuti 1 }other{Kutoka kwenye tovuti # }}</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> imezuiwa.</translation>
+<translation id="3973357910713125165">Kitufe cha kufanya Ukaguzi wa Usalama kwenye Chrome, bonyeza 'Enter' ili ufanye Ukaguzi wa Usalama katika mipangilio ya Chrome</translation>
 <translation id="3987405730340719549">Chrome imebaini kwamba huenda tovuti hii ni bandia au laghai.
 
     Ikiwa unaamini kuwa taarifa hii imeonyeshwa kimakosa, tembelea https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -857,6 +859,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     &lt;h4&gt;Hatua ya 5: Pata usaidizi wa ziada&lt;/h4&gt;
     &lt;p&gt;Kama bado unaona hitilafu, wasiliana na mmiliki wa tovuti.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Jaribu kutumia zana ya Kuchunguza Mtandao<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Fanya Ukaguzi wa Usalama katika mipangilio ya Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Endelea kwenye <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Halali</translation>
 <translation id="4250431568374086873">Muunganisho wako kwenye tovuti hii si salama kabisa</translation>
@@ -982,6 +985,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4758311279753947758">Ongeza maelezo ya mawasiliano</translation>
 <translation id="4761104368405085019">Tumia kipazasauti chako</translation>
+<translation id="4761869838909035636">Fanya Ukaguzi wa Usalama kwenye Chrome</translation>
 <translation id="4764776831041365478">Ukurasa wa wavuti ulio <ph name="URL" /> unaweza kuwa haupatikani kwa muda au unaweza kuwa umehamishwa kabisa hadi anwani mpya ya wavuti.</translation>
 <translation id="4766713847338118463">Bana mara mbili chini</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

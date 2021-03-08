@@ -539,6 +539,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3037605927509011580">Ana xolos!</translation>
 <translation id="3041612393474885105">Sertifikat haqida ma’lumot</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali Xavfsizlik tekshiruvini bajarish uchun avval Tab, keyin Enter tugmalarini bosing</translation>
 <translation id="3061707000357573562">Xizmatni tuzatish</translation>
 <translation id="3064966200440839136">Tashqi ilova orqali to‘lash uchun inkognito rejimidan chiqib ketasiz. Davom ettirilsinmi?</translation>
 <translation id="3080254622891793721">Tasvirlar</translation>
@@ -772,6 +773,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3964661563329879394">{COUNT,plural, =0{Yo‘q}=1{1 ta saytdan }other{# ta saytdan }}</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
+<translation id="3973357910713125165">Chrome sozlamalari orqali Xavfsizlik tekshiruvini bajarish uchun Enter tugmasini bosing</translation>
 <translation id="3987405730340719549">Chrome bu saytni soxta yoki firibgarlarniki deb hisoblaydi.
 
     Bu ogohlantirish xato chiqqan boʻlsa, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals sahifasini oching.</translation>
@@ -853,6 +855,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
     &lt;h4&gt;5-bosqich. Qo‘shimcha yordam olish&lt;/h4&gt;
     &lt;p&gt;Xato qaytarilaversa, sayt egasi bilan bog‘laning.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" /></translation>
+<translation id="4229544452621580519">Chrome sozlamalari orqali Xavfsizlik tekshiruvini bajaring</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> saytini ochish<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Haqiqiy</translation>
 <translation id="4250431568374086873">Bu sayt bilan o‘rnatilgan aloqa himoyalanmagan.</translation>
@@ -978,6 +981,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4756388243121344051">&amp;Tarix</translation>
 <translation id="4758311279753947758">Aloqa ma’lumotini qo‘shish</translation>
 <translation id="4761104368405085019">Mikrofoningizni ishlatish</translation>
+<translation id="4761869838909035636">Chrome Xavfsizlik tekshiruvini bajarish</translation>
 <translation id="4764776831041365478"><ph name="URL" /> manzilidagi veb-sahifa vaqtinchalik ishlamayapti yoki boshqa manzilga butunlay ko‘chirilgan.</translation>
 <translation id="4766713847338118463">Quyidan ikki marta steplerlash</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

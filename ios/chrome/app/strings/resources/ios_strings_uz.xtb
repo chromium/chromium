@@ -538,6 +538,8 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6524918542306337007">Inkognito rejimi ishlamayapti</translation>
 <translation id="6561262006871132942">Yaqinlashtirish</translation>
 <translation id="6585618849026997638">Siz uchun muhim sahifalarga bukmark kiritish orqali qaytish mumkin</translation>
+<translation id="6603393121510733479">Inkognito rejimi tashkilotingiz tomonidan faolsizlantirildi.
+<ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Tarjima parametrlari</translation>
 <translation id="6620279676667515405">Bekor qilish</translation>
 <translation id="6624219055418309072">Inkognito rejimida bloklash</translation>
@@ -582,6 +584,8 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6988572888918530647">Google hisobingizni boshqaring</translation>
 <translation id="6995899638241819463">Parolim oshkor etilganda ogohlantirilsin</translation>
 <translation id="6998989275928107238">Host</translation>
+<translation id="7004032350256606903">Tashkilotingiz internetni pinhona kezishni talab qiladi.
+<ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7006788746334555276">Kontent sozlamalari</translation>
 <translation id="7015203776128479407">Dastlabki sinxronizatsiya sozlanishi oxiriga yetmagan. Sinxronizatsiya yoqilmagan.</translation>
@@ -743,6 +747,8 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8756969031206844760">Parolni yangilash</translation>
 <translation id="8775144690796719618">URL manzil yaroqsiz</translation>
 <translation id="8803639129939845298">Xavfsiz</translation>
+<translation id="8806823403540278281">Tashkilotingiz internetni pinhona kezishni talab qiladi. Inkognito rejimidagi varaqlar saqlanmaydi.
+<ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bukmarklar</translation>
 <translation id="8840513115188359703">Google hisobingizdan chiqmaysiz.</translation>
 <translation id="8870413625673593573">Yaqinda yopilganlar</translation>

@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Tarix</translation>
+<translation id="1647582022260550163">Ruxsatlar qayta tiklanib, cookie fayllar va sayt maʼlumotlari tozalansinmi?</translation>
 <translation id="1660204651932907780">Saytlarga ovoz ijro etish uchun ruxsat berish (tavsiya etiladi)</translation>
 <translation id="1677097821151855053">Saytga kirish uchun yoki reklamani moslashtirish uchun ishlatiladigan cookie fayllari va boshqa sayt maʼlumotlari. Barcha saytlar uchun cookie fayllarni boshqarish uchun <ph name="BEGIN_LINK" />Cookie sozlamalari<ph name="END_LINK" /> sahifasini oching.</translation>
 <translation id="1688867105868176567">Sayt ma’lumotlari tozalansinmi?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali <ph name="APP_NAME" /> uchun ruxsatnomalarni yoqing.</translation>
+<translation id="930525582205581608">Bu sayt olib tashlansinmi?</translation>
 <translation id="965817943346481315">Saytlarda chiquvchi yoqimsiz yoki befoyda reklamalar bloklansin (tavsiya etiladi)</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
 </translationbundle>

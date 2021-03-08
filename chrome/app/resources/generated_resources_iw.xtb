@@ -638,6 +638,7 @@
 <translation id="1692118695553449118">סנכרון מופעל</translation>
 <translation id="1692210323591458290">סגול כהה</translation>
 <translation id="169279809881363536">‏לא נמצאו פרופילים נוספים. כדי להגדיר רשת חדשה, יש לסרוק את קוד ה-QR באמצעות מצלמת המכשיר או להזין את קוד ההפעלה שקיבלת מהספק.</translation>
+<translation id="169675691788639886">‏למכשיר מוגדר שרת SSH. אין להיכנס לחשבונות רגישים.</translation>
 <translation id="1697150536837697295">אומנות</translation>
 <translation id="1697686431566694143">אישור לערוך את הקובץ</translation>
 <translation id="1698122934742150150">הפעלה נוכחית בלבד במצב אנונימי</translation>
@@ -2817,6 +2818,7 @@
 <translation id="4115080753528843955">שירותי תוכן מסוימים משתמשים במזהים ייחודיים כדי להעניק הרשאת גישה לתוכן מוגן</translation>
 <translation id="4115378294792113321">מג'נטה</translation>
 <translation id="4118579674665737931">אפשר להפעיל מחדש את המכשיר ולנסות שוב.</translation>
+<translation id="4118998393712575296">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או הגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בשילוב עם אתרים ואפליקציות כמו Google Classroom.</translation>
 <translation id="4120388883569225797">לא ניתן לאפס את מפתח האבטחה הזה</translation>
 <translation id="4120817667028078560">הנתיב ארוך מדי</translation>
 <translation id="4124823734405044952">מפתח האבטחה שלך אופס</translation>
@@ -3877,6 +3879,7 @@
 <translation id="540296380408672091">‏לחסום תמיד קובצי Cookie ב-<ph name="HOST" /></translation>
 <translation id="540495485885201800">החלפה עם הקודם</translation>
 <translation id="5405146885510277940">איפוס הגדרות</translation>
+<translation id="5407119150486192764">עליך להזין את מפתח ביטול הנעילה של קוד האימות בן 8 הספרות שניתן על ידי הספק.</translation>
 <translation id="5408750356094797285">שינוי מרחק התצוגה: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">‏מחשבון Google שלך</translation>
 <translation id="5411472733320185105">‏אין להשתמש בהגדרות proxy עבור מארחים ודומיינים אלה:</translation>
@@ -4509,6 +4512,7 @@
 <translation id="6124213551517593835">‏הפעולה הזו תגרום למחיקת כל הנתונים וקובצי ה-cookie שאוחסנו על ידי קבוצת האתרים <ph name="SITE_GROUP_NAME" /> ועל-ידי כל האתרים הכלולים בקבוצה</translation>
 <translation id="6124650939968185064">התוספים הבאים תלויים בתוסף הזה:</translation>
 <translation id="6124698108608891449">האתר הזה צריך הרשאות נוספות.</translation>
+<translation id="6125442051901189730">‏אין פרופילים זמינים של SIM. <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" /> מגדירים פרופיל חדש.</translation>
 <translation id="6125479973208104919">יהיה עליך להוסיף את החשבון שלך ב-<ph name="DEVICE_TYPE" /> פעם נוספת.</translation>
 <translation id="6129691635767514872">‏הנתונים שבחרת הוסרו מ-Chrome ומהמכשירים המסונכרנים. ייתכן שבכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> עדיין יתאפשר לך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google, כמו חיפושים ופעילות משירותים אחרים של Google.</translation>
 <translation id="6129938384427316298">‏הערה לאישור Netscape</translation>
@@ -6619,6 +6623,7 @@
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8553342806078037065">ניהול אנשים אחרים</translation>
 <translation id="8554899698005018844">לא הוגדרה שפה</translation>
+<translation id="8555195867496021627">‏אין פרופילים זמינים של eSIM. <ph name="BEGIN_LINK" />כאן<ph name="END_LINK" /> אפשר להוריד פרופיל חדש.</translation>
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
 <translation id="8557930019681227453">מניפסט</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{פתיחת כל הכתובות בחלון &amp;חדש}=1{פתיחה בחלון &amp;חדש}two{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}many{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}other{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}}</translation>

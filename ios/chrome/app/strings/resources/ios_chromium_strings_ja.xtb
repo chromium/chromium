@@ -74,6 +74,8 @@
 <translation id="7746854981345936341">Chromium の使い方のヒント: 戻る、進む、検索など一部のボタンは画面の下部に表示されるようになりました。</translation>
 <translation id="786327964234957808">同期アカウントを <ph name="USER_EMAIL1" /> から <ph name="USER_EMAIL2" /> に切り替えようとしています。既存の Chromium データは <ph name="DOMAIN" /> で管理されています。この操作を行うと、データはこのデバイスから削除されますが、<ph name="USER_EMAIL1" /> には残ります。</translation>
 <translation id="7890287942691234100">Chromium のスキャナの使用開始</translation>
+<translation id="7931842119211730154">Chromium を終了するときにシークレット タブをロックする</translation>
+<translation id="7980860476903281594">Chromium で、許可したサイトと現在地が共有されます。</translation>
 <translation id="8013573822802650211">どのデバイスからでも Chromium で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
 <translation id="8175055321229419309">ヒント: <ph name="BEGIN_LINK" />Chromium を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>

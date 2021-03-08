@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1644574205037202324">履歴</translation>
+<translation id="1647582022260550163">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
 <translation id="1660204651932907780">音声の再生をサイトに許可する（推奨）</translation>
 <translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを特定するために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1688867105868176567">サイトデータを削除しますか？</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
+<translation id="930525582205581608">このサイトに関する情報をすべて削除しますか？</translation>
 <translation id="965817943346481315">煩わしい広告や誤解を招く広告が表示されるサイトの場合にブロック（推奨）</translation>
 <translation id="967624055006145463">保存データ</translation>
 </translationbundle>

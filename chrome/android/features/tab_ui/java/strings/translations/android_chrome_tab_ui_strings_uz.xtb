@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
+<translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
 <translation id="3996880007329611795">Xabardor qolish</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
