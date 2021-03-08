@@ -320,5 +320,9 @@ config("wrap_malloc_symbols") {
 
     # <unistd.h> functions
     "-Wl,-wrap,getcwd",
+
+    # <stdio.h> functions
+    "-Wl,-wrap,asprintf",
+    "-Wl,-wrap,vasprintf",
   ]
 }
