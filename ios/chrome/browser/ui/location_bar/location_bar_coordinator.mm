@@ -299,10 +299,6 @@
     LoadJavaScriptURL(url, self.browserState,
                       self.webStateList->GetActiveWebState());
   } else {
-    // When opening a URL, warn the omnibox geolocation in case it needs to stop
-    // the service.
-    [[OmniboxGeolocationController sharedInstance] locationBarDidSubmitURL];
-
     // TODO(crbug.com/785244): Is it ok to call |cancelOmniboxEdit| after
     // |loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the

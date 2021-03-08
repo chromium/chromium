@@ -55,10 +55,12 @@ source_set("unit_tests") {
   sources = [
     "CLLocation+XGeoHeaderTest.mm",
     "location_manager_unittest.mm",
+    "omnibox_geolocation_controller_unittest.mm",
     "omnibox_geolocation_local_state_unittest.mm",
   ]
   deps = [
     ":geolocation",
+    ":geolocation_internal",
     "//base",
     "//components/prefs:test_support",
     "//ios/chrome/test:test_support",
@@ -81,6 +83,7 @@ source_set("geolocation_internal") {
     "//base",
     "//components/google/core/common",
     "//components/version_info",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/tabs",

@@ -10,16 +10,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/application_context.h"
-#import "ios/chrome/browser/geolocation/location_manager.h"
 #import "ios/chrome/browser/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface OmniboxGeolocationLocalState () {
-  LocationManager* _locationManager;
-}
+@interface OmniboxGeolocationLocalState ()
 
 - (int)intForPath:(const char*)path;
 - (void)setInt:(int)value forPath:(const char*)path;
@@ -38,15 +35,6 @@
       prefs::kOmniboxGeolocationLastAuthorizationAlertVersion, "");
 }
 
-- (instancetype)initWithLocationManager:(LocationManager*)locationManager {
-  DCHECK(locationManager);
-  self = [super init];
-  if (self) {
-    _locationManager = locationManager;
-  }
-  return self;
-}
-
 - (geolocation::AuthorizationState)authorizationState {
   int authorizationState =
       [self intForPath:prefs::kOmniboxGeolocationAuthorizationState];
@@ -63,7 +51,7 @@
       break;
   }
 
-  switch ([_locationManager authorizationStatus]) {
+  switch (CLLocationManager.authorizationStatus) {
     case kCLAuthorizationStatusNotDetermined:
       // If the user previously authorized or denied geolocation but reset the
       // system settings, then start over.

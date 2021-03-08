@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 
-@class LocationManager;
 @class OmniboxGeolocationLocalState;
 
 // Private methods for unit tests.
@@ -17,7 +16,7 @@
 - (void)setLocalState:(OmniboxGeolocationLocalState*)localState;
 
 // Sets the LocationManager for the receiver to use.
-- (void)setLocationManager:(LocationManager*)locationManager;
+- (void)setLocationManager:(CLLocationManager*)locationManager;
 
 @end
 
