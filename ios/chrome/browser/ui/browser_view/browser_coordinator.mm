@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#import "base/metrics/histogram_functions.h"
 #include "base/scoped_observer.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -574,6 +577,10 @@
   [[UIApplication sharedApplication] openURL:URL
                                      options:@{}
                            completionHandler:nil];
+
+  base::UmaHistogramEnumeration(
+      "Download.OpenDownloads.PerProfileType",
+      GetBrowserStateType(self.browser->GetBrowserState()));
 }
 
 - (void)showRecentTabs {

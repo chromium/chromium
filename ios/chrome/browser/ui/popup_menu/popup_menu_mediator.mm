@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -20,6 +21,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -532,7 +534,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
 }
 
-#pragma mark - PopupMenuActionHandlerCommands
+#pragma mark - PopupMenuActionHandlerDelegate
 
 - (void)readPageLater {
   if (!self.webState)
@@ -563,6 +565,22 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       self.webState->GetNavigationManager()->GetIndexOfItem(navigationItem);
   DCHECK_NE(index, -1);
   self.webState->GetNavigationManager()->GoToIndex(index);
+}
+
+- (void)recordSettingsMetricsPerProfile {
+  profile_metrics::BrowserProfileType type =
+      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                   : profile_metrics::BrowserProfileType::kRegular;
+  base::UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType",
+                                type);
+}
+
+- (void)recordDownloadsMetricsPerProfile {
+  profile_metrics::BrowserProfileType type =
+      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
+                   : profile_metrics::BrowserProfileType::kRegular;
+  base::UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
+                                type);
 }
 
 #pragma mark - IOSLanguageDetectionTabHelperObserving

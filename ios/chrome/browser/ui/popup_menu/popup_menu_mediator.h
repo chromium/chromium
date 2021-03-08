@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler_commands.h"
+#import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 
 namespace bookmarks {
@@ -29,7 +29,7 @@ class BrowserPolicyConnectorIOS;
 // Mediator for the popup menu. This object is in charge of creating and
 // updating the items of the popup menu.
 @interface PopupMenuMediator
-    : NSObject <BrowserContainerConsumer, PopupMenuActionHandlerCommands>
+    : NSObject <BrowserContainerConsumer, PopupMenuActionHandlerDelegate>
 
 // Initializes the mediator with a |type| of popup menu, whether it
 // |isIncognito|, a |readingListModel| used to display the badge for the reading
