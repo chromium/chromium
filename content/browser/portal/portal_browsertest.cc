@@ -381,11 +381,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, AdoptPredecessor) {
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(portal_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
@@ -675,11 +675,11 @@ IN_PROC_BROWSER_TEST_F(PortalHitTestBrowserTest,
   // Activate the portal.
   {
     PortalActivatedObserver activated_observer(portal);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     activated_observer.WaitForActivate();
 
     RenderWidgetHostViewBase* view =
@@ -1619,8 +1619,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalHistoryWithActivation) {
   EXPECT_EQ(portal_url, portal_controller.GetLastCommittedEntry()->GetURL());
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   NavigationControllerImpl& activated_controller = portal_controller;
@@ -1647,8 +1647,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   Portal* portal = CreatePortalToUrl(web_contents_impl, portal_url);
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   web_contents_impl = static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -1711,8 +1711,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   ASSERT_TRUE(navigation_request);
 
   PortalActivatedObserver activated_observer(portal);
-  ASSERT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   activated_observer.WaitForActivate();
 
   NavigationControllerImpl& activated_controller = portal_controller;
@@ -1842,10 +1842,13 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DidFocusIPCFromOrphanedPortal) {
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(portal_main_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
-                       "let portal = document.querySelector('portal');"
-                       "portal.activate();"));
+    ExecuteScriptAsync(main_frame,
+                       "document.querySelector('portal').activate();");
     activated_observer.WaitForActivate();
+
+    // |web_contents_impl| should be owned by an orphaned portal.
+    EXPECT_TRUE(web_contents_impl->IsPortal());
+    EXPECT_EQ(web_contents_impl->GetOuterWebContents(), nullptr);
 
     // |web_contents_impl| is orphaned and therefore still points to itself
     // as the focused WebContents node in its tree. It shouldn't have a view
@@ -1937,11 +1940,11 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   {
     PortalActivatedObserver activated_observer(portal);
     PortalCreatedObserver adoption_observer(portal_frame);
-    EXPECT_TRUE(ExecJs(main_frame,
+    ExecuteScriptAsync(main_frame,
                        "let portal = document.querySelector('portal');"
                        "portal.activate().then(() => { "
                        "  document.body.removeChild(portal); "
-                       "});"));
+                       "});");
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
@@ -2204,10 +2207,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfCrashedPages) {
   CrashTab(portal_contents);
 
   PortalActivatedObserver activated_observer(portal);
-  EXPECT_TRUE(ExecJs(main_frame, R"(
-    document.querySelector('portal').activate();
-  )",
-                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   EXPECT_EQ(blink::mojom::PortalActivateResult::kRejectedDueToErrorInPortal,
             activated_observer.WaitForActivateResult());
 }
@@ -2231,8 +2232,8 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, ActivatePreviouslyCrashedPortal) {
   navigation_observer.Wait();
 
   PortalActivatedObserver activated_observer(portal);
-  EXPECT_TRUE(
-      ExecJs(main_frame, "document.querySelector('portal').activate();"));
+  ExecuteScriptAsync(main_frame,
+                     "document.querySelector('portal').activate();");
   EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWillUnload,
             activated_observer.WaitForActivateResult());
 }
