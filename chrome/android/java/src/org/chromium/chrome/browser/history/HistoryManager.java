@@ -57,6 +57,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
@@ -415,6 +416,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      */
     public void openClearBrowsingDataPreference() {
         recordUserAction("ClearBrowsingData");
+        recordClearBrowsingDataMetric();
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(mActivity, ClearBrowsingDataTabsFragment.class);
     }
@@ -509,6 +511,14 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
             RecordHistogram.recordCustomCountHistogram("HistoryPage.ClickAgeInDaysSubset",
                     ageInDays, 1, UMA_MAX_SUBSET_BUCKET_VALUE, UMA_BUCKET_COUNT);
         }
+    }
+
+    private void recordClearBrowsingDataMetric() {
+        @BrowserProfileType
+        int type = mIsIncognito ? BrowserProfileType.INCOGNITO : BrowserProfileType.REGULAR;
+        RecordHistogram.recordEnumeratedHistogram(
+                METRICS_PREFIX + "ClearBrowsingData.PerProfileType", type,
+                BrowserProfileType.MAX_VALUE + 1);
     }
 
     /**
