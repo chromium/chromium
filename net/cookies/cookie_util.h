@@ -140,11 +140,17 @@ NET_EXPORT void ParseRequestCookieLine(const std::string& header_value,
 NET_EXPORT std::string SerializeRequestCookieLine(
     const ParsedRequestCookies& parsed_cookies);
 
-// Determines which of the cookies for `url` can be accessed, with respect to
-// the SameSite attribute. This applies to looking up existing cookies for HTTP
-// requests. For looking up cookies for non-HTTP APIs (i.e., JavaScript), see
-// ComputeSameSiteContextForScriptGet. For setting new cookies, see
-// ComputeSameSiteContextForResponse and ComputeSameSiteContextForScriptSet.
+// Determines which of the cookies for the request URL can be accessed, with
+// respect to the SameSite attribute. This applies to looking up existing
+// cookies for HTTP requests. For looking up cookies for non-HTTP APIs (i.e.,
+// JavaScript), see ComputeSameSiteContextForScriptGet. For setting new cookies,
+// see ComputeSameSiteContextForResponse and ComputeSameSiteContextForScriptSet.
+//
+// `url_chain` is a non-empty vector of URLs, the last of which is the current
+// request URL. It represents the redirect chain of the current request. The
+// redirect chain is used to calculate whether there has been a cross-site
+// redirect. In order for a context to be deemed strictly same-site, there must
+// not have been any cross-site redirects.
 //
 // `site_for_cookies` is the currently navigated to site that should be
 // considered "first-party" for cookies.
@@ -175,7 +181,7 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 // when the method is "safe" in the RFC7231 section 4.2.1 sense.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForRequest(const std::string& http_method,
-                                 const GURL& url,
+                                 const std::vector<GURL>& url_chain,
                                  const SiteForCookies& site_for_cookies,
                                  const base::Optional<url::Origin>& initiator,
                                  bool is_main_frame_navigation,
@@ -190,16 +196,20 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const base::Optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies);
 
-// Determines which of the cookies for `url` can be set from a network response,
-// with respect to the SameSite attribute. This will only return CROSS_SITE or
-// SAME_SITE_LAX (cookie sets of SameSite=strict cookies are permitted in same
-// contexts that sets of SameSite=lax cookies are).
+// Determines which of the cookies for the request URL can be set from a network
+// response, with respect to the SameSite attribute. This will only return
+// CROSS_SITE or SAME_SITE_LAX (cookie sets of SameSite=strict cookies are
+// permitted in same contexts that sets of SameSite=lax cookies are).
+// `url_chain` is a non-empty vector of URLs, the last of which is the current
+// request URL. It represents the redirect chain of the current request. The
+// redirect chain is used to calculate whether there has been a cross-site
+// redirect.
 // `is_main_frame_navigation` is whether the request was for a navigation that
 // targets the main frame or top-level browsing context. Both SameSite=Lax and
 // SameSite=Strict cookies may be set by any main frame navigation.
 // If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_LAX.
 NET_EXPORT CookieOptions::SameSiteCookieContext
-ComputeSameSiteContextForResponse(const GURL& url,
+ComputeSameSiteContextForResponse(const std::vector<GURL>& url_chain,
                                   const SiteForCookies& site_for_cookies,
                                   const base::Optional<url::Origin>& initiator,
                                   bool is_main_frame_navigation,

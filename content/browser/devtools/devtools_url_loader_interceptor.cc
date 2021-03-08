@@ -421,6 +421,11 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   const base::Optional<std::string> renderer_request_id_;
 
+  // List of URLs that have been redirected through. The last member is the
+  // current request URL. Tracked for the purpose of computing the proper
+  // SameSite cookies to return, which depends on the redirect chain.
+  std::vector<GURL> url_chain_;
+
   DISALLOW_COPY_AND_ASSIGN(InterceptionJob);
 };
 
@@ -712,6 +717,8 @@ InterceptionJob::InterceptionJob(
   // Figure out if we need anything smarter here.
   registered_in_global_request_map_ =
       job_map.emplace(global_req_id_, this).second;
+
+  url_chain_.push_back(create_loader_params_->request.url);
 
   if (StartJobAndMaybeNotify())
     return;
@@ -1112,10 +1119,10 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
           ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
               create_loader_params_->request.site_for_cookies.scheme(),
               create_loader_params_->request.url.SchemeIsCryptographic());
+  DCHECK_EQ(create_loader_params_->request.url, url_chain_.back());
   options.set_same_site_cookie_context(
       net::cookie_util::ComputeSameSiteContextForResponse(
-          create_loader_params_->request.url,
-          create_loader_params_->request.site_for_cookies,
+          url_chain_, create_loader_params_->request.site_for_cookies,
           create_loader_params_->request.request_initiator,
           create_loader_params_->request.is_main_frame,
           should_treat_as_first_party));
@@ -1256,6 +1263,7 @@ void InterceptionJob::FetchCookies(
   options.set_do_not_update_access_time();
 
   const network::ResourceRequest& request = create_loader_params_->request;
+  DCHECK_EQ(request.url, url_chain_.back());
 
   bool should_treat_as_first_party =
       GetContentClient()
@@ -1265,7 +1273,7 @@ void InterceptionJob::FetchCookies(
               request.url.SchemeIsCryptographic());
   options.set_same_site_cookie_context(
       net::cookie_util::ComputeSameSiteContextForRequest(
-          request.method, request.url, request.site_for_cookies,
+          request.method, url_chain_, request.site_for_cookies,
           request.request_initiator, request.is_main_frame,
           should_treat_as_first_party));
 
@@ -1352,6 +1360,8 @@ void InterceptionJob::FollowRedirect(
   response_metadata_.reset();
 
   UpdateCORSFlag();
+
+  url_chain_.push_back(create_loader_params_->request.url);
 
   if (interceptor_) {
     // Pretend that each redirect hop is a new request -- this is for

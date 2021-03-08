@@ -552,9 +552,9 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
                                     request_->isolation_info().request_type();
     CookieOptions::SameSiteCookieContext same_site_context =
         net::cookie_util::ComputeSameSiteContextForRequest(
-            request_->method(), request_->url(), request_->site_for_cookies(),
-            request_->initiator(), is_main_frame_navigation,
-            force_ignore_site_for_cookies);
+            request_->method(), request_->url_chain(),
+            request_->site_for_cookies(), request_->initiator(),
+            is_main_frame_navigation, force_ignore_site_for_cookies);
 
     net::SchemefulSite request_site(request_->url());
 
@@ -717,8 +717,9 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
                                   request_->isolation_info().request_type();
   CookieOptions::SameSiteCookieContext same_site_context =
       net::cookie_util::ComputeSameSiteContextForResponse(
-          request_->url(), request_->site_for_cookies(), request_->initiator(),
-          is_main_frame_navigation, force_ignore_site_for_cookies);
+          request_->url_chain(), request_->site_for_cookies(),
+          request_->initiator(), is_main_frame_navigation,
+          force_ignore_site_for_cookies);
 
   const CookieAccessDelegate* delegate = cookie_store->cookie_access_delegate();
   net::SchemefulSite request_site(request_->url());
