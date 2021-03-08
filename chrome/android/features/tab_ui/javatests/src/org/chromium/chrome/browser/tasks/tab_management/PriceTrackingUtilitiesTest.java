@@ -86,6 +86,7 @@ public class PriceTrackingUtilitiesTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> ProfileSyncService.resetForTests());
         IdentityServicesProvider.setInstanceForTests(null);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
     }
 
     @UiThreadTest
