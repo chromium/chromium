@@ -73,6 +73,9 @@ class StorageHandler : public DevToolsDomainHandler,
 
   void GetTrustTokens(
       std::unique_ptr<GetTrustTokensCallback> callback) override;
+  void ClearTrustTokens(
+      const std::string& issuerOrigin,
+      std::unique_ptr<ClearTrustTokensCallback> callback) override;
 
  private:
   // See definition for lifetime information.

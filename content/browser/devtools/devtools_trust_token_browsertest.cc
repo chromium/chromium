@@ -14,6 +14,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "services/network/public/cpp/features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 
@@ -28,6 +29,31 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
   void TearDownOnMainThread() override {
     TrustTokenBrowsertest::TearDownOnMainThread();
     DevToolsProtocolTest::TearDownOnMainThread();
+  }
+
+  // The returned view is only valid until the next |SendCommand| call.
+  base::Value::ListView GetTrustTokensViaProtocol() {
+    SendCommand("Storage.getTrustTokens", nullptr);
+    base::Value* tokens = result_->FindPath("tokens");
+    EXPECT_TRUE(tokens);
+    return tokens->GetList();
+  }
+
+  // Asserts that CDP reports |count| number of tokens for |issuerOrigin|.
+  void AssertTrustTokensViaProtocol(const std::string& issuerOrigin,
+                                    int expectedCount) {
+    auto tokens = GetTrustTokensViaProtocol();
+    EXPECT_GT(tokens.size(), 0ul);
+
+    for (const auto& token : tokens) {
+      const std::string* issuer = token.FindStringKey("issuerOrigin");
+      if (*issuer == issuerOrigin) {
+        const base::Optional<int> actualCount = token.FindIntPath("count");
+        EXPECT_THAT(actualCount, ::testing::Optional(expectedCount));
+        return;
+      }
+    }
+    FAIL() << "No trust tokens for issuer " << issuerOrigin;
   }
 };
 
@@ -289,13 +315,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
   Attach();
 
   // 3) Call Storage.getTrustTokens and expect none to be there.
-  SendCommand("Storage.getTrustTokens", nullptr);
-  base::Value* tokens = result_->FindPath("tokens");
-  EXPECT_TRUE(tokens);
-  EXPECT_EQ(tokens->GetList().size(), 0ul);
+  EXPECT_EQ(GetTrustTokensViaProtocol().size(), 0ul);
 
-  // 4) Request and redeem a token, then use the redeemed token in a Signing
-  // request.
+  // 4) Request some Trust Tokens.
   std::string command = R"(
   (async () => {
     await fetch('/issue', {trustToken: {type: 'token-request'}});
@@ -303,15 +325,47 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, GetTrustTokens) {
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
   // resolve.
-  EXPECT_EQ(
-      "Success",
-      EvalJs(shell(), JsReplace(command, IssuanceOriginFromHost("a.test"))));
+  EXPECT_EQ("Success", EvalJs(shell(), command));
 
   // 5) Call Storage.getTrustTokens and expect a Trust Token to be there.
-  SendCommand("Storage.getTrustTokens", nullptr);
-  tokens = result_->FindPath("tokens");
-  EXPECT_TRUE(tokens);
-  EXPECT_EQ(tokens->GetList().size(), 1ul);
+  EXPECT_EQ(GetTrustTokensViaProtocol().size(), 1ul);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest, ClearTrustTokens) {
+  ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
+
+  // 1) Navigate to a test site.
+  GURL start_url = server_.GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+
+  // 2) Open DevTools.
+  Attach();
+
+  // 3) Request some Trust Tokens.
+  std::string command = R"(
+  (async () => {
+    await fetch('/issue', {trustToken: {type: 'token-request'}});
+    return 'Success'; })(); )";
+
+  // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
+  // resolve.
+  EXPECT_EQ("Success", EvalJs(shell(), command));
+
+  // 4) Call Storage.getTrustTokens and expect a Trust Token to be there.
+  AssertTrustTokensViaProtocol(IssuanceOriginFromHost("a.test"), 10);
+
+  // 5) Call Storage.clearTrustTokens
+  auto params = std::make_unique<base::DictionaryValue>();
+  params->SetStringPath("issuerOrigin", IssuanceOriginFromHost("a.test"));
+  auto* result = SendCommand("Storage.clearTrustTokens", std::move(params));
+
+  EXPECT_THAT(result->FindBoolPath("didDeleteTokens"),
+              ::testing::Optional(true));
+
+  // 6) Call Storage.getTrustTokens and expect no Trust Tokens to be there.
+  //    Note that we still get an entry for our 'issuerOrigin', but the actual
+  //    Token count must be 0.
+  AssertTrustTokensViaProtocol(IssuanceOriginFromHost("a.test"), 0);
 }
 
 }  // namespace content

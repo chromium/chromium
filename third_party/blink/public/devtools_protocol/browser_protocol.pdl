@@ -7897,6 +7897,15 @@ experimental domain Storage
     returns
       array of TrustTokens tokens
 
+  # Removes all Trust Tokens issued by the provided issuerOrigin.
+  # Leaves other stored data, including the issuer's Redemption Records, intact.
+  experimental command clearTrustTokens
+    parameters
+      string issuerOrigin
+    returns
+      # True if any tokens were deleted, false otherwise.
+      boolean didDeleteTokens
+
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
     parameters
