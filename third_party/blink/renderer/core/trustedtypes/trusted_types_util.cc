@@ -57,6 +57,10 @@ const char kFunctionConstructorFailureConsoleMessage[] =
     "arguments. See https://github.com/w3c/webappsec-trusted-types/wiki/"
     "Trusted-Types-for-function-constructor for more information.";
 
+const char kScriptExecutionTrustedTypeFailConsoleMessage[] =
+    "This document requires 'TrustedScript' assignment. "
+    "An HTMLScriptElement was directly modified and will not be executed.";
+
 const char* GetMessage(TrustedTypeViolationKind kind) {
   switch (kind) {
     case kTrustedHTMLAssignment:
@@ -522,9 +526,16 @@ String CORE_EXPORT
 GetStringForScriptExecution(String script,
                             const ScriptElementBase::Type type,
                             ExecutionContext* context) {
-  return GetStringFromScriptHelper(
-      std::move(script), context, GetElementName(type), "text",
-      kScriptExecution, kScriptExecutionAndDefaultPolicyFailed);
+  String value = GetStringFromScriptHelper(
+      script, context, GetElementName(type), "text", kScriptExecution,
+      kScriptExecutionAndDefaultPolicyFailed);
+  if (!script.IsNull() && value.IsNull()) {
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        kScriptExecutionTrustedTypeFailConsoleMessage));
+  }
+  return value;
 }
 
 String TrustedTypesCheckForJavascriptURLinNavigation(
