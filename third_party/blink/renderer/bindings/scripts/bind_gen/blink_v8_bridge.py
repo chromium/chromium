@@ -227,7 +227,7 @@ def blink_type_info(idl_type, use_new_union=False):
                         ref_fmt="{}*",
                         const_ref_fmt="const {}*",
                         value_fmt="{}*",
-                        has_null_value=False)
+                        has_null_value=True)
 
     if real_type.is_union:
         blink_impl_type = blink_class_name(real_type.union_definition_object)
@@ -368,7 +368,7 @@ def make_blink_to_v8_value(
     return SymbolNode(v8_var_name, definition_constructor=create_definition)
 
 
-def make_default_value_expr(idl_type, default_value):
+def make_default_value_expr(idl_type, default_value, use_new_union=False):
     """
     Returns a set of C++ expressions to be used for initialization with default
     values.  The returned object has the following attributes.
@@ -422,10 +422,42 @@ def make_default_value_expr(idl_type, default_value):
                 for dependency in assignment_deps))
 
             self.initializer_expr = initializer_expr
-            self.initializer_deps = initializer_deps
+            self.initializer_deps = tuple(initializer_deps)
             self.is_initialization_lightweight = is_initialization_lightweight
             self.assignment_value = assignment_value
-            self.assignment_deps = assignment_deps
+            self.assignment_deps = tuple(assignment_deps)
+
+    if idl_type.unwrap(typedef=True).is_union and use_new_union:
+        union_type = idl_type.unwrap(typedef=True)
+        member_type = None
+        for member_type in union_type.flattened_member_types:
+            if default_value.is_type_compatible_with(member_type):
+                member_type = member_type
+                break
+        assert not (member_type is None) or default_value.idl_type.is_nullable
+
+        pattern = "MakeGarbageCollected<{}>({})"
+        union_class_name = blink_class_name(
+            union_type.new_union_definition_object)
+
+        if default_value.idl_type.is_nullable:
+            value = pattern.format(union_class_name, "nullptr")
+            return DefaultValueExpr(initializer_expr=value,
+                                    initializer_deps=[],
+                                    is_initialization_lightweight=False,
+                                    assignment_value=value,
+                                    assignment_deps=[])
+        else:
+            member_default_expr = make_default_value_expr(
+                member_type, default_value)
+            value = pattern.format(union_class_name,
+                                   member_default_expr.assignment_value)
+            return DefaultValueExpr(
+                initializer_expr=value,
+                initializer_deps=member_default_expr.initializer_deps,
+                is_initialization_lightweight=False,
+                assignment_value=value,
+                assignment_deps=member_default_expr.assignment_deps)
 
     if idl_type.unwrap(typedef=True).is_union:
         union_type = idl_type.unwrap(typedef=True)
@@ -485,6 +517,10 @@ def make_default_value_expr(idl_type, default_value):
             initializer_deps = ["isolate"]
             assignment_value = "ScriptValue::CreateNull(${isolate})"
             assignment_deps = ["isolate"]
+        elif idl_type.unwrap().is_union and use_new_union:
+            initializer_expr = "nullptr"
+            is_initialization_lightweight = True
+            assignment_value = "nullptr"
         elif idl_type.unwrap().is_union:
             initializer_expr = None  # <union_type>::IsNull() by default
             assignment_value = "{}()".format(type_info.value_t)
