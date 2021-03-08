@@ -5,19 +5,18 @@
 import {assert} from '../chrome_util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-import {ChromeDirectoryEntry} from './chrome_file_system_entry.js';
 import {Filenamer, IMAGE_PREFIX, VIDEO_PREFIX} from './file_namer.js';
-import {
-  AbstractDirectoryEntry,  // eslint-disable-line no-unused-vars
-  AbstractFileEntry,       // eslint-disable-line no-unused-vars
-} from './file_system_entry.js';
 import * as idb from './idb.js';
 import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
-import {NativeDirectoryEntry} from './native_file_system_entry.js';
+import {
+  NativeDirectoryEntry,  // eslint-disable-line no-unused-vars
+  NativeDirectoryEntryImpl,
+  NativeFileEntry,  // eslint-disable-line no-unused-vars
+} from './native_file_system_entry.js';
 
 /**
  * Checks if the entry's name has the video prefix.
- * @param {!AbstractFileEntry} entry File entry.
+ * @param {!NativeFileEntry} entry File entry.
  * @return {boolean} Has the video prefix or not.
  */
 export function hasVideoPrefix(entry) {
@@ -26,7 +25,7 @@ export function hasVideoPrefix(entry) {
 
 /**
  * Checks if the entry's name has the image prefix.
- * @param {!AbstractFileEntry} entry File entry.
+ * @param {!NativeFileEntry} entry File entry.
  * @return {boolean} Has the image prefix or not.
  */
 function hasImagePrefix(entry) {
@@ -35,19 +34,19 @@ function hasImagePrefix(entry) {
 
 /**
  * Temporary directory in the internal file system.
- * @type {?AbstractDirectoryEntry}
+ * @type {?NativeDirectoryEntry}
  */
 let internalTempDir = null;
 
 /**
  * Camera directory in the external file system.
- * @type {?AbstractDirectoryEntry}
+ * @type {?NativeDirectoryEntry}
  */
 let cameraDir = null;
 
 /**
  * Gets camera directory used by CCA.
- * @return {?AbstractDirectoryEntry}
+ * @return {?NativeDirectoryEntry}
  */
 export function getCameraDirectory() {
   return cameraDir;
@@ -55,19 +54,15 @@ export function getCameraDirectory() {
 
 /**
  * Initializes the temporary directory in the internal file system.
- * @return {!Promise<!AbstractDirectoryEntry>} Promise for the directory result.
+ * @return {!Promise<!NativeDirectoryEntry>} Promise for the directory result.
  */
-function initInternalTempDir() {
-  return new Promise((resolve, reject) => {
-    webkitRequestFileSystem(
-        window.TEMPORARY, 768 * 1024 * 1024 /* 768MB */,
-        (fs) => resolve(new ChromeDirectoryEntry(fs.root)), reject);
-  });
+async function initInternalTempDir() {
+  return new NativeDirectoryEntryImpl(await navigator.storage.getDirectory());
 }
 
 /**
  * Initializes the camera directory in the external file system.
- * @return {!Promise<?AbstractDirectoryEntry>} Promise for the directory result.
+ * @return {!Promise<?NativeDirectoryEntry>} Promise for the directory result.
  */
 async function initCameraDirectory() {
   const handle = new WaitableEvent();
@@ -95,7 +90,7 @@ async function initCameraDirectory() {
     });
   }
   const dir = await handle.wait();
-  const myFilesDir = new NativeDirectoryEntry(dir);
+  const myFilesDir = new NativeDirectoryEntryImpl(dir);
   return getMaybeLazyDirectory(myFilesDir, 'Camera');
 }
 
@@ -116,7 +111,7 @@ export async function initialize() {
  * Saves photo blob or metadata blob into predefined default location.
  * @param {!Blob} blob Data of the photo to be saved.
  * @param {string} name Filename of the photo to be saved.
- * @return {!Promise<?AbstractFileEntry>} Promise for the result.
+ * @return {!Promise<?NativeFileEntry>} Promise for the result.
  */
 export async function saveBlob(blob, name) {
   const file = await cameraDir.createFile(name);
@@ -128,7 +123,7 @@ export async function saveBlob(blob, name) {
 
 /**
  * Creates a file for saving video recording result.
- * @return {!Promise<!AbstractFileEntry>} Newly created video file.
+ * @return {!Promise<!NativeFileEntry>} Newly created video file.
  * @throws {!Error} If failed to create video file.
  */
 export async function createVideoFile() {
@@ -146,7 +141,7 @@ export async function createVideoFile() {
 const PRIVATE_TEMPFILE_NAME = 'video-intent.mkv';
 
 /**
- * @return {!Promise<!AbstractFileEntry>} Newly created temporary file.
+ * @return {!Promise<!NativeFileEntry>} Newly created temporary file.
  * @throws {!Error} If failed to create video temp file.
  */
 export async function createPrivateTempVideoFile() {
@@ -162,7 +157,7 @@ export async function createPrivateTempVideoFile() {
 
 /**
  * Gets the picture entries.
- * @return {!Promise<!Array<!AbstractFileEntry>>} Promise for the picture
+ * @return {!Promise<!Array<!NativeFileEntry>>} Promise for the picture
  *     entries.
  */
 export async function getEntries() {
@@ -177,7 +172,7 @@ export async function getEntries() {
 
 /**
  * Returns an URL for a picture given by the file |entry|.
- * @param {!AbstractFileEntry} entry The file entry of the picture.
+ * @param {!NativeFileEntry} entry The file entry of the picture.
  * @return {!Promise<string>} Promise for the result.
  */
 export async function pictureURL(entry) {

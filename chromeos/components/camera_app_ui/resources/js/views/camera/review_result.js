@@ -5,7 +5,7 @@
 import * as dom from '../../dom.js';
 import {pictureURL} from '../../models/file_system.js';
 // eslint-disable-next-line no-unused-vars
-import {AbstractFileEntry} from '../../models/file_system_entry.js';
+import {NativeFileEntry} from '../../models/native_file_system_entry.js';
 import * as state from '../../state.js';
 import * as util from '../../util.js';
 
@@ -132,7 +132,7 @@ export class ReviewResult {
 
   /**
    * Opens video result file and shows video on review result UI.
-   * @param {!AbstractFileEntry} fileEntry Video result file.
+   * @param {!NativeFileEntry} fileEntry Video result file.
    * @return {!Promise<boolean>} Promise resolved with whether user confirms
    *     with the video result.
    */

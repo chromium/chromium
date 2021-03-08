@@ -1,22 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
+ * It is available since we enabled and filled data in it while creating
+ * content::WebUIDataSource for CCA.
  * @typedef {{
- *   get: function(Array<string>, function(Object)),
- *   set: function(string, ?),
+ *   getString: function(string): string,
+ *   getStringF: function(string, ...(string|number)): string,
  * }}
  */
-chrome.chromeosInfoPrivate;
-
-/** @const */
-chrome.events = {};
+window.loadTimeData;
 
 /**
  * @typedef {{
- *   addListener: function(function(): void),
- *   removeListener: function(function(): void),
+ *   getDirectory: function(): !Promise<!FileSystemDirectoryHandle>,
  * }}
  */
-chrome.events.Event;
+navigator.storage;

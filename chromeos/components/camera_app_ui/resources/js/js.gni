@@ -28,10 +28,8 @@ compile_js_files = [
   "models/barcode.js",
   "models/barcode_worker.js",
   "models/barcode_worker_interface.js",
-  "models/chrome_file_system_entry.js",
   "models/file_namer.js",
   "models/file_system.js",
-  "models/file_system_entry.js",
   "models/file_util.js",
   "models/idb.js",
   "models/lazy_directory_entry.js",
@@ -95,7 +93,6 @@ wasm_files = [ "lib/ffmpeg.wasm" ]
 
 externs_files = [
   "externs/chrome.js",
-  "externs/swa.js",
   "externs/typescript.js",
   "externs/universal_analytics_api.js",
   "externs/w3c_api.js",
