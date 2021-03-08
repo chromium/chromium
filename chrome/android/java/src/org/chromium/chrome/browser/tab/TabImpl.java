@@ -864,6 +864,14 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 CriticalPersistedTabData.from(this).setUrl(new GURL(loadUrlParams.getUrl()));
             }
 
+            // The {@link mDelegateFactory} needs to be set before calling
+            // {@link TabHelpers.initTabHelpers()}. This is because it creates a
+            // TabBrowserControlsConstraintsHelper, and
+            // {@link TabBrowserControlsConstraintsHelper#updateVisibilityDelegate()} will call the
+            // Tab#getDelegateFactory().createBrowserControlsVisibilityDelegate().
+            // See https://crbug.com/1179419.
+            mDelegateFactory = delegateFactory;
+
             TabHelpers.initTabHelpers(this, parent);
 
             if (tabState != null) {
@@ -872,7 +880,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             initializeNative();
 
-            mDelegateFactory = delegateFactory;
             RevenueStats.getInstance().tabCreated(this);
 
             // If there is a frozen WebContents state or a pending lazy load, don't create a new
@@ -948,7 +955,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      */
     void restoreFieldsFromState(TabState state) {
         assert state != null;
-        assert !mUsedCriticalPersistedTabData;
         CriticalPersistedTabData.from(this).setWebContentsState(state.contentsState);
         CriticalPersistedTabData.from(this).setTimestampMillis(state.timestampMillis);
         CriticalPersistedTabData.from(this).setUrl(
