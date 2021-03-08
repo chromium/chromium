@@ -10,6 +10,7 @@
 #include "base/hash/hash.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -450,6 +451,50 @@ TEST_F(VotesUploaderTest, UploadSingleUsername) {
                                    /* pref_service= */ nullptr));
 
     votes_uploader.MaybeSendSingleUsernameVote(credentials_saved);
+  }
+}
+
+// Verifies that the sent username vote depends on whether the username was
+// changed or not.
+TEST_F(VotesUploaderTest, UploadedVotesDependOnUsernameChangeState) {
+  using State = VotesUploader::UsernameChangeState;
+  constexpr autofill::FieldRendererId kUsernameRendererId(101);
+  constexpr FieldSignature kUsernameFieldSignature(1234);
+  constexpr FormSignature kFormSignature(1000);
+
+  MockFieldInfoManager mock_field_manager;
+  ON_CALL(mock_field_manager, GetFieldType).WillByDefault(Return(UNKNOWN_TYPE));
+  ON_CALL(client_, GetFieldInfoManager)
+      .WillByDefault(Return(&mock_field_manager));
+
+  for (State username_change_state :
+       {State::kUnchanged, State::kChangedToKnownValue,
+        State::kChangedToUnknownValue}) {
+    SCOPED_TRACE(testing::Message("username_change_state = ")
+                 << static_cast<int>(username_change_state));
+    ServerFieldTypeSet kExpectedVotes = {
+        username_change_state == State::kUnchanged ? SINGLE_USERNAME
+                                                   : NOT_USERNAME};
+
+    VotesUploader votes_uploader(&client_, false);
+    votes_uploader.set_username_change_state(username_change_state);
+
+    FormPredictions form_predictions;
+    form_predictions.form_signature = kFormSignature;
+    form_predictions.fields.push_back({
+        .renderer_id = kUsernameRendererId,
+        .signature = kUsernameFieldSignature,
+    });
+    votes_uploader.set_single_username_vote_data(kUsernameRendererId,
+                                                 form_predictions);
+    EXPECT_CALL(
+        mock_autofill_download_manager_,
+        StartUploadRequest(SignatureIs(kFormSignature),
+                           /*form_was_autofilled=*/false, kExpectedVotes,
+                           /*login_form_signature=*/"",
+                           /*observed_submission=*/true,
+                           /*pref_service=*/nullptr));
+    votes_uploader.MaybeSendSingleUsernameVote(/*credentials_saved=*/true);
   }
 }
 

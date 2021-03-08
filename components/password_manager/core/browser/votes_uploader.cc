@@ -330,7 +330,7 @@ bool VotesUploader::UploadPasswordVote(
     if (autofill_type != autofill::ACCOUNT_CREATION_PASSWORD) {
       if (generation_popup_was_shown_)
         AddGeneratedVote(&form_structure);
-      if (has_username_edited_vote_) {
+      if (username_change_state_ == UsernameChangeState::kChangedToKnownValue) {
         field_types[form_to_upload.username_element] = autofill::USERNAME;
         username_vote_type = AutofillUploadContents::Field::USERNAME_EDITED;
       }
@@ -497,10 +497,11 @@ void VotesUploader::MaybeSendSingleUsernameVote(bool credentials_saved) {
         // The vote for this field has been already sent. Don't send again.
         return;
       }
-      type = credentials_saved && !has_username_edited_vote_
+      type = credentials_saved &&
+                     username_change_state_ == UsernameChangeState::kUnchanged
                  ? autofill::SINGLE_USERNAME
                  : autofill::NOT_USERNAME;
-      if (has_username_edited_vote_)
+      if (username_change_state_ == UsernameChangeState::kChangedToKnownValue)
         field->set_vote_type(AutofillUploadContents::Field::USERNAME_EDITED);
       available_field_types.insert(type);
       SaveFieldVote(form_to_upload->form_signature(),

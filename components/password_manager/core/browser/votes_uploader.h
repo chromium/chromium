@@ -53,6 +53,19 @@ struct SingleUsernameVoteData {
 // This class manages vote uploads for password forms.
 class VotesUploader {
  public:
+  // The states a changed username can be in.
+  enum class UsernameChangeState {
+    // The user did not change the username.
+    kUnchanged,
+    // The user changed the username to a different value that was present in
+    // the submitted form. For example, via the dropdown in the Desktop bubble.
+    kChangedToKnownValue,
+    // The user changed the username to a different value that was not present
+    // in the submitted form. For example, via the text field in the Desktop
+    // bubble.
+    kChangedToUnknownValue,
+  };
+
   VotesUploader(PasswordManagerClient* client,
                 bool is_possible_change_password_form);
   VotesUploader(const VotesUploader& other);
@@ -137,8 +150,8 @@ class VotesUploader {
     generation_element_ = generation_element;
   }
 
-  void set_has_username_edited_vote(bool has_username_edited_vote) {
-    has_username_edited_vote_ = has_username_edited_vote;
+  void set_username_change_state(UsernameChangeState username_change_state) {
+    username_change_state_ = username_change_state;
   }
 
   void set_has_passwords_revealed_vote(bool has_passwords_revealed_vote) {
@@ -213,9 +226,9 @@ class VotesUploader {
   // A password field name that is used for generation.
   autofill::FieldRendererId generation_element_;
 
-  // True iff a user edited the username value in a prompt and new username is
-  // the value of another field of the observed form.
-  bool has_username_edited_vote_ = false;
+  // Captures whether the user changed the username to a known value, an unknown
+  // value, or didn't change the username at all.
+  UsernameChangeState username_change_state_ = UsernameChangeState::kUnchanged;
 
   // If the user typed username that doesn't match any saved credentials, but
   // matches an entry from |all_possible_usernames| of a saved credential,

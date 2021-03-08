@@ -335,18 +335,23 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
 
   metrics_recorder_->set_username_updated_in_bubble(true);
 
-  // |has_username_edited_vote_| is true iff |new_username| was typed in another
-  // field. Otherwise, |has_username_edited_vote_| is false and no vote will be
-  // uploaded.
-  votes_uploader_.set_has_username_edited_vote(false);
   if (!new_username.empty()) {
-    for (const auto& possible_username :
-         parsed_submitted_form_->all_possible_usernames) {
-      if (possible_username.first == new_username) {
-        parsed_submitted_form_->username_element = possible_username.second;
-        votes_uploader_.set_has_username_edited_vote(true);
-        break;
-      }
+    // Try to find `new_username` in the usernames `parsed_submitted_form_`
+    // knows about. Set `votes_uploader_`'s UsernameChangeState depending on
+    // whether the username is present or not. Also set `username_element` if it
+    // is a known username.
+    const auto& possible_usernames =
+        parsed_submitted_form_->all_possible_usernames;
+    auto possible_username_it = base::ranges::find(
+        possible_usernames, new_username, &ValueElementPair::first);
+
+    if (possible_username_it != possible_usernames.end()) {
+      parsed_submitted_form_->username_element = possible_username_it->second;
+      votes_uploader_.set_username_change_state(
+          VotesUploader::UsernameChangeState::kChangedToKnownValue);
+    } else {
+      votes_uploader_.set_username_change_state(
+          VotesUploader::UsernameChangeState::kChangedToUnknownValue);
     }
   }
 
