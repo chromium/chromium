@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/version_updater/mock_version_updater_delegate.h"
+#include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 
 namespace chromeos {
 

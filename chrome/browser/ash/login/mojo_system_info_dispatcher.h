@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_MOJO_SYSTEM_INFO_DISPATCHER_H_
 #define CHROME_BROWSER_ASH_LOGIN_MOJO_SYSTEM_INFO_DISPATCHER_H_
 
-#include "chrome/browser/chromeos/login/version_info_updater.h"
+#include "chrome/browser/ash/login/version_info_updater.h"
 
 namespace chromeos {
 

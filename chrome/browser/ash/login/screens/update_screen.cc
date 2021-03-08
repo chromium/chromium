@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/chromeos/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_screen_handler.h"
 #include "chrome/grit/chromium_strings.h"

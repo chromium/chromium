@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_WIZARD_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_WIZARD_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -521,4 +521,4 @@ class WizardController {
 // source migration is finished.
 using ::chromeos::WizardController;
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_WIZARD_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTROLLER_H_

@@ -17,7 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 namespace chromeos {

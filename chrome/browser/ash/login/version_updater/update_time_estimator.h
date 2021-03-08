@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
+#define CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
 
 #include "base/time/time.h"
 #include "chromeos/dbus/update_engine_client.h"
@@ -77,4 +77,4 @@ class UpdateTimeEstimator {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_UPDATE_TIME_ESTIMATOR_H_

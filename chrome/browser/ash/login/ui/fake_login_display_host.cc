@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {

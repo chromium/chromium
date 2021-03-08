@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

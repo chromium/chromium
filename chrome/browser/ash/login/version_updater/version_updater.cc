@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/version_updater/version_updater.h"
+#include "chrome/browser/ash/login/version_updater/version_updater.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
+#include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

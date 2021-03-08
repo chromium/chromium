@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 
 #include "base/check.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
 
 namespace chromeos {

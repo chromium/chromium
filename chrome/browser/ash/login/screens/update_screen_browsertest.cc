@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/version_updater/version_updater.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/version_updater/version_updater.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -70,7 +70,7 @@ const char kTimeFinalize[] = "OOBE.UpdateScreen.StageTime.Finalize";
 const char kTimeVerify[] = "OOBE.UpdateScreen.StageTime.Verify";
 
 // These values should be kept in sync with the progress bar values in
-// chrome/browser/chromeos/login/version_updater/version_updater.cc.
+// chrome/browser/ash/login/version_updater/version_updater.cc.
 const int kUpdateCheckProgress = 14;
 const int kVerifyingProgress = 74;
 const int kFinalizingProgress = 81;

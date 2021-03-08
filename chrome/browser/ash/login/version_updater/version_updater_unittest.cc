@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/login/version_updater/version_updater.h"
+#include "chrome/browser/ash/login/version_updater/version_updater.h"
 
 #include <memory>
 
@@ -12,8 +12,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/chromeos/login/version_updater/mock_version_updater_delegate.h"
-#include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
+#include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
+#include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chrome/browser/chromeos/net/network_portal_detector_test_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"

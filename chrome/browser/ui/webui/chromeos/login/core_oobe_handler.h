@@ -18,7 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/chromeos/login/version_info_updater.h"
+#include "chrome/browser/ash/login/version_info_updater.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"

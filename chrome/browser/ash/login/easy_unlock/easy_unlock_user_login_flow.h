@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
+#include "chrome/browser/ash/login/user_flow.h"
 
 class AccountId;
 

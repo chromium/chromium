@@ -22536,7 +22536,7 @@
     },
     {
       'name': 'DeviceWebBasedAttestationAllowedUrls',
-      'owners': ['miersh@google.com', 'pmarko@chromium.org', 'file://chrome/browser/chromeos/login/OWNERS'],
+      'owners': ['miersh@google.com', 'pmarko@chromium.org', 'file://chrome/browser/ash/login/OWNERS'],
       'device_only': True,
       'type': 'list',
       'schema': {
@@ -22564,7 +22564,7 @@
     },
     {
       'name': 'DeviceShowNumericKeyboardForPassword',
-      'owners': ['raleksandrov@google.com', 'file://chrome/browser/chromeos/login/OWNERS'],
+      'owners': ['raleksandrov@google.com', 'file://chrome/browser/ash/login/OWNERS'],
       'type' : 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:80-'],

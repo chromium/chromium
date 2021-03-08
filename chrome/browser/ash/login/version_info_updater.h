@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_INFO_UPDATER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_INFO_UPDATER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_VERSION_INFO_UPDATER_H_
+#define CHROME_BROWSER_ASH_LOGIN_VERSION_INFO_UPDATER_H_
 
 #include <memory>
 #include <string>
@@ -107,4 +107,4 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_INFO_UPDATER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_INFO_UPDATER_H_

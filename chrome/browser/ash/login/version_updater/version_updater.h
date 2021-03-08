@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_
-#define CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_
+#define CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/chromeos/login/version_updater/update_time_estimator.h"
+#include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 
@@ -208,4 +208,4 @@ class VersionUpdater : public UpdateEngineClient::Observer,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_VERSION_UPDATER_VERSION_UPDATER_H_

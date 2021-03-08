@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
-#include "chrome/browser/chromeos/login/version_updater/version_updater.h"
+#include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace base {

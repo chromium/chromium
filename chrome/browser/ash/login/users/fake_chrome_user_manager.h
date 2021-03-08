@@ -11,8 +11,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"

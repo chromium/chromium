@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 
 namespace {
