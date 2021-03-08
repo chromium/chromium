@@ -168,6 +168,11 @@ function createBrowserSettingsRoutes() {
     // <if expr="not is_macosx">
     r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
     // </if>
+    // <if expr="not chromeos and not lacros">
+    if (loadTimeData.getBoolean('enableDesktopRestructuredLanguageSettings')) {
+      r.LANGUAGE_SETTINGS = r.LANGUAGES.createChild('/languageSettings');
+    }
+    // </if>
 
     if (visibility.downloads !== false) {
       r.DOWNLOADS = r.ADVANCED.createSection('/downloads', 'downloads');

@@ -102,6 +102,19 @@ Polymer({
     detailLanguage_: Object,
 
     /** @private */
+    enableDesktopRestructuredLanguageSettings_: {
+      type: Boolean,
+      value() {
+        let enabled = false;
+        // <if expr="not chromeos and not lacros">
+        enabled = loadTimeData.getBoolean(
+            'enableDesktopRestructuredLanguageSettings');
+        // </if>
+        return enabled;
+      },
+    },
+
+    /** @private */
     hideSpellCheckLanguages_: {
       type: Boolean,
       value: false,
@@ -127,6 +140,14 @@ Polymer({
         // <if expr="not is_macosx">
         if (routes.EDIT_DICTIONARY) {
           map.set(routes.EDIT_DICTIONARY.path, '#spellCheckSubpageTrigger');
+        }
+        // </if>
+        // <if expr="not chromeos and not lacros">
+        if (loadTimeData.getBoolean(
+                'enableDesktopRestructuredLanguageSettings')) {
+          if (routes.LANGUAGE_SETTINGS) {
+            map.set(routes.LANGUAGE_SETTINGS.path, '#languagesSubpageTrigger');
+          }
         }
         // </if>
         return map;
@@ -313,6 +334,19 @@ Polymer({
     Router.getInstance().navigateTo(
         /** @type {!Route} */ (routes.EDIT_DICTIONARY));
   },
+
+  // <if expr="not chromeos and not lacros">
+  /**
+   * Opens the Language Settings page.
+   * @private
+   */
+  onLanguagesSubpageClick_() {
+    if (this.enableDesktopRestructuredLanguageSettings_) {
+      Router.getInstance().navigateTo(
+          /** @type {!Route} */ (routes.LANGUAGE_SETTINGS));
+    }
+  },
+  // </if>
 
   /**
    * Handler for enabling or disabling spell check for a specific language.

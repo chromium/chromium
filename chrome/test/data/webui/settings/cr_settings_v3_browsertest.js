@@ -75,14 +75,6 @@ var CrSettingsLanguagesPageV3Test = class extends CrSettingsV3BrowserTest {
   }
 };
 
-TEST_F('CrSettingsLanguagesPageV3Test', 'AddLanguagesDialog', function() {
-  mocha.grep(languages_page_tests.TestNames.AddLanguagesDialog).run();
-});
-
-TEST_F('CrSettingsLanguagesPageV3Test', 'LanguageMenu', function() {
-  mocha.grep(languages_page_tests.TestNames.LanguageMenu).run();
-});
-
 TEST_F('CrSettingsLanguagesPageV3Test', 'Spellcheck', function() {
   mocha.grep(languages_page_tests.TestNames.Spellcheck).run();
 });
@@ -93,6 +85,15 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
+TEST_F(
+    'CrSettingsLanguagesPageV3Test', 'RestructuredLanguageSettings',
+    function() {
+      mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
+          .run();
+    });
+GEN('#endif');
+
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsLanguagesPageV3Test', 'ChromeOSLanguagesSettingsUpdate',
@@ -101,6 +102,22 @@ TEST_F(
           .run();
     });
 GEN('#endif');
+
+// eslint-disable-next-line no-var
+var CrSettingsLanguagesSubpageV3Test = class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_tests.js';
+  }
+};
+
+TEST_F('CrSettingsLanguagesSubpageV3Test', 'AddLanguagesDialog', function() {
+  mocha.grep(languages_subpage_tests.TestNames.AddLanguagesDialog).run();
+});
+
+TEST_F('CrSettingsLanguagesSubpageV3Test', 'LanguageMenu', function() {
+  mocha.grep(languages_subpage_tests.TestNames.LanguageMenu).run();
+});
 
 // eslint-disable-next-line no-var
 var CrSettingsLanguagesPageMetricsV3Test =

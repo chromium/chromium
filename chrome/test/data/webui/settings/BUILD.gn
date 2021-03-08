@@ -112,6 +112,7 @@ js_type_check("closure_compile") {
     ":languages_page_metrics_test_cros",
 
     #":languages_page_tests",
+    #":languages_subpage_tests",
     #":languages_tests",
     #":metrics_reporting_tests",
     #":on_startup_page_tests",

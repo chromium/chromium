@@ -95,6 +95,10 @@
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/language/core/common/language_experiments.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_factory.h"
@@ -290,6 +294,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           features::kChromeCleanupScanCompletedNotification));
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
+                          base::FeatureList::IsEnabled(
+                              language::kDesktopRestructuredLanguageSettings));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean("splitSettingsSyncEnabled",

@@ -114,24 +114,33 @@
 <if expr="chromeos">
         <template is="dom-if" if="[[!isChromeOSLanguagesSettingsUpdate_]]">
 </if> <!-- chromeos -->
-          <cr-expand-button
-              aria-label="$i18n{languagesExpandA11yLabel}"
-              class="cr-row first"
-              expanded="{{languagesOpened_}}">
-            <div>$i18n{languagesListTitle}</div>
+          <template is="dom-if" if="[[enableDesktopRestructuredLanguageSettings_]]">
+            <cr-link-row on-click="onLanguagesSubpageClick_"
+                id="languagesSubpageTrigger"
+                label="$i18n{languagesListTitle}"
+                role-description="$i18n{subpageArrowRoleDescription}">
+            </cr-link-row>
+          </template>
+          <template is="dom-if" if="[[!enableDesktopRestructuredLanguageSettings_]]">
+            <cr-expand-button
+                aria-label="$i18n{languagesExpandA11yLabel}"
+                class="cr-row first"
+                expanded="{{languagesOpened_}}">
+              <div>$i18n{languagesListTitle}</div>
 <if expr="chromeos or is_win">
-            <div class="secondary">
-              [[getProspectiveUILanguageName_(languages.prospectiveUILanguage)]]
-            </div>
+              <div class="secondary">
+                [[getProspectiveUILanguageName_(languages.prospectiveUILanguage)]]
+              </div>
 </if>
-          </cr-expand-button>
-          <iron-collapse id="languagesCollapse" opened="[[languagesOpened_]]">
-            <settings-languages-subpage
-                languages="{{languages}}"
-                prefs="{{prefs}}"
-                language-helper="{{languageHelper}}">
-            </settings-languages-subpage>
-          </iron-collapse>
+            </cr-expand-button>
+            <iron-collapse id="languagesCollapse" opened="[[languagesOpened_]]">
+              <settings-languages-subpage
+                  languages="{{languages}}"
+                  prefs="{{prefs}}"
+                  language-helper="{{languageHelper}}">
+              </settings-languages-subpage>
+            </iron-collapse>
+          </template>
           <settings-toggle-button
               id="enableSpellcheckingToggle"
               class="hr"
@@ -247,6 +256,21 @@
             page-title="$i18n{editDictionaryPageTitle}"
             no-search$="[[!prefs.browser.enable_spellchecking.value]]">
           <settings-edit-dictionary-page></settings-edit-dictionary-page>
+        </settings-subpage>
+      </template>
+</if>
+<if expr="not chromeos">
+      <template is="dom-if" route-path="/languageSettings"
+          no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
+        <settings-subpage
+            associated-control="[[$$('#languagesSubpageTrigger')]]"
+            page-title="$i18n{languagesListTitle}"
+            no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
+          <settings-languages-subpage
+              languages="{{languages}}"
+              prefs="{{prefs}}"
+              language-helper="{{languageHelper}}">
+          </settings-languages-subpage>
         </settings-subpage>
       </template>
 </if>

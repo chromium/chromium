@@ -41,7 +41,7 @@ suite('LanguagesPageMetricsBrowser', function() {
   /** @type {!LanguageHelper} */
   let languageHelper;
   /** @type {!SettingsLanguagesPageElement} */
-  let languagesPage;
+  let languagesSubpage;
   /** @type {!TestLanguagesBrowserProxy} */
   let browserProxy;
   /** @type {!TestLanguageSettingsMetricsProxy} */
@@ -73,21 +73,32 @@ suite('LanguagesPageMetricsBrowser', function() {
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
       languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
 
-      languagesPage = /** @type {!SettingsLanguagesPageElement} */ (
-          document.createElement('settings-languages-page'));
+      const settingsLanguages = document.createElement('settings-languages');
+      settingsLanguages.prefs = settingsPrefs.prefs;
+      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+      document.body.appendChild(settingsLanguages);
+
+      languagesSubpage = /** @type {!SettingsLanguagesPageElement} */ (
+          document.createElement('settings-languages-subpage'));
 
       // Prefs would normally be data-bound to settings-languages-page.
-      languagesPage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, languagesPage, 'prefs');
+      languagesSubpage.prefs = settingsLanguages.prefs;
+      fakeDataBind(settingsLanguages, languagesSubpage, 'prefs');
 
-      document.body.appendChild(languagesPage);
-      languageHelper = languagesPage.languageHelper;
+      languagesSubpage.languageHelper = settingsLanguages.languageHelper;
+      fakeDataBind(settingsLanguages, languagesSubpage, 'language-helper');
+
+      languagesSubpage.languages = settingsLanguages.languages;
+      fakeDataBind(settingsLanguages, languagesSubpage, 'languages');
+
+      document.body.appendChild(languagesSubpage);
+      languageHelper = languagesSubpage.languageHelper;
       return languageHelper.whenReady();
     });
   });
 
   test('records when adding languages', async () => {
-    languagesPage.$$('settings-languages-subpage').$$('#addLanguages').click();
+    languagesSubpage.$$('#addLanguages').click();
     flush();
 
     assertEquals(
@@ -97,10 +108,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when disabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', true);
-    languagesPage.$$('settings-languages-subpage')
-        .$$('#offerTranslateOtherLanguages')
-        .click();
+    languagesSubpage.setPrefValue('translate.enabled', true);
+    languagesSubpage.$$('#offerTranslateOtherLanguages').click();
     flush();
 
     assertEquals(
@@ -109,10 +118,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when enabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', false);
-    languagesPage.$$('settings-languages-subpage')
-        .$$('#offerTranslateOtherLanguages')
-        .click();
+    languagesSubpage.setPrefValue('translate.enabled', false);
+    languagesSubpage.$$('#offerTranslateOtherLanguages').click();
     flush();
 
     assertEquals(
@@ -121,12 +128,8 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when three-dot menu is opened', async () => {
-    const languagesCollapse = languagesPage.$$('#languagesCollapse');
-    languagesCollapse.opened = true;
-
     const menuButtons =
-        languagesPage.$$('settings-languages-subpage')
-            .$$('#languagesSection')
+        languagesSubpage.$$('#languagesSection')
             .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
     menuButtons[0].click();
@@ -137,19 +140,14 @@ suite('LanguagesPageMetricsBrowser', function() {
   });
 
   test('records when ticking translate checkbox', async () => {
-    const languagesCollapse = languagesPage.$$('#languagesCollapse');
-    languagesCollapse.opened = true;
-
     const menuButtons =
-        languagesPage.$$('settings-languages-subpage')
-            .$$('#languagesSection')
+        languagesSubpage.$$('#languagesSection')
             .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
     // Chooses the second language to change translate checkbox
     // as first language is the language used for translation.
     menuButtons[1].click();
-    const actionMenu =
-        languagesPage.$$('settings-languages-subpage').$$('#menu').get();
+    const actionMenu = languagesSubpage.$$('#menu').get();
     assertTrue(actionMenu.open);
     const menuItems = actionMenu.querySelectorAll('.dropdown-item');
     for (const item of menuItems) {
@@ -173,17 +171,13 @@ suite('LanguagesPageMetricsBrowser', function() {
     }
 
     flush();
-    const languagesCollapse = languagesPage.$$('#languagesCollapse');
-    languagesCollapse.opened = true;
 
     const menuButtons =
-        languagesPage.$$('settings-languages-subpage')
-            .$$('#languagesSection')
+        languagesSubpage.$$('#languagesSection')
             .querySelectorAll('.list-item cr-icon-button.icon-more-vert');
 
     menuButtons[1].click();
-    const actionMenu =
-        languagesPage.$$('settings-languages-subpage').$$('#menu').get();
+    const actionMenu = languagesSubpage.$$('#menu').get();
     assertTrue(actionMenu.open);
 
     function getMenuItem(i18nKey) {
