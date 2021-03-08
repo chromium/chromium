@@ -163,9 +163,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void RunURLAndHistoryUpdateSteps(
       const KURL&,
       scoped_refptr<SerializedScriptValue>,
+      WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType =
-          mojom::blink::ScrollRestorationType::kAuto,
-      WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem);
+          mojom::blink::ScrollRestorationType::kAuto);
   void UpdateForSameDocumentNavigation(const KURL&,
                                        SameDocumentNavigationSource,
                                        scoped_refptr<SerializedScriptValue>,

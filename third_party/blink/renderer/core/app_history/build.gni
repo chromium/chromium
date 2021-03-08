@@ -1,0 +1,10 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_app_history = [
+  "app_history.cc",
+  "app_history.h",
+  "app_history_navigate_event.cc",
+  "app_history_navigate_event.h",
+]

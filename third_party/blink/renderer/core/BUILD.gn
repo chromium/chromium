@@ -18,6 +18,7 @@ import("//third_party/blink/renderer/core/accessibility/build.gni")
 import("//third_party/blink/renderer/core/animation/build.gni")
 import("//third_party/blink/renderer/core/animation_frame/build.gni")
 import("//third_party/blink/renderer/core/aom/build.gni")
+import("//third_party/blink/renderer/core/app_history/build.gni")
 import("//third_party/blink/renderer/core/clipboard/build.gni")
 import("//third_party/blink/renderer/core/content_capture/build.gni")
 import("//third_party/blink/renderer/core/context_features/build.gni")
@@ -187,6 +188,7 @@ component("core") {
   sources +=
       rebase_path(blink_core_sources_animation_frame, "", "animation_frame")
   sources += rebase_path(blink_core_sources_aom, "", "aom")
+  sources += rebase_path(blink_core_sources_app_history, "", "app_history")
   sources += rebase_path(blink_core_sources_clipboard, "", "clipboard")
   sources +=
       rebase_path(blink_core_sources_content_capture, "", "content_capture")
@@ -453,6 +455,7 @@ source_set("testing") {
 
 generate_event_interfaces("core_event_interfaces") {
   sources = [
+    "app_history/app_history_navigate_event.idl",
     "css/font_face_set_load_event.idl",
     "css/media_query_list_event.idl",
     "dom/events/custom_event.idl",

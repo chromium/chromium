@@ -60,6 +60,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
@@ -655,6 +656,13 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (!app_history->DispatchNavigateEvent(url, request.Form(), false,
+                                            frame_load_type)) {
+      return;
+    }
+  }
+
   // If we're navigating and there's still a text fragment permission token on
   // the document loader, it means this navigation didn't try to invoke a text
   // fragment. In this case, we want to propagate this to the next document to
@@ -937,6 +945,13 @@ void FrameLoader::CommitNavigation(
     // TODO(https://crbug.com/862088): we should probably ignore print()
     // call in this case instead.
     return;
+  }
+
+  if (!navigation_params->is_browser_initiated) {
+    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+      app_history->DispatchNavigateEvent(navigation_params->url, nullptr, false,
+                                         navigation_params->frame_load_type);
+    }
   }
 
   // TODO(dgozman): figure out the better place for this check

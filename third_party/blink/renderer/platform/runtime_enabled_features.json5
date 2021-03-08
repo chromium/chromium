@@ -187,6 +187,10 @@
       origin_trial_feature_name: "AppCache",
     },
     {
+      name: "AppHistory",
+      status: "experimental",
+    },
+    {
       name: "AriaTouchPassthrough",
       status: "experimental",
     },

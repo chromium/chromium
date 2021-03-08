@@ -1,0 +1,18 @@
+<!doctype html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<iframe id="i" src="resources/meta-refresh.html"></iframe>
+</head>
+<script>
+async_test(t => {
+  i.onload = t.step_func(() => {
+    i.contentWindow.appHistory.onnavigate = t.step_func_done(e => {
+      assert_equals(e.canRespond, true);
+      assert_equals(e.hashChange, false);
+      assert_equals(e.formData, null);
+      e.preventDefault();
+    });
+  });
+}, "<meta> refresh fires navigate event");
+</script>

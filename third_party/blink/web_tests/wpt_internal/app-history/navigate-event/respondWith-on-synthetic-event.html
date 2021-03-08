@@ -1,0 +1,8 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  assert_throws_dom("SecurityError", () => new AppHistoryNavigateEvent("navigate").respondWith(Promise.resolve()));
+}, "AppHistoryNavigateEvent.respondWith throws if invoked on a synthetic event");
+</script>

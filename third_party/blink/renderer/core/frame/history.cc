@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/frame/history.h"
 
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -300,8 +301,15 @@ void History::StateObjectAdded(
     return;
   }
 
+  if (auto* app_history = AppHistory::appHistory(*DomWindow())) {
+    if (!app_history->DispatchNavigateEvent(full_url, nullptr, false, type,
+                                            data.get())) {
+      return;
+    }
+  }
+
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      full_url, std::move(data), restoration_type, type);
+      full_url, std::move(data), type, restoration_type);
 }
 
 }  // namespace blink

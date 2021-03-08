@@ -229,6 +229,18 @@ interface AnimationTimeline
     getter duration
     getter phase
     method constructor
+interface AppHistory : EventTarget
+    attribute @@toStringTag
+    getter onnavigate
+    method constructor
+    setter onnavigate
+interface AppHistoryNavigateEvent : Event
+    attribute @@toStringTag
+    getter canRespond
+    getter formData
+    getter hashChange
+    method constructor
+    method respondWith
 interface Attr : Node
     attribute @@toStringTag
     getter localName
@@ -13623,6 +13635,7 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
+    getter appHistory
     getter caches
     getter clientInformation
     getter closed

@@ -1,0 +1,16 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<a id="a" href="#1"></a>
+<script>
+async_test(t => {
+  appHistory.onnavigate = t.step_func(e => {
+    assert_equals(e.canRespond, true);
+    assert_equals(e.hashChange, true);
+    assert_equals(e.formData, null);
+    e.preventDefault();
+    t.step_timeout(t.step_func_done(() => assert_equals(location.hash, "")), 0);
+  });
+  a.click();
+}, "Fragment <a> click fires navigate event");
+</script>

@@ -43,6 +43,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
@@ -675,8 +676,8 @@ static SinglePageAppNavigationType CategorizeSinglePageAppNavigation(
 void DocumentLoader::RunURLAndHistoryUpdateSteps(
     const KURL& new_url,
     scoped_refptr<SerializedScriptValue> data,
-    mojom::blink::ScrollRestorationType scroll_restoration_type,
-    WebFrameLoadType type) {
+    WebFrameLoadType type,
+    mojom::blink::ScrollRestorationType scroll_restoration_type) {
   UpdateForSameDocumentNavigation(new_url, kSameDocumentNavigationHistoryApi,
                                   std::move(data), scroll_restoration_type,
                                   type, true);
@@ -1209,6 +1210,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     // making it cross-document. This gives a consistent outcome for all
     // navigations in a frameset.
     return mojom::blink::CommitResult::RestartCrossDocument;
+  }
+
+  if (frame_load_type != WebFrameLoadType::kBackForward) {
+    if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+      if (!app_history->DispatchNavigateEvent(url, nullptr, true,
+                                              frame_load_type)) {
+        return mojom::blink::CommitResult::Aborted;
+      }
+    }
   }
 
   if (!IsBackForwardLoadType(frame_load_type)) {

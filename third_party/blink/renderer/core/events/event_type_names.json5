@@ -193,6 +193,7 @@
     "mouseup",
     "mousewheel",
     "mute",
+    "navigate",
     "negotiationneeded",
     "nomatch",
     "notificationclick",
