@@ -106,8 +106,11 @@ void SoftwareOutputDeviceWinDirect::EndPaintDelegated(
   if (!canvas_)
     return;
 
-  HDC dib_dc = skia::GetNativeDrawingContext(canvas_.get());
   HDC hdc = ::GetDC(hwnd());
+  if (!hdc)
+    return;
+
+  HDC dib_dc = skia::GetNativeDrawingContext(canvas_.get());
   RECT src_rect = damage_rect.ToRECT();
   skia::CopyHDC(dib_dc, hdc, damage_rect.x(), damage_rect.y(),
                 canvas_->imageInfo().isOpaque(), src_rect,

@@ -85,7 +85,7 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
   DCHECK(data.IsFrameSinkRegistered());
 
   const bool destroy_synchronously =
-      data.has_created_compositor_frame_sink && data.is_root;
+      data.has_created_compositor_frame_sink && data.wait_on_destruction;
 
   data.has_created_compositor_frame_sink = false;
   data.client = nullptr;
@@ -142,6 +142,9 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
 
   data.is_root = true;
   data.has_created_compositor_frame_sink = true;
+
+  // Only wait on destruction if using GPU compositing for the window.
+  data.wait_on_destruction = params->gpu_compositing;
 
   frame_sink_manager_->CreateRootCompositorFrameSink(std::move(params));
   display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
@@ -334,8 +337,10 @@ void HostFrameSinkManager::OnConnectionLost() {
 
   // CompositorFrameSinks are lost along with the connection to
   // mojom::FrameSinkManager.
-  for (auto& map_entry : frame_sink_data_map_)
+  for (auto& map_entry : frame_sink_data_map_) {
     map_entry.second.has_created_compositor_frame_sink = false;
+    map_entry.second.wait_on_destruction = false;
+  }
 
   if (!connection_lost_callback_.is_null())
     connection_lost_callback_.Run();

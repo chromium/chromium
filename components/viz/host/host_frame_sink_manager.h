@@ -238,6 +238,9 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     // If the frame sink is a root that corresponds to a Display.
     bool is_root = false;
 
+    // If we should wait on synchronous destruction.
+    bool wait_on_destruction = false;
+
     // If a mojom::CompositorFrameSink was created for this FrameSinkId. This
     // will always be false if not using Mojo.
     bool has_created_compositor_frame_sink = false;
