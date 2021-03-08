@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
+#include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -354,6 +355,8 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallBodyAndContentType) {
   std::string multipart_boundary =
       "--" + content_type.substr(expected_type.size());
   std::string expected_body(multipart_boundary + "\r\n");
+  std::string mime_type;
+  net::GetMimeTypeFromExtension(FILE_PATH_LITERAL("txt"), &mime_type);
   expected_body +=
       "Content-Disposition: form-data; name=\"attributes\"\r\n"
       "Content-Type: application/json\r\n\r\n"
@@ -367,7 +370,7 @@ TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallBodyAndContentType) {
   expected_body += "Content-Disposition: form-data; name=\"file\"; filename=\"";
   expected_body +=
       file_name_.AsUTF8Unsafe() +  // AsUTF8Unsafe() to compile on Windows
-      "\"\r\nContent-Type: text/plain\r\n\r\n\r\n";
+      "\"\r\nContent-Type: " + mime_type + "\r\n\r\n\r\n";
   expected_body += multipart_boundary + "--\r\n";
   std::string body = flow_->CreateApiCallBody();
   ASSERT_EQ(body, expected_body);
