@@ -263,24 +263,32 @@ def _run_with_weston(cmd, env, stdoutfile):
     # Set $XDG_RUNTIME_DIR if it is not set.
     _set_xdg_runtime_dir(env)
 
+    # Weston is compiled along with the Ozone/Wayland platform, and is
+    # fetched as data deps. Thus, run it from the current directory.
+    #
+    # Weston is used with the following flags:
+    # 1) --backend=headless-backend.so - runs Weston in a headless mode
+    # that does not require a real GPU card.
+    # 2) --idle-time=0 - disables idle timeout, which prevents Weston
+    # to enter idle state. Otherwise, Weston stops to send frame callbacks,
+    # and tests start to time out (this typically happens after 300 seconds -
+    # the default time after which Weston enters the idle state).
+    # 3) --width && --height set size of a virtual display: we need to set
+    # an adequate size so that tests can have more room for managing size
+    # of windows.
+    # 4) --use-gl - Runs Weston using hardware acceleration instead of
+    # SwiftShader.
+    weston_cmd = ['./weston', '--backend=headless-backend.so', '--idle-time=0',
+          '--width=1024', '--height=768', '--modules=test-plugin.so']
+
+    if '--weston-use-gl' in cmd:
+      weston_cmd.append('--use-gl')
+      cmd.remove('--weston-use-gl')
+
     weston_proc_display = None
     for _ in range(10):
-      # Weston is compiled along with the Ozone/Wayland platform, and is
-      # fetched as data deps. Thus, run it from the current directory.
-      #
-      # Weston is used with the following flags:
-      # 1) --backend=headless-backend.so - runs Weston in a headless mode
-      # that does not require a real GPU card.
-      # 2) --idle-time=0 - disables idle timeout, which prevents Weston
-      # to enter idle state. Otherwise, Weston stops to send frame callbacks,
-      # and tests start to time out (this typically happens after 300 seconds -
-      # the default time after which Weston enters the idle state).
-      # 3) --width && --height set size of a virtual display: we need to set
-      # an adequate size so that tests can have more room for managing size
-      # of windows.
       weston_proc = subprocess.Popen(
-         ('./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--width=1024', '--height=768', '--modules=test-plugin.so'),
+         weston_cmd,
          stderr=subprocess.STDOUT, env=env)
 
       # Get the $WAYLAND_DISPLAY set by Weston and pass it to the test launcher.

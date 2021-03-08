@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import os
 import re
 import mock
+import sys
 
 # This set must be the union of the driver tags used in WebGL and WebGL2
 # expectations files.
@@ -154,6 +156,16 @@ def GetSkiaRenderer(gpu_feature_status, extra_browser_args):
     elif HasGlSkiaRenderer(gpu_feature_status):
       retval = 'skia-renderer-gl'
   return retval
+
+
+def GetDisplayServer():
+  if sys.platform == 'linux2':
+    if 'WAYLAND_DISPLAY' in os.environ:
+      return 'display-server-wayland'
+    else:
+      return 'display-server-x'
+  else:
+    return None
 
 
 # TODO(sgilhuly): Use GPU feature status for Dawn instead of command line.

@@ -52,7 +52,7 @@ std::unique_ptr<SystemInfo::Size> GfxSizeToSystemInfoSize(
 // ASAN builds need more time -- see Issue 1167875.
 #if ((defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)) && \
      !defined(NDEBUG)) ||                                              \
-    defined(OS_WIN) || defined(ADDRESS_SANITIZER)
+    defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(USE_OZONE)
 const int kGPUInfoWatchdogTimeoutMs = 30000;
 #else
 const int kGPUInfoWatchdogTimeoutMs = 5000;

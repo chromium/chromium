@@ -4124,7 +4124,7 @@
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': {},
       'Lacros FYI x64 Release (AMD)': {
-        'os_type': 'linux',
+        'os_type': 'lacros',
         'browser_config': 'release',
         'mixins': [
           'linux_amd_rx_5500_xt',
@@ -4134,13 +4134,16 @@
         },
       },
       'Lacros FYI x64 Release (Intel)': {
-        'os_type': 'linux',
+        'os_type': 'lacros',
         'browser_config': 'release',
         'mixins': [
-          'linux_intel_hd_630_stable',
+          # Weston does not work on Mesa 19, but works on Mesa 20.
+          # TODO(crbug.com/1153159): Switch to the stable mixin once 20 becomes
+          # the standard version.
+          'linux_intel_hd_630_experimental',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
         },
       },
       'Linux FYI Debug (NVIDIA)': {

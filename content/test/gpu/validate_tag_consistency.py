@@ -64,6 +64,8 @@ TAG_HEADER = """\
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
+# Display Server
+# tags: [ display-server-wayland display-server-x ]
 # results: [ Failure RetryOnFailure Skip ]
 """
 

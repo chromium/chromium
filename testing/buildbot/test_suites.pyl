@@ -2643,6 +2643,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'enable_resultdb',
         ],
@@ -2650,6 +2657,13 @@
       'trace_test': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3013,6 +3027,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
         ],
@@ -3024,6 +3045,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'enable_resultdb',
         ],
@@ -3033,6 +3061,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'enable_resultdb',
         ],
@@ -3040,6 +3075,13 @@
       'hardware_accelerated_feature': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3060,6 +3102,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3082,6 +3131,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
@@ -3102,6 +3158,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3333,6 +3396,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
@@ -3344,6 +3414,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'enable_resultdb',
         ],
@@ -3353,6 +3430,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'enable_resultdb',
         ],
@@ -3360,6 +3444,13 @@
       'hardware_accelerated_feature': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3380,6 +3471,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3402,6 +3500,13 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
@@ -3422,6 +3527,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3474,6 +3586,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3546,6 +3665,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3627,6 +3753,13 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3758,6 +3891,13 @@
         'telemetry_test_name': 'webgl_conformance',
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
         ],
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active

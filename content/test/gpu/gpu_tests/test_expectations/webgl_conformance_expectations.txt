@@ -53,6 +53,8 @@
 #         mesa_lt_19.1 mesa_ge_20.1 ]
 # ASan
 # tags: [ asan no-asan ]
+# Display Server
+# tags: [ display-server-wayland display-server-x ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
@@ -758,6 +760,13 @@ crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-prec
 
 # Flaky renderer hangs suspected due to some driver issue on Kevin devices.
 crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
+
+###########################
+# Lacros/Wayland failures #
+###########################
+
+crbug.com/1185344 [ linux display-server-wayland intel no-swiftshader-gl angle-disabled ] WebglExtension_EXT_sRGB [ Failure ]
+crbug.com/1185344 [ linux display-server-wayland intel no-swiftshader-gl angle-disabled ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
 ########################
 # SwiftShader failures #

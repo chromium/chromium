@@ -553,6 +553,9 @@ class GpuIntegrationTest(
       skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info.feature_status,
                                                  startup_args)
       tags.append(skia_renderer)
+    display_server = gpu_helper.GetDisplayServer()
+    if display_server:
+      tags.append(display_server)
     return tags
 
   @classmethod
@@ -625,6 +628,9 @@ class GpuIntegrationTest(
         # make a difference to these tests anyways.
         'chromeos-local',
         'chromeos-remote',
+        # "exact" is a valid browser type in Telemetry, but should never be used
+        # on the bots.
+        'exact',
     ]
 
 

@@ -12,6 +12,7 @@ import tempfile
 
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
+from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
 from gpu_tests.skia_gold import gpu_skia_gold_properties
@@ -42,6 +43,7 @@ class _ImageParameters(object):
     self.model_name = None
     self.driver_version = None
     self.driver_vendor = None
+    self.display_server = None
 
 
 class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
@@ -247,6 +249,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     params.model_name = system_info.model_name
     params.driver_version = device.driver_version
     params.driver_vendor = device.driver_vendor
+    params.display_server = gpu_helper.GetDisplayServer()
 
   @classmethod
   def _UploadBitmapToCloudStorage(cls, bucket, name, bitmap, public=False):
@@ -312,6 +315,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         _ToNonEmptyStrOrNone(img_params.driver_version),
         'driver_vendor':
         _ToNonEmptyStrOrNone(img_params.driver_vendor),
+        'display_server':
+        _ToNonEmptyStrOrNone(img_params.display_server),
         'combined_hardware_identifier':
         _GetCombinedHardwareIdentifier(img_params),
         'browser_type':
