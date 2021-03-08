@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // gfx::NativePixmapPlane
-[EnableIf=supports_native_pixmap, Stable]
+[EnableIf=supports_native_pixmap]
 struct NativePixmapPlane {
   uint32 stride;
   uint64 offset;
@@ -19,7 +19,7 @@ struct NativePixmapPlane {
 };
 
 // gfx::NativePixmapHandle
-[EnableIf=supports_native_pixmap, Stable]
+[EnableIf=supports_native_pixmap]
 struct NativePixmapHandle {
   array<NativePixmapPlane> planes;
 
@@ -36,7 +36,7 @@ struct NativePixmapHandle {
   bool ram_coherency;
 };
 
-[EnableIf=is_android, Stable]
+[EnableIf=is_android]
 struct AHardwareBufferHandle {
   // The actual file descriptor used to wrap the AHardwareBuffer object for
   // serialization.
@@ -50,7 +50,6 @@ struct AHardwareBufferHandle {
   handle<message_pipe> tracking_pipe;
 };
 
-[Stable]
 union GpuMemoryBufferPlatformHandle {
   mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
 
