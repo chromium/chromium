@@ -31,13 +31,13 @@ class DeviceTrustSignalReporterForTest : public DeviceTrustSignalReporter {
   // failure.
   MOCK_METHOD(void,
               PostCreateReportQueueTask,
-              (reporting::ReportingClient::CreateReportQueueCallback,
+              (reporting::ReportQueueProvider::CreateReportQueueCallback,
                std::unique_ptr<reporting::ReportQueueConfiguration>));
 
   // Invoke this method upon calling PostCreateReportQueueTask to mock queue
   // creation success.
   void CreateMockReportQueueAndCallback(
-      reporting::ReportingClient::CreateReportQueueCallback create_queue_cb,
+      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
       std::unique_ptr<reporting::ReportQueueConfiguration> config) {
     mock_queue_ = new testing::StrictMock<reporting::MockReportQueue>();
     std::move(create_queue_cb)
@@ -47,7 +47,7 @@ class DeviceTrustSignalReporterForTest : public DeviceTrustSignalReporter {
   // Invoke this method upon calling PostCreateReportQueueTask to mock queue
   // creation success.
   void FailCreateReportQueueAndCallback(
-      reporting::ReportingClient::CreateReportQueueCallback create_queue_cb,
+      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
       std::unique_ptr<reporting::ReportQueueConfiguration> config) {
     std::move(create_queue_cb)
         .Run(
@@ -70,7 +70,7 @@ class DeviceTrustSignalReporterTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        reporting::ReportingClient::kEncryptedReportingPipeline);
+        reporting::ReportQueueProvider::kEncryptedReportingPipeline);
   }
 
   void InitQueue() {

@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/install_event_log_uploader_base.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
@@ -115,8 +115,8 @@ class ExtensionInstallEventLogUploader : public InstallEventLogUploaderBase {
     void OnReportQueueConfigResult(ReportQueueConfigResult report_queue_result);
 
     // |BuildReportQueue| uses the |report_queue_config| to build a ReportQueue
-    // with ReportClient::CreateReportQueueImpl. Sets |OnReportQueueResult| as
-    // the completion callback for |CreateReportQueueImpl|.
+    // with ReportQueueProvider::CreateQueue. Sets |OnReportQueueResult| as
+    // the completion callback for |ReportQueueProvider::CreateQueue|.
     void BuildReportQueue(std::unique_ptr<::reporting::ReportQueueConfiguration>
                               report_queue_config);
 

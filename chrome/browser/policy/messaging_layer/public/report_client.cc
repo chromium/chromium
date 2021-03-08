@@ -178,13 +178,6 @@ ReportingClient::InstantiateInitializingContext(
       init_state_tracker);
 }
 
-// static
-void ReportingClient::CreateReportQueueImpl(
-    std::unique_ptr<ReportQueueConfiguration> config,
-    base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)> queue_cb) {
-  ReportQueueProvider::CreateQueue(std::move(config), std::move(queue_cb));
-}
-
 ReportingClient::ClientInitializingContext::ClientInitializingContext(
     GetCloudPolicyClientCallback get_client_cb,
     UploaderInterface::StartCb start_upload_cb,

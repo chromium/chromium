@@ -310,6 +310,7 @@ source_set("chromeos") {
     "//components/renderer_context_menu",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_provider",
     "//components/reporting/util:status",
     "//components/reporting/util:task_runner_context",
     "//components/rlz",
@@ -3222,6 +3223,7 @@ source_set("chromeos") {
       "//chromeos/services/chromebox_for_meetings/public/mojom",
       "//components/reporting/client:report_queue",
       "//components/reporting/client:report_queue_configuration",
+      "//components/reporting/client:report_queue_provider",
       "//components/reporting/proto:record_constants",
       "//components/variations/field_trial_config",
     ]

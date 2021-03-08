@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNAL_REPORTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNAL_REPORTER_H_
 
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/reporting/client/report_queue_provider.h"
 
 namespace enterprise_connectors {
 
@@ -31,13 +32,13 @@ class DeviceTrustSignalReporter {
  protected:
   void OnCreateReportQueueResponse(
       base::OnceCallback<void(bool)> create_queue_cb,
-      reporting::ReportingClient::CreateReportQueueResponse
+      reporting::ReportQueueProvider::CreateReportQueueResponse
           report_queue_result);
 
   // Helper methods made virtual to be overwritten in unit tests.
   virtual policy::DMToken GetDmToken() const;
   virtual void PostCreateReportQueueTask(
-      reporting::ReportingClient::CreateReportQueueCallback create_queue_cb,
+      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
       std::unique_ptr<reporting::ReportQueueConfiguration> config);
 
  private:

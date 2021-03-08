@@ -7,17 +7,18 @@
 #include <atomic>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/install_event_log_util.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -187,7 +188,7 @@ void ExtensionInstallEventLogUploader::ReportQueueBuilder::
 void ExtensionInstallEventLogUploader::ReportQueueBuilder::BuildReportQueue(
     std::unique_ptr<::reporting::ReportQueueConfiguration>
         report_queue_config) {
-  ::reporting::ReportingClient::CreateReportQueueImpl(
+  ::reporting::ReportQueueProvider::CreateQueue(
       std::move(report_queue_config),
       base::BindOnce(&ReportQueueBuilder::OnReportQueueResult,
                      base::Unretained(this)));

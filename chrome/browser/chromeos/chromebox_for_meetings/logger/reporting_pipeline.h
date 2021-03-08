@@ -10,8 +10,8 @@
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/logger/cfm_logger_service.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_provider.h"
 
 namespace chromeos {
 namespace cfm {
@@ -45,7 +45,7 @@ class ReportingPipeline : public CfmLoggerService::Delegate,
  private:
   void UpdateToken(std::string request_token);
   void OnReportQueueUpdated(
-      reporting::ReportingClient::CreateReportQueueResponse
+      reporting::ReportQueueProvider::CreateReportQueueResponse
           report_queue_result);
 
   UpdateStatusCallback update_status_callback_;

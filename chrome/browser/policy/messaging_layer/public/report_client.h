@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting//proto/record.pb.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -81,13 +80,6 @@ class ReportingClient : public ReportQueueProvider {
     scoped_refptr<StorageModuleInterface> storage_;
     ReportingClient* const client_;
   };
-
-  // Temporary forwarder to |ReportQueueProvider::CreateQueue| to keep
-  // external callers happy.
-  static void CreateReportQueueImpl(
-      std::unique_ptr<ReportQueueConfiguration> config,
-      base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
-          queue_cb);
 
   ReportQueueProvider::InitializingContext* InstantiateInitializingContext(
       InitializingContext::UpdateConfigurationCallback update_config_cb,

@@ -100,7 +100,7 @@ class ReportClientTest : public testing::Test {
         std::make_unique<ReportingClient::TestEnvironment>(client_.get());
 
     scoped_feature_list_.InitAndEnableFeature(
-        ReportingClient::kEncryptedReportingPipeline);
+        ReportQueueProvider::kEncryptedReportingPipeline);
   }
 
   void TearDown() override {
