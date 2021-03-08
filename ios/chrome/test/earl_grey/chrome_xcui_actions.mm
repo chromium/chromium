@@ -223,4 +223,33 @@ BOOL TapAtOffsetOf(NSString* accessibility_identifier,
   return YES;
 }
 
+BOOL TypeText(NSString* accessibility_identifier,
+              int window_number,
+              NSString* text) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  XCUIElement* element = nil;
+  if (@available(iOS 13, *)) {
+    XCUIElementQuery* query = GetQueryMatchingIdentifierInWindow(
+        app, accessibility_identifier, window_number, XCUIElementTypeTextField);
+    if (query.count > 0)
+      element = [query elementBoundByIndex:0];
+  } else {
+    // [XCUIElementQuery matchingIdentifier:] doesn't work in iOS 12.
+    XCUIElementQuery* query = app.textFields;
+    for (unsigned int i = 0; i < query.count; i++, element = nil) {
+      element = [query elementBoundByIndex:i];
+      if ([element.identifier isEqualToString:accessibility_identifier])
+        break;
+    }
+  }
+
+  if (!element)
+    return NO;
+
+  [element typeText:text];
+
+  return YES;
+}
+
 }  // namespace chrome_test_util

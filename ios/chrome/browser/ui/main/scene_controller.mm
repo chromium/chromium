@@ -277,6 +277,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     if (!base::ios::IsSceneStartupSupported() && !self.sceneState.window) {
       self.sceneState.window = [[ChromeOverlayWindow alloc]
           initWithFrame:[[UIScreen mainScreen] bounds]];
+      // Assign an a11y identifier for using in EGTest.
+      self.sceneState.window.accessibilityIdentifier = @"0";
       CustomizeUIWindowAppearance(self.sceneState.window);
     }
     _sceneURLLoadingService = new SceneUrlLoadingService();

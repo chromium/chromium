@@ -15,8 +15,10 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/keyboard_app_interface.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -40,7 +42,6 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }  // namespace
 
 // Tests for Find in Page.
-// Disabled all tests due to https://crbug.com/1107877.
 @interface FindInPageTestCase : WebHttpServerChromeTestCase
 
 // URL for a test page with |kFindInPageResponse|.
@@ -89,6 +90,16 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
   // Open Find in Page view.
   [self openFindInPage];
+
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // If keyboard is undocked, then it can cover the find in page text field,
+    // causing the tests to fail.
+    if (![KeyboardAppInterface isKeyboardDocked]) {
+      [[EarlGrey
+          selectElementWithMatcher:[KeyboardAppInterface keyboardWindowMatcher]]
+          performAction:[KeyboardAppInterface keyboardDockAction]];
+    }
+  }
 }
 
 - (void)tearDown {
@@ -102,7 +113,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
-- (void)DISABLED_testFindInPage {
+- (void)testFindInPage {
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -119,7 +130,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 // Tests that Find In Page search term retention is working as expected, e.g.
 // the search term is persisted between FIP runs, but in incognito search term
 // is not retained and not autofilled.
-- (void)DISABLED_testFindInPageRetainsSearchTerm {
+- (void)testFindInPageRetainsSearchTerm {
   // Type "find".
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
@@ -159,9 +170,7 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }
 
 // Tests accessibility of the Find in Page screen.
-//
-// Disabled due to https://crbug.com/1107877.
-- (void)DISABLED_testAccessibilityOnFindInPage {
+- (void)testAccessibilityOnFindInPage {
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
@@ -188,8 +197,8 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }
 
 - (void)typeFindInPageText:(NSString*)text {
-  [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
-      performAction:grey_typeText(text)];
+  chrome_test_util::TypeText(kFindInPageInputFieldId, 0, text);
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 - (id<GREYMatcher>)findInPageInputField {

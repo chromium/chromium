@@ -16,7 +16,7 @@
 @interface KeyboardAppInterface : NSObject
 
 // Return a boolean indicating if the keyboard is docked.
-+ (BOOL)isKeyboadDocked;
++ (BOOL)isKeyboardDocked;
 
 // Matcher for the Keyboard Window.
 + (id<GREYMatcher>)keyboardWindowMatcher;
