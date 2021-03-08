@@ -644,7 +644,7 @@ deps = {
         },
       ],
       'dep_type': 'cipd',
-      'condition': 'use_rts',
+      'condition': 'checkout_rts_model',
   },
 
   'src/tools/luci-go': {
