@@ -1309,8 +1309,6 @@ crbug.com/1050754 external/wpt/input-events/input-events-get-target-ranges-non-c
 crbug.com/1050754 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?TypingA [ Failure ]
 crbug.com/1050754 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/input-events/input-events-typing.html [ Failure ]
-crbug.com/1050754 external/wpt/installedapp/idlharness.https.window.html [ Failure ]
-crbug.com/1050754 external/wpt/installedapp/installedapp.https.window.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/cross-origin-iframe.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/document-scrolling-element-root.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/empty-root-margin.html [ Failure ]
