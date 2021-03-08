@@ -11,21 +11,11 @@ namespace blink {
 TEST(TextIteratorBehaviorTest, Basic) {
   EXPECT_TRUE(TextIteratorBehavior() == TextIteratorBehavior());
   EXPECT_FALSE(TextIteratorBehavior() != TextIteratorBehavior());
-  EXPECT_NE(TextIteratorBehavior(),
-            TextIteratorBehavior::Builder().SetForInnerText(true).Build());
-  EXPECT_NE(TextIteratorBehavior::Builder().SetForInnerText(true).Build(),
-            TextIteratorBehavior());
-  EXPECT_NE(TextIteratorBehavior::Builder().SetForInnerText(true).Build(),
-            TextIteratorBehavior::Builder().SetEmitsImageAltText(true).Build());
-  EXPECT_NE(TextIteratorBehavior::Builder().SetEmitsImageAltText(true).Build(),
-            TextIteratorBehavior::Builder().SetForInnerText(true).Build());
   EXPECT_EQ(TextIteratorBehavior::Builder()
-                .SetForInnerText(true)
                 .SetEmitsImageAltText(true)
                 .Build(),
             TextIteratorBehavior::Builder()
                 .SetEmitsImageAltText(true)
-                .SetForInnerText(true)
                 .Build());
 }
 
@@ -66,10 +56,6 @@ TEST(TextIteratorBehaviorTest, Values) {
                   .SetExcludeAutofilledValue(true)
                   .Build()
                   .ExcludeAutofilledValue());
-  EXPECT_TRUE(TextIteratorBehavior::Builder()
-                  .SetForInnerText(true)
-                  .Build()
-                  .ForInnerText());
   EXPECT_TRUE(TextIteratorBehavior::Builder()
                   .SetForSelectionToString(true)
                   .Build()

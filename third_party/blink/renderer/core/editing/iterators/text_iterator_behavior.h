@@ -45,8 +45,6 @@ class CORE_EXPORT TextIteratorBehavior final {
   bool ExcludeAutofilledValue() const {
     return values_.bits.exclude_autofilled_value;
   }
-  // TODO(editing-dev): We should remove unused flag |ForInnerText()|.
-  bool ForInnerText() const { return values_.bits.for_inner_text; }
   bool ForSelectionToString() const {
     return values_.bits.for_selection_to_string;
   }
@@ -90,7 +88,6 @@ class CORE_EXPORT TextIteratorBehavior final {
       bool enters_open_shadow_roots : 1;
       bool enters_text_controls : 1;
       bool exclude_autofilled_value : 1;
-      bool for_inner_text : 1;
       bool for_selection_to_string : 1;
       bool for_window_find : 1;
       bool ignores_style_visibility : 1;
@@ -123,7 +120,6 @@ class CORE_EXPORT TextIteratorBehavior::Builder final {
   Builder& SetEntersOpenShadowRoots(bool);
   Builder& SetEntersTextControls(bool);
   Builder& SetExcludeAutofilledValue(bool);
-  Builder& SetForInnerText(bool);
   Builder& SetForSelectionToString(bool);
   Builder& SetForWindowFind(bool);
   Builder& SetIgnoresStyleVisibility(bool);
