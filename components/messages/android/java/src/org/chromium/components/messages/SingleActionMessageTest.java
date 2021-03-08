@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.app.Activity;
@@ -31,7 +30,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
-import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Tests for {@link SingleActionMessage}.
@@ -47,14 +45,10 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     private SingleActionMessage.DismissCallback mEmptyDismissCallback =
             (model, dismissReason) -> {};
 
-    private AccessibilityUtil mAccessibilityUtil;
-
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         mDismissCallback = new CallbackHelper();
-        mAccessibilityUtil = Mockito.mock(AccessibilityUtil.class);
-        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(false);
     }
 
     @Test
@@ -62,8 +56,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAddAndRemoveSingleActionMessage() throws Exception {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
-        SingleActionMessage message = new SingleActionMessage(container, model,
-                mEmptyDismissCallback, () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
+        SingleActionMessage message = new SingleActionMessage(
+                container, model, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner = Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner).show(any(Runnable.class));
         doNothing().when(messageBanner).setOnTouchRunnable(any(Runnable.class));
@@ -93,14 +87,11 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
     public void testAutoDismissDuration() {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel model = createBasicSingleActionMessageModel();
+        long duration = 42;
         SingleActionMessage message = new SingleActionMessage(container, model,
-                mEmptyDismissCallback, () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
-        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(true);
-        long durationOnA11y = message.getAutoDismissDuration();
-        when(mAccessibilityUtil.isAccessibilityEnabled()).thenReturn(false);
-        long duration = message.getAutoDismissDuration();
-        Assert.assertTrue(
-                "Message duration should be longer when a11y is on", durationOnA11y > duration);
+                mEmptyDismissCallback, () -> 0, () -> duration, mAnimatorStartCallback);
+        Assert.assertEquals("Autodismiss duration is not propagated correctly.", duration,
+                message.getAutoDismissDuration());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -109,8 +100,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         MessageContainer container = new MessageContainer(getActivity(), null);
         PropertyModel m1 = createBasicSingleActionMessageModel();
         PropertyModel m2 = createBasicSingleActionMessageModel();
-        SingleActionMessage message1 = new SingleActionMessage(container, m1, mEmptyDismissCallback,
-                () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
+        SingleActionMessage message1 = new SingleActionMessage(
+                container, m1, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner1 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner1).show(any(Runnable.class));
@@ -118,8 +109,8 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
         view1.setId(R.id.message_banner);
         message1.setMessageBannerForTesting(messageBanner1);
         message1.setViewForTesting(view1);
-        SingleActionMessage message2 = new SingleActionMessage(container, m2, mEmptyDismissCallback,
-                () -> 0, mAccessibilityUtil, mAnimatorStartCallback);
+        SingleActionMessage message2 = new SingleActionMessage(
+                container, m2, mEmptyDismissCallback, () -> 0, () -> 0L, mAnimatorStartCallback);
         final MessageBannerCoordinator messageBanner2 =
                 Mockito.mock(MessageBannerCoordinator.class);
         doNothing().when(messageBanner2).show(any(Runnable.class));
