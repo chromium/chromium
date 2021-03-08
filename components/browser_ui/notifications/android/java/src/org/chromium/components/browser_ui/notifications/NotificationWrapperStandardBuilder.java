@@ -16,12 +16,16 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
+import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
  * Wraps a {@link Notification.Builder} object.
  */
 public class NotificationWrapperStandardBuilder implements NotificationWrapperBuilder {
+    private static final String TAG = "NotifStandardBuilder";
     private final Notification.Builder mBuilder;
     private final Context mContext;
     private final NotificationMetadata mMetadata;
@@ -139,7 +143,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && icon != 0) {
             mBuilder.addAction(
                     new Notification.Action
                             .Builder(Icon.createWithResource(mContext, icon), title, intent)
@@ -170,6 +174,19 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
         action.actionIntent =
                 new PendingIntentProvider(action.actionIntent, flags, 0).getPendingIntent();
         addAction(action);
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(NotificationCompat.Action action) {
+        Log.w(TAG, "Ignoring compat action in standard builder.");
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType) {
+        Log.w(TAG, "Ignoring compat action in standard builder.");
         return this;
     }
 

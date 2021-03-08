@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.notifications;
 import android.app.PendingIntent;
 import android.content.Context;
 
+import androidx.core.app.NotificationCompat;
+
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperCompatBuilder;
@@ -43,6 +45,17 @@ public class ChromeNotificationWrapperCompatBuilder extends NotificationWrapperC
                 NotificationIntentInterceptor.IntentType.ACTION_INTENT, actionType, getMetadata(),
                 pendingIntentProvider);
         return addAction(icon, title, pendingIntent);
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(NotificationCompat.Action action, int flags,
+            @NotificationUmaTracker.ActionType int actionType) {
+        // TODO(xingliu): Plumb requestCode from action intent.
+        PendingIntent pendingIntent = NotificationIntentInterceptor.createInterceptPendingIntent(
+                NotificationIntentInterceptor.IntentType.ACTION_INTENT, actionType, getMetadata(),
+                new PendingIntentProvider(action.actionIntent, flags, 0));
+        action.actionIntent = pendingIntent;
+        return addAction(action);
     }
 
     @Override

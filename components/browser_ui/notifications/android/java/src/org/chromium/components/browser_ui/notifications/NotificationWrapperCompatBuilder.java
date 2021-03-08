@@ -141,7 +141,14 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
     @Override
     public NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntent intent) {
-        mBuilder.addAction(icon, title, intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && icon != 0) {
+            mBuilder.addAction(
+                    new NotificationCompat.Action
+                            .Builder(IconCompat.createWithResource(mContext, icon), title, intent)
+                            .build());
+        } else {
+            mBuilder.addAction(icon, title, intent);
+        }
         return this;
     }
 
@@ -154,12 +161,30 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public NotificationWrapperBuilder addAction(Notification.Action action) {
+        Log.w(TAG, "Ignoring standard action in compat builder.");
         return this;
     }
 
     @Override
     public NotificationWrapperBuilder addAction(
             Notification.Action action, int flags, int actionType) {
+        Log.w(TAG, "Ignoring standard action in compat builder.");
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(NotificationCompat.Action action) {
+        mBuilder.addAction(action);
+        return this;
+    }
+
+    @Override
+    public NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType) {
+        // TODO(xingliu): Plumb requestCode from action intent.
+        action.actionIntent =
+                new PendingIntentProvider(action.actionIntent, flags, 0).getPendingIntent();
+        addAction(action);
         return this;
     }
 

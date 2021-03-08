@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
 /**
  * Abstraction over Notification.Builder and NotificationCompat.Builder interfaces.
  */
@@ -66,6 +68,15 @@ public interface NotificationWrapperBuilder {
      * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
      */
     NotificationWrapperBuilder addAction(Notification.Action action, int flags, int actionType);
+
+    @Deprecated
+    NotificationWrapperBuilder addAction(NotificationCompat.Action action);
+
+    /**
+     * @param actionType is for UMA. In Chrome, this is {@link NotificationUmaTracker.ActionType}.
+     */
+    NotificationWrapperBuilder addAction(
+            NotificationCompat.Action action, int flags, int actionType);
 
     @Deprecated
     NotificationWrapperBuilder setDeleteIntent(PendingIntent intent);
