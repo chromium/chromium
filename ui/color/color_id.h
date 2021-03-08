@@ -12,7 +12,8 @@
 // clang-format off
 #define CROSS_PLATFORM_COLOR_IDS \
   /* Core color concepts */ \
-  E_CPONLY(kColorAccent, kUiColorsStart) \
+  /* Use the 3 param macro so kColorAccent is set to the correct value. */ \
+  E_CPONLY(kColorAccent, kUiColorsStart, kUiColorsStart) \
   E(kColorAlertHighSeverity, NativeTheme::kColorId_AlertSeverityHigh) \
   E(kColorAlertLowSeverity, NativeTheme::kColorId_AlertSeverityLow) \
   E(kColorAlertMediumSeverity, NativeTheme::kColorId_AlertSeverityMedium) \

@@ -568,7 +568,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
   }
 
   SkColor color = GetDefaultColor(color_id, base_theme, color_scheme);
-  DVLOG(2) << "GetHighContrastColor: "
+  DVLOG(2) << "GetDefaultColor: "
            << "NativeTheme::ColorId: " << NativeThemeColorIdName(color_id)
            << " Color: " << SkColorName(color);
   return color;

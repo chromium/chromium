@@ -13,6 +13,8 @@ source_set("color_headers") {
     "color_id_macros.inc",
     "color_mixer.h",
     "color_provider.h",
+    "color_provider_manager.h",
+    "color_provider_utils.h",
     "color_set.h",
   ]
 

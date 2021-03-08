@@ -15,7 +15,9 @@
 
 namespace ui {
 
-void AddNativeCoreColorMixer(ColorProvider* provider, bool dark_window) {
+void AddNativeCoreColorMixer(ColorProvider* provider,
+                             bool dark_window,
+                             bool high_contrast) {
   ScopedCurrentNSAppearance scoped_nsappearance(dark_window);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet({kColorSetNative,
@@ -26,7 +28,9 @@ void AddNativeCoreColorMixer(ColorProvider* provider, bool dark_window) {
                 }});
 }
 
-void AddNativeUiColorMixer(ColorProvider* provider, bool dark_window) {
+void AddNativeUiColorMixer(ColorProvider* provider,
+                           bool dark_window,
+                           bool high_contrast) {
   ScopedCurrentNSAppearance scoped_nsappearance(dark_window);
   ColorMixer& mixer = provider->AddMixer();
   mixer.AddSet(

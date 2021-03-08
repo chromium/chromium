@@ -237,12 +237,14 @@ NativeTheme::NativeTheme(bool should_use_dark_colors)
     ColorProviderManager::Get().SetColorProviderInitializer(base::BindRepeating(
         [](ColorProvider* provider, ColorProviderManager::ColorMode color_mode,
            ColorProviderManager::ContrastMode contrast_mode) {
-          const bool is_dark_color_mode =
+          const bool dark_mode =
               color_mode == ColorProviderManager::ColorMode::kDark;
-          ui::AddCoreDefaultColorMixer(provider, is_dark_color_mode);
-          ui::AddNativeCoreColorMixer(provider, is_dark_color_mode);
+          const bool high_contrast =
+              contrast_mode == ColorProviderManager::ContrastMode::kHigh;
+          ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
+          ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
           ui::AddUiColorMixer(provider);
-          ui::AddNativeUiColorMixer(provider, is_dark_color_mode);
+          ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
         }));
   });
   if (!color_provider_manager_init.is_null())
@@ -255,16 +257,26 @@ NativeTheme::~NativeTheme() = default;
 base::Optional<SkColor> NativeTheme::GetColorProviderColor(
     ColorId color_id,
     ColorScheme color_scheme) const {
-  // TODO(http://crbug.com/1057754): Remove the below restrictions.
+  // TODO(http://crbug.com/1057754): Remove the restriction below for
+  //                                 non-Windows platforms.
+  const bool allow_high_contrast_redirection =
+#if defined(OS_WIN)
+      true;
+#else
+      color_scheme != ColorScheme::kPlatformHighContrast;
+#endif
   if (base::FeatureList::IsEnabled(features::kColorProviderRedirection) &&
-      color_scheme != NativeTheme::ColorScheme::kPlatformHighContrast) {
+      allow_high_contrast_redirection) {
     if (auto provider_color_id = NativeThemeColorIdToColorId(color_id)) {
       auto color_mode = (color_scheme == NativeTheme::ColorScheme::kDark)
                             ? ColorProviderManager::ColorMode::kDark
                             : ColorProviderManager::ColorMode::kLight;
-      // TODO(http://crbug.com/1057754): Handle high contrast modes.
+      auto contrast_mode =
+          (color_scheme == NativeTheme::ColorScheme::kPlatformHighContrast)
+              ? ColorProviderManager::ContrastMode::kHigh
+              : ColorProviderManager::ContrastMode::kNormal;
       auto* color_provider = ColorProviderManager::Get().GetColorProviderFor(
-          color_mode, ColorProviderManager::ContrastMode::kNormal);
+          color_mode, contrast_mode);
       ReportHistogramBooleanUsesColorProvider(true);
       return color_provider->GetColor(provider_color_id.value());
     }

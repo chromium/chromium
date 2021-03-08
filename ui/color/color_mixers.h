@@ -18,13 +18,17 @@ class ColorProvider;
 // |dark window| should be set if the window for this provider is "dark themed",
 // e.g. system native dark mode is enabled or the window is incognito.
 COMPONENT_EXPORT(COLOR)
-void AddCoreDefaultColorMixer(ColorProvider* provider, bool dark_window);
+void AddCoreDefaultColorMixer(ColorProvider* provider,
+                              bool dark_window,
+                              bool high_contrast);
 
 // Adds a color mixer to |provider| that provide kColorSetNative.
 // This function should be implemented on a per-platform basis in
 // relevant subdirectories.
 COMPONENT_EXPORT(COLOR)
-void AddNativeCoreColorMixer(ColorProvider* provider, bool dark_window);
+void AddNativeCoreColorMixer(ColorProvider* provider,
+                             bool dark_window,
+                             bool high_contrast);
 
 // Adds a color mixer to |provider| that combine the above color sets with
 // recipes as necessary to produce all colors needed by ui/.
@@ -34,7 +38,9 @@ COMPONENT_EXPORT(COLOR) void AddUiColorMixer(ColorProvider* provider);
 // Intended for colors needed by ui/ that this platform overrides but
 // are outside the set defined in the core mixer.
 COMPONENT_EXPORT(COLOR)
-void AddNativeUiColorMixer(ColorProvider* provider, bool dark_window);
+void AddNativeUiColorMixer(ColorProvider* provider,
+                           bool dark_window,
+                           bool high_contrast);
 
 }  // namespace ui
 

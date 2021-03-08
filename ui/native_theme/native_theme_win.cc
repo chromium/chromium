@@ -596,9 +596,11 @@ SkColor NativeThemeWin::GetSystemColor(ColorId color_id,
     color_scheme = GetDefaultSystemColorScheme();
 
   base::Optional<SkColor> color;
-  if (color_scheme == ColorScheme::kPlatformHighContrast)
-    color = GetPlatformHighContrastColor(color_id);
-  return color.value_or(NativeTheme::GetSystemColor(color_id, color_scheme));
+  if (color_scheme == ColorScheme::kPlatformHighContrast &&
+      (color = GetPlatformHighContrastColor(color_id))) {
+    return color.value();
+  }
+  return NativeTheme::GetSystemColor(color_id, color_scheme);
 }
 
 base::Optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
