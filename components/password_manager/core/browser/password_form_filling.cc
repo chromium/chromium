@@ -124,6 +124,12 @@ void Autofill(PasswordManagerClient* client,
                                 &federated_matches);
 }
 
+std::string GetPreferredRealm(const PasswordForm& form) {
+  DCHECK(IsPublicSuffixMatchOrAffiliationBasedMatch(form));
+  return form.app_display_name.empty() ? form.signon_realm
+                                       : form.app_display_name;
+}
+
 }  // namespace
 
 LikelyFormFilling SendFillInformationToRenderer(
@@ -282,8 +288,9 @@ PasswordFormFillData CreatePasswordFormFillData(
 #endif
   }
 
-  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match))
-    result.preferred_realm = preferred_match.signon_realm;
+  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {
+    result.preferred_realm = GetPreferredRealm(preferred_match);
+  }
 
   // Copy additional username/value pairs.
   for (const PasswordForm* match : matches) {
@@ -305,8 +312,9 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.username = match->username_value;
     value.password = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
-    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match))
-      value.realm = match->signon_realm;
+    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {
+      value.realm = GetPreferredRealm(*match);
+    }
     result.additional_logins.push_back(std::move(value));
   }
 

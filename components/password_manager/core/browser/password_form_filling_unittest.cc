@@ -729,4 +729,41 @@ TEST(PasswordFormFillDataTest, DeduplicatesFillData) {
           IsLogin(kSyncedUsername, kSyncedPassword, true)));
 }
 
+// Tests that the constructing a PasswordFormFillData behaves correctly when
+// there is a preferred match that was found using affiliation based matching,
+// with app_display_name.
+TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
+  // Create the current form on the page.
+  PasswordForm form_on_page;
+  form_on_page.url = GURL("https://foo.com/");
+  form_on_page.action = GURL("https://foo.com/login");
+  form_on_page.username_element = ASCIIToUTF16("username");
+  form_on_page.username_value = ASCIIToUTF16(kPreferredUsername);
+  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.password_value = ASCIIToUTF16(kPreferredPassword);
+  form_on_page.signon_realm = "https://foo.com/";
+  form_on_page.scheme = PasswordForm::Scheme::kHtml;
+
+  // Create a match that was matched using affiliation matching, so
+  // |is_affiliation_based_match| == true.
+  PasswordForm affiliated_match;
+  affiliated_match.url = GURL("android://hash@foo1.com/");
+  affiliated_match.username_value = ASCIIToUTF16("test2@gmail.com");
+  affiliated_match.password_value = ASCIIToUTF16(kPreferredPassword);
+  affiliated_match.is_affiliation_based_match = true;
+  affiliated_match.app_display_name = "Foo";
+  affiliated_match.signon_realm = "https://foo1.com/";
+  affiliated_match.scheme = PasswordForm::Scheme::kHtml;
+
+  // Add one exact match and one affiliation based match.
+  std::vector<const PasswordForm*> matches = {&affiliated_match};
+
+  PasswordFormFillData result = CreatePasswordFormFillData(
+      form_on_page, matches, affiliated_match, false);
+  EXPECT_FALSE(result.wait_for_username);
+  // The preferred realm should match the app name from the affiliated match so
+  // the user can see and understand where the result came from.
+  EXPECT_EQ(affiliated_match.app_display_name, result.preferred_realm);
+}
+
 }  // namespace password_manager
