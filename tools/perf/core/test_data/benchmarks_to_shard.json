@@ -92,6 +92,7 @@
       "delete-in-password-field.html",
       "div-editable.html",
       "inner_html_with_selection.html",
+      "insert-text-with-dir-auto.html",
       "long-sibling-list.html",
       "modify-element-classname.html",
       "modify-element-id.html",
