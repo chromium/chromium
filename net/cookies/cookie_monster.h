@@ -37,10 +37,6 @@
 #include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
-namespace base {
-class HistogramBase;
-}  // namespace base
-
 namespace net {
 
 class CookieChangeDispatcher;
@@ -284,6 +280,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // of stored cookies. Please do not reorder the list when adding new entries.
   // New items MUST be added at the end of the list, just before
   // COOKIE_TYPE_LAST_ENTRY;
+  // There will be 2^COOKIE_TYPE_LAST_ENTRY buckets in the linear histogram.
   enum CookieType {
     COOKIE_TYPE_SAME_SITE = 0,
     COOKIE_TYPE_HTTPONLY,
@@ -295,8 +292,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // sources of Secure and non-Secure cookies: that is, whether such
   // cookies are set by origins with cryptographic or non-cryptographic
   // schemes. Please do not reorder the list when adding new
-  // entries. New items MUST be added at the end of the list, just
-  // before COOKIE_SOURCE_LAST_ENTRY.
+  // entries. New items MUST be added at the end of the list, and kMaxValue
+  // should be updated to the last value.
   //
   // COOKIE_SOURCE_(NON)SECURE_COOKIE_(NON)CRYPTOGRAPHIC_SCHEME means
   // that a cookie was set or overwritten from a URL with the given type
@@ -308,7 +305,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
     COOKIE_SOURCE_SECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME,
     COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME,
     COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME,
-    COOKIE_SOURCE_LAST_ENTRY
+    kMaxValue = COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME
   };
 
   // Enum for collecting metrics on how frequently a cookie is sent to the same
@@ -555,10 +552,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // cookies. Returns whether stats were recorded.
   bool DoRecordPeriodicStats();
 
-  // Initialize the histogram_* variables below; should only be called from
-  // the constructor.
-  void InitializeHistograms();
-
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.
   void DoCookieCallback(base::OnceClosure callback);
@@ -582,15 +575,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const GURL& destination,
       int source_port,
       CookieSourceScheme source_scheme);
-
-  // Histogram variables; see CookieMonster::InitializeHistograms() in
-  // cookie_monster.cc for details.
-  base::HistogramBase* histogram_expiration_duration_minutes_secure_;
-  base::HistogramBase* histogram_expiration_duration_minutes_non_secure_;
-  base::HistogramBase* histogram_count_;
-  base::HistogramBase* histogram_cookie_type_;
-  base::HistogramBase* histogram_cookie_source_scheme_;
-  base::HistogramBase* histogram_time_blocked_on_load_;
 
   // Set of keys (eTLD+1's) for which non-expired cookies have
   // been evicted for hitting the per-domain max. The size of this set is
