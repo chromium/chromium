@@ -229,24 +229,13 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     const WebApplicationInfo& web_app_info) {
-  DCHECK(shortcut_manager_);
-
   if (g_suppress_os_hooks_for_testing_)
     return;
 
   // TODO(crbug.com/1079439): Update file handlers.
-  shortcut_manager_->UpdateShortcuts(app_id, old_name);
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenu) &&
-      !web_app_info.shortcuts_menu_item_infos.empty()) {
-    shortcut_manager_->RegisterShortcutsMenuWithOs(
-        app_id, web_app_info.shortcuts_menu_item_infos,
-        web_app_info.shortcuts_menu_icon_bitmaps);
-  } else {
-    // Unregister shortcuts menu when feature is disabled or
-    // shortcuts_menu_item_infos is empty.
-    shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
-  }
+
+  UpdateShortcuts(app_id, old_name);
+  UpdateShortcutsMenu(app_id, web_app_info);
 
   UpdateUrlHandlers(app_id);
 }
@@ -489,6 +478,29 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
     const AppId& app_id) {
   if (ShouldRegisterUninstallationViaOsSettingsWithOs())
     UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+}
+
+void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
+                                           base::StringPiece old_name) {
+  DCHECK(shortcut_manager_);
+  shortcut_manager_->UpdateShortcuts(app_id, old_name);
+}
+
+void OsIntegrationManager::UpdateShortcutsMenu(
+    const AppId& app_id,
+    const WebApplicationInfo& web_app_info) {
+  DCHECK(shortcut_manager_);
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsAppIconShortcutsMenu) &&
+      !web_app_info.shortcuts_menu_item_infos.empty()) {
+    shortcut_manager_->RegisterShortcutsMenuWithOs(
+        app_id, web_app_info.shortcuts_menu_item_infos,
+        web_app_info.shortcuts_menu_icon_bitmaps);
+  } else {
+    // Unregister shortcuts menu when feature is disabled or
+    // shortcuts_menu_item_infos is empty.
+    shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
+  }
 }
 
 void OsIntegrationManager::UpdateUrlHandlers(const AppId& app_id) {

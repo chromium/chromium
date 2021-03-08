@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -114,7 +115,14 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (override));
 
   // Update:
-  // TODO(crbug/1072058): Add test case that runs UpdateOsHooks.
+  MOCK_METHOD(void,
+              UpdateShortcuts,
+              (const AppId& app_id, base::StringPiece old_name),
+              (override));
+  MOCK_METHOD(void,
+              UpdateShortcutsMenu,
+              (const AppId& app_id, const WebApplicationInfo& web_app_info),
+              (override));
   MOCK_METHOD(void, UpdateUrlHandlers, (const AppId& app_id), (override));
 
   // Utility methods:
@@ -265,6 +273,20 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_TRUE(uninstall_results[OsHookType::kRunOnOsLogin]);
   EXPECT_TRUE(uninstall_results[OsHookType::kShortcutsMenu]);
   EXPECT_TRUE(uninstall_results[OsHookType::kUninstallationViaOsSettings]);
+}
+
+TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
+  const AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager;
+
+  WebApplicationInfo web_app_info;
+  base::StringPiece old_name = "test-name";
+
+  EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name)).Times(1);
+  EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, UpdateUrlHandlers(app_id)).Times(1);
+
+  manager.UpdateOsHooks(app_id, old_name, web_app_info);
 }
 
 }  // namespace

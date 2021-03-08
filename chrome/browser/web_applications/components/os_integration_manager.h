@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
@@ -210,6 +211,9 @@ class OsIntegrationManager {
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
   // Update:
+  virtual void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
+  virtual void UpdateShortcutsMenu(const AppId& app_id,
+                                   const WebApplicationInfo& web_app_info);
   virtual void UpdateUrlHandlers(const AppId& app_id);
 
   // Utility methods:
