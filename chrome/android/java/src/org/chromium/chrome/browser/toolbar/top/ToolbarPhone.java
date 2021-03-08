@@ -192,7 +192,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     protected int mUnfocusedLocationBarLayoutLeft;
     protected int mUnfocusedLocationBarLayoutRight;
     private boolean mUnfocusedLocationBarUsesTransparentBg;
-    private boolean mCurrentUrlFocusState;
 
     private int mLocationBarBackgroundAlpha = 255;
     private float mNtpSearchBoxScrollFraction = UNINITIALIZED_FRACTION;
@@ -1873,10 +1872,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // possible that this function is called before native initialization when Instant Start
         // is enabled. Keyboard shouldn't be shown here.
         if (isNativeLibraryReady()) {
-            boolean hasFocus = urlHasFocus();
+            boolean hasFocus = inTabSwitcherMode && !urlHasFocus();
+            boolean shouldShowKeyboard = false;
             // When switching out of the tab switcher and the url has got focused, we don't clear
             // the focus.
-            boolean shouldShowKeyboard = hasFocus && !inTabSwitcherMode;
+            if (!inTabSwitcherMode && urlHasFocus()) {
+                hasFocus = true;
+                shouldShowKeyboard = true;
+            }
             triggerUrlFocusAnimation(hasFocus, shouldShowKeyboard);
         } else {
             mPendingTriggerUrlFocusRequest = true;
@@ -2097,10 +2100,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         if (getToolbarDataProvider().isInOverviewAndShowingOmnibox()) {
             mUrlBar.setText("");
-            if (!hasFocus) {
-                mCurrentUrlFocusState = false;
-                return;
-            }
+            if (!hasFocus) return;
         }
 
         triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
@@ -2112,14 +2112,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      *         as hasFocus by default.
      */
     private void triggerUrlFocusAnimation(final boolean hasFocus, boolean shouldShowKeyboard) {
-        // Check if we need to run animation. If not, jump directly to target desired state.
-        if (mCurrentUrlFocusState == hasFocus) {
-            mLocationBar.finishUrlFocusChange(hasFocus, shouldShowKeyboard,
-                    getToolbarDataProvider().shouldShowLocationBarInOverviewMode());
-            return;
-        }
-
-        mCurrentUrlFocusState = hasFocus;
         TraceEvent.begin("ToolbarPhone.triggerUrlFocusAnimation");
         if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
             mUrlFocusLayoutAnimator.cancel();
