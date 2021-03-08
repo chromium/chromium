@@ -22,6 +22,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace ash {
 
 class SearchResultObserver;
@@ -50,8 +54,8 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
   void SetChipIcon(const gfx::ImageSkia& chip_icon);
 
-  const gfx::ImageSkia& badge_icon() const { return metadata_->badge_icon; }
-  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
+  const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
+  void SetBadgeIcon(const ui::ImageModel& badge_icon);
 
   const base::string16& title() const { return metadata_->title; }
   void set_title(const base::string16& title);
@@ -156,6 +160,10 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   bool is_recommendation() const { return metadata_->is_recommendation; }
   void set_is_recommendation(bool is_recommendation) {
     metadata_->is_recommendation = is_recommendation;
+  }
+
+  bool use_badge_icon_background() const {
+    return metadata_->use_badge_icon_background;
   }
 
   void AddObserver(SearchResultObserver* observer);

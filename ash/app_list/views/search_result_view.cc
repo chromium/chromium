@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -429,14 +430,26 @@ void SearchResultView::OnMetadataChanged() {
   }
 
   // Updates |badge_icon_|.
-  const gfx::ImageSkia badge_icon(result() ? result()->badge_icon()
-                                           : gfx::ImageSkia());
-  if (badge_icon.isNull()) {
+  gfx::ImageSkia badge_icon_skia;
+  if (result() && !result()->badge_icon().IsEmpty()) {
+    const ui::ImageModel& badge_icon = result()->badge_icon();
+    gfx::ImageSkia badge_icon_skia =
+        badge_icon.IsVectorIcon()
+            ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
+                  .GetImageSkia(GetNativeTheme())
+            : badge_icon.GetImage().AsImageSkia();
+
+    if (result()->use_badge_icon_background())
+      badge_icon_skia =
+          CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+  }
+
+  if (badge_icon_skia.isNull()) {
     badge_icon_->SetVisible(false);
   } else {
     const int dimension =
         AppListConfig::instance().search_list_badge_icon_dimension();
-    SetIconImage(badge_icon, badge_icon_, gfx::Size(dimension, dimension));
+    SetIconImage(badge_icon_skia, badge_icon_, gfx::Size(dimension, dimension));
     badge_icon_->SetVisible(true);
   }
 

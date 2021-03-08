@@ -26,6 +26,10 @@ namespace app_list {
 class AppContextMenu;
 }  // namespace app_list
 
+namespace ui {
+class ImageModel;
+}
+
 // ChromeSearchResult consists of an icon, title text and details text. Title
 // and details text can have tagged ranges that are displayed differently from
 // default style.
@@ -74,7 +78,7 @@ class ChromeSearchResult {
   }
   const gfx::ImageSkia& icon() const { return metadata_->icon; }
   const gfx::ImageSkia& chip_icon() const { return metadata_->chip_icon; }
-  const gfx::ImageSkia& badge_icon() const { return metadata_->badge_icon; }
+  const ui::ImageModel& badge_icon() const { return metadata_->badge_icon; }
 
   bool notify_visibility_change() const {
     return metadata_->notify_visibility_change;
@@ -104,7 +108,8 @@ class ChromeSearchResult {
   void SetEquivalentResutlId(const std::string& equivlanet_result_id);
   void SetIcon(const gfx::ImageSkia& icon);
   void SetChipIcon(const gfx::ImageSkia& icon);
-  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
+  void SetBadgeIcon(const ui::ImageModel& badge_icon);
+  void SetUseBadgeIconBackground(bool use_badge_icon_background);
   void SetNotifyVisibilityChange(bool notify_visibility_change);
 
   void SetSearchResultMetadata();

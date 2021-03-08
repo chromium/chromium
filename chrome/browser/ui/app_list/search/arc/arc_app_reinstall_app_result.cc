@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -31,21 +32,6 @@ constexpr char kPlayStoreAppUrlPrefix[] =
 // We choose a default app reinstallation relevance; This ranks app reinstall
 // app result as a top result typically.
 constexpr float kAppReinstallRelevance = 0.7;
-
-// Create a badge icon with a white circle background image.
-gfx::ImageSkia CreateBadgeIcon(const gfx::VectorIcon& vector_icon) {
-  // TODO(thanhdng): Once ChromeSearchResult has access to a View pointer, get
-  // the NativeTheme from there instead.
-  const SkColor badge_icon_color =
-      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-          ui::NativeTheme::kColorId_DefaultIconColor);
-  const int badge_size =
-      ash::AppListConfig::instance().search_tile_badge_icon_dimension();
-  const auto& badge_icon =
-      gfx::CreateVectorIcon(vector_icon, badge_size, badge_icon_color);
-  return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-      badge_size / 2, SK_ColorWHITE, badge_icon);
-}
 
 // Apply background and mask to make the icon similar to the icon of
 // ArcPlaystoreSearchResult.
@@ -76,7 +62,11 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
   const gfx::ImageSkia masked_app_icon(ApplyBackgroundAndMask(app_icon));
   SetIcon(masked_app_icon);
   SetChipIcon(masked_app_icon);
-  SetBadgeIcon(CreateBadgeIcon(vector_icons::kCloudDownloadIcon));
+  SetBadgeIcon(ui::ImageModel::FromVectorIcon(
+      vector_icons::kCloudDownloadIcon,
+      ui::NativeTheme::kColorId_DefaultIconColor,
+      ash::AppListConfig::instance().search_tile_badge_icon_dimension()));
+  SetUseBadgeIconBackground(true);
   SetNotifyVisibilityChange(true);
 
   if (mojom_data->star_rating != 0.0f) {

@@ -21,6 +21,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 
 namespace app_list {
 
@@ -85,7 +86,7 @@ void ArcAppShortcutSearchResult::Open(int event_flags) {
 void ArcAppShortcutSearchResult::OnAppImageUpdated(
     const std::string& app_id,
     const gfx::ImageSkia& image) {
-  SetBadgeIcon(image);
+  SetBadgeIcon(ui::ImageModel::FromImageSkia(image));
 }
 
 std::string ArcAppShortcutSearchResult::GetAppId() const {

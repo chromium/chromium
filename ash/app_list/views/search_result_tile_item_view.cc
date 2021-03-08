@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -25,10 +26,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -299,7 +302,7 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
 void SearchResultTileItemView::OnMetadataChanged() {
   SetIcon(result()->icon());
   SetTitle(result()->title());
-  SetBadgeIcon(result()->badge_icon());
+  SetBadgeIcon(result()->badge_icon(), result()->use_badge_icon_background());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
   Layout();
@@ -404,15 +407,27 @@ void SearchResultTileItemView::SetIcon(const gfx::ImageSkia& icon) {
   icon_->SetImage(resized);
 }
 
-void SearchResultTileItemView::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
-  if (badge_icon.isNull()) {
+void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
+                                            bool use_badge_icon_background) {
+  if (badge_icon.IsEmpty()) {
     badge_->SetVisible(false);
     return;
   }
 
+  gfx::ImageSkia badge_icon_skia =
+      badge_icon.IsVectorIcon()
+          ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
+                .GetImageSkia(GetNativeTheme())
+          : badge_icon.GetImage().AsImageSkia();
+
+  if (use_badge_icon_background) {
+    badge_icon_skia =
+        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+  }
+
   gfx::ImageSkia resized_badge_icon(
       gfx::ImageSkiaOperations::CreateResizedImage(
-          badge_icon, skia::ImageOperations::RESIZE_BEST,
+          badge_icon_skia, skia::ImageOperations::RESIZE_BEST,
           AppListConfig::instance().search_tile_badge_icon_size()));
 
   gfx::ShadowValues shadow_values;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/app_list/app_context_menu.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "ui/base/models/image_model.h"
 
 namespace {
 
@@ -142,9 +143,14 @@ void ChromeSearchResult::SetChipIcon(const gfx::ImageSkia& chip_icon) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
-  badge_icon.EnsureRepsForSupportedScales();
+void ChromeSearchResult::SetBadgeIcon(const ui::ImageModel& badge_icon) {
   metadata_->badge_icon = badge_icon;
+  SetSearchResultMetadata();
+}
+
+void ChromeSearchResult::SetUseBadgeIconBackground(
+    bool use_badge_icon_background) {
+  metadata_->use_badge_icon_background = use_badge_icon_background;
   SetSearchResultMetadata();
 }
 

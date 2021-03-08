@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/sync/model/string_ordinal.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -338,7 +339,11 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
 
   // The badge icon of this result that indicates its type, e.g. installable
   // from PlayStore, installable from WebStore, etc.
-  gfx::ImageSkia badge_icon;
+  ui::ImageModel badge_icon;
+
+  // Flag indicating whether the `badge_icon` should be painted atop a circle
+  // background image.
+  bool use_badge_icon_background = false;
 
   // If set to true, whether or not to send visibility updates through to to
   // the chrome side when this result is set visible/invisible.

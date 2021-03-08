@@ -7,6 +7,7 @@
 #include <map>
 
 #include "ash/app_list/model/search/search_result_observer.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
 namespace ash {
@@ -43,7 +44,7 @@ void SearchResult::set_title(const base::string16& title) {
     observer.OnMetadataChanged();
 }
 
-void SearchResult::SetBadgeIcon(const gfx::ImageSkia& badge_icon) {
+void SearchResult::SetBadgeIcon(const ui::ImageModel& badge_icon) {
   metadata_->badge_icon = badge_icon;
   for (auto& observer : observers_)
     observer.OnMetadataChanged();

@@ -137,6 +137,7 @@ component("app_list") {
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/native_theme",
     "//ui/resources",
     "//ui/strings",
     "//ui/views",

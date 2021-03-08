@@ -21,6 +21,7 @@
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/crx_file/id_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -114,10 +115,12 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   set_id(kPlayAppPrefix +
          crx_file::id_util::GenerateId(install_intent_uri().value()));
   SetDisplayType(ash::SearchResultDisplayType::kTile);
-  SetBadgeIcon(CreateBadgeIcon(
+  // TODO: The badge icon should be updated to pass through a vector icon and
+  // color id rather than hardcoding the colors here.
+  SetBadgeIcon(ui::ImageModel::FromImageSkia(CreateBadgeIcon(
       is_instant_app() ? ash::kBadgeInstantIcon : ash::kBadgePlayIcon,
       ash::AppListConfig::instance().search_tile_badge_icon_dimension(),
-      kBadgePadding, kBadgeIconSize, kBadgeColor));
+      kBadgePadding, kBadgeIconSize, kBadgeColor)));
   SetFormattedPrice(base::UTF8ToUTF16(formatted_price().value()));
   SetRating(review_score());
   SetResultType(is_instant_app() ? ash::AppListSearchResultType::kInstantApp

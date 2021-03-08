@@ -7,6 +7,7 @@
 
 #include "ash/app_list/app_list_export.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace views {
 class Textfield;
@@ -45,6 +46,12 @@ APP_LIST_EXPORT bool LeftRightKeyEventShouldExitText(
 APP_LIST_EXPORT bool ProcessLeftRightKeyTraversalForTextfield(
     views::Textfield* textfield,
     const ui::KeyEvent& key_event);
+
+// Returns a new image with the `icon` atop a circle background with
+// `background_color`.
+APP_LIST_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
+    const gfx::ImageSkia& icon,
+    SkColor background_color);
 
 }  // namespace ash
 

@@ -14,6 +14,10 @@
 #include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace views {
 class ImageView;
 class Label;
@@ -82,7 +86,8 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void OnButtonPressed(const ui::Event& event);
 
   void SetIcon(const gfx::ImageSkia& icon);
-  void SetBadgeIcon(const gfx::ImageSkia& badge_icon);
+  void SetBadgeIcon(const ui::ImageModel& badge_icon,
+                    bool use_badge_icon_background);
   void SetTitle(const base::string16& title);
   void SetRating(float rating);
   void SetPrice(const base::string16& price);
