@@ -4489,6 +4489,9 @@
   <message name="IDS_CROSTINI_INSTALLER_DISK_SIZE_HINT" desc="Text shown in Crostini installer dialog to explain that the disk size can be modified later in Settings">
     This can be modified later in Settings
   </message>
+  <message name="IDS_CROSTINI_INSTALLER_USERNAME_LABEL" desc="Label for the field where the user enters their username">
+    Username
+  </message>
   <message name="IDS_CROSTINI_INSTALLER_USERNAME_MESSAGE" desc="Text shown in the Crostini installer dialog prompting the user to pick their username">
     Select a username
   </message>

@@ -112,7 +112,7 @@
     </div>
     <div id="configure-message" hidden="[[!eq_(state_, State.CONFIGURE)]]">
       <div id="configure-message-title">[[getConfigureMessageTitle_()]]</div>
-      <cr-input label="Username" id="username" type="text"
+      <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
           invalid="[[!eq_(usernameError_, '')]]"
           error-message="[[usernameError_]]">

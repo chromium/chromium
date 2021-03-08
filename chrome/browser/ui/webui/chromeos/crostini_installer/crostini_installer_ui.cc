@@ -81,6 +81,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"diskSizeSubtitle", IDS_CROSTINI_INSTALLER_DISK_SIZE_SUBTITLE},
       {"diskSizeHint", IDS_CROSTINI_INSTALLER_DISK_SIZE_HINT},
       {"insufficientDiskError", IDS_CROSTINI_INSTALLER_INSUFFICIENT_DISK_ERROR},
+      {"usernameLabel", IDS_CROSTINI_INSTALLER_USERNAME_LABEL},
       {"usernameMessage", IDS_CROSTINI_INSTALLER_USERNAME_MESSAGE},
       {"usernameInvalidFirstCharacterError",
        IDS_CROSTINI_INSTALLER_USERNAME_INVALID_FIRST_CHARACTER_ERROR},
