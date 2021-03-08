@@ -28,7 +28,7 @@ constexpr int64_t kInvalidColor =
     static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1;
 }
 
-namespace chromeos {
+namespace ash {
 
 // static
 void ApkWebAppInstaller::Install(Profile* profile,
@@ -170,4 +170,4 @@ void ApkWebAppInstaller::DoInstall() {
                      base::Unretained(this), std::move(start_url)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

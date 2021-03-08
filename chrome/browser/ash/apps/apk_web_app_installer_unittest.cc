@@ -42,7 +42,7 @@ arc::mojom::RawIconPngDataPtr GetIconBytes() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class FakeApkWebAppInstaller : public ApkWebAppInstaller {
  public:
@@ -188,4 +188,4 @@ TEST_F(ApkWebAppInstallerTest, NullIconCallsCompleteInstallation) {
   EXPECT_FALSE(apk_web_app_installer.has_web_app_info());
 }
 
-}  // namespace chromeos
+}  // namespace ash

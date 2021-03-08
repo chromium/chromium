@@ -62,7 +62,7 @@ const int kDefaultIconSize = 192;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 ApkWebAppService* ApkWebAppService::Get(Profile* profile) {
@@ -499,4 +499,4 @@ void ApkWebAppService::UpdatePackageInfo(
       base::Value(web_app_info->certificate_sha256_fingerprint.value()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

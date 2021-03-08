@@ -279,7 +279,7 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
   if (!web_app::AppBrowserController::IsWebApp(browser))
     return "";
 
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(
       Profile::FromBrowserContext(rfh->GetBrowserContext()));
   if (!apk_web_app_service)
     return "";

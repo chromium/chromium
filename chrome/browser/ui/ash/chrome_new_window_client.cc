@@ -532,8 +532,8 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   proxy->LaunchAppWithUrl(*app_id, event_flags, url,
                           apps::mojom::LaunchSource::kFromArc);
 
-  chromeos::ApkWebAppService* apk_web_app_service =
-      chromeos::ApkWebAppService::Get(profile);
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(profile);
   if (!apk_web_app_service ||
       !apk_web_app_service->IsWebAppInstalledFromArc(app_id.value())) {
     return;

@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 ApkWebAppService* ApkWebAppServiceFactory::GetForProfile(Profile* profile) {
@@ -54,4 +54,4 @@ content::BrowserContext* ApkWebAppServiceFactory::GetBrowserContextToUse(
   return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
-}  // namespace chromeos
+}  // namespace ash

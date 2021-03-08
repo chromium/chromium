@@ -33,7 +33,7 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
     return "";
   }
 
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(profile);
+  auto* apk_web_app_service = ash::ApkWebAppService::Get(profile);
   if (!apk_web_app_service) {
     return "";
   }

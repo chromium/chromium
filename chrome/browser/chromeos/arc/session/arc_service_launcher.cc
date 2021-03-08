@@ -252,7 +252,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   GpuArcVideoKeyedService::GetForBrowserContext(profile);
   CertStoreService::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
-  chromeos::ApkWebAppService::Get(profile);
+  ash::ApkWebAppService::Get(profile);
   chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(profile);
 
   // ARC Container-only services.

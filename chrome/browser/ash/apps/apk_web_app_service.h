@@ -33,7 +33,7 @@ enum class InstallResultCode;
 class WebAppProvider;
 }  // namespace web_app
 
-namespace chromeos {
+namespace ash {
 
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
@@ -121,6 +121,6 @@ class ApkWebAppService : public KeyedService,
   DISALLOW_COPY_AND_ASSIGN(ApkWebAppService);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_H_

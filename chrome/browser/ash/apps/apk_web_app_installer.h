@@ -23,7 +23,7 @@ namespace web_app {
 enum class InstallResultCode;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Class which takes an arc::mojom::WebAppInfo struct and decodes the data
 // within it to install as a local web app.
@@ -94,6 +94,6 @@ class ApkWebAppInstaller {
   DISALLOW_COPY_AND_ASSIGN(ApkWebAppInstaller);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APPS_APK_WEB_APP_INSTALLER_H_

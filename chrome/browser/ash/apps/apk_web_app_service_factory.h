@@ -15,7 +15,7 @@ class BrowserContext;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class ApkWebAppService;
 
@@ -48,6 +48,6 @@ class ApkWebAppServiceFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(ApkWebAppServiceFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_FACTORY_H_

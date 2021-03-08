@@ -289,8 +289,8 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   if (!HasAppId())
     return;
 
-  chromeos::ApkWebAppService* apk_web_app_service =
-      chromeos::ApkWebAppService::Get(browser->profile());
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(browser->profile());
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(GetAppId()))
     return;
 

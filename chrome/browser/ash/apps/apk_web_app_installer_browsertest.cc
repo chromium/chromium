@@ -53,7 +53,7 @@ arc::mojom::RawIconPngDataPtr GetFakeIconBytes() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class ApkWebAppInstallerBrowserTest : public InProcessBrowserTest,
                                       public web_app::AppRegistrarObserver,
@@ -467,4 +467,4 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
