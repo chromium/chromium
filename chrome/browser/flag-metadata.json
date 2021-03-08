@@ -2560,7 +2560,7 @@
   {
     "name": "enable-vulkan",
     "owners": [ "penghuang" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "enable-web-authentication-cable-v2-support",
