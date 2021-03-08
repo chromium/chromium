@@ -11,6 +11,8 @@
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom-forward.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
@@ -71,6 +73,7 @@ class NativeInputMethodEngine
     // migration. It will be removed when the official extension is completely
     // migrated.
     ImeObserver(
+        PrefService* prefs,
         std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
         std::unique_ptr<AssistiveSuggester> assistive_suggester,
         std::unique_ptr<AutocorrectManager> autocorrect_manager);
@@ -141,7 +144,7 @@ class NativeInputMethodEngine
     void FlushForTesting();
 
     // Returns whether this is connected to the input engine.
-    bool IsConnectedForTesting() const { return active_engine_id_.has_value(); }
+    bool IsConnectedForTesting() const { return remote_to_engine_.is_bound(); }
 
    private:
     // Called when this is connected to the input engine. |bound| indicates
@@ -157,6 +160,8 @@ class NativeInputMethodEngine
         ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback,
         ime::mojom::KeypressResponseForRulebasedPtr response);
 
+    PrefService* prefs_ = nullptr;
+
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
     mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
     mojo::Receiver<ime::mojom::InputChannel> receiver_from_engine_;
@@ -169,11 +174,15 @@ class NativeInputMethodEngine
 
   ImeObserver* GetNativeObserver() const;
 
+  void OnInputMethodPrefsChanged();
+
   AssistiveSuggester* assistive_suggester_ = nullptr;
   AutocorrectManager* autocorrect_manager_ = nullptr;
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       chrome_keyboard_controller_client_observer_{this};
+
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 }  // namespace chromeos

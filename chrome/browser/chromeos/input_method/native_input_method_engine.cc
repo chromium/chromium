@@ -17,6 +17,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
@@ -35,11 +37,11 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
   return ui::IMEBridge::Get()->GetInputContextHandler();
 }
 
-bool ShouldUseRuleBasedMojoEngine(const std::string& engine_id) {
+bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
-bool ShouldUseFstMojoEngine(const std::string& engine_id) {
+bool ShouldRouteToFstMojoEngine(const std::string& engine_id) {
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
   // keyboard is disabled. Otherwise, just let the extension handle any physical
@@ -48,6 +50,16 @@ bool ShouldUseFstMojoEngine(const std::string& engine_id) {
              chromeos::features::kSystemLatinPhysicalTyping) &&
          base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE) &&
          !ChromeKeyboardControllerClient::Get()->GetKeyboardEnabled();
+}
+
+bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
+                                          const std::string& engine_id) {
+  // The FST Mojo engine is only needed if autocorrect is enabled.
+  const base::DictionaryValue* input_method_settings =
+      prefs->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);
+  const base::Value* autocorrect_setting = input_method_settings->FindPath(
+      engine_id + ".physicalKeyboardAutoCorrectionLevel");
+  return autocorrect_setting && autocorrect_setting->GetIfInt().value_or(0) > 0;
 }
 
 std::string NormalizeEngineId(const std::string engine_id) {
@@ -143,12 +155,18 @@ void NativeInputMethodEngine::Initialize(
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
+  pref_change_registrar_.Init(profile->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kLanguageInputMethodSpecificSettings,
+      base::BindRepeating(&NativeInputMethodEngine::OnInputMethodPrefsChanged,
+                          base::Unretained(this)));
+
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer =
       std::make_unique<chromeos::NativeInputMethodEngine::ImeObserver>(
-          std::move(observer), std::move(assistive_suggester),
-          std::move(autocorrect_manager));
+          profile->GetPrefs(), std::move(observer),
+          std::move(assistive_suggester), std::move(autocorrect_manager));
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
 }
@@ -184,10 +202,12 @@ NativeInputMethodEngine::GetNativeObserver() const {
 }
 
 NativeInputMethodEngine::ImeObserver::ImeObserver(
+    PrefService* prefs,
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager)
-    : ime_base_observer_(std::move(ime_base_observer)),
+    : prefs_(prefs),
+      ime_base_observer_(std::move(ime_base_observer)),
       receiver_from_engine_(this),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)) {}
@@ -196,8 +216,18 @@ NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
-  if (ShouldUseRuleBasedMojoEngine(engine_id) ||
-      ShouldUseFstMojoEngine(engine_id)) {
+  // TODO(b/181077907): Always launch the IME service and let IME service decide
+  // whether it should shutdown or not.
+  if (ShouldRouteToFstMojoEngine(engine_id) &&
+      !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id)) {
+    remote_manager_.reset();
+    remote_to_engine_.reset();
+    receiver_from_engine_.reset();
+    return;
+  }
+
+  if (ShouldRouteToRuleBasedEngine(engine_id) ||
+      ShouldRouteToFstMojoEngine(engine_id)) {
     if (!remote_manager_.is_bound()) {
       auto* ime_manager = input_method::InputMethodManager::Get();
       ime_manager->ConnectInputEngineManager(
@@ -243,14 +273,15 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     assistive_suggester_->OnFocus(context.id);
   }
   autocorrect_manager_->OnFocus(context.id);
-  if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
-      remote_to_engine_.is_bound()) {
-    remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
-        TextInputTypeToMojoType(context.type),
-        AutocorrectFlagsToMojoType(context.flags),
-        context.should_do_learning
-            ? ime::mojom::PersonalizationMode::kEnabled
-            : ime::mojom::PersonalizationMode::kDisabled));
+  if (active_engine_id_ && ShouldRouteToFstMojoEngine(*active_engine_id_)) {
+    if (remote_to_engine_.is_bound()) {
+      remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
+          TextInputTypeToMojoType(context.type),
+          AutocorrectFlagsToMojoType(context.flags),
+          context.should_do_learning
+              ? ime::mojom::PersonalizationMode::kEnabled
+              : ime::mojom::PersonalizationMode::kDisabled));
+    }
   } else {
     ime_base_observer_->OnFocus(context);
   }
@@ -260,9 +291,10 @@ void NativeInputMethodEngine::ImeObserver::OnBlur(int context_id) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();
 
-  if (active_engine_id_ && ShouldUseFstMojoEngine(*active_engine_id_) &&
-      remote_to_engine_.is_bound()) {
-    remote_to_engine_->OnBlur();
+  if (active_engine_id_ && ShouldRouteToFstMojoEngine(*active_engine_id_)) {
+    if (remote_to_engine_.is_bound()) {
+      remote_to_engine_->OnBlur();
+    }
   } else {
     ime_base_observer_->OnBlur(context_id);
   }
@@ -289,15 +321,18 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey()),
       ModifierStateFromEvent(event));
 
-  if (ShouldUseRuleBasedMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
+  if (ShouldRouteToRuleBasedEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(
         std::move(key_event),
         base::BindOnce(&ImeObserver::OnRuleBasedKeyEventResponse,
                        base::Unretained(this), base::Time::Now(),
                        std::move(callback)));
-  } else if (ShouldUseFstMojoEngine(engine_id) &&
-             remote_to_engine_.is_bound()) {
-    remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
+  } else if (ShouldRouteToFstMojoEngine(engine_id)) {
+    if (remote_to_engine_.is_bound()) {
+      remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
+    } else {
+      std::move(callback).Run(false);
+    }
   } else {
     ime_base_observer_->OnKeyEvent(engine_id, event, std::move(callback));
   }
@@ -305,11 +340,12 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
 
 void NativeInputMethodEngine::ImeObserver::OnReset(
     const std::string& engine_id) {
-  if (remote_to_engine_.is_bound() && ShouldUseRuleBasedMojoEngine(engine_id)) {
+  if (remote_to_engine_.is_bound() && ShouldRouteToRuleBasedEngine(engine_id)) {
     remote_to_engine_->ResetForRulebased();
-  } else if (remote_to_engine_.is_bound() &&
-             ShouldUseFstMojoEngine(engine_id)) {
-    remote_to_engine_->OnCompositionCanceled();
+  } else if (ShouldRouteToFstMojoEngine(engine_id)) {
+    if (remote_to_engine_.is_bound()) {
+      remote_to_engine_->OnCompositionCanceled();
+    }
   } else {
     ime_base_observer_->OnReset(engine_id);
   }
@@ -317,7 +353,7 @@ void NativeInputMethodEngine::ImeObserver::OnReset(
 
 void NativeInputMethodEngine::ImeObserver::OnDeactivated(
     const std::string& engine_id) {
-  if (ShouldUseRuleBasedMojoEngine(engine_id)) {
+  if (ShouldRouteToRuleBasedEngine(engine_id)) {
     remote_to_engine_.reset();
   }
   ime_base_observer_->OnDeactivated(engine_id);
@@ -341,12 +377,14 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
                                                    anchor_pos);
   }
   autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
-  if (ShouldUseFstMojoEngine(engine_id) && remote_to_engine_.is_bound()) {
-    auto selection = ime::mojom::SelectionRange::New();
-    selection->anchor = anchor_pos;
-    selection->focus = cursor_pos;
-    remote_to_engine_->OnSurroundingTextChanged(
-        base::UTF16ToUTF8(text), offset_pos, std::move(selection));
+  if (ShouldRouteToFstMojoEngine(engine_id)) {
+    if (remote_to_engine_.is_bound()) {
+      auto selection = ime::mojom::SelectionRange::New();
+      selection->anchor = anchor_pos;
+      selection->focus = cursor_pos;
+      remote_to_engine_->OnSurroundingTextChanged(
+          base::UTF16ToUTF8(text), offset_pos, std::move(selection));
+    }
   } else {
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
                                                  anchor_pos, offset_pos);
@@ -521,6 +559,10 @@ void NativeInputMethodEngine::ImeObserver::OnRuleBasedKeyEventResponse(
     }
   }
   std::move(callback).Run(response->result);
+}
+
+void NativeInputMethodEngine::OnInputMethodPrefsChanged() {
+  Enable(GetActiveComponentId());
 }
 
 }  // namespace chromeos

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/chromeos/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/services/ime/mock_input_channel.h"
 #include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
@@ -35,6 +36,16 @@ using testing::NiceMock;
 using testing::StrictMock;
 
 constexpr char kEngineIdUs[] = "xkb:us::eng";
+
+void SetPhysicalTypingAutocorrectEnabled(TestingProfile& profile,
+                                         bool enabled) {
+  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  input_method_setting.SetPath(
+      std::string(kEngineIdUs) + ".physicalKeyboardAutoCorrectionLevel",
+      base::Value(enabled ? 1 : 0));
+  profile.GetPrefs()->Set(prefs::kLanguageInputMethodSpecificSettings,
+                          input_method_setting);
+}
 
 class TestInputEngineManager : public ime::mojom::InputEngineManager {
  public:
@@ -107,12 +118,66 @@ class NativeInputMethodEngineTest : public ::testing::Test {
       keyboard_controller_client_test_helper_;
 };
 
-TEST_F(NativeInputMethodEngineTest, EnableCallsRightMojoFunctions) {
+TEST_F(NativeInputMethodEngineTest, DoesNotLaunchImeServiceIfAutocorrectIsOff) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
+
   testing::StrictMock<ime::MockInputChannel> mock_input_channel;
   input_method::InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_channel));
   NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdUs);
+  EXPECT_FALSE(engine.IsConnectedForTesting());
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
   TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  engine.Enable(kEngineIdUs);
+  EXPECT_TRUE(engine.IsConnectedForTesting());
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
+  TestingProfile testing_profile;
+  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+  engine.Enable(kEngineIdUs);
+
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+  EXPECT_TRUE(engine.IsConnectedForTesting());
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, false);
+  EXPECT_FALSE(engine.IsConnectedForTesting());
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest, EnableCallsRightMojoFunctions) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel));
+  NativeInputMethodEngine engine;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 
@@ -125,11 +190,13 @@ TEST_F(NativeInputMethodEngineTest, EnableCallsRightMojoFunctions) {
 }
 
 TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
   testing::StrictMock<ime::MockInputChannel> mock_input_channel;
   input_method::InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_channel));
   NativeInputMethodEngine engine;
-  TestingProfile testing_profile;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
 
@@ -155,12 +222,14 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
 }
 
 TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
   testing::NiceMock<ime::MockInputChannel> mock_input_channel;
   mojo::Remote<ime::mojom::InputChannel> remote;
   input_method::InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_channel, &remote));
   NativeInputMethodEngine engine;
-  TestingProfile testing_profile;
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
   ui::IMEEngineHandlerInterface::InputContext input_context(
