@@ -624,29 +624,6 @@
             ]
         }
     ],
-    "AppCacheCorruptionRecovery": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AppCacheCorruptionRecovery",
-                    "enable_features": [
-                        "AppCacheCorruptionRecovery"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppListLaunchRecorder": [
         {
             "platforms": [
