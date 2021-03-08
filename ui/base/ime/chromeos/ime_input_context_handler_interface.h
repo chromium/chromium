@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include <string>
 #include "base/component_export.h"
+#include "base/strings/string16.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -21,11 +21,13 @@ struct SurroundingTextInfo {
   gfx::Range selection_range;
 };
 
+// All strings related to IME operations should be UTF-16 encoded and all
+// indices/ranges relative to those strings should be UTF-16 code units.
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
  public:
   // Called when the engine commit a text.
   virtual void CommitText(
-      const std::string& text,
+      const base::string16& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) = 0;
 
   // Called when the engine changes the composition range.

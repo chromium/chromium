@@ -149,7 +149,9 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Commit the specified text to the specified context.  Fails if the context
   // is not focused.
-  bool CommitText(int context_id, const char* text, std::string* error);
+  bool CommitText(int context_id,
+                  const base::string16& text,
+                  std::string* error);
 
   // Notifies InputContextHandler to commit any composition text.
   // Set |reset_engine| to false if the event was from the extension.
@@ -287,7 +289,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Notifies InputContextHanlder to commit |text|.
   virtual void CommitTextToInputContext(int context_id,
-                                        const std::string& text) = 0;
+                                        const base::string16& text) = 0;
 
   // Notifies InputContextHandler to delete surrounding text.
   void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
@@ -330,7 +332,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   std::vector<gfx::Rect> composition_bounds_;
 
   // The text to be committed from calling input.ime.commitText API.
-  std::string text_;
+  base::string16 text_;
   bool commit_text_changed_;
 
   // Indicates whether the IME extension is currently handling a physical key

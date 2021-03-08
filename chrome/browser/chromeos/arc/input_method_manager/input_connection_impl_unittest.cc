@@ -228,13 +228,13 @@ TEST_F(InputConnectionImplTest, CommitText) {
   engine()->FocusIn(context());
 
   context_handler()->Reset();
-  connection->CommitText(base::ASCIIToUTF16("text"), 1);
+  connection->CommitText(u"text", 1);
   EXPECT_EQ(1, context_handler()->commit_text_call_count());
-  EXPECT_EQ("text", context_handler()->last_commit_text());
+  EXPECT_EQ(u"text", context_handler()->last_commit_text());
 
   // Calling Commit() with '\n' invokes SendKeyEvent.
   context_handler()->Reset();
-  connection->CommitText(base::ASCIIToUTF16("\n"), 1);
+  connection->CommitText(u"\n", 1);
   EXPECT_EQ(0, context_handler()->commit_text_call_count());
   const std::vector<ui::KeyEvent>& sent_key_events =
       context_handler()->sent_key_events();
@@ -269,14 +269,13 @@ TEST_F(InputConnectionImplTest, FinishComposingText) {
   // If there is composing text, FinishComposingText() calls CommitText() with
   // the text.
   context_handler()->Reset();
-  connection->SetComposingText(base::ASCIIToUTF16("composing"), 0,
-                               base::nullopt);
+  connection->SetComposingText(u"composing", 0, base::nullopt);
   client()->SetText("composing");
   client()->SetCompositionRange(gfx::Range(0, 9));
   EXPECT_EQ(0, context_handler()->commit_text_call_count());
   connection->FinishComposingText();
   EXPECT_EQ(1, context_handler()->commit_text_call_count());
-  EXPECT_EQ("composing", context_handler()->last_commit_text());
+  EXPECT_EQ(u"composing", context_handler()->last_commit_text());
 
   client()->SetCompositionRange(gfx::Range(0, 0));
   connection->FinishComposingText();
@@ -286,7 +285,7 @@ TEST_F(InputConnectionImplTest, FinishComposingText) {
 }
 
 TEST_F(InputConnectionImplTest, SetComposingText) {
-  const base::string16 text = base::ASCIIToUTF16("text");
+  const base::string16 text = u"text";
   auto connection = CreateNewConnection(1);
   engine()->FocusIn(context());
 
@@ -303,7 +302,7 @@ TEST_F(InputConnectionImplTest, SetComposingText) {
   connection->CommitText(text, 0);
   EXPECT_EQ(2, context_handler()->update_preedit_text_call_count());
   EXPECT_EQ(
-      base::ASCIIToUTF16(""),
+      u"",
       context_handler()->last_update_composition_arg().composition_text.text);
   EXPECT_EQ(1, context_handler()->commit_text_call_count());
 
@@ -407,10 +406,10 @@ TEST_F(InputConnectionImplTest, InputContextHandlerIsNull) {
   auto connection = CreateNewConnection(1);
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
 
-  connection->CommitText(base::ASCIIToUTF16("text"), 1);
+  connection->CommitText(u"text", 1);
   connection->DeleteSurroundingText(1, 1);
   connection->FinishComposingText();
-  connection->SetComposingText(base::ASCIIToUTF16("text"), 0, base::nullopt);
+  connection->SetComposingText(u"text", 0, base::nullopt);
   connection->SetSelection(gfx::Range(2, 4));
   connection->GetTextInputState(true);
 }

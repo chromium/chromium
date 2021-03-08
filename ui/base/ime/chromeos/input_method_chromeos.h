@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
@@ -54,7 +53,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodChromeOS
 
   // ui::IMEInputContextHandlerInterface overrides:
   void CommitText(
-      const std::string& text,
+      const base::string16& text,
       TextInputClient::InsertTextCursorBehavior cursor_behavior) override;
   bool SetCompositionRange(
       uint32_t before,

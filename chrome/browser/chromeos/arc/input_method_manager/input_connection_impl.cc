@@ -137,8 +137,7 @@ void InputConnectionImpl::CommitText(const base::string16& text,
     return;
   }
 
-  if (!ime_engine_->CommitText(input_context_id_,
-                               base::UTF16ToUTF8(text).c_str(), &error))
+  if (!ime_engine_->CommitText(input_context_id_, text, &error))
     LOG(ERROR) << "CommitText failed: error=\"" << error << "\"";
 }
 
@@ -185,9 +184,7 @@ void InputConnectionImpl::FinishComposingText() {
   client->GetTextFromRange(composition_range, &composing_text);
 
   std::string error;
-  if (!ime_engine_->CommitText(input_context_id_,
-                               base::UTF16ToUTF8(composing_text).c_str(),
-                               &error)) {
+  if (!ime_engine_->CommitText(input_context_id_, composing_text, &error)) {
     LOG(ERROR) << "FinishComposingText: CommitText() failed, error=\"" << error
                << "\"";
   }

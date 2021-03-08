@@ -500,7 +500,8 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   std::unique_ptr<CommitText::Params> parent_params(
       CommitText::Params::Create(*args_));
   const CommitText::Params::Parameters& params = parent_params->parameters;
-  if (!engine->CommitText(params.context_id, params.text.c_str(), &error)) {
+  if (!engine->CommitText(params.context_id, base::UTF8ToUTF16(params.text),
+                          &error)) {
     std::unique_ptr<base::ListValue> results =
         std::make_unique<base::ListValue>();
     results->Append(std::make_unique<base::Value>(false));

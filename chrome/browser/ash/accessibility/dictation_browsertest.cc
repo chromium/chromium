@@ -75,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEnds) {
 
   SendSpeechResult(kFinalSpeechResult, true /* is_final */);
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
@@ -95,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
 
   SendSpeechResult(kFinalSpeechResult, true /* is_final */);
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
@@ -110,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
 
   manager->ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
@@ -127,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
 
   manager->ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
 }
 
 IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
@@ -136,7 +140,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   SendSpeechResult(kFirstSpeechResult, true /* is_final */);
 
   // Speech goes to the default IMEInputContextHandler.
-  EXPECT_EQ(kFirstSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFirstSpeechResult),
+            input_context_handler_->last_commit_text());
 
   // Simulate a remote app instantiating a new IMEInputContextHandler, like the
   // keyboard shortcut viewer app creating a second InputMethodChromeOS.
@@ -148,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   SendSpeechResult(kSecondSpeechResult, true /* is_final */);
 
   // Speech goes to the new IMEInputContextHandler.
-  EXPECT_EQ(kSecondSpeechResult, input_context_handler2.last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kSecondSpeechResult),
+            input_context_handler2.last_commit_text());
 
   ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
 }
@@ -165,7 +171,8 @@ IN_PROC_BROWSER_TEST_F(DictationTest, ChangeInputField) {
 
   // Check that dictation has turned off.
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
-  EXPECT_EQ(kFinalSpeechResult, input_context_handler_->last_commit_text());
+  EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
+            input_context_handler_->last_commit_text());
 }
 
 }  // namespace ash

@@ -227,9 +227,8 @@ void AutocorrectManager::UndoAutocorrect() {
   // Insert the text before the cursor - now there should be the correct text
   // and the cursor position will not have changed.
   input_context->CommitText(
-      (base::UTF16ToUTF8(
-           surrounding_text.surrounding_text.substr(0, range.start())) +
-       original_text_),
+      surrounding_text.surrounding_text.substr(0, range.start()) +
+          base::UTF8ToUTF16(original_text_),
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);

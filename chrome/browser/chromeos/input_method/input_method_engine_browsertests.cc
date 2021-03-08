@@ -504,7 +504,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     ASSERT_TRUE(content::ExecuteScript(host->host_contents(),
                                        commit_text_test_script));
     EXPECT_EQ(1, mock_input_context->commit_text_call_count());
-    EXPECT_EQ("COMMIT_TEXT", mock_input_context->last_commit_text());
+    EXPECT_EQ(base::ASCIIToUTF16("COMMIT_TEXT"),
+              mock_input_context->last_commit_text());
   }
   {
     SCOPED_TRACE("sendKeyEvents test");
@@ -1302,7 +1303,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(
         kIdentityIMEID, false /* show_message */);
     EXPECT_EQ(1, mock_input_context->commit_text_call_count());
-    EXPECT_EQ("us", mock_input_context->last_commit_text());
+    EXPECT_EQ(base::ASCIIToUTF16("us"), mock_input_context->last_commit_text());
 
     // Should not call CommitText anymore.
     InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(

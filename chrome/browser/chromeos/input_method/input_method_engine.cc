@@ -174,7 +174,7 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
     return false;
   }
 
-  CommitText(context_id, base::UTF16ToUTF8(suggestion).c_str(), error);
+  CommitText(context_id, suggestion, error);
 
   IMEAssistiveWindowHandlerInterface* aw_handler =
       ui::IMEBridge::Get()->GetAssistiveWindowHandler();
@@ -367,8 +367,7 @@ bool InputMethodEngine::AcceptSuggestion(int context_id, std::string* error) {
       DeleteSurroundingText(context_id_, -confirmed_length, confirmed_length,
                             error);
     }
-    CommitText(context_id_, (base::UTF16ToUTF8(suggestion_text)).c_str(),
-               error);
+    CommitText(context_id_, suggestion_text, error);
     aw_handler->HideSuggestion();
   }
   return true;
@@ -495,7 +494,7 @@ bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {
 }
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,
-                                                 const std::string& text) {
+                                                 const base::string16& text) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
@@ -508,8 +507,7 @@ void InputMethodEngine::CommitTextToInputContext(int context_id,
 
   if (had_composition_text) {
     // Records histograms for committed characters with composition text.
-    base::string16 wtext = base::UTF8ToUTF16(text);
-    UMA_HISTOGRAM_CUSTOM_COUNTS("InputMethod.CommitLength", wtext.length(), 1,
+    UMA_HISTOGRAM_CUSTOM_COUNTS("InputMethod.CommitLength", text.length(), 1,
                                 25, 25);
   }
 }

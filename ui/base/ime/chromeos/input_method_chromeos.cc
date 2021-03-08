@@ -650,7 +650,7 @@ bool InputMethodChromeOS::HasInputMethodResult() const {
 }
 
 void InputMethodChromeOS::CommitText(
-    const std::string& text,
+    const base::string16& text,
     TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   if (text.empty())
     return;
@@ -661,8 +661,7 @@ void InputMethodChromeOS::CommitText(
   if (!GetTextInputClient())
     return;
 
-  const base::string16 utf16_text = base::UTF8ToUTF16(text);
-  if (utf16_text.empty())
+  if (text.empty())
     return;
 
   if (!CanComposeInline()) {
@@ -672,17 +671,17 @@ void InputMethodChromeOS::CommitText(
 
   // Append the text to the buffer, because commit signal might be fired
   // multiple times when processing a key event.
-  result_text_.insert(result_text_cursor_, utf16_text);
+  result_text_.insert(result_text_cursor_, text);
   if (cursor_behavior ==
       TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText) {
-    result_text_cursor_ += utf16_text.length();
+    result_text_cursor_ += text.length();
   }
 
   // If we are not handling key event, do not bother sending text result if the
   // focused text input client does not support text input.
   if (!handling_key_event_ && !IsTextInputTypeNone()) {
     if (!SendFakeProcessKeyEvent(true))
-      GetTextInputClient()->InsertText(utf16_text, cursor_behavior);
+      GetTextInputClient()->InsertText(text, cursor_behavior);
     SendFakeProcessKeyEvent(false);
     result_text_.clear();
     result_text_cursor_ = 0;
@@ -793,10 +792,9 @@ bool InputMethodChromeOS::ExecuteCharacterComposer(const ui::KeyEvent& event) {
   CompositionText preedit;
   preedit.text = character_composer_.preedit_string();
   UpdateCompositionText(preedit, preedit.text.size(), !preedit.text.empty());
-  std::string commit_text =
-      base::UTF16ToUTF8(character_composer_.composed_character());
+  base::string16 commit_text = character_composer_.composed_character();
   if (!commit_text.empty()) {
-    CommitText(commit_text,
+    CommitText(std::move(commit_text),
                TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   }
   return true;

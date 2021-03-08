@@ -135,10 +135,11 @@ void Dictation::DictationOff() {
     audio::SoundsManager::Get()->Play(static_cast<int>(Sound::kDictationEnd));
 
     ui::IMEInputContextHandlerInterface* input_context = GetInputContext();
-    if (input_context)
+    if (input_context) {
       input_context->CommitText(
-          base::UTF16ToUTF8(composition_->text),
+          composition_->text,
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    }
 
     composition_->text = base::string16();
   } else {

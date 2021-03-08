@@ -202,7 +202,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
 
   void CommitTextToInputContext(int context_id,
-                                const std::string& text) override;
+                                const base::string16& text) override;
 
   bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) override;
 

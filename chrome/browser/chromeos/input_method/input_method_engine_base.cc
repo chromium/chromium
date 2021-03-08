@@ -50,7 +50,6 @@ InputMethodEngineBase::InputMethodEngineBase()
       next_context_id_(1),
       profile_(nullptr),
       composition_changed_(false),
-      text_(""),
       commit_text_changed_(false),
       handling_key_event_(false),
       pref_change_registrar_(nullptr) {}
@@ -234,7 +233,7 @@ bool InputMethodEngineBase::ClearComposition(int context_id,
 }
 
 bool InputMethodEngineBase::CommitText(int context_id,
-                                       const char* text,
+                                       const base::string16& text,
                                        std::string* error) {
   if (!IsActive()) {
     // TODO: Commit the text anyways.
@@ -248,7 +247,7 @@ bool InputMethodEngineBase::CommitText(int context_id,
     return false;
   }
 
-  CommitTextToInputContext(context_id, std::string(text));
+  CommitTextToInputContext(context_id, text);
   return true;
 }
 
@@ -556,7 +555,7 @@ void InputMethodEngineBase::KeyEventHandled(const std::string& extension_id,
   // and setComposition calls.
   if (commit_text_changed_) {
     CommitTextToInputContext(context_id_, text_);
-    text_ = "";
+    text_.clear();
     commit_text_changed_ = false;
   }
 
