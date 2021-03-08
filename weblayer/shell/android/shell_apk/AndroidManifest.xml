@@ -54,21 +54,9 @@
           </intent-filter>
       </activity>
 
-      <!-- AR (Augmented Reality) support. -->
-      <meta-data android:name="com.google.ar.core"
-                 android:value="optional" />
-      <!-- This needs to be in the application's manifest because arcore looks for it
-           there. Chrome achieves this by including com_google_ar_core_java, merging
-           the arcore manifest which contains this value, however it's added manually
-           here to avoid pulling that library into the WebLayer client. The value used
-           here is not very important because WebLayer manually checks the apk version
-           is sufficient in ArCoreVersionUtils. -->
-      <meta-data android:name="com.google.ar.core.min_apk_version"
-                 android:value="1" />
-
       {% if weblayer_package is defined %}
-      <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
-                 android:value="{{ weblayer_package }}"/>
-      {% endif %}
+            <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
+                       android:value="{{ weblayer_package }}"/>
+        {% endif %}
     </application>
 </manifest>

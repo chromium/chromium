@@ -158,10 +158,6 @@
 #include "weblayer/browser/captive_portal_service_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_ARCORE)
-#include "weblayer/browser/xr/xr_integration_client_impl.h"
-#endif
-
 namespace switches {
 // Specifies a list of hosts for whom we bypass proxy settings and use direct
 // connections. Ignored if --proxy-auto-detect or --no-proxy-server are also
@@ -1111,18 +1107,6 @@ content::SpeechRecognitionManagerDelegate*
 ContentBrowserClientImpl::CreateSpeechRecognitionManagerDelegate() {
   return new WebLayerSpeechRecognitionManagerDelegate();
 }
-
-#if BUILDFLAG(ENABLE_ARCORE)
-content::XrIntegrationClient*
-ContentBrowserClientImpl::GetXrIntegrationClient() {
-  if (!XrIntegrationClientImpl::IsEnabled())
-    return nullptr;
-
-  if (!xr_integration_client_)
-    xr_integration_client_ = std::make_unique<XrIntegrationClientImpl>();
-  return xr_integration_client_.get();
-}
-#endif  // BUILDFLAG(ENABLE_ARCORE)
 
 ukm::UkmService* ContentBrowserClientImpl::GetUkmService() {
 #if defined(OS_ANDROID)

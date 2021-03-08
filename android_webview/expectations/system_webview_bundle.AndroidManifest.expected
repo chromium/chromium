@@ -7,12 +7,11 @@
     tools:ignore="MissingLeanbackLauncher"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-  <queries>  # DIFF-ANCHOR: 5a71ec1f
+  <queries>  # DIFF-ANCHOR: 0c3a615d
     <intent>  # DIFF-ANCHOR: 28c960ba
       <action android:name="android.media.browse.MediaBrowserService"/>
     </intent>  # DIFF-ANCHOR: 28c960ba
-    <package android:name="com.google.ar.core"/>
-  </queries>  # DIFF-ANCHOR: 5a71ec1f
+  </queries>  # DIFF-ANCHOR: 0c3a615d
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -31,14 +30,6 @@
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
         android:theme="@android:style/Theme.Translucent.NoTitleBar">
     </activity>  # DIFF-ANCHOR: ea1a94af
-    <activity  # DIFF-ANCHOR: 28dc9019
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:launchMode="singleTop"
-        android:name="com.google.ar.core.InstallActivity"
-        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
-    </activity>  # DIFF-ANCHOR: 28dc9019
     <activity  # DIFF-ANCHOR: a4438884
         android:exported="true"
         android:icon="@drawable/icon_webview"
@@ -75,7 +66,6 @@
     </activity-alias>  # DIFF-ANCHOR: b7cc06e9
     <meta-data android:name="$PACKAGE.WebViewLibrary" android:value="libwebviewchromium.so"/>
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
-    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="202940000"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="0"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
     <provider  # DIFF-ANCHOR: a5e78e63

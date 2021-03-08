@@ -21,7 +21,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"

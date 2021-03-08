@@ -12,7 +12,6 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/permission_type.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/permissions/geolocation_permission_context_delegate.h"
@@ -21,10 +20,6 @@
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #else
 #include "components/permissions/contexts/geolocation_permission_context.h"
-#endif
-
-#if BUILDFLAG(ENABLE_ARCORE)
-#include "components/permissions/contexts/webxr_permission_context.h"
 #endif
 
 namespace weblayer {
@@ -93,12 +88,6 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
           blink::mojom::FeaturePolicyFeature::kCamera);
   permission_contexts[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(browser_context);
-
-#if BUILDFLAG(ENABLE_ARCORE)
-  permission_contexts[ContentSettingsType::AR] =
-      std::make_unique<permissions::WebXrPermissionContext>(
-          browser_context, ContentSettingsType::AR);
-#endif
 
   // For now, all requests are denied. As features are added, their permission
   // contexts can be added here instead of DeniedPermissionContext.

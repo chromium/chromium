@@ -4,13 +4,11 @@
 
 import("//android_webview/variables.gni")
 import("//base/android/resource_exclusions.gni")
-import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
 import("//build/util/version.gni")
 import("//chrome/android/trichrome.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
 import("//weblayer/weblayer_resource_exclusions.gni")
@@ -153,15 +151,6 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    _libarcore_dir = get_label_info(
-                         "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                         "target_out_dir") + "/com_google_ar_core_java/jni"
-    not_needed([ "_libarcore_dir" ])
-
-    _include_arcore =
-        webview_includes_weblayer && enable_arcore && !_exclude_weblayer_java &&
-        (_include_secondary_support || _include_primary_support)
-
     if (_include_primary_support) {
       deps += [
         "//android_webview:webview_primary_abi_assets",
@@ -172,10 +161,6 @@ template("system_webview_apk_or_module_tmpl") {
         deps += [ "//base/android/linker:chromium_android_linker" ]
         loadable_modules +=
             [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
-      }
-      if (_include_arcore) {
-        loadable_modules +=
-            [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
       }
     }
     if (_include_secondary_support) {
@@ -192,14 +177,6 @@ template("system_webview_apk_or_module_tmpl") {
         secondary_abi_loadable_modules +=
             [ "$_secondary_out_dir/libchromium_android_linker$shlib_extension" ]
       }
-      if (_include_arcore) {
-        secondary_abi_loadable_modules +=
-            [ "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so" ]
-      }
-    }
-
-    if (_include_arcore) {
-      deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core__unpack_aar" ]
     }
 
     if (!_use_trichrome_library || android_64bit_target_cpu) {

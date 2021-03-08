@@ -3,11 +3,9 @@
 # found in the LICENSE file.
 
 import("//android_webview/system_webview_apk_tmpl.gni")
-import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//third_party/icu/config.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 import("//weblayer/variables.gni")
@@ -253,17 +251,6 @@ android_apk("weblayer_support_apk") {
   deps += [ "//base/android/linker:chromium_android_linker" ]
   loadable_modules =
       [ "$root_out_dir/libchromium_android_linker$shlib_extension" ]
-
-  if (enable_arcore) {
-    _libarcore_dir = get_label_info(
-                         "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
-                         "target_out_dir") + "/com_google_ar_core_java/jni"
-    loadable_modules +=
-        [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
-    deps += [
-      "//third_party/arcore-android-sdk-client:com_google_ar_core__unpack_aar",
-    ]
-  }
 
   apk_name = "WebLayerSupport"
   android_manifest = weblayer_support_manifest
