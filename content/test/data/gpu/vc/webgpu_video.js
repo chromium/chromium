@@ -86,8 +86,9 @@ function createVertexBuffer(device, videos, videoRows, videoColumns) {
   // The small video at the corner is included in the vertex buffer.
   const rectVerts = new Float32Array(videos.length * 24);
 
-  let w = 2.0 / videoColumns;
-  let h = 2.0 / videoRows;
+  const maxColRow = Math.max(videoColumns, videoRows);
+  let w = 2.0 / maxColRow;
+  let h = 2.0 / maxColRow;
   for (let row = 0; row < videoRows; ++row) {
     for (let column = 0; column < videoColumns; ++column) {
       const array_index = (row * videoColumns + column) * 24;
@@ -139,8 +140,9 @@ function createVertexBufferForIcons(device, videos, videoRows, videoColumns) {
   // Therefore, each video needs 12 floats.
   const rectVerts = new Float32Array(videos.length * 12);
 
-  let w = 2.0 / videoColumns;
-  let h = 2.0 / videoRows;
+  const maxColRow = Math.max(videoColumns, videoRows);
+  let w = 2.0 / maxColRow;
+  let h = 2.0 / maxColRow;
   let wIcon = w / 10.0;
   let hIcon = h / 10.0;
 
@@ -257,7 +259,7 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     colorAttachments: [
       {
         attachment: undefined, // Assigned later
-        loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+        loadValue: { r: 1.0, g: 1.0, b: 1.0, a: 1.0 },
       },
     ],
   };
