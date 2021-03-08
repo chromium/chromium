@@ -30,12 +30,6 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 + (void)signinWithFakeIdentity:(FakeChromeIdentity*)fakeIdentity
                     enableSync:(BOOL)enableSync;
 
-// DEPRECATED.
-+ (void)signOut;
-
-// DEPRECATED.
-+ (void)signOutAndClearDataFromDevice;
-
 // Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button, and then validated the confirmation dialog
 // according to |confirmation|.

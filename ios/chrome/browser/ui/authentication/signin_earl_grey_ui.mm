@@ -84,14 +84,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-+ (void)signOut {
-  [self signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
-}
-
-+ (void)signOutAndClearDataFromDevice {
-  [self signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
-}
-
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
   int confirmationLabelID = 0;
   switch (confirmation) {
