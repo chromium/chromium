@@ -23,7 +23,7 @@ namespace sharing {
 class MdnsResponderAdapter : public webrtc::MdnsResponderInterface {
  public:
   explicit MdnsResponderAdapter(
-      const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder);
+      mojo::Remote<network::mojom::MdnsResponder> mdns_responder);
   MdnsResponderAdapter(const MdnsResponderAdapter&) = delete;
   MdnsResponderAdapter& operator=(const MdnsResponderAdapter&) = delete;
   ~MdnsResponderAdapter() override;
@@ -35,7 +35,7 @@ class MdnsResponderAdapter : public webrtc::MdnsResponderInterface {
                             NameRemovedCallback callback) override;
 
  private:
-  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
 };
 
 }  // namespace sharing

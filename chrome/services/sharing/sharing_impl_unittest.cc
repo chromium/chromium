@@ -30,13 +30,14 @@ class SharingImplTest : public testing::Test {
         std::make_unique<SharingImpl>(remote_.BindNewPipeAndPassReceiver(),
                                       /*io_task_runner=*/nullptr);
 
-    Connect(connections_.BindNewPipeAndPassReceiver(),
-            decoder_.BindNewPipeAndPassReceiver(),
-            bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
-            webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
-            webrtc_dependencies_.mdns_responder_.BindNewPipeAndPassRemote(),
-            webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-            webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
+    Connect(
+        connections_.BindNewPipeAndPassReceiver(),
+        decoder_.BindNewPipeAndPassReceiver(),
+        bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
 
     ASSERT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
     ASSERT_TRUE(connections_.is_connected());
@@ -51,13 +52,15 @@ class SharingImplTest : public testing::Test {
           decoder_receiver,
       mojo::PendingRemote<bluetooth::mojom::Adapter> bluetooth_adapter,
       mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
-      mojo::PendingRemote<network::mojom::MdnsResponder> mdns_responder,
+      mojo::PendingRemote<
+          location::nearby::connections::mojom::MdnsResponderFactory>
+          mdns_responder_factory,
       mojo::PendingRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher,
       mojo::PendingRemote<sharing::mojom::WebRtcSignalingMessenger>
           webrtc_signaling_messenger) {
     auto webrtc_dependencies =
         location::nearby::connections::mojom::WebRtcDependencies::New(
-            std::move(socket_manager), std::move(mdns_responder),
+            std::move(socket_manager), std::move(mdns_responder_factory),
             std::move(ice_config_fetcher),
             std::move(webrtc_signaling_messenger));
     auto dependencies =
@@ -116,8 +119,9 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcSignalingMessengerDisconnects) {
   EnsureDependenciesAreDisconnected();
 }
 
-TEST_F(SharingImplTest, NearbyConnections_WebRtcMdnsResponderDisconnects) {
-  webrtc_dependencies_.mdns_responder_.reset();
+TEST_F(SharingImplTest,
+       NearbyConnections_WebRtcMdnsResponderFactoryDisconnects) {
+  webrtc_dependencies_.mdns_responder_factory_.reset();
   EnsureDependenciesAreDisconnected();
 }
 

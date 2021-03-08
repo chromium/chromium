@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/single_thread_task_runner.h"
+#include "chromeos/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/services/nearby/public/mojom/webrtc.mojom.h"
 #include "chromeos/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -33,7 +34,9 @@ class WebRtcMedium : public api::WebRtcMedium {
   WebRtcMedium(
       const mojo::SharedRemote<network::mojom::P2PSocketManager>&
           socket_manager,
-      const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder,
+      const mojo::SharedRemote<
+          location::nearby::connections::mojom::MdnsResponderFactory>&
+          mdns_responder_factory,
       const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
           ice_config_fetcher,
       const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
@@ -55,10 +58,12 @@ class WebRtcMedium : public api::WebRtcMedium {
   void OnIceServersFetched(
       webrtc::PeerConnectionObserver* observer,
       PeerConnectionCallback callback,
+      mojo::Remote<network::mojom::MdnsResponder> mdns_responder,
       std::vector<sharing::mojom::IceServerPtr> ice_servers);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
-  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+      mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;

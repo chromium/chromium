@@ -261,19 +261,21 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
 
 WebRtcMedium::WebRtcMedium(
     const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
-    const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder,
+    const mojo::SharedRemote<
+        location::nearby::connections::mojom::MdnsResponderFactory>&
+        mdns_responder_factory,
     const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
         ice_config_fetcher,
     const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
         webrtc_signaling_messenger,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : p2p_socket_manager_(socket_manager),
-      mdns_responder_(mdns_responder),
+      mdns_responder_factory_(mdns_responder_factory),
       ice_config_fetcher_(ice_config_fetcher),
       webrtc_signaling_messenger_(webrtc_signaling_messenger),
       task_runner_(std::move(task_runner)) {
   DCHECK(p2p_socket_manager_.is_bound());
-  DCHECK(mdns_responder_.is_bound());
+  DCHECK(mdns_responder_factory.is_bound());
   DCHECK(ice_config_fetcher_.is_bound());
   DCHECK(webrtc_signaling_messenger_.is_bound());
 }
@@ -295,14 +297,25 @@ void WebRtcMedium::CreatePeerConnection(
 
 void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
                                    PeerConnectionCallback callback) {
+  mojo::PendingRemote<network::mojom::MdnsResponder> pending_remote;
+  mojo::PendingReceiver<network::mojom::MdnsResponder> pending_receiver(
+      pending_remote.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<network::mojom::MdnsResponder> mdns_responder{
+      std::move(pending_remote)};
+  // We don't need to wait for this call to finish (it doesn't have a callback
+  // anyways). The mojo pipe will queue up calls and dispatch as soon as the
+  // the other side is available.
+  mdns_responder_factory_->CreateMdnsResponder(std::move(pending_receiver));
+
   ice_config_fetcher_->GetIceServers(base::BindOnce(
       &WebRtcMedium::OnIceServersFetched, weak_ptr_factory_.GetWeakPtr(),
-      observer, std::move(callback)));
+      observer, std::move(callback), std::move(mdns_responder)));
 }
 
 void WebRtcMedium::OnIceServersFetched(
     webrtc::PeerConnectionObserver* observer,
     PeerConnectionCallback callback,
+    mojo::Remote<network::mojom::MdnsResponder> mdns_responder,
     std::vector<sharing::mojom::IceServerPtr> ice_servers) {
   // WebRTC is using the current thread instead of creating new threads since
   // otherwise the |network_manager| is created on current thread and destroyed
@@ -345,8 +358,8 @@ void WebRtcMedium::OnIceServersFetched(
     // connection due to the use of the shared |p2p_socket_manager_|. See
     // https://crbug.com/1142717 for more details.
     network_manager_ = std::make_unique<sharing::IpcNetworkManager>(
-        p2p_socket_manager_,
-        std::make_unique<sharing::MdnsResponderAdapter>(mdns_responder_));
+        p2p_socket_manager_, std::make_unique<sharing::MdnsResponderAdapter>(
+                                 std::move(mdns_responder)));
 
     // NOTE: IpcNetworkManager::Initialize() does not override the empty default
     // implementation so this doesn't actually do anything right now. However

@@ -188,7 +188,7 @@ class NearbyConnectionsTest : public testing::Test {
   NearbyConnectionsTest() {
     auto webrtc_dependencies = mojom::WebRtcDependencies::New(
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.mdns_responder_.BindNewPipeAndPassRemote(),
+        webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
     auto dependencies = mojom::NearbyConnectionsDependencies::New(
@@ -405,8 +405,8 @@ TEST_F(NearbyConnectionsTest, P2PSocketManagerDisconnect) {
   disconnect_run_loop_.Run();
 }
 
-TEST_F(NearbyConnectionsTest, MdnsResponderDisconnect) {
-  webrtc_dependencies_.mdns_responder_.reset();
+TEST_F(NearbyConnectionsTest, MdnsResponderFactoryDisconnect) {
+  webrtc_dependencies_.mdns_responder_factory_.reset();
   disconnect_run_loop_.Run();
 }
 
