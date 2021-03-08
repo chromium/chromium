@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/base_task_api.h"
@@ -90,6 +91,17 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   // any.
   base::Optional<proto::Any> supported_features_for_loaded_model() const {
     return supported_features_for_loaded_model_;
+  }
+  // Validates that |supported_features_for_loaded_model_| is of the same type
+  // and is parseable as |T|. Will return metadata if all checks pass.
+  template <
+      class T,
+      class = typename std::enable_if<
+          std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
+  base::Optional<T> ParsedSupportedFeaturesForLoadedModel() const {
+    if (!supported_features_for_loaded_model_)
+      return base::nullopt;
+    return ParsedAnyMetadata<T>(*supported_features_for_loaded_model_);
   }
 
  protected:

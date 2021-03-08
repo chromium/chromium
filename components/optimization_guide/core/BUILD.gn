@@ -133,6 +133,7 @@ source_set("unit_tests") {
     "optimization_guide_session_statistic_unittest.cc",
     "optimization_guide_store_unittest.cc",
     "optimization_guide_switches_unittest.cc",
+    "optimization_guide_util_unittest.cc",
     "optimization_hints_component_update_listener_unittest.cc",
     "optimization_metadata_unittest.cc",
     "prediction_model_fetcher_unittest.cc",

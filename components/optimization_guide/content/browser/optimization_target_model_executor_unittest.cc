@@ -7,6 +7,7 @@
 #include "base/path_service.h"
 #include "components/optimization_guide/content/browser/base_model_executor.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/tflite-support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -116,9 +117,10 @@ class OptimizationTargetModelExecutorTest : public testing::Test {
   void ResetModelExecutor() { model_executor_.reset(); }
 
   void PushModelFileToModelExecutor(
-      proto::OptimizationTarget optimization_target) {
+      proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata) {
     DCHECK(model_executor_);
-    model_executor_->OnModelFileUpdated(optimization_target, base::nullopt,
+    model_executor_->OnModelFileUpdated(optimization_target, model_metadata,
                                         model_file_path_);
     RunUntilIdle();
   }
@@ -152,7 +154,8 @@ TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedWrongTarget) {
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION);
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+      /*model_metadata=*/base::nullopt);
 
   EXPECT_FALSE(model_executor()->HasLoadedModel());
 }
@@ -161,7 +164,8 @@ TEST_F(OptimizationTargetModelExecutorTest, ModelFileUpdatedCorrectTarget) {
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/base::nullopt);
 
   EXPECT_TRUE(model_executor()->HasLoadedModel());
 }
@@ -187,7 +191,8 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
   CreateModelExecutor();
 
   PushModelFileToModelExecutor(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/base::nullopt);
   EXPECT_TRUE(model_executor()->HasLoadedModel());
 
   std::vector<float> input;
@@ -214,6 +219,41 @@ TEST_F(OptimizationTargetModelExecutorTest, ExecuteWithLoadedModel) {
           run_loop.get()),
       input);
   run_loop->Run();
+}
+
+TEST_F(OptimizationTargetModelExecutorTest,
+       ParsedSupportedFeaturesForLoadedModelNoMetadata) {
+  CreateModelExecutor();
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/base::nullopt);
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
+
+  EXPECT_FALSE(model_executor()
+                   ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>()
+                   .has_value());
+}
+
+TEST_F(OptimizationTargetModelExecutorTest,
+       ParsedSupportedFeaturesForLoadedModelWithMetadata) {
+  CreateModelExecutor();
+
+  proto::Any any_metadata;
+  any_metadata.set_type_url("type.googleapis.com/com.foo.Duration");
+  proto::Duration model_metadata;
+  model_metadata.set_seconds(123);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      any_metadata);
+  EXPECT_TRUE(model_executor()->HasLoadedModel());
+
+  base::Optional<proto::Duration> supported_features_for_loaded_model =
+      model_executor()
+          ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>();
+  EXPECT_TRUE(supported_features_for_loaded_model.has_value());
+  EXPECT_EQ(123, supported_features_for_loaded_model->seconds());
 }
 
 }  // namespace optimization_guide

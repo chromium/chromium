@@ -7,7 +7,7 @@
 
 #include "base/logging.h"
 #include "base/optional.h"
-#include "base/strings/string_split.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace optimization_guide {
@@ -33,29 +33,7 @@ class OptimizationMetadata {
   base::Optional<T> ParsedMetadata() const {
     if (!any_metadata_)
       return base::nullopt;
-
-    // Verify type is the same - the Any type URL should be wrapped as:
-    // "type.googleapis.com/com.foo.Name".
-    std::vector<std::string> any_type_parts =
-        base::SplitString(any_metadata_->type_url(), ".", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    if (any_type_parts.empty())
-      return base::nullopt;
-    T metadata;
-    std::vector<std::string> type_parts =
-        base::SplitString(metadata.GetTypeName(), ".", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    if (type_parts.empty())
-      return base::nullopt;
-    std::string any_type_name = any_type_parts.back();
-    std::string type_name = type_parts.back();
-    if (type_name != any_type_name)
-      return base::nullopt;
-
-    // Return metadata if parseable.
-    if (metadata.ParseFromString(any_metadata_->value()))
-      return metadata;
-    return base::nullopt;
+    return ParsedAnyMetadata<T>(*any_metadata_);
   }
   const base::Optional<proto::Any>& any_metadata() const {
     return any_metadata_;
