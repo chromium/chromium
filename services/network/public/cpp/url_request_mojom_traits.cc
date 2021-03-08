@@ -314,8 +314,6 @@ bool StructTraits<network::mojom::DataElementChunkedDataPipeDataView,
          network::DataElementChunkedDataPipe* out) {
   auto data_pipe_getter = data.TakeDataPipeGetter<
       mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>>();
-  UMA_HISTOGRAM_BOOLEAN("NetworkService.StreamingUploadDataPipeGetterValidity",
-                        data_pipe_getter.is_valid());
   *out = network::DataElementChunkedDataPipe(
       std::move(data_pipe_getter),
       network::DataElementChunkedDataPipe::ReadOnlyOnce(data.read_only_once()));

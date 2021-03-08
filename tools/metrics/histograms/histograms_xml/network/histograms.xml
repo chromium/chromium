@@ -2209,6 +2209,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NetworkService.StreamingUploadDataPipeGetterValidity"
     units="BooleanValid" expires_after="2021-03-31">
+  <obsolete>
+    Removed 03/2021
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <summary>
