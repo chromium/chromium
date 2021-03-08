@@ -194,7 +194,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
 
   ActiveScriptWrappableManager* GetActiveScriptWrappableManager() const {
-    DCHECK(active_script_wrappable_manager_);
     return active_script_wrappable_manager_;
   }
 
