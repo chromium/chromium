@@ -35,9 +35,15 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
     WARN_UNUSED_RESULT;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// Sets the |username_hash| associated with |context|.
+// Must be called only on the IO thread, once for each ResourceContext.
+void SetNSSCertDatabaseUsernameHash(content::ResourceContext* context,
+                                    const std::string& username_hash);
+
 // Enables the system key slot in the NSSCertDatabase for the user associated
 // with |context|.
-// Must be called only on the IO thread.
+// Must be called only on the IO thread. SetNSSCertDatabaseUsernameHash() must
+// already have been called on |context|.
 void EnableNSSSystemKeySlotForResourceContext(
     content::ResourceContext* context);
 #endif

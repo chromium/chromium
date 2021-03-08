@@ -10,14 +10,15 @@
 using content::BrowserThread;
 
 ProfileIODataHandle::ProfileIODataHandle(Profile* profile)
-    : io_data_(new ProfileIOData), profile_(profile), initialized_(false) {
+    : io_data_(std::make_unique<ProfileIOData>()),
+      profile_(profile),
+      initialized_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(profile);
 }
 
 ProfileIODataHandle::~ProfileIODataHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  io_data_->ShutdownOnUIThread();
 }
 
 content::ResourceContext* ProfileIODataHandle::GetResourceContext() const {

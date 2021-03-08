@@ -12,14 +12,29 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/profiles/profile_io_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/resource_context.h"
 #include "crypto/nss_util_internal.h"
 #include "net/cert/nss_cert_database_chromeos.h"
 
 namespace {
 
 void* kDatabaseManagerKey = &kDatabaseManagerKey;
+void* kUsernameHashKey = &kUsernameHashKey;
+
+class NSSUsernameHash : public base::SupportsUserData::Data {
+ public:
+  explicit NSSUsernameHash(const std::string& username_hash)
+      : username_hash_(username_hash) {}
+  NSSUsernameHash(const NSSUsernameHash&) = delete;
+  NSSUsernameHash& operator=(const NSSUsernameHash&) = delete;
+  ~NSSUsernameHash() override = default;
+
+  const std::string& username_hash() { return username_hash_; }
+
+ private:
+  const std::string username_hash_;
+};
 
 class NSSCertDatabaseChromeOSManager : public base::SupportsUserData::Data {
  public:
@@ -72,10 +87,6 @@ class NSSCertDatabaseChromeOSManager : public base::SupportsUserData::Data {
   DISALLOW_COPY_AND_ASSIGN(NSSCertDatabaseChromeOSManager);
 };
 
-std::string GetUsername(content::ResourceContext* context) {
-  return ProfileIOData::FromResourceContext(context)->username_hash();
-}
-
 net::NSSCertDatabaseChromeOS* GetNSSCertDatabaseChromeOS(
     content::ResourceContext* context,
     NSSCertDatabaseChromeOSManager::GetNSSCertDatabaseCallback callback) {
@@ -84,7 +95,14 @@ net::NSSCertDatabaseChromeOS* GetNSSCertDatabaseChromeOS(
       static_cast<NSSCertDatabaseChromeOSManager*>(
           context->GetUserData(kDatabaseManagerKey));
   if (!manager) {
-    manager = new NSSCertDatabaseChromeOSManager(GetUsername(context));
+    NSSUsernameHash* username_hash =
+        static_cast<NSSUsernameHash*>(context->GetUserData(kUsernameHashKey));
+    // |username_hash| should not be null here, but handle it just in case it
+    // is, to avoid a crash.
+    // TODO(https://cbug.com/1018972): This check will be removed as part of
+    // removing the ResourceContext dependency of this code.
+    manager = new NSSCertDatabaseChromeOSManager(
+        username_hash ? username_hash->username_hash() : std::string());
     context->SetUserData(kDatabaseManagerKey, base::WrapUnique(manager));
   }
   return manager->GetNSSCertDatabase(std::move(callback));
@@ -119,6 +137,15 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
   return GetNSSCertDatabaseChromeOS(
       context, base::BindOnce(&CallWithNSSCertDatabase, std::move(callback)));
+}
+
+void SetNSSCertDatabaseUsernameHash(content::ResourceContext* context,
+                                    const std::string& username_hash) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  DCHECK(!context->GetUserData(kUsernameHashKey));
+  context->SetUserData(kUsernameHashKey,
+                       std::make_unique<NSSUsernameHash>(username_hash));
 }
 
 void EnableNSSSystemKeySlotForResourceContext(

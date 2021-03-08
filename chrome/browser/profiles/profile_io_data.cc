@@ -169,14 +169,20 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
     crypto::InitializePrivateSoftwareSlotForChromeOSUser(username_hash);
   }
 }
+
+void EnableNSSSystemKeySlotOnIOThread(ResourceContext* resource_context,
+                                      const std::string& username_hash,
+                                      bool user_is_affiliated) {
+  SetNSSCertDatabaseUsernameHash(resource_context, username_hash);
+  if (user_is_affiliated)
+    EnableNSSSystemKeySlotForResourceContext(resource_context);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
 void ProfileIOData::InitializeOnUIThread(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  auto params = std::make_unique<ProfileParams>();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
@@ -185,49 +191,47 @@ void ProfileIOData::InitializeOnUIThread(Profile* profile) {
   // Getters for a user's NSS slots always return a null slot if the user's
   // username hash is empty, even when the NSS is not initialized for the
   // user.
+  std::string username_hash;
+  bool user_is_affiliated = false;
   if (user && !user->username_hash().empty()) {
-    params->username_hash = user->username_hash();
-    DCHECK(!params->username_hash.empty());
+    username_hash = user->username_hash();
+    DCHECK(!username_hash.empty());
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&StartNSSInitOnIOThread, user->GetAccountId(),
-                                  user->username_hash(), profile->GetPath()));
+                                  username_hash, profile->GetPath()));
 
-    if (user->IsAffiliated()) {
-      params->user_is_affiliated = true;
-    }
+    user_is_affiliated = user->IsAffiliated();
   }
-#endif
-
-  profile_params_ = std::move(params);
 
   // We need to make sure that content initializes its own data structures that
   // are associated with each ResourceContext because we might post this
   // object to the IO thread after this function.
   BrowserContext::EnsureResourceContextInitialized(profile);
 
+  DCHECK(!(username_hash.empty() && user_is_affiliated));
+
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ProfileIOData::Init, base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&EnableNSSSystemKeySlotOnIOThread,
+                                profile->GetResourceContext(), username_hash,
+                                user_is_affiliated));
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Make sure the ResourceContext is initialized.  It's unclear if this is
+  // still needed.
+  BrowserContext::EnsureResourceContextInitialized(profile);
+#endif
 }
 
-ProfileIOData::ProfileParams::ProfileParams() = default;
-
-ProfileIOData::ProfileParams::~ProfileParams() = default;
-
 ProfileIOData::ProfileIOData()
-    : initialized_(false),
-      resource_context_(new ResourceContext(this)) {
+    : resource_context_(std::make_unique<content::ResourceContext>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 ProfileIOData::~ProfileIOData() {
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO))
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-}
-
-// static
-ProfileIOData* ProfileIOData::FromResourceContext(
-    content::ResourceContext* rc) {
-  return (static_cast<ResourceContext*>(rc))->io_data_;
+  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(resource_context_));
+  }
 }
 
 // static
@@ -285,40 +289,4 @@ bool ProfileIOData::IsHandledURL(const GURL& url) {
 
 content::ResourceContext* ProfileIOData::GetResourceContext() const {
   return resource_context_.get();
-}
-
-ProfileIOData::ResourceContext::ResourceContext(ProfileIOData* io_data)
-    : io_data_(io_data) {
-  DCHECK(io_data);
-}
-
-ProfileIOData::ResourceContext::~ResourceContext() {}
-
-void ProfileIOData::Init() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!initialized_);
-  DCHECK(profile_params_.get());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  username_hash_ = profile_params_->username_hash;
-  // If we're using the system slot for certificate management, we also must
-  // have access to the user's slots.
-  DCHECK(!(username_hash_.empty() && profile_params_->user_is_affiliated));
-  // Use the device-wide system key slot only if the user is affiliated on
-  // the device.
-  if (profile_params_->user_is_affiliated) {
-    EnableNSSSystemKeySlotForResourceContext(resource_context_.get());
-  }
-#endif
-
-  profile_params_.reset();
-  initialized_ = true;
-}
-
-void ProfileIOData::ShutdownOnUIThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  bool posted = content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
-  if (!posted)
-    delete this;
 }

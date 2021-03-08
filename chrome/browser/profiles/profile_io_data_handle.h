@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_HANDLE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_IO_DATA_HANDLE_H_
 
+#include <memory>
+
 #include "base/macros.h"
 
 namespace content {
@@ -25,9 +27,7 @@ class ProfileIODataHandle {
   // Lazily initialize ProfileParams.
   void LazyInitialize() const;
 
-  // The getters will be invalidated on the IO thread before
-  // ProfileIOData instance is deleted.
-  ProfileIOData* const io_data_;
+  std::unique_ptr<ProfileIOData> io_data_;
 
   Profile* const profile_;
 
