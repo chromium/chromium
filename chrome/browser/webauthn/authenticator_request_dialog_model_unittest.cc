@@ -12,10 +12,14 @@
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "device/fido/authenticator_data.h"
+#include "device/fido/authenticator_get_assertion_response.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -519,9 +523,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
       &num_called));
-  model.saved_authenticators().AddAuthenticator(
-      AuthenticatorReference("authenticator" /* authenticator_id */,
-                             AuthenticatorTransport::kInternal));
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
 
   model.StartFlow(std::move(transports_info), base::nullopt,
                   /*is_conditional=*/false);
@@ -572,4 +575,90 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_THAT(dispatched_authenticator_ids, ElementsAre(kWinAuthenticatorId));
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest,
+       ConditionalUINoRecognizedCredential) {
+  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+
+  int num_called = 0;
+  model.SetRequestCallback(base::BindRepeating(
+      [](int* i, const std::string& authenticator_id) { ++(*i); },
+      &num_called));
+  model.saved_authenticators().AddAuthenticator(
+      AuthenticatorReference(/*device_id=*/"authenticator",
+                             AuthenticatorTransport::kUsbHumanInterfaceDevice));
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.available_transports = kAllTransports;
+  transports_info.has_recognized_platform_authenticator_credential = true;
+  model.StartFlow(std::move(transports_info), base::nullopt,
+                  /*is_conditional=*/true);
+  EXPECT_EQ(model.current_step(), Step::kSubtleUI);
+  EXPECT_TRUE(model.should_dialog_be_hidden());
+  EXPECT_EQ(num_called, 0);
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
+  AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
+
+  int num_called = 0;
+  model.SetRequestCallback(base::BindRepeating(
+      [](int* i, const std::string& authenticator_id) {
+        EXPECT_EQ(authenticator_id, "internal");
+        ++(*i);
+      },
+      &num_called));
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice));
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.available_transports = kAllTransports;
+  transports_info.has_recognized_platform_authenticator_credential = true;
+  device::PublicKeyCredentialUserEntity user_1({1, 2, 3, 4});
+  device::PublicKeyCredentialUserEntity user_2({5, 6, 7, 8});
+  transports_info.recognized_platform_authenticator_credentials = {user_1,
+                                                                   user_2};
+  model.StartFlow(std::move(transports_info), base::nullopt,
+                  /*is_conditional=*/true);
+  EXPECT_EQ(model.current_step(), Step::kSelectAccount);
+  EXPECT_FALSE(model.should_dialog_be_hidden());
+  EXPECT_EQ(num_called, 0);
+
+  // After selecting an account, the request should be dispatched to the
+  // platform authenticator.
+  model.OnAccountSelected(0);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(num_called, 1);
+
+  static const uint8_t kAppParam[32] = {0};
+  static const uint8_t kSignatureCounter[4] = {0};
+  device::AuthenticatorData auth_data(kAppParam, /*flags=*/0, kSignatureCounter,
+                                      base::nullopt);
+  device::AuthenticatorGetAssertionResponse response_1(
+      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
+                                base::nullopt),
+      /*signature=*/{1});
+  response_1.SetUserEntity(user_1);
+  device::AuthenticatorGetAssertionResponse response_2(
+      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
+                                base::nullopt),
+      /*signature=*/{2});
+  response_2.SetUserEntity(user_2);
+
+  uint8_t selected_id = -1;
+  std::vector<device::AuthenticatorGetAssertionResponse> responses;
+  responses.push_back(std::move(response_1));
+  responses.push_back(std::move(response_2));
+  model.SelectAccount(
+      std::move(responses),
+      base::BindLambdaForTesting(
+          [&](device::AuthenticatorGetAssertionResponse selected) {
+            selected_id = selected.signature()[0];
+          }));
+  EXPECT_EQ(selected_id, 1);
 }

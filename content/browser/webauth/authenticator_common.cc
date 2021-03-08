@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -1725,6 +1724,13 @@ void AuthenticatorCommon::OnSignResponse(
            (response_data->at(0).user_entity() &&
             (response_data->at(0).user_entity()->name ||
              response_data->at(0).user_entity()->display_name)))) {
+        std::vector<device::PublicKeyCredentialUserEntity> users_list;
+        users_list.reserve(response_data->size());
+        for (const auto& response : *response_data) {
+          if (response.user_entity()) {
+            users_list.push_back(*response.user_entity());
+          }
+        }
         request_delegate_->SelectAccount(
             std::move(*response_data),
             base::BindOnce(&AuthenticatorCommon::OnAccountSelected,

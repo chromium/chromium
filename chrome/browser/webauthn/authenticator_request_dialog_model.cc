@@ -16,6 +16,7 @@
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/pin.h"
+#include "device/fido/public_key_credential_user_entity.h"
 
 namespace {
 
@@ -96,7 +97,7 @@ AuthenticatorRequestDialogModel::EphemeralState::~EphemeralState() = default;
 void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
   selected_authenticator_id_ = base::nullopt;
   saved_authenticators_.RemoveAllAuthenticators();
-  responses_.clear();
+  users_.clear();
 }
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
@@ -128,12 +129,28 @@ void AuthenticatorRequestDialogModel::StartFlow(
   last_used_transport_ = last_used_transport;
 
   if (is_conditional) {
-    // If this is a conditional request, keep the UI hidden while dispatching
-    // requests.
+    if (!transport_availability_.recognized_platform_authenticator_credentials
+             .empty()) {
+      // This is a conditional request and chrome has discovered credentials.
+      // Show the credential list to the user and dispatch to the authenticator
+      // *after* they select one.
+      // TODO(crbug.com/1171985): this should be a non-modal, less in-your-face
+      // dialog than the default credential selection dialog.
+      ephemeral_state_.users_ = {};
+      for (const auto& user :
+           transport_availability_
+               .recognized_platform_authenticator_credentials) {
+        ephemeral_state_.users_.push_back(user);
+      }
+      SetCurrentStep(Step::kSelectAccount);
+      return;
+    }
+    // This is a conditional request with no discovered credentials. Keep the UI
+    // hidden while dispatching requests to plugged in authenticators.
     SetCurrentStep(Step::kSubtleUI);
-  } else {
-    StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
+    return;
   }
+  StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
 }
 
 void AuthenticatorRequestDialogModel::StartOver() {
@@ -538,21 +555,47 @@ void AuthenticatorRequestDialogModel::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
         callback) {
+  if (preselected_account_) {
+    for (auto& response : responses) {
+      if (response.user_entity() == preselected_account_) {
+        std::move(callback).Run(std::move(response));
+        return;
+      }
+    }
+    // The user selected an account that was not part of the responses. This
+    // shouldn't really happen, cancel the request.
+    Cancel();
+    return;
+  }
   ephemeral_state_.responses_ = std::move(responses);
+  ephemeral_state_.users_ = {};
+  for (const auto& response : ephemeral_state_.responses_) {
+    ephemeral_state_.users_.push_back(*response.user_entity());
+  }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);
 }
 
 void AuthenticatorRequestDialogModel::OnAccountSelected(size_t index) {
+  if (ephemeral_state_.responses_.empty()) {
+    // An account has been pre-selected from the conditional UI prompt.
+    preselected_account_ = std::move(ephemeral_state_.users_.at(index));
+    ephemeral_state_.users_.clear();
+    HideDialogAndDispatchToPlatformAuthenticator();
+    return;
+  }
+
   if (!selection_callback_) {
     // It's possible that the user could activate the dialog more than once
     // before the Webauthn request is completed and its torn down.
     return;
   }
 
-  auto selected = std::move(ephemeral_state_.responses_[index]);
+  device::AuthenticatorGetAssertionResponse response =
+      std::move(ephemeral_state_.responses_.at(index));
+  ephemeral_state_.users_.clear();
   ephemeral_state_.responses_.clear();
-  std::move(selection_callback_).Run(std::move(selected));
+  std::move(selection_callback_).Run(std::move(response));
 }
 
 void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(

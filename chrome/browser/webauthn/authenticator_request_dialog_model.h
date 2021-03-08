@@ -25,6 +25,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
+#include "device/fido/public_key_credential_user_entity.h"
 
 namespace device {
 class AuthenticatorGetAssertionResponse;
@@ -406,8 +407,8 @@ class AuthenticatorRequestDialogModel {
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
 
-  const std::vector<device::AuthenticatorGetAssertionResponse>& responses() {
-    return ephemeral_state_.responses_;
+  const std::vector<device::PublicKeyCredentialUserEntity>& users() {
+    return ephemeral_state_.users_;
   }
 
   device::ResidentKeyRequirement resident_key_requirement() const {
@@ -450,8 +451,13 @@ class AuthenticatorRequestDialogModel {
     // immediately results in modal UI to appear.
     ObservableAuthenticatorList saved_authenticators_;
 
-    // responses_ contains possible accounts to select between.
+    // responses_ contains possible responses to select between after an
+    // authenticator has responded to a request.
     std::vector<device::AuthenticatorGetAssertionResponse> responses_;
+
+    // users_ contains possible accounts to select between before or after an
+    // authenticator has responded to a request.
+    std::vector<device::PublicKeyCredentialUserEntity> users_;
   };
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
@@ -493,6 +499,7 @@ class AuthenticatorRequestDialogModel {
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
+  base::Optional<device::PublicKeyCredentialUserEntity> preselected_account_;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

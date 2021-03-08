@@ -32,6 +32,7 @@ namespace device {
 class BleAdapterManager;
 class FidoAuthenticator;
 class FidoDiscoveryFactory;
+class PublicKeyCredentialUserEntity;
 
 // Base class that handles authenticator discovery/removal. Its lifetime is
 // equivalent to that of a single WebAuthn request. For each authenticator, the
@@ -75,6 +76,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // authenticator has been added to the request handler. (The Windows
     // WebAuthn API does NOT count as a platform authenticator in this case.)
     base::Optional<bool> has_recognized_platform_authenticator_credential;
+
+    // The set of recognized platform credential user entities that can fulfill
+    // a GetAssertion request. Not all platform authenticators report this, so
+    // the set might be empty even if
+    // |has_recognized_platform_authenticator_credential| is true.
+    std::vector<PublicKeyCredentialUserEntity>
+        recognized_platform_authenticator_credentials;
 
     bool is_ble_powered = false;
     bool can_power_on_ble_adapter = false;

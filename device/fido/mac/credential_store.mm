@@ -140,8 +140,7 @@ QueryKeychainItemsForProfile(const std::string& keychain_access_group,
       continue;
     }
 
-    result.push_back(base::ScopedCFTypeRef<CFDictionaryRef>(
-        attributes, base::scoped_policy::RETAIN));
+    result.emplace_back(attributes, base::scoped_policy::RETAIN);
   }
 
   FilterKeychainItemsByCreationDate(&result, created_not_before,

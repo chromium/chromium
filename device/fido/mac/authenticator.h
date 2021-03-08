@@ -18,6 +18,7 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/operation.h"
+#include "device/fido/public_key_credential_user_entity.h"
 
 namespace device {
 namespace fido {
@@ -49,7 +50,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   ~TouchIdAuthenticator() override;
 
   bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request);
+      const CtapGetAssertionRequest& request) const;
+
+  std::vector<PublicKeyCredentialUserEntity>
+  GetResidentCredentialUsersForRequest(
+      const CtapGetAssertionRequest& request) const;
 
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;

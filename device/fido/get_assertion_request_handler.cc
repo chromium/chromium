@@ -424,12 +424,19 @@ void GetAssertionRequestHandler::FillHasRecognizedPlatformCredential(
   bool has_credential =
       touch_id_authenticator &&
       touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
-  OnHasPlatformCredential(std::move(done_callback), has_credential);
+  std::vector<PublicKeyCredentialUserEntity> credential_users;
+  if (has_credential) {
+    credential_users =
+        touch_id_authenticator->GetResidentCredentialUsersForRequest(request_);
+  }
+  OnHasPlatformCredential(std::move(done_callback), std::move(credential_users),
+                          has_credential);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
       request_,
       base::BindOnce(&GetAssertionRequestHandler::OnHasPlatformCredential,
-                     weak_factory_.GetWeakPtr(), std::move(done_callback)));
+                     weak_factory_.GetWeakPtr(), std::move(done_callback),
+                     std::vector<PublicKeyCredentialUserEntity>()));
 #else
   std::move(done_callback).Run();
 #endif
@@ -813,10 +820,13 @@ void GetAssertionRequestHandler::OnWriteLargeBlob(
 
 void GetAssertionRequestHandler::OnHasPlatformCredential(
     base::OnceCallback<void()> done_callback,
+    std::vector<PublicKeyCredentialUserEntity> user_entities,
     bool has_credential) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
   transport_availability_info()
       .has_recognized_platform_authenticator_credential = has_credential;
+  transport_availability_info().recognized_platform_authenticator_credentials =
+      std::move(user_entities);
   std::move(done_callback).Run();
 }
 
