@@ -1,4 +1,4 @@
-From 77844d5d6dce373125d26cac31056fb832960c27 Mon Sep 17 00:00:00 2001
+From a68470f9b13da7b03f1768cefbd64130de2e73a7 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Mon, 1 Feb 2021 15:14:20 -0500
 Subject: [PATCH 2/3] Disable horizontal class merging
@@ -9,18 +9,18 @@ Bug: 1173182
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-index 0d4a76804..934e7edad 100644
+index 54bbbcc46..7991ad088 100644
 --- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
 +++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
-@@ -1135,7 +1135,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+@@ -1156,7 +1156,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
  
    public static class HorizontalClassMergerOptions {
  
 -    public boolean enable = true;
 +    public boolean enable = System.getProperty("com.android.tools.r8.horizontalClassMerging") != null;
      public boolean enableConstructorMerging = true;
-     // TODO(b/174809311): Update or remove the option and its tests after new lambdas synthetics.
-     public boolean enableJavaLambdaMerging = false;
+     public boolean enableJavaLambdaMerging = true;
+ 
 -- 
-2.30.0.365.g02bc693789-goog
+2.30.1.766.gb4fecdf3b7-goog
 
