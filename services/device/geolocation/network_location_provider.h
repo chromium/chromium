@@ -72,12 +72,11 @@ class NetworkLocationProvider
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_update_callback_;
 
 #if defined(OS_MAC)
-  // Manage a subscription to GeolocationSystemPermissionManager, which may
-  // outlive this object.
-  base::ScopedObservation<
-      GeolocationSystemPermissionManager,
-      GeolocationSystemPermissionManager::GeolocationPermissionObserver>
-      geolocation_permission_observation_{this};
+  // Used to keep track of masOS System Permission changes. Also, ensures
+  // lifetime of ObserverList as the BrowserProcess may destroy its reference
+  // on the UI Thread before we destroy this provider.
+  scoped_refptr<GeolocationSystemPermissionManager::ObserverList>
+      permission_observers_;
 #endif
 
   // The  wifi data and a flag to indicate if the data set is complete.
