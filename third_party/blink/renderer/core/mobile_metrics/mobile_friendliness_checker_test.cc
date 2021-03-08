@@ -75,91 +75,75 @@ class MobileFriendlinessCheckerTest : public testing::Test {
 };
 
 TEST_F(MobileFriendlinessCheckerTest, NoViewportSetting) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf =
       CalculateMetricsForHTMLString("<body>bar</body>");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, DeviceWidth) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kYes;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
   MobileFriendliness actual_mf =
       CalculateMetricsForFile("viewport/viewport-1.html");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, HardcodedViewport) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = blink::mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.viewport_hardcoded_width = 200;
   MobileFriendliness actual_mf =
       CalculateMetricsForFile("viewport/viewport-30.html");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_hardcoded_width, 200);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, DeviceWidthWithInitialScale05) {
   // Specifying initial-scale=0.5 is usually not the best choice for most web
   // pages. But we cannot determine that such page must not be mobile friendly.
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kYes;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.viewport_initial_scale_x10 = 5;
   MobileFriendliness actual_mf =
       CalculateMetricsForFile("viewport/viewport-34.html");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 5);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, UserZoom) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kYes;
-  expected_mf.viewport_initial_scale_x10 = 20;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kNo;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf = CalculateMetricsForFile(
       "viewport-initial-scale-and-user-scalable-no.html");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 20);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, NoText) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = -1;
   MobileFriendliness actual_mf =
       CalculateMetricsForHTMLString(R"(<body></body>)");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, -1);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, NoSmallFonts) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 0;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <div style="font-size: 12px">
   This is legible font size example.
 </div>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, OnlySmallFonts) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <div style="font-size:7px">
   Small font text.
 </div>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, MostlySmallFont) {
@@ -229,10 +213,6 @@ TEST_F(MobileFriendlinessCheckerTest, MultipleDivs) {
 }
 
 TEST_F(MobileFriendlinessCheckerTest, DontCountInvisibleSmallFontArea) {
-  MobileFriendliness expected_mf;
-  expected_mf.small_text_ratio = 0;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <body>
@@ -245,15 +225,12 @@ TEST_F(MobileFriendlinessCheckerTest, DontCountInvisibleSmallFontArea) {
   </body>
 </html>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ScaleZoomedLegibleFont) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kYes;
-  expected_mf.viewport_initial_scale_x10 = 100;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 0;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -264,16 +241,13 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleZoomedLegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 100);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ViewportZoomedOutIllegibleFont) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.viewport_hardcoded_width = 480;
-  expected_mf.viewport_initial_scale_x10 = 5;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -284,15 +258,14 @@ TEST_F(MobileFriendlinessCheckerTest, ViewportZoomedOutIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.viewport_hardcoded_width, 480);
+  EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 5);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, TooWideViewportWidthIllegibleFont) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = blink::mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.viewport_hardcoded_width = 960;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <head>
@@ -303,14 +276,13 @@ TEST_F(MobileFriendlinessCheckerTest, TooWideViewportWidthIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, blink::mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.viewport_hardcoded_width, 960);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, CSSZoomedIllegibleFont) {
-  MobileFriendliness expected_mf;
-  expected_mf.viewport_device_width = mojom::ViewportStatus::kNo;
-  expected_mf.allow_user_zoom = mojom::ViewportStatus::kYes;
-  expected_mf.small_text_ratio = 100;
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
   <body style="font-size: 12px; zoom:50%">
@@ -318,7 +290,103 @@ TEST_F(MobileFriendlinessCheckerTest, CSSZoomedIllegibleFont) {
   </body>
 </html>
 )");
-  EXPECT_EQ(expected_mf, actual_mf);
+  EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
+  EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
+  EXPECT_EQ(actual_mf.small_text_ratio, 100);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextNarrow) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <pre>foo foo foo foo foo</pre>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextTooWide) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <pre>)" +
+      std::string(10000, 'a') + R"(</pre>
+  </body>
+</html>
+)");
+  EXPECT_NE(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TextTooWideInvisible) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      R"(
+<html>
+  <body>
+    <pre style="visibility:hidden">)" +
+      std::string(10000, 'a') + R"(</pre>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, -1);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ImageNarrow) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <img style="width:200px; height:50px">
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ImageTooWide) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <img style="width:2000px; height:50px">
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 317);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ImageTooWideDisplayNone) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <body>
+    <img style="width:2000px; height:50px; display:none">
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, -1);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, minimum-scale=1, initial-scale=3">
+  </head>
+  <body style="font-size: 76px; width: 480">
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+    foo foo foo foo foo foo foo foo foo foo
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 30);
+  EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100.0);
 }
 
 }  // namespace blink

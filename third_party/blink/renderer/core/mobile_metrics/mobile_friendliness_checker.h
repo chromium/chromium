@@ -42,6 +42,8 @@ class CORE_EXPORT MobileFriendlinessChecker
   };
 
  private:
+  void ComputeTextContentOutsideViewport(const LayoutObject& object);
+
   TextAreaWithFontSize text_area_sizes_;
   Member<LocalFrameView> frame_view_;
   blink::MobileFriendliness mobile_friendliness_;

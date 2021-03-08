@@ -1229,6 +1229,12 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
     builder.SetViewportHardcodedWidth(
         BucketWithOffsetAndUnit(hardcoded_width, 500, 10));
   }
+
+  if (mf.text_content_outside_viewport_percentage != -1) {
+    builder.SetTextContentOutsideViewportPercentage(
+        mf.text_content_outside_viewport_percentage);
+  }
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 

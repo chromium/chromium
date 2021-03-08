@@ -9451,6 +9451,7 @@ be describing additional metrics about the same event.
 
 <event name="MobileFriendliness">
   <owner>kumagi@google.com</owner>
+  <owner>gaul@google.com</owner>
   <metric name="AllowUserZoom" enum="Boolean">
     <summary>
       Whether the page allows the user to zoom in/out.
@@ -9459,6 +9460,12 @@ be describing additional metrics about the same event.
   <metric name="SmallTextRatio">
     <summary>
       Percentage of small font text area in total text area.
+    </summary>
+  </metric>
+  <metric name="TextContentOutsideViewportPercentage">
+    <summary>
+      Percentage of pixels of text and images horizontally outside the viewport,
+      relative to the frame width.
     </summary>
   </metric>
   <metric name="ViewportDeviceWidth" enum="Boolean">

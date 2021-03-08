@@ -42,6 +42,11 @@ struct BLINK_COMMON_EXPORT MobileFriendliness {
   // Percentage of small font size text area in all text area.
   // Default -1 means "Unknown" and should not be sent as UKM.
   int small_text_ratio = -1;
+
+  // Percentage of pixels of text and images horizontally outside the viewport,
+  // relative to the frame width.
+  // Default -1 means "Unknown" and should not be sent as UKM.
+  int text_content_outside_viewport_percentage = -1;
 };
 
 }  // namespace blink

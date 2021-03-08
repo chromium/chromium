@@ -32,6 +32,10 @@ class StructTraits<blink::mojom::MobileFriendlinessDataView,
   static int small_text_ratio(const blink::MobileFriendliness& mf) {
     return mf.small_text_ratio;
   }
+  static int text_content_outside_viewport_percentage(
+      const blink::MobileFriendliness& mf) {
+    return mf.text_content_outside_viewport_percentage;
+  }
   static bool Read(blink::mojom::MobileFriendlinessDataView data,
                    blink::MobileFriendliness* mf);
 };

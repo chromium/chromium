@@ -16,6 +16,8 @@ bool StructTraits<blink::mojom::MobileFriendlinessDataView,
   mf->viewport_hardcoded_width = data.viewport_hardcoded_width();
   mf->allow_user_zoom = data.allow_user_zoom();
   mf->small_text_ratio = data.small_text_ratio();
+  mf->text_content_outside_viewport_percentage =
+      data.text_content_outside_viewport_percentage();
   return true;
 }
 

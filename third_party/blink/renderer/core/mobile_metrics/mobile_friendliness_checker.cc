@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -70,6 +71,8 @@ int MobileFriendlinessChecker::TextAreaWithFontSize::SmallTextRatio() const {
 
 void MobileFriendlinessChecker::NotifyInvalidatePaint(
     const LayoutObject& object) {
+  ComputeTextContentOutsideViewport(object);
+
   if (!font_size_check_enabled_)
     return;
 
@@ -107,6 +110,53 @@ void MobileFriendlinessChecker::NotifyPrePaintFinished() {
             DocumentLifecycle::kInPrePaint);
   frame_view_->DidChangeMobileFriendliness(mobile_friendliness_);
   needs_report_mf_ = false;
+}
+
+void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
+    const LayoutObject& object) {
+  if (!frame_view_->GetFrame().IsMainFrame())
+    return;
+
+  int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().Width();
+  int total_text_width;
+  int text_content_outside_viewport_percentage = 0;
+
+  if (const auto* text = DynamicTo<LayoutText>(object)) {
+    const ComputedStyle* style = text->Style();
+    if (style->Visibility() != EVisibility::kVisible ||
+        style->ContentVisibility() != EContentVisibility::kVisible)
+      return;
+    total_text_width = text->PhysicalRightOffset().ToInt();
+  } else if (const auto* image = DynamicTo<LayoutImage>(object)) {
+    const ComputedStyle* style = image->Style();
+    if (style->Visibility() != EVisibility::kVisible)
+      return;
+    PhysicalRect rect = image->ReplacedContentRect();
+    total_text_width = (rect.offset.left + rect.size.width).ToInt();
+  } else {
+    return;
+  }
+
+  double initial_scale = frame_view_->GetPage()
+                             ->GetPageScaleConstraintsSet()
+                             .FinalConstraints()
+                             .initial_scale;
+  if (initial_scale > 0)
+    total_text_width *= initial_scale;
+
+  if (total_text_width > frame_width) {
+    text_content_outside_viewport_percentage =
+        ceil((total_text_width - frame_width) * 100.0 / frame_width);
+  }
+
+  needs_report_mf_ =
+      needs_report_mf_ ||
+      (mobile_friendliness_.text_content_outside_viewport_percentage <
+       text_content_outside_viewport_percentage);
+
+  mobile_friendliness_.text_content_outside_viewport_percentage =
+      std::max(mobile_friendliness_.text_content_outside_viewport_percentage,
+               text_content_outside_viewport_percentage);
 }
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {
