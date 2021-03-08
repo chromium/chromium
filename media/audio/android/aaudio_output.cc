@@ -5,6 +5,7 @@
 #include "media/audio/android/aaudio_output.h"
 
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/audio_bus.h"
@@ -43,6 +44,7 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
 
   if (AudioManagerAndroid::SupportsPerformanceModeForOutput()) {
     switch (params.latency_tag()) {
+      case AudioLatency::LATENCY_EXACT_MS:
       case AudioLatency::LATENCY_INTERACTIVE:
       case AudioLatency::LATENCY_RTC:
         performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
@@ -54,6 +56,12 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
         performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
     }
   }
+
+  TRACE_EVENT2("audio", "AAudioOutputStream::AAudioOutputStream",
+               "AAUDIO_PERFORMANCE_MODE_LOW_LATENCY",
+               performance_mode_ == AAUDIO_PERFORMANCE_MODE_LOW_LATENCY
+                   ? "true" : "false",
+               "frames_per_buffer", params.frames_per_buffer());
 }
 
 AAudioOutputStream::~AAudioOutputStream() {
@@ -100,6 +108,10 @@ bool AAudioOutputStream::Open() {
   AAudioStream_setBufferSizeInFrames(aaudio_stream_, sizeRequested);
 
   audio_bus_ = AudioBus::Create(params_);
+
+  TRACE_EVENT2("audio", "AAudioOutputStream::Open",
+               "params_", params_.AsHumanReadableString(),
+               "requested BufferSizeInFrames", sizeRequested);
 
   return true;
 }
