@@ -206,7 +206,10 @@ class LogMessageManager {
   }
 
   // Called when it's no longer safe to invoke |log_callback_|.
-  void ShutdownLogging() { logging::SetLogMessageHandler(nullptr); }
+  void ShutdownLogging() {
+    logging::SetLogMessageHandler(nullptr);
+    log_callback_.Reset();
+  }
 
  private:
   base::Lock message_lock_;
