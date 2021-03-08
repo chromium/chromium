@@ -341,7 +341,14 @@ public class AutocompleteController {
     @CalledByNative
     private static boolean isEquivalentOmniboxSuggestion(
             AutocompleteMatch suggestion, int hashCode) {
-        return suggestion.hashCode() == hashCode;
+        if (suggestion.hashCode() == hashCode) return true;
+
+        // Note: these are only logged on development builds.
+        // clang-format off
+        Log.d(TAG, "Checked suggestion not valid: " + suggestion.getFillIntoEdit() + " ("
+                   + suggestion.getType() + ")");
+        // clang-format on
+        return false;
     }
 
     /**
