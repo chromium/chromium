@@ -128,6 +128,8 @@ source_set("browser") {
     "network_service/aw_web_resource_request.h",
     "network_service/net_helpers.cc",
     "network_service/net_helpers.h",
+    "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.cc",
+    "page_load_metrics/aw_page_load_metrics_memory_tracker_factory.h",
     "page_load_metrics/aw_page_load_metrics_provider.cc",
     "page_load_metrics/aw_page_load_metrics_provider.h",
     "page_load_metrics/page_load_metrics_initialize.cc",
@@ -196,6 +198,7 @@ source_set("browser") {
     "//components/embedder_support/android:util",
     "//components/favicon_base:favicon_base",
     "//components/flags_ui",
+    "//components/keyed_service/content",
 
     # Called via JNI in CrashpadMain
     "//components/crash/android:crashpad_main",

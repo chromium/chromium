@@ -7,10 +7,12 @@
 #include "base/macros.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
+#include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "weblayer/browser/no_state_prefetch/prerender_utils.h"
 #include "weblayer/browser/page_load_metrics_observer_impl.h"
+#include "weblayer/browser/weblayer_page_load_metrics_memory_tracker_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -45,7 +47,11 @@ class PageLoadMetricsEmbedder
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override {
-    return nullptr;
+    if (!base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring))
+      return nullptr;
+
+    return WeblayerPageLoadMetricsMemoryTrackerFactory::GetForBrowserContext(
+        browser_context);
   }
 
  protected:

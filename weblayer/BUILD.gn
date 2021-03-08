@@ -289,6 +289,8 @@ source_set("weblayer_lib_base") {
     "browser/weblayer_features.h",
     "browser/weblayer_field_trials.cc",
     "browser/weblayer_field_trials.h",
+    "browser/weblayer_page_load_metrics_memory_tracker_factory.cc",
+    "browser/weblayer_page_load_metrics_memory_tracker_factory.h",
     "browser/weblayer_security_blocking_page_factory.cc",
     "browser/weblayer_security_blocking_page_factory.h",
     "browser/weblayer_speech_recognition_manager_delegate.cc",

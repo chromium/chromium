@@ -2224,6 +2224,7 @@ class AdsMemoryMeasurementBrowserTest
   }
 
  private:
+  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(AdsMemoryMeasurementBrowserTest);
