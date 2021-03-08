@@ -73,6 +73,7 @@
 #include "services/network/sec_header_helpers.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
+#include "services/network/url_loader_factory.h"
 #include "url/origin.h"
 
 namespace network {
@@ -449,6 +450,7 @@ void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
 
 URLLoader::URLLoader(
     net::URLRequestContext* url_request_context,
+    URLLoaderFactory* url_loader_factory,
     mojom::NetworkServiceClient* network_service_client,
     mojom::NetworkContextClient* network_context_client,
     DeleteCallback delete_callback,
@@ -475,6 +477,7 @@ URLLoader::URLLoader(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : url_request_context_(url_request_context),
+      url_loader_factory_(url_loader_factory),
       network_service_client_(network_service_client),
       network_context_client_(network_context_client),
       delete_callback_(std::move(delete_callback)),
@@ -856,12 +859,13 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
                                   weak_ptr_factory_.GetWeakPtr(),
                                   net::ERR_TRUST_TOKEN_OPERATION_FAILED));
 
-    if (devtools_observer_ && devtools_request_id()) {
+    auto* devtools_observer = GetDevToolsObserver();
+    if (devtools_observer && devtools_request_id()) {
       mojom::TrustTokenOperationResultPtr operation_result =
           mojom::TrustTokenOperationResult::New();
       operation_result->status = *trust_token_status_;
       operation_result->type = type;
-      devtools_observer_->OnTrustTokenOperationDone(
+      devtools_observer->OnTrustTokenOperationDone(
           devtools_request_id().value(), std::move(operation_result));
     }
     return;
@@ -1072,8 +1076,8 @@ bool URLLoader::CanConnectToAddressSpace(
              << (is_warning ? "but not enforcing blocking of insecure private "
                               "network request."
                             : "blocking insecure private network request.");
-    if (devtools_observer_) {
-      devtools_observer_->OnPrivateNetworkRequest(
+    if (auto* devtools_observer = GetDevToolsObserver()) {
+      devtools_observer->OnPrivateNetworkRequest(
           devtools_request_id(), url_request_->url(), is_warning,
           resource_address_space, security_state->Clone());
     }
@@ -1193,7 +1197,8 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
     // |this| may have been deleted.
     return;
   }
-  if (!url_loader_network_observer_) {
+  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
+  if (!url_loader_network_observer) {
     OnAuthCredentials(base::nullopt);
     return;
   }
@@ -1205,7 +1210,7 @@ void URLLoader::OnAuthRequired(net::URLRequest* url_request,
 
   DCHECK(!auth_challenge_responder_receiver_.is_bound());
 
-  url_loader_network_observer_->OnAuthRequired(
+  url_loader_network_observer->OnAuthRequired(
       fetch_window_id_, request_id_, url_request_->url(), first_auth_attempt_,
       auth_info, url_request->response_headers(),
       auth_challenge_responder_receiver_.BindNewPipeAndPassRemote());
@@ -1228,7 +1233,8 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
     return;
   }
 
-  if (!url_loader_network_observer_) {
+  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
+  if (!url_loader_network_observer) {
     CancelRequest();
     return;
   }
@@ -1236,7 +1242,7 @@ void URLLoader::OnCertificateRequested(net::URLRequest* unused,
   // Set up mojo endpoints for ClientCertificateResponder and bind to the
   // Receiver. This enables us to receive messages regarding the client
   // certificate selection.
-  url_loader_network_observer_->OnCertificateRequested(
+  url_loader_network_observer->OnCertificateRequested(
       fetch_window_id_, cert_info,
       client_cert_responder_receiver_.BindNewPipeAndPassRemote());
   client_cert_responder_receiver_.set_disconnect_handler(
@@ -1247,11 +1253,12 @@ void URLLoader::OnSSLCertificateError(net::URLRequest* request,
                                       int net_error,
                                       const net::SSLInfo& ssl_info,
                                       bool fatal) {
-  if (!url_loader_network_observer_) {
+  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
+  if (!url_loader_network_observer) {
     OnSSLCertificateErrorResponse(ssl_info, net::ERR_INSECURE_RESPONSE);
     return;
   }
-  url_loader_network_observer_->OnSSLCertificateError(
+  url_loader_network_observer->OnSSLCertificateError(
       url_request_->url(), net_error, ssl_info, fatal,
       base::BindOnce(&URLLoader::OnSSLCertificateErrorResponse,
                      weak_ptr_factory_.GetWeakPtr(), ssl_info));
@@ -1314,14 +1321,15 @@ void URLLoader::OnDoneFinalizingTrustTokenOperation(
 void URLLoader::MaybeSendTrustTokenOperationResultToDevTools() {
   CHECK(trust_token_helper_ && trust_token_status_);
 
-  if (!devtools_observer_ || !devtools_request_id())
+  auto* devtools_observer = GetDevToolsObserver();
+  if (!devtools_observer || !devtools_request_id())
     return;
 
   mojom::TrustTokenOperationResultPtr operation_result =
       trust_token_helper_->CollectOperationResultWithStatus(
           *trust_token_status_);
-  devtools_observer_->OnTrustTokenOperationDone(devtools_request_id().value(),
-                                                std::move(operation_result));
+  devtools_observer->OnTrustTokenOperationDone(devtools_request_id().value(),
+                                               std::move(operation_result));
 }
 
 void URLLoader::ContinueOnResponseStarted() {
@@ -1649,12 +1657,6 @@ int URLLoader::OnHeadersReceived(
   return net::OK;
 }
 
-mojom::URLLoaderNetworkServiceObserver* URLLoader::GetAuthCertObserver() {
-  if (!url_loader_network_observer_)
-    return nullptr;
-  return url_loader_network_observer_.get();
-}
-
 void URLLoader::UpdateLoadInfo() {
   DCHECK(!waiting_on_load_state_ack_);
   auto load_info = mojom::LoadInfo::New();
@@ -1669,9 +1671,15 @@ void URLLoader::UpdateLoadInfo() {
 
   waiting_on_load_state_ack_ = true;
 
-  url_loader_network_observer_->OnLoadingStateUpdate(
-      std::move(load_info),
-      base::BindOnce(&URLLoader::AckUpdateLoadInfo, base::Unretained(this)));
+  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
+  // |url_laoder_network_observer| should be non-null here because we've
+  // previously gone through a nullness check in
+  // `MayebStartUpdateLoaderInfoTimer` and `GetURLLoaderNetworkServiceObserver`
+  // should always return the same value.
+  DCHECK(url_loader_network_observer);
+  url_loader_network_observer->OnLoadingStateUpdate(
+      std::move(load_info), base::BindOnce(&URLLoader::AckUpdateLoadInfo,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void URLLoader::AckUpdateLoadInfo() {
@@ -1682,7 +1690,7 @@ void URLLoader::AckUpdateLoadInfo() {
 
 void URLLoader::MaybeStartUpdateLoadInfoTimer() {
   if (waiting_on_load_state_ack_ || update_load_info_timer_.IsRunning() ||
-      !url_loader_network_observer_) {
+      !GetURLLoaderNetworkServiceObserver()) {
     return;
   }
 
@@ -1951,7 +1959,8 @@ void URLLoader::SetRawResponseHeaders(
 
 void URLLoader::SetRawRequestHeadersAndNotify(
     net::HttpRawRequestHeaders headers) {
-  if (devtools_observer_ && devtools_request_id()) {
+  auto* devtools_observer = GetDevToolsObserver();
+  if (devtools_observer && devtools_request_id()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
     header_array.reserve(headers.headers().size());
 
@@ -1970,12 +1979,12 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       client_security_state = request_client_security_state_->Clone();
     }
 
-    devtools_observer_->OnRawRequest(
+    devtools_observer->OnRawRequest(
         devtools_request_id().value(), url_request_->maybe_sent_cookies(),
         std::move(header_array), std::move(client_security_state));
   }
 
-  if (cookie_observer_) {
+  if (auto* cookie_observer = GetCookieAccessObserver()) {
     std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
     for (const auto& cookie_with_access_result :
          url_request_->maybe_sent_cookies()) {
@@ -1988,7 +1997,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
     }
 
     if (!reported_cookies.empty()) {
-      cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
+      cookie_observer->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
@@ -2165,7 +2174,8 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
 }
 
 void URLLoader::ReportFlaggedResponseCookies() {
-  if (devtools_observer_ && devtools_request_id() &&
+  auto* devtools_observer = GetDevToolsObserver();
+  if (devtools_observer && devtools_request_id() &&
       url_request_->response_headers()) {
     std::vector<network::mojom::HttpRawHeaderPairPtr> header_array;
 
@@ -2192,13 +2202,13 @@ void URLLoader::ReportFlaggedResponseCookies() {
               url_request_->response_headers()->raw_headers()));
     }
 
-    devtools_observer_->OnRawResponse(
+    devtools_observer->OnRawResponse(
         devtools_request_id().value(), url_request_->maybe_stored_cookies(),
         std::move(header_array), raw_response_headers,
         IPAddressToIPAddressSpace(response_info.remote_endpoint.address()));
   }
 
-  if (cookie_observer_) {
+  if (auto* cookie_observer = GetCookieAccessObserver()) {
     std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
     for (const auto& cookie_line_and_access_result :
          url_request_->maybe_stored_cookies()) {
@@ -2220,7 +2230,7 @@ void URLLoader::ReportFlaggedResponseCookies() {
     }
 
     if (!reported_cookies.empty()) {
-      cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
+      cookie_observer->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
@@ -2307,6 +2317,31 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
   }
 
   return false;
+}
+
+mojom::DevToolsObserver* URLLoader::GetDevToolsObserver() const {
+  if (devtools_observer_)
+    return devtools_observer_.get();
+  if (url_loader_factory_)
+    return url_loader_factory_->GetDevToolsObserver();
+  return nullptr;
+}
+
+mojom::CookieAccessObserver* URLLoader::GetCookieAccessObserver() const {
+  if (cookie_observer_)
+    return cookie_observer_.get();
+  if (url_loader_factory_)
+    return url_loader_factory_->GetCookieAccessObserver();
+  return nullptr;
+}
+
+mojom::URLLoaderNetworkServiceObserver*
+URLLoader::GetURLLoaderNetworkServiceObserver() const {
+  if (url_loader_network_observer_)
+    return url_loader_network_observer_.get();
+  if (url_loader_factory_)
+    return url_loader_factory_->GetURLLoaderNetworkServiceObserver();
+  return nullptr;
 }
 
 }  // namespace network

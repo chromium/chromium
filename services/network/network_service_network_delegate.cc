@@ -327,7 +327,8 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
   if (!url_loader)
     return net::OK;
 
-  auto* url_loader_network_observer = url_loader->GetAuthCertObserver();
+  auto* url_loader_network_observer =
+      url_loader->GetURLLoaderNetworkServiceObserver();
   if (!url_loader_network_observer)
     return net::OK;
 

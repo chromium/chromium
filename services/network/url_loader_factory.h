@@ -63,7 +63,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
-  mojom::DevToolsObserver* GetDevToolsObserver();
+  mojom::DevToolsObserver* GetDevToolsObserver() const;
+  mojom::CookieAccessObserver* GetCookieAccessObserver() const;
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const;
 
   static constexpr int kMaxKeepaliveConnections = 2048;
   static constexpr int kMaxKeepaliveConnectionsPerTopLevelFrame = 256;

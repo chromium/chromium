@@ -265,8 +265,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
     cookie_observer =
         std::move(const_cast<mojo::PendingRemote<mojom::CookieAccessObserver>&>(
             url_request.trusted_params->cookie_observer));
-  } else if (cookie_observer_) {
-    cookie_observer_->Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
   }
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer;
@@ -276,9 +274,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
         std::move(const_cast<
                   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
             url_request.trusted_params->url_loader_network_observer));
-  } else if (url_loader_network_observer_) {
-    url_loader_network_observer_->Clone(
-        url_loader_network_observer.InitWithNewPipeAndPassReceiver());
   }
 
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
@@ -287,13 +282,10 @@ void URLLoaderFactory::CreateLoaderAndStart(
     devtools_observer =
         std::move(const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
             url_request.trusted_params->devtools_observer));
-  } else if (devtools_observer_) {
-    devtools_observer_->Clone(
-        devtools_observer.InitWithNewPipeAndPassReceiver());
   }
 
   auto loader = std::make_unique<URLLoader>(
-      context_->url_request_context(), network_service_client,
+      context_->url_request_context(), this, network_service_client,
       context_->client(),
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
@@ -318,9 +310,22 @@ void URLLoaderFactory::Clone(
   NOTREACHED();
 }
 
-mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() {
+mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
   if (devtools_observer_)
     return devtools_observer_.get();
+  return nullptr;
+}
+
+mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
+  if (cookie_observer_)
+    return cookie_observer_.get();
+  return nullptr;
+}
+
+mojom::URLLoaderNetworkServiceObserver*
+URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
+  if (url_loader_network_observer_)
+    return url_loader_network_observer_.get();
   return nullptr;
 }
 

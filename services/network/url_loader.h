@@ -72,6 +72,7 @@ class NetworkUsageAccumulator;
 class KeepaliveStatisticsRecorder;
 class ScopedThrottlingToken;
 struct OriginPolicy;
+class URLLoaderFactory;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
@@ -106,12 +107,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // have the |obey_origin_policy| flag set.
   // |trust_token_helper_factory| must be non-null exactly when the request has
   // Trust Tokens parameters.
-  //
-  // TODO(mmenke): This parameter list is getting a bit excessive. Either pass
-  // in a struct, or just pass in a pointer to the NetworkContext or
-  // URLLoaderFactory directly.
+  // |url_loader_factory| is the factory that created this URLLoader, it will
+  // outlive the lifecycle of this URLLoader. It may be null in tests. The
+  // factory will be used for callbacks if |dev_tools_observer|,
+  // |cookie_access_observer| or |url_loader_network_observer| are not provided.
   URLLoader(
       net::URLRequestContext* url_request_context,
+      URLLoaderFactory* url_loader_factory,
       mojom::NetworkServiceClient* network_service_client,
       mojom::NetworkContextClient* network_context_client,
       DeleteCallback delete_callback,
@@ -179,7 +181,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::IPEndPoint& endpoint,
       base::Optional<GURL>* preserve_fragment_on_redirect_url);
 
-  mojom::URLLoaderNetworkServiceObserver* GetAuthCertObserver();
+  mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
+      const;
 
   void OnBeforeURLRequest();
 
@@ -390,7 +393,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool CanConnectToAddressSpace(
       mojom::IPAddressSpace resource_address_space) const;
 
+  mojom::DevToolsObserver* GetDevToolsObserver() const;
+  mojom::CookieAccessObserver* GetCookieAccessObserver() const;
+
   net::URLRequestContext* url_request_context_;
+  URLLoaderFactory* const url_loader_factory_;
   mojom::NetworkServiceClient* network_service_client_;
   mojom::NetworkContextClient* network_context_client_;
   DeleteCallback delete_callback_;
@@ -542,12 +549,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Outlives `this`.
   const cors::OriginAccessList& origin_access_list_;
 
-  // Observer listening to all cookie reads and writes made by this request.
+  // Observers bound to this specific URLLoader. There may be observers
+  // bound to an URLLoaderFactory as well so these members should not be
+  // used directly, but the GetXXXObserver APIs should be used instead as that
+  // will load the appropriate Observer from the |url_loader_factory_| if
+  // these observers aren't bound.
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
-
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_;
-
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   // Client security state copied from the input ResourceRequest.
