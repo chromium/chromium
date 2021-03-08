@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -335,6 +337,52 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
       "PasswordManager.PasswordEditUpdatedValues",
       metrics_util::PasswordEditUpdatedValues::kNone, 1);
 
+  presenter().RemoveObserver(&observer);
+}
+
+TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
+  PasswordForm form;
+  form.signon_realm = "https://example.com";
+  form.username_value = u"test1@gmail.com";
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm duplicate_form(form);
+  duplicate_form.signon_realm = "https://m.example.com";
+
+  store().AddLogin(form);
+  store().AddLogin(duplicate_form);
+
+  RunUntilIdle();
+  ASSERT_FALSE(store().IsEmpty());
+
+  StrictMockSavedPasswordsPresenterObserver observer;
+  presenter().AddObserver(&observer);
+
+  const std::u16string new_password = u"new_password";
+
+  PasswordForm updated_form = form;
+  updated_form.password_value = new_password;
+
+  PasswordForm updated_duplicate_form = duplicate_form;
+  updated_duplicate_form.password_value = new_password;
+
+  EXPECT_CALL(observer, OnEdited(updated_form));
+  EXPECT_CALL(observer, OnEdited(updated_duplicate_form));
+  // The notification that the logins have changed arrives after both updates
+  // are sent to the store and db. This means that there will be 2 requests
+  // from the presenter to get the updated credentials, BUT they are both sent
+  // after the writes.
+  EXPECT_CALL(observer, OnSavedPasswordsChanged(
+                            ElementsAre(updated_form, updated_duplicate_form)))
+      .Times(2);
+  EXPECT_TRUE(
+      presenter().EditSavedPasswords(form, form.username_value, new_password));
+  RunUntilIdle();
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form.signon_realm, ElementsAre(updated_form)),
+                          Pair(duplicate_form.signon_realm,
+                               ElementsAre(updated_duplicate_form))));
   presenter().RemoveObserver(&observer);
 }
 

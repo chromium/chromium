@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
 namespace {
@@ -37,6 +38,7 @@ bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
   };
   return base::ranges::any_of(all_forms, has_conflicting_username);
 }
+
 }  // namespace
 
 namespace password_manager {
@@ -65,7 +67,7 @@ void SavedPasswordsPresenter::Init() {
 }
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
-                                           base::string16 new_password) {
+                                           std::u16string new_password) {
   auto is_equal = [&form](const PasswordForm& form_to_check) {
     return ArePasswordFormUniqueKeysEqual(form, form_to_check);
   };
@@ -82,9 +84,25 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
 }
 
 bool SavedPasswordsPresenter::EditSavedPasswords(
+    const PasswordForm& form,
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
+  // TODO(crbug.com/1184691): Adapt this code to support credentials
+  // coming from both account and profile store, then change desktop
+  // settings and maybe iOS to use this presenter for updating the duplicates.
+  std::vector<PasswordForm> forms_to_change;
+  std::string current_form_key = CreateSortKey(form);
+  for (const auto& saved_form : passwords_) {
+    if (CreateSortKey(saved_form) == current_form_key)
+      forms_to_change.push_back(saved_form);
+  }
+  return EditSavedPasswords(forms_to_change, new_username, new_password);
+}
+
+bool SavedPasswordsPresenter::EditSavedPasswords(
     const SavedPasswordsView forms,
-    const base::string16& new_username,
-    const base::string16& new_password) {
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
   IsUsernameChanged username_changed(new_username != forms[0].username_value);
   IsPasswordChanged password_changed(new_password != forms[0].password_value);
 

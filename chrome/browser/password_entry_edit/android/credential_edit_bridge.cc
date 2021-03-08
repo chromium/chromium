@@ -82,12 +82,8 @@ void CredentialEditBridge::SaveChanges(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username,
     const base::android::JavaParamRef<jstring>& password) {
-  std::vector<password_manager::PasswordForm> forms_to_change{*credential_};
-
-  // TODO(crbug.com/1170289): Make sure toremove duplicates of the edited
-  // credential, before saving the new one.
   saved_passwords_presenter_->EditSavedPasswords(
-      forms_to_change, base::android::ConvertJavaStringToUTF16(username),
+      *credential_, base::android::ConvertJavaStringToUTF16(username),
       base::android::ConvertJavaStringToUTF16(password));
 }
 
