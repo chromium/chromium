@@ -12215,7 +12215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.ContextMenu" enum="ReadingListContextMenuActions"
-    expires_after="2021-04-15">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -12225,7 +12225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.Download.Failures" units="count"
-    expires_after="2021-04-15">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -12234,14 +12234,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.Download.Status" enum="ReadingListDownloadStatus"
-    expires_after="2021-08-22">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Final status of the download of a reading list entry.</summary>
 </histogram>
 
 <histogram name="ReadingList.FirstReadAgeOnDeletion" units="hours"
-    expires_after="2021-04-15">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -12251,14 +12251,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.OfflineVersionDisplayed" enum="Boolean"
-    expires_after="2021-07-04">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Whether the displayed version is the offline one.</summary>
 </histogram>
 
 <histogram name="ReadingList.Read.AgeOnDeletion" units="hours"
-    expires_after="2021-07-18">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -12267,14 +12267,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.Read.Number" units="count"
-    expires_after="2021-08-22">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of read entries in reading list.</summary>
 </histogram>
 
 <histogram name="ReadingList.Unread.AgeOnDeletion" units="hours"
-    expires_after="2021-04-15">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -12283,7 +12283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.Unread.Number" units="count"
-    expires_after="2021-08-22">
+    expires_after="2022-03-15">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of unread entries in reading list.</summary>
