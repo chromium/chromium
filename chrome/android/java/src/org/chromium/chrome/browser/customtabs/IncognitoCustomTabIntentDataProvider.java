@@ -217,8 +217,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             return true;
         }
         if (!isTrustedIntent(intent)) return false;
-        assert ChromeFeatureList.isInitialized();
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_INCOGNITO);
     }
 
     private String resolveUrlToLoad(Intent intent) {
