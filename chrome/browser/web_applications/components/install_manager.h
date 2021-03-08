@@ -192,6 +192,7 @@ class InstallManager {
   void DisableWebAppSyncInstallForTesting() {
     disable_web_app_sync_install_for_testing_ = true;
   }
+  virtual std::set<AppId> GetEnqueuedAppIdsForTesting() = 0;
 
  protected:
   Profile* profile() { return profile_; }

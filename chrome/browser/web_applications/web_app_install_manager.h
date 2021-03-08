@@ -98,6 +98,7 @@ class WebAppInstallManager final : public InstallManager,
   void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> url_loader);
   bool has_web_contents_for_testing() const { return web_contents_ != nullptr; }
   size_t tasks_size_for_testing() const { return tasks_.size(); }
+  std::set<AppId> GetEnqueuedAppIdsForTesting() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,

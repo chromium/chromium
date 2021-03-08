@@ -841,6 +841,11 @@ const base::Feature kSmbFs{"SmbFs", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kSoundContentSetting{"SoundContentSetting",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables receiving and sending bookmark apps creation through APPS
+// sync. Will be removed in M92 https://crbug.com/1185374.
+const base::Feature kSyncBookmarkApps{"SyncBookmarkApps",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables chrome://sys-internals.
 const base::Feature kSysInternals{"SysInternals",
