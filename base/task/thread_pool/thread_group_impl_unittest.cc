@@ -1743,86 +1743,45 @@ TEST_F(ThreadGroupImplImplStartInBodyTest,
   task_tracker_.FlushForTesting();
 }
 
-namespace {
-
-// A WorkerThreadObserver that lets one worker start, then waits until
-// UnblockWorkers() is called before letting any other workers start.
-class HoldWorkersObserver : public WorkerThreadObserver {
- public:
-  HoldWorkersObserver() = default;
-  HoldWorkersObserver(const HoldWorkersObserver&) = delete;
-  HoldWorkersObserver& operator=(const HoldWorkersObserver&) = delete;
-
-  void UnblockWorkers() { unblock_workers_.Signal(); }
-
-  // WorkerThreadObserver:
-  void OnWorkerThreadMainEntry() override {
-    bool expected = false;
-    if (allowed_first_worker_.compare_exchange_strong(expected, true))
-      return;
-    unblock_workers_.Wait();
-  }
-  void OnWorkerThreadMainExit() override {}
-
- private:
-  std::atomic_bool allowed_first_worker_{false};
-  TestWaitableEvent unblock_workers_;
-};
-
-}  // namespace
-
 // Previously, a WILL_BLOCK ScopedBlockingCall unconditionally woke up a worker
 // if the priority queue was non-empty. Sometimes, that caused multiple workers
 // to be woken up for the same sequence. This test verifies that it is no longer
 // the case:
-// 1. Post task A that blocks until an event is signaled.
-// 2. Post task B. It can't be scheduled because the 1st worker is busy and
-//    the 2nd worker is blocked by HoldWorkersObserver.
-// 3. Signal the event so that task A enters a first WILL_BLOCK
-//    ScopedBlockingCall. This should no-op because there are already enough
-//    workers (previously, a worker would be woken up because the priority
-//    queue isn't empty).
-// 4. Task A enters a second WILL_BLOCK ScopedBlockingCall. This should no-op
-//    because there are already enough workers.
-// 5. Unblock HoldWorkersObserver and wait for all tasks to complete.
-// Disabled: https://crbug.com/1140651
+// 1. Post and run task A.
+// 2. Post task B from task A.
+// 3. Task A enters a WILL_BLOCK ScopedBlockingCall. Once the idle thread is
+//    created, this should no-op because there are already enough workers
+//    (previously, a worker would be woken up because the priority queue isn't
+//    empty).
+// 5. Wait for all tasks to complete.
 TEST_F(ThreadGroupImplImplStartInBodyTest,
-       DISABLED_RepeatedWillBlockDoesNotCreateTooManyWorkers) {
+       RepeatedWillBlockDoesNotCreateTooManyWorkers) {
   constexpr size_t kNumWorkers = 2U;
-  HoldWorkersObserver worker_observer;
-  StartThreadGroup(TimeDelta::Max(),   // |suggested_reclaim_time|
-                   kNumWorkers,        // |max_tasks|
-                   nullopt,            // |max_best_effort_tasks|
-                   &worker_observer);  // |worker_observer|
+  StartThreadGroup(TimeDelta::Max(),  // |suggested_reclaim_time|
+                   kNumWorkers,       // |max_tasks|
+                   nullopt);          // |max_best_effort_tasks|
   const scoped_refptr<TaskRunner> runner = test::CreatePooledTaskRunner(
       {MayBlock()}, &mock_pooled_task_runner_delegate_);
 
-  TestWaitableEvent hold_will_block_task;
-  runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                     hold_will_block_task.Wait();
-                     for (size_t i = 0; i < kLargeNumber; ++i) {
+  for (size_t i = 0; i < kLargeNumber; ++i) {
+    runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+                       runner->PostTask(
+                           FROM_HERE, BindLambdaForTesting([&]() {
+                             EXPECT_LE(
+                                 thread_group_->NumberOfWorkersForTesting(),
+                                 kNumWorkers + 1);
+                           }));
                        // Number of workers should not increase when there is
                        // enough capacity to accommodate queued and running
                        // sequences.
                        ScopedBlockingCall scoped_blocking_call(
                            FROM_HERE, BlockingType::WILL_BLOCK);
-                       EXPECT_LE(kNumWorkers + 1,
+                       EXPECT_EQ(kNumWorkers + 1,
                                  thread_group_->NumberOfWorkersForTesting());
-                     }
-
-                     worker_observer.UnblockWorkers();
-                   }));
-
-  runner->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
-                     EXPECT_LE(thread_group_->NumberOfWorkersForTesting(),
-                               kNumWorkers + 1);
-                   }));
-  hold_will_block_task.Signal();
-
-  // Join the thread group to avoid invalid accesses to |worker_observer|.
-  task_tracker_.FlushForTesting();
-  thread_group_->JoinForTesting();
-  thread_group_.reset();
+                     }));
+    // Wait for all tasks to complete.
+    task_tracker_.FlushForTesting();
+  }
 }
 
 namespace {
