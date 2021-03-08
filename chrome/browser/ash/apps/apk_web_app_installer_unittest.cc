@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/apps/apk_web_app_installer.h"
+#include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

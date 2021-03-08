@@ -11,7 +11,7 @@ communicating with the browser and each other. This layer consists of
 app-platform-agnostic code, which each app platform's custom implementation
 then plugs into. Example features include:
 
-* `chromeos/apps/intent_helper` - allows installed apps that handle particular
+* `ash/apps/intent_helper` - allows installed apps that handle particular
   URLs to be opened by users from the omnibox. For ARC++, custom code queries
   the ARC++ container; for desktop PWAs, data is contained in the browser
   itself.

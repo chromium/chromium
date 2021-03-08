@@ -45,7 +45,7 @@
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace payments {

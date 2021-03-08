@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/intent_helper/chromeos_intent_picker_helpers.h"
 
 #include <algorithm>
 #include <utility>
@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
-#include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -216,7 +216,6 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 
 void MaybeShowIntentPickerChromeOs(
     content::NavigationHandle* navigation_handle) {
-
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

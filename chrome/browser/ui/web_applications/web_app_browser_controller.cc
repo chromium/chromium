@@ -29,7 +29,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 
 namespace {
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";

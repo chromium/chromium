@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/ash/apps/intent_helper/common_apps_navigation_throttle.h"
 
 #include <utility>
 
@@ -12,9 +12,9 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
+#include "chrome/browser/ash/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
-#include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"

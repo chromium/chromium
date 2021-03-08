@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_APPS_APK_WEB_APP_SERVICE_H_
-#define CHROME_BROWSER_CHROMEOS_APPS_APK_WEB_APP_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_H_
+#define CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_H_
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/apps/apk_web_app_installer.h"
+#include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -123,4 +123,4 @@ class ApkWebAppService : public KeyedService,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_APPS_APK_WEB_APP_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_APPS_APK_WEB_APP_SERVICE_H_

@@ -17,7 +17,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_intent_picker_helpers.h"
+#include "chrome/browser/ash/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
 #endif

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/apps/apk_web_app_installer.h"
+#include "chrome/browser/ash/apps/apk_web_app_installer.h"
 
 #include <limits>
 #include <utility>

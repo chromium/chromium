@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
+#include "chrome/browser/ash/apps/metrics/intent_handling_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"

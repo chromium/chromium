@@ -129,11 +129,11 @@
     'apps': {
       'filepath': '^apps/'\
                   '|chrome/browser/apps/'\
-                  '|chrome/browser/chromeos/apps/'
+                  '|chrome/browser/ash/apps/'
     },
     'apps_intent_helper': {
       'filepath': 'chrome/browser/apps/intent_helper/|'\
-                  'chrome/browser/chromeos/apps/intent_helper/|'\
+                  'chrome/browser/ash/apps/intent_helper/|'\
                   'components/arc/intent_helper/'
     },
     'arc': {
