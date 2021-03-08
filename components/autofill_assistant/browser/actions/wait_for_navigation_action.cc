@@ -33,6 +33,8 @@ void WaitForNavigationAction::InternalProcessAction(
   timer_.Start(FROM_HERE, timeout,
                base::BindOnce(&WaitForNavigationAction::OnTimeout,
                               weak_ptr_factory_.GetWeakPtr()));
+
+  action_stopwatch_.StartWaitTime();
   if (!delegate_->WaitForNavigation(
           base::BindOnce(&WaitForNavigationAction::OnWaitForNavigation,
                          weak_ptr_factory_.GetWeakPtr()))) {
@@ -49,7 +51,7 @@ void WaitForNavigationAction::OnWaitForNavigation(bool success) {
     // Already timed out.
     return;
   }
-
+  action_stopwatch_.StartActiveTime();
   SendResult(success ? ACTION_APPLIED : NAVIGATION_ERROR);
 }
 
@@ -64,6 +66,7 @@ void WaitForNavigationAction::OnTimeout() {
     // OnWaitForNavigation.
     return;
   }
+  action_stopwatch_.StartActiveTime();
   SendResult(TIMED_OUT);
 }
 
