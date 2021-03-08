@@ -107,6 +107,15 @@ void GetAllOriginsAndPaths(const base::FilePath& indexeddb_path,
 
 }  // namespace
 
+// static
+void IndexedDBContextImpl::ReleaseOnIDBSequence(
+    scoped_refptr<IndexedDBContextImpl> context) {
+  if (!context->idb_task_runner_->RunsTasksInCurrentSequence()) {
+    IndexedDBContextImpl* context_ptr = context.get();
+    context_ptr->IDBTaskRunner()->ReleaseSoon(FROM_HERE, std::move(context));
+  }
+}
+
 IndexedDBContextImpl::IndexedDBContextImpl(
     const base::FilePath& data_path,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
@@ -117,7 +126,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
         native_file_system_context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
-    : base::RefCountedDeleteOnSequence<IndexedDBContextImpl>(
+    : idb_task_runner_(
           custom_task_runner
               ? custom_task_runner
               : (base::ThreadPool::CreateSequencedTaskRunner(
@@ -141,7 +150,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
   // This is safe because the IndexedDBContextImpl must be destructed on the
   // IDBTaskRunner, and this task will always happen before that.
   if (blob_storage_context || native_file_system_context) {
-    IDBTaskRunner()->PostTask(
+    idb_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](mojo::Remote<storage::mojom::BlobStorageContext>*
@@ -887,11 +896,6 @@ std::set<Origin>* IndexedDBContextImpl::GetOriginSet() {
         std::make_unique<std::set<Origin>>(origins.begin(), origins.end());
   }
   return origin_set_.get();
-}
-
-base::SequencedTaskRunner* IndexedDBContextImpl::IDBTaskRunner() {
-  DCHECK(owning_task_runner());
-  return owning_task_runner();
 }
 
 }  // namespace content
