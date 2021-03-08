@@ -19,7 +19,7 @@
     });
     assert_equals(animation, null);
   }, "Check that removing a parent iframe during keyframe parsing " +
-     "doesn't crash");
+     "doesn't crash when calling animate with options");
 
   test(function() {
     const iframe = document.createElement('iframe');
@@ -42,4 +42,19 @@
     assert_equals(animation, null);
   }, "Check that removing a parent iframe during options parsing " +
      "doesn't crash");
+
+  test(function() {
+    const iframe = document.createElement('iframe');
+    document.body.appendChild(iframe);
+    const element = iframe.contentDocument.createElement("div");
+    const keyframes = [];
+    keyframes.__defineGetter__(0,()=>{
+      document.body.removeChild(iframe);
+      return { transform: 'translate3D(0, -300px, 0)' };
+    });
+    const animation = element.animate(keyframes);
+    assert_equals(animation, null);
+  }, "Check that removing a parent iframe during keyframe parsing " +
+     "doesn't crash when calling animate without options");
+
 </script>
