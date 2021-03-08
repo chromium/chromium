@@ -392,6 +392,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.macOS.ServiceProcessKilled" units="ms"
+    expires_after="M96">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The runtime of the macOS notification service process to display alerts
+    before it got killed unexpectedly. Logged when the service process dies.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.macOS.ServiceProcessRuntime" units="ms"
+    expires_after="M96">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The runtime of the macOS notification service process to display alerts.
+    Logged when we close the connection to the service process either on purpose
+    or after it got killed unexpectedly.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.NotificationHelper.ComServerModuleStatus"
     enum="NotificationHelperComServerModuleStatus" expires_after="M87">
   <owner>finnur@chromium.org</owner>

@@ -9,7 +9,9 @@
 #include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #import "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "content/public/test/browser_task_environment.h"
@@ -169,7 +171,8 @@ class AlertDispatcherMojoTest : public testing::Test {
             }));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::MockOnceClosure on_disconnect_;
   base::scoped_nsobject<AlertDispatcherMojo> alert_dispatcher_;
   FakeMacNotificationProviderFactory* provider_factory_ = nullptr;
@@ -230,4 +233,67 @@ TEST_F(AlertDispatcherMojoTest, CloseThenDispatchNotificationAndKeepConnected) {
 
   run_loop.Run();
   ExpectKeepConnected();
+}
+
+TEST_F(AlertDispatcherMojoTest, CloseProfileNotificationsAndDisconnect) {
+  base::RunLoop run_loop;
+  // Expect that we disconnect after closing the last notification.
+  ExpectDisconnect(run_loop.QuitClosure());
+  EXPECT_CALL(service(), CloseNotificationsForProfile)
+      .WillOnce([](mac_notifications::mojom::ProfileIdentifierPtr profile) {
+        EXPECT_EQ("profileId", profile->id);
+        EXPECT_TRUE(profile->incognito);
+      });
+  EmulateNoNotifications();
+  [alert_dispatcher_ closeNotificationsWithProfileId:@"profileId"
+                                           incognito:YES];
+  run_loop.Run();
+}
+
+TEST_F(AlertDispatcherMojoTest, CloseAndDisconnectTiming) {
+  base::HistogramTester histograms;
+  // Show a new notification.
+  EXPECT_CALL(service(), DisplayNotification);
+  [alert_dispatcher_ dispatchNotification:@{}];
+
+  // Wait for 30 seconds and close the notification.
+  auto delay = base::TimeDelta::FromSeconds(30);
+  task_environment_.FastForwardBy(delay);
+
+  // Expect that we disconnect after closing the last notification.
+  base::RunLoop run_loop;
+  ExpectDisconnect(run_loop.QuitClosure());
+  EmulateNoNotifications();
+  EXPECT_CALL(service(), CloseNotification);
+  [alert_dispatcher_ closeNotificationWithId:@"notificationId"
+                                   profileId:@"profileId"
+                                   incognito:YES];
+
+  // Verify that we log the runtime length and no unexpected kill.
+  run_loop.Run();
+  histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessRuntime",
+                                    delay, /*expected_count=*/1);
+  histograms.ExpectTotalCount("Notifications.macOS.ServiceProcessKilled",
+                              /*count=*/0);
+}
+
+TEST_F(AlertDispatcherMojoTest, KillServiceTiming) {
+  base::HistogramTester histograms;
+  // Show a new notification.
+  EXPECT_CALL(service(), DisplayNotification);
+  [alert_dispatcher_ dispatchNotification:@{}];
+
+  // Wait for 30 seconds and terminate the service.
+  auto delay = base::TimeDelta::FromSeconds(30);
+  task_environment_.FastForwardBy(delay);
+  // Simulate a dying service process.
+  provider_factory_->disconnect();
+
+  // Run remaining tasks as we can't observe the disconnect callback.
+  task_environment_.RunUntilIdle();
+  // Verify that we log the runtime length and an unexpected kill.
+  histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessRuntime",
+                                    delay, /*expected_count=*/1);
+  histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessKilled",
+                                    delay, /*expected_count=*/1);
 }

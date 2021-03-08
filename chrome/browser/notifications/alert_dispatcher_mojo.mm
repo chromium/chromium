@@ -14,8 +14,10 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #import "chrome/browser/notifications/notification_alert_service_bridge.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -26,6 +28,7 @@
   base::scoped_nsobject<NotificationAlertServiceBridge> _mojoService;
   SEQUENCE_CHECKER(_sequenceChecker);
   base::CancelableOnceClosure _noAlertsChecker;
+  base::TimeTicks _serviceStartTime;
 }
 
 - (instancetype)initWithProviderFactory:
@@ -56,12 +59,14 @@
                               incognito:(BOOL)incognito {
   [[self serviceProxy] closeNotificationsWithProfileId:profileId
                                              incognito:incognito];
+  // Check if there are any alerts left after this.
+  [self checkIfAlertsRemaining];
 }
 
 - (void)closeAllNotifications {
   [[self serviceProxy] closeAllNotifications];
   // We know that there are no more notifications after this.
-  [self onServiceDisconnected];
+  [self onServiceDisconnectedGracefully:YES];
 }
 
 - (void)getDisplayedAlertsForProfileId:(NSString*)profileId
@@ -133,7 +138,7 @@
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // Create a new cancelable callback that closes the mojo connection.
   _noAlertsChecker.Reset(base::BindOnce(base::RetainBlock(^{
-    [self onServiceDisconnected];
+    [self onServiceDisconnectedGracefully:YES];
   })));
   __block base::OnceClosure blockCallback = _noAlertsChecker.callback();
 
@@ -149,8 +154,21 @@
   [[self serviceProxy] getAllDisplayedAlertsWithReply:reply];
 }
 
-- (void)onServiceDisconnected {
+- (void)onServiceDisconnectedGracefully:(BOOL)gracefully {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_mojoService) {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - _serviceStartTime;
+    base::UmaHistogramCustomTimes(
+        "Notifications.macOS.ServiceProcessRuntime", elapsed,
+        base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromHours(8),
+        /*buckets=*/50);
+    if (!gracefully) {
+      base::UmaHistogramCustomTimes(
+          "Notifications.macOS.ServiceProcessKilled", elapsed,
+          base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromHours(8),
+          /*buckets=*/50);
+    }
+  }
   _noAlertsChecker.Cancel();
   _mojoService.reset();
 }
@@ -158,8 +176,9 @@
 - (id<NotificationDelivery>)serviceProxy {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_mojoService) {
+    _serviceStartTime = base::TimeTicks::Now();
     auto onDisconnect = base::BindOnce(base::RetainBlock(^{
-      [self onServiceDisconnected];
+      [self onServiceDisconnectedGracefully:NO];
     }));
     auto onAction = base::BindRepeating(base::RetainBlock(^{
       [self checkIfAlertsRemaining];
