@@ -2,7 +2,7 @@
 <html>
 <head>
   <!-- Headers:
-    Content-Security-Policy: prefetch-src 'none'
+    Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline' 'self'; img-src 'self'; style-src 'self'
     Link: </content-security-policy/support/fail.png>;rel=prefetch
   -->
   <script src='/resources/testharness.js'></script>
@@ -27,7 +27,7 @@
         link.rel = 'stylesheet';
         link.href = '/content-security-policy/support/prefetch-subresource.css';
         document.head.appendChild(link);
-    }, 'Prefetch via `Link` header blocked when allowed by prefetch-src');
+    }, 'Prefetch via `Link` header blocked when allowed by default-src');
   </script>
 </head>
 <body>
