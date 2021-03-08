@@ -807,7 +807,7 @@ const base::Feature kWebAssemblyLazyCompilation{
 // Enable WebAssembly SIMD.
 // https://github.com/WebAssembly/Simd
 const base::Feature kWebAssemblySimd{"WebAssemblySimd",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
