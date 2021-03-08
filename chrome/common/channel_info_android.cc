@@ -12,7 +12,7 @@
 
 namespace chrome {
 
-std::string GetChannelName() {
+std::string GetChannelName(WithExtendedStable with_extended_stable) {
   switch (GetChannel()) {
     case version_info::Channel::UNKNOWN: return "unknown";
     case version_info::Channel::CANARY: return "canary";
@@ -26,6 +26,10 @@ std::string GetChannelName() {
 
 version_info::Channel GetChannel() {
   return version_info::android::GetChannel();
+}
+
+bool IsExtendedStableChannel() {
+  return false;  // Not supported on Android.
 }
 
 }  // namespace chrome

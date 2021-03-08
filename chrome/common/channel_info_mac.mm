@@ -98,7 +98,8 @@ void CacheChannelInfo() {
   ignore_result(SideBySideCapable());
 }
 
-std::string GetChannelName() {
+std::string GetChannelName(WithExtendedStable with_extended_stable) {
+  // TODO(https://crbug.com/1185621): Detect extended stable.
   return ChannelName();
 }
 
@@ -122,6 +123,11 @@ bool IsSideBySideCapable() {
 
 version_info::Channel GetChannel() {
   return GetChannelByName(ChannelName());
+}
+
+bool IsExtendedStableChannel() {
+  // TODO(https://crbug.com/1185621): Detect extended stable.
+  return false;
 }
 
 }  // namespace chrome

@@ -50,7 +50,8 @@ version_info::Channel GetChannelImpl(std::string* modifier_out) {
 
 }  // namespace
 
-std::string GetChannelName() {
+std::string GetChannelName(WithExtendedStable with_extended_stable) {
+  // TODO(https://crbug.com/1185621): Detect extended stable.
   std::string modifier;
   GetChannelImpl(&modifier);
   return modifier;
@@ -103,6 +104,11 @@ std::string GetDesktopName(base::Environment* env) {
 
 version_info::Channel GetChannel() {
   return GetChannelImpl(nullptr);
+}
+
+bool IsExtendedStableChannel() {
+  // TODO(https://crbug.com/1185621): Detect extended stable.
+  return false;
 }
 
 }  // namespace chrome

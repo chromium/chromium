@@ -12,8 +12,9 @@
 
 namespace chrome {
 
-std::string GetChannelName() {
+std::string GetChannelName(WithExtendedStable with_extended_stable) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(https://crbug.com/1185621): Detect extended stable.
   std::wstring channel(install_static::GetChromeChannelName());
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Adorn the channel when DCHECKs are baked into the build, as there will be
@@ -28,6 +29,11 @@ std::string GetChannelName() {
 
 version_info::Channel GetChannel() {
   return install_static::GetChromeChannel();
+}
+
+bool IsExtendedStableChannel() {
+  // TODO(https://crbug.com/1185621): Detect extended stable.
+  return false;
 }
 
 }  // namespace chrome
