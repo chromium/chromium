@@ -21,6 +21,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Android.AdaptiveToolbarButton.Clicked"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-15">
+  <owner>bttk@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Reports the variant of the optional toolbar button that was clicked. Reports
+    only when the feature AdaptiveButtonInTopToolbar is active.
+  </summary>
+</histogram>
+
+<histogram name="Android.AdaptiveToolbarButton.SessionVariant"
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-15">
+  <owner>bttk@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Reports the variant of the optional toolbar button used during the session.
+    Reports only when the feature AdaptiveButtonInTopToolbar is active, the
+    button is placed in the toolbar, and is clickable.
+  </summary>
+</histogram>
+
 <histogram name="Android.AppNotificationStatus" enum="NotificationAppStatus"
     expires_after="2020-11-15">
   <owner>peter@chromium.org</owner>

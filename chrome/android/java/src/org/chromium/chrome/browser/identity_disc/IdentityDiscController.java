@@ -103,7 +103,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mProfileSupplier = profileSupplier;
         mActivityLifecycleDispatcher.register(this);
 
-        mButtonData = new ButtonDataImpl(false, null,
+        mButtonData = new ButtonDataImpl(/*canShow=*/false, /*drawable=*/null,
+                /*onClickListener=*/
                 view
                 -> {
                     recordIdentityDiscUsed();
@@ -114,11 +115,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                                     ? MainSettings.class
                                     : SyncAndServicesSettings.class);
                 },
-                R.string.accessibility_toolbar_btn_identity_disc, false,
+                R.string.accessibility_toolbar_btn_identity_disc, /*supportsTinting=*/false,
                 new IPHCommandBuilder(mContext.getResources(),
                         FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
                         R.string.iph_identity_disc_accessibility_text),
-                true);
+                /*isEnabled=*/true);
     }
 
     /**

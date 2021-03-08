@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
 /**
@@ -36,22 +37,34 @@ public interface ButtonData {
     final class ButtonSpec {
         @NonNull
         private final Drawable mDrawable;
-        @NonNull
+        // TODO(crbug.com/1185382): make mOnClickListener @NonNull
+        @Nullable
         private final View.OnClickListener mOnClickListener;
         @StringRes
         private final int mContentDescriptionResId;
         private final boolean mSupportsTinting;
         @Nullable
         private final IPHCommandBuilder mIPHCommandBuilder;
+        @AdaptiveToolbarButtonVariant
+        private final int mButtonVariant;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
                 int contentDescriptionResId, boolean supportsTinting,
-                @Nullable IPHCommandBuilder iphCommandBuilder) {
+                @Nullable IPHCommandBuilder iphCommandBuilder,
+                @AdaptiveToolbarButtonVariant int buttonVariant) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
             mContentDescriptionResId = contentDescriptionResId;
             mSupportsTinting = supportsTinting;
             mIPHCommandBuilder = iphCommandBuilder;
+            mButtonVariant = buttonVariant;
+        }
+
+        public ButtonSpec(Drawable drawable, View.OnClickListener onClickListener,
+                int contentDescriptionResId, boolean supportsTinting,
+                IPHCommandBuilder iphCommandBuilder) {
+            this(drawable, onClickListener, contentDescriptionResId, supportsTinting,
+                    iphCommandBuilder, AdaptiveToolbarButtonVariant.UNKNOWN);
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -85,6 +98,12 @@ public interface ButtonData {
         @Nullable
         public IPHCommandBuilder getIPHCommandBuilder() {
             return mIPHCommandBuilder;
+        }
+
+        /** Returns the adaptive button variant used for recording metrics. */
+        @AdaptiveToolbarButtonVariant
+        public int getButtonVariant() {
+            return mButtonVariant;
         }
     }
 }

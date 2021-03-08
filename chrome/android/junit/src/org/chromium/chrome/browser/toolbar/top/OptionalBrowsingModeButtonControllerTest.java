@@ -62,9 +62,9 @@ public class OptionalBrowsingModeButtonControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mButtonData1 = new ButtonDataImpl(true, null, null, 0, false, null, true);
-        mButtonData2 = new ButtonDataImpl(true, null, null, 0, false, null, true);
-        mButtonData3 = new ButtonDataImpl(true, null, null, 0, false, null, true);
+        mButtonData1 = createButtonData();
+        mButtonData2 = createButtonData();
+        mButtonData3 = createButtonData();
         doReturn(mButtonData1).when(mButtonDataProvider1).get(mTab);
         doReturn(mButtonData2).when(mButtonDataProvider2).get(mTab);
         doReturn(mButtonData3).when(mButtonDataProvider3).get(mTab);
@@ -144,7 +144,7 @@ public class OptionalBrowsingModeButtonControllerTest {
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
 
-        ButtonDataImpl newButtonData = new ButtonDataImpl(true, null, null, 0, false, null, true);
+        ButtonDataImpl newButtonData = createButtonData();
         doReturn(newButtonData).when(mButtonDataProvider1).get(mTab);
         mButtonController.buttonDataProviderChanged(mButtonDataProvider1, true);
         verify(mToolbarLayout, times(1)).updateOptionalButton(newButtonData);
@@ -159,7 +159,7 @@ public class OptionalBrowsingModeButtonControllerTest {
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
 
-        ButtonDataImpl newButtonData = new ButtonDataImpl(true, null, null, 0, false, null, true);
+        ButtonDataImpl newButtonData = createButtonData();
         mButtonController.buttonDataProviderChanged(mButtonDataProvider2, true);
         verify(mToolbarLayout, times(0)).updateOptionalButton(newButtonData);
 
@@ -203,5 +203,12 @@ public class OptionalBrowsingModeButtonControllerTest {
         mButtonData1.setEnabled(false);
         mButtonController.updateButtonVisibility();
         verify(mToolbarLayout, times(1)).updateOptionalButton(mButtonData1);
+    }
+
+    private static ButtonDataImpl createButtonData() {
+        return new ButtonDataImpl(
+                /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
+                /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true);
     }
 }
