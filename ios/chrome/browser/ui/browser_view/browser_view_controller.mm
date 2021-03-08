@@ -609,6 +609,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // displaying a new web state.
 @property(nonatomic, assign) BOOL viewTranslatedForSmoothScrolling;
 
+// A gesture recognizer to track the last tapped window and the coordinates of
+// the last tap.
+@property(nonatomic, strong) UIGestureRecognizer* contentAreaGestureRecognizer;
+
 // BVC initialization
 // ------------------
 // If the BVC is initialized with a valid browser state & tab model immediately,
@@ -1352,6 +1356,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
   self.browser = nullptr;
 
+  [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
+
   [self.primaryToolbarCoordinator stop];
   self.primaryToolbarCoordinator = nil;
   [self.secondaryToolbarContainerCoordinator stop];
@@ -1473,12 +1479,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Add a tap gesture recognizer to save the last tap location for the source
   // location of the new tab animation.
-  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+  self.contentAreaGestureRecognizer = [[UITapGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(saveContentAreaTapLocation:)];
-  [tapRecognizer setDelegate:self];
-  [tapRecognizer setCancelsTouchesInView:NO];
-  [self.contentArea addGestureRecognizer:tapRecognizer];
+  [self.contentAreaGestureRecognizer setDelegate:self];
+  [self.contentAreaGestureRecognizer setCancelsTouchesInView:NO];
+  [self.contentArea addGestureRecognizer:self.contentAreaGestureRecognizer];
 
   if (self.isThumbStripEnabled) {
     [self ensureBrowserViewHiderCoordinatorStarted];
@@ -2690,6 +2696,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)saveContentAreaTapLocation:(UIGestureRecognizer*)gestureRecognizer {
+  if (_isShutdown) {
+    return;
+  }
   UIView* view = gestureRecognizer.view;
   CGPoint viewCoordinate = [gestureRecognizer locationInView:view];
   _lastTapPoint = [[view superview] convertPoint:viewCoordinate
