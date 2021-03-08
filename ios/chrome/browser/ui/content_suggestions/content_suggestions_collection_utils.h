@@ -13,10 +13,13 @@ extern const int kSearchFieldBackgroundColor;
 
 extern const CGFloat kHintTextScale;
 
-// Returns the proper height for the doodle. |logoIsShowing| refers to the
-// Google logo or the doodle. The SizeClass of the |traitCollection| of the view
-// displaying the doodle is used in the computation.
-CGFloat doodleHeight(BOOL logoIsShowing, UITraitCollection* traitCollection);
+// Returns the proper height for the doodle. |logoIsShowing| is YES if showing
+// the Google logo. |doodleisShowing| is YES if the doodle is showing. The
+// SizeClass of the |traitCollection| of the view displaying the doodle is used
+// in the computation.
+CGFloat doodleHeight(BOOL logoIsShowing,
+                     BOOL doodleIsShowing,
+                     UITraitCollection* traitCollection);
 // Returns the proper margin to the top of the header for the doodle.
 // If |toolbarPresent| is true, the top margin include a space to display the
 // toolbar.  Adds |topInset| to non-RxR displays. The SizeClass of the
@@ -33,12 +36,14 @@ CGFloat searchFieldWidth(CGFloat superviewWidth,
                          UITraitCollection* traitCollection);
 // TODO(crbug.com/761817): Remove |toolbarPresent| once the transition to the
 // new architecture is completed.
-// Returns the expected height of the header. |logoIsShowing| refers to the
-// Google logo or the doodle. |promoCanShow| represents whether a what's new
-// promo can be displayed.  |toolbarPresent| represent whether the height should
-// take into account a space to show the toolbar. The SizeClass of the
-// |traitCollection| of the view displaying the logo is used in the computation.
+// Returns the expected height of the header. |logoIsShowing| is YES if showing
+// the Google logo. |doodleIsShowing| is YES if the doodle is being shown.
+// |promoCanShow| represents whether a what's new promo can be displayed.
+// |toolbarPresent| represent whether the height should take into account a
+// space to show the toolbar. The SizeClass of the |traitCollection| of the view
+// displaying the logo is used in the computation.
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
+                            BOOL doodleIsShowing,
                             BOOL promoCanShow,
                             BOOL toolbarPresent,
                             CGFloat topInset,

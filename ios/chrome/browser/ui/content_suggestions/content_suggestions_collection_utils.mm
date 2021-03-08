@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -33,20 +34,30 @@ const CGFloat kSearchFieldMinMargin = 8;
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 48;
+const CGFloat kShrunkDoodleTopMarginOther = 84;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to |kDoodleTopMarginOther| on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
 
 // Top margin for the search field
 const CGFloat kSearchFieldTopMargin = 32;
+const CGFloat kShrunkLogoSearchFieldTopMargin = 22;
 
 // Bottom margin for the search field.
 const CGFloat kNTPSearchFieldBottomPadding = 18;
 
 const CGFloat kTopSpacingMaterial = 24;
 
-// Height for the doodle frame.
+// Height for the logo and doodle frame.
 const CGFloat kGoogleSearchDoodleHeight = 120;
+
+// Height for the shrunk doodle frame.
+// TODO(crbug.com/1170491): clean up post-launch.
+const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
+
+// Height for the shrunk logo frame.
+// TODO(crbug.com/1170491): clean up post-launch.
+const CGFloat kGoogleSearchLogoShrunkHeight = 34;
 
 // Height for the doodle frame when Google is not the default search engine.
 const CGFloat kNonGoogleSearchDoodleHeight = 60;
@@ -57,9 +68,20 @@ namespace content_suggestions {
 const int kSearchFieldBackgroundColor = 0xF1F3F4;
 const CGFloat kHintTextScale = 0.15;
 
-CGFloat doodleHeight(BOOL logoIsShowing, UITraitCollection* traitCollection) {
-  if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing)
+CGFloat doodleHeight(BOOL logoIsShowing,
+                     BOOL doodleIsShowing,
+                     UITraitCollection* traitCollection) {
+  if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing) {
     return kNonGoogleSearchDoodleHeight;
+  }
+
+  if (ShouldShrinkLogoForStartSurface() && logoIsShowing) {
+    if (doodleIsShowing || IsIPadIdiom()) {
+      return kGoogleSearchDoodleShrunkHeight;
+    } else {
+      return kGoogleSearchLogoShrunkHeight;
+    }
+  }
 
   return kGoogleSearchDoodleHeight;
 }
@@ -71,13 +93,21 @@ CGFloat doodleTopMargin(BOOL toolbarPresent,
     return kDoodleTopMarginRegularXRegular;
   if (IsCompactHeight(traitCollection))
     return topInset;
-  return topInset + kDoodleTopMarginOther +
-         AlignValueToPixel(kDoodleScaledTopMarginOther *
-                           ui_util::SystemSuggestedFontSizeMultiplier());
+  CGFloat topMargin =
+      topInset +
+      AlignValueToPixel(kDoodleScaledTopMarginOther *
+                        ui_util::SystemSuggestedFontSizeMultiplier());
+  if (ShouldShrinkLogoForStartSurface()) {
+    topMargin += kShrunkDoodleTopMarginOther;
+  } else {
+    topMargin += kDoodleTopMarginOther;
+  }
+  return topMargin;
 }
 
 CGFloat searchFieldTopMargin() {
-  return kSearchFieldTopMargin;
+  return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
+                                           : kSearchFieldTopMargin;
 }
 
 CGFloat searchFieldWidth(CGFloat superviewWidth,
@@ -90,13 +120,15 @@ CGFloat searchFieldWidth(CGFloat superviewWidth,
 }
 
 CGFloat heightForLogoHeader(BOOL logoIsShowing,
+                            BOOL doodleIsShowing,
                             BOOL promoCanShow,
                             BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection) {
   CGFloat headerHeight =
       doodleTopMargin(toolbarPresent, topInset, traitCollection) +
-      doodleHeight(logoIsShowing, traitCollection) + searchFieldTopMargin() +
+      doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
+      searchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
       kNTPSearchFieldBottomPadding;
