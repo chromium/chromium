@@ -188,18 +188,19 @@ NOINLINE void PartitionBucket<thread_safe>::OnFull() {
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
-    PartitionRoot<thread_safe>* root,
-    int flags,
-    uint16_t num_partition_pages,
-    size_t slot_span_committed_size) {
+ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
+                                               int flags) {
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page) %
               PartitionPageSize()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(root->next_partition_page_end) %
               PartitionPageSize()));
+
+  size_t num_partition_pages = get_pages_per_slot_span();
+  size_t slot_span_reserved_size = PartitionPageSize() * num_partition_pages;
+  size_t slot_span_committed_size = get_bytes_per_span();
   PA_DCHECK(num_partition_pages <= NumPartitionPagesPerSuperPage());
   PA_DCHECK(slot_span_committed_size % SystemPageSize() == 0);
-  size_t slot_span_reserved_size = PartitionPageSize() * num_partition_pages;
   PA_DCHECK(slot_span_committed_size <= slot_span_reserved_size);
 
   size_t num_partition_pages_left =
@@ -213,21 +214,28 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
     }
   }
 
-  char* ret = root->next_partition_page;
+  void* slot_span_start = root->next_partition_page;
   root->next_partition_page += slot_span_reserved_size;
+
+  // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the slot_span's
+  // bucket isn't set up yet to properly assert the slot start.
+  auto* slot_span =
+      SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(slot_span_start);
+  InitializeSlotSpan(slot_span);
+
   // System pages in the super page come in a decommited state. Commit them
   // before vending them back.
   // If lazy commit is enabled, pages will be committed when provisioning slots,
   // in ProvisionMoreSlotsAndAllocOne(), not here.
   if (!root->use_lazy_commit) {
-    root->RecommitSystemPagesForData(ret, slot_span_committed_size,
+    root->RecommitSystemPagesForData(slot_span_start, slot_span_committed_size,
                                      PageUpdatePermissions);
   }
 
   // Double check that we had enough space in the super page for the new slot
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
-  return ret;
+  return slot_span;
 }
 
 template <bool thread_safe>
@@ -608,19 +616,9 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     // Third. If we get here, we need a brand new slot span.
     // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
     // as slot_span_committed_size.
-    uint16_t num_partition_pages = get_pages_per_slot_span();
-    void* raw_memory =
-        AllocNewSlotSpan(root, flags, num_partition_pages,
-                         /* slot_span_committed_size= */ get_bytes_per_span());
-    if (LIKELY(raw_memory != nullptr)) {
-      // Call FromSlotInnerPtr instead of FromSlotStartPtr, because the bucket
-      // isn't set up yet to properly assert the slot start.
-      new_slot_span =
-          SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(raw_memory);
-      InitializeSlotSpan(new_slot_span);
-      // New memory from PageAllocator is always zeroed.
-      *is_already_zeroed = true;
-    }
+    new_slot_span = AllocNewSlotSpan(root, flags);
+    // New memory from PageAllocator is always zeroed.
+    *is_already_zeroed = true;
   }
 
   // Bail if we had a memory allocation failure.

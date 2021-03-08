@@ -147,11 +147,9 @@ struct PartitionBucket {
   // Allocates a new slot span with size |num_partition_pages| from the
   // current extent. Metadata within this slot span will be uninitialized.
   // Returns nullptr on error.
-  ALWAYS_INLINE void* AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
-                                       int flags,
-                                       uint16_t num_partition_pages,
-                                       size_t committed_size)
-      EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
+      PartitionRoot<thread_safe>* root,
+      int flags) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Allocates a new super page from the current extent. All slot-spans will be
   // in the decommitted state. Returns nullptr on error.
