@@ -582,7 +582,11 @@ mojom("mojom_platform") {
       ]
       traits_sources =
           [ "//third_party/blink/common/manifest/manifest_mojom_traits.cc" ]
-      traits_deps = [ "//ui/gfx/geometry/mojom:mojom_traits" ]
+      traits_deps = [
+        "//net",
+        "//ui/gfx/geometry/mojom:mojom_traits",
+        "//url",
+      ]
     },
     {
       types = [

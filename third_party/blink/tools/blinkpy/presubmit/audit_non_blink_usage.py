@@ -1286,7 +1286,10 @@ _CONFIG = [
     },
     {
         'paths': ['third_party/blink/renderer/modules/manifest/'],
-        'allowed': ['net::ParseMimeTypeWithoutParameter'],
+        'allowed': [
+            'net::ParseMimeTypeWithoutParameter',
+            'net::registry_controlled_domains::.+',
+        ],
     },
     {
         'paths':

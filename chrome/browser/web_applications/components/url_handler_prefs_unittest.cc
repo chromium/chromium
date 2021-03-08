@@ -435,6 +435,33 @@ TEST_F(UrlHandlerPrefsTest, SubdomainMatch_DifferentLevels) {
                {profile_1_, profile_1_});
 }
 
+TEST_F(UrlHandlerPrefsTest, SubdomainMatch_WildcardAsSubdomain) {
+  const auto web_app = WebAppWithUrlHandlers(
+      app_url_1_,
+      // Should match https://*.com
+      {apps::UrlHandlerInfo(url::Origin::Create(GURL("https://com")),
+                            /*has_origin_wildcard*/ true)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
+
+  auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+      LocalState(), GURL("https://example.com"));
+  EXPECT_TRUE(matches.has_value());
+  EXPECT_EQ(1u, matches->size());
+  CheckMatches(matches, {web_app.get()}, {profile_1_});
+
+  matches = url_handler_prefs::FindMatchingUrlHandlers(
+      LocalState(), GURL("https://foo.example.com"));
+  EXPECT_TRUE(matches.has_value());
+  EXPECT_EQ(1u, matches->size());
+  CheckMatches(matches, {web_app.get()}, {profile_1_});
+
+  matches = url_handler_prefs::FindMatchingUrlHandlers(
+      LocalState(), GURL("https://example.me"));
+  EXPECT_TRUE(matches.has_value());
+  EXPECT_EQ(0u, matches->size());
+}
+
 TEST_F(UrlHandlerPrefsTest, MatchPaths) {
   // Test no wildcard
   apps::UrlHandlerInfo handler(origin_1_, false, {"/foo/bar"}, {});

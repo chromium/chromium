@@ -268,6 +268,11 @@ struct BLINK_COMMON_EXPORT
     return url_handler.origin;
   }
 
+  static bool has_origin_wildcard(
+      const ::blink::Manifest::UrlHandler& url_handler) {
+    return url_handler.has_origin_wildcard;
+  }
+
   static bool Read(blink::mojom::ManifestUrlHandlerDataView data,
                    ::blink::Manifest::UrlHandler* out);
 };

@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -208,7 +209,7 @@ struct WebApplicationInfo {
 
   // The app intends to act as a URL handler for URLs described by this
   // information.
-  std::vector<blink::Manifest::UrlHandler> url_handlers;
+  apps::UrlHandlers url_handlers;
 
   // User preference as to whether to auto run the app on OS login.
   // Currently only supported in Windows platform.

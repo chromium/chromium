@@ -185,6 +185,16 @@ base::Optional<apps::ShareTarget> ToWebAppShareTarget(
   return std::move(apps_share_target);
 }
 
+apps::UrlHandlers ToWebAppUrlHandlers(
+    const std::vector<blink::Manifest::UrlHandler>& url_handlers) {
+  apps::UrlHandlers apps_url_handlers;
+  for (const auto& url_handler : url_handlers) {
+    apps_url_handlers.emplace_back(url_handler.origin,
+                                   url_handler.has_origin_wildcard);
+  }
+  return apps_url_handlers;
+}
+
 }  // namespace
 
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
@@ -271,7 +281,7 @@ void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
 
   web_app_info->protocol_handlers = manifest.protocol_handlers;
 
-  web_app_info->url_handlers = manifest.url_handlers;
+  web_app_info->url_handlers = ToWebAppUrlHandlers(manifest.url_handlers);
 
   // If any shortcuts are specified in the manifest, they take precedence over
   // any we picked up from the web_app stuff.

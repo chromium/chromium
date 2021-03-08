@@ -118,6 +118,7 @@ struct BLINK_COMMON_EXPORT Manifest {
 
   struct BLINK_COMMON_EXPORT UrlHandler {
     url::Origin origin;
+    bool has_origin_wildcard;
   };
 
   // Structure representing a related application.

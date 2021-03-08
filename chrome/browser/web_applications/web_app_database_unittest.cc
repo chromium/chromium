@@ -157,6 +157,7 @@ class WebAppDatabaseTest : public WebAppTest {
       apps::UrlHandlerInfo url_handler;
       url_handler.origin =
           url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+      url_handler.has_origin_wildcard = true;
       url_handlers.push_back(std::move(url_handler));
     }
 
@@ -772,6 +773,21 @@ TEST_F(WebAppDatabaseTest, WebAppWithCaptureLinksRoundTrip) {
   auto app_id = app->app_id();
 
   app->SetCaptureLinks(blink::mojom::CaptureLinks::kExistingClientNavigate);
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+
+TEST_F(WebAppDatabaseTest, WebAppWithUrlHandlersRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+  auto app_id = app->app_id();
+
+  app->SetUrlHandlers(CreateUrlHandlers(1));
 
   controller().RegisterApp(std::move(app));
 

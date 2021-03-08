@@ -2533,6 +2533,183 @@ TEST_F(ManifestParserTest, UrlHandlerParseRules) {
     ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
                     ->IsSameOriginWith(url_handlers[0]->origin.get()));
   }
+
+  // Parse invalid handler where the origin is a TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://co.uk\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse origin with wildcard.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_TRUE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse invalid origin wildcard format.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*foo.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://*foo.com")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_FALSE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse origin where the host is just the wildcard prefix.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.com\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with an unknown TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.foo\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse invalid origin where wildcard is used with a multipart TLD.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.co.uk\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(
+        "url_handlers entry ignored, domain of required property 'origin' is "
+        "invalid.",
+        errors()[0]);
+    ASSERT_EQ(0u, url_handlers.size());
+  }
+
+  // Parse valid origin with private registry.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://*.glitch.me\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(blink::SecurityOrigin::CreateFromString("https://glitch.me")
+                    ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_TRUE(url_handlers[0]->has_origin_wildcard);
+  }
+
+  // Parse valid IP address as origin.
+  {
+    auto& manifest = ParseManifest(
+        "{"
+        "  \"url_handlers\": ["
+        "    {"
+        "      \"origin\": \"https://192.168.0.1:8888\""
+        "    }"
+        "  ]"
+        "}");
+    auto& url_handlers = manifest->url_handlers;
+
+    ASSERT_EQ(0u, GetErrorCount());
+    ASSERT_EQ(1u, url_handlers.size());
+    ASSERT_TRUE(
+        blink::SecurityOrigin::CreateFromString("https://192.168.0.1:8888")
+            ->IsSameOriginWith(url_handlers[0]->origin.get()));
+    ASSERT_FALSE(url_handlers[0]->has_origin_wildcard);
+  }
 }
 
 TEST_F(ManifestParserTest, ShareTargetParseRules) {

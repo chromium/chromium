@@ -118,6 +118,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     blink::Manifest::UrlHandler url_handler;
     url_handler.origin =
         url::Origin::Create(GURL("https://url_handlers_origin.com/"));
+    url_handler.has_origin_wildcard = false;
     manifest.url_handlers.push_back(url_handler);
   }
 
@@ -181,6 +182,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   auto url_handler = web_app_info.url_handlers[0];
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
+  EXPECT_FALSE(url_handler.has_origin_wildcard);
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
@@ -361,6 +363,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     blink::Manifest::UrlHandler url_handler;
     url_handler.origin =
         url::Origin::Create(GURL("https://url_handlers_origin.com/"));
+    url_handler.has_origin_wildcard = true;
     manifest.url_handlers.push_back(url_handler);
   }
 
@@ -460,6 +463,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   auto url_handler = web_app_info.url_handlers[0];
   EXPECT_EQ(url_handler.origin,
             url::Origin::Create(GURL("https://url_handlers_origin.com/")));
+  EXPECT_TRUE(url_handler.has_origin_wildcard);
 }
 
 // Tests that we limit the number of icons declared by a site.

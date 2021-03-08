@@ -140,6 +140,10 @@ struct ManifestProtocolHandler {
 
 struct ManifestUrlHandler {
   url.mojom.Origin origin;
+  // A boolean that is used to show if a wildcard is present for the origin.
+  // If true, the application indicates that it wants to handle all subdomains
+  // of |origin|. If false, the application only wants to handle |origin|.
+  bool has_origin_wildcard;
 };
 
 // Structure representing a related application.

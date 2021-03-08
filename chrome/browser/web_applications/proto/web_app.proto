@@ -34,6 +34,7 @@ message WebAppProtocolHandler {
 
 message WebAppUrlHandlerProto {
   required string origin = 1;
+  required bool has_origin_wildcard = 2;
 }
 
 // A set to track simultaneous installs and uninstalls from multiple install

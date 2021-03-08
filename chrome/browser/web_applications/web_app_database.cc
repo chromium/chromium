@@ -338,6 +338,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   for (const auto& url_handler : web_app.url_handlers()) {
     WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
     url_handler_proto->set_origin(url_handler.origin.Serialize());
+    url_handler_proto->set_has_origin_wildcard(url_handler.has_origin_wildcard);
   }
 
   if (web_app.capture_links() != blink::mojom::CaptureLinks::kUndefined)
@@ -677,6 +678,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       return nullptr;
     }
     url_handler.origin = std::move(origin);
+    url_handler.has_origin_wildcard = url_handler_proto.has_origin_wildcard();
     url_handlers.push_back(std::move(url_handler));
   }
   web_app->SetUrlHandlers(std::move(url_handlers));
