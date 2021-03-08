@@ -610,9 +610,6 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     has_context = MakeCurrent(/*need_framebuffer=*/false);
     if (has_context) {
       release_current_last_.emplace(gl_surface_, context_state_);
-
-      // Release all ongoing AsyncReadResults.
-      ReleaseAsyncReadResultHelpers();
     }
   }
 
@@ -632,11 +629,8 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
 
   sync_point_client_state_->Destroy();
 
-#if DCHECK_IS_ON()
-  // All ongoing AsyncReadResults should be released already.
-  base::AutoLock auto_lock(async_read_result_lock_->lock());
-  DCHECK(async_read_result_helpers_.empty());
-#endif
+  // Release all ongoing AsyncReadResults.
+  ReleaseAsyncReadResultHelpers();   
 }
 
 void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
