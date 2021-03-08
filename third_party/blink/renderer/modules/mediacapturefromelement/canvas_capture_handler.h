@@ -18,11 +18,14 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "media/base/video_frame_pool.h"
 #include "media/capture/video_capturer_source.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 class SkImage;
+
+namespace gfx {
+class Size;
+}  // namespace gfx
 
 namespace blink {
 
@@ -48,7 +51,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
   // Creates a CanvasCaptureHandler instance and updates UMA histogram.
   static std::unique_ptr<CanvasCaptureHandler> CreateCanvasCaptureHandler(
       LocalFrame* frame,
-      const blink::WebSize& size,
+      const gfx::Size& size,
       double frame_rate,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
@@ -74,7 +77,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
   // by the Blink side MediaStreamSource.
   CanvasCaptureHandler(
       LocalFrame* frame,
-      const blink::WebSize& size,
+      const gfx::Size& size,
       double frame_rate,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
