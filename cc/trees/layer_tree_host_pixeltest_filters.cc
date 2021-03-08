@@ -575,7 +575,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   filter->SetBackdropFilters(filters);
   filter->ClearBackdropFilterBounds();
 
-#if defined(OS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
+    defined(ARCH_CPU_ARM64)
 #if defined(OS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
@@ -585,6 +586,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
+#elif defined(OS_MAC)
+  // There's a 1 pixel error on MacOS
+  float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
+  int large_error_allowed = 1;
 #elif defined(_MIPS_ARCH_LOONGSON)
   // Loongson has 2 pixels off by at most 2: crbug.com/819075
   float percentage_pixels_large_error = 0.005f;  // 2px / (200*200)
@@ -882,7 +887,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
+    defined(ARCH_CPU_ARM64)
 #if defined(ARCH_CPU_ARM64) && \
     (defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
@@ -890,6 +896,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   float percentage_pixels_large_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int large_error_allowed = 17;
+#elif defined(OS_MAC) || defined(OS_CHROMEOS)
+  // There's a 1 pixel error on MacOS and ChromeOS
+  float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
+  float average_error_allowed_in_bad_pixels = 1.f;
+  int large_error_allowed = 1;
 #else
   // Windows and all other ARM64 have 3 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00333334f;  // 3px / (300*300)
