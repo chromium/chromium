@@ -8,6 +8,7 @@
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
@@ -27,6 +28,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Ne;
+using ::testing::SizeIs;
+using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
@@ -109,7 +116,8 @@ class ReportClientTest : public testing::Test {
   // BrowserTaskEnvironment needs to be destroyed before TestEnvironment
   // and ScopedFeatureList, so that tasks on other threads don't run after
   // they are destroyed.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
@@ -156,6 +164,42 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   auto report_queue_2 = std::move(result.ValueOrDie());
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
+}
+
+// Creates queue, enqueues messages and verifies they are uploaded.
+TEST_F(ReportClientTest, EnqueueMessageAndUpload) {
+  auto config_result = ReportQueueConfiguration::Create(
+      dm_token_, destination_, policy_checker_callback_);
+  EXPECT_TRUE(config_result.ok());
+
+  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
+  ReportingClient::CreateReportQueueImpl(std::move(config_result.ValueOrDie()),
+                                         create_queue_event.cb());
+  auto result = create_queue_event.result();
+  ASSERT_OK(result);
+  auto report_queue = std::move(result.ValueOrDie());
+
+  TestEvent<Status> enqueue_record_event;
+  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
+  ASSERT_OK(enqueue_record_event.result());
+
+  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([](base::Value payload,
+                    policy::CloudPolicyClient::ResponseCallback done_cb) {
+            base::Value* const records = payload.FindListKey("encryptedRecord");
+            ASSERT_THAT(records, Ne(nullptr));
+            base::Value::ListView records_list = records->GetList();
+            ASSERT_THAT(records_list, SizeIs(1));
+            base::Value* const seq_info =
+                records_list[0].FindDictKey("sequenceInformation");
+            ASSERT_THAT(seq_info, Ne(nullptr));
+            base::Value response{base::Value::Type::DICTIONARY};
+            response.SetPath("lastSucceedUploadedRecord", std::move(*seq_info));
+            std::move(done_cb).Run(std::move(response));
+          })));
+  // Trigger upload.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 }  // namespace
 }  // namespace reporting
