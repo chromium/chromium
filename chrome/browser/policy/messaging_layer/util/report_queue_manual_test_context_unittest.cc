@@ -7,7 +7,6 @@
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/report_queue.h"
@@ -92,7 +91,7 @@ TEST_F(ReportQueueManualTestContextTest,
   TestCallbackWaiterWithCounter enqueue_waiter{kNumberOfMessagesToEnqueue};
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
       .WillRepeatedly(WithArgs<2>(Invoke(
-          [&enqueue_waiter](ReportQueueImpl::EnqueueCallback enqueue_callback) {
+          [&enqueue_waiter](ReportQueue::EnqueueCallback enqueue_callback) {
             std::move(enqueue_callback).Run(Status::StatusOK());
             enqueue_waiter.Signal();
           })));

@@ -8,9 +8,9 @@
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/task_runner_context.h"
@@ -33,7 +33,7 @@ namespace reporting {
 //                              }),
 //                              base::ThreadPool::CreateSequencedTaskRunner(
 //                                base::TaskTraits()));
-// As configured this context will create a ReportQueueImpl and upload an event
+// As configured this context will create a ReportQueue and upload an event
 // to the FAST_BATCH priority every second for 10 seconds.
 class ReportQueueManualTestContext : public TaskRunnerContext<Status> {
  public:

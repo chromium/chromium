@@ -33,7 +33,7 @@ namespace reporting {
 // delivery.
 //
 // ReportQueues are not meant to be created directly, instead use the
-// reporting::ReportingClient::CreateReportQueueImpl(...) function. See the
+// reporting::ReportQueueProvider::CreateQueue(...) function. See the
 // comments for reporting::ReportingClient for example usage.
 //
 // Enqueue can also be used with a |base::Value| or |std::string|.

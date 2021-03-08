@@ -9,13 +9,14 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/task_runner_context.h"
@@ -108,7 +109,7 @@ void ReportQueueManualTestContext::BuildReportQueue() {
     return;
   }
 
-  reporting::ReportingClient::CreateReportQueueImpl(
+  reporting::ReportQueueProvider::CreateQueue(
       std::move(config_result.ValueOrDie()),
       base::BindOnce(&ReportQueueManualTestContext::OnReportQueueResponse,
                      base::Unretained(this)));
