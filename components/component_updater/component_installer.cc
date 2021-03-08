@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -66,6 +68,15 @@ ComponentInstaller::~ComponentInstaller() = default;
 void ComponentInstaller::Register(ComponentUpdateService* cus,
                                   base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(cus);
+  Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
+                          base::Unretained(cus)),
+           std::move(callback));
+}
+
+void ComponentInstaller::Register(RegisterCallback register_callback,
+                                  base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Some components may affect user visible features, hence USER_VISIBLE.
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -84,7 +95,8 @@ void ComponentInstaller::Register(ComponentUpdateService* cus,
       base::BindOnce(&ComponentInstaller::StartRegistration, this,
                      registration_info),
       base::BindOnce(&ComponentInstaller::FinishRegistration, this,
-                     registration_info, cus, std::move(callback)));
+                     registration_info, std::move(register_callback),
+                     std::move(callback)));
 }
 
 void ComponentInstaller::OnUpdateError(int error) {
@@ -394,7 +406,7 @@ void ComponentInstaller::UninstallOnTaskRunner() {
 
 void ComponentInstaller::FinishRegistration(
     scoped_refptr<RegistrationInfo> registration_info,
-    ComponentUpdateService* cus,
+    RegisterCallback register_callback,
     base::OnceClosure callback) {
   VLOG(1) << __func__ << " for " << installer_policy_->GetName();
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -419,7 +431,7 @@ void ComponentInstaller::FinishRegistration(
   crx.supports_group_policy_enable_component_updates =
       installer_policy_->SupportsGroupPolicyEnabledComponentUpdates();
 
-  if (!cus->RegisterComponent(crx)) {
+  if (!std::move(register_callback).Run(crx)) {
     LOG(ERROR) << "Component registration failed for "
                << installer_policy_->GetName();
     if (!callback.is_null())

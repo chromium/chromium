@@ -26,6 +26,8 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace component_updater {
+using RegisterCallback =
+    base::OnceCallback<bool(const update_client::CrxComponent&)>;
 
 class ComponentUpdateService;
 
@@ -113,9 +115,15 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       scoped_refptr<update_client::ActionHandler> action_handler = nullptr);
 
   // Registers the component for update checks and installs.
+  // |cus| provides the registration logic.
   // The passed |callback| will be called once the initial check for installed
   // versions is done and the component has been registered.
   void Register(ComponentUpdateService* cus, base::OnceClosure callback);
+
+  // Registers the component for update checks and installs.
+  // |register_callback| is called to do the registration.
+  // |callback| is called when registration finishes.
+  void Register(RegisterCallback register_callback, base::OnceClosure callback);
 
   // Overrides from update_client::CrxInstaller.
   void OnUpdateError(int error) override;
@@ -163,7 +171,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       base::FilePath* install_path);
   void StartRegistration(scoped_refptr<RegistrationInfo> registration_info);
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
-                          ComponentUpdateService* cus,
+                          RegisterCallback register_callback,
                           base::OnceClosure callback);
   void ComponentReady(std::unique_ptr<base::DictionaryValue> manifest);
   void UninstallOnTaskRunner();
