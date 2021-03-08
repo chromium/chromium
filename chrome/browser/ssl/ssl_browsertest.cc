@@ -305,6 +305,29 @@ class ChromeContentBrowserClientForMixedContentTest
   DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientForMixedContentTest);
 };
 
+// Wrapper around content::SetBrowserClientForTesting() that ensures the
+// previous content browser client is restored upon destruction.
+class ScopedContentBrowserClientSetting final {
+ public:
+  // `client` must outlive this instance.
+  explicit ScopedContentBrowserClientSetting(
+      content::ContentBrowserClient& client)
+      : old_client_(content::SetBrowserClientForTesting(&client)) {}
+
+  // Instances of this class are neither copyable nor movable.
+  ScopedContentBrowserClientSetting(const ScopedContentBrowserClientSetting&) =
+      delete;
+  ScopedContentBrowserClientSetting& operator=(
+      const ScopedContentBrowserClientSetting&) = delete;
+
+  ~ScopedContentBrowserClientSetting() {
+    content::SetBrowserClientForTesting(old_client_);
+  }
+
+ private:
+  content::ContentBrowserClient* const old_client_;
+};
+
 std::string EncodeQuery(const std::string& query) {
   url::RawCanonOutputT<char> buffer;
   url::EncodeURIComponent(query.data(), query.size(), &buffer);
@@ -3687,8 +3710,7 @@ IN_PROC_BROWSER_TEST_P(
         SSLUIWorkerFetchTest,
         DISABLED_MixedContentSettings_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3721,8 +3743,6 @@ IN_PROC_BROWSER_TEST_P(
       }
     }
   }
-
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 // This test checks the behavior of mixed content blocking for the requests
@@ -3740,8 +3760,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     MAYBE_MixedContentSettings_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3784,8 +3803,6 @@ IN_PROC_BROWSER_TEST_P(
       }
     }
   }
-
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 // This test checks that all mixed content requests from a dedicated worker are
@@ -3795,8 +3812,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     MixedContentSettingsWithBlockingCSP_AllowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3820,7 +3836,6 @@ IN_PROC_BROWSER_TEST_P(
           false /* expected_show_dangerous_after_allow */);
     }
   }
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 // This test checks that all mixed content requests from a dedicated worker are
@@ -3830,8 +3845,7 @@ IN_PROC_BROWSER_TEST_P(
     SSLUIWorkerFetchTest,
     MixedContentSettingsWithBlockingCSP_DisallowRunningInsecureContent) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3855,7 +3869,6 @@ IN_PROC_BROWSER_TEST_P(
           false /* expected_show_dangerous_after_allow */);
     }
   }
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 // This test checks that all mixed content requests from a dedicated worker
@@ -3866,8 +3879,7 @@ IN_PROC_BROWSER_TEST_P(
 // committed interstitials.
 IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest, DISABLED_MixedContentSubFrame) {
   ChromeContentBrowserClientForMixedContentTest browser_client;
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
 
   https_server_.ServeFilesFromDirectory(tmp_dir_.GetPath());
   embedded_test_server()->ServeFilesFromDirectory(tmp_dir_.GetPath());
@@ -3917,8 +3929,6 @@ IN_PROC_BROWSER_TEST_P(SSLUIWorkerFetchTest, DISABLED_MixedContentSubFrame) {
       }
     }
   }
-
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -6280,8 +6290,8 @@ IN_PROC_BROWSER_TEST_F(
       false, /* allow_running_insecure_content */
       false, /* strict_mixed_content_checking */
       false /*strictly_block_blockable_mixed_content */);
-  content::ContentBrowserClient* old_browser_client =
-      content::SetBrowserClientForTesting(&browser_client);
+  ScopedContentBrowserClientSetting setting(browser_client);
+
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   tab->OnWebPreferencesChanged();
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -6311,8 +6321,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check console message was printed.
   EXPECT_EQ(console_observer.messages().size(), 1u);
-
-  content::SetBrowserClientForTesting(old_browser_client);
 }
 
 // Checks insecure form warning works for forms that submit on a new tab.
