@@ -16,7 +16,9 @@
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
+#include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy_manager.h"
 #include "chrome/updater/unittest_util.h"
@@ -174,11 +176,13 @@ class DMRequestCallbackHandler
               /*first_request=*/true, /*rotate_to_new_key=*/false,
               DMPolicyBuilderForTesting::SigningOption::kSignNormally);
       std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
+      std::vector<PolicyValidationResult> validation_results;
       DMPolicyMap policies = ParsePolicyFetchResponse(
           dm_response->SerializeAsString(), *info.get(), storage_->GetDmToken(),
-          storage_->GetDeviceID());
+          storage_->GetDeviceID(), validation_results);
       ASSERT_FALSE(policies.empty());
       ASSERT_TRUE(storage_->PersistPolicies(policies));
+      ASSERT_TRUE(validation_results.empty());
     }
   }
 
@@ -513,7 +517,7 @@ TEST_F(DMClientTest, PostPolicyFetch_RejectDataWithBadSignature) {
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch__Deregister) {
+TEST_F(DMClientTest, PostPolicyFetch_Deregister) {
   callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
@@ -534,7 +538,7 @@ TEST_F(DMClientTest, PostPolicyFetch__Deregister) {
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch__BadResponse) {
+TEST_F(DMClientTest, PostPolicyFetch_BadResponse) {
   callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);
@@ -554,7 +558,7 @@ TEST_F(DMClientTest, PostPolicyFetch__BadResponse) {
   run_loop.Run();
 }
 
-TEST_F(DMClientTest, PostPolicyFetch__BadRequest) {
+TEST_F(DMClientTest, PostPolicyFetch_BadRequest) {
   callback_handler_ = base::MakeRefCounted<DMRequestCallbackHandler>();
   callback_handler_->CreateStorage(/*init_dm_token=*/true,
                                    /*init_cache_info=*/true);

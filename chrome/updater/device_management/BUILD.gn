@@ -18,6 +18,8 @@ source_set("device_management") {
     "dm_message.h",
     "dm_policy_manager.cc",
     "dm_policy_manager.h",
+    "dm_response_validator.cc",
+    "dm_response_validator.h",
     "dm_storage.cc",
     "dm_storage.h",
   ]
