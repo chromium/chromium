@@ -458,16 +458,88 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperRecord(ScriptState* script_state,
 // IDLSequence
 template <typename T>
 struct ToV8Traits<IDLSequence<T>> {
-  static v8::MaybeLocal<v8::Value> ToV8(
-      ScriptState* script_state,
-      const typename IDLSequence<T>::ImplType& value) {
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const VectorType& value)
+      WARN_UNUSED_RESULT {
     return bindings::ToV8HelperSequence<T>(script_state, value);
   }
 
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const VectorType* value)
+      WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequence<T>(script_state, *value);
+  }
+
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        VectorType* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    return bindings::ToV8HelperSequence<T>(script_state, *value);
+  }
+};
+
+// IDLArray
+template <typename T>
+struct ToV8Traits<IDLArray<T>> {
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const VectorType& value)
+      WARN_UNUSED_RESULT {
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, value)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
+                                                 v8::IntegrityLevel::kFrozen);
+    return v8_value;
+  }
+
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        const VectorType* value)
+      WARN_UNUSED_RESULT {
+    DCHECK(value);
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
+                                                 v8::IntegrityLevel::kFrozen);
+    return v8_value;
+  }
+
+  template <typename VectorType>
+  static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
+                                        VectorType* value) WARN_UNUSED_RESULT {
+    DCHECK(value);
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
+                                                 v8::IntegrityLevel::kFrozen);
+    return v8_value;
+  }
+
+  // TODO(crbug.com/1185046): Remove this overload.
+  template <>
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const typename IDLSequence<T>::ImplType* value) {
-    return bindings::ToV8HelperSequence<T>(script_state, *value);
+      const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
+    v8::Local<v8::Value> v8_value;
+    if (!ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value)
+             .ToLocal(&v8_value)) {
+      return v8::MaybeLocal<v8::Value>();
+    }
+    v8_value.As<v8::Object>()->SetIntegrityLevel(script_state->GetContext(),
+                                                 v8::IntegrityLevel::kFrozen);
+    return v8_value;
   }
 };
 
@@ -484,6 +556,7 @@ struct ToV8Traits<IDLRecord<K, V>> {
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
       const typename IDLRecord<K, V>::ImplType* value) {
+    DCHECK(value);
     return bindings::ToV8HelperRecord<V>(script_state, *value);
   }
 };
@@ -692,7 +765,7 @@ struct ToV8Traits<IDLNullable<MaybeShared<T>>> {
   }
 };
 
-// Nullable Array
+// Nullable Sequence
 template <typename T>
 struct ToV8Traits<IDLNullable<IDLSequence<T>>> {
   static v8::MaybeLocal<v8::Value> ToV8(
@@ -709,10 +782,32 @@ struct ToV8Traits<IDLNullable<IDLSequence<T>>> {
       const typename IDLSequence<T>::ImplType* value) WARN_UNUSED_RESULT {
     if (!value)
       return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<IDLSequence<T>>::ToV8(script_state, *value);
+    return ToV8Traits<IDLSequence<T>>::ToV8(script_state, value);
   }
 };
 
+// Nullable Frozen Array
+template <typename T>
+struct ToV8Traits<IDLNullable<IDLArray<T>>> {
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const base::Optional<typename IDLArray<T>::ImplType>& value)
+      WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<IDLArray<T>>::ToV8(script_state, *value);
+  }
+
+  static v8::MaybeLocal<v8::Value> ToV8(
+      ScriptState* script_state,
+      const typename IDLArray<T>::ImplType* value) WARN_UNUSED_RESULT {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<IDLArray<T>>::ToV8(script_state, value);
+  }
+};
+
+// Nullable Record
 template <typename K, typename V>
 struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
   static v8::MaybeLocal<v8::Value> ToV8(
@@ -728,7 +823,7 @@ struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
       const typename IDLRecord<K, V>::ImplType* value) {
     if (!value)
       return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, *value);
+    return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, value);
   }
 };
 

@@ -250,6 +250,11 @@ TEST(ToV8TraitsTest, HeapVector) {
   TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
                    "hoge,fuga", heap_vector);
 
+  const HeapVector<Member<GarbageCollectedScriptWrappable>>*
+      const_garbage_collected_heap_vector = &heap_vector;
+  TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
+                   "hoge,fuga", const_garbage_collected_heap_vector);
+
   HeapVector<Member<GarbageCollectedScriptWrappable>>*
       garbage_collected_heap_vector = &heap_vector;
   TEST_TOV8_TRAITS(scope, IDLSequence<GarbageCollectedScriptWrappable>,
@@ -330,6 +335,58 @@ TEST(ToV8TraitsTest, StringVectorVector) {
       result->Get(scope.GetContext(), 1).ToLocalChecked();
   EXPECT_TRUE(vector2->IsArray());
   EXPECT_EQ(1U, vector2.As<v8::Array>()->Length());
+}
+
+TEST(ToV8TraitsTest, ArrayAndSequence) {
+  const V8TestingScope scope;
+  DOMPointInit* dom_point_init1 = DOMPointInit::Create();
+  dom_point_init1->setW(1.0);
+  DOMPointInit* dom_point_init2 = DOMPointInit::Create();
+  dom_point_init2->setW(2.0);
+  DOMPointInit* dom_point_init3 = DOMPointInit::Create();
+  dom_point_init3->setW(3.0);
+  HeapVector<Member<DOMPointInit>> dom_point_init_vector;
+  dom_point_init_vector.push_back(dom_point_init1);
+  dom_point_init_vector.push_back(dom_point_init2);
+  v8::Local<v8::Value> v8_dom_point_init3;
+  ASSERT_TRUE(
+      ToV8Traits<DOMPointInit>::ToV8(scope.GetScriptState(), dom_point_init3)
+          .ToLocal(&v8_dom_point_init3));
+  bool is_value_set;
+
+  // Frozen array
+  TEST_TOV8_TRAITS(scope, IDLArray<DOMPointInit>,
+                   "[object Object],[object Object]", dom_point_init_vector);
+  v8::Local<v8::Value> v8_frozen_array;
+  ASSERT_TRUE(ToV8Traits<IDLArray<DOMPointInit>>::ToV8(scope.GetScriptState(),
+                                                       dom_point_init_vector)
+                  .ToLocal(&v8_frozen_array));
+  ASSERT_TRUE(v8_frozen_array.As<v8::Object>()
+                  ->Set(scope.GetContext(), 0, v8_dom_point_init3)
+                  .To(&is_value_set));
+  ASSERT_TRUE(is_value_set);
+  v8::Local<v8::Value> element_of_frozen_array =
+      v8_frozen_array.As<v8::Object>()
+          ->Get(scope.GetContext(), 0)
+          .ToLocalChecked();
+  // An element of a frozen array cannot be changed.
+  EXPECT_NE(element_of_frozen_array, v8_dom_point_init3);
+
+  // Sequence
+  TEST_TOV8_TRAITS(scope, IDLSequence<DOMPointInit>,
+                   "[object Object],[object Object]", dom_point_init_vector);
+  v8::Local<v8::Value> v8_sequence;
+  ASSERT_TRUE(ToV8Traits<IDLSequence<DOMPointInit>>::ToV8(
+                  scope.GetScriptState(), dom_point_init_vector)
+                  .ToLocal(&v8_sequence));
+  ASSERT_TRUE(v8_sequence.As<v8::Object>()
+                  ->Set(scope.GetContext(), 0, v8_dom_point_init3)
+                  .To(&is_value_set));
+  ASSERT_TRUE(is_value_set);
+  v8::Local<v8::Value> element_of_sequence =
+      v8_sequence.As<v8::Object>()->Get(scope.GetContext(), 0).ToLocalChecked();
+  // An element of a sequence can be changed.
+  EXPECT_EQ(element_of_sequence, v8_dom_point_init3);
 }
 
 TEST(ToV8TraitsTest, PairVector) {
@@ -497,6 +554,20 @@ TEST(ToV8TraitsTest, NullableEnumeration) {
       V8AddressSpace::Create("public");
   TEST_TOV8_TRAITS(scope, IDLNullable<V8AddressSpace>, "public",
                    v8_address_space);
+}
+
+TEST(ToV8TraitsTest, NullableArray) {
+  const V8TestingScope scope;
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLArray<DOMPointInit>>, "null",
+                   base::nullopt);
+
+  DOMPointInit* dom_point_init1 = DOMPointInit::Create();
+  DOMPointInit* dom_point_init2 = DOMPointInit::Create();
+  HeapVector<Member<DOMPointInit>> dom_point_init_vector;
+  dom_point_init_vector.push_back(dom_point_init1);
+  dom_point_init_vector.push_back(dom_point_init2);
+  TEST_TOV8_TRAITS(scope, IDLNullable<IDLArray<DOMPointInit>>,
+                   "[object Object],[object Object]", dom_point_init_vector);
 }
 
 TEST(ToV8TraitsTest, NullableDate) {

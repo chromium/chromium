@@ -266,7 +266,10 @@ struct IDLSequence final : public IDLBase {
 
 // Frozen array types
 template <typename T>
-using IDLArray = IDLSequence<T>;
+struct IDLArray final : public IDLBase {
+  using ImplType =
+      VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
+};
 
 // Record types
 template <typename Key, typename Value>

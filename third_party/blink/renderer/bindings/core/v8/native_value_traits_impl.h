@@ -968,6 +968,11 @@ struct NativeValueTraits<IDLOptional<IDLSequence<T>>>
   }
 };
 
+// Frozen array types
+template <typename T>
+struct NativeValueTraits<IDLArray<T>>
+    : public NativeValueTraits<IDLSequence<T>> {};
+
 // Record types
 template <typename K, typename V>
 struct NativeValueTraits<IDLRecord<K, V>>
