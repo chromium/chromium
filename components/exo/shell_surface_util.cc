@@ -168,6 +168,14 @@ Surface* GetTargetSurfaceForLocatedEvent(
     root_surface = GetShellRootSurface(widget->GetNativeWindow());
     if (!root_surface)
       return nullptr;
+
+    ShellSurfaceBase* shell_surface_base =
+        GetShellSurfaceBaseForWindow(widget->GetNativeWindow());
+    // Check if it's overlay window.
+    if (!shell_surface_base->host_window()->Contains(window) &&
+        shell_surface_base->GetWidget()->GetNativeWindow() != window) {
+      return nullptr;
+    }
   }
 
   // Create a clone of the event as targeter may update it during the
@@ -228,7 +236,7 @@ Surface* GetTargetSurfaceForKeyboardFocus(aura::Window* window) {
   }
   // Make sure the |window| is the toplevel or a host window, but not
   // another window added to the toplevel.
-  if (shell_surface_base &&
+  if (shell_surface_base && !shell_surface_base->HasOverlay() &&
       (shell_surface_base->GetWidget()->GetNativeWindow() == window ||
        shell_surface_base->host_window()->Contains(window))) {
     return shell_surface_base->root_surface();

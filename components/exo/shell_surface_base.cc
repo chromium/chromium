@@ -38,6 +38,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -51,6 +52,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_controller.h"
@@ -62,11 +64,12 @@ namespace exo {
 namespace {
 
 // Set aura::client::kSkipImeProcessing to all Surface descendants.
-void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window) {
+void SetSkipImeProcessingToDescendentSurfaces(aura::Window* window,
+                                              bool value) {
   if (Surface::AsSurface(window))
-    window->SetProperty(aura::client::kSkipImeProcessing, true);
+    window->SetProperty(aura::client::kSkipImeProcessing, value);
   for (aura::Window* child : window->children())
-    SetSkipImeProcessingToDescendentSurfaces(child);
+    SetSkipImeProcessingToDescendentSurfaces(child, value);
 }
 
 // The accelerator keys used to close ShellSurfaces.
@@ -84,10 +87,15 @@ class ShellSurfaceWidget : public views::Widget {
 
   // Overridden from views::Widget:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    // Handle only accelerators. Do not call Widget::OnKeyEvent that eats focus
-    // management keys (like the tab key) as well.
-    if (GetFocusManager()->ProcessAccelerator(ui::Accelerator(*event)))
+    if (GetFocusManager()->GetFocusedView() &&
+        GetFocusManager()->GetFocusedView()->GetWidget() != this) {
+      // If the focus is on the overlay widget, dispatch the key event normally.
+      views::Widget::OnKeyEvent(event);
+    } else if (GetFocusManager()->ProcessAccelerator(ui::Accelerator(*event))) {
+      // Otherwise handle only accelerators. Do not call Widget::OnKeyEvent that
+      // eats focus management keys (like the tab key) as well.
       event->SetHandled();
+    }
   }
 
  private:
@@ -327,6 +335,9 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
+  // Close the overlay in case the window is deleted by the server.
+  overlay_widget_.reset();
+
   // Remove activation observer before hiding widget to prevent it from
   // casuing the configure callback to be called.
   WMHelper::GetInstance()->RemoveActivationObserver(this);
@@ -577,6 +588,54 @@ ShellSurfaceBase::AsTracedValue() const {
   return value;
 }
 
+void ShellSurfaceBase::AddOverlay(OverlayParams&& overlay_params) {
+  DCHECK(widget_);
+  DCHECK(!overlay_widget_);
+
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
+  params.parent = widget_->GetNativeWindow();
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  if (overlay_params.translucent)
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+
+  if (overlay_params.focusable)
+    params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+
+  params.delegate = new views::WidgetDelegate();
+  params.delegate->SetContentsView(std::move(overlay_params.contents_view));
+  params.name = "Overlay";
+
+  overlay_widget_ = std::make_unique<views::Widget>();
+  overlay_widget_->Init(std::move(params));
+  overlay_widget_->GetNativeWindow()->SetEventTargeter(
+      std::make_unique<aura::WindowTargeter>());
+  overlay_widget_->Show();
+
+  // Setup Focus Traversal.
+  overlay_widget_->SetFocusTraversableParentView(this);
+  overlay_widget_->SetFocusTraversableParent(
+      GetWidget()->GetFocusTraversable());
+  SetFocusTraversesOut(true);
+
+  skip_ime_processing_ = GetWidget()->GetNativeWindow()->GetProperty(
+      aura::client::kSkipImeProcessing);
+  if (skip_ime_processing_) {
+    GetWidget()->GetNativeWindow()->SetProperty(
+        aura::client::kSkipImeProcessing, false);
+  }
+
+  UpdateWidgetBounds();
+}
+
+void ShellSurfaceBase::RemoveOverlay() {
+  overlay_widget_.reset();
+  SetFocusTraversesOut(false);
+  if (skip_ime_processing_) {
+    GetWidget()->GetNativeWindow()->SetProperty(
+        aura::client::kSkipImeProcessing, true);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
@@ -693,6 +752,8 @@ void ShellSurfaceBase::OnSurfaceDestroying(Surface* surface) {
   DCHECK_EQ(root_surface(), surface);
   surface->RemoveSurfaceObserver(this);
   SetRootSurface(nullptr);
+
+  overlay_widget_.reset();
 
   if (widget_)
     SetShellRootSurface(widget_->GetNativeWindow(), nullptr);
@@ -846,6 +907,10 @@ void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                 child_ax_tree_id_.ToString());
 }
 
+views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {
+  return overlay_widget_.get();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 
@@ -860,7 +925,8 @@ void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
                                                intptr_t old_value) {
   if (widget_ && window == widget_->GetNativeWindow() &&
       key == aura::client::kSkipImeProcessing) {
-    SetSkipImeProcessingToDescendentSurfaces(window);
+    SetSkipImeProcessingToDescendentSurfaces(
+        window, window->GetProperty(aura::client::kSkipImeProcessing));
   }
 }
 
@@ -876,6 +942,12 @@ void ShellSurfaceBase::OnWindowActivated(ActivationReason reason,
                                          aura::Window* lost_active) {
   if (!widget_)
     return;
+
+  if (overlay_widget_ && overlay_widget_->widget_delegate()->CanActivate()) {
+    aura::client::FocusClient* client =
+        aura::client::GetFocusClient(widget_->GetNativeWindow());
+    client->ResetFocusWithinActiveWindow(overlay_widget_->GetNativeWindow());
+  }
 
   if (gained_active == widget_->GetNativeWindow() ||
       lost_active == widget_->GetNativeWindow()) {
@@ -1007,6 +1079,11 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     OnSetFrame(frame_type_);
 }
 
+ShellSurfaceBase::OverlayParams::OverlayParams(
+    std::unique_ptr<views::View> overlay)
+    : contents_view(std::move(overlay)) {}
+ShellSurfaceBase::OverlayParams::~OverlayParams() = default;
+
 bool ShellSurfaceBase::IsResizing() const {
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
@@ -1019,6 +1096,10 @@ bool ShellSurfaceBase::IsResizing() const {
 
 void ShellSurfaceBase::UpdateWidgetBounds() {
   DCHECK(widget_);
+
+  base::Optional<gfx::Rect> bounds = GetWidgetBounds();
+  if (bounds && overlay_widget_)
+    overlay_widget_->SetBounds(gfx::Rect(bounds->size()));
 
   aura::Window* window = widget_->GetNativeWindow();
   ash::WindowState* window_state = ash::WindowState::Get(window);
@@ -1039,7 +1120,6 @@ void ShellSurfaceBase::UpdateWidgetBounds() {
       return;
   }
 
-  base::Optional<gfx::Rect> bounds = GetWidgetBounds();
   if (bounds)
     SetWidgetBounds(*bounds);
 }
