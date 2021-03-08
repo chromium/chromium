@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -86,7 +85,7 @@ public class SplashController
 
     private static final String TAG = "SplashController";
 
-    private final ChromeActivity<?> mActivity;
+    private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
@@ -124,8 +123,7 @@ public class SplashController
     private ObserverList<SplashscreenObserver> mObservers;
 
     @Inject
-    public SplashController(ChromeActivity<?> activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
+    public SplashController(Activity activity, ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
             CustomTabOrientationController orientationController, TwaFinishHandler finishHandler,
             CustomTabActivityTabProvider tabProvider,
@@ -300,7 +298,7 @@ public class SplashController
 
     /** Hides the splash screen. */
     private void hideSplash(final Tab tab, boolean loadFailed) {
-        if (mActivity.isActivityFinishingOrDestroyed()) {
+        if (mLifecycleDispatcher.isActivityFinishingOrDestroyed()) {
             return;
         }
 
