@@ -411,7 +411,11 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   }
 
   NGLayoutCacheStatus cache_status;
+
+  // We may be able to hit the cache without calculating fragment geometry
+  // (calculating that isn't necessarily very cheap). So, start off without it.
   base::Optional<NGFragmentGeometry> fragment_geometry;
+
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                &fragment_geometry, &cache_status);
@@ -457,6 +461,13 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
       LogicalAxes contained_axes = ContainedAxes();
       GetDocument().GetStyleEngine().UpdateStyleAndLayoutTreeForContainer(
           *element, available_size, contained_axes);
+
+      // Try the cache again. Container query matching may have affected
+      // elements in the subtree, so that we need full layout instead of
+      // simplified layout, for instance.
+      layout_result =
+          box_->CachedLayoutResult(constraint_space, break_token, early_break,
+                                   &fragment_geometry, &cache_status);
     }
   }
 
