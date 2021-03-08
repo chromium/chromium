@@ -2477,6 +2477,31 @@ TEST_P(AutofillManagerStructuredProfileTest,
   CheckSuggestions(kDefaultPageID, Suggestion("9377", "1800FLOWERS", "", 1));
 }
 
+// Tests that the suggestion consists of phone number without the country code
+// when a length limit is imposed in the field due to which filling with
+// country code is not possible.
+TEST_P(AutofillManagerStructuredProfileTest,
+       GetProfileSuggestions_ForPhoneField) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  form.fields[9].max_length = 10;
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+
+  AutofillProfile profile;
+  profile.set_guid("00000000-0000-0000-0000-000000000103");
+  profile.SetInfo(NAME_FULL, ASCIIToUTF16("Natty Bumppo"), "en-US");
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("+886123456789"));
+  personal_data_.ClearProfiles();
+  personal_data_.AddProfile(profile);
+
+  const FormFieldData& field = form.fields[9];
+  GetAutofillSuggestions(form, field);
+
+  CheckSuggestions(kDefaultPageID,
+                   Suggestion("123456789", "Natty Bumppo", "", 1));
+}
+
 // Tests that we return email profile suggestions values
 // when the email field with username autocomplete attribute exist.
 TEST_P(AutofillManagerStructuredProfileTest,

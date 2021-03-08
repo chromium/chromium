@@ -40,11 +40,13 @@ class FieldFiller {
                      std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given |field|. The returned value
-  // might be |number|, or could possibly be a meaningful subset |number|, if
-  // that's appropriate for the field.
-  static base::string16 GetPhoneNumberValue(const AutofillField& field,
-                                            const base::string16& number,
-                                            const FormFieldData& field_data);
+  // might be |number|, or |phone_home_city_and_number|, or could possibly be a
+  // meaningful subset |number|, if that's appropriate for the field.
+  static base::string16 GetPhoneNumberValue(
+      const AutofillField& field,
+      const base::string16& number,
+      const base::string16& phone_home_city_and_number,
+      const FormFieldData& field_data);
 
   // Returns the index of the shortest entry in the given select field of which
   // |value| is a substring. Returns -1 if no such entry exists.

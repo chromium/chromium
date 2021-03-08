@@ -502,14 +502,15 @@ bool FillCreditCardTypeSelectControl(const base::string16& value,
   return false;
 }
 
-// Set |field_data|'s value to |number|, or possibly an appropriate substring of
-// |number|.  The |field| specifies the type of the phone and whether this is a
-// phone prefix or suffix.
+// Set |field_data|'s value to |number|, or |phone_home_city_and_number|, or
+// possibly an appropriate substring of |number|.  The |field| specifies the
+// type of the phone and whether this is a phone prefix or suffix.
 void FillPhoneNumberField(const AutofillField& field,
                           const base::string16& number,
+                          const base::string16& phone_home_city_and_number,
                           FormFieldData* field_data) {
-  field_data->value =
-      FieldFiller::GetPhoneNumberValue(field, number, *field_data);
+  field_data->value = FieldFiller::GetPhoneNumberValue(
+      field, number, phone_home_city_and_number, *field_data);
 }
 
 // Set |field_data|'s value to |number|, or possibly an appropriate substring
@@ -861,7 +862,13 @@ bool FieldFiller::FillFormField(
         type.GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       FillPhoneCountryCodeSelectControl(value, field_data, failure_to_fill);
     } else {
-      FillPhoneNumberField(field, value, field_data);
+      DCHECK(absl::holds_alternative<const AutofillProfile*>(
+          profile_or_credit_card));
+      const base::string16 phone_home_city_and_number =
+          absl::get<const AutofillProfile*>(profile_or_credit_card)
+              ->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
+      FillPhoneNumberField(field, value, phone_home_city_and_number,
+                           field_data);
     }
     return true;
   }
@@ -918,6 +925,7 @@ bool FieldFiller::FillFormField(
 base::string16 FieldFiller::GetPhoneNumberValue(
     const AutofillField& field,
     const base::string16& number,
+    const base::string16& phone_home_city_and_number,
     const FormFieldData& field_data) {
   // TODO(crbug.com/581485): Investigate the use of libphonenumber here.
   // Check to see if the |field| size matches the "prefix" or "suffix" size or
@@ -941,11 +949,16 @@ base::string16 FieldFiller::GetPhoneNumberValue(
   if (field_data.max_length == 0)
     return number;
 
-  // If |number| exceeds the maximum size of the field, cut the first part to
-  // provide a valid number for the field. For example, the number 15142365264
-  // with a field with a max length of 10 would return 5142365264, thus removing
-  // the country code and remaining valid.
   if (number.length() > field_data.max_length) {
+    // Try after removing the country code, if |number| exceeds the maximum size
+    // of the field.
+    if (phone_home_city_and_number.length() <= field_data.max_length)
+      return phone_home_city_and_number;
+
+    // If |number| exceeds the maximum size of the field, cut the first part to
+    // provide a valid number for the field. For example, the number 15142365264
+    // with a field with a max length of 10 would return 5142365264, thus
+    // filling in the last |field_data.max_length| characters from the |number|.
     return number.substr(number.length() - field_data.max_length,
                          field_data.max_length);
   }

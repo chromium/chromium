@@ -540,10 +540,30 @@ struct AutofillFieldFillerTestCase {
   HtmlFieldType field_type;
   size_t field_max_length;
   std::string expected_value;
+
+  AutofillFieldFillerTestCase(HtmlFieldType field_type,
+                              size_t field_max_length,
+                              std::string expected_value)
+      : field_type(field_type),
+        field_max_length(field_max_length),
+        expected_value(expected_value) {}
+};
+
+struct AutofillPhoneFieldFillerTestCase : public AutofillFieldFillerTestCase {
+  std::string phone_home_whole_number_value;
+
+  AutofillPhoneFieldFillerTestCase(HtmlFieldType field_type,
+                                   size_t field_max_length,
+                                   std::string expected_value,
+                                   std::string phone_home_whole_number_value)
+      : AutofillFieldFillerTestCase(field_type,
+                                    field_max_length,
+                                    expected_value),
+        phone_home_whole_number_value(phone_home_whole_number_value) {}
 };
 
 class PhoneNumberTest
-    : public testing::TestWithParam<AutofillFieldFillerTestCase> {
+    : public testing::TestWithParam<AutofillPhoneFieldFillerTestCase> {
  public:
   PhoneNumberTest() { CountryNames::SetLocaleString("en-US"); }
 };
@@ -555,7 +575,8 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   field.max_length = test_case.field_max_length;
 
   AutofillProfile address;
-  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, ASCIIToUTF16("+15145554578"));
+  address.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
+                     ASCIIToUTF16(test_case.phone_home_whole_number_value));
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, &field, /*cvc=*/base::string16());
   EXPECT_EQ(ASCIIToUTF16(test_case.expected_value), field.value);
@@ -566,30 +587,44 @@ INSTANTIATE_TEST_SUITE_P(
     PhoneNumberTest,
     testing::Values(
         // Filling a prefix type field should just fill the prefix.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_PREFIX,
-                                    /*max_length=*/0, "555"},
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_PREFIX,
+                                         /*field_max_length=*/0, "555",
+                                         "+15145554578"},
         // Filling a suffix type field with a phone number of 7 digits should
         // just fill the suffix.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_SUFFIX,
-                                    /*max_length=*/0, "4578"},
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_SUFFIX,
+                                         /*field_max_length=*/0, "4578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 3 should fill only
         // the prefix.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL_LOCAL, /*max_length=*/3,
-                                    "555"},
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL,
+                                         /*field_max_length=*/3, "555",
+                                         "+15145554578"},
         // TODO(crbug.com/581485): There should be a test case where the full
-        // number is requested (HTML_TYPE_TEL) but a max_length of 3 would fill
-        // the prefix.
+        // number is requested (HTML_TYPE_TEL) but a field_max_length of 3 would
+        // fill the prefix.
         // Filling a phone type field with a max length of 4 should fill only
         // the suffix.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL, /*max_length=*/4, "4578"},
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+                                         /*field_max_length=*/4, "4578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 10 with a phone
         // number including the country code should fill the phone number
         // without the country code.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL, /*max_length=*/10,
-                                    "5145554578"},
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+                                         /*field_max_length=*/10, "5145554578",
+                                         "+15145554578"},
         // Filling a phone type field with a max length of 5 with a phone number
         // should fill with the last 5 digits of that phone number.
-        AutofillFieldFillerTestCase{HTML_TYPE_TEL, /*max_length=*/5, "54578"}));
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+                                         /*field_max_length=*/5, "54578",
+                                         "+15145554578"},
+        // Filling a phone type field with a max length of 10 with a phone
+        // number including the country code should fill the phone number
+        // without the country code.
+        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+                                         /*field_max_length=*/10, "123456789",
+                                         "+886123456789"}));
 
 class ExpirationYearTest
     : public testing::TestWithParam<AutofillFieldFillerTestCase> {

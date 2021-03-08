@@ -1891,10 +1891,17 @@ std::vector<Suggestion> AutofillManager::GetProfileSuggestions(
       autofill_field.Type(), field.value, field.is_autofilled, field_types);
 
   // Adjust phone number to display in prefix/suffix case.
-  if (autofill_field.Type().GetStorableType() == PHONE_HOME_NUMBER) {
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-      suggestions[i].value = FieldFiller::GetPhoneNumberValue(
-          autofill_field, suggestions[i].value, field);
+  if (autofill_field.Type().group() == FieldTypeGroup::kPhoneHome) {
+    for (auto& suggestion : suggestions) {
+      const AutofillProfile* profile =
+          personal_data_->GetProfileByGUID(suggestion.backend_id);
+      if (profile) {
+        const base::string16 phone_home_city_and_number =
+            profile->GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale_);
+        suggestion.value =
+            FieldFiller::GetPhoneNumberValue(autofill_field, suggestion.value,
+                                             phone_home_city_and_number, field);
+      }
     }
   }
 
