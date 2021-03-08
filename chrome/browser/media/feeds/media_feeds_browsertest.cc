@@ -926,8 +926,8 @@ IN_PROC_BROWSER_TEST_F(MediaFeedsBrowserTest,
   }
 }
 
-// Flaky on linux and windows: crbug.com/1124983
-#if defined(OS_LINUX) || defined(OS_WIN)
+// Flaky on linux, windows, and chromeos: crbug.com/1124983
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_ResetMediaFeed_WebContentsDestroyed \
   DISABLED_ResetMediaFeed_WebContentsDestroyed
 #else
