@@ -297,7 +297,7 @@ void MruWindowTracker::OnWindowActivated(ActivationReason reason,
   SetActiveWindow(gained_active);
 
   if (gained_active && features::IsFullRestoreEnabled())
-    FullRestoreController::Get()->SaveAllWindows();
+    FullRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
 void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {

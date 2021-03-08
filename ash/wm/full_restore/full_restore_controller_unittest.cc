@@ -270,13 +270,13 @@ TEST_F(FullRestoreControllerTest, Activation) {
   wm::ActivateWindow(window1.get());
   EXPECT_EQ(3, GetTotalSaveWindowsCount());
 
-  // Tests that most recently used windows have the highest activation index.
+  // Tests that most recently used windows have the lowest activation index.
   wm::ActivateWindow(window1.get());
   wm::ActivateWindow(window2.get());
   wm::ActivateWindow(window3.get());
-  EXPECT_EQ(0, GetActivationIndex(window1.get()));
+  EXPECT_EQ(2, GetActivationIndex(window1.get()));
   EXPECT_EQ(1, GetActivationIndex(window2.get()));
-  EXPECT_EQ(2, GetActivationIndex(window3.get()));
+  EXPECT_EQ(0, GetActivationIndex(window3.get()));
 }
 
 }  // namespace ash

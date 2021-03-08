@@ -57,8 +57,8 @@ FullRestoreController::FullRestoreController() {
   DCHECK_EQ(nullptr, g_instance);
   g_instance = this;
 
-  tablet_mode_observeration_.Observe(Shell::Get()->tablet_mode_controller());
-  full_restore_info_observeration_.Observe(
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
+  full_restore_info_observation_.Observe(
       full_restore::FullRestoreInfo::GetInstance());
 }
 
@@ -76,17 +76,14 @@ void FullRestoreController::SaveWindow(WindowState* window_state) {
   SaveWindowImpl(window_state, /*activation_index=*/base::nullopt);
 }
 
-void FullRestoreController::SaveAllWindows() {
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  for (int i = 0; i < int{windows.size()}; ++i) {
-    WindowState* window_state = WindowState::Get(windows[i]);
+void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
+  DCHECK(gained_active);
 
-    // Flip the index so that larger values are associated with more recently
-    // used windows. See SaveWindowImpl for more details.
-    const int activation_index = windows.size() - 1 - i;
-    SaveWindowImpl(window_state, activation_index);
-  }
+  // Once a window gains activation, it can be cleared of its activation index
+  // key since it is no longer used in the stacking algorithm.
+  gained_active->ClearProperty(full_restore::kActivationIndexKey);
+
+  SaveAllWindows();
 }
 
 void FullRestoreController::OnActiveUserPrefServiceChanged(
@@ -103,12 +100,14 @@ void FullRestoreController::OnTabletModeEnded() {
 }
 
 void FullRestoreController::OnTabletControllerDestroyed() {
-  tablet_mode_observeration_.Reset();
+  tablet_mode_observation_.Reset();
 }
 
 void FullRestoreController::OnAppLaunched(aura::Window* window) {}
 
 void FullRestoreController::OnWindowInitialized(aura::Window* window) {
+  DCHECK(window);
+
   int32_t* activation_index =
       window->GetProperty(full_restore::kActivationIndexKey);
   if (!activation_index)
@@ -128,6 +127,18 @@ void FullRestoreController::OnWindowInitialized(aura::Window* window) {
                        widget->widget_delegate()->SetCanActivate(true);
                      },
                      window));
+}
+
+void FullRestoreController::SaveAllWindows() {
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+  for (int i = 0; i < int{mru_windows.size()}; ++i) {
+    // Provide the activation index here since we need to loop through |windows|
+    // anyhow. Otherwise we need to loop again to get the same value in
+    // SaveWindowImpl().
+    WindowState* window_state = WindowState::Get(mru_windows[i]);
+    SaveWindowImpl(window_state, /*activation_index=*/i);
+  }
 }
 
 void FullRestoreController::SaveWindowImpl(
@@ -150,22 +161,11 @@ void FullRestoreController::SaveWindowImpl(
   if (activation_index) {
     window_activation_index = *activation_index;
   } else {
-    // The returned MRU list has the more recently used windows have a smaller
-    // index. We want to flip it so that larger values are associated with
-    // more recently used windows instead. This is because when creating
-    // windows, we will add them into a aura::Window hierarichy, whose
-    // children are stacked such that the highest indexed children are stacked
-    // closest to the top. We reverse the order here since we have access to
-    // the full MRU list, as opposed to on read when we will not have enough
-    // info when the first couple of windows get added. Due to there being
-    // equal or more windows in the MRU list than app windows, the activation
-    // indexes may not be consecutive, but the relative order will be correct.
-    auto windows =
+    auto mru_windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-    std::reverse(windows.begin(), windows.end());
-    auto it = std::find(windows.begin(), windows.end(), window);
-    if (it != windows.end())
-      window_activation_index = it - windows.begin();
+    auto it = std::find(mru_windows.begin(), mru_windows.end(), window);
+    if (it != mru_windows.end())
+      window_activation_index = it - mru_windows.begin();
   }
 
   full_restore::WindowInfo window_info;
