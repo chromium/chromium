@@ -742,36 +742,6 @@ void PaymentRequest::OnPaymentResponseAvailable(
 
   journey_logger_.SetReceivedInstrumentDetails();
 
-  // Log the correct "selected instrument" metric according to its type and
-  // the method name in response.
-  DCHECK(state_->selected_app());
-  JourneyLogger::PaymentMethodCategory category =
-      JourneyLogger::PaymentMethodCategory::kOther;
-  switch (state_->selected_app()->type()) {
-    case PaymentApp::Type::AUTOFILL:
-      category = JourneyLogger::PaymentMethodCategory::kBasicCard;
-      break;
-    case PaymentApp::Type::SERVICE_WORKER_APP:
-      // Intentionally fall through.
-    case PaymentApp::Type::NATIVE_MOBILE_APP: {
-      category = IsGooglePaymentMethod(response->method_name)
-                     ? JourneyLogger::PaymentMethodCategory::kGoogle
-                     : JourneyLogger::PaymentMethodCategory::kOther;
-      break;
-    }
-    case PaymentApp::Type::INTERNAL: {
-      if (response->method_name == methods::kSecurePaymentConfirmation) {
-        category =
-            JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation;
-      }
-      break;
-    }
-    case PaymentApp::Type::UNDEFINED:
-      NOTREACHED();
-      break;
-  }
-  journey_logger_.SetSelectedMethod(category);
-
   // If currently interactive, show the processing spinner. Autofill payment
   // apps request a CVC, so they are always interactive at this point. A payment
   // handler may elect to be non-interactive by not showing a confirmation page
@@ -881,9 +851,41 @@ void PaymentRequest::Pay() {
     display_handle_->Show(weak_ptr_factory_.GetWeakPtr());
   }
 
+  // Log the correct "selected method".
+  journey_logger_.SetSelectedMethod(GetSelectedMethodCategory());
+
   state_->selected_app()->SetPaymentHandlerHost(
       payment_handler_host_->AsWeakPtr());
   state_->GeneratePaymentResponse();
+}
+
+JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
+    const {
+  const PaymentApp* selected_app = state_->selected_app();
+  DCHECK(selected_app);
+  switch (state_->selected_app()->type()) {
+    case PaymentApp::Type::AUTOFILL:
+      return JourneyLogger::PaymentMethodCategory::kBasicCard;
+      break;
+    case PaymentApp::Type::SERVICE_WORKER_APP:
+      // Intentionally fall through.
+    case PaymentApp::Type::NATIVE_MOBILE_APP: {
+      for (const std::string& method : selected_app->GetAppMethodNames()) {
+        if (IsGooglePaymentMethod(method))
+          return JourneyLogger::PaymentMethodCategory::kGoogle;
+      }
+      break;
+    }
+    case PaymentApp::Type::INTERNAL: {
+      if (spec_->IsSecurePaymentConfirmationRequested())
+        return JourneyLogger::PaymentMethodCategory::kSecurePaymentConfirmation;
+      break;
+    }
+    case PaymentApp::Type::UNDEFINED:
+      NOTREACHED();
+      break;
+  }
+  return JourneyLogger::PaymentMethodCategory::kOther;
 }
 
 void PaymentRequest::HideIfNecessary() {

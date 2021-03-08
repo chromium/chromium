@@ -592,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                                                credentialIdentifier, "0.01")));
 
   ExpectFunnelCount(SecurePaymentConfirmationSystemPromptResult::kCanceled, 1);
-  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
+  ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, NonexistentIcon) {
