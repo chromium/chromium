@@ -476,6 +476,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Network connection type when starting a new download.</summary>
 </histogram>
 
+<histogram name="Download.OpenDownloads.PerProfileType"
+    enum="BrowserProfileType" expires_after="2021-12-31">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the profile type for opening the Downloads page. This may be
+    triggered by different entry points like mobile menu, notification or info
+    bar.
+  </summary>
+</histogram>
+
+<histogram name="Download.OpenDownloadsFromMenu.PerProfileType"
+    enum="BrowserProfileType" expires_after="2021-12-31">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the profile type for opening the Downloads page from menu.
+  </summary>
+</histogram>
+
 <histogram name="Download.OpenMethod" enum="DownloadOpenMethod"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
