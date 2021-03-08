@@ -342,7 +342,7 @@ suite('UsbInternalsUITest', function() {
     const treeItems = tree.querySelectorAll('.tree-item');
     assertEquals(11, treeItems.length);
     expectEquals('USB Version: 2.0.0', treeItems[0].textContent);
-    expectEquals('Class Code: 0', treeItems[1].textContent);
+    expectEquals('Class Code: 0 (Device)', treeItems[1].textContent);
     expectEquals('Subclass Code: 0', treeItems[2].textContent);
     expectEquals('Protocol Code: 0', treeItems[3].textContent);
     expectEquals('Port Number: 0', treeItems[4].textContent);
@@ -375,7 +375,7 @@ suite('UsbInternalsUITest', function() {
     expectEquals(
         'Descriptor Type (should be 0x01): 0x01', treeItems[1].textContent);
     expectEquals('USB Version: 2.0.0', treeItems[2].textContent);
-    expectEquals('Class Code: 0', treeItems[3].textContent);
+    expectEquals('Class Code: 0 (Device)', treeItems[3].textContent);
     expectEquals('Subclass Code: 0', treeItems[4].textContent);
     expectEquals('Protocol Code: 0', treeItems[5].textContent);
     expectEquals(
@@ -453,7 +453,7 @@ suite('UsbInternalsUITest', function() {
     expectEquals(
         'Descriptor Type (should be 0x01): 0x01', treeItems[1].textContent);
     expectEquals('USB Version: 2.0.0', treeItems[2].textContent);
-    expectEquals('Class Code: 0', treeItems[3].textContent);
+    expectEquals('Class Code: 0 (Device)', treeItems[3].textContent);
     expectEquals('Subclass Code: 0', treeItems[4].textContent);
     expectEquals('Protocol Code: 0', treeItems[5].textContent);
     expectEquals(
