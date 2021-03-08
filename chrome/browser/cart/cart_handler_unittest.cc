@@ -296,7 +296,8 @@ class CartHandlerNtpModuleTest : public CartHandlerTest {
 };
 
 // Verifies GetMerchantCarts loads real data without fake data parameter.
-TEST_F(CartHandlerNtpModuleTest, TestDisableFakeData) {
+// Flaky, see crbug.com/1185497.
+TEST_F(CartHandlerNtpModuleTest, DISABLED_TestDisableFakeData) {
   base::RunLoop run_loop;
   service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
   service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
