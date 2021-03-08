@@ -2,8 +2,9 @@
 // Set authentication info
 window.addEventListener("message", function(evt) {
     var port = evt.ports[0];
-    // Cookies intended for cross-site use must be marked SameSite=None and Secure.
-    document.cookie = 'cookie=' + evt.data.cookie + (evt.data.cookieCrossSite ? "; SameSite=None; Secure" : "");
+    // Cookies that might be used cross-site must be marked SameSite=None and Secure.
+    // Secure cookies can be used on localhost URLs, even those with http schemes.
+    document.cookie = 'cookie=' + evt.data.cookie + "; SameSite=None; Secure";
     var xhr = new XMLHttpRequest();
     xhr.addEventListener('load', function() {
         port.postMessage({msg: 'LOGIN FINISHED'});

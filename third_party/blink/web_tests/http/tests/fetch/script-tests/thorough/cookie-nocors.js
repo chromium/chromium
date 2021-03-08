@@ -60,19 +60,19 @@ TEST_TARGETS.push(
 
   // Try to set cookieC, but
   // cookie is not sent/updated because credentials flag is not set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=omit&SetCookie=cookieC&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=no-cors&credentials=omit&SetCookie=cookieC',
     [fetchResolved, noBody, typeOpaque],
     onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
   [OTHER_CHECK_URL + 'otherCheck1', [fetchResolved], [cookieCheck2]],
 
   // Set cookieC with opaque response. Response is opaque, but cookie is set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=include&SetCookie=cookieC&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=no-cors&credentials=include&SetCookie=cookieC',
     [fetchResolved, noBody, typeOpaque],
     onlyOnServiceWorkerProxiedTest([cookieCheck2])],
   [OTHER_CHECK_URL + 'otherCheck2', [fetchResolved], [cookieCheckC]],
 
   // Set cookieA with opaque response. Response is opaque and cookie is not set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=same-origin&SetCookie=cookieA&SameSiteNone',
+  [OTHER_BASE_URL + 'mode=no-cors&credentials=same-origin&SetCookie=cookieA',
     [fetchResolved, noBody, typeOpaque],
     onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
   [OTHER_CHECK_URL + 'otherCheck3', [fetchResolved], [cookieCheckC]]
