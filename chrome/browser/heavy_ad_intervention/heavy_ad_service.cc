@@ -12,11 +12,17 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_blocklist.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/blocklist/opt_out_blocklist/sql/opt_out_store_sql.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+namespace {
+
+const base::FilePath::CharType kHeavyAdInterventionOptOutDBFilename[] =
+    FILE_PATH_LITERAL("heavy_ad_intervention_opt_out.db");
+
+}  // namespace
 
 // Whether an opt out store should be used or not.
 bool HeavyAdOptOutStoreDisabled() {
@@ -47,7 +53,7 @@ void HeavyAdService::Initialize(const base::FilePath& profile_path) {
 
     opt_out_store = std::make_unique<blocklist::OptOutStoreSQL>(
         content::GetUIThreadTaskRunner({}), background_task_runner,
-        profile_path.Append(chrome::kHeavyAdInterventionOptOutDBFilename));
+        profile_path.Append(kHeavyAdInterventionOptOutDBFilename));
   }
 
   heavy_ad_blocklist_ = std::make_unique<HeavyAdBlocklist>(

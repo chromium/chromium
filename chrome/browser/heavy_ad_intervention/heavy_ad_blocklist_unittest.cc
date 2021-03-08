@@ -12,7 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/variations/variations_associated_data.h"

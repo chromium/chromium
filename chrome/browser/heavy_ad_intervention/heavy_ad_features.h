@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
 #define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
 
+#include "base/feature_list.h"
+
+namespace features {
+
 // Param that enabled heavy ad intervention with reporting only, does not
 // unloaded the ads.
 extern const char kHeavyAdReportingOnlyParamName[];
@@ -12,5 +16,11 @@ extern const char kHeavyAdReportingOnlyParamName[];
 // Param that enabled sending intervention reports for frames unloaded by heavy
 // ad intervention.
 extern const char kHeavyAdReportingEnabledParamName[];
+
+extern const base::Feature kHeavyAdIntervention;
+extern const base::Feature kHeavyAdInterventionWarning;
+extern const base::Feature kHeavyAdPrivacyMitigations;
+
+}  // namespace features
 
 #endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
