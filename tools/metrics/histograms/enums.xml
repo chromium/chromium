@@ -63413,6 +63413,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="PROXY_HAS_RULES"/>
 </enum>
 
+<enum name="PsmHashDanceDifferentResultsComparison">
+  <int value="0" label="Hash dance true and PSM false"/>
+  <int value="1" label="PSM true and Hash dance false"/>
+</enum>
+
 <enum name="PublicKeyPinFailedDomain">
   <int value="0" label="DOMAIN_NOT_PINNED"/>
   <int value="1" label="DOMAIN_GOOGLE_COM"/>

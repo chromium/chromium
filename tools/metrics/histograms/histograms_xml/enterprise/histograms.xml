@@ -148,6 +148,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Total duration time of the auto-enrollment protocol.</summary>
 </histogram>
 
+<histogram
+    name="Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison"
+    enum="PsmHashDanceDifferentResultsComparison" expires_after="2021-09-01">
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Comparison of hash dance and private set membership results used to
+    determine the initial enrollment state of the device. Only recorded after
+    both protocols have been executed successfully with different results.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Enterprise.AutoEnrollmentRequestNetworkErrorCode"
     enum="NetErrorCodes" expires_after="2021-08-15">
 <!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
