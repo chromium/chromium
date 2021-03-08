@@ -27,6 +27,10 @@
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
 #endif
 
+#if defined(OS_LINUX)
+#include "components/upload_list/combining_upload_list.h"
+#endif
+
 scoped_refptr<UploadList> CreateCrashUploadList() {
 #if defined(OS_MAC) || defined(OS_WIN)
   return new CrashUploadListCrashpad();
@@ -42,7 +46,9 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
 // ChromeOS uses crash_sender as its uploader even when Crashpad is enabled,
 // which isn't compatible with CrashUploadListCrashpad. crash_sender continues
 // to log uploads in CrashUploadList::kReporterLogFilename.
-#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
+// Linux is handled below.
+#if !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+      defined(OS_LINUX))
   if (crash_reporter::IsCrashpadEnabled()) {
     return new CrashUploadListCrashpad();
   }
@@ -52,6 +58,20 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =
       crash_dir_path.AppendASCII(CrashUploadList::kReporterLogFilename);
-  return new TextLogUploadList(upload_log_path);
+  scoped_refptr<UploadList> result =
+      base::MakeRefCounted<TextLogUploadList>(upload_log_path);
+
+#if defined(OS_LINUX)
+  if (crash_reporter::IsCrashpadEnabled()) {
+    // Crashpad keeps the records of C++ crashes (segfaults, etc) in its
+    // internal database. The JavaScript error reporter writes JS error upload
+    // records to the older text format. Combine the two to present a complete
+    // list to the user.
+    std::vector<scoped_refptr<UploadList>> uploaders = {
+        base::MakeRefCounted<CrashUploadListCrashpad>(), std::move(result)};
+    result = base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
+  }
+#endif
+  return result;
 #endif  // defined(OS_MAC) || defined(OS_WIN)
 }

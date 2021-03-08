@@ -499,12 +499,6 @@ static std::string UploadInfoVectorToString(
 }
 
 TEST_F(ChromeJsErrorReportProcessorTest, UpdatesUploadsLog) {
-  if (crash_reporter::IsCrashpadEnabled()) {
-    // TODO(crbug.com/1162356): Combine uploads.log with Crashpad database when
-    // getting list of crashes.
-    GTEST_SKIP();
-  }
-
   base::ScopedPathOverride crash_dir_override(chrome::DIR_CRASH_DUMPS);
   processor_->set_update_report_database(true);
 
