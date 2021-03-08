@@ -70,14 +70,13 @@ class CORE_EXPORT StyleTraversalRoot {
   friend class StyleTraversalRootTestImpl;
 
 #if DCHECK_IS_ON()
-  bool RootIsBeingRemoved() const;
+  bool InDOMRemoval() const;
 #endif
 
   void AssertRootNodeInvariants() {
 #if DCHECK_IS_ON()
     DCHECK(!root_node_ || root_node_->IsDocumentNode() ||
-           IsDirty(*root_node_) || IsChildDirty(*root_node_) ||
-           RootIsBeingRemoved());
+           IsDirty(*root_node_) || IsChildDirty(*root_node_) || InDOMRemoval());
 #endif
   }
 

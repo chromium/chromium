@@ -57,10 +57,9 @@ void StyleTraversalRoot::Update(ContainerNode* common_ancestor,
 }
 
 #if DCHECK_IS_ON()
-bool StyleTraversalRoot::RootIsBeingRemoved() const {
+bool StyleTraversalRoot::InDOMRemoval() const {
   DCHECK(root_node_);
-  return !root_node_->isConnected() &&
-         root_node_->GetDocument().GetStyleEngine().InDOMRemoval();
+  return root_node_->GetDocument().GetStyleEngine().InDOMRemoval();
 }
 #endif
 
