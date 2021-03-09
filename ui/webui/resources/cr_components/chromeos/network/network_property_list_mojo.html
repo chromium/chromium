@@ -53,7 +53,9 @@
               readonly="[[!isEditable_(item, editFieldTypes, propertyDict)]]"
               value="[[getPropertyValue_(item, prefix, propertyDict)]]"
               on-change="onValueChange_"
-              type="[[getEditInputType_(item, editFieldTypes)]]">
+              type="[[getEditInputType_(item, editFieldTypes)]]"
+              on-focus="onInputFocused_"
+              edited="false">
           </cr-input>
         </template>
       </div>

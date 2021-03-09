@@ -163,6 +163,7 @@ js_library("network_property_list_mojo") {
   deps = [
     ":cr_policy_network_behavior_mojo",
     ":onc_mojo",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -541,6 +542,7 @@ js_library("network_property_list_mojo.m") {
     ":network_shared_css.m",
     ":onc_mojo.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":network_property_list_mojo_module" ]
