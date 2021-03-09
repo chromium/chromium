@@ -205,12 +205,4 @@ TEST_F(CounterStyleMapTest, UpdateReferencesInChildScope) {
   EXPECT_EQ("decimal", new_bar.GetExtendedStyle().GetName());
 }
 
-class CounterStyleInitiallyDisabledTest
-    : private ScopedCSSAtRuleCounterStyleForTest,
-      public PageTestBase {
- public:
-  CounterStyleInitiallyDisabledTest()
-      : ScopedCSSAtRuleCounterStyleForTest(false) {}
-};
-
 }  // namespace blink
