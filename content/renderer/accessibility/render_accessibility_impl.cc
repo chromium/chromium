@@ -810,6 +810,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
 
+  bool had_end_of_test_event = false;
+
   ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
 
   WebAXObject root = tree_source_->GetRoot();
@@ -829,6 +831,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
     if (event.event_type == ax::mojom::Event::kLoadComplete)
       had_load_complete_messages = true;
+
+    if (event.event_type == ax::mojom::Event::kEndOfTest) {
+      had_end_of_test_event = true;
+      continue;
+    }
 
     auto obj = WebAXObject::FromWebDocumentByID(document, event.id);
 
@@ -985,6 +992,18 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     updates.push_back(update);
 
     VLOG(1) << "Accessibility tree update:\n" << update.ToString();
+  }
+
+  if (had_end_of_test_event) {
+    ui::AXEvent end_of_test(root.AxID(), ax::mojom::Event::kEndOfTest);
+    if (!WebAXObject::IsDirty(document)) {
+      events.emplace_back(end_of_test);
+    } else {
+      // Document is still dirty, queue up another end of test and process
+      // immediately.
+      event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
+      HandleAXEvent(end_of_test);
+    }
   }
 
   event_schedule_status_ = EventScheduleStatus::kWaitingForAck;

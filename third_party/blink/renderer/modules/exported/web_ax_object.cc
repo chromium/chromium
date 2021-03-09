@@ -1387,6 +1387,17 @@ bool WebAXObject::MaybeUpdateLayoutAndCheckValidity(
 }
 
 // static
+bool WebAXObject::IsDirty(const WebDocument& web_document) {
+  const Document* document = web_document.ConstUnwrap<Document>();
+  if (!document || !document->View())
+    return false;
+  if (!document->ExistingAXObjectCache())
+    return false;
+
+  return document->ExistingAXObjectCache()->IsDirty();
+}
+
+// static
 void WebAXObject::Freeze(const WebDocument& web_document) {
   const Document* doc = web_document.ConstUnwrap<Document>();
   auto* cache = To<AXObjectCacheImpl>(doc->ExistingAXObjectCache());
