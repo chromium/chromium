@@ -921,10 +921,10 @@ simple task posting environment (one default task queue) can use a
 Unit tests can use [TaskEnvironment](https://cs.chromium.org/chromium/src/base/test/task_environment.h)
 which is highly configurable.
 
-## MessageLoop and CurrentThread
+## MessageLoop and MessageLoopCurrent
 
-You might come across references to MessageLoop or CurrentThread in the
+You might come across references to MessageLoop or MessageLoopCurrent in the
 code or documentation. These classes no longer exist and we are in the process
-or getting rid of all references to them. base::CurrentThread was replaced
+or getting rid of all references to them. base::MessageLoopCurrent was replaced
 by base::CurrentThread and the drop in replacements for base::MessageLoop are
 base::SingleThreadTaskExecutor and base::Test::TaskEnvironment.
