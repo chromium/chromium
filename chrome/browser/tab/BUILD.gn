@@ -10,6 +10,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
+    "java/src/org/chromium/chrome/browser/tab/SadTab.java",
+    "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
     "java/src/org/chromium/chrome/browser/tab/Tab.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributeKeys.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributes.java",
@@ -45,12 +47,17 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
   ]
 
-  # TabSelectionType, TabLaunchType
-  srcjar_deps = [ "//chrome/browser/ui:tab_model_enums_java" ]
+  srcjar_deps = [
+    # TabSelectionType, TabLaunchType
+    "//chrome/browser/ui:tab_model_enums_java",
+
+    # SadTabEvent
+    "//components/ui_metrics:ui_metrics_enums_java",
+  ]
 
   deps = [
     ":critical_persisted_tab_data_proto_java",
-    "//base:base_java",
+    ":java_resources",
     "//base:base_java",
     "//base:jni_java",
     "//chrome/browser/android/crypto:java",
@@ -61,6 +68,7 @@ android_library("java") {
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/util/android:java",
     "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
@@ -73,6 +81,7 @@ android_library("java") {
     "//components/payments/content/android:java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
+    "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -84,6 +93,19 @@ android_library("java") {
   ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.tab"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-hdpi/sad_tab.png",
+    "java/res/drawable-mdpi/sad_tab.png",
+    "java/res/drawable-xhdpi/sad_tab.png",
+    "java/res/drawable-xxhdpi/sad_tab.png",
+    "java/res/drawable-xxxhdpi/sad_tab.png",
+    "java/res/layout/sad_tab.xml",
+  ]
+  deps = [ "//ui/android:ui_java_resources" ]
 }
 
 generate_jni("jni_headers") {

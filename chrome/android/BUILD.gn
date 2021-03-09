@@ -198,6 +198,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/browser/password_check/android:java_resources",
     "//chrome/browser/signin/services/android:java_resources",
     "//chrome/browser/signin/ui/android:java_resources",
+    "//chrome/browser/tab:java_resources",
     "//chrome/browser/ui/android/appmenu:java_resources",
     "//chrome/browser/ui/android/favicon:java_resources",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -585,7 +586,6 @@ android_library("chrome_java") {
     "//components/ntp_tiles:ntp_tiles_enums_java",
     "//components/offline_pages/core:offline_page_model_enums_java",
     "//components/search_engines:search_engine_type_java",
-    "//components/ui_metrics:ui_metrics_enums_java",
     "//net:effective_connection_type_java",
   ]
 

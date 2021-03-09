@@ -8,9 +8,10 @@
 
 <org.chromium.chrome.browser.tab.SadTabView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="Overdraw"
-    android:background="#f7f7f7"
+    android:background="@color/modern_grey_100"
     android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -36,13 +37,13 @@
             tools:ignore="ContentDescription"
             android:layout_gravity="start" />
 
-        <TextView
+        <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/sad_tab_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
             android:textAppearance="@style/TextAppearance.Headline.Primary"
-            android:lineSpacingMultiplier="1.4"
+            app:leading="@dimen/text_size_large_leading"
             android:layout_gravity="start" />
 
         <TextView

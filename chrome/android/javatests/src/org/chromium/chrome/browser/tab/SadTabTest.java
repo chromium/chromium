@@ -181,7 +181,7 @@ public class SadTabTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SadTab sadTab = SadTab.from(tab);
             sadTab.removeIfPresent();
-            sadTab.show();
+            sadTab.show(tab.getContext(), () -> {}, () -> {});
         });
     }
 

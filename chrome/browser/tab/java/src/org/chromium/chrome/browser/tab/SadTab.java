@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -20,9 +19,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -34,11 +30,12 @@ import org.chromium.url.GURL;
 /**
  * Represent the sad tab displayed in place of a crashed renderer. Instantiated on the first
  * |show()| request from a Tab, and destroyed together with it.
+ * TODO(crbug.com/1161348): Consider moving this to its own target.
  */
 public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;
 
-    private final TabImpl mTab;
+    private final Tab mTab;
 
     private View mView;
 
@@ -68,52 +65,32 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
 
     @VisibleForTesting
     public SadTab(Tab tab) {
-        mTab = (TabImpl) tab;
+        mTab = tab;
         mTab.addObserver(this);
     }
 
     /**
      * Constructs and shows a sad tab (Aw, Snap!).
      */
-    public void show() {
+    public void show(Context context, Runnable suggestionAction, Runnable buttonAction) {
         if (mTab.getWebContents() == null) return;
 
         // Make sure we are not adding the "Aw, snap" view over an existing one.
         assert mView == null;
-
-        // If the tab has crashed twice in a row change the sad tab view to the "Send Feedback"
-        // version and change the onClickListener.
-        final boolean showSendFeedbackView = mSadTabSuccessiveRefreshCounter >= 1;
-
-        Runnable suggestionAction = new Runnable() {
-            @Override
-            public void run() {
-                Activity activity = mTab.getWindowAndroid().getActivity().get();
-                assert activity != null;
-                HelpAndFeedbackLauncherImpl.getInstance().show(activity,
-                        activity.getString(R.string.help_context_sad_tab),
-                        Profile.fromWebContents(mTab.getWebContents()), null);
-            }
-        };
-
-        Runnable buttonAction = new Runnable() {
-            @Override
-            public void run() {
-                if (showSendFeedbackView) {
-                    Profile profile = Profile.fromWebContents(mTab.getWebContents());
-                    mTab.getActivity().startHelpAndFeedback(
-                            mTab.getUrlString(), "MobileSadTabFeedback", profile);
-                } else {
-                    mTab.reload();
-                }
-            }
-        };
-
-        mView = createView(
-                suggestionAction, buttonAction, showSendFeedbackView, mTab.isIncognito());
+        mView = createView(context, suggestionAction, buttonAction, showSendFeedbackView(),
+                mTab.isIncognito());
         mSadTabSuccessiveRefreshCounter++;
 
         mTab.getTabViewManager().addTabViewProvider(this);
+    }
+
+    /**
+     * @return {@code true} if we should show 'Send Feedback'.
+     */
+    public boolean showSendFeedbackView() {
+        // If the tab has crashed twice in a row change the sad tab view to the "Send Feedback"
+        // version and change the onClickListener.
+        return mSadTabSuccessiveRefreshCounter >= 1;
     }
 
     /**
@@ -159,6 +136,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     }
 
     /**
+     * @param context Context this sad tab is shown with.
      * @param suggestionAction {@link Runnable} to be executed when user clicks "try these
      *                        suggestions".
      * @param buttonAction {@link Runnable} to be executed when the button is pressed.
@@ -167,10 +145,8 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
      * @param isIncognito Whether the Sad Tab view is being showin in an incognito tab.
      * @return A {@link View} instance which is used in place of a crashed renderer.
      */
-    protected View createView(final Runnable suggestionAction, Runnable buttonAction,
-            boolean showSendFeedbackView, boolean isIncognito) {
-        Context context = mTab.getThemedApplicationContext();
-
+    protected View createView(Context context, final Runnable suggestionAction,
+            Runnable buttonAction, boolean showSendFeedbackView, boolean isIncognito) {
         // Inflate Sad tab and initialize.
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

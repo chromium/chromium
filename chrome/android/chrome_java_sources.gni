@@ -1300,8 +1300,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateClientImpl.java",
   "java/src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/RedirectHandlerTabHelper.java",
-  "java/src/org/chromium/chrome/browser/tab/SadTab.java",
-  "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
   "java/src/org/chromium/chrome/browser/tab/TabAssociatedApp.java",
   "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
   "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsOffsetHelper.java",
