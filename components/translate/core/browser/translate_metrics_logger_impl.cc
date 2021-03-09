@@ -22,6 +22,9 @@ const char kTranslateTranslationTargetLanguage[] =
     "Translate.Translation.TargetLanguage";
 const char kTranslateTranslationType[] = "Translate.Translation.Type";
 
+// UI Interaction frequency UMA histograms.
+const char kTranslateUiInteractionEvent[] = "Translate.UiInteraction.Event";
+
 // Page-load frequency UMA histograms.
 const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[] =
     "Translate.PageLoad.AutofillAssistantDeferredTriggerDecision";
@@ -395,6 +398,10 @@ void TranslateMetricsLoggerImpl::LogUIInteraction(
     first_ui_interaction_ = ui_interaction;
 
   num_ui_interactions_++;
+
+  // Record this UI interaction to the Translate.UiInteraction.Event UMA
+  // histogram immediately.
+  base::UmaHistogramEnumeration(kTranslateUiInteractionEvent, ui_interaction);
 }
 
 TranslationType TranslateMetricsLoggerImpl::GetNextManualTranslationType() {

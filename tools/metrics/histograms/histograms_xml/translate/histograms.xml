@@ -1108,6 +1108,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.UiInteraction.Event" enum="TranslateUIInteraction"
+    expires_after="M95">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records the UI interaction that the user performed. The set of possible
+    actions are independent of the exact UI and platform, and capture the high
+    level action performed.
+
+    This is recorded every time the user interacts with the Translate UI on all
+    platforms.
+  </summary>
+</histogram>
+
 <histogram name="Translate.UndisplayableLanguage" enum="LanguageCode"
     expires_after="M81">
   <obsolete>

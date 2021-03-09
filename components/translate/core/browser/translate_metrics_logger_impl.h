@@ -23,6 +23,9 @@ extern const char kTranslateTranslationTargetLanguage[];
 extern const char kTranslateTranslationStatus[];
 extern const char kTranslateTranslationType[];
 
+// UI Interaction frequency UMA histograms.
+extern const char kTranslateUiInteractionEvent[];
+
 // Page-load frequency UMA histograms.
 extern const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[];
 extern const char kTranslatePageLoadFinalSourceLanguage[];

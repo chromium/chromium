@@ -1388,14 +1388,40 @@ TEST_F(TranslateMetricsLoggerImplTest, LogUIInteraction) {
       UIInteraction::kNeverTranslateLanguage,
       UIInteraction::kNeverTranslateSite,
       UIInteraction::kCloseUIExplicitly,
-      UIInteraction::kCloseUILostFocus};
+      UIInteraction::kCloseUILostFocus,
+      UIInteraction::kTranslate,
+      UIInteraction::kChangeSourceLanguage,
+      UIInteraction::kCloseUIExplicitly};
   for (auto ui_interaction : kUIInteractions) {
     translate_metrics_logger()->LogUIInteraction(ui_interaction);
   }
 
   translate_metrics_logger()->RecordMetrics(true);
 
-  CheckUIInteractions(kUIInteractions[0], 9);
+  // Checks internal state that track UI interactions over the page load.
+  CheckUIInteractions(kUIInteractions[0], 12);
+
+  // Check that the expected values are recorded to
+  // Translate.UiInteraction.Event.
+  histogram_tester()->ExpectTotalCount(kTranslateUiInteractionEvent, 12);
+  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
+                                        UIInteraction::kTranslate, 2);
+  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
+                                        UIInteraction::kRevert, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kAlwaysTranslateLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kChangeSourceLanguage, 2);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kChangeTargetLanguage, 1);
+  histogram_tester()->ExpectBucketCount(
+      kTranslateUiInteractionEvent, UIInteraction::kNeverTranslateLanguage, 1);
+  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
+                                        UIInteraction::kNeverTranslateSite, 1);
+  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
+                                        UIInteraction::kCloseUIExplicitly, 2);
+  histogram_tester()->ExpectBucketCount(kTranslateUiInteractionEvent,
+                                        UIInteraction::kCloseUILostFocus, 1);
 }
 
 }  // namespace testing
