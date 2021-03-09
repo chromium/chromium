@@ -38,7 +38,7 @@
     reset.
   </description>
 
-  <interface name="zcr_remote_shell_v1" version="30">
+  <interface name="zcr_remote_shell_v1" version="31">
     <description summary="remote_shell">
       The global interface that allows clients to turn a wl_surface into a
       "real window" which is remotely managed but can be stacked, activated
@@ -294,7 +294,7 @@
 
   </interface>
 
-  <interface name="zcr_remote_surface_v1" version="27">
+  <interface name="zcr_remote_surface_v1" version="31">
     <description summary="A desktop window">
       An interface that may be implemented by a wl_surface, for
       implementations that provide a desktop-style user interface
@@ -1113,12 +1113,26 @@
       </description>
     </request>
 
+    <!-- Version 27 additions -->
     <request name="set_system_gesture_exclusion" since="27">
       <description summary="set system gesture exclusion">
         Set system gesture exclusion region in which system gestures e.g. back
         gesture should not be triggered.
       </description>
       <arg name="region" type="object" interface="wl_region" allow-null="true"/>
+    </request>
+
+    <!-- Version 31 additions -->
+    <request name="set_resize_lock" since="31">
+      <description summary="set resize lock state">
+          Enable the resize lock and put restrictions related to resizing on the shell surface.
+      </description>
+    </request>
+
+    <request name="unset_resize_lock" since="31">
+      <description summary="unset resize lock state">
+          Disable the resize lock and allow the shell surface to be resized freely.
+      </description>
     </request>
   </interface>
 

@@ -640,6 +640,15 @@ void remote_surface_set_system_gesture_exclusion(wl_client* client,
   }
 }
 
+void remote_surface_set_resize_lock(wl_client* client, wl_resource* resource) {
+  NOTIMPLEMENTED();
+}
+
+void remote_surface_unset_resize_lock(wl_client* client,
+                                      wl_resource* resource) {
+  NOTIMPLEMENTED();
+}
+
 const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
     remote_surface_destroy,
     remote_surface_set_app_id,
@@ -689,7 +698,9 @@ const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
     remote_surface_set_accessibility_id,
     remote_surface_set_pip_original_window,
     remote_surface_unset_pip_original_window,
-    remote_surface_set_system_gesture_exclusion};
+    remote_surface_set_system_gesture_exclusion,
+    remote_surface_set_resize_lock,
+    remote_surface_unset_resize_lock};
 
 ////////////////////////////////////////////////////////////////////////////////
 // notification_surface_interface:
