@@ -32,8 +32,6 @@
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/common/chrome_features.h"
-#else
-#include "chrome/browser/chrome_browser_field_trials_desktop.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -75,8 +73,6 @@ void ChromeBrowserFieldTrials::SetupFieldTrials() {
 
 #if defined(OS_ANDROID)
   chrome::SetupMobileFieldTrials();
-#else
-  chrome::SetupDesktopFieldTrials();
 #endif
 }
 

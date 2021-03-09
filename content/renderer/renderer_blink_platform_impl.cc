@@ -631,16 +631,6 @@ bool RendererBlinkPlatformImpl::IsWebRtcStunOriginEnabled() {
       switches::kEnableWebRtcStunOrigin);
 }
 
-base::Optional<blink::WebString>
-RendererBlinkPlatformImpl::WebRtcStunProbeTrialParameter() {
-  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch(switches::kWebRtcStunProbeTrialParameter))
-    return base::nullopt;
-
-  return blink::WebString::FromASCII(
-      cmd_line->GetSwitchValueASCII(switches::kWebRtcStunProbeTrialParameter));
-}
-
 media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
     blink::WebLocalFrame* web_frame) {
   DCHECK(ShouldEnforceWebRTCRoutingPreferences());

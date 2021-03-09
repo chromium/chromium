@@ -644,10 +644,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual bool IsWebRtcSrtpEncryptedHeadersEnabled() { return false; }
 
-  virtual base::Optional<WebString> WebRtcStunProbeTrialParameter() {
-    return base::nullopt;
-  }
-
   // TODO(qingsi): Consolidate the legacy |ip_handling_policy| with
   // |allow_mdns_obfuscation| following the latest spec on IP handling modes
   // with mDNS introduced

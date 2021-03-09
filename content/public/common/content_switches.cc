@@ -879,11 +879,6 @@ const char kWebRtcMaxCaptureFramerate[] = "max-gum-fps";
 const char kWebRtcMaxCpuConsumptionPercentage[] =
     "webrtc-max-cpu-consumption-percentage";
 
-// Renderer process parameter for WebRTC Stun probe trial to determine the
-// interval. Please see SetupStunProbeTrial in
-// chrome_browser_field_trials_desktop.cc for more detail.
-const char kWebRtcStunProbeTrialParameter[] = "webrtc-stun-probe-trial";
-
 // Enable capture and local storage of WebRTC event logs without visiting
 // chrome://webrtc-internals. This is useful for automated testing. It accepts
 // the path to which the local logs would be stored. Disabling is not possible

@@ -312,9 +312,6 @@ void RemoveShaderInfo(int32_t id) {
     GetShaderCacheFactorySingleton()->RemoveCacheInfo(id);
 }
 
-// Allow us to only run the trial in the first renderer.
-bool has_done_stun_trials = false;
-
 // the global list of all renderer processes
 base::IDMap<RenderProcessHost*>& GetAllHosts() {
   static base::NoDestructor<base::IDMap<RenderProcessHost*>> s_all_hosts;
@@ -3414,16 +3411,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 
   BrowserChildProcessHostImpl::CopyFeatureAndFieldTrialFlags(renderer_cmd);
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(renderer_cmd);
-
-  // Only run the Stun trials in the first renderer.
-  if (!has_done_stun_trials &&
-      browser_cmd.HasSwitch(switches::kWebRtcStunProbeTrialParameter)) {
-    has_done_stun_trials = true;
-    renderer_cmd->AppendSwitchASCII(
-        switches::kWebRtcStunProbeTrialParameter,
-        browser_cmd.GetSwitchValueASCII(
-            switches::kWebRtcStunProbeTrialParameter));
-  }
 
   // Disable databases in incognito mode.
   if (GetBrowserContext()->IsOffTheRecord() &&

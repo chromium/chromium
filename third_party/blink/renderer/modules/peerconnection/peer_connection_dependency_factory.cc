@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/p2p/port_allocator.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
-#include "third_party/blink/renderer/platform/peerconnection/stun_field_trial.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -121,7 +120,6 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
   if (base::FeatureList::IsEnabled(features::kWebRtcDistinctWorkerThread)) {
     chrome_worker_thread_.emplace("WebRTC_Worker");
   }
-  TryScheduleStunProbeTrial();
 }
 
 PeerConnectionDependencyFactory::~PeerConnectionDependencyFactory() {
@@ -566,32 +564,6 @@ void PeerConnectionDependencyFactory::InitializeWorkerThread(
   jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
   *thread = jingle_glue::JingleThreadWrapper::current();
   event->Signal();
-}
-
-void PeerConnectionDependencyFactory::TryScheduleStunProbeTrial() {
-  base::Optional<WebString> params =
-      Platform::Current()->WebRtcStunProbeTrialParameter();
-  if (!params)
-    return;
-
-  GetPcFactory();
-
-  PostDelayedCrossThreadTask(
-      *chrome_network_thread_.task_runner().get(), FROM_HERE,
-      CrossThreadBindOnce(
-          &PeerConnectionDependencyFactory::StartStunProbeTrialOnNetworkThread,
-          CrossThreadUnretained(this), String(*params)),
-      base::TimeDelta::FromMilliseconds(blink::kExperimentStartDelayMs));
-}
-
-void PeerConnectionDependencyFactory::StartStunProbeTrialOnNetworkThread(
-    const String& params) {
-  DCHECK(network_manager_);
-  DCHECK(chrome_network_thread_.task_runner()->BelongsToCurrentThread());
-  // TODO(crbug.com/787254): Remove the UTF8 conversion when StunProberTrial
-  // operates over WTF::String.
-  stun_trial_.reset(new StunProberTrial(network_manager_.get(), params.Utf8(),
-                                        socket_factory_.get()));
 }
 
 void PeerConnectionDependencyFactory::CreateIpcNetworkManagerOnNetworkThread(

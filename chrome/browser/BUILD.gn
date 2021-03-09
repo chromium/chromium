@@ -3450,8 +3450,6 @@ static_library("browser") {
       "cart/commerce_hint_service.cc",
       "cart/commerce_hint_service.h",
       "certificate_viewer.h",
-      "chrome_browser_field_trials_desktop.cc",
-      "chrome_browser_field_trials_desktop.h",
       "chrome_process_singleton.cc",
       "chrome_process_singleton.h",
       "component_updater/intervention_policy_database_component_installer.cc",
