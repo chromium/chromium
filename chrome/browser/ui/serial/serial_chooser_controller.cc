@@ -32,8 +32,7 @@ SerialChooserController::SerialChooserController(
       frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  requesting_origin_ = render_frame_host->GetLastCommittedOrigin();
-  embedding_origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -99,8 +98,7 @@ bool SerialChooserController::IsPaired(size_t index) const {
   if (!chooser_context_)
     return false;
 
-  return chooser_context_->HasPortPermission(requesting_origin_,
-                                             embedding_origin_, *ports_[index]);
+  return chooser_context_->HasPortPermission(origin_, *ports_[index]);
 }
 
 void SerialChooserController::Select(const std::vector<size_t>& indices) {
@@ -113,8 +111,7 @@ void SerialChooserController::Select(const std::vector<size_t>& indices) {
     return;
   }
 
-  chooser_context_->GrantPortPermission(requesting_origin_, embedding_origin_,
-                                        *ports_[index]);
+  chooser_context_->GrantPortPermission(origin_, *ports_[index]);
   RunCallback(ports_[index]->Clone());
 }
 

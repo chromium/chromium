@@ -42,17 +42,14 @@ class MockHidDelegate : public HidDelegate {
   // these methods to broadcast device connections to all delegate observers.
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device);
   void OnDeviceRemoved(const device::mojom::HidDeviceInfo& device);
-  void OnPermissionRevoked(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin);
+  void OnPermissionRevoked(const url::Origin& origin);
 
   MOCK_METHOD0(RunChooserInternal,
                std::vector<device::mojom::HidDeviceInfoPtr>());
-  MOCK_METHOD2(CanRequestDevicePermission,
+  MOCK_METHOD1(CanRequestDevicePermission,
+               bool(content::WebContents* web_contents));
+  MOCK_METHOD2(HasDevicePermission,
                bool(content::WebContents* web_contents,
-                    const url::Origin& requesting_origin));
-  MOCK_METHOD3(HasDevicePermission,
-               bool(content::WebContents* web_contents,
-                    const url::Origin& requesting_origin,
                     const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,
                device::mojom::HidManager*(content::WebContents* web_contents));

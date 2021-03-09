@@ -336,7 +336,7 @@ public class WebsitePermissionsFetcher {
                          mBrowserContextHandle, mChooserDataType)) {
                 String origin = info.getOrigin();
                 if (origin == null) continue;
-                findOrCreateSite(origin, info.getEmbedder()).addChosenObjectInfo(info);
+                findOrCreateSite(origin, null).addChosenObjectInfo(info);
             }
         }
     }

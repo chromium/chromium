@@ -752,9 +752,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
       url::Origin::Create(web_contents_->GetLastCommittedURL());
 
   // Revoke the permission.
-  const auto objects = context->GetGrantedObjects(origin, origin);
+  const auto objects = context->GetGrantedObjects(origin);
   EXPECT_EQ(1ul, objects.size());
-  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
+  context->RevokeObjectPermission(origin, objects.at(0)->value);
 
   // Wait for gattserverdisconnect event.
   EXPECT_EQ("event fired",
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
       url::Origin::Create(web_contents_->GetLastCommittedURL());
   BluetoothChooserContext* context =
       BluetoothChooserContextFactory::GetForProfile(browser()->profile());
-  const auto objects = context->GetGrantedObjects(origin, origin);
+  const auto objects = context->GetGrantedObjects(origin);
   EXPECT_EQ(2u, objects.size());
 
   // Send first advertisement and wait for the event to be resolved.
@@ -843,8 +843,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
             content::EvalJs(web_contents_, "first_device_promise"));
 
   // Revoke the permission.
-  context->RevokeObjectPermission(origin, origin, objects.at(0)->value);
-  EXPECT_EQ(1ul, context->GetGrantedObjects(origin, origin).size());
+  context->RevokeObjectPermission(origin, objects.at(0)->value);
+  EXPECT_EQ(1ul, context->GetGrantedObjects(origin).size());
 
   // Send another advertisement after the permission was revoked, this
   // advertisement event should not be received. Also send an advertisement

@@ -122,7 +122,7 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
       });
 
   base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin(), origin()))
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
       .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
 
   HidChooserContext* context = GetContext();
@@ -131,34 +131,33 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
   auto device = ConnectEphemeralDevice();
   device_added_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
 
   // 2. Grant an ephemeral permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin(), origin());
+      origin_objects = context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->requesting_origin);
-  EXPECT_EQ(origin().GetURL(), objects[0]->embedding_origin);
+  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
   // 3. Revoke the permission.
-  context->RevokeObjectPermission(origin(), origin(), objects[0]->value);
+  context->RevokeObjectPermission(origin(), objects[0]->value);
   permission_revoked_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin(), origin());
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  origin_objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, origin_objects.size());
   objects = context->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -181,7 +180,7 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
       });
 
   base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin(), origin()))
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
       .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
 
   HidChooserContext* context = GetContext();
@@ -190,23 +189,22 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   auto device = ConnectEphemeralDevice();
   device_added_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
 
   // 2. Grant an ephemeral permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin(), origin());
+      origin_objects = context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->requesting_origin);
-  EXPECT_EQ(origin().GetURL(), objects[0]->embedding_origin);
+  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
@@ -217,8 +215,8 @@ TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
   DisconnectDevice(*device);
   permission_revoked_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin(), origin());
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  origin_objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, origin_objects.size());
   objects = context->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -243,7 +241,7 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
       });
 
   base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin(), origin()))
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
       .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
 
   HidChooserContext* context = GetContext();
@@ -252,23 +250,22 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
   auto device = ConnectPersistentUsbDevice();
   device_added_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
 
   // 2. Grant a persistent permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context->GetGrantedObjects(origin(), origin());
+      origin_objects = context->GetGrantedObjects(origin());
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->requesting_origin);
-  EXPECT_EQ(origin().GetURL(), objects[0]->embedding_origin);
+  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
@@ -278,14 +275,14 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
   DisconnectDevice(*device);
   device_removed_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
   // 4. Revoke the persistent permission.
-  context->RevokeObjectPermission(origin(), origin(), objects[0]->value);
+  context->RevokeObjectPermission(origin(), objects[0]->value);
   permission_revoked_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin(), origin());
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  origin_objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, origin_objects.size());
   objects = context->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -309,10 +306,10 @@ TEST_F(HidChooserContextTest, GuardPermission) {
   device_added_loop.Run();
 
   // 2. Grant an ephemeral device permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 
   // 3. Set the guard permission to CONTENT_SETTING_BLOCK.
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -321,9 +318,9 @@ TEST_F(HidChooserContextTest, GuardPermission) {
                                      CONTENT_SETTING_BLOCK);
 
   // 4. Check that the device permission is no longer granted.
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
 
-  auto objects = context->GetGrantedObjects(origin(), origin());
+  auto objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, objects.size());
 
   auto all_origin_objects = context->GetAllGrantedObjects();
@@ -347,7 +344,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
       });
 
   base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin(), origin()))
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
       .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
 
   HidChooserContext* context = GetContext();
@@ -357,14 +354,14 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
   device_added_loop.Run();
 
   // 2. Grant an ephemeral device permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
   // 3. Simulate a connection error. The ephemeral permission should be revoked.
   SimulateHidManagerConnectionError();
   permission_revoked_loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
 }
 
 TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
@@ -392,7 +389,7 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
   device_added_loop.Run();
 
   // 2. Grant a persistent device permission.
-  context->GrantDevicePermission(origin(), origin(), *device);
+  context->GrantDevicePermission(origin(), *device);
   permission_granted_loop.Run();
 
   // 3. Simulate a connection error. The persistent permission should not be
@@ -400,5 +397,5 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
   SimulateHidManagerConnectionError();
   connection_error_loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), origin(), *device));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
 }

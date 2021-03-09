@@ -98,8 +98,7 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
         const ChooserContextPermissionObserver) = delete;
 
     // permissions::ChooserContextBase::PermissionObserver:
-    void OnPermissionRevoked(const url::Origin& requesting_origin,
-                             const url::Origin& embedding_origin) override;
+    void OnPermissionRevoked(const url::Origin& origin) override;
 
     void AddFramePermissionObserver(FramePermissionObserver* observer);
     void RemoveFramePermissionObserver(FramePermissionObserver* observer);

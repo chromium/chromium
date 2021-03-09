@@ -20,9 +20,7 @@ class MockPermissionObserver : public ChooserContextBase::PermissionObserver {
   MOCK_METHOD2(OnChooserObjectPermissionChanged,
                void(ContentSettingsType guard_content_settings_type,
                     ContentSettingsType data_content_settings_type));
-  MOCK_METHOD2(OnPermissionRevoked,
-               void(const url::Origin& requesting_origin,
-                    const url::Origin& embedding_origin));
+  MOCK_METHOD1(OnPermissionRevoked, void(const url::Origin& origin));
 };
 
 }  // namespace permissions

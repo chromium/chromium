@@ -210,18 +210,18 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbDefault) {
 
   // Expect the default permission value to be 'ask'.
   auto* context = UsbChooserContextFactory::GetForProfile(browser()->profile());
-  EXPECT_TRUE(context->CanRequestObjectPermission(kTestOrigin, kTestOrigin));
+  EXPECT_TRUE(context->CanRequestObjectPermission(kTestOrigin));
 
   // Update policy to change the default permission value to 'block'.
   PolicyMap policies;
   SetPolicy(&policies, key::kDefaultWebUsbGuardSetting, base::Value(2));
   UpdateProviderPolicy(policies);
-  EXPECT_FALSE(context->CanRequestObjectPermission(kTestOrigin, kTestOrigin));
+  EXPECT_FALSE(context->CanRequestObjectPermission(kTestOrigin));
 
   // Update policy to change the default permission value to 'ask'.
   SetPolicy(&policies, key::kDefaultWebUsbGuardSetting, base::Value(3));
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(context->CanRequestObjectPermission(kTestOrigin, kTestOrigin));
+  EXPECT_TRUE(context->CanRequestObjectPermission(kTestOrigin));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
@@ -233,8 +233,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
 
   // Expect the default permission value to be empty.
   auto* context = UsbChooserContextFactory::GetForProfile(browser()->profile());
-  EXPECT_FALSE(
-      context->HasDevicePermission(kTestOrigin, kTestOrigin, device_info));
+  EXPECT_FALSE(context->HasDevicePermission(kTestOrigin, device_info));
 
   // Update policy to add an entry to the permission value to allow
   // |kTestOrigin| to access the device described by |device_info|.
@@ -261,16 +260,14 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
             std::move(policy_value));
   UpdateProviderPolicy(policies);
 
-  EXPECT_TRUE(
-      context->HasDevicePermission(kTestOrigin, kTestOrigin, device_info));
+  EXPECT_TRUE(context->HasDevicePermission(kTestOrigin, device_info));
 
   // Remove the policy to ensure that it can be dynamically updated.
   SetPolicy(&policies, key::kWebUsbAllowDevicesForUrls,
             base::Value(base::Value::Type::LIST));
   UpdateProviderPolicy(policies);
 
-  EXPECT_FALSE(
-      context->HasDevicePermission(kTestOrigin, kTestOrigin, device_info));
+  EXPECT_FALSE(context->HasDevicePermission(kTestOrigin, device_info));
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {

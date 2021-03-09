@@ -396,7 +396,7 @@ TEST_F(HidServiceTest, RevokeDevicePermission) {
   // Simulate user revoking permission.
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(false));
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
-  hid_delegate().OnPermissionRevoked(origin, origin);
+  hid_delegate().OnPermissionRevoked(origin);
 
   disconnect_loop.Run();
   EXPECT_FALSE(contents()->IsConnectedToHidDevice());
@@ -412,7 +412,7 @@ TEST_F(HidServiceTest, RevokeDevicePermissionWithoutConnection) {
 
   // Simulate user revoking permission.
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
-  hid_delegate().OnPermissionRevoked(origin, origin);
+  hid_delegate().OnPermissionRevoked(origin);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(contents()->IsConnectedToHidDevice());

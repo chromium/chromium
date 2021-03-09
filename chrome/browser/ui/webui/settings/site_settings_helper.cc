@@ -884,7 +884,7 @@ base::Value GetChooserExceptionListFromProfile(
       all_chooser_objects;
   for (const auto& object : objects) {
     // Don't include WebUI settings.
-    if (content::HasWebUIScheme(object->requesting_origin))
+    if (content::HasWebUIScheme(object->origin))
       continue;
 
     base::string16 name = chooser_context->GetObjectDisplayName(object->value);
@@ -894,14 +894,13 @@ base::Value GetChooserExceptionListFromProfile(
     std::string source = GetSourceStringForChooserException(
         profile, content_type, object->source);
 
-    const auto requesting_origin_source_pair =
-        std::make_pair(object->requesting_origin, source);
-    auto& embedding_origin_incognito_pair_set =
-        chooser_exception_details[requesting_origin_source_pair];
+    const auto origin_source_pair = std::make_pair(object->origin, source);
+    auto& origin_incognito_pair_set =
+        chooser_exception_details[origin_source_pair];
 
-    const auto embedding_origin_incognito_pair =
-        std::make_pair(object->embedding_origin, object->incognito);
-    embedding_origin_incognito_pair_set.insert(embedding_origin_incognito_pair);
+    const auto origin_incognito_pair =
+        std::make_pair(object->origin, object->incognito);
+    origin_incognito_pair_set.insert(origin_incognito_pair);
   }
 
   for (const auto& all_chooser_objects_entry : all_chooser_objects) {

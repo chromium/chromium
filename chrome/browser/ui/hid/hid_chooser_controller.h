@@ -81,8 +81,7 @@ class HidChooserController : public ChooserController,
 
   std::vector<blink::mojom::HidDeviceFilterPtr> filters_;
   content::HidChooser::Callback callback_;
-  const url::Origin requesting_origin_;
-  const url::Origin embedding_origin_;
+  const url::Origin origin_;
   const int frame_tree_node_id_;
 
   // The lifetime of the chooser context is tied to the browser context used to

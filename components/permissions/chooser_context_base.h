@@ -33,15 +33,13 @@ namespace permissions {
 class ChooserContextBase : public KeyedService {
  public:
   struct Object {
-    Object(const url::Origin& requesting_origin,
-           const base::Optional<url::Origin>& embedding_origin,
+    Object(const url::Origin& origin,
            base::Value value,
            content_settings::SettingSource source,
            bool incognito);
     ~Object();
 
-    GURL requesting_origin;
-    GURL embedding_origin;
+    GURL origin;
     base::Value value;
     content_settings::SettingSource source;
     bool incognito;
@@ -57,10 +55,8 @@ class ChooserContextBase : public KeyedService {
     virtual void OnChooserObjectPermissionChanged(
         ContentSettingsType guard_content_settings_type,
         ContentSettingsType data_content_settings_type);
-    // Notify obsever that an object permission was revoked for
-    // |requesting_origin| and |embedding_origin|.
-    virtual void OnPermissionRevoked(const url::Origin& requesting_origin,
-                                     const url::Origin& embedding_origin);
+    // Notify obsever that an object permission was revoked for |origin|.
+    virtual void OnPermissionRevoked(const url::Origin& origin);
   };
 
   void AddObserver(PermissionObserver* observer);
@@ -71,21 +67,16 @@ class ChooserContextBase : public KeyedService {
                      HostContentSettingsMap* host_content_settings_map);
   ~ChooserContextBase() override;
 
-  // Checks whether |requesting_origin| can request permission to access objects
-  // when embedded within |embedding_origin|. This is done by checking
-  // |guard_content_settings_type_| which will usually be "ask" by default but
-  // could be set by the user or group policy.
-  bool CanRequestObjectPermission(const url::Origin& requesting_origin,
-                                  const url::Origin& embedding_origin);
+  // Checks whether |origin| can request permission to access objects. This is
+  // done by checking |guard_content_settings_type_| which will usually be "ask"
+  // by default but could be set by the user or group policy.
+  bool CanRequestObjectPermission(const url::Origin& origin);
 
-  // Returns the list of objects that |requesting_origin| has been granted
-  // permission to access when embedded within |embedding_origin|.
-  //
-  // This method may be extended by a subclass to return objects not stored in
-  // |host_content_settings_map_|.
+  // Returns the list of objects that |origin| has been granted permission to
+  // access. This method may be extended by a subclass to return objects not
+  // stored in |host_content_settings_map_|.
   virtual std::vector<std::unique_ptr<Object>> GetGrantedObjects(
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin);
+      const url::Origin& origin);
 
   // Returns the set of all objects that any origin has been granted permission
   // to access.
@@ -94,28 +85,22 @@ class ChooserContextBase : public KeyedService {
   // |host_content_settings_map_|.
   virtual std::vector<std::unique_ptr<Object>> GetAllGrantedObjects();
 
-  // Grants |requesting_origin| access to |object| when embedded within
-  // |embedding_origin| by writing it into |host_content_settings_map_|.
-  void GrantObjectPermission(const url::Origin& requesting_origin,
-                             const url::Origin& embedding_origin,
-                             base::Value object);
-
-  // Updates |old_object| with |new_object| for |requesting_origin| when
-  // embedded within |embedding_origin|, and writes the value into
+  // Grants |origin| access to |object| by writing it into
   // |host_content_settings_map_|.
-  void UpdateObjectPermission(const url::Origin& requesting_origin,
-                              const url::Origin& embedding_origin,
+  void GrantObjectPermission(const url::Origin& origin, base::Value object);
+
+  // Updates |old_object| with |new_object| for |origin|, and writes the value
+  // into |host_content_settings_map_|.
+  void UpdateObjectPermission(const url::Origin& origin,
                               const base::Value& old_object,
                               base::Value new_object);
 
-  // Revokes |requesting_origin|'s permission to access |object| when embedded
-  // within |embedding_origin|.
+  // Revokes |origin|'s permission to access |object|.
   //
   // This method may be extended by a subclass to revoke permission to access
   // objects returned by GetGrantedObjects but not stored in
   // |host_content_settings_map_|.
-  virtual void RevokeObjectPermission(const url::Origin& requesting_origin,
-                                      const url::Origin& embedding_origin,
+  virtual void RevokeObjectPermission(const url::Origin& origin,
                                       const base::Value& object);
 
   // Validates the structure of an object read from
@@ -130,20 +115,16 @@ class ChooserContextBase : public KeyedService {
   // member variable to store this state.
   bool IsOffTheRecord();
   void NotifyPermissionChanged();
-  void NotifyPermissionRevoked(const url::Origin& requesting_origin,
-                               const url::Origin& embedding_origin);
+  void NotifyPermissionRevoked(const url::Origin& origin);
 
   const ContentSettingsType guard_content_settings_type_;
   const ContentSettingsType data_content_settings_type_;
   base::ObserverList<PermissionObserver> permission_observer_list_;
 
  private:
-  base::Value GetWebsiteSetting(const url::Origin& requesting_origin,
-                                const url::Origin& embedding_origin,
+  base::Value GetWebsiteSetting(const url::Origin& origin,
                                 content_settings::SettingInfo* info);
-  void SetWebsiteSetting(const url::Origin& requesting_origin,
-                         const url::Origin& embedding_origin,
-                         base::Value value);
+  void SetWebsiteSetting(const url::Origin& origin, base::Value value);
 
   HostContentSettingsMap* const host_content_settings_map_;
 };

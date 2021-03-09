@@ -6143,14 +6143,16 @@
       },
       'example_value': [{
         'devices': [{'vendor_id': 1234, 'product_id': 5678}],
-        'urls': ['https://google.com', 'https://requesting.com,https://embedded.com'],
+        'urls': ['https://google.com'],
       }],
       'id': 486,
       'caption': '''Automatically grant permission to these sites to connect to USB devices with the given vendor and product IDs.''',
       'tags': ['website-sharing'],
       'desc': '''Setting the policy lets you list the URL patterns that specify which sites are automatically granted permission to access a USB device with the given vendor and product IDs. Each item in the list requires both <ph name="DEVICES_FIELD_NAME">devices</ph> and <ph name="URLS_FIELD_NAME">urls</ph> fields for the policy to be valid. Each item in the <ph name="DEVICES_FIELD_NAME">devices</ph> field can have a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field. Omitting the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field will create a policy matching any device. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field will create a policy matching any device with the given vendor ID. A policy which has a <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field without a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field is invalid.
 
-      The USB permission model uses the requesting and embedding URLs to grant the requesting URL permission to access the USB device. The requesting URL can be different than the embedding URL when the requesting site is loaded in an iframe. So, the <ph name="URLS_FIELD_NAME">urls</ph> field can have up to 2 URL strings delimited by a comma to specify the requesting and embedding URL, respectively. If only one URL is specified, then access to the corresponding USB devices is granted when the requesting site's URL matches this URL, regardless of embedding status. The URLs must be valid, otherwise the policy is ignored.
+      The USB permission model will grant the specified URL permission to access the USB device as a top-level origin. If embedded frames need to access USB devices, the 'usb' <ph name="FEATURE_POLICY_HEADER_NAME">feature-policy</ph> header should be used to grant access. The URL must be valid, otherwise the policy is ignored.
+
+      Deprecated: The USB permission model used to support specifying both the requesting and embedding URLs. This is deprecated and only supported for backwards compatiblity in this manner: if both a requesting and embedding URL is specified, then the embedding URL will be granted the permission as top-level origin and the requsting URL will be ignored entirely.
 
       Leaving the policy unset means <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME">DefaultWebUsbGuardSetting</ph> applies, if it's set. If not, the user's personal setting applies.
 
@@ -6191,14 +6193,16 @@
       },
       'example_value': [{
         'devices': [{'vendor_id': 1234, 'product_id': 5678}],
-        'urls': ['https://google.com', 'https://requesting.com,https://embedded.com'],
+        'urls': ['https://google.com'],
       }],
       'id': 603,
       'caption': '''Automatically grant permission to these sites to connect to USB devices with the given vendor and product IDs on the login screen.''',
       'tags': ['website-sharing'],
       'desc': '''Setting the policy lets you list the URL patterns that specify which sites are automatically granted permission to access a USB device with the given vendor and product IDs on the login screen. Each item in the list requires both <ph name="DEVICES_FIELD_NAME">devices</ph> and <ph name="URLS_FIELD_NAME">urls</ph> fields for the policy to be valid. Each item in the <ph name="DEVICES_FIELD_NAME">devices</ph> field can have a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field. Omitting the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field will create a policy matching any device. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field will create a policy matching any device with the given vendor ID. A policy which has a <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field without a <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field is invalid.
 
-      The USB permission model uses the requesting and embedding URLs to grant the requesting URL permission to access the USB device. The requesting URL can be different than the embedding URL when the requesting site is loaded in an iframe. So, the <ph name="URLS_FIELD_NAME">urls</ph> field can have up to 2 URL strings delimited by a comma to specify the requesting and embedding URL, respectively. If only one URL is specified, then access to the corresponding USB devices is granted when the requesting site's URL matches this URL, regardless of embedding status. The URLs must be valid, otherwise the policy is ignored.
+      The USB permission model will grant the specified URL permission to access the USB device as a top-level origin. If embedded frames need to access USB devices, the 'usb' <ph name="FEATURE_POLICY_HEADER_NAME">feature-policy</ph> header should be used to grant access. The URL must be valid, otherwise the policy is ignored.
+
+      Deprecated: The USB permission model used to support specifying both the requesting and embedding URLs. This is deprecated and only supported for backwards compatiblity in this manner: if both a requesting and embedding URL is specified, then the embedding URL will be granted the permission as top-level origin and the requsting URL will be ignored entirely.
 
       Leaving the policy unset puts the global default value in use for all sites (no automatic access).''',
     },

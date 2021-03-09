@@ -46,28 +46,22 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
 }
 
 bool ChromeHidDelegate::CanRequestDevicePermission(
-    content::WebContents* web_contents,
-    const url::Origin& requesting_origin) {
+    content::WebContents* web_contents) {
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
-  const auto& embedding_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  return chooser_context->CanRequestObjectPermission(requesting_origin,
-                                                     embedding_origin);
+  const auto& origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  return chooser_context->CanRequestObjectPermission(origin);
 }
 
 bool ChromeHidDelegate::HasDevicePermission(
     content::WebContents* web_contents,
-    const url::Origin& requesting_origin,
     const device::mojom::HidDeviceInfo& device) {
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* chooser_context = HidChooserContextFactory::GetForProfile(profile);
-  const auto& embedding_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  return chooser_context->HasDevicePermission(requesting_origin,
-                                              embedding_origin, device);
+  const auto& origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  return chooser_context->HasDevicePermission(origin, device);
 }
 
 device::mojom::HidManager* ChromeHidDelegate::GetHidManager(
@@ -103,11 +97,9 @@ const device::mojom::HidDeviceInfo* ChromeHidDelegate::GetDeviceInfo(
   return chooser_context->GetDeviceInfo(guid);
 }
 
-void ChromeHidDelegate::OnPermissionRevoked(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
+void ChromeHidDelegate::OnPermissionRevoked(const url::Origin& origin) {
   for (auto& observer : observer_list_)
-    observer.OnPermissionRevoked(requesting_origin, embedding_origin);
+    observer.OnPermissionRevoked(origin);
 }
 
 void ChromeHidDelegate::OnDeviceAdded(

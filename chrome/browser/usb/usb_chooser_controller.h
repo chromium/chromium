@@ -60,8 +60,7 @@ class UsbChooserController : public ChooserController,
 
   std::vector<device::mojom::UsbDeviceFilterPtr> filters_;
   blink::mojom::WebUsbService::GetPermissionCallback callback_;
-  url::Origin requesting_origin_;
-  url::Origin embedding_origin_;
+  url::Origin origin_;
 
   content::WebContents* const web_contents_;
   base::WeakPtr<UsbChooserContext> chooser_context_;

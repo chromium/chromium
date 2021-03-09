@@ -96,8 +96,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       BluetoothDeviceScanningPromptController* prompt_controller);
 
   // BluetoothDelegate::FramePermissionObserverimplementation:
-  void OnPermissionRevoked(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin) override;
+  void OnPermissionRevoked(const url::Origin& origin) override;
   content::RenderFrameHost* GetRenderFrameHost() override;
 
  private:

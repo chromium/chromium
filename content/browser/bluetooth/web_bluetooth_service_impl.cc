@@ -574,12 +574,8 @@ void WebBluetoothServiceImpl::OnBluetoothScanningPromptEvent(
   }
 }
 
-void WebBluetoothServiceImpl::OnPermissionRevoked(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  if (render_frame_host_->GetLastCommittedOrigin() != requesting_origin ||
-      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin() !=
-          embedding_origin) {
+void WebBluetoothServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
+  if (render_frame_host_->GetMainFrame()->GetLastCommittedOrigin() != origin) {
     return;
   }
 

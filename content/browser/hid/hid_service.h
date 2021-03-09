@@ -53,8 +53,7 @@ class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
   void OnDeviceRemoved(
       const device::mojom::HidDeviceInfo& device_info) override;
   void OnHidManagerConnectionError() override;
-  void OnPermissionRevoked(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin) override;
+  void OnPermissionRevoked(const url::Origin& origin) override;
 
  private:
   HidService(RenderFrameHost*, mojo::PendingReceiver<blink::mojom::HidService>);
@@ -74,8 +73,7 @@ class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
 
   // The last shown HID chooser UI.
   std::unique_ptr<HidChooser> chooser_;
-  url::Origin requesting_origin_;
-  url::Origin embedding_origin_;
+  url::Origin origin_;
 
   // Used to bind with Blink.
   mojo::AssociatedRemoteSet<device::mojom::HidManagerClient> clients_;

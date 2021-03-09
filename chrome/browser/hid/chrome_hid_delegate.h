@@ -28,11 +28,8 @@ class ChromeHidDelegate
       content::RenderFrameHost* frame,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
       content::HidChooser::Callback callback) override;
-  bool CanRequestDevicePermission(
-      content::WebContents* web_contents,
-      const url::Origin& requesting_origin) override;
+  bool CanRequestDevicePermission(content::WebContents* web_contents) override;
   bool HasDevicePermission(content::WebContents* web_contents,
-                           const url::Origin& requesting_origin,
                            const device::mojom::HidDeviceInfo& device) override;
   device::mojom::HidManager* GetHidManager(
       content::WebContents* web_contents) override;
@@ -45,8 +42,7 @@ class ChromeHidDelegate
       const std::string& guid) override;
 
   // permissions::ChooserContextBase::PermissionObserver:
-  void OnPermissionRevoked(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin) override;
+  void OnPermissionRevoked(const url::Origin& origin) override;
 
   // HidChooserContext::DeviceObserver:
   void OnDeviceAdded(const device::mojom::HidDeviceInfo&) override;

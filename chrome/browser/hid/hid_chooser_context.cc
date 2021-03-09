@@ -114,14 +114,12 @@ bool HidChooserContext::IsValidObject(const base::Value& object) {
 }
 
 std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-HidChooserContext::GetGrantedObjects(const url::Origin& requesting_origin,
-                                     const url::Origin& embedding_origin) {
+HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
   std::vector<std::unique_ptr<ChooserContextBase::Object>> objects =
-      ChooserContextBase::GetGrantedObjects(requesting_origin,
-                                            embedding_origin);
+      ChooserContextBase::GetGrantedObjects(origin);
 
-  if (CanRequestObjectPermission(requesting_origin, embedding_origin)) {
-    auto it = ephemeral_devices_.find({requesting_origin, embedding_origin});
+  if (CanRequestObjectPermission(origin)) {
+    auto it = ephemeral_devices_.find(origin);
     if (it != ephemeral_devices_.end()) {
       for (const std::string& guid : it->second) {
         // |devices_| should be initialized when |ephemeral_devices_| is filled.
@@ -132,8 +130,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& requesting_origin,
         // class.
         DCHECK(base::Contains(devices_, guid));
         objects.push_back(std::make_unique<ChooserContextBase::Object>(
-            requesting_origin, embedding_origin,
-            DeviceInfoToValue(*devices_[guid]),
+            origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::SETTING_SOURCE_USER,
             is_incognito_));
       }
@@ -151,17 +148,15 @@ HidChooserContext::GetAllGrantedObjects() {
       ChooserContextBase::GetAllGrantedObjects();
 
   for (const auto& map_entry : ephemeral_devices_) {
-    const url::Origin& requesting_origin = map_entry.first.first;
-    const url::Origin& embedding_origin = map_entry.first.second;
+    const url::Origin& origin = map_entry.first;
 
-    if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
+    if (!CanRequestObjectPermission(origin))
       continue;
 
     for (const auto& guid : map_entry.second) {
       DCHECK(base::Contains(devices_, guid));
       objects.push_back(std::make_unique<ChooserContextBase::Object>(
-          requesting_origin, embedding_origin,
-          DeviceInfoToValue(*devices_[guid]),
+          origin, DeviceInfoToValue(*devices_[guid]),
           content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
   }
@@ -171,20 +166,17 @@ HidChooserContext::GetAllGrantedObjects() {
   return objects;
 }
 
-void HidChooserContext::RevokeObjectPermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
-    const base::Value& object) {
+void HidChooserContext::RevokeObjectPermission(const url::Origin& origin,
+                                               const base::Value& object) {
   const std::string* guid = object.FindStringKey(kHidGuidKey);
 
   if (!guid) {
-    ChooserContextBase::RevokeObjectPermission(requesting_origin,
-                                               embedding_origin, object);
+    ChooserContextBase::RevokeObjectPermission(origin, object);
     // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED).
     return;
   }
 
-  auto it = ephemeral_devices_.find({requesting_origin, embedding_origin});
+  auto it = ephemeral_devices_.find(origin);
   if (it != ephemeral_devices_.end()) {
     std::set<std::string>& devices = it->second;
 
@@ -192,45 +184,41 @@ void HidChooserContext::RevokeObjectPermission(
     devices.erase(*guid);
     if (devices.empty())
       ephemeral_devices_.erase(it);
-    NotifyPermissionRevoked(requesting_origin, embedding_origin);
+    NotifyPermissionRevoked(origin);
   }
 
   // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
 }
 
 void HidChooserContext::GrantDevicePermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
   DCHECK(base::Contains(devices_, device.guid));
   if (CanStorePersistentEntry(device)) {
-    GrantObjectPermission(requesting_origin, embedding_origin,
-                          DeviceInfoToValue(device));
+    GrantObjectPermission(origin, DeviceInfoToValue(device));
   } else {
-    ephemeral_devices_[{requesting_origin, embedding_origin}].insert(
-        device.guid);
+    ephemeral_devices_[origin].insert(device.guid);
     NotifyPermissionChanged();
   }
 }
 
 bool HidChooserContext::HasDevicePermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
   if (device::HidBlocklist::IsDeviceExcluded(device))
     return false;
 
-  if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
+  if (!CanRequestObjectPermission(origin))
     return false;
 
-  auto it = ephemeral_devices_.find({requesting_origin, embedding_origin});
+  auto it = ephemeral_devices_.find(origin);
   if (it != ephemeral_devices_.end() &&
       base::Contains(it->second, device.guid)) {
     return true;
   }
 
   std::vector<std::unique_ptr<ChooserContextBase::Object>> object_list =
-      GetGrantedObjects(requesting_origin, embedding_origin);
+      GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device_value = object->value;
     DCHECK(IsValidObject(device_value));
@@ -328,19 +316,19 @@ void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
   if (CanStorePersistentEntry(*device))
     return;
 
-  std::vector<std::pair<url::Origin, url::Origin>> revoked_url_pairs;
+  std::vector<url::Origin> revoked_origins;
   for (auto& map_entry : ephemeral_devices_) {
     if (map_entry.second.erase(device->guid) > 0)
-      revoked_url_pairs.push_back(map_entry.first);
+      revoked_origins.push_back(map_entry.first);
   }
-  if (revoked_url_pairs.empty())
+  if (revoked_origins.empty())
     return;
 
   for (auto& observer : permission_observer_list_) {
     observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
                                               data_content_settings_type_);
-    for (auto& url_pair : revoked_url_pairs) {
-      observer.OnPermissionRevoked(url_pair.first, url_pair.second);
+    for (auto& origin : revoked_origins) {
+      observer.OnPermissionRevoked(origin);
     }
   }
 }
@@ -390,7 +378,7 @@ void HidChooserContext::OnHidManagerConnectionError() {
   client_receiver_.reset();
   devices_.clear();
 
-  std::vector<std::pair<url::Origin, url::Origin>> revoked_origins;
+  std::vector<url::Origin> revoked_origins;
   revoked_origins.reserve(ephemeral_devices_.size());
   for (const auto& map_entry : ephemeral_devices_)
     revoked_origins.push_back(map_entry.first);
@@ -406,6 +394,6 @@ void HidChooserContext::OnHidManagerConnectionError() {
     observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
                                               data_content_settings_type_);
     for (const auto& origin : revoked_origins)
-      observer.OnPermissionRevoked(origin.first, origin.second);
+      observer.OnPermissionRevoked(origin);
   }
 }

@@ -353,7 +353,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
 
   auto device_info = usb_device_manager.CreateAndAddDevice(
       0, 0, "Google", "Gizmo", "1234567890");
-  store->GrantDevicePermission(origin, origin, *device_info);
+  store->GrantDevicePermission(origin, *device_info);
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
@@ -373,7 +373,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_EQ(kExpectedChildren, api_->permissions_view()->children().size());
-  EXPECT_FALSE(store->HasDevicePermission(origin, origin, *device_info));
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }
 
 namespace {
@@ -401,7 +401,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
                            *base::JSONReader::ReadDeprecated(kPolicySetting));
   UsbChooserContext* store = UsbChooserContextFactory::GetForProfile(profile);
 
-  auto objects = store->GetGrantedObjects(origin, origin);
+  auto objects = store->GetGrantedObjects(origin);
   EXPECT_EQ(objects.size(), 1u);
 
   PermissionInfoList list;
@@ -455,9 +455,9 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 
   auto device_info = usb_device_manager.CreateAndAddDevice(
       0, 0, "Google", "Gizmo", "1234567890");
-  store->GrantDevicePermission(origin, origin, *device_info);
+  store->GrantDevicePermission(origin, *device_info);
 
-  auto objects = store->GetGrantedObjects(origin, origin);
+  auto objects = store->GetGrantedObjects(origin);
   EXPECT_EQ(objects.size(), 2u);
 
   PermissionInfoList list;
@@ -487,7 +487,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
     api_->SetPermissionInfo(list);
     EXPECT_EQ(kExpectedChildren + 1,
               api_->permissions_view()->children().size());
-    EXPECT_FALSE(store->HasDevicePermission(origin, origin, *device_info));
+    EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
   }
 
   // The policy granted permission should now be the first child, since the user

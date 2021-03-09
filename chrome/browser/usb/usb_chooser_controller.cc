@@ -65,8 +65,7 @@ base::string16 FormatUsbDeviceName(
 
 void OnDeviceInfoRefreshed(
     base::WeakPtr<UsbChooserContext> chooser_context,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     blink::mojom::WebUsbService::GetPermissionCallback callback,
     device::mojom::UsbDeviceInfoPtr device_info) {
   if (!chooser_context || !device_info) {
@@ -79,8 +78,7 @@ void OnDeviceInfoRefreshed(
           ? WEBUSB_CHOOSER_CLOSED_EPHEMERAL_PERMISSION_GRANTED
           : WEBUSB_CHOOSER_CLOSED_PERMISSION_GRANTED);
 
-  chooser_context->GrantDevicePermission(requesting_origin, embedding_origin,
-                                         *device_info);
+  chooser_context->GrantDevicePermission(origin, *device_info);
   std::move(callback).Run(std::move(device_info));
 }
 
@@ -98,8 +96,7 @@ UsbChooserController::UsbChooserController(
       web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
       observer_(this) {
   RenderFrameHost* main_frame = web_contents_->GetMainFrame();
-  requesting_origin_ = render_frame_host->GetLastCommittedOrigin();
-  embedding_origin_ = main_frame->GetLastCommittedOrigin();
+  origin_ = main_frame->GetLastCommittedOrigin();
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   chooser_context_ =
@@ -161,8 +158,7 @@ bool UsbChooserController::IsPaired(size_t index) const {
   if (!device_info)
     return false;
 
-  return chooser_context_->HasDevicePermission(requesting_origin_,
-                                               embedding_origin_, *device_info);
+  return chooser_context_->HasDevicePermission(origin_, *device_info);
 }
 
 void UsbChooserController::Select(const std::vector<size_t>& indices) {
@@ -181,8 +177,7 @@ void UsbChooserController::Select(const std::vector<size_t>& indices) {
   // necessary to grant permission to access the device need to be bound to
   // this callback.
   auto on_device_info_refreshed = base::BindOnce(
-      &OnDeviceInfoRefreshed, chooser_context_, requesting_origin_,
-      embedding_origin_, std::move(callback_));
+      &OnDeviceInfoRefreshed, chooser_context_, origin_, std::move(callback_));
 #if defined(OS_ANDROID)
   chooser_context_->RefreshDeviceInfo(guid,
                                       std::move(on_device_info_refreshed));

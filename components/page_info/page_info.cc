@@ -550,7 +550,7 @@ void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
   permissions::ChooserContextBase* context =
       delegate_->GetChooserContext(ui_info.content_settings_type);
   const auto origin = url::Origin::Create(site_url_);
-  context->RevokeObjectPermission(origin, origin, object);
+  context->RevokeObjectPermission(origin, object);
   show_info_bar_ = true;
 
   // Refresh the UI to reflect the changed settings.
@@ -952,7 +952,7 @@ void PageInfo::PresentSitePermissions() {
         delegate_->GetChooserContext(ui_info.content_settings_type);
     if (!context)
       continue;
-    auto chosen_objects = context->GetGrantedObjects(origin, origin);
+    auto chosen_objects = context->GetGrantedObjects(origin);
     for (std::unique_ptr<permissions::ChooserContextBase::Object>& object :
          chosen_objects) {
       chosen_object_info_list.push_back(

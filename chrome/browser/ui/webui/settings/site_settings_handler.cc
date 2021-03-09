@@ -1237,7 +1237,6 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
   permissions::ChooserContextBase* chooser_context =
       chooser_type->get_context(profile_);
   chooser_context->RevokeObjectPermission(
-      url::Origin::Create(requesting_origin),
       url::Origin::Create(embedding_origin), args->GetList()[3]);
 }
 

@@ -33,6 +33,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
+#include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -973,54 +974,69 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
 
 void HostContentSettingsMap::
     MigrateSettingsPrecedingPermissionDelegationActivation() {
-  content_settings::ContentSettingsRegistry* registry =
+  auto* content_settings_registry =
       content_settings::ContentSettingsRegistry::GetInstance();
-  for (const content_settings::ContentSettingsInfo* info : *registry) {
-    // Only migrate settings that don't support secondary patterns.
-    if (info->website_settings_info()->SupportsSecondaryPattern())
+  for (const content_settings::ContentSettingsInfo* info :
+       *content_settings_registry) {
+    MigrateSingleSettingPrecedingPermissionDelegationActivation(
+        info->website_settings_info());
+  }
+
+  auto* website_settings_registry =
+      content_settings::WebsiteSettingsRegistry::GetInstance();
+  for (const content_settings::WebsiteSettingsInfo* info :
+       *website_settings_registry) {
+    MigrateSingleSettingPrecedingPermissionDelegationActivation(info);
+  }
+}
+
+void HostContentSettingsMap::
+    MigrateSingleSettingPrecedingPermissionDelegationActivation(
+        const content_settings::WebsiteSettingsInfo* info) {
+  // Only migrate settings that don't support secondary patterns.
+  if (info->SupportsSecondaryPattern())
+    return;
+
+  ContentSettingsType type = info->type();
+
+  ContentSettingsForOneType host_settings;
+  GetSettingsForOneType(type, &host_settings);
+  for (ContentSettingPatternSource pattern : host_settings) {
+    if (pattern.source != "preference" ||
+        pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
       continue;
+    }
 
-    ContentSettingsType type = info->website_settings_info()->type();
+    // Users were never allowed to add user-specified patterns for these types
+    // so we can assume they are all origin scoped.
+    DCHECK(GURL(pattern.primary_pattern.ToString()).is_valid());
+    DCHECK(GURL(pattern.secondary_pattern.ToString()).is_valid());
 
-    ContentSettingsForOneType host_settings;
-    GetSettingsForOneType(type, &host_settings);
-    for (ContentSettingPatternSource pattern : host_settings) {
-      if (pattern.source != "preference" ||
-          pattern.secondary_pattern == ContentSettingsPattern::Wildcard()) {
-        continue;
-      }
-
-      // Users were never allowed to add user-specified patterns for these types
-      // so we can assume they are all origin scoped.
-      DCHECK(GURL(pattern.primary_pattern.ToString()).is_valid());
-      DCHECK(GURL(pattern.secondary_pattern.ToString()).is_valid());
-
-      if (pattern.secondary_pattern.IsValid() &&
-          pattern.secondary_pattern != pattern.primary_pattern) {
-        SetContentSettingCustomScope(pattern.primary_pattern,
-                                     pattern.secondary_pattern, type,
-                                     CONTENT_SETTING_DEFAULT);
-        // Also clear the setting for the top level origin so that the user
-        // receives another prompt. This is necessary in case they have allowed
-        // the top level origin but blocked an embedded origin in which case
-        // they should have another opportunity to block a request from an
-        // embedded origin.
-        SetContentSettingCustomScope(pattern.secondary_pattern,
-                                     pattern.secondary_pattern, type,
-                                     CONTENT_SETTING_DEFAULT);
-        SetContentSettingCustomScope(pattern.secondary_pattern,
-                                     ContentSettingsPattern::Wildcard(), type,
-                                     CONTENT_SETTING_DEFAULT);
-      } else if (pattern.primary_pattern.IsValid() &&
-                 pattern.primary_pattern == pattern.secondary_pattern) {
-        // Migrate settings from (x,x) -> (x,*).
-        SetContentSettingCustomScope(pattern.primary_pattern,
-                                     pattern.secondary_pattern, type,
-                                     CONTENT_SETTING_DEFAULT);
-        SetContentSettingCustomScope(pattern.primary_pattern,
-                                     ContentSettingsPattern::Wildcard(), type,
-                                     pattern.GetContentSetting());
-      }
+    if (pattern.secondary_pattern.IsValid() &&
+        pattern.secondary_pattern != pattern.primary_pattern) {
+      SetContentSettingCustomScope(pattern.primary_pattern,
+                                   pattern.secondary_pattern, type,
+                                   CONTENT_SETTING_DEFAULT);
+      // Also clear the setting for the top level origin so that the user
+      // receives another prompt. This is necessary in case they have allowed
+      // the top level origin but blocked an embedded origin in which case
+      // they should have another opportunity to block a request from an
+      // embedded origin.
+      SetContentSettingCustomScope(pattern.secondary_pattern,
+                                   pattern.secondary_pattern, type,
+                                   CONTENT_SETTING_DEFAULT);
+      SetContentSettingCustomScope(pattern.secondary_pattern,
+                                   ContentSettingsPattern::Wildcard(), type,
+                                   CONTENT_SETTING_DEFAULT);
+    } else if (pattern.primary_pattern.IsValid() &&
+               pattern.primary_pattern == pattern.secondary_pattern) {
+      // Migrate settings from (x,x) -> (x,*).
+      SetContentSettingCustomScope(pattern.primary_pattern,
+                                   pattern.secondary_pattern, type,
+                                   CONTENT_SETTING_DEFAULT);
+      SetContentSettingCustomScope(pattern.primary_pattern,
+                                   ContentSettingsPattern::Wildcard(), type,
+                                   pattern.GetContentSetting());
     }
   }
 }

@@ -44,11 +44,9 @@ HidChooserController::HidChooserController(
                         IDS_HID_CHOOSER_PROMPT_EXTENSION_NAME),
       filters_(std::move(filters)),
       callback_(std::move(callback)),
-      requesting_origin_(render_frame_host->GetLastCommittedOrigin()),
-      embedding_origin_(
-          content::WebContents::FromRenderFrameHost(render_frame_host)
-              ->GetMainFrame()
-              ->GetLastCommittedOrigin()),
+      origin_(content::WebContents::FromRenderFrameHost(render_frame_host)
+                  ->GetMainFrame()
+                  ->GetLastCommittedOrigin()),
       frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
   auto* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -106,8 +104,7 @@ bool HidChooserController::IsPaired(size_t index) const {
   const auto& device_infos = device_map_.find(items_[index])->second;
   DCHECK_GT(device_infos.size(), 0u);
   for (const auto& device : device_infos) {
-    if (!chooser_context_->HasDevicePermission(requesting_origin_,
-                                               embedding_origin_, *device)) {
+    if (!chooser_context_->HasDevicePermission(origin_, *device)) {
       return false;
     }
   }
@@ -132,8 +129,7 @@ void HidChooserController::Select(const std::vector<size_t>& indices) {
   devices.reserve(device_infos.size());
   bool any_persistent_permission_granted = false;
   for (auto& device : device_infos) {
-    chooser_context_->GrantDevicePermission(requesting_origin_,
-                                            embedding_origin_, *device);
+    chooser_context_->GrantDevicePermission(origin_, *device);
     if (HidChooserContext::CanStorePersistentEntry(*device))
       any_persistent_permission_granted = true;
     devices.push_back(device->Clone());

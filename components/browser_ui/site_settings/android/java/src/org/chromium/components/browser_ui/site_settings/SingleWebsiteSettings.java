@@ -435,9 +435,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 }
             }
             for (ChosenObjectInfo objectInfo : other.getChosenObjectInfo()) {
-                if (origin.equals(objectInfo.getOrigin())
-                        && (objectInfo.getEmbedder() == null
-                                || objectInfo.getEmbedder().equals(SITE_WILDCARD))) {
+                if (origin.equals(objectInfo.getOrigin())) {
                     merged.addChosenObjectInfo(objectInfo);
                 }
             }

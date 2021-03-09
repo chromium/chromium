@@ -131,14 +131,12 @@ base::string16 SerialChooserContext::GetObjectDisplayName(
 }
 
 std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-SerialChooserContext::GetGrantedObjects(const url::Origin& requesting_origin,
-                                        const url::Origin& embedding_origin) {
+SerialChooserContext::GetGrantedObjects(const url::Origin& origin) {
   std::vector<std::unique_ptr<Object>> objects =
-      ChooserContextBase::GetGrantedObjects(requesting_origin,
-                                            embedding_origin);
+      ChooserContextBase::GetGrantedObjects(origin);
 
-  if (CanRequestObjectPermission(requesting_origin, embedding_origin)) {
-    auto it = ephemeral_ports_.find({requesting_origin, embedding_origin});
+  if (CanRequestObjectPermission(origin)) {
+    auto it = ephemeral_ports_.find(origin);
     if (it != ephemeral_ports_.end()) {
       const std::set<base::UnguessableToken>& ports = it->second;
       for (const auto& token : ports) {
@@ -148,7 +146,7 @@ SerialChooserContext::GetGrantedObjects(const url::Origin& requesting_origin,
 
         const base::Value& port = port_it->second;
         objects.push_back(std::make_unique<Object>(
-            requesting_origin, embedding_origin, port.Clone(),
+            origin, port.Clone(),
             content_settings::SettingSource::SETTING_SOURCE_USER,
             is_incognito_));
       }
@@ -163,10 +161,9 @@ SerialChooserContext::GetAllGrantedObjects() {
   std::vector<std::unique_ptr<Object>> objects =
       ChooserContextBase::GetAllGrantedObjects();
   for (const auto& map_entry : ephemeral_ports_) {
-    const url::Origin& requesting_origin = map_entry.first.first;
-    const url::Origin& embedding_origin = map_entry.first.second;
+    const url::Origin& origin = map_entry.first;
 
-    if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
+    if (!CanRequestObjectPermission(origin))
       continue;
 
     for (const auto& token : map_entry.second) {
@@ -175,7 +172,7 @@ SerialChooserContext::GetAllGrantedObjects() {
         continue;
 
       objects.push_back(std::make_unique<Object>(
-          requesting_origin, embedding_origin, it->second.Clone(),
+          origin, it->second.Clone(),
           content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
   }
@@ -183,19 +180,16 @@ SerialChooserContext::GetAllGrantedObjects() {
   return objects;
 }
 
-void SerialChooserContext::RevokeObjectPermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
-    const base::Value& object) {
+void SerialChooserContext::RevokeObjectPermission(const url::Origin& origin,
+                                                  const base::Value& object) {
   const std::string* token = object.FindStringKey(kTokenKey);
   if (!token) {
-    ChooserContextBase::RevokeObjectPermission(requesting_origin,
-                                               embedding_origin, object);
+    ChooserContextBase::RevokeObjectPermission(origin, object);
     RecordPermissionRevocation(SerialPermissionRevoked::kPersistent);
     return;
   }
 
-  auto it = ephemeral_ports_.find({requesting_origin, embedding_origin});
+  auto it = ephemeral_ports_.find(origin);
   if (it == ephemeral_ports_.end())
     return;
   std::set<base::UnguessableToken>& ports = it->second;
@@ -203,39 +197,36 @@ void SerialChooserContext::RevokeObjectPermission(
   DCHECK(IsValidObject(object));
   ports.erase(DecodeToken(*token));
   RecordPermissionRevocation(SerialPermissionRevoked::kEphemeralByUser);
-  NotifyPermissionRevoked(requesting_origin, embedding_origin);
+  NotifyPermissionRevoked(origin);
 }
 
 void SerialChooserContext::GrantPortPermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::mojom::SerialPortInfo& port) {
   base::Value value = PortInfoToValue(port);
   port_info_.insert({port.token, value.Clone()});
 
   if (CanStorePersistentEntry(port)) {
-    GrantObjectPermission(requesting_origin, embedding_origin,
-                          std::move(value));
+    GrantObjectPermission(origin, std::move(value));
     return;
   }
 
-  ephemeral_ports_[{requesting_origin, embedding_origin}].insert(port.token);
+  ephemeral_ports_[origin].insert(port.token);
   NotifyPermissionChanged();
 }
 
 bool SerialChooserContext::HasPortPermission(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::mojom::SerialPortInfo& port) {
   if (SerialBlocklist::Get().IsExcluded(port)) {
     return false;
   }
 
-  if (!CanRequestObjectPermission(requesting_origin, embedding_origin)) {
+  if (!CanRequestObjectPermission(origin)) {
     return false;
   }
 
-  auto it = ephemeral_ports_.find({requesting_origin, embedding_origin});
+  auto it = ephemeral_ports_.find(origin);
   if (it != ephemeral_ports_.end()) {
     const std::set<base::UnguessableToken> ports = it->second;
     if (base::Contains(ports, port.token))
@@ -247,7 +238,7 @@ bool SerialChooserContext::HasPortPermission(
   }
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      object_list = GetGrantedObjects(requesting_origin, embedding_origin);
+      object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::Value& device = object->value;
 
@@ -356,25 +347,25 @@ void SerialChooserContext::OnPortRemoved(
   for (auto& observer : port_observer_list_)
     observer.OnPortRemoved(*port);
 
-  std::vector<std::pair<url::Origin, url::Origin>> revoked_url_pairs;
+  std::vector<url::Origin> revoked_origins;
   for (auto& map_entry : ephemeral_ports_) {
     std::set<base::UnguessableToken>& ports = map_entry.second;
     if (ports.erase(port->token) > 0) {
       RecordPermissionRevocation(
           SerialPermissionRevoked::kEphemeralByDisconnect);
-      revoked_url_pairs.push_back(map_entry.first);
+      revoked_origins.push_back(map_entry.first);
     }
   }
 
   port_info_.erase(port->token);
 
   for (auto& observer : permission_observer_list_) {
-    if (!revoked_url_pairs.empty()) {
+    if (!revoked_origins.empty()) {
       observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
                                                 data_content_settings_type_);
     }
-    for (const auto& url_pair : revoked_url_pairs)
-      observer.OnPermissionRevoked(url_pair.first, url_pair.second);
+    for (const auto& origin : revoked_origins)
+      observer.OnPermissionRevoked(origin);
   }
 }
 
@@ -404,7 +395,7 @@ void SerialChooserContext::OnPortManagerConnectionError() {
 
   port_info_.clear();
 
-  std::vector<std::pair<url::Origin, url::Origin>> revoked_origins;
+  std::vector<url::Origin> revoked_origins;
   revoked_origins.reserve(ephemeral_ports_.size());
   for (const auto& map_entry : ephemeral_ports_)
     revoked_origins.push_back(map_entry.first);
@@ -416,6 +407,6 @@ void SerialChooserContext::OnPortManagerConnectionError() {
     observer.OnChooserObjectPermissionChanged(guard_content_settings_type_,
                                               data_content_settings_type_);
     for (const auto& origin : revoked_origins)
-      observer.OnPermissionRevoked(origin.first, origin.second);
+      observer.OnPermissionRevoked(origin);
   }
 }

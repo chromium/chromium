@@ -23,23 +23,6 @@ constexpr char kPrefUrlsKey[] = "urls";
 constexpr char kPrefVendorIdKey[] = "vendor_id";
 constexpr char kPrefProductIdKey[] = "product_id";
 
-// Find the origin match by checking if a origin pair in |origin_set| matches
-// the given origin pair. A nullopt embedding origin signifies a wildcard, so
-// ignore the embedding origin check for this case.
-bool FindMatchInSet(
-    const std::set<std::pair<url::Origin, base::Optional<url::Origin>>>&
-        origin_set,
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  for (const auto& origin_pair : origin_set) {
-    if (origin_pair.first == requesting_origin) {
-      if (!origin_pair.second || *origin_pair.second == embedding_origin)
-        return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 UsbPolicyAllowedDevices::UsbPolicyAllowedDevices(PrefService* pref_service) {
@@ -59,17 +42,14 @@ UsbPolicyAllowedDevices::UsbPolicyAllowedDevices(PrefService* pref_service) {
 UsbPolicyAllowedDevices::~UsbPolicyAllowedDevices() {}
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const device::mojom::UsbDeviceInfo& device_info) {
   return IsDeviceAllowed(
-      requesting_origin, embedding_origin,
-      std::make_pair(device_info.vendor_id, device_info.product_id));
+      origin, std::make_pair(device_info.vendor_id, device_info.product_id));
 }
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin,
+    const url::Origin& origin,
     const std::pair<int, int>& device_ids) {
   // Search through each set of URL pair that match the given device. The
   // keys correspond to the following URL pair sets:
@@ -85,7 +65,7 @@ bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     if (entry == usb_device_ids_to_urls_.cend())
       continue;
 
-    if (FindMatchInSet(entry->second, requesting_origin, embedding_origin))
+    if (entry->second.find(origin) != entry->second.end())
       return true;
   }
   return false;
@@ -105,7 +85,7 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value->GetList()) {
     const base::Value* urls_list = item.FindKey(kPrefUrlsKey);
-    std::set<std::pair<url::Origin, base::Optional<url::Origin>>> parsed_set;
+    std::set<url::Origin> parsed_set;
 
     // A urls item can contain a pair of URLs that are delimited by a comma. If
     // it does not contain a second URL, set the embedding URL to an empty GURL
@@ -123,10 +103,16 @@ void UsbPolicyAllowedDevices::CreateOrUpdateMap() {
       base::Optional<url::Origin> embedding_origin;
       if (urls.size() == 2 && !urls[1].empty())
         embedding_origin = url::Origin::Create(GURL(urls[1]));
-      auto origin_pair = std::make_pair(std::move(requesting_origin),
-                                        std::move(embedding_origin));
 
-      parsed_set.insert(std::move(origin_pair));
+      // In order to be compatible with legacy (requesting,embedding) entries
+      // without breaking any access specified, we will grant the permission to
+      // the embedder if present because under permission delegation the
+      // top-level origin has the permission. If only the requesting origin is
+      // present, use that instead.
+      auto origin = embedding_origin.has_value() ? embedding_origin.value()
+                                                 : requesting_origin;
+
+      parsed_set.insert(std::move(origin));
     }
 
     // Ignore items with empty parsed URLs.

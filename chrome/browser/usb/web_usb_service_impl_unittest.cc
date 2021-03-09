@@ -177,7 +177,7 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
       0xffff, 0x567c, "ACME", "Frobinator Xtreme", "STUVWX");
 
   auto device_info_1 = device_manager()->AddDevice(device1);
-  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_1);
+  GetChooserContext()->GrantDevicePermission(origin, *device_info_1);
   device_manager()->AddDevice(no_permission_device1);
 
   mojo::Remote<WebUsbService> web_usb_service;
@@ -192,7 +192,7 @@ TEST_F(WebUsbServiceImplTest, NoPermissionDevice) {
   GetDevicesBlocking(web_usb_service.get(), {device1->guid()});
 
   auto device_info_2 = device_manager()->AddDevice(device2);
-  GetChooserContext()->GrantDevicePermission(origin, origin, *device_info_2);
+  GetChooserContext()->GrantDevicePermission(origin, *device_info_2);
   device_manager()->AddDevice(no_permission_device2);
   device_manager()->RemoveDevice(device1);
   device_manager()->RemoveDevice(device2);
@@ -237,9 +237,9 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
       0, 0, "ACME", "Frobinator II", "");
 
   auto device_info = device_manager()->AddDevice(device);
-  context->GrantDevicePermission(origin, origin, *device_info);
+  context->GrantDevicePermission(origin, *device_info);
   auto ephemeral_device_info = device_manager()->AddDevice(ephemeral_device);
-  context->GrantDevicePermission(origin, origin, *ephemeral_device_info);
+  context->GrantDevicePermission(origin, *ephemeral_device_info);
 
   mojo::Remote<WebUsbService> web_usb_service;
   ConnectToService(web_usb_service.BindNewPipeAndPassReceiver());
@@ -249,17 +249,15 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
   GetDevicesBlocking(web_usb_service.get(),
                      {device->guid(), ephemeral_device->guid()});
 
-  EXPECT_TRUE(context->HasDevicePermission(origin, origin, *device_info));
-  EXPECT_TRUE(
-      context->HasDevicePermission(origin, origin, *ephemeral_device_info));
+  EXPECT_TRUE(context->HasDevicePermission(origin, *device_info));
+  EXPECT_TRUE(context->HasDevicePermission(origin, *ephemeral_device_info));
 
   SimulateDeviceServiceCrash();
   EXPECT_CALL(mock_client, ConnectionError()).Times(1);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin, origin, *device_info));
-  EXPECT_FALSE(
-      context->HasDevicePermission(origin, origin, *ephemeral_device_info));
+  EXPECT_TRUE(context->HasDevicePermission(origin, *device_info));
+  EXPECT_FALSE(context->HasDevicePermission(origin, *ephemeral_device_info));
 
   // Although a new device added, as the Device manager has been destroyed, no
   // event will be triggered.
@@ -271,7 +269,7 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
   base::RunLoop().RunUntilIdle();
 
   // Grant permission to the new device when service is off.
-  context->GrantDevicePermission(origin, origin, *another_device_info);
+  context->GrantDevicePermission(origin, *another_device_info);
 
   device_manager()->RemoveDevice(device);
   EXPECT_CALL(mock_client, DoOnDeviceRemoved(_)).Times(0);
@@ -284,11 +282,9 @@ TEST_F(WebUsbServiceImplTest, ReconnectDeviceManager) {
 
   GetDevicesBlocking(web_usb_service.get(), {another_device->guid()});
 
-  EXPECT_TRUE(context->HasDevicePermission(origin, origin, *device_info));
-  EXPECT_TRUE(
-      context->HasDevicePermission(origin, origin, *another_device_info));
-  EXPECT_FALSE(
-      context->HasDevicePermission(origin, origin, *ephemeral_device_info));
+  EXPECT_TRUE(context->HasDevicePermission(origin, *device_info));
+  EXPECT_TRUE(context->HasDevicePermission(origin, *another_device_info));
+  EXPECT_FALSE(context->HasDevicePermission(origin, *ephemeral_device_info));
 }
 
 TEST_F(WebUsbServiceImplTest, RevokeDevicePermission) {
@@ -303,7 +299,7 @@ TEST_F(WebUsbServiceImplTest, RevokeDevicePermission) {
   base::RunLoop().RunUntilIdle();
   GetDevicesBlocking(web_usb_service.get(), {});
 
-  context->GrantDevicePermission(origin, origin, *device_info);
+  context->GrantDevicePermission(origin, *device_info);
 
   mojo::Remote<device::mojom::UsbDevice> device;
   web_usb_service->GetDevice(device_info->guid,
@@ -314,8 +310,8 @@ TEST_F(WebUsbServiceImplTest, RevokeDevicePermission) {
   device.set_disconnect_handler(
       base::BindLambdaForTesting([&]() { device.reset(); }));
 
-  auto objects = context->GetGrantedObjects(origin, origin);
-  context->RevokeObjectPermission(origin, origin, objects[0]->value);
+  auto objects = context->GetGrantedObjects(origin);
+  context->RevokeObjectPermission(origin, objects[0]->value);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(device);
@@ -327,7 +323,7 @@ TEST_F(WebUsbServiceImplTest, OpenAndCloseDevice) {
   auto* context = GetChooserContext();
   auto device_info = device_manager()->CreateAndAddDevice(
       0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
-  context->GrantDevicePermission(origin, origin, *device_info);
+  context->GrantDevicePermission(origin, *device_info);
 
   mojo::Remote<WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
@@ -358,7 +354,7 @@ TEST_F(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
   auto fake_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
       0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
   auto device_info = device_manager()->AddDevice(fake_device);
-  context->GrantDevicePermission(origin, origin, *device_info);
+  context->GrantDevicePermission(origin, *device_info);
 
   mojo::Remote<WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
@@ -386,7 +382,7 @@ TEST_F(WebUsbServiceImplTest, OpenAndNavigateCrossOrigin) {
   auto fake_device = base::MakeRefCounted<FakeUsbDeviceInfo>(
       0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF");
   auto device_info = device_manager()->AddDevice(fake_device);
-  context->GrantDevicePermission(origin, origin, *device_info);
+  context->GrantDevicePermission(origin, *device_info);
 
   mojo::Remote<WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
@@ -445,7 +441,7 @@ TEST_P(WebUsbServiceImplProtectedInterfaceTest, BlockProtectedInterface) {
       0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF", std::move(configs));
 
   auto device_info = device_manager()->AddDevice(fake_device);
-  context->GrantDevicePermission(kOrigin, kOrigin, *device_info);
+  context->GrantDevicePermission(kOrigin, *device_info);
 
   mojo::Remote<WebUsbService> service;
   ConnectToService(service.BindNewPipeAndPassReceiver());
@@ -542,8 +538,7 @@ TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
       0x1234, 0x5678, "ACME", "Frobinator", "ABCDEF", std::move(configs));
 
   auto device_info = device_manager()->AddDevice(fake_device);
-  context->GrantDevicePermission(imprivata_origin, imprivata_origin,
-                                 *device_info);
+  context->GrantDevicePermission(imprivata_origin, *device_info);
 
   NavigateAndCommit(imprivata_url);
 

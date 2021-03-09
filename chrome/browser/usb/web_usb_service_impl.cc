@@ -88,8 +88,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   // This class is destroyed on cross-origin navigations and so it is safe to
   // cache these values.
-  requesting_origin_ = render_frame_host_->GetLastCommittedOrigin();
-  embedding_origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   chooser_context_ = UsbChooserContextFactory::GetForProfile(profile);
@@ -123,8 +122,7 @@ bool WebUsbServiceImpl::HasDevicePermission(
   if (!chooser_context_)
     return false;
 
-  return chooser_context_->HasDevicePermission(requesting_origin_,
-                                               embedding_origin_, device_info);
+  return chooser_context_->HasDevicePermission(origin_, device_info);
 }
 
 std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
@@ -154,8 +152,8 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
       "plpogimmgnkkiflhpidbibfmgpkaofec", "pmhiabnkkchjeaehcodceadhdpfejmmd",
   });
 
-  if (requesting_origin_.scheme() == extensions::kExtensionScheme &&
-      base::Contains(kImprivataExtensionIds, requesting_origin_.host())) {
+  if (origin_.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kImprivataExtensionIds, origin_.host())) {
     base::Erase(classes, device::mojom::kUsbHidClass);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,11 +224,8 @@ void WebUsbServiceImpl::SetClient(
   clients_.Add(std::move(client));
 }
 
-void WebUsbServiceImpl::OnPermissionRevoked(
-    const url::Origin& requesting_origin,
-    const url::Origin& embedding_origin) {
-  if (requesting_origin_ != requesting_origin ||
-      embedding_origin_ != embedding_origin) {
+void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
+  if (origin_ != origin) {
     return;
   }
 

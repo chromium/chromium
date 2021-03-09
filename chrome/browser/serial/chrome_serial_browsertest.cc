@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SerialTest, RemovePort) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
   url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  context()->GrantPortPermission(origin, origin, *port);
+  context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
   // In order to ensure that the renderer is ready to receive events we must
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SerialBlocklistTest, Blocklist) {
   port->has_product_id = true;
   port->product_id = 0x58F0;
   url::Origin origin = web_contents->GetMainFrame()->GetLastCommittedOrigin();
-  context()->GrantPortPermission(origin, origin, *port);
+  context()->GrantPortPermission(origin, *port);
   port_manager().AddPort(port.Clone());
 
   // Adding a USB device to the blocklist overrides any previously granted

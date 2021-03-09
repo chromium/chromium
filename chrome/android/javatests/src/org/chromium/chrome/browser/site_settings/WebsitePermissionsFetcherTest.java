@@ -528,12 +528,11 @@ public class WebsitePermissionsFetcherTest {
                 new LocalStorageInfo(googleOrigin, storageSize, false));
 
         // Add chooser info types.
-        websitePreferenceBridge.addChosenObjectInfo(
-                new ChosenObjectInfo(ContentSettingsType.USB_CHOOSER_DATA, googleOrigin,
-                        SITE_WILDCARD, "Gadget", "Object", false));
+        websitePreferenceBridge.addChosenObjectInfo(new ChosenObjectInfo(
+                ContentSettingsType.USB_CHOOSER_DATA, googleOrigin, "Gadget", "Object", false));
         websitePreferenceBridge.addChosenObjectInfo(
                 new ChosenObjectInfo(ContentSettingsType.BLUETOOTH_CHOOSER_DATA, googleOrigin,
-                        SITE_WILDCARD, "Wireless", "Object", false));
+                        "Wireless", "Object", false));
 
         fetcher.fetchAllPreferences((sites) -> {
             Assert.assertEquals(1, sites.size());
@@ -933,8 +932,8 @@ public class WebsitePermissionsFetcherTest {
                     SiteSettingsCategory.contentSettingsType(type));
             Assert.assertNotEquals(-1, chooserDataType);
 
-            ChosenObjectInfo fakeObjectInfo = new ChosenObjectInfo(chooserDataType, googleOrigin,
-                    SITE_WILDCARD, "Chosen Object", "SerializedObjectData", false);
+            ChosenObjectInfo fakeObjectInfo = new ChosenObjectInfo(
+                    chooserDataType, googleOrigin, "Chosen Object", "SerializedObjectData", false);
             websitePreferenceBridge.addChosenObjectInfo(fakeObjectInfo);
 
             fetcher.fetchPreferencesForCategory(

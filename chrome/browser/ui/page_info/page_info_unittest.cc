@@ -518,7 +518,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
 
   auto device_info = usb_device_manager.CreateAndAddDevice(
       0, 0, "Google", "Gizmo", "1234567890");
-  store->GrantDevicePermission(origin(), origin(), *device_info);
+  store->GrantDevicePermission(origin(), *device_info);
 
   EXPECT_CALL(*mock_ui(), SetIdentityInfo(_));
   EXPECT_CALL(*mock_ui(), SetCookieInfo(_));
@@ -534,7 +534,7 @@ TEST_F(PageInfoTest, OnChosenObjectDeleted) {
   page_info()->OnSiteChosenObjectDeleted(info->ui_info,
                                          info->chooser_object->value);
 
-  EXPECT_FALSE(store->HasDevicePermission(origin(), origin(), *device_info));
+  EXPECT_FALSE(store->HasDevicePermission(origin(), *device_info));
   EXPECT_EQ(0u, last_chosen_object_info().size());
 }
 

@@ -44,19 +44,15 @@ class SerialChooserContext : public permissions::ChooserContextBase,
   // In addition these methods from ChooserContextBase are overridden in order
   // to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
-      const url::Origin& requesting_origin,
-      const url::Origin& embedding_origin) override;
+      const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
-  void RevokeObjectPermission(const url::Origin& requesting_origin,
-                              const url::Origin& embedding_origin,
+  void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
 
   // Serial-specific interface for granting and checking permissions.
-  void GrantPortPermission(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin,
+  void GrantPortPermission(const url::Origin& origin,
                            const device::mojom::SerialPortInfo& port);
-  bool HasPortPermission(const url::Origin& requesting_origin,
-                         const url::Origin& embedding_origin,
+  bool HasPortPermission(const url::Origin& origin,
                          const device::mojom::SerialPortInfo& port);
   static bool CanStorePersistentEntry(
       const device::mojom::SerialPortInfo& port);
@@ -80,18 +76,14 @@ class SerialChooserContext : public permissions::ChooserContextBase,
   void SetUpPortManagerConnection(
       mojo::PendingRemote<device::mojom::SerialPortManager> manager);
   void OnPortManagerConnectionError();
-  void OnGetPorts(const url::Origin& requesting_origin,
-                  const url::Origin& embedding_origin,
+  void OnGetPorts(const url::Origin& origin,
                   blink::mojom::SerialService::GetPortsCallback callback,
                   std::vector<device::mojom::SerialPortInfoPtr> ports);
 
   const bool is_incognito_;
 
-  // Tracks the set of ports to which an origin (potentially embedded in another
-  // origin) has access to. Key is (requesting_origin, embedding_origin).
-  std::map<std::pair<url::Origin, url::Origin>,
-           std::set<base::UnguessableToken>>
-      ephemeral_ports_;
+  // Tracks the set of ports to which an origin has access to.
+  std::map<url::Origin, std::set<base::UnguessableToken>> ephemeral_ports_;
 
   // Holds information about ports in |ephemeral_ports_|.
   std::map<base::UnguessableToken, base::Value> port_info_;

@@ -480,17 +480,10 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
   for (const auto& object : context->GetAllGrantedObjects()) {
     // Remove the trailing slash so that origins are matched correctly in
     // SingleWebsitePreferences.mergePermissionInfoForTopLevelOrigin.
-    std::string origin = object->requesting_origin.spec();
+    std::string origin = object->origin.spec();
     DCHECK_EQ('/', origin.back());
     origin.pop_back();
     ScopedJavaLocalRef<jstring> jorigin = ConvertUTF8ToJavaString(env, origin);
-
-    std::string embedder = object->embedding_origin.spec();
-    DCHECK_EQ('/', embedder.back());
-    embedder.pop_back();
-    ScopedJavaLocalRef<jstring> jembedder;
-    if (embedder != origin)
-      jembedder = ConvertUTF8ToJavaString(env, embedder);
 
     ScopedJavaLocalRef<jstring> jname = ConvertUTF16ToJavaString(
         env, context->GetObjectDisplayName(object->value));
@@ -505,8 +498,8 @@ static void JNI_WebsitePreferenceBridge_GetChosenObjects(
         object->source == content_settings::SETTING_SOURCE_POLICY;
 
     Java_WebsitePreferenceBridge_insertChosenObjectInfoIntoList(
-        env, list, content_settings_type, jorigin, jembedder, jname,
-        jserialized, jis_managed);
+        env, list, content_settings_type, jorigin, jname, jserialized,
+        jis_managed);
   }
 }
 
@@ -515,23 +508,16 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
     const JavaParamRef<jobject>& jbrowser_context_handle,
     jint content_settings_type,
     const JavaParamRef<jstring>& jorigin,
-    const JavaParamRef<jstring>& jembedder,
     const JavaParamRef<jstring>& jobject) {
   GURL origin(ConvertJavaStringToUTF8(env, jorigin));
   DCHECK(origin.is_valid());
-  // If embedder == origin above then a null embedder was sent to Java instead
-  // of a duplicated string.
-  GURL embedder(
-      ConvertJavaStringToUTF8(env, jembedder.is_null() ? jorigin : jembedder));
-  DCHECK(embedder.is_valid());
   std::unique_ptr<base::DictionaryValue> object = base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(ConvertJavaStringToUTF8(env, jobject)));
   DCHECK(object);
   permissions::ChooserContextBase* context = GetChooserContext(
       jbrowser_context_handle,
       static_cast<ContentSettingsType>(content_settings_type));
-  context->RevokeObjectPermission(url::Origin::Create(origin),
-                                  url::Origin::Create(embedder), *object);
+  context->RevokeObjectPermission(url::Origin::Create(origin), *object);
 }
 
 namespace {

@@ -49,25 +49,20 @@ class UsbChooserContext : public permissions::ChooserContextBase,
 
   // ChooserContextBase:
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-  GetGrantedObjects(const url::Origin& requesting_origin,
-                    const url::Origin& embedding_origin) override;
+  GetGrantedObjects(const url::Origin& origin) override;
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
   GetAllGrantedObjects() override;
-  void RevokeObjectPermission(const url::Origin& requesting_origin,
-                              const url::Origin& embedding_origin,
+  void RevokeObjectPermission(const url::Origin& origin,
                               const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
   base::string16 GetObjectDisplayName(const base::Value& object) override;
 
-  // Grants |requesting_origin| access to the USB device.
-  void GrantDevicePermission(const url::Origin& requesting_origin,
-                             const url::Origin& embedding_origin,
+  // Grants |origin| access to the USB device.
+  void GrantDevicePermission(const url::Origin& origin,
                              const device::mojom::UsbDeviceInfo& device_info);
 
-  // Checks if |requesting_origin| (when embedded within |embedding_origin| has
-  // access to a device with |device_info|.
-  bool HasDevicePermission(const url::Origin& requesting_origin,
-                           const url::Origin& embedding_origin,
+  // Checks if |origin| has access to a device with |device_info|.
+  bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::UsbDeviceInfo& device_info);
 
   void AddObserver(DeviceObserver* observer);
@@ -116,8 +111,7 @@ class UsbChooserContext : public permissions::ChooserContextBase,
   base::queue<device::mojom::UsbDeviceManager::GetDevicesCallback>
       pending_get_devices_requests_;
 
-  std::map<std::pair<url::Origin, url::Origin>, std::set<std::string>>
-      ephemeral_devices_;
+  std::map<url::Origin, std::set<std::string>> ephemeral_devices_;
   std::map<std::string, device::mojom::UsbDeviceInfoPtr> devices_;
 
   std::unique_ptr<UsbPolicyAllowedDevices> usb_policy_allowed_devices_;

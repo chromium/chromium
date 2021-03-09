@@ -135,25 +135,24 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
 
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context()->GetGrantedObjects(origin, origin);
+      origin_objects = context()->GetGrantedObjects(origin);
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin.GetURL(), objects[0]->requesting_origin);
-  EXPECT_EQ(origin.GetURL(), objects[0]->embedding_origin);
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
@@ -163,11 +162,11 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin, origin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
-  context()->RevokeObjectPermission(origin, origin, objects[0]->value);
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
-  origin_objects = context()->GetGrantedObjects(origin, origin);
+  context()->RevokeObjectPermission(origin, objects[0]->value);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -185,25 +184,24 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
   device::mojom::SerialPortInfoPtr port =
       CreatePersistentPort("Persistent Port", "ABC123");
 
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      origin_objects = context()->GetGrantedObjects(origin, origin);
+      origin_objects = context()->GetGrantedObjects(origin);
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
       objects = context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin.GetURL(), objects[0]->requesting_origin);
-  EXPECT_EQ(origin.GetURL(), objects[0]->embedding_origin);
+  EXPECT_EQ(origin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
@@ -213,11 +211,11 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentPermission) {
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin, origin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
-  context()->RevokeObjectPermission(origin, origin, objects[0]->value);
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
-  origin_objects = context()->GetGrantedObjects(origin, origin);
+  context()->RevokeObjectPermission(origin, objects[0]->value);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -235,14 +233,14 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
   port->token = base::UnguessableToken::Create();
   port_manager().AddPort(port.Clone());
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin, origin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
   port_manager().RemovePort(port->token);
   {
@@ -251,13 +249,13 @@ TEST_F(SerialChooserContextTest, EphemeralPermissionRevokedOnDisconnect) {
         .WillOnce(
             testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
               EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, origin, info));
+              EXPECT_TRUE(context()->HasPortPermission(origin, info));
               run_loop.Quit();
             }));
     run_loop.Run();
   }
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
-  auto origin_objects = context()->GetGrantedObjects(origin, origin);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  auto origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   auto objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -274,14 +272,14 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
       CreatePersistentPort(/*name=*/base::nullopt, "ABC123");
   port_manager().AddPort(port.Clone());
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA));
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin, origin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
 
   // Without a display name a persistent permission cannot be recorded and so
   // removing the device will revoke permission.
@@ -292,13 +290,13 @@ TEST_F(SerialChooserContextTest, PersistenceRequiresDisplayName) {
         .WillOnce(
             testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
               EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, origin, info));
+              EXPECT_TRUE(context()->HasPortPermission(origin, info));
               run_loop.Quit();
             }));
     run_loop.Run();
   }
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
-  auto origin_objects = context()->GetGrantedObjects(origin, origin);
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
+  auto origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, origin_objects.size());
   auto objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(0u, objects.size());
@@ -312,16 +310,15 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
       CreatePersistentPort("Persistent Port", persistent_id);
   port_manager().AddPort(port.Clone());
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   EXPECT_CALL(permission_observer(),
               OnChooserObjectPermissionChanged(
                   ContentSettingsType::SERIAL_GUARD,
                   ContentSettingsType::SERIAL_CHOOSER_DATA))
       .Times(0);
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin, origin))
-      .Times(0);
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin)).Times(0);
 
   port_manager().RemovePort(port->token);
   {
@@ -330,14 +327,14 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
         .WillOnce(
             testing::Invoke([&](const device::mojom::SerialPortInfo& info) {
               EXPECT_EQ(port->token, info.token);
-              EXPECT_TRUE(context()->HasPortPermission(origin, origin, info));
+              EXPECT_TRUE(context()->HasPortPermission(origin, info));
               run_loop.Quit();
             }));
     run_loop.Run();
   }
 
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
-  auto origin_objects = context()->GetGrantedObjects(origin, origin);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
+  auto origin_objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(1u, origin_objects.size());
   auto objects = context()->GetAllGrantedObjects();
   EXPECT_EQ(1u, objects.size());
@@ -347,7 +344,7 @@ TEST_F(SerialChooserContextTest, PersistentPermissionNotRevokedOnDisconnect) {
   port = CreatePersistentPort("Persistent Port", persistent_id);
   port_manager().AddPort(port.Clone());
 
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 }
 
 TEST_F(SerialChooserContextTest, GuardPermission) {
@@ -356,17 +353,17 @@ TEST_F(SerialChooserContextTest, GuardPermission) {
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
 
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(origin.GetURL(), origin.GetURL(),
                                      ContentSettingsType::SERIAL_GUARD,
                                      CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin, origin);
+      objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
@@ -379,16 +376,16 @@ TEST_F(SerialChooserContextTest, PolicyGuardPermission) {
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  context()->GrantPortPermission(origin, origin, *port);
+  context()->GrantPortPermission(origin, *port);
 
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedDefaultSerialGuardSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
-  EXPECT_FALSE(context()->CanRequestObjectPermission(origin, origin));
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(origin));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin, origin);
+      objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(0u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
@@ -402,8 +399,8 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  context()->GrantPortPermission(kFooOrigin, kFooOrigin, *port);
-  context()->GrantPortPermission(kBarOrigin, kBarOrigin, *port);
+  context()->GrantPortPermission(kFooOrigin, *port);
+  context()->GrantPortPermission(kBarOrigin, *port);
 
   // Set the default to "ask" so that the policy being tested overrides it.
   auto* prefs = profile()->GetTestingPrefService();
@@ -414,15 +411,15 @@ TEST_F(SerialChooserContextTest, PolicyAskForUrls) {
     [ "https://foo.origin" ]
   )"));
 
-  EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin, kFooOrigin));
-  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, kFooOrigin, *port));
-  EXPECT_FALSE(context()->CanRequestObjectPermission(kBarOrigin, kBarOrigin));
-  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, kBarOrigin, *port));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_TRUE(context()->HasPortPermission(kFooOrigin, *port));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kBarOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kBarOrigin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(kFooOrigin, kFooOrigin);
+      objects = context()->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(1u, objects.size());
-  objects = context()->GetGrantedObjects(kBarOrigin, kBarOrigin);
+  objects = context()->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(0u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
@@ -436,8 +433,8 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
 
   auto port = device::mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
-  context()->GrantPortPermission(kFooOrigin, kFooOrigin, *port);
-  context()->GrantPortPermission(kBarOrigin, kBarOrigin, *port);
+  context()->GrantPortPermission(kFooOrigin, *port);
+  context()->GrantPortPermission(kBarOrigin, *port);
 
   auto* prefs = profile()->GetTestingPrefService();
   prefs->SetManagedPref(prefs::kManagedSerialBlockedForUrls,
@@ -445,15 +442,15 @@ TEST_F(SerialChooserContextTest, PolicyBlockedForUrls) {
     [ "https://foo.origin" ]
   )"));
 
-  EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin, kFooOrigin));
-  EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, kFooOrigin, *port));
-  EXPECT_TRUE(context()->CanRequestObjectPermission(kBarOrigin, kBarOrigin));
-  EXPECT_TRUE(context()->HasPortPermission(kBarOrigin, kBarOrigin, *port));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kFooOrigin));
+  EXPECT_FALSE(context()->HasPortPermission(kFooOrigin, *port));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kBarOrigin));
+  EXPECT_TRUE(context()->HasPortPermission(kBarOrigin, *port));
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(kFooOrigin, kFooOrigin);
+      objects = context()->GetGrantedObjects(kFooOrigin);
   EXPECT_EQ(0u, objects.size());
-  objects = context()->GetGrantedObjects(kBarOrigin, kBarOrigin);
+  objects = context()->GetGrantedObjects(kBarOrigin);
   EXPECT_EQ(1u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
@@ -470,20 +467,20 @@ TEST_F(SerialChooserContextTest, Blocklist) {
   port->vendor_id = 0x18D1;
   port->has_product_id = true;
   port->product_id = 0x58F0;
-  context()->GrantPortPermission(origin, origin, *port);
-  EXPECT_TRUE(context()->HasPortPermission(origin, origin, *port));
+  context()->GrantPortPermission(origin, *port);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port));
 
   // Adding a USB device to the blocklist overrides any previously granted
   // permissions.
   SetDynamicBlocklist("usb:18D1:58F0");
-  EXPECT_FALSE(context()->HasPortPermission(origin, origin, *port));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port));
 
   // The lists of granted permissions will still include the entry because
   // permission storage does not include the USB vendor and product IDs on all
   // platforms and users should still be made aware of permissions they've
   // granted even if they are being blocked from taking effect.
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
-      objects = context()->GetGrantedObjects(origin, origin);
+      objects = context()->GetGrantedObjects(origin);
   EXPECT_EQ(1u, objects.size());
 
   std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
