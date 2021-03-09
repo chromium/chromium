@@ -37,13 +37,13 @@ base::string16 WebUIIOS::GetJavascriptCall(
   std::string json;
   for (size_t i = 0; i < arg_list.size(); ++i) {
     if (i > 0)
-      parameters += base::char16(',');
+      parameters += char16_t(',');
 
     base::JSONWriter::Write(*arg_list[i], &json);
     parameters += base::UTF8ToUTF16(json);
   }
-  return base::ASCIIToUTF16(function_name) + base::char16('(') + parameters +
-         base::char16(')') + base::char16(';');
+  return base::ASCIIToUTF16(function_name) + char16_t('(') + parameters +
+         char16_t(')') + char16_t(';');
 }
 
 WebUIIOSImpl::WebUIIOSImpl(WebState* web_state) : web_state_(web_state) {

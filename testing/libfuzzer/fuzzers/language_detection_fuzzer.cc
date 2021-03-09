@@ -20,15 +20,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   int lang_len = ch & 0xF;
   int html_lang_len = (ch >> 4) & 0xF;
   int text_len = static_cast<int>(size) - lang_len - html_lang_len;
-  if ((text_len < 0) || (text_len % 2 != 0)) {
+  if ((text_len < 0) || (text_len % sizeof(char16_t) != 0)) {
     return 0;
   }
   std::string lang(reinterpret_cast<const char*>(data), lang_len);
   std::string html_lang(reinterpret_cast<const char*>(data + lang_len),
                         html_lang_len);
   base::string16 text(
-      reinterpret_cast<const base::char16*>(data + lang_len + html_lang_len),
-      text_len / 2);
+      reinterpret_cast<const char16_t*>(data + lang_len + html_lang_len),
+      text_len / sizeof(char16_t));
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score;

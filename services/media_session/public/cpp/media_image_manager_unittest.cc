@@ -58,7 +58,7 @@ TEST_F(MediaImageManagerTest, CheckExpectedImageTypeHashes) {
     // Uncomment these lines to print the hashes if new ones need to be added.
     // printf("0x%x %s\n",
     //        base::PersistentHash(type16.data(),
-    //                             type16.size() * sizeof(base::char16)),
+    //                             type16.size() * sizeof(char16_t)),
     //        type.c_str());
 
     EXPECT_TRUE(MediaImageManager::GetImageTypeScore(type16));

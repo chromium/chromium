@@ -232,8 +232,8 @@ std::unique_ptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
-PdfViewWebPlugin::SearchString(const base::char16* string,
-                               const base::char16* term,
+PdfViewWebPlugin::SearchString(const char16_t* string,
+                               const char16_t* term,
                                bool case_sensitive) {
   return {};
 }

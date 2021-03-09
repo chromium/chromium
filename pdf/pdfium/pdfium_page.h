@@ -153,7 +153,7 @@ class PDFiumPage {
   static Area FormTypeToArea(int form_type);
 
   // Gets the character at the given index.
-  base::char16 GetCharAtIndex(int index);
+  char16_t GetCharAtIndex(int index);
 
   // Gets the number of characters in the page.
   int GetCharCount();

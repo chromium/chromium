@@ -56,7 +56,7 @@ class TermBreakIterator {
   };
 
   // Returns new state for given |ch|.
-  State GetNewState(base::char16 ch);
+  State GetNewState(char16_t ch);
 
   const base::string16& word_;
   size_t prev_;

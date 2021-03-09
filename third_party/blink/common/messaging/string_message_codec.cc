@@ -74,8 +74,8 @@ bool ReadUint32(const uint8_t** ptr, const uint8_t* end, uint32_t* value) {
 }
 
 bool ContainsOnlyLatin1(const base::string16& data) {
-  base::char16 x = 0;
-  for (base::char16 c : data)
+  char16_t x = 0;
+  for (char16_t c : data)
     x |= c;
   return !(x & 0xFF00);
 }
@@ -93,7 +93,7 @@ std::vector<uint8_t> EncodeStringMessage(const base::string16& data) {
     WriteUint32(data_latin1.size(), &buffer);
     WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
   } else {
-    size_t num_bytes = data.size() * sizeof(base::char16);
+    size_t num_bytes = data.size() * sizeof(char16_t);
     if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
       WriteUint8(kPaddingTag, &buffer);
     WriteUint8(kTwoByteStringTag, &buffer);
@@ -134,7 +134,7 @@ bool DecodeStringMessage(base::span<const uint8_t> encoded_data,
       uint32_t num_bytes;
       if (!ReadUint32(&ptr, end, &num_bytes))
         return false;
-      result->assign(reinterpret_cast<const base::char16*>(ptr), num_bytes / 2);
+      result->assign(reinterpret_cast<const char16_t*>(ptr), num_bytes / 2);
       return true;
     }
   }

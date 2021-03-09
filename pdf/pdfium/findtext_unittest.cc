@@ -27,8 +27,8 @@ class FindTextTestClient : public TestClient {
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int), (override));
 
-  std::vector<SearchStringResult> SearchString(const base::char16* string,
-                                               const base::char16* term,
+  std::vector<SearchStringResult> SearchString(const char16_t* string,
+                                               const char16_t* term,
                                                bool case_sensitive) override {
     EXPECT_TRUE(case_sensitive);
     base::string16 haystack = base::string16(string);

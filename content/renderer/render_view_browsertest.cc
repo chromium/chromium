@@ -391,10 +391,10 @@ class RenderViewImplTest : public RenderViewTest {
     NativeWebKeyboardEvent keyup_event(*event3);
     SendNativeKeyEvent(keyup_event);
 
-    base::char16 c = DomCodeToUsLayoutCharacter(
+    char16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(static_cast<ui::KeyboardCode>(key_code)),
         flags);
-    output->assign(1, static_cast<base::char16>(c));
+    output->assign(1, static_cast<char16_t>(c));
     return 1;
   }
 #endif
@@ -422,10 +422,10 @@ class RenderViewImplTest : public RenderViewTest {
     NativeWebKeyboardEvent keyup_web_event(keyup_event);
     SendNativeKeyEvent(keyup_web_event);
 
-    base::char16 c = DomCodeToUsLayoutCharacter(
+    char16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(static_cast<ui::KeyboardCode>(key_code)),
         flags);
-    output->assign(1, static_cast<base::char16>(c));
+    output->assign(1, static_cast<char16_t>(c));
     return 1;
   }
 #endif

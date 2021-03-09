@@ -234,7 +234,7 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
 
   // Otherwise try to convert it from IDN to punycode.
   const int kInitialBufferSize = 256;
-  url::RawCanonOutputT<base::char16, kInitialBufferSize> punycode_output;
+  url::RawCanonOutputT<char16_t, kInitialBufferSize> punycode_output;
   if (!url::IDNToASCII(hostname_utf16.data(), hostname_utf16.length(),
                        &punycode_output)) {
     return false;

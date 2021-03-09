@@ -259,8 +259,8 @@ static std::string WrappedEncodeString(base::string16 value) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeString) {
-  const base::char16 test_string_a[] = {'f', 'o', 'o', '\0'};
-  const base::char16 test_string_b[] = {0xdead, 0xbeef, '\0'};
+  const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
+  const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
   EXPECT_EQ(0u, WrappedEncodeString(ASCIIToUTF16("")).size());
   EXPECT_EQ(2u, WrappedEncodeString(ASCIIToUTF16("a")).size());
@@ -270,8 +270,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeString) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeString) {
-  const base::char16 test_string_a[] = {'f', 'o', 'o', '\0'};
-  const base::char16 test_string_b[] = {0xdead, 0xbeef, '\0'};
+  const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
+  const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
   std::vector<base::string16> test_cases = {base::string16(), ASCIIToUTF16("a"),
                                             ASCIIToUTF16("foo"), test_string_a,
@@ -307,8 +307,8 @@ static std::string WrappedEncodeStringWithLength(base::string16 value) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, EncodeStringWithLength) {
-  const base::char16 test_string_a[] = {'f', 'o', 'o', '\0'};
-  const base::char16 test_string_b[] = {0xdead, 0xbeef, '\0'};
+  const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
+  const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
   EXPECT_EQ(1u, WrappedEncodeStringWithLength(base::string16()).size());
   EXPECT_EQ(3u, WrappedEncodeStringWithLength(ASCIIToUTF16("a")).size());
@@ -319,11 +319,11 @@ TEST(IndexedDBLevelDBCodingTest, EncodeStringWithLength) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeStringWithLength) {
-  const base::char16 test_string_a[] = {'f', 'o', 'o', '\0'};
-  const base::char16 test_string_b[] = {0xdead, 0xbeef, '\0'};
+  const char16_t test_string_a[] = {'f', 'o', 'o', '\0'};
+  const char16_t test_string_b[] = {0xdead, 0xbeef, '\0'};
 
   const int kLongStringLen = 1234;
-  base::char16 long_string[kLongStringLen + 1];
+  char16_t long_string[kLongStringLen + 1];
   for (int i = 0; i < kLongStringLen; ++i)
     long_string[i] = i;
   long_string[kLongStringLen] = 0;
@@ -374,12 +374,12 @@ static int CompareStrings(const std::string& p, const std::string& q) {
 }
 
 TEST(IndexedDBLevelDBCodingTest, CompareEncodedStringsWithLength) {
-  const base::char16 test_string_a[] = {0x1000, 0x1000, '\0'};
-  const base::char16 test_string_b[] = {0x1000, 0x1000, 0x1000, '\0'};
-  const base::char16 test_string_c[] = {0x1000, 0x1000, 0x1001, '\0'};
-  const base::char16 test_string_d[] = {0x1001, 0x1000, 0x1000, '\0'};
-  const base::char16 test_string_e[] = {0xd834, 0xdd1e, '\0'};
-  const base::char16 test_string_f[] = {0xfffd, '\0'};
+  const char16_t test_string_a[] = {0x1000, 0x1000, '\0'};
+  const char16_t test_string_b[] = {0x1000, 0x1000, 0x1000, '\0'};
+  const char16_t test_string_c[] = {0x1000, 0x1000, 0x1001, '\0'};
+  const char16_t test_string_d[] = {0x1001, 0x1000, 0x1000, '\0'};
+  const char16_t test_string_e[] = {0xd834, 0xdd1e, '\0'};
+  const char16_t test_string_f[] = {0xfffd, '\0'};
 
   std::vector<base::string16> test_cases = {
       ASCIIToUTF16(""),

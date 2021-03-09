@@ -55,8 +55,8 @@ PDFiumAPIStringBufferSizeInBytesAdapter::
     PDFiumAPIStringBufferSizeInBytesAdapter(base::string16* str,
                                             size_t expected_size,
                                             bool check_expected_size)
-    : adapter_(str, expected_size / sizeof(base::char16), check_expected_size) {
-  DCHECK(expected_size % sizeof(base::char16) == 0);
+    : adapter_(str, expected_size / sizeof(char16_t), check_expected_size) {
+  DCHECK(expected_size % sizeof(char16_t) == 0);
 }
 
 PDFiumAPIStringBufferSizeInBytesAdapter::
@@ -67,8 +67,8 @@ void* PDFiumAPIStringBufferSizeInBytesAdapter::GetData() {
 }
 
 void PDFiumAPIStringBufferSizeInBytesAdapter::Close(size_t actual_size) {
-  DCHECK(actual_size % sizeof(base::char16) == 0);
-  adapter_.Close(actual_size / sizeof(base::char16));
+  DCHECK(actual_size % sizeof(char16_t) == 0);
+  adapter_.Close(actual_size / sizeof(char16_t));
 }
 
 // explicit instantiations

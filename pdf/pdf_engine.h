@@ -222,8 +222,8 @@ class PDFEngine {
       int length;
     };
     virtual std::vector<SearchStringResult> SearchString(
-        const base::char16* string,
-        const base::char16* term,
+        const char16_t* string,
+        const char16_t* term,
         bool case_sensitive) = 0;
 
     // Notifies the client that the document has finished loading.

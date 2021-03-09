@@ -25,7 +25,7 @@ void AdjustForBackwardsRange(int* index, int* count) {
 
 }  // namespace
 
-bool IsIgnorableCharacter(base::char16 c) {
+bool IsIgnorableCharacter(char16_t c) {
   return (c == kZeroWidthSpace) || (c == kPDFSoftHyphenMarker);
 }
 
@@ -111,7 +111,7 @@ base::string16 PDFiumRange::GetText() const {
     api_string_adapter.Close(written);
   }
 
-  base::EraseIf(rv, [](base::char16 c) { return IsIgnorableCharacter(c); });
+  base::EraseIf(rv, [](char16_t c) { return IsIgnorableCharacter(c); });
 
   return rv;
 }

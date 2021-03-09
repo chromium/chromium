@@ -81,8 +81,7 @@ bool ReadString16Payload(NtlmBufferReader* reader, base::string16* str) {
   }
 #endif
 
-  str->assign(reinterpret_cast<const base::char16*>(raw.data()),
-              raw.size() / 2);
+  str->assign(reinterpret_cast<const char16_t*>(raw.data()), raw.size() / 2);
   return true;
 }
 

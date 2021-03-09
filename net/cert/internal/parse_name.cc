@@ -30,7 +30,7 @@ bool ConvertBmpStringValue(const der::Input& in, std::string* out) {
     memcpy(base::WriteInto(&in_16bit, in.Length() / 2 + 1), in.UnsafeData(),
            in.Length());
   }
-  for (base::char16& c : in_16bit) {
+  for (char16_t& c : in_16bit) {
     // BMPString is UCS-2 in big-endian order.
     c = base::NetToHost16(c);
 

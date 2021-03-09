@@ -54,8 +54,8 @@ NSString* kLocalCardExpirationYear =
 // Unicode characters used in card number:
 //  - 0x0020 - Space.
 //  - 0x2060 - WORD-JOINER (makes string undivisible).
-constexpr base::char16 separator[] = {0x2060, 0x0020, 0};
-constexpr base::char16 kMidlineEllipsis[] = {
+constexpr char16_t separator[] = {0x2060, 0x0020, 0};
+constexpr char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
 NSString* kObfuscatedNumberPrefix = base::SysUTF16ToNSString(

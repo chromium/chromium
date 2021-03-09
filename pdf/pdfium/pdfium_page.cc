@@ -847,10 +847,10 @@ PDFiumPage::Area PDFiumPage::FormTypeToArea(int form_type) {
   }
 }
 
-base::char16 PDFiumPage::GetCharAtIndex(int index) {
+char16_t PDFiumPage::GetCharAtIndex(int index) {
   if (!available_)
     return L'\0';
-  return static_cast<base::char16>(FPDFText_GetUnicode(GetTextPage(), index));
+  return static_cast<char16_t>(FPDFText_GetUnicode(GetTextPage(), index));
 }
 
 int PDFiumPage::GetCharCount() {

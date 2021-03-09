@@ -292,8 +292,8 @@ std::string ReadStdString(SerializeObject* obj) {
 
 // Pickles a base::string16 as <int length>:<char*16 data> tuple>.
 void WriteString(const base::string16& str, SerializeObject* obj) {
-  const base::char16* data = str.data();
-  size_t length_in_bytes = str.length() * sizeof(base::char16);
+  const char16_t* data = str.data();
+  size_t length_in_bytes = str.length() * sizeof(char16_t);
 
   CHECK_LT(length_in_bytes,
            static_cast<size_t>(std::numeric_limits<int>::max()));
@@ -314,7 +314,7 @@ void WriteString(const base::Optional<base::string16>& str,
 
 // This reads a serialized base::Optional<base::string16> from obj. If a string
 // can't be read, nullptr is returned.
-const base::char16* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
+const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   int length_in_bytes;
   if (!obj->iter.ReadInt(&length_in_bytes)) {
     obj->parse_error = true;
@@ -331,13 +331,13 @@ const base::char16* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   }
 
   if (num_chars)
-    *num_chars = length_in_bytes / sizeof(base::char16);
-  return reinterpret_cast<const base::char16*>(data);
+    *num_chars = length_in_bytes / sizeof(char16_t);
+  return reinterpret_cast<const char16_t*>(data);
 }
 
 base::Optional<base::string16> ReadString(SerializeObject* obj) {
   int num_chars;
-  const base::char16* chars = ReadStringNoCopy(obj, &num_chars);
+  const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
   base::Optional<base::string16> result;
   if (chars)
     result.emplace(chars, num_chars);

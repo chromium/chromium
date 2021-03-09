@@ -14,7 +14,7 @@
 namespace mojo {
 namespace {
 
-void CopyString(base::char16* dst, const base::string16& text) {
+void CopyString(char16_t* dst, const base::string16& text) {
   size_t pos = 0;
   for (base::i18n::UTF16CharIterator iter(text);
        !iter.end() && pos < blink::WebKeyboardEvent::kTextLengthCap - 1;

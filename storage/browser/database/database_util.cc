@@ -16,8 +16,8 @@ namespace storage {
 namespace {
 
 bool IsSafeSuffix(const base::string16& suffix) {
-  base::char16 prev_c = 0;
-  for (const base::char16 c : suffix) {
+  char16_t prev_c = 0;
+  for (const char16_t c : suffix) {
     if (!(base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-' ||
           c == '.' || c == '_')) {
       return false;

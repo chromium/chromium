@@ -38,7 +38,7 @@
   // Unicode characters used in card number:
   //  - 0x0020 - Space.
   //  - 0x2060 - WORD-JOINER (makes string undivisible).
-  constexpr base::char16 separator[] = {0x2060, 0x0020, 0};
+  constexpr char16_t separator[] = {0x2060, 0x0020, 0};
   const base::string16 digits = creditCard.LastFourDigits();
   NSString* obfuscatedNumber = base::SysUTF16ToNSString(
       autofill::kMidlineEllipsis + base::string16(separator) +

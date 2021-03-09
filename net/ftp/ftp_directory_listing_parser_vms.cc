@@ -223,7 +223,7 @@ bool ParseFtpDirectoryListingVms(
   bool seen_error = false;
 
   base::string16 total_of = base::ASCIIToUTF16("Total of ");
-  base::char16 space[2] = { ' ', 0 };
+  char16_t space[2] = {' ', 0};
   for (size_t i = 0; i < lines.size(); i++) {
     if (lines[i].empty())
       continue;

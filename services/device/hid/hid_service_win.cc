@@ -699,7 +699,7 @@ void HidServiceWin::AddDeviceBlocking(
 
       // 1023 characters plus NULL terminator is more than enough for a USB
       // string descriptor which is limited to 126 characters.
-      base::char16 buffer[1024];
+      char16_t buffer[1024];
       if (HidD_GetProductString(device_handle.Get(), &buffer[0],
                                 sizeof(buffer))) {
         // NULL termination guaranteed by the API.

@@ -374,9 +374,9 @@ bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
     return false;
 
   // The string is returned by the device in UTF-16LE.
-  *output = base::string16(
-      reinterpret_cast<const base::char16*>(descriptor.data() + 2),
-      length / 2 - 1);
+  *output =
+      base::string16(reinterpret_cast<const char16_t*>(descriptor.data() + 2),
+                     (length - 2) / sizeof(char16_t));
   return true;
 }
 

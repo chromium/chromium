@@ -121,7 +121,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     view()->search_box()->OnKeyEvent(&event);
     // Emulates the input method.
     if (::isalnum(static_cast<int>(key_code))) {
-      base::char16 character = ::tolower(static_cast<int>(key_code));
+      char16_t character = ::tolower(static_cast<int>(key_code));
       view()->search_box()->InsertText(
           base::string16(1, character),
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

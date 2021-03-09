@@ -81,11 +81,11 @@ class PDFiumAPIStringBufferSizeInBytesAdapter {
   ~PDFiumAPIStringBufferSizeInBytesAdapter();
 
   // Returns a pointer to |str_|'s buffer. The buffer's size is large enough to
-  // hold |expected_size_| + sizeof(base::char16) bytes, so the PDFium API that
+  // hold |expected_size_| + sizeof(char16_t) bytes, so the PDFium API that
   // uses the pointer has space to write a null-terminator.
   void* GetData();
 
-  // Resizes |str_| to |actual_size| - sizeof(base::char16) bytes, thereby
+  // Resizes |str_| to |actual_size| - sizeof(char16_t) bytes, thereby
   // removing the extra null-terminator. This must be called prior to the
   // adapter's destruction. The pointer returned by GetData() should be
   // considered invalid.

@@ -72,7 +72,7 @@ bool GetProxyServerFromWinHttpResultEntry(
                          wcslen(result_entry.pwszProxy));
   if (!base::IsStringASCII(host_wide)) {
     const int kInitialBufferSize = 256;
-    url::RawCanonOutputT<base::char16, kInitialBufferSize> punycode_output;
+    url::RawCanonOutputT<char16_t, kInitialBufferSize> punycode_output;
     if (!url::IDNToASCII(base::as_u16cstr(host_wide), host_wide.length(),
                          &punycode_output))
       return false;

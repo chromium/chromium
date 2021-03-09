@@ -368,11 +368,11 @@ bool Statement::ColumnBlobAsString16(int col, base::string16* val) const {
     return false;
 
   const void* data = ColumnBlob(col);
-  size_t len = ColumnByteLength(col) / sizeof(base::char16);
+  size_t len = ColumnByteLength(col) / sizeof(char16_t);
   val->resize(len);
   if (val->size() != len)
     return false;
-  val->assign(reinterpret_cast<const base::char16*>(data), len);
+  val->assign(reinterpret_cast<const char16_t*>(data), len);
   return true;
 }
 

@@ -124,8 +124,8 @@ std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
-PreviewModeClient::SearchString(const base::char16* string,
-                                const base::char16* term,
+PreviewModeClient::SearchString(const char16_t* string,
+                                const char16_t* term,
                                 bool case_sensitive) {
   NOTREACHED();
   return std::vector<SearchStringResult>();

@@ -34,9 +34,9 @@ TEST(IndexedDBKeyTest, KeySizeEstimates) {
   keys.push_back(IndexedDBKey(date, mojom::IDBKeyType::Date));
   estimates.push_back(24u);  // Overhead + sizeof(double).
 
-  const base::string16 string(1024, static_cast<base::char16>('X'));
+  const base::string16 string(1024, static_cast<char16_t>('X'));
   keys.push_back(IndexedDBKey(std::move(string)));
-  // Overhead + string length * sizeof(base::char16).
+  // Overhead + string length * sizeof(char16_t).
   estimates.push_back(2064u);
 
   const size_t array_size = 1024;

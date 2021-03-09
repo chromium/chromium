@@ -19,7 +19,7 @@ gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kKeyDown)
     type = NSKeyDown;
-  const base::char16* textStartAddr = &event.text[0];
+  const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
                 textStartAddr + NativeWebKeyboardEvent::kTextLengthCap, '\0') -

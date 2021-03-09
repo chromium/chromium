@@ -120,7 +120,7 @@ class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepad {
   bool connected;
 
   // Device identifier (based on manufacturer, model, etc.).
-  base::char16 id[kIdLengthCap];
+  char16_t id[kIdLengthCap];
 
   // Time value representing the last time the data for this gamepad was
   // updated. Measured as TimeTicks::Now().since_origin().InMicroseconds().

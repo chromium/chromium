@@ -17,7 +17,7 @@
 base::string16 ConsumeRandomLengthString16(FuzzedDataProvider& data_provider,
                                            size_t max_chars) {
   std::string bytes = data_provider.ConsumeRandomLengthString(max_chars * 2);
-  return base::string16(reinterpret_cast<const base::char16*>(bytes.data()),
+  return base::string16(reinterpret_cast<const char16_t*>(bytes.data()),
                         bytes.size() / 2);
 }
 

@@ -32,8 +32,8 @@ class TestClient : public PDFEngine::Client {
                      const std::string& default_answer) override;
   std::string GetURL() override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
-  std::vector<SearchStringResult> SearchString(const base::char16* string,
-                                               const base::char16* term,
+  std::vector<SearchStringResult> SearchString(const char16_t* string,
+                                               const char16_t* term,
                                                bool case_sensitive) override;
   pp::Instance* GetPluginInstance() override;
   bool IsPrintPreview() override;

@@ -52,7 +52,7 @@ const wchar_t* kLastResortFontNames[] = {
     L"Segoe UI", L"Calibri", L"Times New Roman", L"Courier New"};
 
 struct RequiredFontStyle {
-  const base::char16* family_name;
+  const char16_t* family_name;
   DWRITE_FONT_WEIGHT required_weight;
   DWRITE_FONT_STRETCH required_stretch;
   DWRITE_FONT_STYLE required_style;

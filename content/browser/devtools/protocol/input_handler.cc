@@ -116,7 +116,7 @@ base::TimeTicks GetEventTimeTicks(const Maybe<double>& timestamp) {
              : base::TimeTicks::Now();
 }
 
-bool SetKeyboardEventText(base::char16* to, Maybe<std::string> from) {
+bool SetKeyboardEventText(char16_t* to, Maybe<std::string> from) {
   if (!from.isJust())
     return true;
 

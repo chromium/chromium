@@ -10,7 +10,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   // Test for base::string16 if size is even.
-  base::string16 string_input16(reinterpret_cast<const base::char16*>(data),
+  base::string16 string_input16(reinterpret_cast<const char16_t*>(data),
                                 size / 2);
   chromeos::string_matching::TokenizedString tokenized_string_from_string16(
       string_input16);

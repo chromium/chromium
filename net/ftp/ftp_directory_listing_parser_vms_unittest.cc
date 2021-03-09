@@ -179,7 +179,7 @@ TEST_F(FtpDirectoryListingParserVmsTest, EmptyColumnZero) {
   // The parser requires a directory header before accepting regular input.
   lines.push_back(ASCIIToUTF16("garbage"));
 
-  base::char16 data[] = {0x0};
+  char16_t data[] = {0x0};
   lines.push_back(base::string16(data, 1));
 
   std::vector<FtpDirectoryListingEntry> entries;

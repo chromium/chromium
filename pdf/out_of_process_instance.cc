@@ -1100,8 +1100,8 @@ std::unique_ptr<UrlLoader> OutOfProcessInstance::CreateUrlLoader() {
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
-OutOfProcessInstance::SearchString(const base::char16* string,
-                                   const base::char16* term,
+OutOfProcessInstance::SearchString(const char16_t* string,
+                                   const char16_t* term,
                                    bool case_sensitive) {
   PP_PrivateFindResult* pp_results;
   uint32_t count = 0;

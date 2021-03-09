@@ -44,8 +44,8 @@ std::unique_ptr<UrlLoader> TestClient::CreateUrlLoader() {
 }
 
 std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(
-    const base::char16* string,
-    const base::char16* term,
+    const char16_t* string,
+    const char16_t* term,
     bool case_sensitive) {
   return std::vector<SearchStringResult>();
 }
