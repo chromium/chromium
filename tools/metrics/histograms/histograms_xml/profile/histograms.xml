@@ -411,6 +411,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.NumberOfNamedProfiles" units="profiles"
     expires_after="2021-03-12">
+  <obsolete>
+    Removed on 2021-03.
+  </obsolete>
   <owner>feuunk@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>

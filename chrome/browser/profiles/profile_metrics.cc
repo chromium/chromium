@@ -192,8 +192,6 @@ void ProfileMetrics::CountProfileInformation(ProfileAttributesStorage* storage,
       counts->unused++;
     } else {
       counts->active++;
-      if (!entry->IsUsingDefaultName())
-        counts->named++;
       if (entry->IsSupervised())
         counts->supervised++;
       if (entry->IsAuthenticated()) {

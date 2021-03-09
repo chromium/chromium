@@ -24,7 +24,6 @@ struct Counts {
   base::HistogramBase::Sample signedin = 0;
   base::HistogramBase::Sample supervised = 0;
   base::HistogramBase::Sample active = 0;
-  base::HistogramBase::Sample named = 0;
   base::HistogramBase::Sample unused = 0;
   base::HistogramBase::Sample gaia_icon = 0;
   base::HistogramBase::Sample auth_errors = 0;
