@@ -136,6 +136,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
     return authentication_stage_;
   }
 
+  // Called when Login or Lock screen is destroyed.
+  void OnLockScreenDestroyed();
+
   LoginDataDispatcher* data_dispatcher() { return &login_data_dispatcher_; }
 
   void NotifyLoginScreenShown();

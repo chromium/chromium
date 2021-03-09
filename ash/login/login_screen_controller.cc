@@ -387,11 +387,13 @@ void LoginScreenController::ClearLoginShelfGestureHandler() {
 }
 
 void LoginScreenController::ShowLockScreen() {
+  CHECK(!LockScreen::HasInstance());
   OnShow();
   LockScreen::Show(LockScreen::ScreenType::kLock);
 }
 
 void LoginScreenController::ShowLoginScreen() {
+  CHECK(!LockScreen::HasInstance());
   // Login screen can only be used during login.
   session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
@@ -476,6 +478,13 @@ void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
   if (!client_)
     return;
   client_->OnFocusLeavingSystemTray(reverse);
+}
+
+void LoginScreenController::OnLockScreenDestroyed() {
+  DCHECK_EQ(authentication_stage_, AuthenticationStage::kIdle);
+
+  // Still handle it to avoid crashes during Login/Lock/Unlock flows.
+  authentication_stage_ = AuthenticationStage::kIdle;
 }
 
 void LoginScreenController::NotifyLoginScreenShown() {

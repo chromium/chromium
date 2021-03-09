@@ -126,14 +126,7 @@ bool LockScreen::HasInstance() {
 }
 
 void LockScreen::Destroy() {
-  LoginScreenController::AuthenticationStage authentication_stage =
-      Shell::Get()->login_screen_controller()->authentication_stage();
-  base::debug::Alias(&authentication_stage);
-  if (Shell::Get()->login_screen_controller()->authentication_stage() !=
-      authentication_stage) {
-    LOG(FATAL) << "Unexpected authentication stage "
-               << static_cast<int>(authentication_stage);
-  }
+  Shell::Get()->login_screen_controller()->OnLockScreenDestroyed();
   CHECK_EQ(instance_, this);
 
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
