@@ -6385,7 +6385,13 @@ static_library("browser") {
       "net/nss_context.h",
     ]
     if (is_chromeos_ash) {
-      sources += [ "net/nss_context_chromeos.cc" ]
+      sources += [
+        "net/nss_context_chromeos.cc",
+        "net/nss_service_chromeos.cc",
+        "net/nss_service_chromeos.h",
+        "net/nss_service_chromeos_factory.cc",
+        "net/nss_service_chromeos_factory.h",
+      ]
     }
     if (is_linux || is_chromeos_lacros) {
       sources += [ "net/nss_context_linux.cc" ]
