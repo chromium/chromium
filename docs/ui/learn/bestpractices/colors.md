@@ -112,7 +112,7 @@ that sets the correct colors.
 
 **Avoid**
 
-Old code in `native_file_system_usage_bubble_view.cc` set colors in its
+Old code in `file_system_access_usage_bubble_view.cc` set colors in its
 constructor since it seemed reasonable to do:
 
 #####
