@@ -20,6 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace location {
@@ -142,8 +143,16 @@ TEST_F(CountDownLatchTest, InitializeCount2_BlocksUnlessCountIsZero) {
   VerifyExceptionResultForAttemptId(attempt_id, Exception::kSuccess);
 }
 
+// TODO(crbug.com/1185706): Hangs on ChromeOS MSAN.
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero \
+  DISABLED_InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero
+#else
+#define MAYBE_InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero \
+  InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero
+#endif
 TEST_F(CountDownLatchTest,
-       InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero) {
+       MAYBE_InitializeCount2_UnblocksAllBlockedThreadsWhenCountIsZero) {
   InitializeCountDownLatch(2);
 
   base::RunLoop run_loop_1;
