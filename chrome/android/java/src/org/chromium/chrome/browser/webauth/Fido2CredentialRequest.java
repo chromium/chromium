@@ -51,8 +51,9 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     private static final String TAG = "Fido2Request";
-    private HandlerResponseCallback mCallback;
-    private HandlerResponseCallback mIsUserVerifyingPlatformAuthenticatorAvailableCallback;
+    private GetAssertionResponseCallback mGetAssertionCallback;
+    private MakeCredentialResponseCallback mMakeCredentialCallback;
+    private FidoErrorResponseCallback mErrorCallback;
     private Fido2PrivilegedApiClient mFido2ApiClient;
     private WebContents mWebContents;
     private WindowAndroid mWindow;
@@ -77,10 +78,12 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     public static final String FIDO2_KEY_CREDENTIAL_EXTRA = "FIDO2_CREDENTIAL_EXTRA";
 
     private void returnErrorAndResetCallback(int error) {
-        assert mCallback != null;
-        if (mCallback == null) return;
-        mCallback.onError(error);
-        mCallback = null;
+        assert mErrorCallback != null;
+        if (mErrorCallback == null) return;
+        mErrorCallback.onError(error);
+        mErrorCallback = null;
+        mGetAssertionCallback = null;
+        mMakeCredentialCallback = null;
     }
 
     // Listens for a Fido2PendingIntent.
@@ -137,9 +140,11 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
 
     public void handleMakeCredentialRequest(
             org.chromium.blink.mojom.PublicKeyCredentialCreationOptions options,
-            RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
-        assert mCallback == null;
-        mCallback = callback;
+            RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
+            FidoErrorResponseCallback errorCallback) {
+        assert mMakeCredentialCallback == null && mErrorCallback == null;
+        mMakeCredentialCallback = callback;
+        mErrorCallback = errorCallback;
         if (mWebContents == null) {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
@@ -178,9 +183,11 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
-        assert mCallback == null;
-        mCallback = callback;
+            RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
+            FidoErrorResponseCallback errorCallback) {
+        assert mGetAssertionCallback == null && mErrorCallback == null;
+        mGetAssertionCallback = callback;
+        mErrorCallback = errorCallback;
         if (mWebContents == null) {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
@@ -219,9 +226,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     public void handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-            RenderFrameHost frameHost, HandlerResponseCallback callback) {
-        assert mIsUserVerifyingPlatformAuthenticatorAvailableCallback == null;
-        mIsUserVerifyingPlatformAuthenticatorAvailableCallback = callback;
+            RenderFrameHost frameHost, IsUvpaaResponseCallback callback) {
         if (mWebContents == null) {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
@@ -230,19 +235,15 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             // Note that |IsUserVerifyingPlatformAuthenticatorAvailable| only returns
             // true or false, making it unable to handle any error status.
             // So it callbacks with false if Fido2PrivilegedApi is not available.
-            mIsUserVerifyingPlatformAuthenticatorAvailableCallback
-                    .onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
-            mIsUserVerifyingPlatformAuthenticatorAvailableCallback = null;
+            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
             return;
         }
 
         Task<Boolean> result =
                 mFido2ApiClient.isUserVerifyingPlatformAuthenticatorAvailable()
                         .addOnSuccessListener((isUVPAA) -> {
-                            mIsUserVerifyingPlatformAuthenticatorAvailableCallback
-                                    .onIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                            isUVPAA);
-                            mIsUserVerifyingPlatformAuthenticatorAvailableCallback = null;
+                            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(
+                                    isUVPAA);
                         });
     }
 
@@ -307,16 +308,16 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             processErrorResponse((AuthenticatorErrorResponse) response);
         } else if (response instanceof AuthenticatorAttestationResponse) {
             try {
-                mCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
+                mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
                         Fido2Helper.toMakeCredentialResponse(publicKeyCredential));
-                mCallback = null;
+                mMakeCredentialCallback = null;
             } catch (NoSuchAlgorithmException e) {
                 returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
             }
         } else if (response instanceof AuthenticatorAssertionResponse) {
-            mCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
+            mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
                     Fido2Helper.toGetAssertionResponse(publicKeyCredential, mAppIdExtensionUsed));
-            mCallback = null;
+            mGetAssertionCallback = null;
         }
     }
 
@@ -334,7 +335,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             case REGISTER_REQUEST:
                 Log.e(TAG, "Received a register response from Google Play Services FIDO2 API");
                 try {
-                    mCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
+                    mMakeCredentialCallback.onRegisterResponse(AuthenticatorStatus.SUCCESS,
                             Fido2Helper.toMakeCredentialResponse(
                                     AuthenticatorAttestationResponse.deserializeFromBytes(
                                             data.getByteArrayExtra(
@@ -345,14 +346,15 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
                 break;
             case SIGN_REQUEST:
                 Log.e(TAG, "Received a sign response from Google Play Services FIDO2 API");
-                mCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
+                mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS,
                         Fido2Helper.toGetAssertionResponse(
                                 AuthenticatorAssertionResponse.deserializeFromBytes(
                                         data.getByteArrayExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA)),
                                 mAppIdExtensionUsed));
                 break;
         }
-        mCallback = null;
+        mMakeCredentialCallback = null;
+        mGetAssertionCallback = null;
     }
 
     private void processIntentResult(Intent data) {

@@ -53,19 +53,21 @@ public class AuthenticatorTest {
     private class MockFido2ApiHandler extends Fido2ApiHandler {
         @Override
         protected void makeCredential(PublicKeyCredentialCreationOptions options,
-                RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
-            callback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
+                FidoErrorResponseCallback errorCallback) {
+            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
         }
 
         @Override
         protected void getAssertion(PublicKeyCredentialRequestOptions options,
-                RenderFrameHost frameHost, Origin origin, HandlerResponseCallback callback) {
-            callback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
+                FidoErrorResponseCallback errorCallback) {
+            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
         }
 
         @Override
         protected void isUserVerifyingPlatformAuthenticatorAvailable(
-                RenderFrameHost frameHost, HandlerResponseCallback callback) {
+                RenderFrameHost frameHost, IsUvpaaResponseCallback callback) {
             callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
         }
     }
