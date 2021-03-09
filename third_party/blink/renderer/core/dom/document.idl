@@ -21,9 +21,8 @@
 // https://html.spec.whatwg.org/C/#the-document-object
 enum DocumentReadyState { "loading", "interactive", "complete" };
 
-
-// https://w3c.github.io/page-visibility/#visibility-states-and-the-visibilitystate-enum
-enum VisibilityState { "hidden", "visible", "prerender"};
+// https://w3c.github.io/page-visibility/#visibilitystate-enum
+enum VisibilityState { "hidden", "visible" };
 
 // https://wicg.github.io/cors-rfc1918/#feature-detect
 enum AddressSpace { "local", "private", "public" };
