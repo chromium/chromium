@@ -90,7 +90,7 @@ void ReportValidationError(ValidationContext* context,
                            ValidationError error,
                            const char* description) {
 #if !defined(OS_NACL)
-  SCOPED_CRASH_KEY_STRING32("mojo-message", "header-bytes",
+  SCOPED_CRASH_KEY_STRING64("mojo-message", "header-bytes",
                             MessageHeaderAsHexString(context->message()));
 #endif  // !defined (OS_NACL)
 
