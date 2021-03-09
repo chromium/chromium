@@ -19,36 +19,19 @@ class CSSStyleGenerator(BaseGenerator):
                                   self.GetParameters())
 
     def GetParameters(self):
-        def BuildColorsForMode(mode, resolve_missing=False):
-            '''Builds a name to Color dictionary for |mode|.
-            If |resolve_missing| is true, colors that aren't specified in |mode|
-            will be resolved to their default mode value.'''
-            colors = collections.OrderedDict()
-            for name, mode_values in self.model[VariableType.COLOR].items():
-                if resolve_missing:
-                    colors[name] = self.model[VariableType.COLOR].Resolve(
-                        name, mode)
-                else:
-                    if mode in mode_values:
-                        colors[name] = mode_values[mode]
-            return colors
-
-        parameters = None
-
         if self.generate_single_mode:
-            parameters = {
-                'light_colors':
-                BuildColorsForMode(self.generate_single_mode,
-                                   resolve_missing=True)
+            resolved_colors = self.model[VariableType.COLOR].Flatten(
+                resolve_missing=True)
+            colors = {
+                Modes.DEFAULT: resolved_colors[self.generate_single_mode]
             }
         else:
-            parameters = {
-                'light_colors': BuildColorsForMode(Modes.LIGHT),
-                'dark_colors': BuildColorsForMode(Modes.DARK),
-            }
+            colors = self.model[VariableType.COLOR].Flatten()
 
-        parameters['opacities'] = self.model[VariableType.OPACITY]
-        return parameters
+        return {
+            'opacities': self.model[VariableType.OPACITY],
+            'colors': colors,
+        }
 
     def GetFilters(self):
         return {
@@ -64,7 +47,9 @@ class CSSStyleGenerator(BaseGenerator):
             'in_files':
             self.in_file_to_context.keys(),
             'dark_mode_selector':
-            self.generator_options.get('dark_mode_selector', None)
+            self.generator_options.get('dark_mode_selector', None),
+            'Modes':
+            Modes,
         }
 
     def GetCSSVarNames(self):

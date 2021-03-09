@@ -59,6 +59,23 @@ class ModeKeyedModel(object):
 
         return self.variables[name][Modes.DEFAULT]
 
+    def Flatten(self, resolve_missing=False):
+        '''Builds a name to variable dictionary for each mode.
+        If |resolve_missing| is true, colors that aren't specified in |mode|
+        will be resolved to their default mode value.'''
+        flattened = {}
+        for mode in Modes.ALL:
+            variables = collections.OrderedDict()
+            for name, mode_values in self.items():
+                if resolve_missing:
+                    variables[name] = self.Resolve(name, mode)
+                else:
+                    if mode in mode_values:
+                        variables[name] = mode_values[mode]
+            flattened[mode] = variables
+
+        return flattened
+
     def keys(self):
         return self.variables.keys()
 
