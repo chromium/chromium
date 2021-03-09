@@ -2487,16 +2487,6 @@
       },
     },
   },
-  'sync_integration_tests_wayland': {
-    'modifications': {
-      # CI Ozone/Wayland tester.
-      'Linux Tester (Ozone Wayland)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.sync_integration_tests_wayland.filter',
-        ],
-      },
-    }
-  },
   'tab_capture_end2end_tests': {
     # Run these only on Release bots.
     'remove_from': [

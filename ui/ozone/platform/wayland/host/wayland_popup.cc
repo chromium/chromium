@@ -56,6 +56,12 @@ void WaylandPopup::Show(bool inactive) {
   if (shell_popup_)
     return;
 
+  // Map parent window as WaylandPopup cannot become a visible child of a
+  // window that is not mapped.
+  DCHECK(parent_window());
+  if (!parent_window()->IsVisible())
+    parent_window()->Show(false);
+
   if (!CreateShellPopup()) {
     Close();
     return;

@@ -1,3 +1,0 @@
-# TODO(https://crbug.com/1184124): this fails because of non-existing xdg_toplevel that
-# should be a parent of a newly created xdg_popup child.
--SingleClientSessionsSyncTestWithFaviconTestServer.ShouldDeleteOnDemandIconsOnSessionsDisabled

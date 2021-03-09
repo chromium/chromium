@@ -42,28 +42,14 @@
 # are created.
 # TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
 # the problems.
--All/HostedAppProcessModelTest.BackgroundPageWithAppCoveringDifferentSites/0
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
 -All/HostedOrWebAppTest.OpenLinkInNewTab/HostedApp
 -All/HostedOrWebAppTest.OpenLinkInNewTab/WebApp
--AppBackgroundPageApiTest.OpenPopupFromBGPage
 -AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
 -CustomTabBarViewBrowserTest.RightClickMenuShowsCopyUrl
--PopupTrackerBrowserTest.ShiftClick_HasTracker
 -RemoteCopyBrowserTest.ImageUrl
 -RemoteCopyBrowserTest.Text
 -RemoteCopyBrowserTest.TextThenImageUrl
 -WebAppBrowserTest.CopyURL
 -BrowserNavigatorTest.SwitchToTabLatestWindow
--All/IntentPickerBubbleViewBrowserTest.NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker/0
--All/IntentPickerBubbleViewBrowserTest.NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker/1
--All/IntentPickerBubbleViewBrowserTest.NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker/2
--All/IntentPickerBubbleViewBrowserTest.NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker/3
--All/SystemWebAppLinkCaptureBrowserTest.WindowOpenFromOtherSWA/_Default
--CustomTabBarViewBrowserTest.IsNotCreatedInPopup
--OnDiskAppWithIncognitoProfile/NetworkContextConfigurationBrowserTest.CacheIsolation/0
--PopupTrackerBrowserTest.PopupInWindow_IsWindowTrue
--PopupTrackerBrowserTest.PopupNoRedirect_RedirectCountZero
--PopupTrackerBrowserTest.PopupRedirectsTwice_RedirectCountTwo
--SSLUITest.TestCloseTabWithUnsafePopup

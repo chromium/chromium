@@ -127,10 +127,7 @@ source_set("content_unittests_filters") {
 source_set("sync_integration_tests_filters") {
   testonly = true
 
-  data = [
-    "//testing/buildbot/filters/e2e.sync_integration_tests.filter",
-    "//testing/buildbot/filters/ozone-linux.sync_integration_tests_wayland.filter",
-  ]
+  data = [ "//testing/buildbot/filters/e2e.sync_integration_tests.filter" ]
 }
 
 source_set("fuchsia_filters") {
