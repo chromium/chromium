@@ -908,15 +908,18 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-// Test is flaky: crbug.com/1099402
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       DISABLED_ShowOfflineSetupOptionOnNetworkList) {
+                       ShowOfflineSetupOptionOnNetworkList) {
   TriggerDemoModeOnWelcomeScreen();
 
   SimulateOfflineEnvironment();
   test::OobeJS().ClickOnPath(kDemoPreferencesNext);
 
   test::WaitForNetworkSelectionScreen();
+  test::OobeJS()
+      .CreateWaiter(base::StrCat({test::GetOobeElementPath(kNetworkScreen),
+                                  ".offlineDemoModeEnabled"}))
+      ->Wait();
 
   EXPECT_TRUE(IsCustomNetworkListElementShown("offlineDemoSetupListItemName"));
 }
