@@ -43,10 +43,6 @@
 Polymer({
   is: 'cr-icon-button',
 
-  behaviors: [
-    Polymer.PaperRippleBehavior,
-  ],
-
   properties: {
     disabled: {
       type: Boolean,
@@ -69,21 +65,9 @@ Polymer({
       reflectToAttribute: true,
     },
 
-    noRippleOnFocus: {
-      type: Boolean,
-      value: false,
-    },
-
     /** @private */
     multipleIcons_: {
       type: Boolean,
-      reflectToAttribute: true,
-    },
-
-    /** @private */
-    rippleShowing_: {
-      type: Boolean,
-      value: false,
       reflectToAttribute: true,
     },
   },
@@ -97,12 +81,8 @@ Polymer({
   listeners: {
     blur: 'onBlur_',
     click: 'onClick_',
-    down: 'showRipple_',
-    focus: 'onFocus_',
     keydown: 'onKeyDown_',
     keyup: 'onKeyUp_',
-    pointerdown: 'ensureRipple',
-    up: 'hideRipple_',
   },
 
   /**
@@ -115,22 +95,6 @@ Polymer({
    * @private {boolean}
    */
   spaceKeyDown_: false,
-
-  /** @private */
-  hideRipple_() {
-    if (this.hasRipple()) {
-      this.getRipple().clear();
-      this.rippleShowing_ = false;
-    }
-  },
-
-  /** @private */
-  showRipple_() {
-    if (!this.noink && !this.disabled) {
-      this.getRipple().showAndHoldDown();
-      this.rippleShowing_ = true;
-    }
-  },
 
   /**
    * @param {boolean} newValue
@@ -161,19 +125,8 @@ Polymer({
   },
 
   /** @private */
-  onFocus_() {
-    if (!this.noRippleOnFocus) {
-      this.showRipple_();
-    }
-  },
-
-  /** @private */
   onBlur_() {
     this.spaceKeyDown_ = false;
-
-    if (!this.noRippleOnFocus) {
-      this.hideRipple_();
-    }
   },
 
   /**
@@ -203,14 +156,6 @@ Polymer({
             .forEach(child => child.setAttribute('role', 'none'));
       }
     });
-    if (!this.hasRipple()) {
-      return;
-    }
-    if (icons.length > 1) {
-      this.getRipple().classList.remove('circle');
-    } else {
-      this.getRipple().classList.add('circle');
-    }
   },
 
   /**
@@ -249,18 +194,6 @@ Polymer({
       this.spaceKeyDown_ = false;
       this.click();
     }
-  },
-
-  // customize the element's ripple
-  _createRipple() {
-    this._rippleContainer = this.$.icon;
-    const ripple = Polymer.PaperRippleBehavior._createRipple();
-    ripple.id = 'ink';
-    ripple.setAttribute('recenters', '');
-    if (!(this.ironIcon || '').includes(',')) {
-      ripple.classList.add('circle');
-    }
-    return ripple;
   },
 });
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

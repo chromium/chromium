@@ -1,5 +1,6 @@
 <link rel="import" href="../../html/polymer.html">
 
+<link rel="import" href="../cr_actionable_row_style.html">
 <link rel="import" href="../cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../hidden_style_css.html">
 <link rel="import" href="../icons.html">
@@ -9,20 +10,13 @@
 
 <dom-module id="cr-link-row">
   <template strip-whitespace="">
-    <style include="cr-shared-style cr-hidden-style">
+    <style include="cr-actionable-row-style cr-shared-style cr-hidden-style">
       :host {
-        align-items: center;
-        align-self: stretch;
         box-sizing: border-box;
-        cursor: pointer;
-        display: flex;
-        flex: 1;
         font-family: inherit;
         font-size: 100%;  /* Specifically for Mac OSX, harmless elsewhere. */
         line-height: 154%;  /* 20px. */
-        margin: 0;
         min-height: var(--cr-section-min-height);
-        outline: none;
         padding: 0;
       }
 

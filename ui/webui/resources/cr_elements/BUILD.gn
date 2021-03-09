@@ -48,6 +48,7 @@ preprocess_if_expr("preprocess_polymer2") {
   out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
   in_files = [
     "action_link_css.html",
+    "cr_actionable_row_style.html",
     "cr_action_menu/cr_action_menu.html",
     "cr_action_menu/cr_action_menu.js",
     "cr_button/cr_button.html",
@@ -158,6 +159,7 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "action_link_css.m.js",
+    "cr_actionable_row_style.m.js",
     "cr_action_menu/cr_action_menu.m.js",
     "cr_button/cr_button.m.js",
     "cr_checkbox/cr_checkbox.m.js",
@@ -328,6 +330,12 @@ polymer_modulizer("action_link_css") {
   html_type = "style-module"
 }
 
+polymer_modulizer("cr_actionable_row_style") {
+  js_file = "cr_actionable_row_style.m.js"
+  html_file = "cr_actionable_row_style.html"
+  html_type = "style-module"
+}
+
 polymer_modulizer("cr_page_host_style_css") {
   js_file = "cr_page_host_style_css.m.js"
   html_file = "cr_page_host_style_css.html"
@@ -387,6 +395,7 @@ js_modulizer("modulize") {
 group("polymer3_elements") {
   public_deps = [
     ":action_link_css_module",
+    ":cr_actionable_row_style_module",
     ":cr_icons_css_module",
     ":cr_page_host_style_css_module",
     ":hidden_style_css_module",

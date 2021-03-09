@@ -57,30 +57,6 @@ TEST_F('CrElementsCheckboxV3Test', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
-var CrElementsExpandButtonV3FocusTest = class extends CrElementsV3FocusTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_expand_button_focus_tests.js';
-  }
-};
-
-TEST_F('CrElementsExpandButtonV3FocusTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var CrElementsIconButtonV3FocusTest = class extends CrElementsV3FocusTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_icon_button_focus_tests.js';
-  }
-};
-
-TEST_F('CrElementsIconButtonV3FocusTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
 var CrElementsInputV3Test = class extends CrElementsV3FocusTest {
   /** @override */
   get browsePreload() {
