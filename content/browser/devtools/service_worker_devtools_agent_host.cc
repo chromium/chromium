@@ -25,7 +25,6 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -77,6 +76,7 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
                                                    : base::Time()),
       cross_origin_embedder_policy_(std::move(cross_origin_embedder_policy)),
       coep_reporter_(std::move(coep_reporter)) {
+  UpdateProcessHost();
   NotifyCreated();
 }
 
@@ -175,6 +175,7 @@ void ServiceWorkerDevToolsAgentHost::WorkerRestarted(int worker_process_id,
   state_ = WORKER_NOT_READY;
   worker_process_id_ = worker_process_id;
   worker_route_id_ = worker_route_id;
+  UpdateProcessHost();
 }
 
 void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
@@ -193,6 +194,25 @@ void ServiceWorkerDevToolsAgentHost::UpdateIsAttached(bool attached) {
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&SetDevToolsAttachedOnCoreThread, context_wrapper_,
                      version_id_, attached));
+}
+
+void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
+  process_observation_.Reset();
+  if (auto* rph = RenderProcessHost::FromID(worker_process_id_))
+    process_observation_.Observe(rph);
+}
+
+// TODO(caseq): this is only relevant for shutdown, where a RPH may
+// go along with StoragePartition and we won't receive any signals from
+// the DevToolsWorkerManager, so agents would be still attached and
+// may access the storage partition. This is meant to be a temporary
+// workaround, the proper fix is likely to have ServiceWorkerInstance
+// deleted in such case.
+void ServiceWorkerDevToolsAgentHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
+  process_observation_.Reset();
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
