@@ -9,6 +9,7 @@
 #include <string>
 
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
+#include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,25 +21,21 @@ class AssistantController;
 class AssistantStateBase;
 }  // namespace ash
 
-namespace assistant_client {
-struct VoicelessResponse;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerServiceImpl;
 class ServiceContext;
 
 class AssistantSettingsImpl : public AssistantSettings {
  public:
-  AssistantSettingsImpl(ServiceContext* context,
-                        AssistantManagerServiceImpl* assistant_manager_service);
+  explicit AssistantSettingsImpl(ServiceContext* context);
   ~AssistantSettingsImpl() override;
 
-  void Initialize(mojo::PendingRemote<
-                  chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
-                      enrollment_controller_remote);
+  void Initialize(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+          enrollment_controller_remote,
+      chromeos::libassistant::mojom::SettingsController* settings_controller);
 
   // AssistantSettings overrides:
   void GetSettings(const std::string& selector,
@@ -59,14 +56,13 @@ class AssistantSettingsImpl : public AssistantSettings {
   void HandleDeviceAppsStatusSync(base::OnceCallback<void(bool)> callback,
                                   const std::string& settings);
 
-  bool ShouldIgnoreResponse(const assistant_client::VoicelessResponse&) const;
-
   ash::AssistantStateBase* assistant_state();
   ash::AssistantController* assistant_controller();
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner();
+  chromeos::libassistant::mojom::SettingsController& settings_controller();
 
   ServiceContext* const context_;
-  AssistantManagerServiceImpl* const assistant_manager_service_;
+  chromeos::libassistant::mojom::SettingsController* settings_controller_ =
+      nullptr;
 
   mojo::Remote<chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
       speaker_id_enrollment_remote_;

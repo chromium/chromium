@@ -126,6 +126,18 @@ void FakeServiceController::SetAuthenticationTokens(
   authentication_tokens_ = std::move(tokens);
 }
 
+void FakeServiceController::UpdateSettings(const std::string& settings,
+                                           UpdateSettingsCallback callback) {
+  // Callback must be called to satisfy the mojom contract.
+  std::move(callback).Run(std::string());
+}
+
+void FakeServiceController::GetSettings(const std::string& selector,
+                                        GetSettingsCallback callback) {
+  // Callback must be called to satisfy the mojom contract.
+  std::move(callback).Run(std::string());
+}
+
 }  // namespace assistant
 
 }  // namespace chromeos

@@ -491,7 +491,7 @@ void AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse(
     if (ui_result.consent_flow_update_result().update_status() !=
         assistant::ConsentFlowUiUpdateResult::SUCCESS) {
       // TODO(updowndta): Handle consent update failure.
-      LOG(ERROR) << "Consent udpate error.";
+      LOG(ERROR) << "Consent update error.";
     } else if (activity_control_needed_) {
       activity_control_needed_ = false;
       PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -505,7 +505,7 @@ void AssistantOptInFlowScreenHandler::OnUpdateSettingsResponse(
     if (ui_result.email_opt_in_update_result().update_status() !=
         assistant::EmailOptInUpdateResult::SUCCESS) {
       // TODO(updowndta): Handle email optin update failure.
-      LOG(ERROR) << "Email OptIn udpate error.";
+      LOG(ERROR) << "Email OptIn update error.";
     }
     return;
   }

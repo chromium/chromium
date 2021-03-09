@@ -32,6 +32,10 @@ class SettingsController : public AssistantManagerObserver,
   void SetLocale(const std::string& value) override;
   void SetSpokenFeedbackEnabled(bool value) override;
   void SetHotwordEnabled(bool value) override;
+  void GetSettings(const std::string& selector,
+                   GetSettingsCallback callback) override;
+  void UpdateSettings(const std::string& settings,
+                      UpdateSettingsCallback callback) override;
 
   // AssistantManagerObserver:
   void OnAssistantManagerCreated(
@@ -50,9 +54,6 @@ class SettingsController : public AssistantManagerObserver,
  private:
   using UpdateSettingsCallback = base::OnceCallback<void(const std::string&)>;
   class DeviceSettingsUpdater;
-
-  void UpdateSettings(const std::string& settings,
-                      UpdateSettingsCallback callback);
 
   // The settings are being passed in to clearly document when Libassistant
   // must be updated.

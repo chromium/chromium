@@ -198,9 +198,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
 
-  assistant_client::AssistantManager* assistant_manager();
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
   action::CrosActionModule* action_module();
+
   void SetMicState(bool mic_open);
 
   base::Thread& GetBackgroundThreadForTesting();
@@ -214,6 +213,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnServiceStarted();
   void OnServiceRunning();
   bool IsServiceStarted() const;
+
+  assistant_client::AssistantManager* assistant_manager();
+  assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
   void OnModifySettingsAction(const std::string& modify_setting_args_proto);
 

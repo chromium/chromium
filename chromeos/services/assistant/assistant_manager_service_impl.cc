@@ -191,8 +191,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     base::Optional<std::string> s3_server_uri_override,
     base::Optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
-    : assistant_settings_(
-          std::make_unique<AssistantSettingsImpl>(context, this)),
+    : assistant_settings_(std::make_unique<AssistantSettingsImpl>(context)),
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
       context_(context),
@@ -233,7 +232,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_proxy_->ExtractAudioInputController());
 
   assistant_settings_->Initialize(
-      assistant_proxy_->ExtractSpeakerIdEnrollmentController());
+      assistant_proxy_->ExtractSpeakerIdEnrollmentController(),
+      &assistant_proxy_->settings_controller());
 
   media_host_->Initialize(&assistant_proxy_->media_controller(),
                           assistant_proxy_->ExtractMediaDelegate());

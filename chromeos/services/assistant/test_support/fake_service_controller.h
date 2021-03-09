@@ -105,6 +105,10 @@ class FakeServiceController
   void SetListeningEnabled(bool value) override {}
   void SetLocale(const std::string& value) override {}
   void SetSpokenFeedbackEnabled(bool value) override {}
+  void UpdateSettings(const std::string& settings,
+                      UpdateSettingsCallback callback) override;
+  void GetSettings(const std::string& selector,
+                   GetSettingsCallback callback) override;
   void SetHotwordEnabled(bool value) override {}
 
   // Mutex taken in |Start| to allow the calls to block if |BlockStartCalls| was

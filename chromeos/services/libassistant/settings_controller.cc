@@ -142,6 +142,27 @@ void SettingsController::SetHotwordEnabled(bool value) {
   UpdateDeviceSettings(locale_, hotword_enabled_);
 }
 
+void SettingsController::GetSettings(const std::string& selector,
+                                     GetSettingsCallback callback) {
+  if (!assistant_manager_internal_) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  std::string serialized_proto =
+      assistant::SerializeGetSettingsUiRequest(selector);
+  assistant_manager_internal_->SendGetSettingsUiRequest(
+      serialized_proto, std::string(),
+      ToStdFunction(BindToCurrentSequence(
+          [](GetSettingsCallback callback,
+             const assistant_client::VoicelessResponse& response) {
+            std::string result =
+                assistant::UnwrapGetSettingsUiResponse(response);
+            std::move(callback).Run(result);
+          },
+          std::move(callback))));
+}
+
 void SettingsController::UpdateSettings(const std::string& settings,
                                         UpdateSettingsCallback callback) {
   if (!assistant_manager_internal_) {
