@@ -727,25 +727,43 @@ class TabSwitcherMediator
     public boolean onBackPressed(boolean isOnHomepage) {
         if (!mContainerViewModel.get(IS_VISIBLE)) return false;
 
-        // When the Start surface is showing, we check if the tab group dialog is showing from the
-        // carousel tab switcher, and delegates to mTabGridDialogController to close the dialog.
-        // See https://crbug.com/1171799.
-        if (isOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) {
-            return mTabGridDialogController != null && mTabGridDialogController.handleBackPressed();
-        }
-
         if (mTabSelectionEditorController != null
                 && mTabSelectionEditorController.handleBackPressed()) {
             return true;
         }
+
         if (mTabGridDialogController != null && mTabGridDialogController.handleBackPressed()) {
             return true;
         }
+
+        // When the Start surface is showing, we no longer need to call onTabSelecting().
+        if (isOnHomepage && mMode == TabListCoordinator.TabListMode.CAROUSEL) return false;
+
         if (mTabModelSelector.getCurrentTab() == null) return false;
 
         onTabSelecting(mTabModelSelector.getCurrentTabId(), false);
 
         return true;
+    }
+
+    @Override
+    public boolean isDialogVisible() {
+        if (mTabSelectionEditorController != null && mTabSelectionEditorController.isVisible()) {
+            return true;
+        }
+
+        if (mTabGridDialogController != null && mTabGridDialogController.isVisible()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void showTabSelectionEditor(List<Tab> tabs) {
+        if (mTabSelectionEditorController == null) {
+            return;
+        }
+        mTabSelectionEditorController.show(tabs);
     }
 
     @Override

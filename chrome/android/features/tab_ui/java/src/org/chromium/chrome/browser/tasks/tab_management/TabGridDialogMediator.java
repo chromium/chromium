@@ -74,6 +74,11 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
          * @return Whether or not the TabGridDialog consumed the event.
          */
         boolean handleBackPressed();
+
+        /**
+         * @return Whether the TabGridDialog is visible.
+         */
+        boolean isVisible();
     }
 
     /**

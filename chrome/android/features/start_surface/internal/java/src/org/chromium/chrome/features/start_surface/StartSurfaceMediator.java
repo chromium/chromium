@@ -474,9 +474,6 @@ class StartSurfaceMediator
             @StartSurfaceState
             int shownState = computeOverviewStateShown();
 
-            // Cache previous state
-            mPreviousStartSurfaceState = mStartSurfaceState;
-
             mStartSurfaceState = shownState;
             setOverviewStateInternal();
         }
@@ -652,13 +649,27 @@ class StartSurfaceMediator
 
     @Override
     public boolean onBackPressed() {
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+        boolean isOnHomepage = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
+            // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
+            // mSecondaryTasksSurfaceController, while the TabSelectionEditor dialog is controlled
+            // by mController. Therefore, we need to check both controllers whether any dialog is
+            // visible. If so, the corresponding controller will handle the back button.
+            if (mSecondaryTasksSurfaceController != null
+                    && mSecondaryTasksSurfaceController.isDialogVisible()) {
+                return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+            } else if (mController.isDialogVisible()) {
+                return mController.onBackPressed(isOnHomepage);
+            } else if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
+                    && !mIsIncognito) {
                 // Secondary tasks surface is used as the main surface in incognito mode.
-                && !mIsIncognito) {
-            // If we reached tabswitcher from HomePage.
-            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                // If we reached Tab switcher from HomePage, and there isn't any dialog shown,
+                // updates the state, and ChromeTabbedActivity will handle the back button.
                 setOverviewState(StartSurfaceState.SHOWN_HOMEPAGE);
                 return true;
+            } else {
+                return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
             }
         }
 
@@ -669,7 +680,7 @@ class StartSurfaceMediator
             return true;
         }
 
-        return mController.onBackPressed(mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE);
+        return mController.onBackPressed(isOnHomepage);
     }
 
     @Override
@@ -1004,5 +1015,9 @@ class StartSurfaceMediator
                 || state == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
                 || state == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
                 || state == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+    }
+
+    TabSwitcher.Controller getSecondaryTasksSurfaceController() {
+        return mSecondaryTasksSurfaceController;
     }
 }
