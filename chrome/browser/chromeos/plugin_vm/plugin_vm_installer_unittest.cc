@@ -111,7 +111,9 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
 
   void RunGetContentCallback(google_apis::DriveApiErrorCode error,
                              std::unique_ptr<std::string> content) {
-    get_content_callback_.Run(error, std::move(content));
+    get_content_callback_.Run(error, std::move(content),
+                              !get_content_callback_called_);
+    get_content_callback_called_ = true;
   }
 
   void RunProgressCallback(int64_t progress, int64_t total) {
@@ -145,6 +147,8 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
   DownloadActionCallback download_action_callback_;
   GetContentCallback get_content_callback_;
   ProgressCallback progress_callback_;
+
+  bool get_content_callback_called_{false};
 };
 
 class PluginVmInstallerTestBase : public testing::Test {

@@ -446,7 +446,8 @@ void UrlFetchRequestBase::OnDataReceived(base::StringPiece string_piece,
                                          base::OnceClosure resume) {
   if (!download_data_->get_content_callback.is_null()) {
     download_data_->get_content_callback.Run(
-        HTTP_SUCCESS, std::make_unique<std::string>(string_piece));
+        HTTP_SUCCESS, std::make_unique<std::string>(string_piece),
+        download_data_->response_body.empty());
   }
 
   if (!download_data_->output_file_path.empty()) {

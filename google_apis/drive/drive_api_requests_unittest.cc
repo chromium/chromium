@@ -69,7 +69,8 @@ const char kTestDownloadFileQuery[] = "alt=media&supportsTeamDrives=true";
 // Used as a GetContentCallback.
 void AppendContent(std::string* out,
                    DriveApiErrorCode error,
-                   std::unique_ptr<std::string> content) {
+                   std::unique_ptr<std::string> content,
+                   bool first_chunk) {
   EXPECT_EQ(HTTP_SUCCESS, error);
   out->append(*content);
 }
