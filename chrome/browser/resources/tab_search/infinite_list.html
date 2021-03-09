@@ -1,13 +1,12 @@
 <style>
   :host {
     display: block;
-    max-height: var(--list-max-height);
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
   }
 </style>
-<div id="items">
+<div id="container">
   <iron-selector id="selector" on-keydown="onKeyDown_"
       on-iron-select="onSelectedChanged_" role="listbox"
       selected-class="selected">

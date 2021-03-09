@@ -12,6 +12,7 @@ import './tab_search_item.js';
 import './tab_search_search_field.js';
 import './strings.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -22,6 +23,12 @@ import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_lis
 import {TabData} from './tab_data.js';
 import {Tab, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+import {TabSearchItem} from './tab_search_item.js';
+
+// The minimum number of list items we allow viewing regardless of browser
+// height. Includes a half row that hints to the user the capability to scroll.
+/** @type {number} */
+const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT = 5.5;
 
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
@@ -45,6 +52,9 @@ export class TabSearchAppElement extends PolymerElement {
         type: Array,
         value: [],
       },
+
+      /** @private {number} */
+      availableHeight_: Number,
 
       /** @private {!Array<!TabData>} */
       filteredOpenTabs_: {
@@ -171,9 +181,45 @@ export class TabSearchAppElement extends PolymerElement {
         'visibilitychange', this.visibilityChangedListener_);
   }
 
+  /**
+   * @param {string} name A property whose value is specified in pixels.
+   * @return {number}
+   */
+  getStylePropertyPixelValue_(name) {
+    const pxValue = getComputedStyle(this).getPropertyValue(name);
+    assert(pxValue);
+
+    return Number.parseInt(pxValue.trim().slice(0, -2), 10);
+  }
+
+  /**
+   * Calculate the list's available height by subtracting the height used by
+   * the search and feedback fields.
+   *
+   * @param {number} height
+   * @return {number}
+   * @private
+   */
+  listMaxHeight_(height) {
+    const footerHeight =
+        (this.feedbackButtonEnabled_ ?
+             /** @type {HTMLElement} */ (
+                 this.shadowRoot.getElementById('feedback-footer'))
+                 .offsetHeight :
+             0);
+
+    return Math.max(
+        height - this.$.searchField.offsetHeight - footerHeight,
+        Math.round(
+            MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
+            this.getStylePropertyPixelValue_('--mwb-item-height')));
+  }
+
   /** @private */
   onDocumentHidden_() {
-    (this.$.tabsList).selected = NO_SELECTION;
+    this.$.tabsList.scrollTop = 0;
+    this.$.tabsList.selected = NO_SELECTION;
+
     this.$.searchField.setValue('');
     this.$.searchField.getSearchInput().focus();
   }
@@ -186,14 +232,15 @@ export class TabSearchAppElement extends PolymerElement {
           'Tabs.TabSearch.WebUI.TabListDataReceived',
           Math.round(Date.now() - getTabsStartTimestamp));
 
-      // The infinite-list only triggers a dom-change event after it is ready
-      // and observes a change on the list items.
-      listenOnce(this.$.tabsList, 'dom-change', () => {
+      // The infinite-list produces viewport-filled events whenever a data or
+      // scroll position change triggers the the viewport fill logic.
+      listenOnce(this.$.tabsList, 'viewport-filled', () => {
         // Push showUI() to the event loop to allow reflow to occur following
         // the DOM update.
         setTimeout(() => this.apiProxy_.showUI(), 0);
       });
 
+      this.availableHeight_ = profileData.windows.find((t) => t.active).height;
       this.openTabsChanged_(profileData.windows);
     });
   }
@@ -294,7 +341,8 @@ export class TabSearchAppElement extends PolymerElement {
   onItemClick_(e) {
     const tabId = Number.parseInt(e.currentTarget.id, 10);
     this.apiProxy_.switchToTab(
-        {tabId}, !!this.searchText_, /** @type {number} */ (e.model.index));
+        {tabId}, !!this.searchText_,
+        /** @type {number} */ (e.model.index));
   }
 
   /**
@@ -305,7 +353,8 @@ export class TabSearchAppElement extends PolymerElement {
     performance.mark('close_tab:benchmark_begin');
     const tabId = Number.parseInt(e.currentTarget.id, 10);
     this.apiProxy_.closeTab(
-        tabId, !!this.searchText_, /** @type {number} */ (e.model.index));
+        tabId, !!this.searchText_,
+        /** @type {number} */ (e.model.index));
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('close_tab:benchmark_end');

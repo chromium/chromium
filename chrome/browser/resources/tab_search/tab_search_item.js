@@ -39,6 +39,9 @@ export class TabSearchItem extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('useRipples'),
       },
+
+      /** @type {number} */
+      index: Number,
     };
   }
 

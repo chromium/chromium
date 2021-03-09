@@ -8,7 +8,7 @@ import {ProfileData, Tab, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchS
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
-import {generateSampleDataFromSiteNames, sampleData} from './tab_search_test_data.js';
+import {generateSampleDataFromSiteNames, SAMPLE_WINDOW_HEIGHT, sampleData} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -438,11 +438,17 @@ suite('TabSearchAppTest', () => {
     ];
 
     // Move active tab to the bottom of the list.
-    await setupTest({windows: [{active: true, tabs}], recentlyClosedTabs: []});
+    await setupTest({
+      windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
+      recentlyClosedTabs: []
+    });
     verifyTabIds(queryRows(), [3, 1, 2]);
 
     await setupTest(
-        {windows: [{active: true, tabs}], recentlyClosedTabs: []},
+        {
+          windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
+          recentlyClosedTabs: []
+        },
         {'moveActiveTabToBottom': false});
     verifyTabIds(queryRows(), [2, 3, 1]);
   });

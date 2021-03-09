@@ -11,23 +11,24 @@ import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 import {generateSampleTabsFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, disableScrollIntoViewAnimations} from './tab_search_test_helper.js';
 
-const CHUNK_ITEM_COUNT = 7;
+const SAMPLE_AVAIL_HEIGHT = 336;
+const SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT = 6;
 
 class TestApp extends PolymerElement {
   static get properties() {
     return {
       /** @private {number} */
-      chunkItemCount_: {
+      maxHeight_: {
         type: Number,
-        value: CHUNK_ITEM_COUNT
-      }
+        value: SAMPLE_AVAIL_HEIGHT,
+      },
     };
   }
 
   static get template() {
     return html`
-    <infinite-list id="list" chunk-item-count="[[chunkItemCount_]]">
-      <template is="dom-repeat">
+    <infinite-list id="list" max-height="[[maxHeight_]]">
+      <template>
         <tab-search-item id="[[item.tab.tabId]]"
             style="display: flex;height: 56px" data="[[item]]" tabindex="0"
             role="option">
@@ -49,13 +50,6 @@ suite('InfiniteListTest', () => {
    * @param {!Array<!tabSearch.mojom.Tab>} sampleData
    */
   async function setupTest(sampleData) {
-    document.head.insertAdjacentHTML('beforeend', `
-    <style>
-    html {
-      --list-max-height: 280px;
-    }
-    </style>`);
-
     const testApp = document.createElement('test-app');
     document.body.innerHTML = '';
     document.body.appendChild(testApp);
@@ -85,7 +79,7 @@ suite('InfiniteListTest', () => {
   }
 
   test('ScrollHeight', async () => {
-    const tabItems = sampleTabItems(sampleSiteNames());
+    const tabItems = sampleTabItems(sampleSiteNames(5));
     await setupTest(tabItems);
     await waitAfterNextRender(infiniteList);
 
@@ -101,44 +95,39 @@ suite('InfiniteListTest', () => {
   });
 
   test('ListUpdates', async () => {
-    let siteNames = Array.from({length: 1}, (_, i) => 'site' + (i + 1));
-    const tabItems = sampleTabItems(siteNames);
-    await setupTest(tabItems);
+    await setupTest(sampleTabItems(sampleSiteNames(1)));
     assertEquals(1, queryRows().length);
 
     // Ensure that on updating the list with an array smaller in size
-    // than the chunkItemCount property, all the array items are rendered.
-    siteNames = Array.from({length: 3}, (_, i) => 'site' + (i + 1));
-    infiniteList.items = sampleTabItems(siteNames);
+    // than the viewport item count, all the array items are rendered.
+    infiniteList.items = sampleTabItems(sampleSiteNames(3));
     await waitAfterNextRender(infiniteList);
     assertEquals(3, queryRows().length);
 
     // Ensure that on updating the list with an array greater in size than
-    // the chunkItemCount property, only a chunk of array items are rendered.
-    siteNames =
-        Array.from({length: 2 * CHUNK_ITEM_COUNT}, (_, i) => 'site' + (i + 1));
-    infiniteList.items = sampleTabItems(siteNames);
+    // the viewport item count, only a chunk of array items are rendered.
+    const tabItems =
+        sampleTabItems(sampleSiteNames(2 * SAMPLE_HEIGHT_VIEWPORT_ITEM_COUNT));
+    infiniteList.items = tabItems;
     await waitAfterNextRender(infiniteList);
-    assertEquals(CHUNK_ITEM_COUNT, queryRows().length);
+    assertGT(tabItems.length, queryRows().length);
   });
 
   test('SelectedIndex', async () => {
-    const siteNames = Array.from({length: 50}, (_, i) => 'site' + (i + 1));
-    const tabItems = sampleTabItems(siteNames);
+    const itemCount = 25;
+    const tabItems = sampleTabItems(sampleSiteNames(itemCount));
     await setupTest(tabItems);
 
     assertEquals(0, infiniteList.scrollTop);
-    assertEquals(CHUNK_ITEM_COUNT, queryRows().length);
 
     // Assert that upon changing the selected index to a non previously rendered
     // item, this one is rendered on the view.
-    infiniteList.selected = CHUNK_ITEM_COUNT;
-    assertEquals(CHUNK_ITEM_COUNT, queryRows().length);
+    infiniteList.selected = itemCount - 1;
     await waitAfterNextRender(infiniteList);
     let domTabItems = queryRows();
     const selectedTabItem = domTabItems[infiniteList.selected];
     assertNotEquals(null, selectedTabItem);
-    assertEquals(2 * CHUNK_ITEM_COUNT, domTabItems.length);
+    assertEquals(25, domTabItems.length);
 
     // Assert that the view scrolled to show the selected item.
     const afterSelectionScrollTop = infiniteList.scrollTop;
@@ -146,7 +135,7 @@ suite('InfiniteListTest', () => {
 
     // Assert that on replacing the list items, the currently selected index
     // value is still rendered on the view.
-    infiniteList.items = sampleTabItems(siteNames);
+    infiniteList.items = sampleTabItems(sampleSiteNames(itemCount));
     await waitAfterNextRender(infiniteList);
     domTabItems = queryRows();
     const theSelectedTabItem = domTabItems[infiniteList.selected];
@@ -156,8 +145,25 @@ suite('InfiniteListTest', () => {
     assertEquals(afterSelectionScrollTop, infiniteList.scrollTop);
   });
 
+  test('SelectedIndexValidAfterItemRemoval', async () => {
+    const numTabItems = 5;
+    const tabItems = sampleTabItems(sampleSiteNames(numTabItems));
+    await setupTest(tabItems);
+    infiniteList.selected = numTabItems - 1;
+
+    // Assert that on having the last item selected and removing this last item
+    // the selected index moves up to the last item available and that in
+    // the case there are no more items, the selected index is -1.
+    for (let i = numTabItems - 1; i >= 0; i--) {
+      infiniteList.items = tabItems.slice(0, i);
+      await waitAfterNextRender(infiniteList);
+      assertEquals(i, queryRows().length);
+      assertEquals(i - 1, infiniteList.selected);
+    }
+  });
+
   test('NavigateDownShowsPreviousAndFollowingListItems', async () => {
-    const tabItems = sampleTabItems(sampleSiteNames());
+    const tabItems = sampleTabItems(sampleSiteNames(10));
     await setupTest(tabItems);
 
     const tabsDiv = /** @type {!HTMLElement} */ (infiniteList);
@@ -177,7 +183,7 @@ suite('InfiniteListTest', () => {
   });
 
   test('NavigateUpShowsPreviousAndFollowingListItems', async () => {
-    const tabItems = sampleTabItems(sampleSiteNames());
+    const tabItems = sampleTabItems(sampleSiteNames(10));
     await setupTest(tabItems);
 
     const tabsDiv = /** @type {!HTMLElement} */ (infiniteList);

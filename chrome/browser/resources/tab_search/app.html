@@ -1,8 +1,4 @@
 <style include="mwb-shared-style">
-  #tabsList {
-    --list-max-height: 280px;
-  }
-
   #no-results {
     color: var(--cr-primary-text-color);
     font-size: var(--mwb-primary-text-font-size);
@@ -58,12 +54,14 @@
     search-result-text="[[searchResultText_]]">
 </tab-search-search-field>
 <div hidden="[[!filteredOpenTabs_.length]]">
-  <infinite-list id="tabsList" items="[[filteredOpenTabs_]]">
-    <template is="dom-repeat">
+  <infinite-list id="tabsList" max-height="[[listMaxHeight_(availableHeight_)]]"
+      items="[[filteredOpenTabs_]]">
+    <template>
       <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
-          class="mwb-list-item" data="[[item]]" on-click="onItemClick_"
-          on-close="onItemClose_" on-focus="onItemFocus_"
-          on-keydown="onItemKeyDown_" tabindex="0" role="option">
+          class="mwb-list-item" data="[[item]]" index="[[index]]"
+          on-click="onItemClick_" on-close="onItemClose_"
+          on-focus="onItemFocus_" on-keydown="onItemKeyDown_" role="option"
+          tabindex="0">
       </tab-search-item>
     </template>
   </infinite-list>

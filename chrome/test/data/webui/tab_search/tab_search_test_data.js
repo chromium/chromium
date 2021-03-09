@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export const SAMPLE_WINDOW_HEIGHT = 448;
+
 export function sampleData() {
-  const profileTabs = {
+  return {
     windows: [
       {
         active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
         tabs: [
           {
             index: 0,
@@ -33,6 +36,7 @@ export function sampleData() {
       },
       {
         active: false,
+        height: SAMPLE_WINDOW_HEIGHT,
         tabs: [
           {
             index: 0,
@@ -59,26 +63,14 @@ export function sampleData() {
       }
     ]
   };
-
-  return profileTabs;
 }
 
 /**
+ * @param count
  * @return {!Array<string>}
  */
-export function sampleSiteNames() {
-  return [
-    'Google',
-    'Amazon',
-    'Apple',
-    'Bing',
-    'Yahoo',
-    'PayPal',
-    'Square',
-    'Youtube',
-    'Facebook',
-    'Twitter',
-  ];
+export function sampleSiteNames(count) {
+  return Array.from({length: count}, (_, i) => (i + 1).toString());
 }
 
 /**
@@ -93,6 +85,7 @@ export function generateSampleTabsFromSiteNames(siteNames) {
       tabId: i + 1,
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
+      lastActiveTimeTicks: siteNames.length - i,
     };
   });
 }
@@ -104,6 +97,10 @@ export function generateSampleTabsFromSiteNames(siteNames) {
  */
 export function generateSampleDataFromSiteNames(siteNames) {
   return {
-    windows: [{active: true, tabs: generateSampleTabsFromSiteNames(siteNames)}]
+    windows: [{
+      active: true,
+      height: SAMPLE_WINDOW_HEIGHT,
+      tabs: generateSampleTabsFromSiteNames(siteNames)
+    }]
   };
 }
