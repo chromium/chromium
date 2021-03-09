@@ -1857,6 +1857,8 @@ TEST_F(SiteInstanceTest, DoWebUIURLsWithSubdomainsUseTLDForProcessLock) {
   EXPECT_EQ(webui_tld_url, webui_tld_site_info.process_lock_url());
   EXPECT_EQ(webui_tld_url, webui_host_bar_site_info.process_lock_url());
   EXPECT_EQ(webui_tld_url, webui_host_baz_site_info.process_lock_url());
+
+  WebUIControllerFactory::UnregisterFactoryForTesting(&factory);
 }
 
 TEST_F(SiteInstanceTest, ErrorPage) {
