@@ -392,7 +392,8 @@ IN_PROC_BROWSER_TEST_P(SystemNetworkContextManagerFreezeQUICUaBrowsertest,
   if (GetParam()) {  // if the UA Freeze feature is turned on
     EXPECT_EQ("", quic_ua);
   } else {
-    EXPECT_THAT(quic_ua, testing::HasSubstr(chrome::GetChannelName()));
+    EXPECT_THAT(quic_ua, testing::HasSubstr(chrome::GetChannelName(
+                             chrome::WithExtendedStable(false))));
     EXPECT_THAT(quic_ua,
                 testing::HasSubstr(
                     version_info::GetProductNameAndVersionForUserAgent()));

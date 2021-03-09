@@ -319,7 +319,7 @@ void NetExportMessageHandler::StartNetLog(const base::FilePath& path) {
   file_writer_->StartNetLog(
       path, capture_mode_, max_log_file_size_,
       base::CommandLine::ForCurrentProcess()->GetCommandLineString(),
-      chrome::GetChannelName(),
+      chrome::GetChannelName(chrome::WithExtendedStable(true)),
       content::BrowserContext::GetDefaultStoragePartition(
           Profile::FromWebUI(web_ui()))
           ->GetNetworkContext());

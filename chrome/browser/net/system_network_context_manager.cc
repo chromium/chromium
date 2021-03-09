@@ -594,7 +594,10 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
     quic_user_agent_id = "";
   } else {
-    quic_user_agent_id = chrome::GetChannelName();
+    // Extended stable reports as regular stable due to the similarity, and to
+    // avoid adding more signal to the user agent string.
+    quic_user_agent_id =
+        chrome::GetChannelName(chrome::WithExtendedStable(false));
     if (!quic_user_agent_id.empty())
       quic_user_agent_id.push_back(' ');
     quic_user_agent_id.append(

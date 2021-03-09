@@ -5035,7 +5035,7 @@ ChromeContentBrowserClient::GetNetworkContextsParentDirectory() {
 base::DictionaryValue ChromeContentBrowserClient::GetNetLogConstants() {
   auto platform_dict = net_log::GetPlatformConstantsForNetLog(
       base::CommandLine::ForCurrentProcess()->GetCommandLineString(),
-      chrome::GetChannelName());
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
   if (platform_dict)
     return std::move(*platform_dict);
   else
