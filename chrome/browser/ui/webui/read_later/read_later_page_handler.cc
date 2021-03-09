@@ -23,6 +23,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/time_format.h"
 #include "url/gurl.h"
 
@@ -60,16 +61,16 @@ bool IsActiveTabNTP(Browser* browser) {
 ReadLaterPageHandler::ReadLaterPageHandler(
     mojo::PendingReceiver<read_later::mojom::PageHandler> receiver,
     mojo::PendingRemote<read_later::mojom::Page> page,
-    ReadLaterUI* read_later_ui)
+    ReadLaterUI* read_later_ui,
+    content::WebUI* web_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
-      browser_(chrome::FindLastActive()),
       read_later_ui_(read_later_ui),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK(browser_);
+  Profile* profile = Profile::FromWebUI(web_ui);
+  DCHECK(profile);
 
-  reading_list_model_ =
-      ReadingListModelFactory::GetForBrowserContext(browser_->profile());
+  reading_list_model_ = ReadingListModelFactory::GetForBrowserContext(profile);
 }
 
 ReadLaterPageHandler::~ReadLaterPageHandler() = default;
@@ -80,14 +81,18 @@ void ReadLaterPageHandler::GetReadLaterEntries(
 }
 
 void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
+  Browser* browser = chrome::FindLastActive();
+  if (!browser)
+    return;
+
   // Open in active tab if the user is on the NTP.
   WindowOpenDisposition open_location =
-      IsActiveTabNTP(browser_) ? WindowOpenDisposition::CURRENT_TAB
-                               : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      IsActiveTabNTP(browser) ? WindowOpenDisposition::CURRENT_TAB
+                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser_->OpenURL(params);
+  browser->OpenURL(params);
   reading_list_model_->SetReadStatus(url, true);
 }
 

@@ -86,6 +86,6 @@ void ReadLaterUI::CreatePageHandler(
     mojo::PendingRemote<read_later::mojom::Page> page,
     mojo::PendingReceiver<read_later::mojom::PageHandler> receiver) {
   DCHECK(page);
-  page_handler_ = std::make_unique<ReadLaterPageHandler>(std::move(receiver),
-                                                         std::move(page), this);
+  page_handler_ = std::make_unique<ReadLaterPageHandler>(
+      std::move(receiver), std::move(page), this, web_ui());
 }

@@ -18,6 +18,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/reading_list/core/reading_list_model.h"
+#include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -58,11 +59,13 @@ void ExpectNewReadLaterEntry(const read_later::mojom::ReadLaterEntry* entry,
 class TestReadLaterPageHandler : public ReadLaterPageHandler {
  public:
   explicit TestReadLaterPageHandler(
-      mojo::PendingRemote<read_later::mojom::Page> page)
+      mojo::PendingRemote<read_later::mojom::Page> page,
+      content::WebUI* test_web_ui)
       : ReadLaterPageHandler(
             mojo::PendingReceiver<read_later::mojom::PageHandler>(),
             std::move(page),
-            nullptr) {}
+            nullptr,
+            test_web_ui) {}
 };
 
 class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
@@ -70,8 +73,14 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     BrowserList::SetLastActive(browser());
-    handler_ =
-        std::make_unique<TestReadLaterPageHandler>(page_.BindAndGetRemote());
+
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile()));
+    test_web_ui_ = std::make_unique<content::TestWebUI>();
+    test_web_ui_->set_web_contents(web_contents_.get());
+
+    handler_ = std::make_unique<TestReadLaterPageHandler>(
+        page_.BindAndGetRemote(), test_web_ui_.get());
     model_ =
         ReadingListModelFactory::GetForBrowserContext(browser()->profile());
     test::ReadingListLoadObserver(model_).Wait();
@@ -88,6 +97,9 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    handler_.reset();
+    test_web_ui_.reset();
+    web_contents_.reset();
     browser()->tab_strip_model()->CloseAllTabs();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -112,6 +124,8 @@ class TestReadLaterPageHandlerTest : public BrowserWithTestWindowTest {
   testing::StrictMock<MockPage> page_;
 
  private:
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestReadLaterPageHandler> handler_;
   ReadingListModel* model_;
 };
