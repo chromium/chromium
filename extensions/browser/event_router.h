@@ -73,7 +73,7 @@ class EventRouter : public KeyedService,
   // notified when a listener is added or removed. Observers are matched by
   // the base name of the event (e.g. adding an event listener for event name
   // "foo.onBar/123" will trigger observers registered for "foo.onBar").
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when a listener is added.
     virtual void OnListenerAdded(const EventListenerInfo& details) {}
@@ -81,7 +81,7 @@ class EventRouter : public KeyedService,
     virtual void OnListenerRemoved(const EventListenerInfo& details) {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override = default;
   };
 
   // A test observer to monitor event dispatching.
@@ -267,6 +267,7 @@ class EventRouter : public KeyedService,
  private:
   friend class EventRouterFilterTest;
   friend class EventRouterTest;
+  FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
 
   enum class RegisteredEventType {
     kLazy,
@@ -385,8 +386,10 @@ class EventRouter : public KeyedService,
   EventListenerMap listeners_{this};
 
   // Map from base event name to observer.
-  using ObserverMap = std::unordered_map<std::string, Observer*>;
-  ObserverMap observers_;
+  using Observers = base::ObserverList<Observer>;
+  using ObserverMap =
+      std::unordered_map<std::string, std::unique_ptr<Observers>>;
+  ObserverMap observer_map_;
 
   base::ObserverList<TestObserver>::Unchecked test_observers_;
 

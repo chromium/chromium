@@ -344,6 +344,41 @@ TEST_F(EventRouterTest, EventRouterObserverForServiceWorkers) {
       99, 199));
 }
 
+TEST_F(EventRouterTest, MultipleEventRouterObserver) {
+  EventRouter router(nullptr, nullptr);
+  std::unique_ptr<EventListener> listener =
+      EventListener::ForURL("event_name", GURL("http://google.com/path"),
+                            nullptr, std::make_unique<base::DictionaryValue>());
+
+  // Add/remove works without any observers.
+  router.OnListenerAdded(listener.get());
+  router.OnListenerRemoved(listener.get());
+
+  // Register two observers for same event name.
+  MockEventRouterObserver matching_observer1;
+  router.RegisterObserver(&matching_observer1, "event_name");
+  MockEventRouterObserver matching_observer2;
+  router.RegisterObserver(&matching_observer2, "event_name");
+
+  // Adding a listener notifies the appropriate observers.
+  router.OnListenerAdded(listener.get());
+  EXPECT_EQ(1, matching_observer1.listener_added_count());
+  EXPECT_EQ(1, matching_observer2.listener_added_count());
+
+  // Removing a listener notifies the appropriate observers.
+  router.OnListenerRemoved(listener.get());
+  EXPECT_EQ(1, matching_observer1.listener_removed_count());
+  EXPECT_EQ(1, matching_observer2.listener_removed_count());
+
+  // Unregister the observer so that the current observer no longer receives
+  // monitoring, but the other observer still continues to receive monitoring.
+  router.UnregisterObserver(&matching_observer1);
+
+  router.OnListenerAdded(listener.get());
+  EXPECT_EQ(1, matching_observer1.listener_added_count());
+  EXPECT_EQ(2, matching_observer2.listener_added_count());
+}
+
 TEST_F(EventRouterTest, TestReportEvent) {
   EventRouter router(browser_context(), nullptr);
   scoped_refptr<const Extension> normal = ExtensionBuilder("Test").Build();
