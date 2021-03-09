@@ -24,11 +24,13 @@ constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 
 std::vector<CompositorFrameTransitionDirective> CreateSaveDirectiveAsVector(
     uint32_t sequence_id,
-    base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100)) {
+    base::TimeDelta duration = base::TimeDelta::FromMilliseconds(100),
+    CompositorFrameTransitionDirective::Effect effect =
+        CompositorFrameTransitionDirective::Effect::kCoverDown) {
   std::vector<CompositorFrameTransitionDirective> result;
-  result.emplace_back(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
-      CompositorFrameTransitionDirective::Effect::kCoverDown, duration);
+  result.emplace_back(sequence_id,
+                      CompositorFrameTransitionDirective::Type::kSave, effect,
+                      duration);
   return result;
 }
 
@@ -41,6 +43,103 @@ std::vector<CompositorFrameTransitionDirective> CreateAnimateDirectiveAsVector(
 }
 
 }  // namespace
+
+class TestSurfaceAnimationManager : public SurfaceAnimationManager {
+ public:
+  TestSurfaceAnimationManager() = default;
+  ~TestSurfaceAnimationManager() override = default;
+
+  void ValidateStartState(CompositorFrameTransitionDirective::Effect effect) {
+    switch (effect) {
+      case CompositorFrameTransitionDirective::Effect::kRevealRight:
+      case CompositorFrameTransitionDirective::Effect::kRevealLeft:
+      case CompositorFrameTransitionDirective::Effect::kRevealUp:
+      case CompositorFrameTransitionDirective::Effect::kRevealDown:
+      case CompositorFrameTransitionDirective::Effect::kExplode:
+      case CompositorFrameTransitionDirective::Effect::kFade:
+        EXPECT_EQ(src_opacity(), 1.0f) << static_cast<int>(effect);
+        break;
+      case CompositorFrameTransitionDirective::Effect::kNone:
+        EXPECT_EQ(src_opacity(), 0.0f) << static_cast<int>(effect);
+        break;
+      default:
+        EXPECT_EQ(dst_opacity(), 0.0f) << static_cast<int>(effect);
+        break;
+    }
+
+    switch (effect) {
+      case CompositorFrameTransitionDirective::Effect::kNone:
+      case CompositorFrameTransitionDirective::Effect::kFade:
+      case CompositorFrameTransitionDirective::Effect::kExplode:
+      case CompositorFrameTransitionDirective::Effect::kRevealDown:
+      case CompositorFrameTransitionDirective::Effect::kRevealLeft:
+      case CompositorFrameTransitionDirective::Effect::kRevealRight:
+      case CompositorFrameTransitionDirective::Effect::kRevealUp:
+        EXPECT_TRUE(src_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_TRUE(dst_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        break;
+      case CompositorFrameTransitionDirective::Effect::kCoverDown:
+      case CompositorFrameTransitionDirective::Effect::kCoverLeft:
+      case CompositorFrameTransitionDirective::Effect::kCoverRight:
+      case CompositorFrameTransitionDirective::Effect::kCoverUp:
+        EXPECT_TRUE(src_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_FALSE(dst_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_TRUE(dst_transform().Apply().IsIdentityOr2DTranslation());
+        break;
+      case CompositorFrameTransitionDirective::Effect::kImplode:
+        EXPECT_TRUE(src_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_FALSE(dst_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_TRUE(dst_transform().Apply().IsScaleOrTranslation())
+            << static_cast<int>(effect);
+        break;
+      default:
+        break;
+    }
+  }
+  void ValidateEndState(CompositorFrameTransitionDirective::Effect effect) {
+    EXPECT_EQ(dst_opacity(), 1.0f);
+    EXPECT_TRUE(dst_transform().Apply().IsIdentity());
+
+    switch (effect) {
+      case CompositorFrameTransitionDirective::Effect::kRevealRight:
+      case CompositorFrameTransitionDirective::Effect::kRevealLeft:
+      case CompositorFrameTransitionDirective::Effect::kRevealUp:
+      case CompositorFrameTransitionDirective::Effect::kRevealDown:
+      case CompositorFrameTransitionDirective::Effect::kExplode:
+      case CompositorFrameTransitionDirective::Effect::kFade:
+        EXPECT_EQ(src_opacity(), 0.0f) << static_cast<int>(effect);
+        break;
+      default:
+        break;
+    }
+
+    switch (effect) {
+      case CompositorFrameTransitionDirective::Effect::kRevealDown:
+      case CompositorFrameTransitionDirective::Effect::kRevealLeft:
+      case CompositorFrameTransitionDirective::Effect::kRevealRight:
+      case CompositorFrameTransitionDirective::Effect::kRevealUp:
+        EXPECT_FALSE(src_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_TRUE(src_transform().Apply().IsIdentityOr2DTranslation())
+            << static_cast<int>(effect);
+        break;
+      case CompositorFrameTransitionDirective::Effect::kExplode:
+        EXPECT_FALSE(src_transform().Apply().IsIdentity())
+            << static_cast<int>(effect);
+        EXPECT_TRUE(src_transform().Apply().IsScaleOrTranslation())
+            << static_cast<int>(effect);
+        break;
+      default:
+        break;
+    }
+  }
+};
 
 class SurfaceAnimationManagerTest : public testing::Test {
  public:
@@ -90,27 +189,30 @@ class SurfaceAnimationManagerTest : public testing::Test {
 };
 
 TEST_F(SurfaceAnimationManagerTest, DefaultState) {
-  SurfaceAnimationManager manager;
+  TestSurfaceAnimationManager manager;
   manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
-  manager.ProcessTransitionDirectives(current_time(), {}, storage());
+  manager.ProcessTransitionDirectives({}, storage());
 
   EXPECT_FALSE(manager.NeedsBeginFrame());
 }
 
 TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
-  SurfaceAnimationManager manager;
+  TestSurfaceAnimationManager manager;
   manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
-  manager.ProcessTransitionDirectives(
-      current_time(), CreateSaveDirectiveAsVector(1), storage());
+  manager.ProcessTransitionDirectives(CreateSaveDirectiveAsVector(1),
+                                      storage());
 
   storage()->CompleteForTesting();
 
-  manager.ProcessTransitionDirectives(
-      current_time(), CreateAnimateDirectiveAsVector(2), storage());
+  manager.ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
+                                      storage());
+
+  // Tick curves to set start time.
+  manager.NotifyFrameAdvanced(AdvanceTime(base::TimeDelta()));
 
   EXPECT_TRUE(manager.NeedsBeginFrame());
 
@@ -129,41 +231,41 @@ TEST_F(SurfaceAnimationManagerTest, SaveAnimateNeedsBeginFrame) {
 }
 
 TEST_F(SurfaceAnimationManagerTest, AnimateWithoutSaveIsNoop) {
-  SurfaceAnimationManager manager;
+  TestSurfaceAnimationManager manager;
   manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
-  manager.ProcessTransitionDirectives(
-      current_time(), CreateAnimateDirectiveAsVector(1), storage());
+  manager.ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(1),
+                                      storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 }
 
 TEST_F(SurfaceAnimationManagerTest, SaveTimesOut) {
-  SurfaceAnimationManager manager;
+  TestSurfaceAnimationManager manager;
   manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
-  manager.ProcessTransitionDirectives(
-      current_time(), CreateSaveDirectiveAsVector(1), storage());
+  manager.ProcessTransitionDirectives(CreateSaveDirectiveAsVector(1),
+                                      storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   storage()->ExpireForTesting();
 
-  manager.ProcessTransitionDirectives(
-      AdvanceTime(base::TimeDelta::FromSeconds(6)),
-      CreateAnimateDirectiveAsVector(2), storage());
+  AdvanceTime(base::TimeDelta::FromSeconds(6));
+  manager.ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
+                                      storage());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 }
 
 TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
-  SurfaceAnimationManager manager;
+  TestSurfaceAnimationManager manager;
   manager.SetDirectiveFinishedCallback(base::DoNothing());
   EXPECT_FALSE(manager.NeedsBeginFrame());
 
   uint32_t sequence_id = 1;
   for (int i = 0; i < 200; ++i) {
     manager.ProcessTransitionDirectives(
-        current_time(), CreateSaveDirectiveAsVector(sequence_id), storage());
+        CreateSaveDirectiveAsVector(sequence_id), storage());
 
     EXPECT_FALSE(manager.NeedsBeginFrame());
 
@@ -174,7 +276,11 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
   storage()->CompleteForTesting();
 
   manager.ProcessTransitionDirectives(
-      current_time(), CreateAnimateDirectiveAsVector(sequence_id), storage());
+      CreateAnimateDirectiveAsVector(sequence_id), storage());
+
+  // Tick curves to set start time.
+  manager.NotifyFrameAdvanced(AdvanceTime(base::TimeDelta()));
+
   EXPECT_TRUE(manager.NeedsBeginFrame());
 
   manager.NotifyFrameAdvanced(
@@ -186,6 +292,90 @@ TEST_F(SurfaceAnimationManagerTest, RepeatedSavesAreOk) {
       AdvanceTime(base::TimeDelta::FromMilliseconds(1)));
   // Now we're idle.
   EXPECT_FALSE(manager.NeedsBeginFrame());
+}
+
+TEST_F(SurfaceAnimationManagerTest, CheckStartEndStates) {
+  TestSurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
+  EXPECT_FALSE(manager.NeedsBeginFrame());
+
+  CompositorFrameTransitionDirective::Effect effects[] = {
+      CompositorFrameTransitionDirective::Effect::kNone,
+      CompositorFrameTransitionDirective::Effect::kCoverDown,
+      CompositorFrameTransitionDirective::Effect::kCoverLeft,
+      CompositorFrameTransitionDirective::Effect::kCoverRight,
+      CompositorFrameTransitionDirective::Effect::kCoverUp,
+      CompositorFrameTransitionDirective::Effect::kExplode,
+      CompositorFrameTransitionDirective::Effect::kFade,
+      CompositorFrameTransitionDirective::Effect::kImplode,
+      CompositorFrameTransitionDirective::Effect::kRevealDown,
+      CompositorFrameTransitionDirective::Effect::kRevealLeft,
+      CompositorFrameTransitionDirective::Effect::kRevealRight,
+      CompositorFrameTransitionDirective::Effect::kRevealUp};
+
+  uint32_t sequence_id = 1;
+  for (auto effect : effects) {
+    manager.ProcessTransitionDirectives(
+        CreateSaveDirectiveAsVector(
+            sequence_id++, base::TimeDelta::FromMilliseconds(500), effect),
+        storage());
+
+    storage()->CompleteForTesting();
+
+    manager.ProcessTransitionDirectives(
+        CreateAnimateDirectiveAsVector(sequence_id++), storage());
+
+    // Tick curves to set start time.
+    manager.NotifyFrameAdvanced(AdvanceTime(base::TimeDelta()));
+
+    manager.ValidateStartState(effect);
+
+    EXPECT_TRUE(manager.NeedsBeginFrame());
+
+    manager.NotifyFrameAdvanced(
+        AdvanceTime(base::TimeDelta::FromMilliseconds(250)));
+    EXPECT_TRUE(manager.NeedsBeginFrame());
+
+    manager.NotifyFrameAdvanced(
+        AdvanceTime(base::TimeDelta::FromMilliseconds(250)));
+    // We should be at the done state, but still need a frame.
+    EXPECT_TRUE(manager.NeedsBeginFrame());
+
+    manager.NotifyFrameAdvanced(
+        AdvanceTime(base::TimeDelta::FromMilliseconds(1)));
+    EXPECT_FALSE(manager.NeedsBeginFrame());
+
+    manager.ValidateEndState(effect);
+  }
+}
+
+TEST_F(SurfaceAnimationManagerTest, MinimumDuration) {
+  TestSurfaceAnimationManager manager;
+  manager.SetDirectiveFinishedCallback(base::DoNothing());
+  EXPECT_FALSE(manager.NeedsBeginFrame());
+
+  // This animation is too short.
+  manager.ProcessTransitionDirectives(
+      CreateSaveDirectiveAsVector(1, base::TimeDelta::FromMilliseconds(1)),
+      storage());
+
+  storage()->CompleteForTesting();
+
+  manager.ProcessTransitionDirectives(CreateAnimateDirectiveAsVector(2),
+                                      storage());
+
+  // Tick curves to set start time.
+  manager.NotifyFrameAdvanced(AdvanceTime(base::TimeDelta()));
+
+  EXPECT_TRUE(manager.NeedsBeginFrame());
+
+  manager.NotifyFrameAdvanced(
+      AdvanceTime(base::TimeDelta::FromMilliseconds(10)));
+
+  // Despite ticking beyond the stated duration of the effect, 10ms is still
+  // way too fast for a transition; we expect to still be transitioning at
+  // this point.
+  EXPECT_TRUE(manager.NeedsBeginFrame());
 }
 
 }  // namespace viz

@@ -4,6 +4,7 @@
 
 #include "components/viz/service/transitions/surface_animation_manager.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,8 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace viz {
 namespace {
@@ -23,11 +26,64 @@ CompositorRenderPassId NextRenderPassId(const CompositorRenderPassId& id) {
   return CompositorRenderPassId(id.GetUnsafeValue() + 1);
 }
 
-// TODO(vmpstr): This is here to make sure that we can compute the progress by
-// dividing by duration. However, when we use the animation curves that don't
-// rely on progress, this can be removed.
 constexpr base::TimeDelta kMinimumAnimationDuration =
-    base::TimeDelta::FromMilliseconds(1);
+    base::TimeDelta::FromMilliseconds(50);
+
+// TODO(vmpstr): if we decide upon hard-coded animation durations per
+// (https://github.com/vmpstr/shared-element-transitions/issues/9), 500ms for
+// transform transitions and 400ms for opacity transitions (staggered) produces
+// appealing results. For the time being, we will scale the overall duration to
+// produce the opacity duration. Opacity transitions which reveal an element
+// (i.e., transition opacity from 0 -> 1) should finish ahead of a translation.
+// This way, you'll see the next page fade into view and settle
+// while fully opaque. Similarly, transitions which hide an element (i.e.,
+// transition opacity from 1 -> 0) should, for a brief period, animate with
+// full opacity so the user can get a sense of the
+// motion before the element disappears.
+constexpr float kOpacityTransitionDurationScaleFactor = 0.8f;
+
+// When performing slides, the amount moved is proportional to the minimum
+// viewport dimension -- this controls that proportion.
+constexpr float kTranslationProportion = 0.05f;
+
+// When performing implosions or explosions layers grow or shrink. This value
+// determines the scaling done to achieve the larger of the two sizes.
+constexpr float kScaleProportion = 1.1f;
+
+void CreateAndAppendSrcTextureQuad(CompositorRenderPass* render_pass,
+                                   const gfx::Rect& output_rect,
+                                   const gfx::Transform& src_transform,
+                                   float src_opacity,
+                                   ResourceId id) {
+  auto* src_quad_state = render_pass->CreateAndAppendSharedQuadState();
+  src_quad_state->SetAll(
+      /*quad_to_target_transform=*/src_transform,
+      /*quad_layer_rect=*/output_rect,
+      /*visible_layer_rect=*/output_rect,
+      /*mask_filter_info=*/gfx::MaskFilterInfo(),
+      /*clip_rect=*/gfx::Rect(),
+      /*is_clipped=*/false, /*are_contents_opaque=*/false,
+      /*opacity=*/src_opacity,
+      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+
+  auto* src_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+  float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
+  src_quad->SetNew(
+      /*shared_quad_state=*/src_quad_state,
+      /*rect=*/output_rect,
+      /*visible_rect=*/output_rect,
+      /*needs_blending=*/true,
+      /*resource_id=*/id,
+      /*premultiplied_alpha=*/true,
+      /*uv_top_left=*/gfx::PointF(0, 0),
+      /*uv_bottom_right=*/gfx::PointF(1, 1),
+      /*background_color=*/SK_ColorWHITE,
+      /*vertex_opacity=*/vertex_opacity,
+      /*y_flipped=*/true,
+      /*nearest_neighbor=*/true,
+      /*secure_output_only=*/false,
+      /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
+}
 
 }  // namespace
 
@@ -41,11 +97,8 @@ void SurfaceAnimationManager::SetDirectiveFinishedCallback(
 }
 
 bool SurfaceAnimationManager::ProcessTransitionDirectives(
-    base::TimeTicks last_frame_time,
     const std::vector<CompositorFrameTransitionDirective>& directives,
     SurfaceSavedFrameStorage* storage) {
-  DCHECK_GE(last_frame_time, current_time_);
-  current_time_ = last_frame_time;
   bool started_animation = false;
   for (auto& directive : directives) {
     // Don't process directives with sequence ids smaller than or equal to the
@@ -108,20 +161,20 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
   saved_root_texture_.emplace(
       transferable_resource_tracker_.ImportResource(std::move(saved_frame)));
 
+  UpdateAnimationCurves(saved_root_texture_->size);
   state_ = State::kAnimating;
-  started_time_ = current_time_;
   return true;
 }
 
 bool SurfaceAnimationManager::NeedsBeginFrame() const {
   // If we're animating we need to keep pumping frames to advance the animation.
   // If we're done, we require one more frame to switch back to idle state.
-  return state_ == State::kAnimating || state_ == State::kLastFrame;
+  return animator_.IsAnimating() || state_ == State::kLastFrame;
 }
 
 void SurfaceAnimationManager::NotifyFrameAdvanced(base::TimeTicks new_time) {
-  DCHECK_GE(new_time, current_time_);
-  current_time_ = new_time;
+  animator_.Tick(new_time);
+
   switch (state_) {
     case State::kIdle:
       NOTREACHED() << "We should not advance frames when idle";
@@ -140,7 +193,7 @@ void SurfaceAnimationManager::FinishAnimationIfNeeded() {
   DCHECK(saved_root_texture_.has_value());
   DCHECK(save_directive_.has_value());
   DCHECK(animate_directive_sequence_id_.has_value());
-  if (current_time_ >= started_time_ + save_directive_->duration()) {
+  if (!animator_.IsAnimating()) {
     state_ = State::kLastFrame;
     sequence_id_finished_callback_.Run(*animate_directive_sequence_id_);
   }
@@ -158,24 +211,6 @@ void SurfaceAnimationManager::FinalizeAndDisposeOfState() {
 
   save_directive_.reset();
   animate_directive_sequence_id_.reset();
-
-  started_time_ = base::TimeTicks();
-}
-
-double SurfaceAnimationManager::CalculateAnimationProgress() const {
-  DCHECK(state_ == State::kAnimating || state_ == State::kLastFrame);
-  if (state_ == State::kLastFrame)
-    return 1.;
-
-  DCHECK(save_directive_);
-  base::TimeDelta duration = save_directive_->duration();
-  if (duration < kMinimumAnimationDuration)
-    duration = kMinimumAnimationDuration;
-
-  double result = (current_time_ - started_time_) / duration;
-  DCHECK_GE(result, 0.);
-  DCHECK_LE(result, 1.);
-  return result;
 }
 
 void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
@@ -205,47 +240,39 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
   animation_pass->SetNew(NextRenderPassId(max_id), output_rect, output_rect,
                          gfx::Transform());
 
-  float src_opacity = 1 - CalculateAnimationProgress();
-  auto* src_quad_state = animation_pass->CreateAndAppendSharedQuadState();
-  src_quad_state->SetAll(
-      /*quad_to_target_transform=*/gfx::Transform(),
-      /*quad_layer_rect=*/output_rect,
-      /*visible_layer_rect=*/output_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false,
-      /*are_contents_opaque=*/false,
-      /*opacity=*/src_opacity,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+  bool src_on_top = false;
+  switch (save_directive_->effect()) {
+    case CompositorFrameTransitionDirective::Effect::kRevealRight:
+    case CompositorFrameTransitionDirective::Effect::kRevealLeft:
+    case CompositorFrameTransitionDirective::Effect::kRevealUp:
+    case CompositorFrameTransitionDirective::Effect::kRevealDown:
+    case CompositorFrameTransitionDirective::Effect::kExplode:
+    case CompositorFrameTransitionDirective::Effect::kFade:
+      src_on_top = true;
+      break;
+    default:
+      break;
+  }
 
-  auto* src_quad = animation_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
-  src_quad->SetNew(
-      /*shared_quad_state=*/src_quad_state,
-      /*rect=*/output_rect,
-      /*visible_rect=*/output_rect,
-      /*needs_blending=*/true,
-      /*resource_id=*/saved_root_texture_->id,
-      /*premultiplied_alpha=*/true,
-      /*uv_top_left=*/gfx::PointF(0, 0),
-      /*uv_bottom_right=*/gfx::PointF(1, 1),
-      /*background_color=*/SK_ColorWHITE,
-      /*vertex_opacity=*/vertex_opacity,
-      /*y_flipped=*/true,
-      /*nearest_neighbor=*/true,
-      /*secure_output_only=*/false,
-      /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
+  gfx::Transform src_transform = src_transform_.Apply();
+  gfx::Transform dst_transform = dst_transform_.Apply();
+
+  if (src_on_top) {
+    CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
+                                  src_transform, src_opacity_,
+                                  saved_root_texture_->id);
+  }
 
   auto* dst_quad_state = animation_pass->CreateAndAppendSharedQuadState();
   dst_quad_state->SetAll(
-      /*quad_to_target_transform=*/gfx::Transform(),
+      /*quad_to_target_transform=*/dst_transform,
       /*quad_layer_rect=*/output_rect,
       /*visible_layer_rect=*/output_rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
       /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false,
       /*are_contents_opaque=*/false,
-      /*opacity=*/1.f,
+      /*opacity=*/dst_opacity_,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   auto* dst_quad =
@@ -263,6 +290,12 @@ void SurfaceAnimationManager::InterpolateFrame(Surface* surface) {
       /*tex_coord_rect=*/gfx::RectF(output_rect),
       /*force_anti_aliasing_off=*/false,
       /*backdrop_filter_quality*/ 1.0f);
+
+  if (!src_on_top) {
+    CreateAndAppendSrcTextureQuad(animation_pass.get(), output_rect,
+                                  src_transform, src_opacity_,
+                                  saved_root_texture_->id);
+  }
 
   interpolated_frame.render_pass_list.push_back(std::move(animation_pass));
   surface->SetInterpolatedFrame(std::move(interpolated_frame));
@@ -286,6 +319,196 @@ void SurfaceAnimationManager::UnrefResources(
     if (resource.id >= kVizReservedRangeStartId)
       transferable_resource_tracker_.UnrefResource(resource.id);
   }
+}
+void SurfaceAnimationManager::OnFloatAnimated(
+    const float& value,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  if (target_property_id == kDstOpacity) {
+    dst_opacity_ = value;
+  } else {
+    src_opacity_ = value;
+  }
+}
+
+void SurfaceAnimationManager::OnTransformAnimated(
+    const gfx::TransformOperations& operations,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  if (target_property_id == kDstTransform) {
+    dst_transform_ = operations;
+  } else {
+    src_transform_ = operations;
+  }
+}
+
+void SurfaceAnimationManager::UpdateAnimationCurves(
+    const gfx::Size& output_size) {
+  // A small translation. We want to roughly scale this with screen size, but
+  // we choose the minimum screen dimension to keep horizontal and vertical
+  // transitions consistent and to avoid the impact of very oblong screen.
+  const float delta = std::min(output_size.width(), output_size.height()) *
+                      kTranslationProportion;
+
+  gfx::TransformOperations start_transform;
+  gfx::TransformOperations end_transform;
+  int transform_property_id = kDstTransform;
+
+  float start_opacity = 0.0f;
+  float end_opacity = 1.0f;
+  int opacity_property_id = kDstOpacity;
+
+  DCHECK(save_directive_.has_value());
+
+  switch (save_directive_->effect()) {
+    case CompositorFrameTransitionDirective::Effect::kCoverLeft: {
+      start_transform.AppendTranslate(delta, 0.0f, 0.0f);
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kCoverRight: {
+      start_transform.AppendTranslate(-delta, 0.0f, 0.0f);
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kCoverUp: {
+      start_transform.AppendTranslate(0.0f, delta, 0.0f);
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kCoverDown: {
+      start_transform.AppendTranslate(0.0f, -delta, 0.0f);
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kRevealLeft: {
+      end_transform.AppendTranslate(-delta, 0.0f, 0.0f);
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kRevealRight: {
+      end_transform.AppendTranslate(delta, 0.0f, 0.0f);
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kRevealUp: {
+      end_transform.AppendTranslate(0.0f, -delta, 0.0f);
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kRevealDown: {
+      end_transform.AppendTranslate(0.0f, delta, 0.0f);
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kExplode: {
+      start_transform.AppendTranslate(output_size.width() * 0.5f,
+                                      output_size.height() * 0.5f, 0.0f);
+      start_transform.AppendScale(1.0f, 1.0f, 1.0f);
+      start_transform.AppendTranslate(-output_size.width() * 0.5f,
+                                      -output_size.height() * 0.5f, 0.0f);
+
+      end_transform.AppendTranslate(output_size.width() * 0.5f,
+                                    output_size.height() * 0.5f, 0.0f);
+      end_transform.AppendScale(kScaleProportion, kScaleProportion, 1.0f);
+      end_transform.AppendTranslate(-output_size.width() * 0.5f,
+                                    -output_size.height() * 0.5f, 0.0f);
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kFade: {
+      // Fade is effectively an explode with no scaling.
+      transform_property_id = kSrcTransform;
+      std::swap(start_opacity, end_opacity);
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kNone: {
+      transform_property_id = kSrcTransform;
+      start_opacity = end_opacity = 0.0f;
+      opacity_property_id = kSrcOpacity;
+      break;
+    }
+    case CompositorFrameTransitionDirective::Effect::kImplode: {
+      start_transform.AppendTranslate(output_size.width() * 0.5f,
+                                      output_size.height() * 0.5f, 0.0f);
+      start_transform.AppendScale(kScaleProportion, kScaleProportion, 1.0f);
+      start_transform.AppendTranslate(-output_size.width() * 0.5f,
+                                      -output_size.height() * 0.5f, 0.0f);
+
+      end_transform.AppendTranslate(output_size.width() * 0.5f,
+                                    output_size.height() * 0.5f, 0.0f);
+      end_transform.AppendScale(1.0f, 1.0f, 1.0f);
+      end_transform.AppendTranslate(-output_size.width() * 0.5f,
+                                    -output_size.height() * 0.5f, 0.0f);
+      break;
+    }
+  }
+
+  // Ensure we have no conflicting animation.
+  animator_.RemoveAllKeyframeModels();
+
+  // We will use the "ease" timing function (used by CSS transitions).
+  std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function =
+      gfx::CubicBezierTimingFunction::CreatePreset(
+          gfx::CubicBezierTimingFunction::EaseType::EASE);
+
+  // Create the transform curve.
+  base::TimeDelta transform_duration =
+      std::max(save_directive_->duration(), kMinimumAnimationDuration);
+
+  std::unique_ptr<gfx::KeyframedTransformAnimationCurve> transform_curve(
+      gfx::KeyframedTransformAnimationCurve::Create());
+  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
+      base::TimeDelta(), start_transform, timing_function->Clone()));
+  transform_curve->AddKeyframe(gfx::TransformKeyframe::Create(
+      transform_duration, end_transform, timing_function->Clone()));
+  transform_curve->set_target(this);
+  animator_.AddKeyframeModel(gfx::KeyframeModel::Create(
+      std::move(transform_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
+      transform_property_id));
+
+  // Create the opacity curve. Somewhat more complicated because it may be
+  // delayed wrt to the transform curve. See description of
+  // |kOpacityTransitionDurationScaleFactor| above.
+  base::TimeDelta opacity_duration =
+      transform_duration * kOpacityTransitionDurationScaleFactor;
+  base::TimeDelta opacity_delay = start_opacity == 0.0f
+                                      ? base::TimeDelta()
+                                      : transform_duration - opacity_duration;
+
+  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> float_curve(
+      gfx::KeyframedFloatAnimationCurve::Create());
+  if (!opacity_delay.is_zero()) {
+    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        base::TimeDelta(), start_opacity, timing_function->Clone()));
+  }
+  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+      opacity_delay, start_opacity, timing_function->Clone()));
+  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+      opacity_duration, end_opacity, timing_function->Clone()));
+  float_curve->set_target(this);
+  animator_.AddKeyframeModel(gfx::KeyframeModel::Create(
+      std::move(float_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
+      opacity_property_id));
+
+  // We should now have animations queued up.
+  DCHECK(animator_.IsAnimating());
+
+  // To ensure we don't flicker at the beginning of the animation, ensure that
+  // our initial state is correct before we start ticking.
+  src_opacity_ = 1.0f;
+  dst_opacity_ = 1.0f;
+  src_transform_ = gfx::TransformOperations();
+  dst_transform_ = gfx::TransformOperations();
+  OnTransformAnimated(start_transform, transform_property_id, nullptr);
+  OnFloatAnimated(start_opacity, opacity_property_id, nullptr);
 }
 
 }  // namespace viz

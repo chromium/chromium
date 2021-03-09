@@ -158,15 +158,9 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   const auto& transition_directives =
       surface->GetActiveFrameMetadata().transition_directives;
   if (document_transitions_enabled_ && !transition_directives.empty()) {
-    // TODO(vmpstr): Figure out if `last_frame_time_` is correct here.
-    // SurfaceAcitvation may have happened some time after we sent the last
-    // BeginFrame to the client (which is when the frame time is updated). We
-    // may need to keep track of a separate time that updates when OnBeginFrame
-    // happens whether or not it is sent to the client.
     bool started_animation =
         surface_animation_manager_.ProcessTransitionDirectives(
-            last_frame_time_, transition_directives,
-            surface->GetSurfaceSavedFrameStorage());
+            transition_directives, surface->GetSurfaceSavedFrameStorage());
     // If processing the new directives caused us to start an animation, then
     // interpoate the frame immediately. This is needed since if we wait until
     // the next BeginFrame to do the first interpolation, then we maybe have

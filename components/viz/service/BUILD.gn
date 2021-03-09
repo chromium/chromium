@@ -232,6 +232,7 @@ viz_component("service") {
     "//skia:skcms",
     "//third_party/libyuv",
     "//ui/display/types",
+    "//ui/gfx/animation/keyframe",
   ]
 
   public_deps = [

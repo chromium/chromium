@@ -46,6 +46,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
   void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
   void RemoveKeyframeModel(int keyframe_model_id);
   void RemoveKeyframeModels(int target_property);
+  void RemoveAllKeyframeModels();
 
   void Tick(base::TimeTicks monotonic_time);
 
@@ -88,6 +89,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeEffect {
                          SkColor to);
 
   bool IsAnimatingProperty(int property) const;
+  bool IsAnimating() const;
 
   float GetTargetFloatValue(int target_property, float default_value) const;
   gfx::TransformOperations GetTargetTransformOperationsValue(

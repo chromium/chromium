@@ -223,6 +223,10 @@ void KeyframeEffect::RemoveKeyframeModels(int target_property) {
       });
 }
 
+void KeyframeEffect::RemoveAllKeyframeModels() {
+  keyframe_models_.clear();
+}
+
 void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   TickInternal(monotonic_time, true);
 }
@@ -329,6 +333,10 @@ bool KeyframeEffect::IsAnimatingProperty(int property) const {
       return true;
   }
   return false;
+}
+
+bool KeyframeEffect::IsAnimating() const {
+  return !keyframe_models_.empty();
 }
 
 float KeyframeEffect::GetTargetFloatValue(int target_property,

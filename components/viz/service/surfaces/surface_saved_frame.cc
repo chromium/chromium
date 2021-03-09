@@ -13,6 +13,10 @@
 
 namespace viz {
 
+namespace {
+constexpr gfx::Size kDefaultTextureSizeForTesting = gfx::Size(20, 20);
+}  // namespace
+
 SurfaceSavedFrame::SurfaceSavedFrame(
     CompositorFrameTransitionDirective directive,
     TransitionDirectiveCompleteCallback directive_finished_callback)
@@ -82,6 +86,7 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting(
   texture_result_.mailbox = gpu::Mailbox::GenerateForSharedImage();
   texture_result_.release_callback =
       SingleReleaseCallback::Create(std::move(release_callback));
+  texture_result_.size = kDefaultTextureSizeForTesting;
   DCHECK(IsValid());
 }
 

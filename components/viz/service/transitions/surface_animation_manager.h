@@ -15,6 +15,8 @@
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/animation/keyframe/animation_curve.h"
+#include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
 namespace viz {
 
@@ -28,10 +30,12 @@ struct TransferableResource;
 // TODO(vmpstr): This class should also be responsible for interpolating frames
 // and providing the result back to the surface, but that is currently not
 // implemented.
-class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
+class VIZ_SERVICE_EXPORT SurfaceAnimationManager
+    : public gfx::FloatAnimationCurve::Target,
+      public gfx::TransformAnimationCurve::Target {
  public:
   SurfaceAnimationManager();
-  ~SurfaceAnimationManager();
+  ~SurfaceAnimationManager() override;
 
   void SetDirectiveFinishedCallback(
       SurfaceSavedFrame::TransitionDirectiveCompleteCallback
@@ -46,7 +50,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // that we need to interpolate the current active frame, even if we would
   // normally not do so in the middle of the animation.
   bool ProcessTransitionDirectives(
-      base::TimeTicks last_frame_time,
       const std::vector<CompositorFrameTransitionDirective>& directives,
       SurfaceSavedFrameStorage* storage);
 
@@ -65,7 +68,30 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   void RefResources(const std::vector<TransferableResource>& resources);
   void UnrefResources(const std::vector<ReturnedResource>& resources);
 
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       gfx::KeyframeModel* keyframe_model) override;
+
+  void OnTransformAnimated(const gfx::TransformOperations& operations,
+                           int target_property_id,
+                           gfx::KeyframeModel* keyframe_model) override;
+
+ protected:
+  float src_opacity() const { return src_opacity_; }
+  float dst_opacity() const { return dst_opacity_; }
+  gfx::TransformOperations src_transform() const { return src_transform_; }
+  gfx::TransformOperations dst_transform() const { return dst_transform_; }
+
  private:
+  enum TargetProperty : int {
+    kSrcOpacity = 1,
+    kDstOpacity,
+    kSrcTransform,
+    kDstTransform,
+  };
+
+  void UpdateAnimationCurves(const gfx::Size& output_size);
+
   // Helpers to process specific directives.
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
                             SurfaceSavedFrameStorage* storage);
@@ -82,10 +108,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // valid if state is kLastFrame.
   void FinalizeAndDisposeOfState();
 
-  // Returns a value between 0 and 1 representing the current progress of the
-  // animation. This call is only valid if state is kAnimating or kLastFrame.
-  double CalculateAnimationProgress() const;
-
   enum class State { kIdle, kAnimating, kLastFrame };
 
   SurfaceSavedFrame::TransitionDirectiveCompleteCallback
@@ -93,16 +115,21 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   uint32_t last_processed_sequence_id_ = 0;
 
-  State state_ = State::kIdle;
-
-  base::TimeTicks started_time_;
-  base::TimeTicks current_time_;
-
   TransferableResourceTracker transferable_resource_tracker_;
 
   base::Optional<TransferableResource> saved_root_texture_;
   base::Optional<CompositorFrameTransitionDirective> save_directive_;
   base::Optional<uint32_t> animate_directive_sequence_id_;
+
+  // TODO(vmpstr): if SurfaceAnimationManager ultimately manages multiple
+  // animations, then the following should be encapsulated in a per-animation
+  // class.
+  State state_ = State::kIdle;
+  gfx::KeyframeEffect animator_;
+  float src_opacity_ = 1.0f;
+  float dst_opacity_ = 1.0f;
+  gfx::TransformOperations src_transform_;
+  gfx::TransformOperations dst_transform_;
 };
 
 }  // namespace viz
