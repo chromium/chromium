@@ -245,6 +245,9 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
 version_info::Channel GetChromeChannel();
 std::wstring GetChromeChannelName();
 
+// Returns true if the current Chrome process is on the extended stable channel.
+bool IsExtendedStableChannel();
+
 // Returns true if the |source| string matches the |pattern|. The pattern
 // may contain wildcards like '?', which matches one character or a '*'
 // which matches 0 or more characters.
