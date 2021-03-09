@@ -53,7 +53,6 @@
 3. Выберыце Chromium.</translation>
 <translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
 <translation id="6424492062988593837">Chromium стаў яшчэ лепшым! З'явілася новая версія.</translation>
-<translation id="6604711459180487467">Дзякуючы даным аб вашым месцазнаходжанні вы зможаце карыстацца палепшанымі функцыямі Chromium.</translation>
 <translation id="6820823224820483452">Браўзеру Chromium не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
 <translation id="7018284295775193585">Chromium не можа абнавіцца</translation>
 <translation id="7099326575020694068">Chromium не можа выкарыстоўваць камеру ў рэжыме раздзеленага кадра</translation>
@@ -69,6 +68,7 @@
 <translation id="7746854981345936341">Падказка Chromium. Цяпер некаторыя кнопкі знаходзяцца ўнізе экрана, напрыклад "Назад", "Уперад", "Пошук".</translation>
 <translation id="786327964234957808">Вы пераключаецеся з уліковага запісу сінхранізацыі <ph name="USER_EMAIL1" /> на <ph name="USER_EMAIL2" />. Вашымі існуючымі данымі Chromium кіруе дамен <ph name="DOMAIN" />. З гэтай прылады даныя будуць выдалены, але яны застануцца ва ўліковым запісе <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Пачніце карыстацца сканерам Chromium</translation>
+<translation id="7980860476903281594">Chromium абагульвае інфармацыю пра ваша месцазнаходжанне толькі з адобранымі вамі сайтамі.</translation>
 <translation id="8013573822802650211">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chromium, увайдзіце на іх ва ўліковы запіс</translation>
 <translation id="8073677936375100957">Выдаліць даныя Chromium з гэтай прылады?</translation>
 <translation id="8175055321229419309">Парада. <ph name="BEGIN_LINK" />Перамясціце Chromium на паліцу праграм<ph name="END_LINK" /></translation>

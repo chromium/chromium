@@ -22,7 +22,7 @@
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>
-<translation id="1026655690966755180">新增通訊埠</translation>
+<translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
@@ -763,7 +763,7 @@
 <translation id="1820028137326691631">請輸入管理員提供的密碼</translation>
 <translation id="1822140782238030981">已經是 Chrome 使用者了嗎？請登入帳戶</translation>
 <translation id="18245044880483936">備份資料不會計入貴子女的雲端硬碟儲存空間配額。</translation>
-<translation id="1825565032302550710">通訊埠必須介於 1024 與 65535 之間</translation>
+<translation id="1825565032302550710">連接埠必須介於 1024 與 65535 之間</translation>
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1827738518074806965">畫廊</translation>
 <translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
@@ -1154,7 +1154,7 @@
 <translation id="2270627217422354837">與下列網域中的任何裝置交換資料：<ph name="DOMAINS" /></translation>
 <translation id="2272430695183451567">已指派 0 個按鍵</translation>
 <translation id="2272570998639520080">馬丁尼酒杯</translation>
-<translation id="2273119997271134996">座架的視訊通訊埠發生問題</translation>
+<translation id="2273119997271134996">座架的視訊連接埠發生問題</translation>
 <translation id="2274840746523584236">請為 Chromebook 充電</translation>
 <translation id="2276503375879033601">新增更多應用程式</translation>
 <translation id="2276910256003242519">正在清除資料...</translation>
@@ -1690,7 +1690,7 @@
 <translation id="2870560284913253234">網站</translation>
 <translation id="2870909136778269686">更新中…</translation>
 <translation id="2871813825302180988">已有人在這個裝置上使用這個帳戶。</translation>
-<translation id="287205682142673348">通訊埠轉送</translation>
+<translation id="287205682142673348">連接埠轉送</translation>
 <translation id="287286579981869940">新增 <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
@@ -2101,7 +2101,7 @@
 <translation id="3364986687961713424">來自系統管理員的訊息：<ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">請擇一使用 Ctrl 或 Alt 鍵</translation>
 <translation id="3368922792935385530">已連線</translation>
-<translation id="3369067987974711168">顯示這個通訊埠的更多動作</translation>
+<translation id="3369067987974711168">顯示這個連接埠的更多動作</translation>
 <translation id="3369624026883419694">正在解析主機...</translation>
 <translation id="3370260763947406229">自動更正</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
@@ -2202,7 +2202,7 @@
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3470442499439619530">移除這個使用者</translation>
-<translation id="3471876058939596279">HDMI 和 USB Type-C 通訊埠無法同時用於視訊。請使用其他視訊通訊埠。</translation>
+<translation id="3471876058939596279">HDMI 和 USB Type-C 連接埠無法同時用於視訊。請使用其他視訊連接埠。</translation>
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">畫面放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母以內</translation>
@@ -3232,7 +3232,7 @@
 <translation id="4642769377300286600">正在安裝行動裝置設定檔，第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4643612240819915418">在新分頁中開啟影片(&amp;O)</translation>
 <translation id="4645676300727003670">保留(&amp;K)</translation>
-<translation id="4646675363240786305">通訊埠</translation>
+<translation id="4646675363240786305">連接埠</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="4647697156028544508">請輸入「<ph name="DEVICE_NAME" />」的 PIN：</translation>
@@ -3468,7 +3468,7 @@
 <translation id="492363500327720082">正在解除安裝「<ph name="APP_NAME" />」...</translation>
 <translation id="4924002401726507608">提供意見</translation>
 <translation id="4924352752174756392">12 倍</translation>
-<translation id="4925320384394644410">你的通訊埠會顯示在這裡</translation>
+<translation id="4925320384394644410">你的連接埠會顯示在這裡</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求此帳戶必需是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="4927753642311223124">這裡沒有任何通知訊息，以後再來看看吧！</translation>
 <translation id="4929386379796360314">列印目的地</translation>
@@ -3671,7 +3671,7 @@
 <translation id="5185500136143151980">沒有網際網路連線</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5190187232518914472">重溫你最珍視的美好回憶。如要新增或編輯相簿，請前往 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />。</translation>
-<translation id="5190926251776387065">啟用通訊埠</translation>
+<translation id="5190926251776387065">啟用連接埠</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想要下載多個檔案</translation>
 <translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
@@ -3703,7 +3703,7 @@
 <translation id="5228579091201413441">啟用同步功能</translation>
 <translation id="5229189185761556138">管理輸入法</translation>
 <translation id="5230516054153933099">視窗</translation>
-<translation id="5233019165164992427">NaCl 偵錯通訊埠</translation>
+<translation id="5233019165164992427">NaCl 偵錯連接埠</translation>
 <translation id="5233231016133573565">程序 ID</translation>
 <translation id="5233638681132016545">新增分頁</translation>
 <translation id="5233736638227740678">貼上(&amp;P)</translation>
@@ -4195,7 +4195,7 @@
 <translation id="5787420647064736989">裝置名稱</translation>
 <translation id="5788367137662787332">很抱歉，<ph name="DEVICE_LABEL" /> 裝置上至少有一個分割區無法掛載。</translation>
 <translation id="5790085346892983794">成功</translation>
-<translation id="5790651917470750848">轉送通訊埠已經存在</translation>
+<translation id="5790651917470750848">轉送連接埠已經存在</translation>
 <translation id="5792728279623964091">請輕觸電源按鈕</translation>
 <translation id="5793339252089865437">如果你透過行動網路下載更新，可能會產生超額傳輸費用。</translation>
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
@@ -4516,7 +4516,7 @@
 <translation id="6150961653851236686">這是翻譯網頁時使用的語言</translation>
 <translation id="6151323131516309312">按一下 <ph name="SEARCH_KEY" /> 以搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">下載資料夾中已有這個檔案。</translation>
-<translation id="6154240335466762404">移除所有通訊埠</translation>
+<translation id="6154240335466762404">移除所有連接埠</translation>
 <translation id="615436196126345398">通訊協定</translation>
 <translation id="6154697846084421647">目前已登入</translation>
 <translation id="6155141482566063812">背景分頁正在分享你的螢幕畫面</translation>
@@ -4611,7 +4611,7 @@
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264365405983206840">選取全部(&amp;A)</translation>
-<translation id="6265687851677020761">移除通訊埠</translation>
+<translation id="6265687851677020761">移除連接埠</translation>
 <translation id="6267166720438879315">請選取你在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
 <translation id="6268252012308737255">使用「<ph name="APP" />」開啟</translation>
@@ -5202,7 +5202,7 @@
 <translation id="6964390816189577014">英雄</translation>
 <translation id="6964760285928603117">從群組中移除</translation>
 <translation id="6965382102122355670">確定</translation>
-<translation id="6965648386495488594">通訊埠</translation>
+<translation id="6965648386495488594">連接埠</translation>
 <translation id="6965978654500191972">裝置</translation>
 <translation id="696780070563539690">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定，請輸入你的密碼</translation>
@@ -5719,7 +5719,7 @@
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶，請輸入您的密碼。</translation>
 <translation id="7556242789364317684">很抱歉，<ph name="SHORT_PRODUCT_NAME" /> 無法復原你的設定。如要修正錯誤，<ph name="SHORT_PRODUCT_NAME" /> 必須透過 Powerwash 重設你的裝置。</translation>
-<translation id="7557194624273628371">Linux 通訊埠轉送</translation>
+<translation id="7557194624273628371">Linux 連接埠轉送</translation>
 <translation id="7559719679815339381">請稍候.... Kiosk 應用程式正在進行更新，請勿移除 USB 隨身碟。</translation>
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
@@ -5820,7 +5820,7 @@
 <translation id="767127784612208024">輕觸即可確認重設</translation>
 <translation id="767147716926917172">自動將診斷資料和使用資料傳送給 Google</translation>
 <translation id="7672520070349703697"><ph name="HUNG_IFRAME_URL" /> (在「<ph name="PAGE_TITLE" />」中)。</translation>
-<translation id="7674416868315480713">停用所有在 Linux 中轉接的通訊埠</translation>
+<translation id="7674416868315480713">停用所有在 Linux 中轉接的連接埠</translation>
 <translation id="7674542105240814168">已拒絕提供位置資訊存取權</translation>
 <translation id="7676119992609591770">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
 <translation id="7676867886086876795">將你的語音資料傳送給 Google，讓你在任何文字欄位中使用語音輸入功能。</translation>
@@ -6046,7 +6046,7 @@
 <translation id="7903859912536385558">穩定版 (信任的測試人員)</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7904094684485781019">這個帳戶的管理員已禁止多重登入。</translation>
-<translation id="7904526211178107182">將 Linux 通訊埠提供給網路上的其他裝置使用。</translation>
+<translation id="7904526211178107182">將 Linux 連接埠提供給網路上的其他裝置使用。</translation>
 <translation id="7907837847548254634">在聚焦的物件上顯示短暫的醒目效果</translation>
 <translation id="7908378463497120834">很抱歉，你的外部儲存裝置上至少有一個分割區無法掛載。</translation>
 <translation id="7909324225945368569">重新命名設定檔</translation>
@@ -6059,7 +6059,7 @@
 <translation id="7919210519031517829"><ph name="DURATION" /> 秒</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> 可以檢視「<ph name="FILENAME" />」</translation>
 <translation id="7920482456679570420">新增要讓拼字檢查功能略過的字詞</translation>
-<translation id="7924358170328001543">轉送通訊埠時發生錯誤</translation>
+<translation id="7924358170328001543">轉送連接埠時發生錯誤</translation>
 <translation id="7925108652071887026">自動填入資料</translation>
 <translation id="792514962475806987">停駐縮放比例：</translation>
 <translation id="7925247922861151263">AAA 檢查失敗</translation>
@@ -6284,7 +6284,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
-<translation id="8165997195302308593">Crostini 通訊埠轉送</translation>
+<translation id="8165997195302308593">Crostini 連接埠轉送</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8168943654413034772">這是為「選取」動作指派的唯一切換按鍵，因此無法移除。按下任何按鍵即可結束作業。</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
@@ -6506,7 +6506,7 @@
 <translation id="84297032718407999">你將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="8431909052837336408">變更 SIM 卡的 PIN 碼</translation>
-<translation id="8434480141477525001">NaCl 偵錯通訊埠</translation>
+<translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8435395510592618362">向 <ph name="APP_NAME" /> 驗證你的身分</translation>
 <translation id="8437209419043462667">美式配置</translation>
 <translation id="8438328416656800239">改用智慧瀏覽器</translation>
@@ -6671,7 +6671,7 @@
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
 <translation id="863903787380594467">PIN 碼不正確，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="8639047128869322042">正在檢查有害軟體...</translation>
-<translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 通訊埠</translation>
+<translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - 連接埠</translation>
 <translation id="8639635302972078117">傳送使用狀況與診斷資料。這部裝置目前會自動將診斷資料、裝置和應用程式的使用資料傳送給 Google。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8642900771896232685">2 秒</translation>
 <translation id="8642947597466641025">放大文字</translation>
@@ -6757,7 +6757,7 @@
 <translation id="8727154974495727220">「<ph name="DEVICE_TYPE" />」設定完成後，只要按下 Google 助理按鈕或說出「Ok Google」，就能隨時取得各項協助。如要進行變更，請前往 Google 助理的設定頁面。</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> 要求<ph name="PERMISSION" /></translation>
-<translation id="8731787661154643562">通訊埠號碼</translation>
+<translation id="8731787661154643562">連接埠號碼</translation>
 <translation id="8731851055419582926">已檢查密碼</translation>
 <translation id="8732030010853991079">按一下這個圖示，即可使用這項擴充功能。</translation>
 <translation id="8732212173949624846">讀取及變更你已登入的所有裝置上的瀏覽記錄</translation>
@@ -6847,7 +6847,7 @@
 <translation id="8814644416678422095">硬碟</translation>
 <translation id="8814687660896548945">系統正在掃描封存檔案，請稍候...</translation>
 <translation id="8815333263781723799">如要播放這個頁面中設有保護的媒體，必須安裝 Rosetta.</translation>
-<translation id="881782782501875829">新增通訊埠號碼</translation>
+<translation id="881782782501875829">新增連接埠號碼</translation>
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8818958672113348984">透過你的手機進行驗證</translation>

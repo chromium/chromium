@@ -69,11 +69,11 @@
 <translation id="2570734079541893434">Quản lý chế độ cài đặt</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{trong 1 giờ}other{trong # giờ}}</translation>
 <translation id="2583543531130364912">Hiệu chỉnh màn hình cảm ứng</translation>
-<translation id="2586657967955657006">Khay nhớ tạm</translation>
+<translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2666092431469916601">Hàng đầu</translation>
 <translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Mới</translation>
-<translation id="2743387203779672305">Sao chép vào khay nhớ tạm</translation>
+<translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2803313416453193357">Mở thư mục</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 năm trước}other{# năm trước}}</translation>
@@ -101,7 +101,7 @@
 <translation id="3600969208114796418">Tệp <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
 <translation id="3618849550573277856">Tra cứu “<ph name="LOOKUP_STRING" />”</translation>
-<translation id="3622035490309591977">Lịch sử lưu dữ liệu vào khay nhớ tạm</translation>
+<translation id="3622035490309591977">Lịch sử lưu dữ liệu vào bảng nhớ tạm</translation>
 <translation id="364720409959344976">Chọn thư mục để tải lên</translation>
 <translation id="3660179305079774227">Phím mũi tên Lên</translation>
 <translation id="3670030362669914947">Số</translation>
@@ -120,7 +120,7 @@
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 tháng trước}other{# tháng trước}}</translation>
 <translation id="4289300219472526559">Bắt đầu nói</translation>
 <translation id="430191667033048642">Đã chuyển <ph name="MOVED_APP_NAME" /> vào thư mục <ph name="FOLDER_NAME" />.</translation>
-<translation id="4306392492252714209">Xóa khỏi khay nhớ tạm.</translation>
+<translation id="4306392492252714209">Xóa khỏi bảng nhớ tạm.</translation>
 <translation id="4316910396681052118">TẤT CẢ ỨNG DỤNG</translation>
 <translation id="4491109536499578614">Hình ảnh</translation>
 <translation id="4588090240171750605">Cuộn qua Phải</translation>

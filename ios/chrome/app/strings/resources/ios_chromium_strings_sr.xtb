@@ -53,7 +53,6 @@
 3. Изаберите Chromium.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
 <translation id="6424492062988593837">Chromium је управо постао бољи! Доступна је нова верзија.</translation>
-<translation id="6604711459180487467">Побољшајте доживљај у Chromium-у на основу локације.</translation>
 <translation id="6820823224820483452">Chromium није успео да провери све лозинке. Пробајте поново сутра.</translation>
 <translation id="7018284295775193585">Chromium не може да се ажурира</translation>
 <translation id="7099326575020694068">Chromium не може да користи камеру у режиму подељеног приказа</translation>
@@ -69,6 +68,7 @@
 <translation id="7746854981345936341">Савет за Chromium. Нека дугмад се сада налазе у дну екрана, попут дугмади Назад, Напред и Претражи.</translation>
 <translation id="786327964234957808">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chromium подацима управља <ph name="DOMAIN" />. На овај начин бришете податке са овог уређаја, али подаци остају на <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Почните да користите Chromium скенер</translation>
+<translation id="7980860476903281594">Chromium дели локацију са сајтовима које дозволите.</translation>
 <translation id="8013573822802650211">Да бисте видели картице на било којем уређају на ком користите Chromium, пријавите се на свим уређајима</translation>
 <translation id="8073677936375100957">Желите ли да обришете Chromium податке са овог уређаја?</translation>
 <translation id="8175055321229419309">Савет: <ph name="BEGIN_LINK" />Преместите Chromium на док<ph name="END_LINK" /></translation>

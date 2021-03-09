@@ -109,7 +109,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
-<translation id="1885785240814121742">Desbloquear con huella digital</translation>
+<translation id="1885785240814121742">Desbloquear con huella dactilar</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> no admite el valor de resolución <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz), por lo que se cambió a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" /> se restablecerá la configuración anterior.</translation>
 <translation id="1919743966458266018">Se modificó el acceso directo para abrir el administrador de tareas. Utiliza <ph name="NEW_SHORTCUT" /> en vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
@@ -291,7 +291,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3428447136709161042">Desconectar de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Para volver, desliza el dedo desde la derecha</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
-<translation id="3435967511775410570">Se reconoció la huella digital</translation>
+<translation id="3435967511775410570">Se reconoció la huella dactilar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Tu conexión se cambió a una red más segura</translation>
@@ -541,7 +541,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5679050765726761783">Se conectó un adaptador de baja potencia</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la Cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
-<translation id="5691772641933328258">No se reconoció la huella digital</translation>
+<translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="574392208103952083">Media</translation>
@@ -784,7 +784,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7860671499921112077">Para ingresar a la Vista general, desliza tres dedos hacia arriba.</translation>
 <translation id="7866482334467279021">activado</translation>
-<translation id="7868900307798234037">Desbloqueando con huella digital</translation>
+<translation id="7868900307798234037">Desbloqueando con huella dactilar</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7875575368831396199">Al parecer, tu <ph name="DEVICE_TYPE" /> tiene la conexión Bluetooth desactivada. Actívala para poder usar Phone Hub.</translation>
 <translation id="7886169021410746335">Ajustar la configuración de privacidad</translation>
@@ -793,7 +793,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Presionaste la combinación de teclas para girar la pantalla. ¿Quieres llevar a cabo esta acción?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
-<translation id="7902625623987030061">Toca el sensor de huellas digitales</translation>
+<translation id="7902625623987030061">Toca el sensor de huellas dactilares</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta inhabilitó el acceso múltiple.</translation>
 <translation id="7933084174919150729">El Asistente de Google solo está disponible para el perfil principal.</translation>
 <translation id="79341161159229895">Cuenta administrada por <ph name="FIRST_PARENT_EMAIL" /> y <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -802,7 +802,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7980780401175799550">Prueba nuevas formas de navegar con el Sistema operativo Chrome</translation>
 <translation id="7982789257301363584">Red</translation>
-<translation id="7984197416080286869">Demasiados intentos con la huella digital</translation>
+<translation id="7984197416080286869">Demasiados intentos con la huella dactilar</translation>
 <translation id="7994370417837006925">Acceso múltiple</translation>
 <translation id="7995804128062002838">No se pudo realizar una captura de pantalla.</translation>
 <translation id="8000066093800657092">Sin red</translation>

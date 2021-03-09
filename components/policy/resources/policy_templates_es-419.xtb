@@ -739,7 +739,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       * Para usar solo el desbloqueo con PIN, usa ["PIN"].
 
-      * Para usar el PIN y la huella digital, usa ["PIN", "FINGERPRINT"].
+      * Para usar el PIN y la huella dactilar, usa ["PIN", "FINGERPRINT"].
 
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.
 
@@ -4653,7 +4653,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       * Para usar solo el desbloqueo con PIN, usa ["PIN"].
 
-      * Para usar el PIN y la huella digital, usa ["PIN", "FINGERPRINT"].
+      * Para usar el PIN y la huella dactilar, usa ["PIN", "FINGERPRINT"].
 
       Si no estableces la política o estableces una lista vacía, no habrá modos de desbloqueo rápido disponibles para los dispositivos administrados.</translation>
 <translation id="7543109906499122922">La hora a la que el dispositivo comenzará a funcionar con la batería (según la zona horaria local del dispositivo).</translation>

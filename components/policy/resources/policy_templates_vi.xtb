@@ -1051,7 +1051,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì tính năng Nhấp để gọi sẽ bật theo mặc định.</translation>
-<translation id="2482676533225429905">Nhắn tin gốc</translation>
+<translation id="2482676533225429905">Máy chủ nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="2496180316473517155">Lịch sử duyệt web</translation>
 <translation id="2498238926436517902">Luôn tự động ẩn giá</translation>
@@ -1638,7 +1638,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Nếu bạn không đặt chính sách này thì sẽ không có bản cập nhật chương trình cơ sở <ph name="TPM_FIRMWARE_UPDATE_TPM" />.</translation>
 <translation id="3232691106293445015">Các đường kết nối HTTP không an toàn không được phép sử dụng phương thức xác thực <ph name="BASIC_AUTH" />; bắt buộc phải dùng HTTPS</translation>
-<translation id="3234647080363107863">Danh sách các tùy chọn cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho Trình kết nối <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> của Enterprise. Trình kết nối này sẽ chạy khi người dùng nhập dữ liệu vào Chrome từ khay nhớ tạm hoặc bằng cách kéo và thả nội dung trên web.
+<translation id="3234647080363107863">Danh sách các tùy chọn cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho Trình kết nối <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> của Enterprise. Trình kết nối này sẽ chạy khi người dùng nhập dữ liệu vào Chrome từ bảng nhớ tạm hoặc bằng cách kéo và thả nội dung trên web.
 
       Các trường <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> dùng để xác định xem trình kết nối có gửi dữ liệu đi để phân tích hay không khi người dùng nhập dữ liệu vào một trang cụ thể và thẻ nào cần thêm vào yêu cầu phân tích cho dữ liệu đó. Nếu URL của trang khớp với mẫu liên kết với một thẻ tương ứng với một mẫu "enable", thì hệ thống sẽ thêm thẻ đó vào yêu cầu phân tích chừng nào không còn mẫu "disable" có cùng thẻ như vậy khớp với URL của trang. Quá trình phân tích sẽ diễn ra nếu hệ thống thêm ít nhất 1 thẻ vào yêu cầu.
 
@@ -3127,7 +3127,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Nếu bạn đặt chính sách này thành False, thì dịch vụ chuyển tiếp cổng vào vùng chứa Crostini sẽ tắt.</translation>
 <translation id="538108065117008131">Cho phép <ph name="PRODUCT_FRAME_NAME" /> xử lý các loại nội dung sau.</translation>
-<translation id="538768040137709073">Bật tính năng Khay nhớ tạm dùng chung. Tính năng này cho phép người dùng gửi văn bản giữa Máy tính Chrome và thiết bị Android khi tính năng Đồng bộ hóa được bật và người dùng đã đăng nhập.
+<translation id="538768040137709073">Bật tính năng Bảng nhớ tạm dùng chung. Tính năng này cho phép người dùng gửi văn bản giữa Máy tính Chrome và thiết bị Android khi tính năng Đồng bộ hóa được bật và người dùng đã đăng nhập.
 
           Nếu bạn đặt chính sách này thành true, thì người dùng Chrome có thể gửi văn bản trên các thiết bị.
 
@@ -3135,7 +3135,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
-          Nếu bạn không đặt chính sách này, thì tính năng khay nhớ tạm dùng chung sẽ được bật theo mặc định.
+          Nếu bạn không đặt chính sách này, thì tính năng bảng nhớ tạm dùng chung sẽ được bật theo mặc định.
 
           Quản trị viên có thể tùy ý đặt chính sách trên tất cả các nền tảng mà họ quan tâm. Bạn nên đặt một giá trị giống nhau cho chính sách này trên tất cả các nền tảng.</translation>
 <translation id="5389798680516458665">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép hiển thị hình ảnh.
@@ -3323,7 +3323,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn đặt chính sách này thành Tắt, tính năng kiểm tra lỗi chính tả sẽ bị tắt từ mọi nguồn và người dùng không thể bật tính năng đó. Chính sách <ph name="SPELL_CHECK_SERVICE_ENABLED_POLICY_NAME" />, <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> và <ph name="SPELLCHECK_LANGUAGE_BLOCKLIST_POLICY_NAME" /> không có hiệu lực khi bạn tắt chính sách này.
 
       Nếu bạn không đặt chính sách này, người dùng có thể bật hoặc tắt tính năng kiểm tra lỗi chính tả trong phần cài đặt ngôn ngữ. </translation>
-<translation id="5656177735561364047">Bật tính năng Khay nhớ tạm dùng chung</translation>
+<translation id="5656177735561364047">Bật tính năng Bảng nhớ tạm dùng chung</translation>
 <translation id="5657576769650058122">Nếu bạn đặt chính sách này thành Bật, thì bàn phím ảo (thiết bị đầu vào chạy Chrome OS) sẽ bật. Nếu bạn đặt chính sách này thành Tắt, thì bàn phím này sẽ tắt.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thay đổi được. (Người dùng có thể bật hoặc tắt bàn phím ảo hỗ trợ tiếp cận. Bàn phím này được ưu tiên hơn so với bàn phím ảo. Hãy xem chính sách VirtualKeyboardEnabled.)
@@ -5077,7 +5077,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       – Một danh sách các mức hạn chế được áp dụng cho dữ liệu của những nguồn đó.
 
       Bạn có thể thêm các quy tắc để:
-      – Kiểm soát dữ liệu trong khay nhớ tạm được chia sẻ giữa các nguồn và đích đến.
+      – Kiểm soát dữ liệu trong bảng nhớ tạm được chia sẻ giữa các nguồn và đích đến.
       – Kiểm soát việc chụp ảnh màn hình bất kỳ nguồn nào.
       – Kiểm soát việc in bất kỳ nguồn nào.
       – Kiểm soát màn hình bảo vệ quyền riêng tư khi bất kỳ nguồn nào hiển thị.

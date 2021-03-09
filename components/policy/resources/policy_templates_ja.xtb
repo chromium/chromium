@@ -3808,7 +3808,7 @@ False に設定した場合、<ph name="PRODUCT_NAME" /> はネイティブ通�
        * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />: タイムゾーンの自動検出をオンの状態に維持します。Wi-Fi アクセス ポイント、近くの携帯電話基地局、GPS といった位置情報を継続的にサーバーに送信して、最も精度の高いタイムゾーン検出を行います。
 
       このポリシーを設定しないか、「Let users decide（ユーザーの指定による）」または「None（なし）」に設定した場合、ユーザーは chrome://settings にある通常の設定項目を使ってタイムゾーンの自動検出を制御できます。</translation>
-<translation id="6532769014584932288">起動ロックを許可する</translation>
+<translation id="6532769014584932288">wake locks を許可する</translation>
 <translation id="6536600139108165863">デバイスのシャットダウン時に自動的に再起動する</translation>
 <translation id="6539246272469751178">このポリシーは Android アプリには適用されません。Android アプリは、常にデフォルトのダウンロード ディレクトリを使用し、<ph name="PRODUCT_OS_NAME" /> によってデフォルト以外のダウンロード ディレクトリにダウンロードされたファイルにはアクセスできません。</translation>
 <translation id="654303922206238013">ecryptfs の移行方法</translation>
