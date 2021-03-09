@@ -488,7 +488,6 @@
 <translation id="152913213824448541">მახლობლად გაზიარების კონტაქტები</translation>
 <translation id="1529891865407786369">ელკვების წყარო</translation>
 <translation id="1530838837447122178">მაუსისა და სენსორული პანელის პარამეტრები</translation>
-<translation id="1531004739673299060">აპლიკაციის ფანჯარა</translation>
 <translation id="1531275250079031713">„ახალი Wi-Fi ქსელის დამატების“ დიალოგის ჩვენება</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ხმამაღალი</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">დარწმუნებული ხართ, რომ გსურთ ამ მოწყობილობის მუდამ kiosk-რეჟიმში დატოვება?</translation>
 <translation id="1910721550319506122">მოგესალმებით!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">ამჟამინდელი ჩანართი</translation>
 <translation id="1916502483199172559">ნაგულისხმევი წითელი ავატარი</translation>
 <translation id="1918141783557917887">&amp;უფრო პატარა</translation>
 <translation id="1919345977826869612">რეკლამა</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">თქვენი მდებარეობის ნახვა დაშვებულია</translation>
 <translation id="1936931585862840749">ამოსაბეჭდი ეგზემპლარების რაოდენობის მისათითებლად გამოიყენეთ რიცხვი (1-დან <ph name="MAX_COPIES" />-მდე).</translation>
 <translation id="1937774647013465102">კონტეინერის <ph name="ARCHITECTURE_CONTAINER" /> არქიტექტურის ტიპის იმპორტირება ვერ მოხერხდება ამ მოწყობილობით, რომელიც არის <ph name="ARCHITECTURE_DEVICE" />. შეგიძლიათ ცადოთ ამ კონტეინერის აღდგენა სხვა მოწყობილობის მეშვეობით ან იქონიოთ წვდომა კონტეინერის იმიჯში შემავალ ფაილებზე Files აპის საშუალებით.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{დაემატა 1 Google ანგარიში}other{<ph name="EXTRA_ACCOUNTS" /> Google ანგარიში}}</translation>
 <translation id="1938351510777341717">გარე ბრძანება</translation>
 <translation id="1940546824932169984">დაკავშირებული მოწყობილობები</translation>
 <translation id="1942600407708803723">გამორთვა თავსახურის დახურვისას</translation>
@@ -1410,6 +1409,7 @@
 <translation id="2541706104884128042">დაყენებულია ძილის ახალი დრო</translation>
 <translation id="2542050502251273923">დააყენებს ქსელთან კავშირის მენეჯერისა და სხვა სერვისების შეცდომების გამართვის დონეს ff_debug-ის მეშვეობით.</translation>
 <translation id="2544292303401268586">თქვენმა ადმინისტრატორმა მოითხოვა თქვენი მოწყობილობის გადატვირთვა აპების განახლების მიზნით. დასრულებას, შესაძლოა, რამდენიმე წუთი დასჭირდეს.</translation>
+<translation id="2544352060595557290">ეს ჩანართი</translation>
 <translation id="2544853746127077729">ავტორიზაციის სერთიფიკატი უარყოფილი იყო ქსელის მიერ</translation>
 <translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> დაშვებულია</translation>
@@ -1576,6 +1576,7 @@
 <translation id="2734760316755174687">გადაყენებული იქნება „<ph name="SITE_GROUP_NAME" />“-ის ვებსაიტების ნებართვებიც.</translation>
 <translation id="2735712963799620190">განრიგი</translation>
 <translation id="2737363922397526254">აკეცვა…</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" />-ს სურს, გაუზიაროს თქვენს ეკრანზე არსებული კონტენტი <ph name="TARGET_NAME" />-ს.</translation>
 <translation id="2738771556149464852">არა შემდეგ</translation>
 <translation id="2739191690716947896">გამართვა</translation>
 <translation id="2739240477418971307">სპეციალური შესაძლებლობების პარამეტრების შეცვლა</translation>
@@ -3593,6 +3594,7 @@
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
 <translation id="5057403786441168405">მართეთ თქვენი სისტემაში შესული ანგარიშები. მინიჭებული ნებართვების მიხედვით, Chrome-სა და Google Play-ში არსებულმა ვებსაიტებმა, აპებმა თუ გაფართოებებმა შეიძლება გამოიყენოს აღნიშნული ანგარიშები სერვისებით სარგებლობის პროცესის თქვენზე მოსარგებად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">შესვლის შეზღუდვა</translation>
+<translation id="5059526285558225588">აირჩიეთ, რა გაზიარდეს</translation>
 <translation id="5060332552815861872">შესანახად ხელმისაწვდომია 1 პრინტერი.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ეს საქაღალდე შეიცავს სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}other{ეს საქაღალდე შეიცავს # სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}}</translation>
 <translation id="5062930723426326933">შესვლა ვერ განხორციელდა. დაუკავშირდით ინტერნეტს და ხელახლა სცადეთ.</translation>
@@ -4824,7 +4826,6 @@
 <translation id="6473842110411557830">Powerwash-ის ილუსტრაცია</translation>
 <translation id="6474498546677193336">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Linux-ის მომდევნო გათიშვისას.</translation>
 <translation id="6474884162850599008">Google Drive ანგარიშთან კავშირის გაწყვეტა</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />-ს სურს, გააზიაროს თქვენი ეკრანის შიგთავსი. აირჩიეთ, რისი გაზიარება გსურთ.</translation>
 <translation id="6477822444490674459">შეტყობინებების სინქრონიზაცია მხარდაუჭერელია ტელეფონებზე, რომლებზეც სამსახურის პროფილია. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">გსურთ სახიფათო ფაილის შენარჩუნება?</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
@@ -5076,15 +5077,16 @@
 <translation id="6781284683813954823">Doodle-ის ბმული</translation>
 <translation id="6781978626986383437">Linux სარეზერვო კოპირება გაუქმდა</translation>
 <translation id="6782067259631821405">PIN-კოდი არასწორია</translation>
+<translation id="6782468519961184511">თქვენი ადმინისტრატორი კრძალავს დამატებით Google ანგარიშებს</translation>
 <translation id="6785518634832172390">PIN-კოდის სიგრძე უნდა იყოს მაქსიმუმ 12 სიმბოლო</translation>
 <translation id="6786747875388722282">გაფართოებები</translation>
+<translation id="6787097042755590313">სხვა ჩანართი</translation>
 <translation id="6787839852456839824">კლავიატურის მალსახმობები</translation>
 <translation id="6788210894632713004">გაუხსნელი გაფართოება</translation>
 <translation id="6789592661892473991">ჰორიზონტალური გაყოფა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> დაემატა დისტანციურად</translation>
 <translation id="6790820461102226165">მომხმარებლის დამატება…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />-ს სურს, გაუზიაროს თქვენი ეკრანის შიგთავსი <ph name="TARGET_NAME" />-ს. აირჩიეთ, რისი გაზიარება გსურთ.</translation>
 <translation id="6793604637258913070">გამოჩენისას ან მოძრაობისას, ტექსტის კურსორის გამოყოფა</translation>
 <translation id="6793723358811598107">„<ph name="CURRENTKEY" />“-ის მიერ უკვე სრულდება „<ph name="ACTION" />“. გასასვლელად დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="6795884519221689054">პანდა</translation>
@@ -6339,6 +6341,7 @@
 <translation id="8189750580333936930">კონფიდენციალურობის დაცული გარემო</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />-თან დაკავშირება</translation>
 <translation id="8191230140820435481">მართეთ თქვენი პროგრამები, გაფართოებები, და თემები</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" />-ს სურს თქვენს ეკრანზე არსებული კონტენტის გაზიარება.</translation>
 <translation id="8195027750202970175">ზომა დისკზე</translation>
 <translation id="8198323535106903877">ეს <ph name="NUMBER_OF_APPS" /> აპი დაინსტალირდება თქვენთვის</translation>
 <translation id="8199300056570174101">ქსელის (სერვისი) და მოწყობილობის მახასიათებლები</translation>
@@ -6804,7 +6807,6 @@
 <translation id="8743864605301774756">განახლდა 1 საათის წინ</translation>
 <translation id="8746654918629346731">თქვენ უკვე მოითხოვეთ „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="874689135111202667">{0,plural, =1{გსურთ ერთი ფაილის ატვირთვა ამ საიტზე?}other{გსურთ # ფაილის ატვირთვა ამ საიტზე?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{დაემატა 1 Google ანგარიში}other{დაემატა <ph name="EXTRA_ACCOUNTS" /> Google ანგარიში}}</translation>
 <translation id="8749556627204742888">ეს ქსელი თქვენ მიერ ზიარდება მოწყობილობის სხვა მომხმარებლებთან.</translation>
 <translation id="8749805710397399240">თქვენი ეკრანის ტრანსლირება ვერ ხერხდება. შეამოწმეთ ეკრანის ჩაწერის ნებართვა სისტემის პარამეტრებიდან.</translation>
 <translation id="8749863574775030885">USB მოწყობილობებზე უცნობი ვენდორისაგან წვდომა</translation>
@@ -6969,7 +6971,6 @@
 <translation id="8907906903932240086">Chrome-ს შეუძლია თქვენს კომპიუტერში საზიანო პროგრამული უზრუნველყოფის შემოწმება</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> დეინსტალირებულია</translation>
 <translation id="8909833622202089127">საიტი თვალს ადევნებს თქვენს მდებარეობას</translation>
-<translation id="8910146161325739742">გააზიარეთ თქვენი ეკრანი</translation>
 <translation id="8910222113987937043">თქვენი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების ცვლილებების სინქრონიზაცია თქვენს Google ანგარიშთან აღარ მოხდება. თუმცა არსებული მონაცემები კვლავ შეინახება თქვენს Google ანგარიშში და მათ მართვას <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />-იდან შეძლებთ.</translation>
 <translation id="8912362522468806198">Google ანგარიში</translation>
 <translation id="8912793549644936705">გაწელვა</translation>

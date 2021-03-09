@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
 <translation id="2364498172489649528">አልፏል</translation>
-<translation id="2365324413026422635">የባትሪ ኃይል መሙላት ምርመራ ሊከናወን አይችልም</translation>
 <translation id="2391082728065870591">የግብረመልስ ሪፖርት ላክ</translation>
 <translation id="2418150275289244458">በቅንብሮች ውስጥ ክፈት</translation>
 <translation id="2446553403094072641">የተንሳፋፊ ነጥብ ትክክለኛነት</translation>
@@ -253,6 +252,7 @@
 <translation id="6472207088655375767">ኦቲፒ</translation>
 <translation id="6480327114083866287">በ<ph name="MANAGER" /> የሚተዳደር</translation>
 <translation id="649050271426829538">ቆሟል - የወረቀት መታጨቅ</translation>
+<translation id="6516990319416533844">የባትሪ ኃይል መሙያ መጠንን ለመሞከር ባትሪዎ ለአጭር ጊዜ እንዲያልቅ ያድርጉ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
 <translation id="6527081081771465939">ያልታወቀ የWiFi ደህንነት ፕሮቶኮል</translation>
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>

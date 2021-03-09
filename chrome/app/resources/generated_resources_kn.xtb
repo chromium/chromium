@@ -490,7 +490,6 @@
 <translation id="152913213824448541">Nearby ಶೇರ್ ಸಂಪರ್ಕಗಳು</translation>
 <translation id="1529891865407786369">ಪವರ್ ಮೂಲ</translation>
 <translation id="1530838837447122178">ಮೌಸ್ ಮತ್ತು ಟಚ್‌ಪ್ಯಾಡ್ ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="1531004739673299060">ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋ</translation>
 <translation id="1531275250079031713">'ಹೊಸ ವೈ-ಫೈ ಸೇರಿಸಿ' ಡೈಲಾಗ್ ತೋರಿಸಿ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ದೊಡ್ಡ ಧ್ವನಿ</translation>
@@ -847,7 +846,6 @@
 <translation id="1909880997794698664">ನೀವು ಈ ಸಾಧನವನ್ನು ಕಿಯೋಸ್ಕ್ ಮೋಡ‌್‌ನಲ್ಲಿ ಶಾಶ್ವತವಾಗಿ ಇರಿಸಲು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="1910721550319506122">ಸುಸ್ವಾಗತ!</translation>
 <translation id="1915073950770830761">ಕ್ಯಾನರಿ</translation>
-<translation id="1916260783734263714">ಈಗಿನ ಟ್ಯಾಬ್</translation>
 <translation id="1916502483199172559">ಡಿಫಾಲ್ಟ್ ಕೆಂಪು ಅವತಾರ್</translation>
 <translation id="1918141783557917887">&amp;ಚಿಕ್ಕದು</translation>
 <translation id="1919345977826869612">ಜಾಹೀರಾತುಗಳು</translation>
@@ -871,6 +869,7 @@
 <translation id="1935303383381416800">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1936931585862840749">ಎಷ್ಟು ಪ್ರತಿಗಳನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಬೇಕೆಂದು (1 ರಿಂದ <ph name="MAX_COPIES" />) ಸೂಚಿಸಲು ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಿ.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> ಪ್ರಕಾರದ ಈ ಸಾಧನದ ಜೊತೆಗೆ ಕಂಟೇನರ್ ಆರ್ಕಿಟೆಕ್ಚರ್ ಪ್ರಕಾರವನ್ನು <ph name="ARCHITECTURE_CONTAINER" /> ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ನೀವು ಈ ಕಂಟೇನರ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನದಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು ಅಥವಾ ಫೈಲ್‌ಗಳು ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯುವುದರ ಮೂಲಕ ಈ ಕಂಟೇನರ್ ಚಿತ್ರದಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{1 Google ಖಾತೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳು}}</translation>
 <translation id="1938351510777341717">ಬಾಹ್ಯ ಕಮಾಂಡ್ ಕೀ</translation>
 <translation id="1940546824932169984">ಸಂಪರ್ಕಗೊಂಡಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="1942600407708803723">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
@@ -4828,7 +4827,6 @@
 <translation id="6473842110411557830">ಪವರ್‌ವಾಶ್ ಉದಾಹರಣೆ</translation>
 <translation id="6474498546677193336">ಒಂದು ಅಪ್ಲಿಕೇಶನ್, ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಕಾರಣ, ಅದರ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಮುಂದಿನ ಸಲ Linux ಅನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಿದಾಗ, ಈ ಫೋಲ್ಡರ್ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6474884162850599008">Google ಡ್ರೈವ್ ಖಾತೆಗೆ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ನಿಮ್ಮ ಪರದೆಯಲ್ಲಿರುವ ವಿಷಯಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಬಯಸುತ್ತದೆ. ನೀವು ಹಂಚಿಕೊಳ್ಳಬೇಕೆಂದಿರುವುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="6477822444490674459">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ಅಧಿಸೂಚನೆ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -5080,6 +5078,7 @@
 <translation id="6781284683813954823">ಡೂಡಲ್ ಲಿಂಕ್</translation>
 <translation id="6781978626986383437">Linux ಬ್ಯಾಕಪ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6782067259631821405">ಅಮಾನ್ಯ ಪಿನ್</translation>
+<translation id="6782468519961184511">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ Google ಖಾತೆಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="6785518634832172390">ಪಿನ್ 12 ಅಥವಾ ಅದಕ್ಕಿಂತ ಕಡಿಮೆ ಅಂಕಿಗಳನ್ನು ಹೊಂದಿರಬೇಕು</translation>
 <translation id="6786747875388722282">ವಿಸ್ತರಣೆಗಳು</translation>
 <translation id="6787839852456839824">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -5088,7 +5087,6 @@
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ಅನ್ನು ದೂರದಿಂದಲೇ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="6790820461102226165">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ...</translation>
-<translation id="6792072150955115067">ನಿಮ್ಮ ಪರದೆಯಲ್ಲಿರುವ ವಿಷಯವನ್ನು <ph name="TARGET_NAME" /> ಅವರ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲು <ph name="APP_NAME" /> ಬಯಸುತ್ತದೆ. ನೀವು ಏನು ಹಂಚಿಕೊಳ್ಳಬೇಕೆಂದು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="6793604637258913070">ಪಠ್ಯ ಕೆರೆಡ್ ಕಂಡುಬಂದಾಗ ಅಥವಾ ಸರಿಸಿದಾಗ ಅದನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' ಅನ್ನು ಈಗಾಗಲೇ '<ph name="ACTION" />' ಕ್ರಿಯೆಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ. ನಿರ್ಗಮಿಸಲು ಯಾವುದಾದರೂ ಕೀ ಒತ್ತಿ.</translation>
 <translation id="6795884519221689054">ಪಾಂಡಾ</translation>
@@ -6807,7 +6805,6 @@
 <translation id="8743864605301774756">1ಗಂಟೆಯ ಹಿಂದೆ ಆಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8746654918629346731">ನೀವು ಈಗಾಗಲೇ "<ph name="EXTENSION_NAME" />" ಗಾಗಿ ವಿನಂತಿಸಿದ್ದೀರಿ</translation>
 <translation id="874689135111202667">{0,plural, =1{ಈ ಸೈಟ್‌ಗೆ ಒಂದು ಫೈಲ್‌ ಅನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}one{ಈ ಸೈಟ್‌ಗೆ # ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}other{ಈ ಸೈಟ್‌ಗೆ # ಫೈಲ್‌ಗಳನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೇ?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1 Google ಖಾತೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ}one{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}other{<ph name="EXTRA_ACCOUNTS" /> Google ಖಾತೆಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="8749556627204742888">ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ನೀವು ಈ ಸಾಧನದಲ್ಲಿನ ಇತರ ಬಳಕೆದಾರರ ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದೀರಿ.</translation>
 <translation id="8749805710397399240">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಿಸ್ಟಂ ಆದ್ಯತೆಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಅನುಮತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="8749863574775030885">ಅಪರಿಚಿತ ಮಾರಾಟಗಾರರಿಂದ USB ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
@@ -6973,7 +6970,6 @@
 <translation id="8907906903932240086">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್‌ಗಾ‌ಗಿ, Chrome ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8909833622202089127">ನಿಮ್ಮ ಸ್ಧಳವನ್ನು ಸೈಟ್‌ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದೆ</translation>
-<translation id="8910146161325739742">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8910222113987937043">ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮಾಡಲಾಗುವ ಬದಲಾವಣೆಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸಿಂಕ್‌ ಮಾಡಲಾಗುವುದಿಲ್ಲ. ಆದಾಗ್ಯೂ, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೇಟಾ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ ಮತ್ತು <ph name="BEGIN_LINK" />Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌<ph name="END_LINK" />ನಲ್ಲಿ ನಿರ್ವಹಿಸಬಹುದಾಗಿದೆ.</translation>
 <translation id="8912362522468806198">Google ಖಾತೆ</translation>
 <translation id="8912793549644936705">ಎಳೆದಿರುವುದು</translation>

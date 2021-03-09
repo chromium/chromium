@@ -488,7 +488,6 @@
 <translation id="152913213824448541">Nearby Share байланыштары</translation>
 <translation id="1529891865407786369">Кубат булагы</translation>
 <translation id="1530838837447122178">Түзмөктөгү чычкан жана сенсор жөндөөлөрүн ачуу</translation>
-<translation id="1531004739673299060">Колдонмонун терезеси</translation>
 <translation id="1531275250079031713">"Жаңы Wi‑Fi тармагын кошуу" диалогун көрсөтүү</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Катуу</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Бул тузмөктү чын эле биротоло киоск режиминде калтырасызбы?</translation>
 <translation id="1910721550319506122">Кош келиңиз!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Учурдагы өтмөк</translation>
 <translation id="1916502483199172559">Демейки кызыл аватар</translation>
 <translation id="1918141783557917887">&amp;Кичирээк</translation>
 <translation id="1919345977826869612">Жарнамалар</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">Жайгашкан жериңизди көрө алат</translation>
 <translation id="1936931585862840749">Канча көчүрмө басылып чыга турганын сан менен көрсөтүңүз (1–<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> түзмөгү менен контейнердин <ph name="ARCHITECTURE_CONTAINER" /> түрүн импорттоого болбойт. Ал контейнерди башка түзмөктө калыбына келтирүүгө аракет кылып көрүңүз же болбосо, контейнердеги файлдарды Files колдонмосунда көрө аласыз.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{1 Google аккаунту кошулду}other{<ph name="EXTRA_ACCOUNTS" /> Google аккаунту}}</translation>
 <translation id="1938351510777341717">Тышкы буйрук</translation>
 <translation id="1940546824932169984">Байланышкан түзмөктөр</translation>
 <translation id="1942600407708803723">Капкагы жабылып турганда өчүрүлсүн</translation>
@@ -4825,7 +4824,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6473842110411557830">Жууп салуу процессинин сүрөттөмөсү</translation>
 <translation id="6474498546677193336">Бөлүшүү токтотулган жок, анткени колдонмо ушул папканы иштетип жатат. Linux эмки жолу өчүрүлгөндө бул папканы бөлүшүү токтотулат.</translation>
 <translation id="6474884162850599008">Google Drive каттоо эсебин ажыратуу</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> экраныңыздын мазмундарын бөлүшкүсү келет. Бөлүшө турган нерселериңизди тандаңыз.</translation>
 <translation id="6477822444490674459">Жумуш профилиндеги телефондордо билдирмелер шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Бул коркунучтуу файл сакталсынбы?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>
@@ -5077,6 +5075,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6781284683813954823">Doodle шилтемеси</translation>
 <translation id="6781978626986383437">Linux'тун камдык көчүрмөсүн сактоо жокко чыгарылды</translation>
 <translation id="6782067259631821405">PIN код туура эмес</translation>
+<translation id="6782468519961184511">Администраторуңуз кошумча Google аккаунттарын колдонууга тыюу салат</translation>
 <translation id="6785518634832172390">PIN код 12 же андан азыраак сандан турушу керек</translation>
 <translation id="6786747875388722282">Кеңейтүүлөр</translation>
 <translation id="6787839852456839824">Ыкчам баскычтар</translation>
@@ -5085,7 +5084,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> алыстан кошулду</translation>
 <translation id="6790820461102226165">Адам кошуу…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> колдонмосу экраныңыздын мазмундарын <ph name="TARGET_NAME" /> менен бөлүшкүсү келет. Бөлүшө турган нерселериңизди тандаңыз.</translation>
 <translation id="6793604637258913070">Курсор пайда болгондо же жылып жатканда баса белгиленсин</translation>
 <translation id="6793723358811598107">"<ph name="CURRENTKEY" />" "<ph name="ACTION" />" аракети үчүн дайындалган. Чыгуу үчүн каалаган баскычты басыңыз.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6806,7 +6804,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8743864605301774756">1 с. мурун жаңырган</translation>
 <translation id="8746654918629346731">"<ph name="EXTENSION_NAME" />" буга чейин суралган</translation>
 <translation id="874689135111202667">{0,plural, =1{Бул сайтка бир файл жүктөлүп берилсинби?}other{Бул сайтка # файл жүктөлүп берилсинби?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1 Google аккаунту кошулду}other{<ph name="EXTRA_ACCOUNTS" /> Google аккаунту кошулду}}</translation>
 <translation id="8749556627204742888">Бул тармакты ушул түзмөктүн башка колдонуучулары менен бөлүшүп жатасыз.</translation>
 <translation id="8749805710397399240">Экраныңызды тышкы экранга чыгаруу мүмкүн эмес. Тутумдун параметрлерине өтүп, экрандан видео жаздырып алуу уруксатын текшериңиз.</translation>
 <translation id="8749863574775030885">Белгисиз жөнөтүүчүнүн USB түзмөктөрүнө кирүү</translation>
@@ -6971,7 +6968,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8907906903932240086">Chrome компьютериңизден зыяндуу программаларды издей алат</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> чыгарылып салынды</translation>
 <translation id="8909833622202089127">Сайт кайда жүргөнүңүзгө көз салууда</translation>
-<translation id="8910146161325739742">Экраныңызды бөлүшүңүз</translation>
 <translation id="8910222113987937043">Кыстармаларыңызга, таржымалыңызга, сырсөздөрүңүзгө жана башка жөндөөлөргө киргизилген өзгөрүүлөр Google Аккаунтуңуз менен шайкештирилбейт. Ал эми учурдагы дайын-даректериңиз Google Аккаунтуңузде сакталып кала берет жана аларды <ph name="BEGIN_LINK" />Google Жеке кеңсесинен<ph name="END_LINK" /> башкарса болот.</translation>
 <translation id="8912362522468806198">Google аккаунту</translation>
 <translation id="8912793549644936705">Чоюу</translation>

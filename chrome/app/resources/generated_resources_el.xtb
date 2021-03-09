@@ -488,7 +488,6 @@
 <translation id="152913213824448541">Επαφές Κοινοποίησης κοντά</translation>
 <translation id="1529891865407786369">Πηγή ενέργειας</translation>
 <translation id="1530838837447122178">Άνοιγμα των ρυθμίσεων ποντικιού και επιφάνειας αφής της συσκευής</translation>
-<translation id="1531004739673299060">Παράθυρο εφαρμογής</translation>
 <translation id="1531275250079031713">Εμφάνιση παραθύρου διαλόγου "Προσθήκη νέου Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Δυνατά</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">Είστε σίγουροι ότι θέλετε να διατηρήσετε την παρούσα συσκευή μόνιμα σε λειτουργία Kiosk;</translation>
 <translation id="1910721550319506122">Καλώς ορίσατε!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Τρέχουσα καρτέλα</translation>
 <translation id="1916502483199172559">Προεπιλεγμένο κόκκινο avatar</translation>
 <translation id="1918141783557917887">&amp;Σμίκρυνση</translation>
 <translation id="1919345977826869612">Διαφημίσεις</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">Επιτρέπεται να βλέπουν την τοποθεσία σας</translation>
 <translation id="1936931585862840749">Χρησιμοποιήστε έναν αριθμό για να υποδείξετε πόσα αντίγραφα θα εκτυπωθούν (1 έως <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Δεν είναι δυνατή η εισαγωγή ενός κοντέινερ με τύπο αρχιτεκτονικής <ph name="ARCHITECTURE_CONTAINER" /> με μια συσκευή της οποίας ο τύπος αρχιτεκτονικής είναι <ph name="ARCHITECTURE_DEVICE" />. Προσπαθήστε να επαναφέρετε αυτό το κοντέινερ σε μια άλλη συσκευή ή αποκτήστε πρόσβαση στα αρχεία αυτής της εικόνας κοντέινερ ανοίγοντάς τη στην εφαρμογή Αρχεία.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{Προστέθηκε ένας Λογαριασμός Google}other{<ph name="EXTRA_ACCOUNTS" /> Λογαριασμοί Google}}</translation>
 <translation id="1938351510777341717">Εξωτερικό πλήκτρο Command</translation>
 <translation id="1940546824932169984">Συνδεδεμένες συσκευές</translation>
 <translation id="1942600407708803723">Απενεργοποίηση όταν το κάλυμμα είναι κλειστό</translation>
@@ -1411,6 +1410,7 @@
 <translation id="2541706104884128042">Ορίστηκε νέα ώρα ύπνου.</translation>
 <translation id="2542050502251273923">Ρυθμίζει το επίπεδο εντοπισμού και διόρθωσης σφαλμάτων του διαχειριστή σύνδεσης δικτύου και άλλων υπηρεσιών, χρησιμοποιώντας το ff_debug.</translation>
 <translation id="2544292303401268586">Ο διαχειριστής σας ζήτησε την επανεκκίνηση της συσκευής σας για ενημέρωση των εφαρμογών. Μπορεί να χρειαστούν μερικά λεπτά για να ολοκληρωθεί.</translation>
+<translation id="2544352060595557290">Αυτή η καρτέλα</translation>
 <translation id="2544853746127077729">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε από το δίκτυο</translation>
 <translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2548347166720081527">Επέτρεψε την άδεια <ph name="PERMISSION" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="2734760316755174687">Θα γίνει επίσης επαναφορά των ιστοτόπων της ομάδας <ph name="SITE_GROUP_NAME" />.</translation>
 <translation id="2735712963799620190">Χρονοδιάγραμμα</translation>
 <translation id="2737363922397526254">Σύμπτυξη...</translation>
+<translation id="2737916598897808047">Η εφαρμογή <ph name="APP_NAME" /> θέλει να μοιραστεί το περιεχόμενο της οθόνης σας με την καρτέλα <ph name="TARGET_NAME" />.</translation>
 <translation id="2738771556149464852">Όχι αργότερα από</translation>
 <translation id="2739191690716947896">Εντοπισμός σφαλμάτων</translation>
 <translation id="2739240477418971307">Αλλαγή των ρυθμίσεων προσβασιμότητας</translation>
@@ -3594,6 +3595,7 @@
 <translation id="5057110919553308744">Όταν κάνετε κλικ στην επέκταση</translation>
 <translation id="5057403786441168405">Διαχειριστείτε τους συνδεδεμένους λογαριασμούς. Οι ιστότοποι, οι εφαρμογές και οι επεκτάσεις στο Chrome και στο Google Play μπορεί να χρησιμοποιούν αυτούς τους λογαριασμούς για να προσαρμόσουν την εμπειρία σας, ανάλογα με τις άδειες. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Περιορισμός σύνδεσης</translation>
+<translation id="5059526285558225588">Επιλέξτε τι θα μοιράζεστε</translation>
 <translation id="5060332552815861872">Υπάρχει 1 διαθέσιμος εκτυπωτής για αποθήκευση.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Αυτός ο φάκελος περιέχει έναν σελιδοδείκτη. Είστε βέβαιοι ότι θέλετε να τον διαγράψετε;}other{Αυτός ο φάκελος περιέχει # σελιδοδείκτες. Είστε βέβαιοι ότι θέλετε να τους διαγράψετε;}}</translation>
 <translation id="5062930723426326933">Αποτυχία σύνδεσης, συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά.</translation>
@@ -4826,7 +4828,6 @@
 <translation id="6473842110411557830">Εικόνα Powerwash</translation>
 <translation id="6474498546677193336">Η κατάργηση κοινοποίησης δεν ήταν δυνατή, επειδή μια εφαρμογή χρησιμοποιεί αυτόν τον φάκελο. Η κοινοποίηση του φακέλου θα καταργηθεί κατά τον επόμενο τερματισμό λειτουργίας του Linux.</translation>
 <translation id="6474884162850599008">Αποσύνδεση του λογαριασμού Google Drive</translation>
-<translation id="6475697075626596525">Η εφαρμογή <ph name="APP_NAME" /> θέλει να μοιραστεί το περιεχόμενο της οθόνης σας. Επιλέξτε το περιεχόμενο που θα θέλατε να μοιραστείτε.</translation>
 <translation id="6477822444490674459">Ο συγχρονισμός ειδοποιήσεων δεν υποστηρίζεται για τηλέφωνα σε προφίλ εργασίας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Διατήρηση επικίνδυνου αρχείου;</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
@@ -5078,15 +5079,16 @@
 <translation id="6781284683813954823">Σύνδεσμος doodle</translation>
 <translation id="6781978626986383437">Η δημιουργία αντιγράφου ασφαλείας Linux ακυρώθηκε</translation>
 <translation id="6782067259631821405">Μη έγκυρο PIN</translation>
+<translation id="6782468519961184511">Ο διαχειριστής σας δεν επιτρέπει πρόσθετους Λογαριασμούς Google</translation>
 <translation id="6785518634832172390">Το PIN πρέπει να περιέχει το πολύ 12 ψηφία</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
+<translation id="6787097042755590313">Άλλη καρτέλα</translation>
 <translation id="6787839852456839824">Συντομεύσεις πληκτρολογίου</translation>
 <translation id="6788210894632713004">Αποσυμπιεσμένη επέκταση</translation>
 <translation id="6789592661892473991">Οριζόντιος διαχωρισμός</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6790497603648687708">Η επέκταση <ph name="EXTENSION_NAME" /> προστέθηκε απομακρυσμένα</translation>
 <translation id="6790820461102226165">Προσθήκη ατόμου</translation>
-<translation id="6792072150955115067">Η εφαρμογή <ph name="APP_NAME" /> θέλει να μοιραστεί το περιεχόμενο της οθόνης σας με τον ιστότοπο <ph name="TARGET_NAME" />. Επιλέξτε το περιεχόμενο που θα θέλατε να μοιραστείτε.</translation>
 <translation id="6793604637258913070">Επισήμανση του δρομέα κειμένου όταν εμφανίζεται ή κινείται.</translation>
 <translation id="6793723358811598107">Το <ph name="CURRENTKEY" /> έχει ήδη εκχωρηθεί στην ενέργεια "<ph name="ACTION" />". Πατήστε οποιοδήποτε πλήκτρο για έξοδο.</translation>
 <translation id="6795884519221689054">Πάντα</translation>
@@ -6343,6 +6345,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Σύνδεση με <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Διαχείριση των εφαρμογών, των επεκτάσεων και των θεμάτων σας</translation>
+<translation id="8192944472786724289">Η εφαρμογή <ph name="APP_NAME" /> θέλει να κάνει κοινή χρήση του περιεχομένου της οθόνης σας.</translation>
 <translation id="8195027750202970175">Μέγεθος στον δίσκο</translation>
 <translation id="8198323535106903877">Θα εγκατασταθούν αυτές οι <ph name="NUMBER_OF_APPS" /> εφαρμογές</translation>
 <translation id="8199300056570174101">Ιδιότητες δικτύου (Υπηρεσία) και συσκευής</translation>
@@ -6808,7 +6811,6 @@
 <translation id="8743864605301774756">Ενημερώθηκε πριν από 1 ώρα</translation>
 <translation id="8746654918629346731">Υποβλήθηκε ήδη αίτημα για την επέκταση <ph name="EXTENSION_NAME" />.</translation>
 <translation id="874689135111202667">{0,plural, =1{Θέλετε να ανεβάσετε ένα αρχείο σε αυτόν τον ιστότοπο;}other{Θέλετε να ανεβάσετε # αρχεία σε αυτόν τον ιστότοπο;}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Προστέθηκε ένας Λογαριασμός Google}other{Προστέθηκαν <ph name="EXTRA_ACCOUNTS" /> Λογαριασμοί Google}}</translation>
 <translation id="8749556627204742888">Μοιράζεστε αυτό το δίκτυο με άλλους χρήστες αυτής της συσκευής.</translation>
 <translation id="8749805710397399240">Δεν είναι δυνατή η μετάδοση της οθόνης σας. Ελέγξτε την άδεια Εγγραφή οθόνης στις προτιμήσεις συστήματος.</translation>
 <translation id="8749863574775030885">Πρόσβαση σε συσκευές USB από έναν άγνωστο πάροχο υπηρεσιών</translation>
@@ -6971,7 +6973,6 @@
 <translation id="8907906903932240086">Το Chrome μπορεί να ελέγξει τον υπολογιστή σας για επιβλαβές λογισμικό</translation>
 <translation id="8909298138148012791">Η απεγκατάσταση της εφαρμογής <ph name="APP_NAME" /> ολοκληρώθηκε.</translation>
 <translation id="8909833622202089127">Ο ιστότοπος παρακολουθεί την τοποθεσία σας</translation>
-<translation id="8910146161325739742">Μοιραστείτε την οθόνη σας</translation>
 <translation id="8910222113987937043">Οι αλλαγές στους σελιδοδείκτες, το ιστορικό, τους κωδικούς πρόσβασης και άλλες ρυθμίσεις δεν θα συγχρονίζονται πλέον με τον Λογαριασμό σας Google. Ωστόσο, τα υπάρχοντα δεδομένα θα παραμείνουν αποθηκευμένα στον Λογαριασμό σας Google και η διαχείρισή τους μπορεί να γίνεται στον <ph name="BEGIN_LINK" />Πίνακα ελέγχου Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Λογαριασμός Google</translation>
 <translation id="8912793549644936705">Επέκταση</translation>

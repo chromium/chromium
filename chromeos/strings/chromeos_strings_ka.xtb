@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ახლომდებარე მოწყობილობების საპოვნელად ჩართეთ Bluetooth</translation>
 <translation id="2364498172489649528">გავლილია</translation>
-<translation id="2365324413026422635">ბატარეის დატენის ტესტი ვერ გაეშვება, როცა ის სავსეა</translation>
 <translation id="2391082728065870591">გამოხმაურების ანგარიშის გაგზავნა</translation>
 <translation id="2418150275289244458">გახსნა პარამეტრებში</translation>
 <translation id="2446553403094072641">მოლივლივე წერტილის სიზუსტე</translation>
@@ -253,6 +252,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
+<translation id="6516990319416533844">ბატარეის დატენის სიჩქარის შესამოწმებლად ჯერ დაცალეთ ბატარეა გარკვეული დროის განმავლობაში</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6527081081771465939">Wi-Fi-ს უცნობი უსაფრთხოების პროტოკოლი</translation>
 <translation id="65587193855025101">ბაქანი</translation>

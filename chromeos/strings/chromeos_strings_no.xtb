@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2364498172489649528">Bestått</translation>
-<translation id="2365324413026422635">Batteriladingstesten kan ikke utføres når batteriet er fullt</translation>
 <translation id="2391082728065870591">Send tilbakemeldingsrapport</translation>
 <translation id="2418150275289244458">Åpne i innstillingene</translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
@@ -253,6 +252,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6472207088655375767">Engangspassord</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – papirstopp</translation>
+<translation id="6516990319416533844">For å teste ladehastigheten til batteriet, la det tappes i en kort periode</translation>
 <translation id="6517239166834772319">Utforsk</translation>
 <translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
 <translation id="65587193855025101">Planskanner</translation>

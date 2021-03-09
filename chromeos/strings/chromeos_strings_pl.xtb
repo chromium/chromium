@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
 <translation id="2364498172489649528">Zaliczone</translation>
-<translation id="2365324413026422635">Testu ładowania nie można przeprowadzić, gdy bateria jest w pełni naładowana</translation>
 <translation id="2391082728065870591">Prześlij zgłoszenie opinii</translation>
 <translation id="2418150275289244458">Otwórz w ustawieniach</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
@@ -253,6 +252,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zatrzymano – zacięcie papieru</translation>
+<translation id="6516990319416533844">Aby sprawdzić szybkość ładowania, zaczekaj, aż bateria trochę się rozładuje</translation>
 <translation id="6517239166834772319">Odkrywaj</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="65587193855025101">Szyba</translation>

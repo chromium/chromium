@@ -488,7 +488,6 @@
 <translation id="152913213824448541">ទំនាក់ទំនងសម្រាប់ការចែករំលែកនៅ​ជិត</translation>
 <translation id="1529891865407786369">ប្រភព​ថាមពល</translation>
 <translation id="1530838837447122178">បើកការកំណត់កណ្តុរ និងឧបករណ៍ផ្ទាំងប៉ះ</translation>
-<translation id="1531004739673299060">ផ្ទាំងវិនដូកម្មវិធី</translation>
 <translation id="1531275250079031713">បង្ហាញប្រអប់ 'បញ្ចូល Wi-Fi ថ្មី'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ឮខ្លាំង</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">តើអ្នកប្រាកដថាចង់រក្សាទុកឧបករណ៍នេះជាអចិន្ត្រៃយ៍នៅក្នុងរបៀបបញ្ជរទេ?</translation>
 <translation id="1910721550319506122">ស្វាគមន៍!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">ផ្ទាំង​បច្ចុប្បន្ន</translation>
 <translation id="1916502483199172559">រូបតំណាងពណ៌ក្រហមលំនាំដើម</translation>
 <translation id="1918141783557917887">តូចជាង</translation>
 <translation id="1919345977826869612">ពាណិជ្ជកម្ម</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">អនុញ្ញាតឱ្យមើលទីតាំងរបស់អ្នក</translation>
 <translation id="1936931585862840749">ប្រើលេខ ដើម្បី​បង្ហាញ​អំពីចំនួន​ច្បាប់ចម្លង​ដែលត្រូវ​បោះពុម្ព (1 ដល់ <ph name="MAX_COPIES" />)។</translation>
 <translation id="1937774647013465102">មិន​អាច​នាំចូល​ប្រភេទស្ថាបត្យកម្មទម្រង់ផ្ទុក​ <ph name="ARCHITECTURE_CONTAINER" /> ដោយប្រើឧបករណ៍ដែលមាន​<ph name="ARCHITECTURE_DEVICE" /> នេះបាន​ទេ។ អ្នក​អាច​សាកល្បងស្ដារទម្រង់ផ្ទុកនេះទៅក្នុង​ឧបករណ៍​ផ្សេង ឬអ្នកអាចចូលប្រើ​ឯកសារ​នៅក្នុងរូបភាពទម្រង់ផ្ទុក​នេះដោយបើក​នៅក្នុងកម្មវិធី Files ។</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{បានបញ្ចូលគណនី Google 1}other{គណនី Google <ph name="EXTRA_ACCOUNTS" />}}</translation>
 <translation id="1938351510777341717">ការបញ្ជា​ខាងក្រៅ</translation>
 <translation id="1940546824932169984">ឧបករណ៍​ដែល​បានភ្ជាប់</translation>
 <translation id="1942600407708803723">បិទ​នៅពេល​បិទគម្រប</translation>
@@ -1411,6 +1410,7 @@
 <translation id="2541706104884128042">បាន​កំណត់​ម៉ោង​គេង​ថ្មី</translation>
 <translation id="2542050502251273923">កំណត់​កម្រិតជួសជុលនៃ​កម្មវិធីគ្រប់គ្រង​ការតភ្ជាប់បណ្ដាញ និងសេវាកម្មផ្សេងទៀត​ដោយប្រើ ff_debug។</translation>
 <translation id="2544292303401268586">អ្នកគ្រប់គ្រង​របស់អ្នក​បានស្នើសុំឱ្យ​ចាប់ផ្ដើមឧបករណ៍​របស់អ្នក​ឡើងវិញ ដើម្បីដំឡើងកំណែ​កម្មវិធី។ សកម្មភាពនេះអាច​ចំណាយ​ពេល​ច្រើន​នាទី ដើម្បី​បញ្ចប់។</translation>
+<translation id="2544352060595557290">ផ្ទាំងនេះ</translation>
 <translation id="2544853746127077729">វិញ្ញាបនប័ត្រសម្គាល់អត្តសញ្ញាណត្រូវបានបដិសេធដោយបណ្តាញ</translation>
 <translation id="2546283357679194313">ខុកឃី និងទិន្នន័យគេហទំព័រ</translation>
 <translation id="2548347166720081527">បានអនុញ្ញាត <ph name="PERMISSION" /></translation>
@@ -1577,6 +1577,7 @@
 <translation id="2734760316755174687">គេហទំព័រ​ដែលស្ថិត​ក្រោម​ <ph name="SITE_GROUP_NAME" /> ក៏នឹងត្រូវកំណត់​ឡើងវិញ​ផងដែរ។</translation>
 <translation id="2735712963799620190">កាលវិភាគ</translation>
 <translation id="2737363922397526254">បង្រួម...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក​ជាមួយ <ph name="TARGET_NAME" />។</translation>
 <translation id="2738771556149464852">មិនបន្ទាប់ពី</translation>
 <translation id="2739191690716947896">កម្ចាត់កំហុស</translation>
 <translation id="2739240477418971307">ប្តូរការកំណត់លទ្ធភាពប្រើប្រាស់របស់អ្នក</translation>
@@ -3594,6 +3595,7 @@
 <translation id="5057110919553308744">នៅពេលអ្នកចុច​កម្មវិធីបន្ថែម</translation>
 <translation id="5057403786441168405">គ្រប់គ្រង​គណនី​ដែលអ្នក​បានចូល។ គេហទំព័រ កម្មវិធី និង​កម្មវិធីបន្ថែម​នៅក្នុង Chrome និង Google Play អាចប្រើ​គណនីទាំងនេះ ដើម្បីកំណត់​បទពិសោធន៍​ប្រើប្រាស់តាមបំណង​របស់អ្នក ដោយផ្អែកលើ​ការអនុញ្ញាត។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">រឹតបន្តឹង​ការចូលគណនី</translation>
+<translation id="5059526285558225588">ជ្រើសរើសអ្វីដែលត្រូវចែករំលែក</translation>
 <translation id="5060332552815861872">មាន​ម៉ាស៊ីន​បោះពុម្ព​ 1 សម្រាប់​រក្សាទុក។</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ថតនេះផ្ទុកចំណាំមួយ។ តើអ្នកប្រាកដថាចង់លុបវាឬទេ?}other{ថតនេះផ្ទុកចំណាំ # ។ តើអ្នកប្រាកដថាចង់លុបវាឬទេ?}}</translation>
 <translation id="5062930723426326933">ការចូលបានបរាជ័យ សូមភ្ជាប់ទៅអ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។</translation>
@@ -4826,7 +4828,6 @@
 <translation id="6473842110411557830">រូបភាព Powerwash</translation>
 <translation id="6474498546677193336">មិនអាច​ឈប់ចែករំលែក​បានទេ ដោយសារ​កម្មវិធីកំពុង​ប្រើថតនេះ។ ថតនេះនឹង​ឈប់ចែករំលែក នៅពេល Linux បិទ​លើកក្រោយ។</translation>
 <translation id="6474884162850599008">ផ្តាច់គណនី Google Drive</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ចង់ចែករំលែកមាតិកានៅលើអេក្រង់របស់អ្នក។ ជ្រើសរើសអ្វីដែលអ្នកចង់ចែករំលែក។</translation>
 <translation id="6477822444490674459">មិនអាចធ្វើសមកាលកម្ម​ការជូនដំណឹងសម្រាប់ទូរសព្ទ​នៅក្នុងកម្រងព័ត៌មាន​ការងារបានទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">រក្សាឯកសារគ្រោះថ្នាក់ឬ?</translation>
 <translation id="6480327114083866287">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
@@ -5078,15 +5079,16 @@
 <translation id="6781284683813954823">តំណ Doodle</translation>
 <translation id="6781978626986383437">បានបោះបង់​ការបម្រុងទុក Linux</translation>
 <translation id="6782067259631821405">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ</translation>
+<translation id="6782468519961184511">អ្នកគ្រប់គ្រងរបស់អ្នកមិនអនុញ្ញាតគណនី Google បន្ថែមទេ</translation>
 <translation id="6785518634832172390">កូដ PIN ត្រូវតែមាន 12 ខ្ទង់ ឬតិចជាងនេះ</translation>
 <translation id="6786747875388722282">កម្មវិធីបន្ថែម</translation>
+<translation id="6787097042755590313">ផ្ទាំង​ផ្សេងទៀត</translation>
 <translation id="6787839852456839824">ផ្លូវកាត់ក្តារចុច</translation>
 <translation id="6788210894632713004">ផ្នែកបន្ថែមដែលបានពន្លា</translation>
 <translation id="6789592661892473991">បំបែកផ្តេក</translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ត្រូវបានបន្ថែមពីចម្ងាយ</translation>
 <translation id="6790820461102226165">បន្ថែមបុគ្គល...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ចង់ចែករំលែកមាតិកានៅលើអេក្រង់របស់អ្នកជាមួយ <ph name="TARGET_NAME" />។ ជ្រើសរើសអ្វីដែលអ្នកចង់ចែករំលែក។</translation>
 <translation id="6793604637258913070">ហាយឡាយ៍សញ្ញាអត្ថបទនៅពេលដែលវាបង្ហាញ ឬផ្លាស់ទី</translation>
 <translation id="6793723358811598107">បានកំណត់ '<ph name="CURRENTKEY" />' ទៅសកម្មភាព '<ph name="ACTION" />' រួចហើយ។ ចុចគ្រាប់ចុចណាមួយ ដើម្បីចាកចេញ។</translation>
 <translation id="6795884519221689054">ខ្លាឃ្មុំ​ផេនដា</translation>
@@ -6342,6 +6344,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">កំពុងភ្ជាប់ទៅ <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">គ្រប់គ្រងកម្មវិធី កម្មវិធីបន្ថែម និងធីមរបស់អ្នក</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> ចង់ចែករំលែក​ខ្លឹមសារ​នៅលើ​អេក្រង់របស់អ្នក។</translation>
 <translation id="8195027750202970175">ទំហំផ្ទុករបស់ថាស</translation>
 <translation id="8198323535106903877">យើង​នឹង​ដំឡើង​កម្មវិធីទាំង <ph name="NUMBER_OF_APPS" /> នោះសម្រាប់អ្នក</translation>
 <translation id="8199300056570174101">លក្ខណៈ​សម្បត្តិ​បណ្ដាញ (សេវាកម្ម) និង​ឧបករណ៍</translation>
@@ -6807,7 +6810,6 @@
 <translation id="8743864605301774756">បាន​ធ្វើបច្ចុប្បន្នភាពកាលពី 1 ម៉ោងមុន</translation>
 <translation id="8746654918629346731">អ្នកបានស្នើសុំ "<ph name="EXTENSION_NAME" />" រួចហើយ</translation>
 <translation id="874689135111202667">{0,plural, =1{បង្ហោះឯកសារ​មួយ​ទៅ​ទំព័រ​នេះ​?}other{បង្ហោះឯកសារ​ # ​ទៅ​ទំព័រ​នេះ​?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{បានបញ្ចូលគណនី Google 1}other{បានបញ្ចូលគណនី Google <ph name="EXTRA_ACCOUNTS" />}}</translation>
 <translation id="8749556627204742888">អ្នក​កំពុងចែករំលែក​បណ្ដាញនេះ​ជាមួយអ្នកប្រើប្រាស់​ផ្សេងទៀត​ដែលប្រើឧបករណ៍​នេះ។</translation>
 <translation id="8749805710397399240">មិនអាចភ្ជាប់អេក្រង់​របស់អ្នកបានទេ។ សូមពិនិត្យមើល​ការអនុញ្ញាតឱ្យថតអេក្រង់​នៅក្នុង​ចំណូលចិត្តប្រព័ន្ធ។</translation>
 <translation id="8749863574775030885">ចូលប្រើឧបករណ៍ USB ពីអ្នកលក់មិនស្គាល់</translation>
@@ -6972,7 +6974,6 @@
 <translation id="8907906903932240086">Chrome អាចពិនិត្យរក​កម្មវិធីបង្កគ្រោះថ្នាក់នៅលើកុំព្យូទ័ររបស់អ្នក</translation>
 <translation id="8909298138148012791">បានលុប <ph name="APP_NAME" /> ហើយ</translation>
 <translation id="8909833622202089127">ទំព័រ​កំពុងតាមដាន​ទីតាំង​របស់អ្នក</translation>
-<translation id="8910146161325739742">ចែករំលែកអេក្រង់របស់អ្នក</translation>
 <translation id="8910222113987937043">ការផ្លាស់ប្តូរនៅលើចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់ផ្សេងទៀតរបស់អ្នក នឹងមិនអាចធ្វើសមកាលកម្មទៅគណនី Google របស់អ្នកបានទៀតទេ។ ទោះបីជាយ៉ាងណាក៏ដោយ ទិន្នន័យដែលមានស្រាប់របស់អ្នកនៅតែផ្ទុកក្នុងគណនី Google ដដែល ហើយអ្នកអាចគ្រប់គ្រងវានៅលើ <ph name="BEGIN_LINK" />Google ផ្ទាំងគ្រប់គ្រង<ph name="END_LINK" />។</translation>
 <translation id="8912362522468806198">គណនី Google</translation>
 <translation id="8912793549644936705">លាតសន្ធឹង</translation>

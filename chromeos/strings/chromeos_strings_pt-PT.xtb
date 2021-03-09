@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2364498172489649528">Aprovado</translation>
-<translation id="2365324413026422635">Não é possível realizar um teste de carregamento da bateria quando esta está cheia.</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2418150275289244458">Abra nas Definições</translation>
 <translation id="2446553403094072641">Precisão da vírgula flutuante</translation>
@@ -253,6 +252,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6472207088655375767">PUU</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Parada – Encravamento de papel</translation>
+<translation id="6516990319416533844">Para testar a velocidade de carregamento da bateria, descarregue a bateria durante um curto período.</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
 <translation id="65587193855025101">Plano</translation>

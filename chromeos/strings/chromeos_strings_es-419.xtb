@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Activar Bluetooth para buscar los dispositivos cercanos</translation>
 <translation id="2364498172489649528">Aprobado</translation>
-<translation id="2365324413026422635">No se puede realizar la prueba de la carga de la batería cuando está completa.</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2418150275289244458">Abrir en la configuración</translation>
 <translation id="2446553403094072641">Exactitud del punto flotante</translation>
@@ -253,6 +252,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
+<translation id="6516990319416533844">Para probar la velocidad de carga de la batería, deja que esta se descargue un poco.</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
 <translation id="65587193855025101">Cristal del escáner</translation>

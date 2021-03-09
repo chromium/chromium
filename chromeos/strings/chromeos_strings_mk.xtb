@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Вклучете Bluetooth за да откриете места во близина</translation>
 <translation id="2364498172489649528">Помина</translation>
-<translation id="2365324413026422635">Тестот за наполнетост на батеријата не може да се изведе кога таа е полна</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
 <translation id="2418150275289244458">Отвори во поставките</translation>
 <translation id="2446553403094072641">Прецизност на подвижна запирка</translation>
@@ -253,6 +252,7 @@
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Запрено - заглавена хартија</translation>
+<translation id="6516990319416533844">За да ја тестирате брзината на полнење на батеријата, оставете ја батеријата да се празни краток период</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Непознат безбедносен протокол за Wi-Fi</translation>
 <translation id="65587193855025101">Со рамна плоча</translation>

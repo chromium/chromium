@@ -488,7 +488,6 @@
 <translation id="152913213824448541">సమీప షేరింగ్ కాంటాక్ట్‌లు</translation>
 <translation id="1529891865407786369">పవర్ సోర్స్</translation>
 <translation id="1530838837447122178">మౌస్ మరియు టచ్‌ప్యాడ్ పరికర సెట్టింగ్‌లను తెరవండి</translation>
-<translation id="1531004739673299060">యాప్ విండో</translation>
 <translation id="1531275250079031713">'కొత్త Wi-Fiని జోడించు' డైలాగ్‌ను చూపు</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">బిగ్గరగా</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">మీరు ఖచ్చితంగా ఈ పరికరాన్ని శాశ్వతంగా కియోస్క్ మోడ్‌లో ఉంచాలనుకుంటున్నారా?</translation>
 <translation id="1910721550319506122">స్వాగతం!</translation>
 <translation id="1915073950770830761">కెనరీ</translation>
-<translation id="1916260783734263714">ప్రస్తుత ట్యాబ్</translation>
 <translation id="1916502483199172559">డిఫాల్ట్ ఎరుపు రంగు అవతార్</translation>
 <translation id="1918141783557917887">&amp;చిన్నగా</translation>
 <translation id="1919345977826869612">యాడ్స్</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">మీ లొకేషన్‌ను చూడటానికి అనుమతించబడింది</translation>
 <translation id="1936931585862840749">ఎన్ని కాపీలను ప్రింట్ చేయాలో సూచించడానికి సంఖ్యను (1 నుండి <ph name="MAX_COPIES" />) ఉపయోగించండి.</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> అయిన ఈ పరికరంతో <ph name="ARCHITECTURE_CONTAINER" /> రకమైన కంటెయినర్ ఆర్కిటెక్చర్‌ను దిగుమతి చేయడం సాధ్యపడదు. మీరు ఈ కంటెయినర్‌ను వేరే పరికరంలోకి పునరుద్ధరించడం ప్రయత్నించవచ్చు లేదా ఈ కంటెయినర్ చిత్రంలోని ఫైల్‌లను "ఫైల్స్ యాప్"లో తెరవడం ద్వారా యాక్సెస్ చేయవచ్చు.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{1 Google ఖాతా జోడించబడింది}other{<ph name="EXTRA_ACCOUNTS" /> Google ఖాతాలు}}</translation>
 <translation id="1938351510777341717">బాహ్య ఆదేశం</translation>
 <translation id="1940546824932169984">కనెక్ట్ చేయబడిన డివైజ్‌లు</translation>
 <translation id="1942600407708803723">కవర్ మూసి ఉన్నప్పుడు షట్ డౌన్ స్థితికి వెళ్లు</translation>
@@ -1411,6 +1410,7 @@
 <translation id="2541706104884128042">కొత్త నిద్ర సమయం సెట్ చేయబడింది</translation>
 <translation id="2542050502251273923">ff_debugను ఉపయోగించి నెట్‌వర్క్ కనెక్షన్ మేనేజర్ ఇంకా ఇతర సర్వీస్‌ల డీబగ్గింగ్ స్థాయిని సెట్ చేస్తుంది.</translation>
 <translation id="2544292303401268586">యాప్‌లను అప్‌డేట్ చేయడానికి మీ పరికరాన్ని రీస్టార్ట్ చేయమని మీ అడ్మినిస్ట్రేటర్ రిక్వెస్ట్ చేశారు. ఇది పూర్తి కావడానికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="2544352060595557290">ఈ ట్యాబ్</translation>
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />‌ను అనుమతించారు</translation>
@@ -1577,6 +1577,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" />లోని సైట్‌లు కూడా రీసెట్ చేయబడతాయి.</translation>
 <translation id="2735712963799620190">షెడ్యూల్</translation>
 <translation id="2737363922397526254">కుదించు...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను <ph name="TARGET_NAME" />తో షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="2738771556149464852">తరువాత కాదు</translation>
 <translation id="2739191690716947896">డీబగ్</translation>
 <translation id="2739240477418971307">మీ యాక్సెస్‌ సెట్టింగ్‌లను మార్చడం</translation>
@@ -3594,6 +3595,7 @@
 <translation id="5057110919553308744">మీరు ఎక్స్‌టెన్షన్ క్లిక్ చేసినప్పుడు</translation>
 <translation id="5057403786441168405">మీ సైన్-ఇన్ చేసిన ఖాతాలను మేనేజ్ చేయండి. వెబ్‌సైట్‌లు, యాప్‌లు, Chromeలోని ఎక్స్‌టెన్షన్‌లు, Google Play- వాటికి ఇవ్వబడిన అనుమతులను బట్టి, మీ అనుభవాన్ని అనుకూలీకరించడానికి ఈ ఖాతాలను ఉపయోగించవచ్చు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">సైన్ ఇన్‌ను పరిమితం చేయండి</translation>
+<translation id="5059526285558225588">ఏమి షేర్ చేయాలో ఎంచుకోండి</translation>
 <translation id="5060332552815861872">సేవ్ చేయాల్సిన 1 ప్రింటర్ అందుబాటులో ఉంది.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ఈ ఫోల్డర్‌లో ఒక బుక్‌మార్క్ ఉంది. మీరు దీనిని ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?}other{ఈ ఫోల్డర్‌లో # బుక్‌మార్క్‌లు ఉన్నాయి. మీరు దీనిని ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?}}</translation>
 <translation id="5062930723426326933">సైన్-ఇన్ విఫలమైంది, దయచేసి ఇంటర్నెట్‌కు కనెక్ట్ చేసి మళ్లీ ప్రయత్నించండి.</translation>
@@ -4825,7 +4827,6 @@
 <translation id="6473842110411557830">పవర్‌వాష్ దృష్టాంత చిత్రం</translation>
 <translation id="6474498546677193336">ఒక యాప్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తోంది కాబట్టి షేరింగ్‌ను తీసివేయలేకపోయాము. Linux మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="6474884162850599008">Google డిస్క్ ఖాతాను డిస్‌కనెక్ట్ చేయి</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> మీ స్క్రీన్‌పై ఉన్న కంటెంట్‌లను షేర్ చేయాలనుకుంటోంది. మీరు ఏవేవి షేర్ చేయాలనుకుంటున్నారో ఎంచుకోండి.</translation>
 <translation id="6477822444490674459">వర్క్ ప్రొఫైల్ ఉన్న ఫోన్‌లలో నోటిఫికేషన్ సింకింగ్‌కు సపోర్ట్ ఉండదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">అపాయకరమైన ఫైల్‌ను ఉంచాలా?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>
@@ -5077,15 +5078,16 @@
 <translation id="6781284683813954823">డూడుల్ లింక్</translation>
 <translation id="6781978626986383437">Linux బ్యాకప్ రద్దు చేయబడింది</translation>
 <translation id="6782067259631821405">పిన్ చెల్లదు</translation>
+<translation id="6782468519961184511">మీ అడ్మినిస్ట్రేటర్ అదనపు Google ఖాతాలను అనుమతించరు</translation>
 <translation id="6785518634832172390">పిన్ తప్పనిసరిగా 12 అంకెలు కానీ లేదా అంతకంటే తక్కువ కానీ ఉండాలి</translation>
 <translation id="6786747875388722282">ఎక్స్‌టెన్షన్‌లు</translation>
+<translation id="6787097042755590313">ఇతర ట్యాబ్</translation>
 <translation id="6787839852456839824">కీబోర్డ్ షార్ట్‌కట్‌లు</translation>
 <translation id="6788210894632713004">ప్యాక్ చేయని పొడిగింపు</translation>
 <translation id="6789592661892473991">అడ్డంగా విభజించు</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> రిమోట్ విధానంలో జోడించబడింది</translation>
 <translation id="6790820461102226165">వ్యక్తిని జోడించు...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> మీ స్క్రీన్‌పై ఉన్న కంటెంట్‌లను <ph name="TARGET_NAME" />తో షేర్ చేయాలనుకుంటోంది. మీరు షేర్ చేయాలనుకుంటున్న వాటిని ఎంచుకోండి.</translation>
 <translation id="6793604637258913070">వచన కేరెట్‌ కనిపించినప్పుడు లేదా అది కదలికలో ఉన్నప్పుడు, దానిని హైలైట్ చేస్తుంది</translation>
 <translation id="6793723358811598107">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. నిష్క్రమించడానికి ఏదైనా కీని నొక్కండి.</translation>
 <translation id="6795884519221689054">పాండా</translation>
@@ -6338,6 +6340,7 @@
 <translation id="8189750580333936930">గోప్యతా శాండ్‌బాక్స్</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="8191230140820435481">మీ అనువర్తనాలను, పొడిగింపులను మరియు థీమ్‌లను నిర్వహించండి</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="8195027750202970175">డిస్క్‌లో పరిమాణం</translation>
 <translation id="8198323535106903877">మేము మీ కోసం ఈ <ph name="NUMBER_OF_APPS" /> యాప్‌లు ఇన్‌స్టాల్ చేస్తాము</translation>
 <translation id="8199300056570174101">నెట్‌వర్క్ (సేవ) మరియు పరికర లక్షణాలు</translation>
@@ -6803,7 +6806,6 @@
 <translation id="8743864605301774756">1గంట క్రితం నవీకరించబడింది</translation>
 <translation id="8746654918629346731">మీరు "<ph name="EXTENSION_NAME" />"ను ఇప్పటికే అభ్యర్థించారు</translation>
 <translation id="874689135111202667">{0,plural, =1{ఈ సైట్‌కు ఒక ఫైల్‌ను అప్‌లోడ్ చేయాలా?}other{ఈ సైట్‌కు # ఫైల్‌లను అప్‌లోడ్ చేయాలా?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1 Google ఖాతా జోడించబడింది}other{<ph name="EXTRA_ACCOUNTS" /> Google ఖాతాలు జోడించబడ్డాయి}}</translation>
 <translation id="8749556627204742888">మీరు ఈ నెట్‌వర్క్‌ను ఈ పరికరానికి చెందిన ఇతర యూజర్‌లతో షేర్ చేస్తున్నారు.</translation>
 <translation id="8749805710397399240">మీ స్క్రీన్‌ను ప్రసారం చేయడం సాధ్యపడలేదు. సిస్టమ్ ప్రాధాన్యతలలో ఉన్న 'స్క్రీన్ రికార్డింగ్' అనుమతిని చెక్ చేయండి.</translation>
 <translation id="8749863574775030885">తెలియని విక్రేత అందించిన USB పరికరాలకు యాక్సెస్</translation>
@@ -6968,7 +6970,6 @@
 <translation id="8907906903932240086">హానికరమైన సాఫ్ట్‌వేర్ కోసం Chrome మీ కంప్యూటర్‌ను చెక్ చేయగలదు</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> అన్ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="8909833622202089127">సైట్ మీ స్థానాన్ని ట్రాక్ చేస్తోంది</translation>
-<translation id="8910146161325739742">మీ స్క్రీన్‌ను భాగస్వామ్యం చేయండి</translation>
 <translation id="8910222113987937043">మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల‌లో మార్పులు మీ Google ఖాతాకు ఇకపై సింక్ చేయ‌బడవు. అయినప్పటికీ, ఇప్పటికే ఉన్న మీ డేటా Google ఖాతాలో నిల్వ చేయబడుతుంది. <ph name="BEGIN_LINK" />Google డాష్‌బోర్డ్<ph name="END_LINK" />లో నిర్వహించబడుతుంది.</translation>
 <translation id="8912362522468806198">Google ఖాతా</translation>
 <translation id="8912793549644936705">విస్తరించు</translation>

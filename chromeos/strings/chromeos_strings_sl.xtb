@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
 <translation id="2364498172489649528">Preverjanje je uspelo</translation>
-<translation id="2365324413026422635">Preizkusa polnjenja baterije ni mogoče izvesti, ko je polna.</translation>
 <translation id="2391082728065870591">Pošiljanje poročila s povratnimi informacijami</translation>
 <translation id="2418150275289244458">Odpri v nastavitvah</translation>
 <translation id="2446553403094072641">Natančnost plavajoče točke</translation>
@@ -253,6 +252,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
+<translation id="6516990319416533844">Če želite preizkusiti hitrost polnjenja baterije, za krajši čas pustite baterijo, naj se prazni.</translation>
 <translation id="6517239166834772319">Raziskovanje</translation>
 <translation id="6527081081771465939">Neznani varnostni protokol za Wi-Fi</translation>
 <translation id="65587193855025101">Plosko</translation>

@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Aktivera Bluetooth så att det går att upptäcka enheter i närheten</translation>
 <translation id="2364498172489649528">Godkänd</translation>
-<translation id="2365324413026422635">Det går inte att testa batteriets laddning när det är fulladdat</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2446553403094072641">Flyttalsprecision</translation>
@@ -253,6 +252,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
+<translation id="6516990319416533844">Om du vill testa batteriets laddningshastighet låter du det laddas ur under en kortare period</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
 <translation id="65587193855025101">Flatbädd</translation>

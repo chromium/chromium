@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
 <translation id="2364498172489649528">Réussi</translation>
-<translation id="2365324413026422635">Impossible d'effectuer le test de recharge de la batterie lorsqu'elle est pleine</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2418150275289244458">Ouvrir dans les paramètres</translation>
 <translation id="2446553403094072641">Précision en virgule flottante</translation>
@@ -253,6 +252,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6472207088655375767">Mot de passe à usage unique</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Tâche suspendue - Bourrage papier</translation>
+<translation id="6516990319416533844">Pour évaluer le niveau de charge de la batterie, laissez votre batterie se décharger sur une courte période</translation>
 <translation id="6517239166834772319">Explorer</translation>
 <translation id="6527081081771465939">Protocole de sécurité du réseau Wi-Fi inconnu</translation>
 <translation id="65587193855025101">Vitre du plateau</translation>

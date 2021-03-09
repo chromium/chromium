@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Attiva il Bluetooth per trovare dispositivi nelle vicinanze</translation>
 <translation id="2364498172489649528">Superato</translation>
-<translation id="2365324413026422635">Non è possibile eseguire il test della ricarica quando la batteria è completamente carica</translation>
 <translation id="2391082728065870591">Invia rapporto di feedback</translation>
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
@@ -253,6 +252,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Operazione interrotta - Fogli bloccati nella stampante</translation>
+<translation id="6516990319416533844">Per testare la velocità di ricarica della batteria, lascia scaricare completamente la batteria per un breve periodo</translation>
 <translation id="6517239166834772319">Esplora</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
 <translation id="65587193855025101">Flatbed</translation>

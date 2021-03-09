@@ -484,7 +484,6 @@
 <translation id="152913213824448541">Nearby Share ମାଧ୍ୟମରେ ପରିଚାଳନା କରାଯାଉଥିବା ଯୋଗାଯୋଗଗୁଡ଼ିକ</translation>
 <translation id="1529891865407786369">ପାୱର୍‍ ଉତ୍ସ</translation>
 <translation id="1530838837447122178">ମାଉସ୍‌ ଏବଂ ଟଚ୍‍ପ୍ୟାଡ୍‌ ଡିଭାଇସ୍‌ ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
-<translation id="1531004739673299060">ଆପ୍ଲିକେସନ୍‍ ୱିଣ୍ଡୋ</translation>
 <translation id="1531275250079031713">'ନୂଆ ୱାଇ-ଫାଇ ଯୋଗ କରନ୍ତୁ' ଡାୟଲଗ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">ଉଚ୍ଚ ସ୍ୱରରେ</translation>
@@ -839,7 +838,6 @@
 <translation id="1909880997794698664">ଏହି ଡିଭାଇସ୍‌କୁ ସ୍ଥାୟୀ ଭାବେ କିଓସ୍କ ମୋଡ୍‌ରେ ରଖିବାକୁ ଚାହୁଁଛନ୍ତି ବୋଲି ଆପଣ ନିଶ୍ଚିତ କି?</translation>
 <translation id="1910721550319506122">ସ୍ଵାଗତ!</translation>
 <translation id="1915073950770830761">କାନାରୀ</translation>
-<translation id="1916260783734263714">ବର୍ତ୍ତମାନର ଟାବ୍</translation>
 <translation id="1916502483199172559">ଡିଫଲ୍ଟ ନାଲି ଅବତାର</translation>
 <translation id="1918141783557917887">&amp;କ୍ଷୁଦ୍ରତର</translation>
 <translation id="1919345977826869612">ବିଜ୍ଞାପନ</translation>
@@ -863,6 +861,7 @@
 <translation id="1935303383381416800">ଆପଣଙ୍କ ଲୋକେସନ୍ ଦେଖିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1936931585862840749">କେତେ କପି ପ୍ରିଣ୍ଟ କରିବାର ଅଛି ତାହା ସୂଚିତ କରିବା ପାଇଁ ଗୋଟିଏ ନମ୍ବର ବ୍ୟବହାର କରନ୍ତୁ (1ରୁ <ph name="MAX_COPIES" /> ମଧ୍ୟରେ)।</translation>
 <translation id="1937774647013465102">କଣ୍ଟେନର୍ ଆର୍କିଟେକ୍‌ଚର୍ <ph name="ARCHITECTURE_CONTAINER" />କୁ ଏହି ଡିଭାଇସ୍ ସହିତ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ ଯେଉଁଟି ଏକ <ph name="ARCHITECTURE_DEVICE" /> ଅଟେ। ଆପଣ ଏହି କଣ୍ଟେନର୍‌କୁ ଏକ ଭିନ୍ନ ଡିଭାଇସ୍‌ରେ ରିଷ୍ଟୋର୍ କରିବାକୁ ଚେଷ୍ଟା କରିପାରିବେ କିମ୍ବା Files ଆପ୍‌ରେ ଖୋଲିବା ଦ୍ୱାରା ଆପଣ ଏହି କଣ୍ଟେନର୍ ଛବି ଭିତରେ ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{1ଟି Google ଆକାଉଣ୍ଟ ଯୋଗ କରାଯାଇଛି}other{<ph name="EXTRA_ACCOUNTS" />ଟି Google ଆକାଉଣ୍ଟ}}</translation>
 <translation id="1938351510777341717">ଏକ୍ସଟର୍ନଲ୍ କମାଣ୍ଡ</translation>
 <translation id="1940546824932169984">ସଂଯୋଗ ହୋଇଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="1942600407708803723">କଭର୍ ବନ୍ଦ ହେବା ପରେ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -4817,7 +4816,6 @@
 <translation id="6473842110411557830">ପାୱାର୍‍ୱାସ୍ ଉଦାହରଣ</translation>
 <translation id="6474498546677193336">ଏକ ଆପ୍ଲିକେସନ୍ ଏହି ଫୋଲ୍ଡରକୁ ବ୍ୟବହାର କରୁଥିବା ଯୋଗୁଁ ଅନସେୟାର୍ କରାଯାଇପାରିଲା ନାହିଁ। ପରବର୍ତ୍ତୀ ସମୟରେ Linux ବନ୍ଦ ହେଲେ ଫୋଲ୍ଡରକୁ ଅନସେୟାର୍ କରାଯିବ।</translation>
 <translation id="6474884162850599008">Google Driveର ଆକାଉଣ୍ଟ ବିଚ୍ଛିନ୍ନ କରନ୍ତୁ</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‍ର ବିଷୟବସ୍ତୁ ସେୟାର୍ କରିବାକୁ ଚାହେଁ। ଆପଣ ଯାହା ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି ତାହା ବାଛନ୍ତୁ।</translation>
 <translation id="6477822444490674459">ଏକ ୱାର୍କ ପ୍ରୋଫାଇଲରେ ଫୋନଗୁଡ଼ିକ ପାଇଁ ବିଜ୍ଞପ୍ତି ସିଙ୍କ୍ କରିବା ସମର୍ଥିତ ନୁହେଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ବିପଦପୂର୍ଣ୍ଣ ଫାଇଲ୍‍କୁ ରଖିବେ କି?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
@@ -5071,6 +5069,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6781284683813954823">ଡୁଡଲ୍ ଲିଙ୍କ</translation>
 <translation id="6781978626986383437">Linuxର ବ୍ୟାକ୍‌ଅପ୍ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6782067259631821405">ଅବୈଧ PIN</translation>
+<translation id="6782468519961184511">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ଅତିରିକ୍ତ Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="6785518634832172390">PIN ନିଶ୍ଚିତ ଭାବେ 12ଟି ଅଙ୍କ କିମ୍ବା ତାଠାରୁ କମ୍ ହୋଇଥିବା ଆବଶ୍ୟକ</translation>
 <translation id="6786747875388722282">ପରିବର୍ଦ୍ଧନ</translation>
 <translation id="6787839852456839824">କୀ'ବୋର୍ଡ ସର୍ଟକଟ୍‌ଗୁଡ଼ିକ</translation>
@@ -5079,7 +5078,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />କୁ ରିମୋଟ୍‍ ଭାବେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="6790820461102226165">ଲୋକଙ୍କୁ ଯୋଗ କରନ୍ତୁ...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ବିଷୟବସ୍ତୁକୁ <ph name="TARGET_NAME" /> ସହିତ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛି। ଆପଣ କ'ଣ ସେୟାର୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି ତାହା ବାଛନ୍ତୁ।</translation>
 <translation id="6793604637258913070">ଯେତେବେଳେ ଟେକ୍ସଟ୍ କ୍ୟାରେଟ୍ ଦୃଶ୍ୟମାନ ହେବ କିମ୍ବା ଘୁଞ୍ଚିବ ସେତେବେଳେ ଏହାକୁ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="6793723358811598107">'<ph name="ACTION" />' କାର୍ଯ୍ୟକୁ ପୂର୍ବରୁ '<ph name="CURRENTKEY" />'କୁ ଆସାଇନ୍ କରାଯାଇଛି। ବାହାରି ଯିବା ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="6795884519221689054">ପାଣ୍ଡା</translation>
@@ -6798,7 +6796,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8743864605301774756">1 ଘଣ୍ଟା ପୂର୍ବରୁ ଅପ୍‍‍ଡେଟ୍‍ କରାଯାଇଛି</translation>
 <translation id="8746654918629346731">ଆପଣ ପୂର୍ବରୁ "<ph name="EXTENSION_NAME" />" ଅନୁରୋଧ କରିଛନ୍ତି</translation>
 <translation id="874689135111202667">{0,plural, =1{ଏହି ସାଇଟ୍‌କୁ ଏକ ଫାଇଲ୍‌ ଅପ୍‌ଲୋଡ୍‌ କରିବେ କି?}other{ଏହି ସାଇଟ୍‌କୁ #ଟି ଫାଇଲ୍‌ ଅପ୍‌ଲୋଡ୍‌ କରିବେ କି?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1ଟି Google ଆକାଉଣ୍ଟ ଯୋଗ କରାଯାଇଛି}other{<ph name="EXTRA_ACCOUNTS" />ଟି Google ଆକାଉଣ୍ଟ ଯୋଗ କରାଯାଇଛି}}</translation>
 <translation id="8749556627204742888">ଏହି ଡିଭାଇସର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ସହିତ ଆପଣ ଏହି ନେଟୱାର୍କ ସେୟାର୍ କରୁଛନ୍ତି।</translation>
 <translation id="8749805710397399240">ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ କାଷ୍ଟ କରିବାକୁ ଅସମର୍ଥ। ସିଷ୍ଟମ୍ ପସନ୍ଦଗୁଡ଼ିକରେ ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ଅନୁମତି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="8749863574775030885">ଏକ ଅଜ୍ଞାତ ଭେଣ୍ଡର ID ମାଧ୍ୟମରେ USB ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
@@ -6963,7 +6960,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8907906903932240086">Chrome କ୍ଷତିକାରକ ସଫ୍ଟୱେର୍ ପାଇଁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" />କୁ ଅନଇନଷ୍ଟଲ୍ କରିଦିଆଯାଇଛି</translation>
 <translation id="8909833622202089127">ସାଇଟ୍ ଆପଣଙ୍କର ଲୋକେସନ୍ ଟ୍ରାକ୍ କରୁଛି</translation>
-<translation id="8910146161325739742">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ ସେୟାର୍‌ କରନ୍ତୁ</translation>
 <translation id="8910222113987937043">ଆପଣଙ୍କର ବୁକମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‍ୱର୍ଡ ଓ ଅନ୍ୟ ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଆଉ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସିଙ୍କ ହେବ ନାହିଁ। ତେବେ, ଆପଣଙ୍କର ବିଦ୍ୟମାନ ଥିବା ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଷ୍ଟୋର୍ ହୋଇ ରହିବ ଏବଂ <ph name="BEGIN_LINK" />Google ଡ୍ୟାସ୍‍‍ବୋର୍ଡ<ph name="END_LINK" />ରେ ପରିଚାଳିତ ହୋଇପାରିବ।</translation>
 <translation id="8912362522468806198">Google ଆକାଉଣ୍ଟ</translation>
 <translation id="8912793549644936705">ବିସ୍ତାର କରନ୍ତୁ</translation>

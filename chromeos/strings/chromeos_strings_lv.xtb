@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
-<translation id="2365324413026422635">Akumulatora uzlādes pārbaudi nevar veikt, kad akumulators ir pilnībā uzlādēts.</translation>
 <translation id="2391082728065870591">Sūtīt atsauksmju pārskatu</translation>
 <translation id="2418150275289244458">Atvērt iestatījumos</translation>
 <translation id="2446553403094072641">Peldošā punkta precizitāte</translation>
@@ -253,6 +252,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6472207088655375767">VRP</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
+<translation id="6516990319416533844">Lai pārbaudītu akumulatora uzlādes ātrumu, uz neilgu laiku palieliniet akumulatora enerģijas patēriņu, sasniedzot zemu uzlādes līmeni.</translation>
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
 <translation id="65587193855025101">Plakanvirsma</translation>

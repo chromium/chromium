@@ -491,7 +491,6 @@
 <translation id="152913213824448541">Абагульванне паблізу: кантакты</translation>
 <translation id="1529891865407786369">Крыніца сілкавання</translation>
 <translation id="1530838837447122178">Адкрыць налады мышы і сэнсарнай панэлі</translation>
-<translation id="1531004739673299060">Акно праграмы</translation>
 <translation id="1531275250079031713">Паказаць дыялогавае акно "Дадаць новую сетку Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Гучна</translation>
@@ -848,7 +847,6 @@
 <translation id="1909880997794698664">Вы ўпэўненыя, што рэжым кіёска павінен быць заўсёды ўключаны на прыладзе?</translation>
 <translation id="1910721550319506122">Вітаем!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Бягучая ўкладка</translation>
 <translation id="1916502483199172559">Стандартны чырвоны аватар</translation>
 <translation id="1918141783557917887">&amp;Паменшыць</translation>
 <translation id="1919345977826869612">Рэклама</translation>
@@ -872,6 +870,7 @@
 <translation id="1935303383381416800">Дазволена атрымліваць звесткі пра ваша месцазнаходжанне</translation>
 <translation id="1936931585862840749">Каб указаць, колькі копій друкаваць, увядзіце лік (ад 1 да <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{Дададзены 1 Уліковы запіс Google}one{<ph name="EXTRA_ACCOUNTS" /> Уліковы запіс Google}few{<ph name="EXTRA_ACCOUNTS" /> Уліковыя запісы Google}many{<ph name="EXTRA_ACCOUNTS" /> Уліковых запісаў Google}other{<ph name="EXTRA_ACCOUNTS" /> Уліковага запісу Google}}</translation>
 <translation id="1938351510777341717">Знешняя клавіша Command</translation>
 <translation id="1940546824932169984">Падключаныя прылады</translation>
 <translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
@@ -4828,7 +4827,6 @@
 <translation id="6473842110411557830">Ілюстрацыя Powerwash</translation>
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> запытвае дазвол на абагульванне змесціва экрана. Выберыце, што трэба абагульваць.</translation>
 <translation id="6477822444490674459">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Захаваць небяспечны файл?</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
@@ -5080,6 +5078,7 @@
 <translation id="6781284683813954823">Спасылка на дудл</translation>
 <translation id="6781978626986383437">Стварэнне рэзервовай копіі кантэйнера Linux скасавана</translation>
 <translation id="6782067259631821405">Несапраўдны PIN-код</translation>
+<translation id="6782468519961184511">Адміністратар не дазваляе выкарыстоўваць дадатковыя Уліковыя запісы Google</translation>
 <translation id="6785518634832172390">PIN-код павінен змяшчаць не больш за 12 сімвалаў</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
 <translation id="6787839852456839824">Спалучэнні клавіш</translation>
@@ -5088,7 +5087,6 @@
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6790497603648687708">Праграма <ph name="EXTENSION_NAME" /> дададзена з сервера</translation>
 <translation id="6790820461102226165">Дадаць карыстальніка...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> запытвае дазвол на абагульванне змесціва экрана з <ph name="TARGET_NAME" />. Выберыце, што трэба абагульваць.</translation>
 <translation id="6793604637258913070">Указваць на курсор рэдагавання тэксту, калі ён з'яўляецца або рухаецца</translation>
 <translation id="6793723358811598107">Клавіша "<ph name="CURRENTKEY" />" ужо прызначана для дзеяння "<ph name="ACTION" />" Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6809,7 +6807,6 @@
 <translation id="8743864605301774756">Абноўлена # гадзіну таму</translation>
 <translation id="8746654918629346731">Вы ўжо зрабілі запыт на ўсталяванне пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Запампаваць адзін файл на гэты сайт?}one{Запампаваць # файл на гэты сайт?}few{Запампаваць # файлы на гэты сайт?}many{Запампаваць # файлаў на гэты сайт?}other{Запампаваць # файла на гэты сайт?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Дададзены 1 Уліковы запіс Google}one{Дададзены <ph name="EXTRA_ACCOUNTS" /> Уліковы запіс Google}few{Дададзена <ph name="EXTRA_ACCOUNTS" /> Уліковыя запісы Google}many{Дададзена <ph name="EXTRA_ACCOUNTS" /> Уліковых запісаў Google}other{Дададзена <ph name="EXTRA_ACCOUNTS" /> Уліковага запісу Google}}</translation>
 <translation id="8749556627204742888">Вы абагульваеце гэту сетку з іншымі карыстальнікамі гэтай прылады.</translation>
 <translation id="8749805710397399240">Не ўдалося трансліраваць ваш экран. Праверце наяўнасць дазволу на запіс экрана ў наладах System Preferences.</translation>
 <translation id="8749863574775030885">Доступ да USB-прылад ад невядомага пастаўшчыка</translation>
@@ -6977,7 +6974,6 @@
 <translation id="8907906903932240086">Браўзер Chrome можа правяраць ваш камп'ютар на наяўнасць шкоднага праграмнага забеспячэння</translation>
 <translation id="8909298138148012791">Праграма <ph name="APP_NAME" /> выдалена</translation>
 <translation id="8909833622202089127">Сайт адсочвае ваша месцазнаходжанне</translation>
-<translation id="8910146161325739742">Абагульванне экрана</translation>
 <translation id="8910222113987937043">Змены ў закладках, гісторыі, паролях і іншых наладах больш не будуць сінхранізавацца з Уліковым запісам Google. Але існуючыя даныя застануцца ва Уліковым запісе Google, і імі можна будзе кіраваць на старонцы <ph name="BEGIN_LINK" />Панэль кіравання Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Уліковы запіс Google</translation>
 <translation id="8912793549644936705">Расцягнуць</translation>

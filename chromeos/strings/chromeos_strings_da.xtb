@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2364498172489649528">Bestået</translation>
-<translation id="2365324413026422635">Batteriets opladningshastighed kan ikke testes, når batteriet er fuldt opladet</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2418150275289244458">Åbn i Indstillinger</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
@@ -252,6 +251,7 @@
 <translation id="6472207088655375767">Engangskode</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
+<translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
 <translation id="6517239166834772319">Udforsk</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="65587193855025101">Flatbed</translation>

@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
 <translation id="2364498172489649528">Kaloi</translation>
-<translation id="2365324413026422635">Testi i karikimit të baterisë nuk mund të kryhet kur ajo është plot</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2418150275289244458">Hape te cilësimet</translation>
 <translation id="2446553403094072641">Saktësia e pikës pluskuese</translation>
@@ -252,6 +251,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
+<translation id="6516990319416533844">Për të testuar shpejtësinë e karikimit të baterisë, lëre baterinë të shkarkohet për një periudhë të shkurtër</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
 <translation id="65587193855025101">Shtrat i sheshtë</translation>

@@ -488,7 +488,6 @@
 <translation id="152913213824448541">Nearby Share 연락처</translation>
 <translation id="1529891865407786369">전원</translation>
 <translation id="1530838837447122178">마우스 및 터치패드 기기 설정 열기</translation>
-<translation id="1531004739673299060">애플리케이션 창</translation>
 <translation id="1531275250079031713">'새 Wi-Fi 추가' 대화상자 표시</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">크게</translation>
@@ -845,7 +844,6 @@
 <translation id="1909880997794698664">이 기기를 영구적으로 키오스크 모드로 유지하시겠습니까?</translation>
 <translation id="1910721550319506122">반갑습니다!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">현재 탭</translation>
 <translation id="1916502483199172559">기본 빨간색 아바타</translation>
 <translation id="1918141783557917887">작게(&amp;S)</translation>
 <translation id="1919345977826869612">광고</translation>
@@ -869,6 +867,7 @@
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="1936931585862840749">숫자로 인쇄 부수를 표시하세요(1부터 <ph name="MAX_COPIES" />까지).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_DEVICE" /> 기기에서는 <ph name="ARCHITECTURE_CONTAINER" /> 컨테이너 아키텍처 유형을 가져올 수 없습니다. 이 컨테이너를 다른 기기에서 복원할 수 있으며, 컨테이너 이미지를 Files 앱에서 열면 컨테이너 이미지에 포함된 파일에 액세스할 수 있습니다.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{추가된 Google 계정 1개}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개}}</translation>
 <translation id="1938351510777341717">외부 명령어</translation>
 <translation id="1940546824932169984">연결된 기기</translation>
 <translation id="1942600407708803723">커버를 닫으면 종료</translation>
@@ -4823,7 +4822,6 @@
 <translation id="6473842110411557830">파워워시 일러스트레이션</translation>
 <translation id="6474498546677193336">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Linux가 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="6474884162850599008">Google Drive 계정 연결 해제</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" />에서 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
 <translation id="6477822444490674459">직장 프로필을 사용하는 경우 휴대전화에서 알림 동기화가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">위험한 파일을 보관하시겠습니까?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
@@ -5075,6 +5073,7 @@
 <translation id="6781284683813954823">기념일 로고 링크</translation>
 <translation id="6781978626986383437">Linux 백업이 취소됨</translation>
 <translation id="6782067259631821405">잘못된 PIN</translation>
+<translation id="6782468519961184511">관리자가 보조 Google 계정 추가를 허용하지 않습니다.</translation>
 <translation id="6785518634832172390">PIN은 12자리 이하여야 합니다.</translation>
 <translation id="6786747875388722282">확장 프로그램</translation>
 <translation id="6787839852456839824">단축키</translation>
@@ -5083,7 +5082,6 @@
 <translation id="6790428901817661496">재생</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" />이(가) 원격으로 추가됨</translation>
 <translation id="6790820461102226165">사용자 추가...</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" />에서 <ph name="TARGET_NAME" />에 내 화면의 콘텐츠를 공유하려고 합니다. 공유할 항목을 선택하세요.</translation>
 <translation id="6793604637258913070">텍스트 캐럿이 나타나거나 이동할 때 이를 강조표시합니다.</translation>
 <translation id="6793723358811598107">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. 종료하려면 아무 키나 누르세요.</translation>
 <translation id="6795884519221689054">판다</translation>
@@ -6805,7 +6803,6 @@
 <translation id="8743864605301774756">1시간 전에 업데이트되었습니다.</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Google 계정 1개 추가됨}other{Google 계정 <ph name="EXTRA_ACCOUNTS" />개 추가됨}}</translation>
 <translation id="8749556627204742888">기기의 다른 사용자와 공유 중인 네트워크입니다.</translation>
 <translation id="8749805710397399240">화면을 전송할 수 없습니다. 시스템 환경설정에서 화면 녹화 권한을 확인하세요.</translation>
 <translation id="8749863574775030885">알 수 없는 공급업체의 USB 기기에 액세스</translation>
@@ -6970,7 +6967,6 @@
 <translation id="8907906903932240086">Chrome에서 컴퓨터에 유해 소프트웨어가 있는지 확인할 수 있습니다.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> 앱이 제거됨</translation>
 <translation id="8909833622202089127">사이트에서 내 위치를 추적하고 있습니다.</translation>
-<translation id="8910146161325739742">화면 공유하기</translation>
 <translation id="8910222113987937043">북마크, 방문 기록, 비밀번호 및 기타 설정을 변경하면 더 이상 Google 계정에 동기화되지 않습니다. 하지만 기존 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="8912362522468806198">Google 계정</translation>
 <translation id="8912793549644936705">늘이기</translation>

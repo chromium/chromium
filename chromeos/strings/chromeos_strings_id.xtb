@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2364498172489649528">Lulus</translation>
-<translation id="2365324413026422635">Uji pengisian daya baterai tidak dapat dilakukan saat baterai penuh</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2446553403094072641">Akurasi floating point</translation>
@@ -253,6 +252,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas macet</translation>
+<translation id="6516990319416533844">Untuk menguji kecepatan pengisian daya baterai, biarkan daya baterai terkuras dalam waktu singkat</translation>
 <translation id="6517239166834772319">Jelajahi</translation>
 <translation id="6527081081771465939">Protokol keamanan Wi-Fi tidak dikenal</translation>
 <translation id="65587193855025101">Flatbed</translation>

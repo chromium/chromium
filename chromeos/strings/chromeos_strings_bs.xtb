@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
 <translation id="2364498172489649528">Uspješno</translation>
-<translation id="2365324413026422635">Testiranje punjenja baterije se ne može provesti kada je baterija puna</translation>
 <translation id="2391082728065870591">Pošalji izvještaj o povratnim informacijama</translation>
 <translation id="2418150275289244458">Otvori u postavkama</translation>
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
@@ -253,6 +252,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zaustavljeno – papir je zaglavljen</translation>
+<translation id="6516990319416533844">Da testirate brzinu punjenja baterije, pustite da se baterija nakratko isprazni</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznati sigurnosni protokol za WiFi</translation>
 <translation id="65587193855025101">Položeno</translation>

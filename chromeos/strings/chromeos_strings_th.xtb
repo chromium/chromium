@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
 <translation id="2364498172489649528">ผ่าน</translation>
-<translation id="2365324413026422635">ทดสอบการชาร์จขณะที่แบตเตอรี่เต็มอยู่ไม่ได้</translation>
 <translation id="2391082728065870591">ส่งรายงานความคิดเห็น</translation>
 <translation id="2418150275289244458">เปิดในการตั้งค่า</translation>
 <translation id="2446553403094072641">ความแม่นยำของจุดลอยตัว</translation>
@@ -253,6 +252,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">หยุดพิมพ์ - กระดาษติด</translation>
+<translation id="6516990319416533844">ปล่อยให้มีการใช้งานแบตเตอรี่อีกสักครู่เพื่อทดสอบอัตราการชาร์จแบตเตอรี่</translation>
 <translation id="6517239166834772319">สำรวจ</translation>
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
 <translation id="65587193855025101">แผ่นกระจกสำหรับสแกน</translation>

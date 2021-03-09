@@ -490,7 +490,6 @@
 <translation id="152913213824448541">Обмен с окружением: контакты</translation>
 <translation id="1529891865407786369">Источник питания</translation>
 <translation id="1530838837447122178">Открыть настройки мыши и сенсорной панели</translation>
-<translation id="1531004739673299060">Окно программы</translation>
 <translation id="1531275250079031713">Открыть окно добавления сети Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> и <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Громко</translation>
@@ -847,7 +846,6 @@
 <translation id="1909880997794698664">Всегда запускать устройство в режиме киоска?</translation>
 <translation id="1910721550319506122">Добро пожаловать!</translation>
 <translation id="1915073950770830761">Canary</translation>
-<translation id="1916260783734263714">Текущая вкладка</translation>
 <translation id="1916502483199172559">Аватар по умолчанию (красный)</translation>
 <translation id="1918141783557917887">&amp;Мельче</translation>
 <translation id="1919345977826869612">Реклама</translation>
@@ -871,6 +869,7 @@
 <translation id="1935303383381416800">Разрешить сайтам определять ваше местоположение</translation>
 <translation id="1936931585862840749">Укажите количество копий для печати, используя цифры (от 1 до <ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102">Не удалось импортировать тип архитектуры контейнера <ph name="ARCHITECTURE_CONTAINER" /> на это устройство (<ph name="ARCHITECTURE_DEVICE" />). Вы можете попробовать восстановить этот контейнер на другом устройстве или получить доступ к файлам, открыв образ контейнера в приложении "Файлы".</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{Добавлен 1 аккаунт Google}one{<ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{<ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{<ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
 <translation id="1938351510777341717">Внешняя клавиша Command</translation>
 <translation id="1940546824932169984">Подключенные устройства</translation>
 <translation id="1942600407708803723">Завершить работу, когда обложка закрыта</translation>
@@ -4826,7 +4825,6 @@
 <translation id="6473842110411557830">Иллюстрация Powerwash</translation>
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> хочет предоставить доступ к вашему экрану. Выберите окно, которое нужно показать.</translation>
 <translation id="6477822444490674459">Синхронизация уведомлений недоступна, если на телефоне используется рабочий профиль. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Сохранить опасный файл?</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
@@ -5078,6 +5076,7 @@
 <translation id="6781284683813954823">Ссылка на дудл</translation>
 <translation id="6781978626986383437">Резервное копирование контейнера Linux отменено.</translation>
 <translation id="6782067259631821405">Неверный PIN-код.</translation>
+<translation id="6782468519961184511">Администратор запретил добавлять другие аккаунты Google.</translation>
 <translation id="6785518634832172390">PIN-код должен быть не длиннее 12 символов.</translation>
 <translation id="6786747875388722282">Расширения</translation>
 <translation id="6787839852456839824">Быстрые клавиши</translation>
@@ -5086,7 +5085,6 @@
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6790497603648687708">Расширение "<ph name="EXTENSION_NAME" />" было добавлено удаленно</translation>
 <translation id="6790820461102226165">Добавить пользователя</translation>
-<translation id="6792072150955115067">Приложение "<ph name="APP_NAME" />" хочет предоставить сайту <ph name="TARGET_NAME" /> доступ к вашему экрану. Выберите, что можно показать.</translation>
 <translation id="6793604637258913070">Выделять курсор при его появлении или перемещении</translation>
 <translation id="6793723358811598107">Клавиша "<ph name="CURRENTKEY" />" уже используется для действия "<ph name="ACTION" />". Нажмите любую клавишу, чтобы выйти.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6807,7 +6805,6 @@
 <translation id="8743864605301774756">Обновлено 1 час назад</translation>
 <translation id="8746654918629346731">Вы уже запросили расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Загрузить файл на этот сайт?}one{Загрузить # файл на этот сайт?}few{Загрузить # файла на этот сайт?}many{Загрузить # файлов на этот сайт?}other{Загрузить # файла на этот сайт?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{Добавлен 1 аккаунт Google}one{Добавлен <ph name="EXTRA_ACCOUNTS" /> аккаунт Google}few{Добавлено <ph name="EXTRA_ACCOUNTS" /> аккаунта Google}many{Добавлено <ph name="EXTRA_ACCOUNTS" /> аккаунтов Google}other{Добавлено <ph name="EXTRA_ACCOUNTS" /> аккаунта Google}}</translation>
 <translation id="8749556627204742888">Вы открыли доступ к этой сети другим пользователям устройства.</translation>
 <translation id="8749805710397399240">Не удается выполнить трансляцию экрана. Откройте системные настройки и предоставьте разрешение "Запись экрана".</translation>
 <translation id="8749863574775030885">Доступ к USB-устройствам от неизвестного поставщика</translation>
@@ -6975,7 +6972,6 @@
 <translation id="8907906903932240086">Браузер Chrome может проверить компьютер на наличие вредоносного ПО.</translation>
 <translation id="8909298138148012791">Плагин <ph name="APP_NAME" /> удален.</translation>
 <translation id="8909833622202089127">Сайт отслеживает ваше местоположение</translation>
-<translation id="8910146161325739742">Откройте доступ к экрану</translation>
 <translation id="8910222113987937043">Изменения, связанные с закладками, историей, паролями и настройками, больше не будут синхронизироваться с вашим аккаунтом Google. Тем не менее, данные в аккаунте Google сохранятся. Вы можете просмотреть и изменить их в <ph name="BEGIN_LINK" />Личном кабинете Google<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
 <translation id="8912793549644936705">Растянуть</translation>

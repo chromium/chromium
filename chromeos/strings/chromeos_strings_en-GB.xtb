@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Turn on Bluetooth to discover nearby devices</translation>
 <translation id="2364498172489649528">Passed</translation>
-<translation id="2365324413026422635">Battery charge test cannot be conducted when full</translation>
 <translation id="2391082728065870591">Send feedback report</translation>
 <translation id="2418150275289244458">Open in settings</translation>
 <translation id="2446553403094072641">Floating point accuracy</translation>
@@ -253,6 +252,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Managed by <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stopped – paper jam</translation>
+<translation id="6516990319416533844">To test battery charging rate, let your battery drain for a short period</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Unknown Wi-Fi security protocol</translation>
 <translation id="65587193855025101">Flatbed</translation>

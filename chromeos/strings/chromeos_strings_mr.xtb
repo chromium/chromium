@@ -62,7 +62,6 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">जवळपासचे डिव्हाइस शोधण्यासाठी ब्लूटूथ सुरू करा</translation>
 <translation id="2364498172489649528">पास झाले</translation>
-<translation id="2365324413026422635">बॅटरी पूर्ण चार्ज केलेली असताना बॅटरी चार्ज चाचणी केली जाऊ शकत नाही</translation>
 <translation id="2391082728065870591">फीडबॅक अहवाल पाठवा</translation>
 <translation id="2418150275289244458">सेटिंग्जमध्ये उघडा</translation>
 <translation id="2446553403094072641">फ्लोटिंग पॉइंटची अचूकता</translation>
@@ -253,6 +252,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="649050271426829538">थांबले - कागद अडकला</translation>
+<translation id="6516990319416533844">बॅटरी चार्जिंग रेटची चाचणी घेण्यासाठी, थोडा वेळ तुमची बॅटरी ड्रेन होऊ द्या</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
 <translation id="65587193855025101">फ्लॅटबेड</translation>

@@ -485,7 +485,6 @@
 <translation id="152913213824448541">Nearby Share контактілері</translation>
 <translation id="1529891865407786369">Қуат көзі</translation>
 <translation id="1530838837447122178">Тінтуір жəне сенсорлық тақта құрылғысы параметрлерін ашу</translation>
-<translation id="1531004739673299060">Қолданба терезесі</translation>
 <translation id="1531275250079031713">"Жаңа Wi-Fi желісін қосу" диалогтік терезесін көрсету</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">Қатты</translation>
@@ -842,7 +841,6 @@
 <translation id="1909880997794698664">Бұл құрылғыны толық экран режимінде біржола сақтау керек пе?</translation>
 <translation id="1910721550319506122">Қош келдіңіз!</translation>
 <translation id="1915073950770830761">canary</translation>
-<translation id="1916260783734263714">Ағымдағы қойынды</translation>
 <translation id="1916502483199172559">Әдепкі қызыл түсті аватар</translation>
 <translation id="1918141783557917887">&amp;Кішірек</translation>
 <translation id="1919345977826869612">Жарнамалар</translation>
@@ -866,6 +864,7 @@
 <translation id="1935303383381416800">Геодеректеріңізді көруге рұқсаты барлар</translation>
 <translation id="1936931585862840749">Басып шығарылатын көшірмелер санын көрсетіңіз (1-<ph name="MAX_COPIES" />).</translation>
 <translation id="1937774647013465102"><ph name="ARCHITECTURE_CONTAINER" /> контейнер архитектурасы түрін бұл құрылғымен (<ph name="ARCHITECTURE_DEVICE" />) импорттау мүмкін емес. Бұл контейнерді басқа құрылғыда қалпына келтіріп көруіңізге болады немесе файлдарға контейнер кескінін Files қолданбасынан ашу арқылы кіре аласыз.</translation>
+<translation id="1937869457490567002">{COUNT,plural, =1{1 Google есептік жазбасы қосылды.}other{<ph name="EXTRA_ACCOUNTS" /> Google есептік жазбасы}}</translation>
 <translation id="1938351510777341717">Сыртқы пәрмен</translation>
 <translation id="1940546824932169984">Қосылған құрылғылар</translation>
 <translation id="1942600407708803723">Қақпағы жабылғанда, жұмысты аяқтау</translation>
@@ -4822,7 +4821,6 @@
 <translation id="6473842110411557830">Powerwash суреті</translation>
 <translation id="6474498546677193336">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. Linux өшкеннен кейін, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="6474884162850599008">Google Drive есептік жазбасын ажырату</translation>
-<translation id="6475697075626596525"><ph name="APP_NAME" /> экран мазмұнын көрсетуге рұқсат сұрауда. Нені бөліскіңіз келетінін таңдаңыз.</translation>
 <translation id="6477822444490674459">Жұмыс профиліндегі телефондар үшін хабарландыруларды синхрондауға қолдау көрсетілмейді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Қауіпті файл сақталсын ба?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> басқарады</translation>
@@ -5074,6 +5072,7 @@
 <translation id="6781284683813954823">Дудл сілтемесі</translation>
 <translation id="6781978626986383437">Linux контейнерінің сақтық көшірмесін жасаудан бас тартылды</translation>
 <translation id="6782067259631821405">PIN коды жарамсыз</translation>
+<translation id="6782468519961184511">Әкімшіңіз қосымша Google есептік жазбаларын пайдалануға рұқсат бермейді.</translation>
 <translation id="6785518634832172390">PIN коды 12 саннан аспауы керек</translation>
 <translation id="6786747875388722282">Кеңейтімдер</translation>
 <translation id="6787839852456839824">Пернелер тіркесімі</translation>
@@ -5082,7 +5081,6 @@
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> қашықтан қосылды</translation>
 <translation id="6790820461102226165">Адам қосу…</translation>
-<translation id="6792072150955115067"><ph name="APP_NAME" /> қолданбасы экран мазмұнын <ph name="TARGET_NAME" /> сайтымен бөлісуді сұрайды. Бөліскіңіз келетін мазмұнды таңдаңыз.</translation>
 <translation id="6793604637258913070">Шыққанда не жылжығанда, курсорды бөлектеу</translation>
 <translation id="6793723358811598107">"<ph name="ACTION" />" әрекетіне "<ph name="CURRENTKEY" />" пернесі әлдеқашан тағайындалған. Шығу үшін кез келген пернені басыңыз.</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -6803,7 +6801,6 @@
 <translation id="8743864605301774756">1 сағат бұрын жаңартылды</translation>
 <translation id="8746654918629346731">Бұған дейін "<ph name="EXTENSION_NAME" />" деп сұрап қойғансыз.</translation>
 <translation id="874689135111202667">{0,plural, =1{Осы сайтқа бір файл жүктеп салынсын ба?}other{Осы сайтқа # файл жүктеп салынсын ба?}}</translation>
-<translation id="8748551216833979935">{COUNT,plural, =1{1 Google есептік жазбасы қосылды.}other{<ph name="EXTRA_ACCOUNTS" /> Google есептік жазбасы қосылды.}}</translation>
 <translation id="8749556627204742888">Желіні осы құрылғының басқа пайдаланушыларымен бөлісіп жатырсыз.</translation>
 <translation id="8749805710397399240">Экранды трансляциялау мүмкін емес. "Жүйе параметрлері" бөлімінде экран жазғышты пайдалану рұқсатын тексеріңіз.</translation>
 <translation id="8749863574775030885">Белгісіз жеткізуші атынан USB құрылғыларына кіру</translation>
@@ -6968,7 +6965,6 @@
 <translation id="8907906903932240086">Chrome компьютерде зиянды бағдарламалық құралдың бар-жоғын тексере алады.</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> жойылды.</translation>
 <translation id="8909833622202089127">Сайт орналасқан жеріңізді бақылауда</translation>
-<translation id="8910146161325739742">Экранды бөлісу</translation>
 <translation id="8910222113987937043">Бетбелгілерге, тарихқа, құпия сөздерге және басқа параметрлерге енгізілген өзгертулер бұдан әрі Google есептік жазбасымен синхрондалмайды. Алайда бұрыннан бар деректер Google есептік жазбасында сақталады және <ph name="BEGIN_LINK" />Google бақылау тақтасында<ph name="END_LINK" /> басқарылады.</translation>
 <translation id="8912362522468806198">Google есептік жазбасы</translation>
 <translation id="8912793549644936705">Созу</translation>
