@@ -76,13 +76,23 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         PropertyModelChangeProcessor.create(mModel, mStatusView, new StatusViewBinder());
 
+        Runnable forceModelViewReconciliationRunnable = () -> {
+            final View securityIconView = getSecurityIconView();
+            mStatusView.setStatusIconAlpha(mModel.get(StatusProperties.STATUS_ICON_ALPHA));
+            securityIconView.setVisibility(mModel.get(StatusProperties.STATUS_ICON_ALPHA) > 0
+                                    && mModel.get(StatusProperties.SHOW_STATUS_ICON)
+                            ? View.VISIBLE
+                            : View.GONE);
+        };
+
         PageInfoIPHController pageInfoIPHController = new PageInfoIPHController(
                 ContextUtils.activityFromContext(mStatusView.getContext()), getSecurityIconView());
 
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
-                urlBarEditingTextStateProvider, isTablet, locationBarDataProvider,
-                PermissionDialogController.getInstance(), searchEngineLogoUtils,
-                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController);
+                urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
+                locationBarDataProvider, PermissionDialogController.getInstance(),
+                searchEngineLogoUtils, templateUrlServiceSupplier, profileSupplier,
+                pageInfoIPHController);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)

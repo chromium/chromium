@@ -107,12 +107,14 @@ public final class StatusMediatorUnitTest {
                 .when(mSearchEngineLogoUtils)
                 .getSearchEngineLogoFavicon(any(), eq(mResources), any(), any());
 
+        // clang-format off
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator = new StatusMediator(mModel, mResources, mContext,
-                    mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
-                    mSearchEngineLogoUtils, () -> mTemplateUrlService, () -> mProfile, null);
+                    mUrlBarEditingTextStateProvider, /* isTablet */ false, () -> {},
+                    mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
+                    () -> mTemplateUrlService, () -> mProfile, null);
         });
+        // clang-format on
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
     }
 
