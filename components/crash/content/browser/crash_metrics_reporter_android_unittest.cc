@@ -78,6 +78,7 @@ class CrashMetricsReporterTest : public testing::Test {
           histogram_name, CrashMetricsReporter::EMPTY_MINIDUMP_WHILE_RUNNING,
           1);
     }
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
   }
 
  private:
@@ -181,6 +182,7 @@ TEST_F(CrashMetricsReporterTest, UtilityProcessAll) {
   EXPECT_EQ(CrashMetricsReporter::ReportedCrashTypeSet(
                 {CrashMetricsReporter::ProcessedCrashCounts::kUtilityCrashAll}),
             crash_dump_observer.recorded_crash_types());
+  CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
 }
 
 TEST_F(CrashMetricsReporterTest, RendererSubframeOOM) {
@@ -334,6 +336,7 @@ TEST_F(CrashMetricsReporterTest, RendererForegroundCrash) {
                kRendererForegroundVisibleCrash,
            CrashMetricsReporter::ProcessedCrashCounts::kRendererCrashAll}),
       crash_dump_observer.recorded_crash_types());
+  CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
 }
 
 }  // namespace crash_reporter
