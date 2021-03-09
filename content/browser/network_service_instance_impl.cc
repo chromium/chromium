@@ -185,7 +185,6 @@ void CreateNetworkServiceOnIOForTesting(
   GetLocalNetworkService() = std::make_unique<network::NetworkService>(
       nullptr /* registry */, std::move(receiver),
       true /* delay_initialization_until_set_client */);
-  GetLocalNetworkService()->StopMetricsTimerForTesting();
   GetLocalNetworkService()->Initialize(
       network::mojom::NetworkServiceParams::New(),
       true /* mock_network_change_notifier */);

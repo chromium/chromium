@@ -211,7 +211,6 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
     impl_->Reset();
     return;
   }
-  impl_->data_pipe_use_tracker_.Activate();
   const MojoResult mojo_result = impl_->writable_watcher_.Watch(
       impl_->writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
       MOJO_WATCH_CONDITION_SATISFIED,
@@ -412,7 +411,6 @@ WebSocket::WebSocket(
     mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
     base::Optional<WebSocketThrottler::PendingConnection>
         pending_connection_tracker,
-    DataPipeUseTracker data_pipe_use_tracker,
     base::TimeDelta delay)
     : factory_(factory),
       url_loader_network_observer_(std::move(url_loader_network_observer)),
@@ -432,7 +430,6 @@ WebSocket::WebSocket(
       readable_watcher_(FROM_HERE,
                         mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                         base::ThreadTaskRunnerHandle::Get()),
-      data_pipe_use_tracker_(std::move(data_pipe_use_tracker)),
       reassemble_short_messages_(base::FeatureList::IsEnabled(
           network::features::kWebSocketReassembleShortMessages)) {
   DCHECK(handshake_client_);
@@ -879,7 +876,6 @@ void WebSocket::Reset() {
   auth_handler_.reset();
   header_client_.reset();
   receiver_.reset();
-  data_pipe_use_tracker_.Reset();
 
   // net::WebSocketChannel requires that we delete it at this point.
   channel_.reset();

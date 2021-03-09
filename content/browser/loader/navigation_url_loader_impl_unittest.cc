@@ -98,8 +98,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         base::BindOnce(&TestNavigationLoaderInterceptor::DeleteURLLoader,
                        base::Unretained(this)),
         std::move(receiver), 0 /* options */, resource_request,
-        std::move(client), /*reponse_body_use_tracker=*/base::nullopt,
-        TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+        std::move(client), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
         /*coep_reporter=*/nullptr, 0, /* request_id */
         0 /* keepalive_request_size */,
         false /* require_network_isolation_key */, resource_scheduler_client_,

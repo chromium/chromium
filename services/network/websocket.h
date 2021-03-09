@@ -72,7 +72,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
       base::Optional<WebSocketThrottler::PendingConnection>
           pending_connection_tracker,
-      DataPipeUseTracker,
       base::TimeDelta delay);
   ~WebSocket() override;
 
@@ -220,8 +219,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocket : public mojom::WebSocket {
   base::queue<DataFrame> pending_send_data_frames_;
   bool wait_for_readable_ = false;
   bool blocked_on_websocket_channel_ = false;
-
-  DataPipeUseTracker data_pipe_use_tracker_;
 
   // True if we should preserve the old behaviour where <=64KB messages were
   // never fragmented.

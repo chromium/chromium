@@ -484,6 +484,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DataPipeUseForUrlLoader.Max" units="count"
     expires_after="M88">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -495,6 +498,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DataPipeUseForUrlLoader.Min" units="count"
     expires_after="M88">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -506,6 +512,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DataPipeUseForWebSocket.Max" units="count"
     expires_after="M88">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -517,6 +526,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DataPipeUseForWebSocket.Min" units="count"
     expires_after="M88">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>src/net/OWNERS</owner>

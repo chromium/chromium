@@ -67,40 +67,6 @@ class NetworkService;
 class NetworkUsageAccumulator;
 class SCTAuditingCache;
 
-// DataPipeUseTracker tracks the mojo data pipe usage in the network
-// service.
-class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeUseTracker final {
- public:
-  enum DataPipeUser {
-    kUrlLoader = 0,
-    kWebSocket = 1,
-  };
-  // |network_service| must outlive |this|.
-  DataPipeUseTracker(NetworkService* network_service, DataPipeUser user);
-  DataPipeUseTracker(DataPipeUseTracker&&);
-  ~DataPipeUseTracker();
-  DataPipeUseTracker(const DataPipeUseTracker&) = delete;
-  DataPipeUseTracker& operator=(const DataPipeUseTracker&) = delete;
-
-  // Call this when the associated data pipe is created.
-  void Activate();
-  // Call this when (one end of) the associated data pipe is dropped.
-  void Reset();
-
- private:
-  enum State {
-    kInit,
-    kActivated,
-    kReset,
-  };
-  NetworkService* const network_service_;
-  const DataPipeUser user_;
-
-  State state_ = State::kInit;
-};
-
-using DataPipeUser = DataPipeUseTracker::DataPipeUser;
-
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     : public mojom::NetworkService {
  public:
@@ -294,10 +260,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   SCTAuditingCache* sct_auditing_cache() { return sct_auditing_cache_.get(); }
 #endif
 
-  void OnDataPipeCreated(DataPipeUser user);
-  void OnDataPipeDropped(DataPipeUser user);
-  void StopMetricsTimerForTesting();
-
   static NetworkService* GetNetworkServiceForTesting();
 
  private:
@@ -308,8 +270,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // Called by a NetworkContext when its mojo pipe is closed. Deletes the
   // context.
   void OnNetworkContextConnectionClosed(NetworkContext* network_context);
-
-  void ReportMetrics();
 
   bool initialized_ = false;
 
@@ -384,9 +344,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   std::unique_ptr<CRLSetDistributor> crl_set_distributor_;
 
-  // A timer that periodically calls ReportMetrics every 20 minutes.
-  base::RepeatingTimer metrics_trigger_timer_;
-
   // Whether new NetworkContexts will be configured to partition their
   // HttpAuthCaches by NetworkIsolationKey.
   bool split_auth_cache_by_network_isolation_key_ = false;
@@ -406,13 +363,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
-
-  struct DataPipeUsage final {
-    int current = 0;
-    int max = 0;
-    int min = 0;
-  };
-  base::flat_map<DataPipeUser, DataPipeUsage> data_pipe_use_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkService);
 };

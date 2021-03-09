@@ -458,7 +458,6 @@ URLLoader::URLLoader(
     int32_t options,
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
-    base::Optional<DataPipeUseTracker> response_body_use_tracker,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const mojom::URLLoaderFactoryParams* factory_params,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
@@ -494,7 +493,6 @@ URLLoader::URLLoader(
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client)),
-      response_body_use_tracker_(std::move(response_body_use_tracker)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunnerHandle::Get()),
@@ -1344,9 +1342,6 @@ void URLLoader::ContinueOnResponseStarted() {
     NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
     return;
   }
-  if (response_body_use_tracker_) {
-    response_body_use_tracker_->Activate();
-  }
   DCHECK(response_body_stream_.is_valid());
   DCHECK(consumer_handle_.is_valid());
 
@@ -1830,7 +1825,6 @@ void URLLoader::NotifyCompleted(int error_code) {
           KeepaliveRequestResult::kErrorBeforeResponseArrival);
     }
   }
-  response_body_use_tracker_ = base::nullopt;
   // Ensure sending the final upload progress message here, since
   // OnResponseCompleted can be called without OnResponseStarted on cancellation
   // or error cases.
@@ -1944,8 +1938,6 @@ void URLLoader::CompletePendingWrite(bool success) {
     // destroyed.
     response_body_stream_ =
         pending_write_->Complete(pending_write_buffer_offset_);
-  } else {
-    response_body_use_tracker_ = base::nullopt;
   }
   total_written_bytes_ += pending_write_buffer_offset_;
   pending_write_ = nullptr;
