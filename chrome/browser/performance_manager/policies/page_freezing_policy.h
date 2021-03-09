@@ -7,6 +7,8 @@
 
 #include <array>
 
+#include "base/containers/flat_map.h"
+#include "base/timer/timer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -54,6 +56,9 @@ class PageFreezingPolicy : public GraphObserver,
     page_freezer_ = std::move(page_freezer);
   }
 
+  static const base::TimeDelta GetUnfreezeIntervalForTesting();
+  static const base::TimeDelta GetUnfreezeDurationForTesting();
+
  protected:
   // List of states that prevent a tab from being frozen.
   enum CannotFreezeReason {
@@ -74,6 +79,13 @@ class PageFreezingPolicy : public GraphObserver,
   static const char* CannotFreezeReasonToString(CannotFreezeReason reason);
 
  private:
+  // Actions that can be performed by the temporary unfreeze logic. It either
+  // should unfreeze the page node or refreeze it.
+  enum class PageNodeUnfreezeAction {
+    kTemporaryUnfreeze,
+    kRefreeze,
+  };
+
   // GraphObserver implementation:
   void OnBeforeGraphDestroyed(Graph* graph) override;
 
@@ -91,6 +103,7 @@ class PageFreezingPolicy : public GraphObserver,
       base::Optional<performance_manager::freezing::FreezingVote> previous_vote)
       override;
   void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnPageLifecycleStateChanged(const PageNode* page_node) override;
 
   // PageLiveStateObserver:
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override;
@@ -117,9 +130,22 @@ class PageFreezingPolicy : public GraphObserver,
   void InvalidateNegativeFreezingVote(const PageNode* page_node,
                                       CannotFreezeReason reason);
 
+  // Unfreeze |page_node| and schedule a task to refreeze it.
+  void TemporarilyUnfreezePageNode(const PageNode* page_node);
+
+  // Refreeze |page_node| after it has been temporarily unfrozen.
+  void FreezePageNodeAfterTemporaryUnfreeze(const PageNode* page_node);
+
   // Holds one voting channel per CannotFreezeReason.
   std::array<freezing::FreezingVotingChannel, CannotFreezeReason::kCount>
       voting_channels_;
+
+  // Map that tracks the frozen |page_node| and the periodic unfreeze/refreeze
+  // tasks associated to them.
+  base::flat_map<
+      const PageNode*,
+      std::pair<PageNodeUnfreezeAction, std::unique_ptr<base::OneShotTimer>>>
+      page_nodes_unfreeze_tasks_;
 
   // The page node being removed, used to avoid freezing/unfreezing a page node
   // while it's being removed.
