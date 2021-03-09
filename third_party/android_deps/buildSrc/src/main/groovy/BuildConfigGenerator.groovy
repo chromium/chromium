@@ -611,16 +611,7 @@ class BuildConfigGenerator extends DefaultTask {
           case "androidx_core_core":
           case "com_google_guava_guava_android":
           case "google_play_services_basement":
-              def preconditionsTarget = null
-              if (targetName == "androidx_core_core") {
-                  preconditionsTarget = "preconditions_androidx_stub_java"
-              }
-              if (targetName == "google_play_services_basement") {
-                  preconditionsTarget = "preconditions_gms_stub_java"
-              }
               if (targetName == "com_google_guava_guava_android") {
-                  preconditionsTarget = "preconditions_guava_stub_java"
-
                   // com_google_guava_guava_android is java_prebuilt().
                   sb.append("bypass_platform_checks = true")
               }
@@ -633,7 +624,7 @@ class BuildConfigGenerator extends DefaultTask {
                 |     "${computePreconditionsClassForDep(dependencyId)}",
                 |   ]
                 |   deps += [
-                |     "//third_party/android_deps/local_modifications/preconditions:${preconditionsTarget}",
+                |     "//third_party/android_deps/local_modifications/preconditions:preconditions_stub_java",
                 |   ]
                 | }
                 |""".stripMargin())
