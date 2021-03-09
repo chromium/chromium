@@ -82,6 +82,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                 ChromeFeatureList.TAB_TO_GTS_ANIMATION,
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
+                ChromeFeatureList.THEME_REFACTOR_ANDROID,
                 ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW,
                 ChromeFeatureList.USE_CHIME_ANDROID_SDK,
                 ChromeFeatureList.READ_LATER,

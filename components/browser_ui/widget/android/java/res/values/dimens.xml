@@ -96,11 +96,11 @@
     <dimen name="swipe_vertical_drag_threshold">5dp</dimen>
     <dimen name="swipe_horizontal_drag_threshold">10dp</dimen>
 
-  <!-- Query tile dimensions -->
-  <dimen name="tile_ideal_width">80dp</dimen>
+    <!-- Query tile dimensions -->
+    <dimen name="tile_ideal_width">80dp</dimen>
 
-  <!-- Query tile container dimensions -->
-  <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
+    <!-- Query tile container dimensions -->
+    <dimen name="tile_grid_inter_tile_padding">12dp</dimen>
 
     <!-- Tile view dimensions -->
     <dimen name="tile_view_bg_corner_radius">2dp</dimen>
@@ -129,4 +129,10 @@
     <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
     <dimen name="chip_list_side_padding">-16dp</dimen>
 
+    <!-- Misc. app menu dimens -->
+    <dimen name="app_menu_corner_size">?attr/menuCornerSize</dimen>
+    <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
+
+    <!-- Misc refactor dimensions -->
+    <dimen name="refactor_menu_rounded_corner_radius">28dp</dimen>
 </resources>

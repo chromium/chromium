@@ -860,16 +860,14 @@ public class AppMenuTest extends DummyUiActivityTestCase {
     private Rect getPopupLocationRect() {
         View contentView = mAppMenuHandler.getAppMenu().getPopup().getContentView();
         CriteriaHelper.pollUiThread(() -> contentView.getHeight() != 0);
-        Rect bgPadding = new Rect();
-        mAppMenuHandler.getAppMenu().getPopup().getBackground().getPadding(bgPadding);
 
         Rect popupRect = new Rect();
         int[] popupLocation = new int[2];
         contentView.getLocationOnScreen(popupLocation);
-        popupRect.left = popupLocation[0] - bgPadding.left;
-        popupRect.top = popupLocation[1] - bgPadding.top;
-        popupRect.right = popupLocation[0] + contentView.getWidth() + bgPadding.right;
-        popupRect.bottom = popupLocation[1] + contentView.getHeight() + bgPadding.bottom;
+        popupRect.left = popupLocation[0];
+        popupRect.top = popupLocation[1];
+        popupRect.right = popupLocation[0] + contentView.getWidth();
+        popupRect.bottom = popupLocation[1] + contentView.getHeight();
         return popupRect;
     }
 

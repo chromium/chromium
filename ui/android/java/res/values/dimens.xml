@@ -90,4 +90,10 @@
     -->
     <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
+
+    <!-- Elevation levels -->
+    <dimen name="default_elevation_2">3dp</dimen>
+
+    <!-- Arbitrary shadow length for elevation levels -->
+    <dimen name="default_shadow_length_elev_2">6dp</dimen>
 </resources>

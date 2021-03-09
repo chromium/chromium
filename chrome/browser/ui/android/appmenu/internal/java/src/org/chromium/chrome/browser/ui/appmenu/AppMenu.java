@@ -37,7 +37,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -212,10 +211,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // drawable here even though our style says @null we should use this padding instead...
         Drawable originalBgDrawable = mPopup.getBackground();
 
-        // Need to explicitly set the background here.  Relying on it being set in the style caused
-        // an incorrectly drawn background.
-        mPopup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                context.getResources(), R.drawable.popup_bg_tinted));
+        mPopup.setBackgroundDrawable(null);
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
@@ -223,14 +219,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         // Turn off window animations for low end devices.
         if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);
-
-        Rect bgPadding = new Rect();
-        mPopup.getBackground().getPadding(bgPadding);
-
-        int menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width);
-        int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
-
-        mPopup.setWidth(popupWidth);
 
         mCurrentScreenRotation = screenRotation;
         mIsByPermanentButton = isByPermanentButton;
@@ -246,6 +234,25 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             }
         }
 
+        // A List adapter for visible items in the Menu. The first row is added as a header to the
+        // list view.
+        mAdapter = new AppMenuAdapter(this, menuItems, LayoutInflater.from(context),
+                highlightedItemId, customViewBinders, mIconBeforeItem);
+
+        ViewGroup contentView =
+                (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
+        // Setting android:clipToOutline in xml causes an "attribute not found" error.
+        contentView.setClipToOutline(true);
+        mPopup.setElevation(context.getResources().getDimensionPixelSize(R.dimen.menu_elevation));
+
+        Rect bgPadding = new Rect();
+        contentView.getBackground().getPadding(bgPadding);
+
+        int menuWidth = context.getResources().getDimensionPixelSize(R.dimen.menu_width);
+        int popupWidth = menuWidth + bgPadding.left + bgPadding.right;
+
+        mPopup.setWidth(popupWidth);
+
         Rect sizingPadding = new Rect(bgPadding);
         if (isByPermanentButton && originalBgDrawable != null) {
             Rect originalPadding = new Rect();
@@ -254,13 +261,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             sizingPadding.bottom = originalPadding.bottom;
         }
 
-        // A List adapter for visible items in the Menu. The first row is added as a header to the
-        // list view.
-        mAdapter = new AppMenuAdapter(this, menuItems, LayoutInflater.from(context),
-                highlightedItemId, customViewBinders, mIconBeforeItem);
-
-        ViewGroup contentView =
-                (ViewGroup) LayoutInflater.from(context).inflate(R.layout.app_menu_layout, null);
         mListView = (ListView) contentView.findViewById(R.id.app_menu_list);
 
         int footerHeight = inflateFooter(footerResourceId, contentView, menuWidth);

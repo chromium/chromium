@@ -7,6 +7,8 @@
     <attr name="rippleColor" format="color"/>
     <!-- The top or bottom inset of a drawable. -->
     <attr name="verticalInset" format="reference|dimension"/>
+    <!-- The rounded corner radius for the menus. -->
+    <attr name="menuCornerSize" format="reference|dimension"/>
 
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->

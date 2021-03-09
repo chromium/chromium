@@ -15,7 +15,10 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitCompatUtils;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
@@ -51,6 +54,9 @@ public class ChromeBaseAppCompatActivity
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
+            setTheme(R.style.ThemeRefactorAppThemeOverlay);
+        }
         super.onCreate(savedInstanceState);
 
         // Activity level locale overrides must be done in onCreate.

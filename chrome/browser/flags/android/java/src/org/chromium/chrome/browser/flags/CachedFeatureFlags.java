@@ -73,13 +73,13 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false);
             put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false);
             put(ChromeFeatureList.INSTANT_START, false);
-            put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
             put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, false);
             put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false);
             put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true);
             put(ChromeFeatureList.REPORT_FEED_USER_ACTIONS, false);
             put(ChromeFeatureList.INTEREST_FEED_V2, true);
             put(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR, false);
+            put(ChromeFeatureList.THEME_REFACTOR_ANDROID, false);
             put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false);
             put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
             put(ChromeFeatureList.READ_LATER, false);

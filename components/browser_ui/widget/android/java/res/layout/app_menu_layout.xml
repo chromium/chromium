@@ -7,7 +7,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@drawable/app_menu_bg">
 
     <ListView
         android:id="@+id/app_menu_list"
@@ -20,5 +21,4 @@
         android:inflatedId="@+id/app_menu_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
 </LinearLayout>
