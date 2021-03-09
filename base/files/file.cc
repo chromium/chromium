@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -163,6 +164,14 @@ std::string File::ErrorToString(Error error) {
 
   NOTREACHED();
   return "";
+}
+
+void File::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("is_valid", IsValid());
+  dict.Add("created", created_);
+  dict.Add("async", async_);
+  dict.Add("error_details", ErrorToString(error_details_));
 }
 
 }  // namespace base

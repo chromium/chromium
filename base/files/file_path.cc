@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
@@ -1336,6 +1337,10 @@ void FilePath::StripTrailingSeparatorsInternal() {
 
 FilePath FilePath::NormalizePathSeparators() const {
   return NormalizePathSeparatorsTo(kSeparators[0]);
+}
+
+void FilePath::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  perfetto::WriteIntoTracedValue(std::move(context), value());
 }
 
 FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {

@@ -14,7 +14,12 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 using base::File;
 using base::FilePath;
@@ -563,6 +568,22 @@ TEST(FileTest, DuplicateDeleteOnClose) {
   file2.Close();
   ASSERT_FALSE(base::PathExists(file_path));
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(FileTest, TracedValueSupport) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path = temp_dir.GetPath().AppendASCII("file");
+
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE));
+  ASSERT_TRUE(file.IsValid());
+
+  EXPECT_EQ(perfetto::TracedValueToString(file),
+            "{is_valid:true,created:true,async:false,error_details:FILE_OK}");
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 #if defined(OS_WIN)
 // Flakily times out on Windows, see http://crbug.com/846276.

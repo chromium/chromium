@@ -15,6 +15,7 @@
 #include "base/files/file_tracing.h"
 #include "base/files/platform_file.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -316,6 +317,9 @@ class BASE_EXPORT File {
   File Duplicate() const;
 
   bool async() const { return async_; }
+
+  // Serialise this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
 #if defined(OS_WIN)
   // Sets or clears the DeleteFile disposition on the file. Returns true if

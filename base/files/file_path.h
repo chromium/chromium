@@ -114,6 +114,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
 // Windows-style drive letter support and pathname separator characters can be
@@ -426,6 +427,9 @@ class BASE_EXPORT FilePath {
                                     StringPieceType string2) {
     return CompareIgnoreCase(string1, string2) < 0;
   }
+
+  // Serialise this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
 #if defined(OS_APPLE)
   // Returns the string in the special canonical decomposed form as defined for
