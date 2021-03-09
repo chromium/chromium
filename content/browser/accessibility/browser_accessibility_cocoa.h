@@ -66,7 +66,12 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @interface BrowserAccessibilityCocoa : NSAccessibilityElement {
  @private
   content::BrowserAccessibility* _owner;
+  // An array of children of this object. Cached to avoid re-computing.
   base::scoped_nsobject<NSMutableArray> _children;
+  // Whether the children have changed and need to be updated.
+  bool _needsToUpdateChildren;
+  // Whether _children is currently being computed.
+  bool _gettingChildren;
   // Stores the previous value of an edit field.
   base::string16 _oldValue;
 }

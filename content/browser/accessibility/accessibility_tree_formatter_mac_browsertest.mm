@@ -200,9 +200,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestAndCheck(R"~~(data:text/html,
                     <table role="grid"><tr><td>CELL</td></tr></table>)~~",
                {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
@@ -219,9 +216,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_NilValue) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestAndCheck(R"~~(data:text/html,
                     <table role="grid"></table>)~~",
                {"AXCellForColumnAndRow([0, 0])=*"}, R"~~(AXWebArea
@@ -232,9 +226,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        ParameterizedAttributes_IntArray_WrongParameters) {
-  // This line is needed until we turn extra mac nodes back on by default.
-  BrowserAccessibilityManager::AllowExtraMacNodesForTesting();
-
   TestWrongParameters(R"~~(data:text/html,
                            <table role="grid"><tr><td>CELL</td></tr></table>)~~",
                       {"0, 0", "{1, 2}", "[1, NaN]", "[NaN, 1]"},
