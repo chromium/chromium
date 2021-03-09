@@ -152,6 +152,12 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             expected_text = expected_text.encode('utf8')
             actual_text = actual_text.encode('utf8')
         html_diff_content = html_diff(expected_text, actual_text)
+        if six.PY2:
+            # Ensure the diff itself is properly decoded, to avoid
+            # UnicodeDecodeErrors when writing to file. This can happen if
+            # the diff contains unicode characters but the file is written
+            # as ascii because of the default system-level encoding.
+            html_diff_content = unicode(html_diff_content, 'utf8')
         html_diff_subpath = self._write_text_artifact(
             test_failures.FILENAME_SUFFIX_HTML_DIFF, results_dir,
             path_so_far, html_diff_content, extension=".html")
