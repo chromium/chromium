@@ -25,14 +25,15 @@ namespace desks_restore_util {
 
 namespace {
 
-// A key for the dictionaries stored in |kDesksMetricsList|. The entry is an int
-// which represents the number of minutes for
+// |kDesksMetricsList| stores a list of dictionaries with the following
+// key value pairs (<key> : <entry>):
+// |kCreationTimeKey| : an int which represents the number of minutes for
 // base::Time::FromDeltaSinceWindowsEpoch().
+// |kFirstDayVisitedKey| : an int which represents the number of days since
+// local epoch (Jan 1, 2010).
+// |kLastDayVisitedKey| : an int which represents the number of days since
+// local epoch (Jan 1, 2010).
 constexpr char kCreationTimeKey[] = "creation_time";
-
-// Keys for the dictionaries stored in |kDesksMetricsList|. The entries are ints
-// which represent the number of days for
-// base::Time::FromDeltaSinceWindowsEpoch().
 constexpr char kFirstDayVisitedKey[] = "first_day";
 constexpr char kLastDayVisitedKey[] = "last_day";
 

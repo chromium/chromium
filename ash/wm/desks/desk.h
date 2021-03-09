@@ -164,7 +164,8 @@ class ASH_EXPORT Desk {
   void RecordAndResetConsecutiveDailyVisits(bool being_removed);
 
   // Returns the time from base::Time::Now() to Jan 1, 2010 in the local
-  // timezeone in days as an int.
+  // timezeone in days as an int. We use Jan 1, 2010 as an arbitrary epoch
+  // since it is a well-known date in the past.
   int GetDaysFromLocalEpoch() const;
 
   // Overrides the |override_clock_| with |test_clock| for mocking time in
