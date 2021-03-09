@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -274,25 +275,37 @@ public class InstantStartTest {
     }
 
     /**
-     * Create all the files so that tab models can be restored
+     * Create all the files so that tab models can be restored.
      * @param tabIds all the Tab IDs in the normal tab model.
      */
     public static void createTabStateFile(int[] tabIds) throws IOException {
-        createTabStateFile(tabIds, 0);
+        createTabStateFile(tabIds, null, 0);
     }
 
     /**
-     * Create all the files so that tab models can be restored
+     * Create all the files so that tab models can be restored.
      * @param tabIds all the Tab IDs in the normal tab model.
+     * @param urls all of the URLs in the normal tab model.
+     */
+    static void createTabStateFile(int[] tabIds, @Nullable String[] urls) throws IOException {
+        createTabStateFile(tabIds, urls, 0);
+    }
+
+    /**
+     * Create all the files so that tab models can be restored.
+     * @param tabIds all the Tab IDs in the normal tab model.
+     * @param urls all of the URLs in the normal tab model.
      * @param selectedIndex the selected index of normal tab model.
      */
-    public static void createTabStateFile(int[] tabIds, int selectedIndex) throws IOException {
+    public static void createTabStateFile(int[] tabIds, @Nullable String[] urls, int selectedIndex)
+            throws IOException {
         TabModelMetadata normalInfo = new TabModelMetadata(selectedIndex);
-        for (int tabId : tabIds) {
-            normalInfo.ids.add(tabId);
-            normalInfo.urls.add("");
+        for (int i = 0; i < tabIds.length; i++) {
+            normalInfo.ids.add(tabIds[i]);
+            String url = urls != null ? urls[i] : "about:blank";
+            normalInfo.urls.add(url);
 
-            saveTabState(tabId, false);
+            saveTabState(tabIds[i], false);
         }
         TabModelMetadata incognitoInfo = new TabModelMetadata(0);
 
@@ -744,8 +757,7 @@ public class InstantStartTest {
             "/hide_switch_when_no_incognito_tabs/true" +
             "/show_last_active_tab_only/true"})
     @ParameterAnnotations.UseMethodParameter(FeedParams.class)
-    public void renderSingleAsHomepage_SingleTabNoMVTiles(boolean isFeedV2)
-        throws IOException, InterruptedException {
+    public void renderSingleAsHomepage_SingleTabNoMVTiles(boolean isFeedV2) throws IOException {
         // clang-format on
         setFeedVersion(isFeedV2);
 
@@ -1287,6 +1299,30 @@ public class InstantStartTest {
         hideWatcher.waitForBehavior();
         assertEquals(1,
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    public void doNotRestoreEmptyTabs() throws IOException {
+        // clang-format on
+        createTabStateFile(new int[] {0, 1}, new String[] {"", "about:blank"});
+        createThumbnailBitmapAndWriteToFile(0);
+        createThumbnailBitmapAndWriteToFile(1);
+        TabAttributeCache.setTitleForTesting(0, "");
+        TabAttributeCache.setTitleForTesting(0, "Google");
+
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        ViewUtils.onViewWaiting(withId(R.id.tab_list_view));
+        Assert.assertEquals(1, PseudoTab.getAllPseudoTabsFromStateFile().size());
     }
 
     /**
