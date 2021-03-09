@@ -27,7 +27,6 @@ namespace extensions {
 
 class ExtensionSystemSharedFactory;
 class NavigationObserver;
-class StateStoreNotificationObserver;
 class UninstallPingSender;
 class InstallGate;
 class ValueStoreFactory;
@@ -128,8 +127,6 @@ class ExtensionSystemImpl : public ExtensionSystem {
     // The services that are shared between normal and incognito profiles.
 
     std::unique_ptr<StateStore> state_store_;
-    std::unique_ptr<StateStoreNotificationObserver>
-        state_store_notification_observer_;
     std::unique_ptr<StateStore> rules_store_;
     scoped_refptr<ValueStoreFactoryImpl> store_factory_;
     std::unique_ptr<NavigationObserver> navigation_observer_;

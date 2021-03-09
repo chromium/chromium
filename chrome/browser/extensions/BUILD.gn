@@ -679,8 +679,6 @@ static_library("extensions") {
     "standard_management_policy_provider.h",
     "startup_helper.cc",
     "startup_helper.h",
-    "state_store_notification_observer.cc",
-    "state_store_notification_observer.h",
     "suspicious_extension_bubble_delegate.cc",
     "suspicious_extension_bubble_delegate.h",
     "sync_bundle.cc",

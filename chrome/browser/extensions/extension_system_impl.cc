@@ -31,7 +31,6 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/navigation_observer.h"
 #include "chrome/browser/extensions/shared_module_service.h"
-#include "chrome/browser/extensions/state_store_notification_observer.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/update_install_gate.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -115,8 +114,6 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
   // requests.
   state_store_.reset(new StateStore(
       profile_, store_factory_, ValueStoreFrontend::BackendType::STATE, true));
-  state_store_notification_observer_.reset(
-      new StateStoreNotificationObserver(state_store_.get()));
 
   rules_store_.reset(new StateStore(
       profile_, store_factory_, ValueStoreFrontend::BackendType::RULES, false));
