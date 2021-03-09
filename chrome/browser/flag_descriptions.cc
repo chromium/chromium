@@ -3398,6 +3398,16 @@ const char kSwipeToMoveCursorDescription[] =
     "Allows user to use touch gestures to move the text cursor around. This "
     "flag will only take effect on Android 11 and above.";
 
+const char kTabbedAppOverflowMenuIconsName[] =
+    "Android tabbed app overflow menu icons";
+const char kTabbedAppOverflowMenuIconsDescription[] =
+    "If enabled, shows icon in front of each overflow menu item.";
+
+const char kTabbedAppOverflowMenuRegroupName[] =
+    "Android tabbed app overflow menu Regroup";
+const char kTabbedAppOverflowMenuRegroupDescription[] =
+    "If enabled, regroup overflow menu items.";
+
 const char kTabbedAppOverflowMenuThreeButtonActionbarName[] =
     "Android tabbed app overflow menu three buttons actionbar";
 const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[] =

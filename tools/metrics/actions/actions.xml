@@ -14061,7 +14061,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuBackward">
-  <obsolete>Deprecated as of 3/2021</obsolete>
   <owner>gangwu@chromium.org</owner>
   <description>User pressed the back icon in the app menu.</description>
 </action>

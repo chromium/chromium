@@ -177,12 +177,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
-                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
-                R.id.downloads_row_menu_id, R.id.all_bookmarks_row_menu_id,
-                R.id.recent_tabs_menu_id, R.id.divider_line_id, R.id.translate_id,
-                R.id.share_row_menu_id, R.id.feed_follow_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.help_id, R.id.managed_by_menu_id};
+                R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
+                R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
+                R.id.translate_id, R.id.share_row_menu_id, R.id.feed_follow_id,
+                R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id,
+                R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 

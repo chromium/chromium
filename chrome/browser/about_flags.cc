@@ -2015,6 +2015,15 @@ const FeatureEntry::FeatureVariation
          base::size(kPhotoPickerVideoSupportEnabledWithAnimatedThumbnails),
          nullptr}};
 
+const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupBackward[] = {
+    {"action_bar", "backward_button"}};
+const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupShare[] = {
+    {"action_bar", "share_button"}};
+const FeatureEntry::FeatureVariation kTabbedAppOverflowMenuRegroupVariations[] =
+    {{"(backward button)", kTabbedAppOverflowMenuRegroupBackward,
+      base::size(kTabbedAppOverflowMenuRegroupBackward), nullptr},
+     {"(share button)", kTabbedAppOverflowMenuRegroupShare,
+      base::size(kTabbedAppOverflowMenuRegroupShare), nullptr}};
 const FeatureEntry::FeatureParam
     kTabbedAppOverflowMenuThreeButtonActionbarAction[] = {
         {"three_button_action_bar", "action_chip_view"}};
@@ -4409,6 +4418,17 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
+    {"tabbed-app-overflow-menu-icons",
+     flag_descriptions::kTabbedAppOverflowMenuIconsName,
+     flag_descriptions::kTabbedAppOverflowMenuIconsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabbedAppOverflowMenuIcons)},
+    {"tabbed-app-overflow-menu-regroup",
+     flag_descriptions::kTabbedAppOverflowMenuRegroupName,
+     flag_descriptions::kTabbedAppOverflowMenuRegroupDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabbedAppOverflowMenuRegroup,
+         kTabbedAppOverflowMenuRegroupVariations,
+         "AndroidAppMenuUiRework")},
     {"tabbed-app-overflow-menu-three-button-actionbar",
      flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarName,
      flag_descriptions::kTabbedAppOverflowMenuThreeButtonActionbarDescription,

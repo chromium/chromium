@@ -4942,6 +4942,16 @@
     "expiry_milestone": 82
   },
   {
+    "name": "tabbed-app-overflow-menu-icons",
+    "owners": [ "gangwu" ],
+    "expiry_milestone": 90
+  },
+  {
+    "name": "tabbed-app-overflow-menu-regroup",
+    "owners": [ "gangwu" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "tabbed-app-overflow-menu-three-button-actionbar",
     "owners": [ "gangwu" ],
     "expiry_milestone": 91
