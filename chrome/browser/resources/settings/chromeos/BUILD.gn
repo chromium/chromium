@@ -204,6 +204,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_settings.js",
     "i18n_setup.js",
     "page_visibility.js",
+    "privacy_page/privacy_page_browser_proxy.js",
     "search_engines_page/search_engines_browser_proxy.js",
   ]
 }
@@ -477,8 +478,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "prefs/prefs.m.js",
     "prefs/prefs_behavior.m.js",
     "prefs/prefs_types.m.js",
-    "privacy_page/personalization_options.m.js",
-    "privacy_page/privacy_page_browser_proxy.m.js",
+    "privacy_page/personalization_options.js",
     "router.m.js",
     "search_settings.m.js",
     "setting_id_param_util.m.js",

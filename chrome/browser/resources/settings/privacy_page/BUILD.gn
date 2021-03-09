@@ -4,39 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":personalization_options",
-    ":privacy_page_browser_proxy",
-  ]
-}
-
-js_library("personalization_options") {
-  deps = [
-    ":privacy_page_browser_proxy",
-    "..:router",
-    "../controls:settings_toggle_button",
-    "../people_page:signout_dialog",
-    "../people_page:sync_browser_proxy",
-    "../prefs:prefs_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("privacy_page_browser_proxy") {
-  deps = [
-    "..:lifetime_browser_proxy",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
@@ -46,9 +14,9 @@ js_type_check("closure_compile_module") {
     ":cookies_page",
     ":disable_safebrowsing_dialog",
     ":do_not_track_toggle",
-    ":personalization_options.m",
+    ":personalization_options",
     ":privacy_page",
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     ":secure_dns",
     ":secure_dns_input",
     ":security_keys_bio_enroll_dialog",
@@ -89,7 +57,7 @@ js_library("collapse_radio_button") {
 
 js_library("secure_dns") {
   deps = [
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     "..:i18n_setup",
     "../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -99,7 +67,7 @@ js_library("secure_dns") {
 
 js_library("secure_dns_input") {
   deps = [
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     "..:i18n_setup",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -121,10 +89,9 @@ js_library("do_not_track_toggle") {
   ]
 }
 
-js_library("personalization_options.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/privacy_page/personalization_options.m.js" ]
+js_library("personalization_options") {
   deps = [
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     "..:i18n_setup",
     "..:lifetime_browser_proxy.m",
     "../controls:settings_toggle_button.m",
@@ -134,12 +101,11 @@ js_library("personalization_options.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":personalization_options_module" ]
 }
 
 js_library("privacy_page") {
   deps = [
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     "..:hats_browser_proxy",
     "..:i18n_setup",
     "..:metrics_browser_proxy",
@@ -159,10 +125,8 @@ js_library("privacy_page") {
   ]
 }
 
-js_library("privacy_page_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/privacy_page/privacy_page_browser_proxy.m.js" ]
+js_library("privacy_page_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("security_keys_bio_enroll_dialog") {
@@ -230,7 +194,7 @@ js_library("security_keys_subpage") {
 js_library("security_page") {
   deps = [
     ":disable_safebrowsing_dialog",
-    ":privacy_page_browser_proxy.m",
+    ":privacy_page_browser_proxy",
     "..:i18n_setup",
     "..:metrics_browser_proxy",
     "..:route",
@@ -242,20 +206,13 @@ js_library("security_page") {
   ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":modulize",
-    ":personalization_options_module",
-    ":v3_ready_elements",
-  ]
-}
-
-html_to_js("v3_ready_elements") {
+html_to_js("polymer3_elements") {
   js_files = [
     "collapse_radio_button.js",
     "cookies_page.js",
     "disable_safebrowsing_dialog.js",
     "do_not_track_toggle.js",
+    "personalization_options.js",
     "privacy_page.js",
     "secure_dns.js",
     "secure_dns_input.js",
@@ -267,22 +224,4 @@ html_to_js("v3_ready_elements") {
     "security_keys_subpage.js",
     "security_page.js",
   ]
-}
-
-polymer_modulizer("personalization_options") {
-  js_file = "personalization_options.js"
-  html_file = "personalization_options.html"
-  html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/privacy_page/privacy_page_browser_proxy.html|PrivacyPageBrowserProxy,PrivacyPageBrowserProxyImpl,MetricsReporting",
-                   "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|StatusAction,SyncStatus",
-                   "chrome/browser/resources/settings/lifetime_browser_proxy.html|LifetimeBrowserProxyImpl",
-                 ]
-}
-
-js_modulizer("modulize") {
-  input_files = [ "privacy_page_browser_proxy.js" ]
-  namespace_rewrites = settings_namespace_rewrites
 }

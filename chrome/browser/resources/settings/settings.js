@@ -32,7 +32,7 @@ export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserPr
 export {prefToString, stringToPrefValue} from './prefs/pref_util.m.js';
 export {PrefsBehavior} from './prefs/prefs_behavior.m.js';
 export {CrSettingsPrefs} from './prefs/prefs_types.m.js';
-export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.m.js';
+export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page/privacy_page_browser_proxy.js';
 export {ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {buildRouter, routes} from './route.js';
 export {Route, Router} from './router.m.js';
