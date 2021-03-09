@@ -449,7 +449,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public boolean isOfflinePage() {
-        return hasTab() && mOfflineStatus.isOfflinePage(mTab);
+        // Start Surface homepage is not bond with a tab and mTab is kept as the previous tab if
+        // homepage is shown. |!isInOverviewAndShowingOmnibox()| is added here to make sure Start
+        // Surface homepage is not regarded as offline.
+        return hasTab() && mOfflineStatus.isOfflinePage(mTab) && !isInOverviewAndShowingOmnibox();
     }
 
     @Override

@@ -137,7 +137,9 @@ class LocationBarPhone extends LocationBarLayout {
 
         if (!shouldShowLogo) return;
 
-        if (mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
+        if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
+            mStatusCoordinator.setStatusIconShown(true);
+        } else if (mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             mStatusCoordinator.setStatusIconShown(hasFocus());
         } else {
             mStatusCoordinator.setStatusIconShown(true);
