@@ -124,9 +124,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
           prerender::FINAL_STATUS_SAFE_BROWSING);
     }
     // Tab is gone or it's being prerendered.
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(resource.callback, false /*proceed*/,
-                                  false /*showed_interstitial*/));
+    resource.DispatchCallback(FROM_HERE, false /*proceed*/,
+                              false /*showed_interstitial*/);
     return;
   }
 
@@ -141,11 +140,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
         extension_manager->GetExtensionHostForRenderFrameHost(
             web_contents->GetMainFrame());
     if (extension_host) {
-      if (!resource.callback.is_null()) {
-        resource.callback_thread->PostTask(
-            FROM_HERE, base::BindOnce(resource.callback, false /* proceed */,
-                                      false /* showed_interstitial */));
-      }
+      resource.DispatchCallback(FROM_HERE, false /* proceed */,
+                                false /* showed_interstitial */);
       return;
     }
   }

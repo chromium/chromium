@@ -49,6 +49,11 @@ struct UnsafeResource {
   // committed.
   bool IsMainPageLoadBlocked() const;
 
+  // Checks if |callback| is not null and posts it to |callback_thread|.
+  void DispatchCallback(const base::Location& from_here,
+                        bool proceed,
+                        bool showed_interstitial) const;
+
   GURL url;
   GURL original_url;
   GURL navigation_url;

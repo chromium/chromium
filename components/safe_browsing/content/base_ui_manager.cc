@@ -169,12 +169,7 @@ void BaseUIManager::OnBlockingPageDone(
     bool showed_interstitial) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& resource : resources) {
-    if (!resource.callback.is_null()) {
-      DCHECK(resource.callback_thread);
-      resource.callback_thread->PostTask(
-          FROM_HERE,
-          base::BindOnce(resource.callback, proceed, showed_interstitial));
-    }
+    resource.DispatchCallback(FROM_HERE, proceed, showed_interstitial);
 
     GURL allowlist_url = GetAllowlistUrl(
         main_frame_url, false /* is subresource */,
@@ -219,12 +214,8 @@ void BaseUIManager::DisplayBlockingPage(
         (resource.threat_type == SB_THREAT_TYPE_URL_MALWARE &&
          resource.threat_metadata.threat_pattern_type ==
              ThreatPatternType::MALWARE_LANDING)) {
-      if (!resource.callback.is_null()) {
-        DCHECK(resource.callback_thread);
-        resource.callback_thread->PostTask(
-            FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
-                                      false /* showed_interstitial */));
-      }
+      resource.DispatchCallback(FROM_HERE, true /* proceed */,
+                                false /* showed_interstitial */);
       return;
     }
   }
@@ -243,13 +234,8 @@ void BaseUIManager::DisplayBlockingPage(
   // Check if the user has already ignored a SB warning for the same WebContents
   // and top-level domain.
   if (IsAllowlisted(resource)) {
-    if (!resource.callback.is_null()) {
-      DCHECK(resource.callback_thread);
-      resource.callback_thread->PostTask(
-          FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
-                                    false /* showed_interstitial */));
-    }
-
+    resource.DispatchCallback(FROM_HERE, true /* proceed */,
+                              false /* showed_interstitial */);
     return;
   }
 
@@ -290,13 +276,9 @@ void BaseUIManager::DisplayBlockingPage(
   // page (the call to LoadPostCommitErrorPage creates another navigation).
   //
   // If the experiment is enabled, the interstitial is shown below.
-  if (!resource.callback.is_null()) {
-    resource.callback_thread->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            resource.callback, false /* proceed */,
-            resource.IsMainPageLoadBlocked() /* showed_interstitial */));
-  }
+  resource.DispatchCallback(
+      FROM_HERE, false /* proceed */,
+      resource.IsMainPageLoadBlocked() /* showed_interstitial */);
 
   if (!base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     DCHECK(!resource.is_delayed_warning);
