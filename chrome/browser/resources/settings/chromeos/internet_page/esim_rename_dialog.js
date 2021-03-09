@@ -14,10 +14,10 @@ Polymer({
   ],
 
   properties: {
-    /** @type {string} */
-    iccid: {
-      type: String,
-      value: '',
+    /** @type {?OncMojo.NetworkStateProperties} */
+    networkState: {
+      type: Object,
+      value: null,
     },
 
     /** @type {boolean} */
@@ -45,15 +45,6 @@ Polymer({
     }
   },
 
-  /**
-   * Provides an interface to the ESimManager Mojo service.
-   * @private {?chromeos.cellularSetup.mojom.ESimManagerRemote}
-   */
-  eSimManagerRemote_: null,
-
-  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
-  networkConfig_: null,
-
   /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
   esimProfileRemote_: null,
 
@@ -64,11 +55,14 @@ Polymer({
 
   /** @private */
   async init_() {
-    this.esimProfileRemote_ = await cellular_setup.getESimProfile(this.iccid);
-    const profileProperties = await this.esimProfileRemote_.getProperties();
-    this.esimProfileName_ = profileProperties.properties.nickname ?
-        this.convertString16ToJSString_(profileProperties.properties.nickname) :
-        this.convertString16ToJSString_(profileProperties.properties.name);
+    if (!(this.networkState &&
+          this.networkState.type ===
+              chromeos.networkConfig.mojom.NetworkType.kCellular)) {
+      return;
+    }
+    this.esimProfileRemote_ = await cellular_setup.getESimProfile(
+        this.networkState.typeState.cellular.iccid);
+    this.esimProfileName_ = this.networkState.name;
   },
 
   /**

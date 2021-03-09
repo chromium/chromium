@@ -169,7 +169,7 @@
     <template is="dom-if" if="[[showESimProfileRenameDialog_]]" restamp>
       <esim-rename-dialog id="esimRenameDialog"
           on-close="onCloseESimProfileRenameDialog_"
-          iccid="[[esimProfileIccid_]]"
+          network-state="[[eSimNetworkState_]]"
           show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-rename-dialog>
     </template>
@@ -177,7 +177,7 @@
     <template is="dom-if" if="[[showESimRemoveProfileDialog_]]" restamp>
       <esim-remove-profile-dialog id="esimRemoveProfileDialog"
           on-close="onCloseESimRemoveProfileDialog_"
-          iccid="[[esimProfileIccid_]]"
+          network-state="[[eSimNetworkState_]]"
           show-cellular-disconnect-warning="[[hasActivePSimNetwork_]]">
       </esim-remove-profile-dialog>
     </template>

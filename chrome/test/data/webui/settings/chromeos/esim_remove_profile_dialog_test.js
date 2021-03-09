@@ -9,15 +9,17 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // clang-format on
 
 suite('EsimRemoveProfileDialog', function() {
+  const TEST_CELLULAR_GUID = 'cellular_guid';
+
   let esimRemoveProfileDialog;
   let eSimManagerRemote;
   let mojoApi_;
-
 
   setup(function() {
     eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
@@ -31,7 +33,8 @@ suite('EsimRemoveProfileDialog', function() {
   async function init(iccid) {
     esimRemoveProfileDialog =
         document.createElement('esim-remove-profile-dialog');
-    esimRemoveProfileDialog.iccid = iccid;
+    const response = await mojoApi_.getNetworkState(TEST_CELLULAR_GUID);
+    esimRemoveProfileDialog.networkState = response.result;
     document.body.appendChild(esimRemoveProfileDialog);
     assertTrue(!!esimRemoveProfileDialog);
     await flushAsync();
@@ -54,9 +57,20 @@ suite('EsimRemoveProfileDialog', function() {
     return null;
   }
 
+  function addEsimCellularNetwork(guid, iccid) {
+    const cellular = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kCellular, guid,
+        'profile' + iccid);
+    cellular.typeProperties.cellular.iccid = iccid;
+    cellular.typeProperties.cellular.eid = iccid + 'eid';
+    mojoApi_.setManagedPropertiesForTest(cellular);
+  }
+
   test('Remove esim profile', async function() {
-    eSimManagerRemote.addEuiccForTest(2);
-    init('1');
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+    init();
 
     await flushAsync();
 
@@ -78,8 +92,10 @@ suite('EsimRemoveProfileDialog', function() {
   });
 
   test('Remove esim profile fails', async function() {
-    eSimManagerRemote.addEuiccForTest(2);
-    init('1');
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+    init();
 
     await flushAsync();
 

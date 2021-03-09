@@ -150,11 +150,11 @@ Polymer({
     },
 
     /**
-     * Iccid of an esim profile, used in internet detail menu.
-     * @private {string}
+     * eSIM network used in internet detail menu.
+     * @private {chromeos.networkConfig.mojom.NetworkStateProperties}
      */
-    esimProfileIccid_: {
-      type: String,
+    eSimNetworkState_: {
+      type: Object,
       value: '',
     },
 
@@ -426,11 +426,12 @@ Polymer({
   },
 
   /**
-   * @param {!CustomEvent<!{iccid: string}>} event
+   * @param {!CustomEvent<!{networkState:
+   *     chromeos.networkConfig.mojom.NetworkStateProperties}>} event
    * @private
    */
   onShowESimProfileRenameDialog_(event) {
-    this.esimProfileIccid_ = event.detail.iccid;
+    this.eSimNetworkState_ = event.detail.networkState;
     this.showESimProfileRenameDialog_ = true;
   },
 
@@ -440,11 +441,12 @@ Polymer({
   },
 
   /**
-   * @param {!CustomEvent<!{iccid: string}>} event
+   * @param {!CustomEvent<!{networkState:
+   *     chromeos.networkConfig.mojom.NetworkStateProperties}>} event
    * @private
    */
   onShowESimRemoveProfileDialog_(event) {
-    this.esimProfileIccid_ = event.detail.iccid;
+    this.eSimNetworkState_ = event.detail.networkState;
     this.showESimRemoveProfileDialog_ = true;
   },
 

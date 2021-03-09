@@ -16,11 +16,11 @@ Polymer({
   ],
 
   properties: {
-    /** @private */
-    iccid_: {
-      type: String,
-      value: '',
-    },
+    /** @private {?OncMojo.NetworkStateProperties} */
+    networkState_: {
+      type: Object,
+      value: null,
+    }
   },
 
   /**
@@ -34,6 +34,7 @@ Polymer({
         !loadTimeData.getBoolean('updatedCellularActivationUi')) {
       return;
     }
+    this.networkState_ = null;
 
     // Check if the current network is Cellular using the GUID in the
     // current route. We can't use the 'type' parameter in the url
@@ -52,23 +53,7 @@ Polymer({
           chromeos.networkConfig.mojom.NetworkType.kCellular) {
         return;
       }
-      this.setESimIccid_(networkConfig, guid);
-    });
-  },
-
-  /**
-   * @param {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote}
-   *     networkConfig
-   * @param {string} guid
-   * @private
-   */
-  setESimIccid_(networkConfig, guid) {
-    networkConfig.getManagedProperties(guid).then(response => {
-      const managedProperty = response.result;
-      if (managedProperty.typeProperties.cellular.iccid &&
-          managedProperty.typeProperties.cellular.eid) {
-        this.iccid_ = managedProperty.typeProperties.cellular.iccid;
-      }
+      this.networkState_ = response.result;
     });
   },
 
@@ -86,7 +71,7 @@ Polymer({
    * @private
    */
   shouldShowDotsMenuButton_() {
-    return !!this.iccid_;
+    return !!this.networkState_;
   },
 
   /**
@@ -94,7 +79,8 @@ Polymer({
    * @private
    */
   onRenameESimProfileTap_(e) {
-    this.fire('show-esim-profile-rename-dialog', {iccid: this.iccid_});
+    this.fire(
+        'show-esim-profile-rename-dialog', {networkState: this.networkState_});
   },
 
   /**
@@ -102,6 +88,7 @@ Polymer({
    * @private
    */
   onRemoveESimProfileTap_(e) {
-    this.fire('show-esim-remove-profile-dialog', {iccid: this.iccid_});
+    this.fire(
+        'show-esim-remove-profile-dialog', {networkState: this.networkState_});
   }
 });

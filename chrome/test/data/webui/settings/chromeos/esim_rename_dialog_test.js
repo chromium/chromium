@@ -9,11 +9,14 @@
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
 // clang-format on
 
 suite('EsimRenameDialog', function() {
+  const TEST_CELLULAR_GUID = 'cellular_guid';
+
   let esimRenameDialog;
   let eSimManagerRemote;
   let mojoApi_;
@@ -28,9 +31,10 @@ suite('EsimRenameDialog', function() {
     return flushAsync();
   });
 
-  async function init(iccid) {
+  async function init() {
     esimRenameDialog = document.createElement('esim-rename-dialog');
-    esimRenameDialog.iccid = iccid;
+    const response = await mojoApi_.getNetworkState(TEST_CELLULAR_GUID);
+    esimRenameDialog.networkState = response.result;
     document.body.appendChild(esimRenameDialog);
     assertTrue(!!esimRenameDialog);
     Polymer.dom.flush();
@@ -51,10 +55,20 @@ suite('EsimRenameDialog', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
+  function addEsimCellularNetwork(guid, iccid) {
+    const cellular = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kCellular, guid,
+        'profile' + iccid);
+    cellular.typeProperties.cellular.iccid = iccid;
+    cellular.typeProperties.cellular.eid = iccid + 'eid';
+    mojoApi_.setManagedPropertiesForTest(cellular);
+  }
+
   test('Rename esim profile', async function() {
     eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
     await flushAsync();
-    init('1');
+    init();
 
     return flushAsync().then(async () => {
       const inputBox = esimRenameDialog.$$('#eSimprofileName');
@@ -83,8 +97,9 @@ suite('EsimRenameDialog', function() {
 
   test('Rename esim profile fails', async function() {
     eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
     await flushAsync();
-    init('1');
+    init();
 
     return flushAsync().then(async () => {
       const inputBox = esimRenameDialog.$$('#eSimprofileName');

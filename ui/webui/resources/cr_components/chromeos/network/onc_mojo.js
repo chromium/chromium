@@ -691,6 +691,10 @@
     switch (properties.type) {
       case mojom.NetworkType.kCellular:
         const cellularProperties = properties.typeProperties.cellular;
+        networkState.typeState.cellular.iccid =
+            cellularProperties.iccid || '';
+        networkState.typeState.cellular.eid =
+            cellularProperties.eid || '';
         networkState.typeState.cellular.activationState =
             cellularProperties.activationState;
         networkState.typeState.cellular.networkTechnology =
