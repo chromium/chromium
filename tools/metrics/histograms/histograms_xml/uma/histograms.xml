@@ -417,6 +417,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Errors detected by the persistent memory allocator. These are set when they
     occur. {PersistentAllocatorType}
   </summary>
+  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
 </histogram>
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
@@ -428,6 +429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Percentage of persistent memory segment that has been allocated. This is
     updated only once per reporting cycle. {PersistentAllocatorType}
   </summary>
+  <token key="PersistentAllocatorType" variants="PersistentAllocatorType"/>
 </histogram>
 
 <histogram name="UMA.PersistentHistograms.HistogramsInStartupFile"
