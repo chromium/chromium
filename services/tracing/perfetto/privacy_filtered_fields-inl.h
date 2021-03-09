@@ -200,10 +200,36 @@ constexpr int kChromeMemoryPressureNotificationIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMemoryPressureNotification = {
     kChromeMemoryPressureNotificationIndices, nullptr};
 
+// Proto Message: ChromeTaskAnnotator
+constexpr int kChromeTaskAnnotatorIndices[] = {1, -1};
+constexpr MessageInfo kChromeTaskAnnotator = {kChromeTaskAnnotatorIndices,
+                                              nullptr};
+
+// Proto Message: ChromeBrowserContext
+constexpr int kChromeBrowserContextIndices[] = {1, -1};
+constexpr MessageInfo kChromeBrowserContext = {kChromeBrowserContextIndices,
+                                               nullptr};
+
+// Proto Message: ChromeProfileDestroyer
+constexpr int kChromeProfileDestroyerIndices[] = {1, 2, 4, 5, 6, -1};
+constexpr MessageInfo kChromeProfileDestroyer = {kChromeProfileDestroyerIndices,
+                                                 nullptr};
+
+// Proto Message: ChromeTaskPostedToDisabledQueue
+constexpr int kChromeTaskPostedToDisabledQueueIndices[] = {2, 3, 4, -1};
+constexpr MessageInfo kChromeTaskPostedToDisabledQueue = {
+    kChromeTaskPostedToDisabledQueueIndices, nullptr};
+
+// Proto Message: ChromeTaskGraphRunner
+constexpr int kChromeTaskGraphRunnerIndices[] = {1, -1};
+constexpr MessageInfo kChromeTaskGraphRunner = {kChromeTaskGraphRunnerIndices,
+                                                nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,  2,  3,  5,  6,  9,  10, 11, 12, 16, 17, 24, 25, 26, 27,   28,
-    29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 1001, -1};
+    1,  2,  3,  5,  6,    9,    10,   11,   12,   16,   17, 24, 25,
+    26, 27, 28, 29, 30,   31,   32,   33,   34,   35,   36, 38, 39,
+    40, 41, 42, 43, 1001, 1002, 1003, 1004, 1005, 1006, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -235,7 +261,12 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeWindowHandleEventInfo,
     nullptr,
     &kChromeContentSettingsEventInfo,
-    &kChromeMemoryPressureNotification};
+    &kChromeMemoryPressureNotification,
+    &kChromeTaskAnnotator,
+    &kChromeBrowserContext,
+    &kChromeProfileDestroyer,
+    &kChromeTaskPostedToDisabledQueue,
+    &kChromeTaskGraphRunner};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
