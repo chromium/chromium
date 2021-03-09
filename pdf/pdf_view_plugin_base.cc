@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
@@ -36,6 +37,7 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/ui/file_name.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -284,6 +286,36 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
 
   MessageHandler handler = it->second;
   (this->*handler)(message);
+}
+
+void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
+  engine()->KillFormFocus();
+
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetStringKey("type", "saveData");
+  message.SetStringKey("token", token);
+  message.SetStringKey("fileName", GetFileNameForSaveFromUrl(url_));
+
+  base::Value data_to_save;
+  if (edit_mode_) {
+    base::Value::BlobStorage data = engine()->GetSaveData();
+    if (IsSaveDataSizeValid(data.size()))
+      data_to_save = base::Value(std::move(data));
+  } else {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    uint32_t length = engine()->GetLoadedByteSize();
+    if (IsSaveDataSizeValid(length)) {
+      base::Value::BlobStorage data(length);
+      if (engine()->ReadLoadedBytes(length, data.data()))
+        data_to_save = base::Value(std::move(data));
+    }
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  message.SetKey("dataToSave", std::move(data_to_save));
+  SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {

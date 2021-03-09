@@ -45,7 +45,6 @@
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
 #include "pdf/thumbnail.h"
-#include "pdf/ui/file_name.h"
 #include "pdf/ui/format_page_size.h"
 #include "ppapi/c/dev/ppb_cursor_control_dev.h"
 #include "ppapi/c/pp_errors.h"
@@ -118,10 +117,6 @@ constexpr char kJSAttachmentDataToSave[] = "dataToSave";
 constexpr char kJSSaveType[] = "save";
 constexpr char kJSToken[] = "token";
 constexpr char kJSSaveRequestType[] = "saveRequestType";
-// Save data (Plugin -> Page)
-constexpr char kJSSaveDataType[] = "saveData";
-constexpr char kJSFileName[] = "fileName";
-constexpr char kJSDataToSave[] = "dataToSave";
 // Reset print preview mode (Page -> Plugin)
 constexpr char kJSResetPrintPreviewModeType[] = "resetPrintPreviewMode";
 constexpr char kJSPrintPreviewUrl[] = "url";
@@ -1033,41 +1028,6 @@ void OutOfProcessInstance::NotifySelectedFindResultChanged(
     int current_find_index) {
   DCHECK_GE(current_find_index, -1);
   SelectedFindResultChanged(current_find_index);
-}
-
-void OutOfProcessInstance::SaveToBuffer(const std::string& token) {
-  engine()->KillFormFocus();
-
-  pp::VarDictionary message;
-  message.Set(kType, kJSSaveDataType);
-  message.Set(kJSToken, pp::Var(token));
-  message.Set(kJSFileName, pp::Var(GetFileNameForSaveFromUrl(GetURL())));
-  // This will be overwritten if the save is successful.
-  message.Set(kJSDataToSave, pp::Var(pp::Var::Null()));
-
-  if (edit_mode()) {
-    std::vector<uint8_t> data = engine()->GetSaveData();
-    if (IsSaveDataSizeValid(data.size())) {
-      pp::VarArrayBuffer buffer(data.size());
-      std::copy(data.begin(), data.end(),
-                reinterpret_cast<char*>(buffer.Map()));
-      message.Set(kJSDataToSave, buffer);
-    }
-  } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    uint32_t length = engine()->GetLoadedByteSize();
-    if (IsSaveDataSizeValid(length)) {
-      pp::VarArrayBuffer buffer(length);
-      if (engine()->ReadLoadedBytes(length, buffer.Map())) {
-        message.Set(kJSDataToSave, buffer);
-      }
-    }
-#else
-    NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  PostMessage(message);
 }
 
 void OutOfProcessInstance::SaveToFile(const std::string& token) {

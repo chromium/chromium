@@ -172,7 +172,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   bool CanSaveEdits() const;
   void SaveToFile(const std::string& token);
-  void SaveToBuffer(const std::string& token);
 
   void FormDidOpen(int32_t result);
 
