@@ -982,7 +982,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             # Some tests put in non utf-8 char as part of the test
             # which breaks uploads, so need to decode and re-encode.
             result_sink_client.Post(
-                r.GetName(), r.GetType(),
+                r.GetName(), r.GetType(), r.GetDuration(),
                 r.GetLog().decode('utf-8', 'replace').encode('utf-8'),
                 test_file_name)
 

@@ -58,7 +58,8 @@ class ResultSinkClient(object):
         'Authorization': 'ResultSink %s' % context['auth_token'],
     }
 
-  def Post(self, test_id, status, test_log, test_file, artifacts=None):
+  def Post(self, test_id, status, duration, test_log, test_file,
+           artifacts=None):
     """Uploads the test result to the ResultSink server.
 
     This assumes that the rdb stream has been called already and that
@@ -67,6 +68,7 @@ class ResultSinkClient(object):
     Args:
       test_id: A string representing the test's name.
       status: A string representing if the test passed, failed, etc...
+      duration: An int representing time in ms.
       test_log: A string representing the test's output.
       test_file: A string representing the file location of the test.
       artifacts: An optional dict of artifacts to attach to the test.
@@ -89,6 +91,9 @@ class ResultSinkClient(object):
       test_log_formatted = '<pre>' + test_log_escaped + '</pre>'
 
     tr = {
+        # Duration must be formatted to avoid scientific notation in case
+        # number is too small or too large. Result_db takes seconds, not ms.
+        'duration': '%.9fs' % (duration / 1000.0),
         'expected': expected,
         'status': status,
         'summaryHtml': test_log_formatted,
