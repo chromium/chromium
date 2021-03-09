@@ -545,7 +545,7 @@ bool GLSurfaceAdapter::SupportsDelegatedInk() {
   return surface_->SupportsDelegatedInk();
 }
 
-GLSurfaceAdapter::~GLSurfaceAdapter() {}
+GLSurfaceAdapter::~GLSurfaceAdapter() = default;
 
 scoped_refptr<GLSurface> InitializeGLSurfaceWithFormat(
     scoped_refptr<GLSurface> surface, GLSurfaceFormat format) {
