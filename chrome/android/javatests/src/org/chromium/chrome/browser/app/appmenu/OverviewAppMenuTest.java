@@ -143,9 +143,10 @@ public class OverviewAppMenuTest {
                 int itemId = item.getItemId();
                 assertTrue(itemId == R.id.new_tab_menu_id
                         || itemId == R.id.new_incognito_tab_menu_id
-                        || itemId == R.id.all_bookmarks_menu_id
-                        || itemId == R.id.recent_tabs_menu_id || itemId == R.id.open_history_menu_id
-                        || itemId == R.id.downloads_menu_id || itemId == R.id.close_all_tabs_menu_id
+                        || itemId == R.id.divider_line_id || itemId == R.id.open_history_menu_id
+                        || itemId == R.id.downloads_menu_id || itemId == R.id.all_bookmarks_menu_id
+                        || itemId == R.id.recent_tabs_menu_id
+                        || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
                         || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
                         || itemId == R.id.preferences_id);
@@ -158,7 +159,7 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(11));
+        assertThat(checkedMenuItems, equalTo(13));
     }
 
     @Test
@@ -181,9 +182,10 @@ public class OverviewAppMenuTest {
                 int itemId = item.getItemId();
                 assertTrue(itemId == R.id.new_tab_menu_id
                         || itemId == R.id.new_incognito_tab_menu_id
-                        || itemId == R.id.all_bookmarks_menu_id
-                        || itemId == R.id.recent_tabs_menu_id || itemId == R.id.open_history_menu_id
-                        || itemId == R.id.downloads_menu_id || itemId == R.id.close_all_tabs_menu_id
+                        || itemId == R.id.divider_line_id || itemId == R.id.open_history_menu_id
+                        || itemId == R.id.downloads_menu_id || itemId == R.id.all_bookmarks_menu_id
+                        || itemId == R.id.recent_tabs_menu_id
+                        || itemId == R.id.close_all_tabs_menu_id
                         || itemId == R.id.close_all_incognito_tabs_menu_id
                         || itemId == R.id.menu_group_tabs || itemId == R.id.track_prices_row_menu_id
                         || itemId == R.id.preferences_id);
@@ -196,7 +198,7 @@ public class OverviewAppMenuTest {
                 checkedMenuItems++;
             }
         }
-        assertThat(checkedMenuItems, equalTo(11));
+        assertThat(checkedMenuItems, equalTo(13));
     }
 
     @Test

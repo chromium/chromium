@@ -247,11 +247,9 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
-            ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS})
+    @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testBookmarkMenuItem() throws IOException {
+    public void testBookmarkMenuItem() throws IOException {
         MenuItem bookmarkStar =
                 AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
                         .findItem(R.id.bookmark_this_page_id);
@@ -433,7 +431,6 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP})
     public void testDividerLineMenuItem() throws IOException {
         int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
         Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);

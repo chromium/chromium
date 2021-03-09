@@ -85,9 +85,6 @@ import java.util.Set;
  * items based on activity state.
  */
 public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
-    public static final StringCachedFieldTrialParameter ACTION_BAR_VARIATION =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, "action_bar", "");
     public static final StringCachedFieldTrialParameter THREE_BUTTON_ACTION_BAR_VARIATION =
             new StringCachedFieldTrialParameter(
                     ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR,
@@ -130,13 +127,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         int OVERVIEW_MODE_MENU = 1;
         int START_SURFACE_MODE_MENU = 2;
         int TABLET_EMPTY_MODE_MENU = 3;
-    }
-
-    @IntDef({ActionBarType.STANDARD, ActionBarType.BACKWARD_BUTTON, ActionBarType.SHARE_BUTTON})
-    @interface ActionBarType {
-        int STANDARD = 0;
-        int BACKWARD_BUTTON = 1;
-        int SHARE_BUTTON = 2;
     }
 
     @IntDef({ThreeButtonActionBarType.DISABLED, ThreeButtonActionBarType.ACTION_CHIP_VIEW,
@@ -225,9 +215,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @Override
     public int getAppMenuLayoutId() {
-        if (shouldShowRegroupedMenu() || shouldShowThreeButtonActionBar()) {
-            return R.menu.main_menu_regroup;
-        }
         return R.menu.main_menu;
     }
 
@@ -321,17 +308,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (shouldShowIconRow) {
             SubMenu actionBar = menu.findItem(R.id.icon_row_menu_id).getSubMenu();
 
-            @ActionBarType
-            int actionBarType = getActionBarType();
-            MenuItem backwardMenuItem = actionBar.findItem(R.id.backward_menu_id);
-            if (backwardMenuItem != null) {
-                if (actionBarType == ActionBarType.BACKWARD_BUTTON) {
-                    backwardMenuItem.setEnabled(currentTab.canGoBack());
-                } else {
-                    actionBar.removeItem(R.id.backward_menu_id);
-                }
-            }
-
             // Disable the "Forward" menu item if there is no page to go to.
             MenuItem forwardMenuItem = actionBar.findItem(R.id.forward_menu_id);
             forwardMenuItem.setEnabled(currentTab.canGoForward());
@@ -358,19 +334,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 } else {
                     offlineMenuItem.setEnabled(shouldEnableDownloadPage(currentTab));
                 }
-            }
-
-            MenuItem shareMenuItem = actionBar.findItem(R.id.share_menu_button_id);
-            if (shareMenuItem != null) {
-                if (shouldShowShareInMenu()) {
-                    actionBar.removeItem(R.id.share_menu_button_id);
-                } else {
-                    shareMenuItem.setEnabled(mShareUtils.shouldEnableShare(currentTab));
-                }
-            }
-
-            if (shouldShowInfoInMenu()) {
-                actionBar.removeItem(R.id.info_menu_id);
             }
 
             if (shouldShowThreeButtonActionBar()) {
@@ -474,8 +437,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
-        menu.findItem(R.id.share_row_menu_id)
-                .setVisible(mShareUtils.shouldEnableShare(currentTab) && shouldShowShareInMenu());
+        menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
 
         ShareHelper.configureDirectShareMenuItem(
                 mContext, menu.findItem(R.id.direct_share_menu_id));
@@ -541,11 +503,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         // Only display reader mode settings menu option if the current page is in reader mode.
         menu.findItem(R.id.reader_mode_prefs_id).setVisible(shouldShowReaderModePrefs(currentTab));
-
-        MenuItem infoMenuItem = menu.findItem(R.id.info_id);
-        if (infoMenuItem != null) {
-            infoMenuItem.setVisible(shouldShowInfoInMenu());
-        }
 
         // Only display the Enter VR button if VR Shell Dev environment is enabled.
         menu.findItem(R.id.enter_vr_id).setVisible(shouldShowEnterVr());
@@ -990,35 +947,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         sItemBookmarkedForTesting = bookmarked;
     }
 
-    private boolean shouldShowRegroupedMenu() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP);
-    }
-
     private static boolean shouldShowThreeButtonActionBar() {
         return CachedFeatureFlags.isEnabled(
                 ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR);
-    }
-
-    private boolean shouldShowShareInMenu() {
-        return getActionBarType() != ActionBarType.SHARE_BUTTON;
-    }
-
-    private boolean shouldShowInfoInMenu() {
-        return getActionBarType() != ActionBarType.STANDARD;
-    }
-
-    /**
-     * @return The type of action bar should be shown.
-     */
-    private @ActionBarType int getActionBarType() {
-        if (shouldShowRegroupedMenu()) {
-            if (ACTION_BAR_VARIATION.getValue().equals("backward_button")) {
-                return ActionBarType.BACKWARD_BUTTON;
-            } else if (ACTION_BAR_VARIATION.getValue().equals("share_button")) {
-                return ActionBarType.SHARE_BUTTON;
-            }
-        }
-        return ActionBarType.STANDARD;
     }
 
     /**
