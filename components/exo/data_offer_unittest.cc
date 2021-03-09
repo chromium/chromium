@@ -50,11 +50,14 @@ class TestDataOfferDelegate : public DataOfferDelegate {
     mime_types_.insert(mime_type);
   }
 
-  void OnActions(const base::flat_set<DndAction>& source_actions,
-                 DndAction dnd_action) override {
+  // Called when possible |source_actions| is offered by the client.
+  void OnSourceActions(
+      const base::flat_set<DndAction>& source_actions) override {
     source_actions_ = source_actions;
-    dnd_action_ = dnd_action;
   }
+
+  // Called when current |action| is offered by the client.
+  void OnAction(DndAction dnd_action) override { dnd_action_ = dnd_action; }
 
   const base::flat_set<std::string>& mime_types() const { return mime_types_; }
   const base::flat_set<DndAction>& source_actions() const {
@@ -153,7 +156,8 @@ TEST_F(DataOfferTest, SetTextDropData) {
 
   TestDataExchangeDelegate data_exchange_delegate;
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
-  data_offer.SetActions(source_actions, DndAction::kMove);
+  data_offer.SetSourceActions(source_actions);
+  data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
   EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
   EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
@@ -182,7 +186,8 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
 
   TestDataExchangeDelegate data_exchange_delegate;
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
-  data_offer.SetActions(source_actions, DndAction::kMove);
+  data_offer.SetSourceActions(source_actions);
+  data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
   EXPECT_EQ(1u, delegate.mime_types().count("text/html;charset=utf-8"));
   EXPECT_EQ(1u, delegate.mime_types().count("text/html;charset=utf-16"));

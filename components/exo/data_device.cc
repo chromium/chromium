@@ -95,7 +95,8 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
       std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
   data_offer_->get()->SetDropData(seat_->data_exchange_delegate(),
                                   surface->window(), event.data());
-  data_offer_->get()->SetActions(dnd_actions, DndAction::kAsk);
+  data_offer_->get()->SetSourceActions(dnd_actions);
+  data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());
 }
 

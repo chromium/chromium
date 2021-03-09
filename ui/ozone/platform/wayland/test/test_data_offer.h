@@ -36,7 +36,8 @@ class TestDataOffer : public ServerObject {
   void OnOffer(const std::string& mime_type, ui::PlatformClipboard::Data data);
   void SetActions(uint32_t dnd_actions, uint32_t preferred_action);
 
-  void OnActions(uint32_t source_actions, uint32_t dnd_action);
+  void OnSourceActions(uint32_t source_actions);
+  void OnAction(uint32_t dnd_action);
 
   uint32_t supported_actions() const { return client_supported_actions_; }
   uint32_t preferred_action() const { return client_preferred_action_; }

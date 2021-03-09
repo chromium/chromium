@@ -514,9 +514,9 @@ TEST_P(WaylandDataDragControllerTest, ForeignDragHandleAskAction) {
   auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
   data_offer->OnOffer(kMimeTypeText,
                       ToClipboardData(std::string(kSampleTextForDragAndDrop)));
-  data_offer->OnActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE |
-                            WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY,
-                        WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK);
+  data_offer->OnSourceActions(WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE |
+                              WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+  data_offer->OnAction(WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK);
 
   gfx::Point entered_point(10, 10);
   // The server sends an enter event.

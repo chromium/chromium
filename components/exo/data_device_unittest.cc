@@ -51,8 +51,9 @@ class TestDataOfferDelegate : public DataOfferDelegate {
   // Overridden from DataOfferDelegate:
   void OnDataOfferDestroying(DataOffer* offer) override { delete this; }
   void OnOffer(const std::string& mime_type) override {}
-  void OnActions(const base::flat_set<DndAction>& source_actions,
-                 DndAction action) override {}
+  void OnSourceActions(
+      const base::flat_set<DndAction>& source_actions) override {}
+  void OnAction(DndAction action) override {}
 };
 
 class TestDataDeviceDelegate : public DataDeviceDelegate {
