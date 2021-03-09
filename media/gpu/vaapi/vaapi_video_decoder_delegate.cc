@@ -165,6 +165,11 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
     VAEncryptionSegmentInfo segment_info = {};
     segment_info.segment_start_offset = offset;
     segment_info.segment_length = segment_info.init_byte_length = size;
+    if (decrypt_config_) {
+      // We need to specify the IV even if the segment is clear.
+      memcpy(segment_info.aes_cbc_iv_or_ctr, decrypt_config_->iv().data(),
+             DecryptConfig::kDecryptionKeySize);
+    }
     segments->emplace_back(std::move(segment_info));
     crypto_params->num_segments++;
     crypto_params->segment_info = &segments->front();
