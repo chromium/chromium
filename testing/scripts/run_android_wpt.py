@@ -153,8 +153,18 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     return rest_args
 
-  def _extra_metadata_builder_args(self):
+  @property
+  def browser_specific_expectations_path(self):
     raise NotImplementedError
+
+  def _extra_metadata_builder_args(self):
+    args = ['--additional-expectations=%s' % path
+            for path in self.options.additional_expectations]
+    if not self.options.ignore_browser_specific_expectations:
+      args.extend(['--additional-expectations',
+                   self.browser_specific_expectations_path])
+
+    return args
 
   def _maybe_build_metadata(self):
     metadata_builder_cmd = [
@@ -204,6 +214,12 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
                         help='Controls the path of the WPT runner to use'
                         ' (therefore tests).  Defaults the revision rolled into'
                         ' Chromium.')
+    parser.add_argument('--additional-expectations',
+                        action='append', default=[],
+                        help='Paths to additional test expectations files.')
+    parser.add_argument('--ignore-browser-specific-expectations',
+                        action='store_true', default=False,
+                        help='Ignore browser specific expectation files.')
     parser.add_argument('--test-type', default='testharness',
                         help='Specify to experiment with other test types.'
                         ' Currently only the default is expected to work.')
@@ -269,10 +285,9 @@ class WPTWeblayerAdapter(WPTAndroidAdapter):
          install_webview_provider_as_needed:
       yield
 
-  def _extra_metadata_builder_args(self):
-    return [
-      '--additional-expectations',
-      PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBLAYER]]
+  @property
+  def browser_specific_expectations_path(self):
+    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBLAYER]
 
   def add_extra_arguments(self, parser):
     super(WPTWeblayerAdapter, self).add_extra_arguments(parser)
@@ -310,10 +325,9 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
     with install_shell_as_needed, install_webview_provider_as_needed:
       yield
 
-  def _extra_metadata_builder_args(self):
-    return [
-      '--additional-expectations',
-      PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBVIEW]]
+  @property
+  def browser_specific_expectations_path(self):
+    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[ANDROID_WEBVIEW]
 
   def add_extra_arguments(self, parser):
     super(WPTWebviewAdapter, self).add_extra_arguments(parser)
@@ -340,10 +354,9 @@ class WPTClankAdapter(WPTAndroidAdapter):
     with install_clank_as_needed:
       yield
 
-  def _extra_metadata_builder_args(self):
-    return [
-      '--additional-expectations',
-      PRODUCTS_TO_EXPECTATION_FILE_PATHS[CHROME_ANDROID]]
+  @property
+  def browser_specific_expectations_path(self):
+    return PRODUCTS_TO_EXPECTATION_FILE_PATHS[CHROME_ANDROID]
 
   def add_extra_arguments(self, parser):
     super(WPTClankAdapter, self).add_extra_arguments(parser)
