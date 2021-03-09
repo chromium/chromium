@@ -945,7 +945,6 @@
 
 आप अपने डिवाइस पर Family Link ऐप्लिकेशन इंस्टॉल करके इस खाते की सेटिंग प्रबंधित कर सकते हैं.  हमने आपको ईमेल से निर्देश भेज दिए हैं.</translation>
 <translation id="2040460856718599782">ओह!  आपको प्रमाणित करने की कोशिश करते समय कुछ गड़बड़ी हो गई. कृपया अपने साइन इन क्रेडेंशियल दोबारा जाँचें और फिर से कोशिश करें.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{आपका 1 पासवर्ड या तो हैक हुआ है या चोरी हुआ है}one{आपका # पासवर्ड या तो हैक हुआ है या चोरी हुआ है}other{आपके # पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं}}</translation>
 <translation id="2044014337866019681">पक्का करें कि आप सत्र को अनलॉक करने के लिए, <ph name="ACCOUNT" /> की पुष्टि कर रहे हैं.</translation>
 <translation id="204497730941176055">माइक्रोसॉफ्ट प्रमाणपत्र टेम्पलेट नाम</translation>
 <translation id="2045117674524495717">कीबोर्ड शॉर्टकट सहायक</translation>
@@ -1095,7 +1094,6 @@
 <translation id="2199719347983604670">Chrome सिंक का डेटा</translation>
 <translation id="2200094388063410062">ई-मेल</translation>
 <translation id="2200356397587687044">जारी रखने के लिए Chrome को अनुमति चाहिए</translation>
-<translation id="220138918934036434">छुपाएं बटन</translation>
 <translation id="2202898655984161076">प्रिंटरों को सूचीबद्ध करने में कोई समस्या थी. आपके प्रिंटरों में से कुछ <ph name="CLOUD_PRINT_NAME" /> के साथ सफलतापूर्वक पंजीकृत नहीं हो सके हैं.</translation>
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
@@ -1984,7 +1982,6 @@
 <translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199127022143353223">सर्वर</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}one{Chrome अभी इस पासवर्ड की जांच करने का सुझाव देता है}other{Chrome अभी इन पासवर्ड की जांच करने का सुझाव देता है}}</translation>
 <translation id="3201422919974259695">उपलब्ध यूएसबी डिवाइस यहां दिखाई देंगे.</translation>
 <translation id="3202131003361292969">पाथ</translation>
 <translation id="3202173864863109533">इस टैब का ऑडियो म्‍यूट किया जा रहा है.</translation>
@@ -4471,7 +4468,6 @@
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" किसी एचआईडी डिवाइस से कनेक्ट करना चाहता है</translation>
 <translation id="6080515710685820702">शेयर किए गए कंप्यूटर का उपयोग कर रहे हैं? तो गुप्त विंडो खोलकर देखें.</translation>
 <translation id="6080689532560039067">अपने सिस्टम के समय की जाँच करें</translation>
-<translation id="6082651258230788217">टूलबार में दिखाएं</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - बिना नाम वाले ग्रुप का हिस्सा</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="6086004606538989567">आपने जिस खाते की पुष्टि की है उसके पास इस डिवाइस को ऐक्सेस करने की अनुमति नहीं है.</translation>
@@ -6057,7 +6053,6 @@
 <translation id="7893153962594818789">इस <ph name="DEVICE_TYPE" /> पर ब्लूटूथ बंद है. अपना पासवर्ड डालें और ब्लूटूथ चालू करें.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (सामान्य)</translation>
 <translation id="7897900149154324287">भविष्य में, अपने निकाले जाने योग्य डिवाइस को अनप्लग करने से पहले उसे Files ऐप्लिकेशन से निकालना न भूलें, नहीं तो, आपका डेटा खो सकता है.</translation>
-<translation id="7898627924844766532">टूलबार में रखें</translation>
 <translation id="7898725031477653577">हमेशा अनुवाद करें</translation>
 <translation id="790040513076446191">निजता-संबंधी सेटिंग में हेरफेर करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
@@ -6621,7 +6616,7 @@
 <translation id="8551588720239073785">तारीख और समय की सेटिंग</translation>
 <translation id="8553342806078037065">अन्य लोगों को प्रबंधित करें</translation>
 <translation id="8554899698005018844">कोई भाषा नहीं</translation>
-<translation id="8555195867496021627">कोई भी ई-सिम प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> डाउनलोड करें.</translation>
+<translation id="8555195867496021627">कोई भी ई-सिम प्रोफ़ाइल उपलब्ध नहीं है. नई प्रोफ़ाइल <ph name="BEGIN_LINK" />यहां<ph name="END_LINK" /> से डाउनलोड करें.</translation>
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="8557930019681227453">मेनिफ़ेस्ट</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>

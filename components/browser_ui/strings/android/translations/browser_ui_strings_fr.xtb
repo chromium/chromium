@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="1647582022260550163">Voulez-vous vraiment réinitialiser les autorisations et supprimer les cookies et les données de ce site ?</translation>
 <translation id="1660204651932907780">Autoriser le son des sites (recommandé)</translation>
 <translation id="1677097821151855053">Les cookies et autres données de site servent à se souvenir de vous (par exemple, pour que vous puissiez vous connecter plus facilement ou pour personnaliser les annonces). Pour gérer les cookies de l'ensemble des sites, accédez aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Effacer les données de site ?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Effacer pour ce site ?</translation>
 <translation id="965817943346481315">Bloquer si le site affiche des annonces intrusives ou trompeuses (recommandé)</translation>
 <translation id="967624055006145463">Données stockées</translation>
 </translationbundle>

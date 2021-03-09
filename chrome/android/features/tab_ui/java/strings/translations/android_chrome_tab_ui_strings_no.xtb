@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Du blir varslet når det finnes en lavere pris på en åpen fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
+<translation id="3882834874697329510">For å bli varslet når det finnes en lavere pris på en åpen fane, slå på varsler i Innstillinger.</translation>
 <translation id="3940195383040445971">Spor priser på faner</translation>
 <translation id="3996880007329611795">Bli varslet</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>

@@ -895,6 +895,9 @@
       こうしたおすすめのページは、リモートの Google サーバーから取得されます。
 
       このポリシーが false の場合、おすすめのページは取得されず、表示されません。</translation>
+<translation id="2246011554082893079">このデバイスで <ph name="BOREALIS_NAME" /> を使用できるかどうかを制御します。
+
+      このポリシーを false に設定した場合、デバイスのユーザーは誰も <ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="225340736558643885">安全でないフォームの警告を有効にする</translation>
 <translation id="2258126710006312594">リモート アクセスのユーザーにホストとのファイルの転送を許可します</translation>
 <translation id="2261329877420573811"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_WHITELIST" /> が選択されている場合、<ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。
@@ -1435,6 +1438,9 @@
 <translation id="2960013482187484833">一番最後に使用したプリンタを印刷プレビューのデフォルトの選択肢とする</translation>
 <translation id="2960128438010718932">新しいアップデートの段階的な適用スケジュール</translation>
 <translation id="2960691910306063964">リモート アクセス ホストの PIN 入力なしの認証を有効または無効にする</translation>
+<translation id="2964056138564883247">このユーザーが <ph name="BOREALIS_NAME" /> を使用できるかどうかを制御します。
+
+      このポリシーを false に設定した場合、<ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="2964373560810620158">ユーザーに <ph name="LACROS_NAME" /> ブラウザの使用を許可しない</translation>
 <translation id="2969797921412053304">このポリシーでは、ログイン画面の SAML フロー中にデバイス識別情報のリモート証明書の使用を許可する URL を設定します。
 
@@ -2672,6 +2678,7 @@
 <translation id="4812270373673968774">このポリシーを [常に使用] に設定した場合、<ph name="PRODUCT_OS_NAME" /> シェルフが自動的に非表示になります。このポリシーを [使用しない] に設定した場合、シェルフが非表示になることがなくなります。このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、シェルフが自動的に非表示になるかどうかをユーザーが指定します。</translation>
 <translation id="4812714598405913256">DeviceMinimumVersion ポリシー用の自動更新の有効期限に関するメッセージを設定する</translation>
 <translation id="4816674326202173458">企業ユーザーがメイン ユーザーとしてもセカンダリ ユーザーとしても操作できるようにする（管理対象ユーザー以外のユーザーに対するデフォルトの動作）</translation>
+<translation id="4820432864264617413">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="4826326557828204741">バッテリー電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="482803100714220060">URL 全体を表示する</translation>
 <translation id="4832852360828533362">ユーザーとデバイスに関するレポートの送信</translation>
@@ -2685,6 +2692,7 @@
       このポリシーを未設定のままにするか、無効な値を指定した場合、システム機能の無効化モードは「blocked」になります。</translation>
 <translation id="4835470005923546373">背景のグラフィックの印刷モードをデフォルトで無効にする</translation>
 <translation id="4835622243021053389">NTLMv2 認証を有効にする。</translation>
+<translation id="485419696366295465"><ph name="BOREALIS_NAME" /> サブシステムに関連するポリシーを制御します。</translation>
 <translation id="4855636880814771207">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは Bluetooth をオンまたはオフにすることができます。
 
       このポリシーを無効に設定した場合、<ph name="PRODUCT_OS_NAME" /> では Bluetooth がオフになり、ユーザーはこれをオンにすることができません。
@@ -3219,6 +3227,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">ログイン画面でハイ コントラストを有効にする</translation>
 <translation id="555077880566103058">すべてのサイトで <ph name="FLASH_PLUGIN_NAME" /> プラグインの自動実行を許可する</translation>
+<translation id="5556607617517096419">Borealis</translation>
 <translation id="5559079916187891399">このポリシーは Android アプリには適用されません。</translation>
 <translation id="5560039246134246593"><ph name="PRODUCT_NAME" /> でのバリエーション シードの取得にパラメータを追加します。
 
@@ -3423,6 +3432,7 @@
 <translation id="5814301096961727113">ログイン画面での音声フィードバックのデフォルト状態を設定する</translation>
 <translation id="5815129011704381141">更新後に自動再起動</translation>
 <translation id="582857022372205358">短辺とじの両面印刷を有効にする</translation>
+<translation id="5830196507442186669">デバイスに対して <ph name="PRODUCT_OS_NAME" /> での <ph name="BOREALIS_NAME" /> の使用を許可する</translation>
 <translation id="5832274826894536455">非推奨ポリシー</translation>
 <translation id="5835253272509953988">このポリシーを有効に設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> で入力したユーザー名とパスワードが漏洩していないかどうかを確認できます。
 
@@ -3619,6 +3629,7 @@
 <translation id="6097601282776163274">URL キーによる匿名化データの収集を有効にする</translation>
 <translation id="6099853574908182288">デフォルトのカラー印刷モード</translation>
 <translation id="6102342563050263313">URL フラグメントで指定されたテキストへのスクロールを有効にする</translation>
+<translation id="6102449843040973938">デバイスでの <ph name="BOREALIS_NAME" /> の実行をブロックしない</translation>
 <translation id="6107642964266628393">Chrome OS の更新を適用する方法と時間を制御します。</translation>
 <translation id="6111936128861357925">恐竜のイースター エッグゲームを許可する</translation>
 <translation id="6123052603197028610">タイムスタンプを取得するために Google サーバーへクエリを送信することを許可しない</translation>
@@ -3680,6 +3691,7 @@
       この場合は、サンドボックス化されていない音声サブシステムの実行に関連して、ユーザーがセキュリティ上のリスクにさらされることになります。
       このポリシーを設定しない場合は、音声処理のサンドボックス化に関するデフォルトの設定が使用されます。デフォルトの設定はプラットフォームごとに異なる場合があります。
       このポリシーは、企業のセキュリティ ソフトウェアの設定がサンドボックス化と干渉する場合に、音声処理のサンドボックス化を無効にできるようにするためのものです。</translation>
+<translation id="6252773211180267325">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックしない</translation>
 <translation id="6261643884958898336">マシン識別情報に関するレポートを作成</translation>
 <translation id="6265892395051519509">センサーへのアクセスを許可するサイトを指定します</translation>
 <translation id="6273015149273504999">
@@ -4131,6 +4143,7 @@
 <translation id="6856743875250214792">このポリシーは内部テストのみに使用されており、セキュリティ保証の観点から、M66 ではサポート終了および削除となりました。
 
       <ph name="PRODUCT_NAME" /> の起動時に適用するフラグを指定します。指定したフラグはログイン画面にのみ適用されます。このポリシーで設定したフラグはユーザーのセッションには影響しません。</translation>
+<translation id="6857240169209507953">デバイスでの <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="685769593149966548">YouTube で制限付きモード「強」を強制する</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以降</translation>
 <translation id="68818134518270542">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のロック画面でメモアプリとして有効にできるアプリを指定できます。任意のメモアプリをロック画面に設定すると、そのアプリを起動するための UI 要素が画面に表示されます。アプリを起動すると、ロック画面の上部にウィンドウが表示され、このコンテキストにメモを作成できます。アプリを使用して、作成したメモをメインのユーザー セッションに読み込むことができます（セッションがロックされていない場合）。ロック画面でサポートされているのは <ph name="PRODUCT_NAME" /> のメモアプリのみです。このポリシーを設定すると、アプリの拡張機能 ID がポリシーのリスト値に含まれている場合に、ユーザーはロック画面でアプリを有効にできます。このため、このポリシーを空のリストに設定すると、メモアプリはロック画面で無効になります。ポリシーでアプリ ID を指定しても、ユーザーがロック画面でそのアプリをメモアプリとして有効にできるとは限りません。たとえば、<ph name="PRODUCT_NAME" /> 61 では、使用できる一連のアプリに関して、さらにプラットフォームによる制限が適用されます。このポリシーを未設定のままにした場合、ユーザーがロック画面で有効にできる一連のアプリに関して、ポリシーを通じて適用される制限はありません。</translation>
@@ -4399,12 +4412,6 @@
 <translation id="7146198347561863646">このポリシーを有効に設定するか未設定のままにした場合、電源管理の wake lock が許可されます。拡張機能から Power Management Extension API と ARC アプリを介して wake lock をリクエストできます。
 
       このポリシーを無効に設定した場合、wake lock のリクエストは無視されます。</translation>
-<translation id="7147888508887603697">chrome://password-change ページを有効にします。SAML ユーザーはこのページでセッション中に SAML パスワードを変更して、SAML パスワードとデバイスのロック画面のパスワードを常に同期できます。
-
-      さらに、このポリシーは、SAML パスワードの有効期限が近い SAML ユーザーへの警告通知も有効にします。これにより、ユーザーはすぐにセッション内でパスワードを変更して対応することが可能になります。
-      ただし、この通知は、パスワードの有効期限に関する情報が、SAML ログインフロー中に SAML ID プロバイダからデバイスに送信される場合にのみ表示されます。
-
-      このポリシーを無効に設定するか未設定のままにした場合、chrome://password-change で SAML パスワードを変更することはできず、SAML パスワードの有効期限が近づいても通知されません。</translation>
 <translation id="7149042336307555519"> OS アップデートに使用できる接続のタイプです。OS アップデートは、サイズが大きいために接続に大きな負担がかかり、余分な費用が発生する可能性があります。そのためデフォルトでは、費用が高くなる接続タイプ（現時点では「cellular」）を利用できません。
 
       認識される接続タイプ ID は <ph name="CONNECTION_TYPE_ETHERNET_NAME" />、<ph name="CONNECTION_TYPE_WIFI_NAME" />、<ph name="CONNECTION_TYPE_CELLULAR_NAME" /> です。</translation>
@@ -4545,6 +4552,7 @@
       このポリシーが「RemoveLRUIfDormant」に設定されている場合、自動クリーンアップでは、十分な空き容量が確保されるまで、前回のログイン日時が 3 か月以上前のユーザーがログイン日時の古い順にデバイスから削除されます。
 
       このポリシーが設定されていない場合、自動クリーンアップは組み込みのデフォルト設定を使用します。現在、この設定は「RemoveLRUIfDormant」です。</translation>
+<translation id="7334517274921831425">ユーザーに対して <ph name="PRODUCT_OS_NAME" /> での <ph name="BOREALIS_NAME" /> の使用を許可する</translation>
 <translation id="7336785017449297672">時計とタイムゾーンの設定を制御します。</translation>
 <translation id="7336878834592315572">セッションの継続中は Cookie を保存する</translation>
 <translation id="7338217396351647423">ARC ランタイムに渡される一連のポリシーを指定します。管理者はこのポリシーを使って、自動インストールする Android アプリを選択できます。有効な JSON 形式で値を入力してください。

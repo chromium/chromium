@@ -206,7 +206,6 @@
 <translation id="7067091210845072982">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>
-<translation id="7205698830395646142">隱藏在 Chromium 選單中</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="731644333568559921">更新 Chromium 作業系統(&amp;C)</translation>
 <translation id="731795002583552498">正在更新 Chromium</translation>
@@ -242,7 +241,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7907774600618164274">Chromium 作業系統未正確關閉。</translation>
 <translation id="7937630085815544518">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並行形式安裝的第二個 Chromium，因此無法設定為您的預設瀏覽器。</translation>
-<translation id="7979877361127045932">隱藏在 Chromium 選單中</translation>
 <translation id="8013436988911883588">Chromium 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="8248265253516264921">如果圖片並無有用的說明，Chromium 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>

@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">ویژگی‌های بسیاری از سایت‌ها ممکن است درست کار نکنند</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1644574205037202324">سابقه</translation>
+<translation id="1647582022260550163">مطمئنید می‌خواهید اجازه‌ها را بازنشانی کنید و کوکی‌ها و داده‌های سایت را پاک کنید؟</translation>
 <translation id="1660204651932907780">به سایت‌ها اجازه داده شود صدا پخش کنند (توصیه می‌شود)</translation>
 <translation id="1677097821151855053">از کوکی‌ها و دیگر داده‌های سایت برای به‌خاطر سپردن شما استفاده می‌شود؛ برای مثال ورود به سیستم یا نمایش آگهی‌های شخصی‌شده. برای مدیریت کردن کوکی‌ها برای همه سایت‌ها، به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> بروید.</translation>
 <translation id="1688867105868176567">داده‌های سایت پاک شود؟</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر}}</translation>
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
+<translation id="930525582205581608">این سایت فراموش شود؟</translation>
 <translation id="965817943346481315">اگر سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد مسدود شود (توصیه می‌شود)</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 </translationbundle>

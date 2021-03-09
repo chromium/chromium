@@ -540,6 +540,7 @@
 <translation id="3037605927509011580">Վա՛յ</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="3060227939791841287">C9 (ծրար)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
 <translation id="3061707000357573562">Խոցելիության շտկում</translation>
 <translation id="3064966200440839136">Դուք դուրս կգաք ինկոգնիտո ռեժիմից՝ արտաքին հավելվածում վճարում կատարելու համար։ Շարունակե՞լ։</translation>
 <translation id="3080254622891793721">Գրաֆիկա</translation>
@@ -777,6 +778,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{From # sites }other{# կայքից }}</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-ն արգելափակված է</translation>
+<translation id="3973357910713125165">«Անցնել Chrome-ի անվտանգության ստուգում» կոճակ։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Enter»։</translation>
 <translation id="3987405730340719549">Chrome-ը հայտնաբերել է, որ սա կարող է կեղծ կամ մոլորեցնող կայք լինել:
 
     Եթե կարծում եք, որ սա սխալմունք է, այցելեք https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals էջ։</translation>
@@ -858,6 +860,7 @@
     &lt;h4&gt;Քայլ 5. ստացեք լրացուցիչ օգնություն&lt;/h4&gt;
     &lt;p&gt;Եթե շարունակում եք տեսնել սխալը, կապվեք կայքի սեփականատիրոջ հետ։&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Գործարկել ցանցի ախտորոշումը<ph name="END_LINK" />:</translation>
+<translation id="4229544452621580519">Անցեք անվտանգության ստուգում Chrome-ի կարգավորումներում</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Անցնել <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Վավեր</translation>
 <translation id="4250431568374086873">Կայքին կապակցումը լիարժեք պաշտպանված չէ</translation>
@@ -983,6 +986,7 @@
 <translation id="4756388243121344051">&amp;Պատմություն</translation>
 <translation id="4758311279753947758">Ավելացնել կոնտակտային տվյալներ</translation>
 <translation id="4761104368405085019">Օգտագործել խոսափողը</translation>
+<translation id="4761869838909035636">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="4764776831041365478">Հնարավոր է, <ph name="URL" />-ի վեբէջը ժամանակավորապես ծանրաբեռնված է կամ մշտապես տեղափոխվել է նոր հասցեով:</translation>
 <translation id="4766713847338118463">Երկու ամրակ ներքևում</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

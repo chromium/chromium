@@ -538,6 +538,8 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
 <translation id="6561262006871132942">Zoom ind</translation>
 <translation id="6585618849026997638">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke</translation>
+<translation id="6603393121510733479">Din organisation har deaktiveret privat browsing.
+<ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Valgmuligheder for oversættelse</translation>
 <translation id="6620279676667515405">Annuller</translation>
 <translation id="6624219055418309072">Bloker i inkognito</translation>
@@ -582,6 +584,8 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6988572888918530647">Administrer din Google-konto</translation>
 <translation id="6995899638241819463">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="6998989275928107238">Til</translation>
+<translation id="7004032350256606903">Din organisation kræver, at du bruger privat browsing.
+<ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Seneste faner</translation>
 <translation id="7006788746334555276">Indstillinger for indhold</translation>
 <translation id="7015203776128479407">Den indledende konfiguration af synkronisering blev ikke afsluttet. Synkronisering er deaktiveret.</translation>
@@ -743,6 +747,8 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
 <translation id="8803639129939845298">Sikker</translation>
+<translation id="8806823403540278281">Din organisation kræver, at du bruger privat browsing. Faner gemmes ikke i inkognitotilstand.
+<ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8840513115188359703">Du bliver ikke logget ud af din Google-konto.</translation>
 <translation id="8870413625673593573">Senest lukkede</translation>

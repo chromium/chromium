@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες πολλών ιστοτόπων.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
+<translation id="1647582022260550163">Είστε βέβαιοι ότι θέλετε να επαναφέρετε τις άδειες και να διαγράψετε τα cookie και τα δεδομένα ιστοτόπου;</translation>
 <translation id="1660204651932907780">Να επιτρέπεται στους ιστοτόπους να αναπαράγουν ήχο (συνιστάται)</translation>
 <translation id="1677097821151855053">Τα cookie και άλλα δεδομένα ιστοτόπου χρησιμοποιούνται για την απομνημόνευσή σας, όπως, για παράδειγμα, για σας συνδέουν ή να εξατομικεύουν τις διαφημίσεις σας. Για να διαχειριστείτε τα cookie για όλους τους ιστοτόπους, ανατρέξτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Να διαγραφούν τα δεδομένα ιστοτόπου;</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη}}</translation>
 <translation id="913657688200966289">Ενεργοποιήστε τις άδειες για την εφαρμογή <ph name="APP_NAME" /> στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Κατάργηση απομνημόνευσης αυτού του ιστοτόπου;</translation>
 <translation id="965817943346481315">Αποκλεισμός εάν ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις (συνιστάται)</translation>
 <translation id="967624055006145463">Αποθηκευμένα δεδομένα</translation>
 </translationbundle>

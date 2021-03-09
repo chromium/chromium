@@ -538,6 +538,8 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6524918542306337007">Anonimni način nije dostupan</translation>
 <translation id="6561262006871132942">Povećaj</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
+<translation id="6603393121510733479">Vaša organizacija isključila je anonimno pregledavanje.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcije Prevoditelja</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiranje u anonimnom načinu</translation>
@@ -582,6 +584,8 @@ Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="6988572888918530647">Upravljajte svojim Google računom</translation>
 <translation id="6995899638241819463">Upozori ako su zaporke ugrožene zbog povrede podataka</translation>
 <translation id="6998989275928107238">Do</translation>
+<translation id="7004032350256606903">Vaša organizacija zahtijeva da pregledavate privatno.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
 <translation id="7006788746334555276">Postavke sadržaja</translation>
 <translation id="7015203776128479407">Početno postavljanje sinkronizacije nije dovršeno. Sinkronizacija je isključena.</translation>
@@ -743,6 +747,8 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8756969031206844760">Želite li ažurirati zaporku?</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8803639129939845298">Sigurno</translation>
+<translation id="8806823403540278281">Vaša organizacija zahtijeva da pregledavate privatno. Kartice se ne spremaju u anonimnom načinu.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Knjižne oznake</translation>
 <translation id="8840513115188359703">Nećete se odjaviti s Google računa.</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>

@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Primit ćete obavještenje kada bude niža cijena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sužavanje <ph name="TABS_COUNT_ONE" /> kartice.}one{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karticom.}few{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartice.}other{Sužavanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
+<translation id="3882834874697329510">Da dobijete obavještenje kada je niža cijena na otvorenoj kartici, uključite obavještenja u Postavkama.</translation>
 <translation id="3940195383040445971">Pratite cijene na karticama</translation>
 <translation id="3996880007329611795">Šalji obavještenja</translation>
 <translation id="4133493477912226187">Čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>

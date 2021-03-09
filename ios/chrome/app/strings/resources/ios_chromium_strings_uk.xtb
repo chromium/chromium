@@ -74,6 +74,8 @@
 <translation id="7746854981345936341">Порада щодо Chromium. Деякі кнопки зараз розташовані внизу екрана, як-от "Назад", "Уперед" і "Пошук".</translation>
 <translation id="786327964234957808">Ви переходите з облікового запису <ph name="USER_EMAIL1" /> в обліковий запис <ph name="USER_EMAIL2" />. Наявними даними Chromium керує домен <ph name="DOMAIN" />. Ваші дані буде видалено з пристрою, але вони залишаться в обліковому записі <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Використовуйте сканер у Chromium</translation>
+<translation id="7931842119211730154">Блокувати анонімні вкладки після закриття Chromium</translation>
+<translation id="7980860476903281594">Chromium надає доступ до ваших геоданих тим сайтам, яким ви дозволили доступ до відповідної інформації.</translation>
 <translation id="8013573822802650211">Щоб переглядати свої вкладки Chromium на будь-якому пристрої, увійдіть на ньому в обліковий запис</translation>
 <translation id="8073677936375100957">Видалити дані Chromium із цього пристрою?</translation>
 <translation id="8175055321229419309">Порада. <ph name="BEGIN_LINK" />Перемістіть значок Chromium на панель Dock<ph name="END_LINK" /></translation>

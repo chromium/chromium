@@ -540,6 +540,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3037605927509011580">Oh, ne!</translation>
 <translation id="3041612393474885105">Informacije o potvrdi</translation>
 <translation id="3060227939791841287">C9 (omotnica)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da pokrenete Sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
 <translation id="3064966200440839136">Napuštate anonimni način rada radi plaćanja putem vanjske aplikacije. Nastaviti?</translation>
 <translation id="3080254622891793721">Grafika</translation>
@@ -777,6 +778,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3964661563329879394">{COUNT,plural, =0{Ništa}=1{S jedne web lokacije }one{S # web lokacije }few{S # web lokacije }other{S # web lokacija }}</translation>
 <translation id="397105322502079400">Računanje…</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
+<translation id="3973357910713125165">Dugme Pokrenite Sigurnosnu provjeru Chromea, pritisnite Enter da pokrenete Sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="3987405730340719549">Chrome je utvrdio da bi ova web lokacija mogla biti lažna ili obmanjujućeg sadržaja.
 
     Ako smatrate da je ovo prikazano greškom, posjetite https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -858,6 +860,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
     &lt;h4&gt;5. korak: Potražite dodatnu pomoć&lt;/h4&gt;
     &lt;p&gt;Ako se greška još uvijek prikazuje, obratite se vlasniku web lokacije.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pokušajte pokrenuti dijagnostiku mreže<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Pokrenite Sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Nastavite na web lokaciju <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Važeća</translation>
 <translation id="4250431568374086873">Veza s ovom web-lokacijom nije potpuno sigurna</translation>
@@ -983,6 +986,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4756388243121344051">&amp;Historija</translation>
 <translation id="4758311279753947758">Dodaj informacije o kontaktu</translation>
 <translation id="4761104368405085019">Korištenje vašeg mikrofona</translation>
+<translation id="4761869838909035636">Pokrenite Sigurnosnu provjeru Chromea</translation>
 <translation id="4764776831041365478">Web-stranica na adresi <ph name="URL" /> možda privremeno nije dostupna ili je trajno preseljena na novu web-adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na donjoj strani</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

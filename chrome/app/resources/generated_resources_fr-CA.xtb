@@ -944,7 +944,6 @@ Sinon, déconnectez-vous maintenant pour que les changements apportés à ce com
 
 Vous pouvez gérer les paramètres de ce compte en installant l'application Family Link sur votre appareil.  Nous vous avons envoyé des instructions à ce sujet dans un courriel.</translation>
 <translation id="2040460856718599782">Oups... Nous n'avons pas réussi à vous authentifier. Veuillez vérifier vos identifiants de connexion puis réessayer.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{Vous avez 1 mot de passe compromis}one{Vous avez # mot de passe compromis}other{Vous avez # mots de passe compromis}}</translation>
 <translation id="2044014337866019681">Assurez-vous de vérifier <ph name="ACCOUNT" /> pour déverrouiller la session.</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
 <translation id="2045117674524495717">Aide des raccourcis-clavier</translation>
@@ -1094,7 +1093,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2199719347983604670">Données provenant de la synchronisation Google Chrome</translation>
 <translation id="2200094388063410062">Courriel</translation>
 <translation id="2200356397587687044">Google Chrome a besoin de votre autorisation pour continuer</translation>
-<translation id="220138918934036434">Bouton Masquer</translation>
 <translation id="2202898655984161076">Un problème est survenu lors de la création de la liste des imprimantes. Certaines de vos imprimantes ne sont peut-être pas correctement enregistrées dans <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2204034823255629767">Lire et modifier tout ce que vous tapez</translation>
 <translation id="220858061631308971">Veuillez entrer ce NIP sur l'appareil « <ph name="DEVICE_NAME" /> » :</translation>
@@ -1984,7 +1982,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3190558889382726167">Mot de passe enregistré</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199127022143353223">Serveurs</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome recommande de vérifier ce mot de passe maintenant}one{Chrome recommande de vérifier ce mot de passe maintenant}other{Chrome recommande de vérifier ces mots de passe maintenant}}</translation>
 <translation id="3201422919974259695">Les appareils USB disponibles s'afficheront ici.</translation>
 <translation id="3202131003361292969">Chemin d'accès</translation>
 <translation id="3202173864863109533">L'audio de cet onglet est désactivé.</translation>
@@ -4470,7 +4467,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6078769373519310690">« <ph name="CHROME_EXTENSION_NAME" /> » souhaite se connecter à un appareil HID</translation>
 <translation id="6080515710685820702">Vous utilisez un ordinateur partagé? Essayez d'ouvrir une fenêtre de navigation privée.</translation>
 <translation id="6080689532560039067">Vérifiez l'heure système</translation>
-<translation id="6082651258230788217">Afficher dans la barre d'outils</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> : fait partie d'un groupe sans nom</translation>
 <translation id="6085886413119427067">Détermine la manière de communiquer avec des sites Web par connexion sécurisée</translation>
 <translation id="6086004606538989567">Le compte que vous avez vérifié n'est pas autorisé à accéder à cet appareil.</translation>
@@ -6056,7 +6052,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7893153962594818789">Le Bluetooth est désactivé sur ce <ph name="DEVICE_TYPE" />. Entrez votre mot de passe et activez le Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (par défaut)</translation>
 <translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre périphérique amovible dans l'application Fichiers avant de le débrancher. Sinon, vous risquez de perdre des données.</translation>
-<translation id="7898627924844766532">Garder dans la barre d'outils</translation>
 <translation id="7898725031477653577">Toujours traduire</translation>
 <translation id="790040513076446191">Modifier les paramètres de confidentialité</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

@@ -540,6 +540,7 @@
 <translation id="3037605927509011580">По ѓаволите!</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
 <translation id="3060227939791841287">C9 (плик)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3061707000357573562">Услуга за поправање грешки</translation>
 <translation id="3064966200440839136">Ќе го напуштите режимот „Инкогнито“ за да платите преку надворешна апликација. Ќе продолжите?</translation>
 <translation id="3080254622891793721">Графика</translation>
@@ -777,6 +778,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Ниту еден}=1{Од 1 сајт }one{Од # сајт }other{Од # сајтови }}</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
+<translation id="3973357910713125165">Копче „Изврши безбедносна проверка во Chrome“, притиснете Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3987405730340719549">Chrome утврди дека сајтов може да е лажен или измамнички.
 
     Ако сметате дека ова ви се прикажува по грешка, одете на https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -858,6 +860,7 @@
     &lt;h4&gt;Чекор 5: добијте дополнителна помош&lt;/h4&gt;
     &lt;p&gt;Ако сѐ уште ја гледате грешкава, контактирајте со сопственикот на веб-сајтот.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Извршете безбедносна проверка во поставките за Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Продолжете на <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Важечки</translation>
 <translation id="4250431568374086873">Врската со овој сајт не е потполно безбедна</translation>
@@ -983,6 +986,7 @@
 <translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4758311279753947758">Додај информации за контакт</translation>
 <translation id="4761104368405085019">Користете го микрофонот</translation>
+<translation id="4761869838909035636">Изврши безбедносна проверка во Chrome</translation>
 <translation id="4764776831041365478">Веб-локацијата на <ph name="URL" /> можеби привремено не работи или можеби е трајно преместена на нова веб-адреса.</translation>
 <translation id="4766713847338118463">Двојно спојување долу</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

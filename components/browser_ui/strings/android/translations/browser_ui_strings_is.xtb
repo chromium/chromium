@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Eiginleikar gætu bilað á mörgum vefsvæðum</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1644574205037202324">Ferill</translation>
+<translation id="1647582022260550163">Viltu örugglega endurstilla heimildir og hreinsa fótspor og vefsvæðagögn?</translation>
 <translation id="1660204651932907780">Leyfa vefsvæðum að spila hljóð (mælt með)</translation>
 <translation id="1677097821151855053">Fótspor og önnur gögn af síðunni eru notuð til að muna eftir þér, t.d. til að skrá þig inn eða sérsníða auglýsingar. Upplýsingar um stjórnun fótspora fyrir öll vefsvæði eru í <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Viltu hreinsa vefsvæðagögn?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}one{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}other{„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ og <ph name="NUM_MORE" /> í viðbót}}</translation>
 <translation id="913657688200966289">Kveiktu á heimildum fyrir <ph name="APP_NAME" /> í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Gleyma þessu vefsvæði?</translation>
 <translation id="965817943346481315">Loka fyrir ef vefsvæði sýnir ágengar eða villandi auglýsingar (ráðlagt)</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 </translationbundle>

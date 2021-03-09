@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Je krijgt een melding als er een lagere prijs is op een geopend tabblad</translation>
 <translation id="3328308545011660196">Suggestie: <ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
+<translation id="3882834874697329510">Wil je een melding krijgen als er een lagere prijs is op een geopend tabblad, zet dan meldingen aan in Instellingen.</translation>
 <translation id="3940195383040445971">Prijzen volgen op tabbladen</translation>
 <translation id="3996880007329611795">Meldingen krijgen</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>

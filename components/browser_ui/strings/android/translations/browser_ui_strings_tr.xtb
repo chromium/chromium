@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
+<translation id="1647582022260550163">İzinleri sıfırlayıp çerezleri ve site verilerini temizlemek istediğinizden emin misiniz?</translation>
 <translation id="1660204651932907780">Sitelerin ses çalmasına izin ver (önerilir)</translation>
 <translation id="1677097821151855053">Çerezler ve diğer site verileri sizi hatırlamamız için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölümünden öğrenebilirsiniz.</translation>
 <translation id="1688867105868176567">Site verileri temizlensin mi?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>
+<translation id="930525582205581608">Bu site unutulsun mu?</translation>
 <translation id="965817943346481315">Araya giren veya yanıltıcı reklamlar gösteren sitelerde reklamları engelle (önerilir)</translation>
 <translation id="967624055006145463">Depolanan veriler</translation>
 </translationbundle>

@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">მრავალი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="1620510694547887537">კამერა</translation>
 <translation id="1644574205037202324">ისტორია</translation>
+<translation id="1647582022260550163">ნამდვილად გსურთ, გადააყენოთ ნებართვები, ასევე, გაასუფთაოთ ქუქი-ჩანაწერები და საიტების მონაცემები?</translation>
 <translation id="1660204651932907780">საიტებისთვის ხმის დაკვრის დაშვება (რეკომენდებული)</translation>
 <translation id="1677097821151855053">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">გსურთ საიტის მონაცემების გასუფთავება?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-ისთვის ნებართვების გააქტიურება <ph name="BEGIN_LINK" />Android-ის პარამეტრებში<ph name="END_LINK" /> შეგიძლიათ.</translation>
+<translation id="930525582205581608">გსურთ ამ საიტის დავიწყება?</translation>
 <translation id="965817943346481315">დაბლოკვა, თუ საიტი აჩვენებს მომაბეზრებელ ან შეცდომაში შემყვან რეკლამას (რეკომენდებული)</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
 </translationbundle>

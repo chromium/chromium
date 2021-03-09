@@ -204,7 +204,6 @@ Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilka
 <translation id="7067091210845072982">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google.</translation>
 <translation id="7196312274710523067">Kunne ikke starte Chromium. Prøv på nytt.</translation>
 <translation id="7197677400338048821">Chromium kan ikke sjekke passordene dine. Prøv igjen når det har gått 24 timer.</translation>
-<translation id="7205698830395646142">Skjul i Chromium-menyen</translation>
 <translation id="7223968959479464213">Oppgavebehandling – Chromium</translation>
 <translation id="731644333568559921">Oppdater &amp;Chromium OS</translation>
 <translation id="731795002583552498">Oppdaterer Chromium</translation>
@@ -241,7 +240,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7907774600618164274">Chromium OS ble ikke avsluttet på riktig måte.</translation>
 <translation id="7937630085815544518">Du ble logget på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Du må logge deg på igjen med samme konto.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installering av Chromium. Den kan ikke brukes som standardnettleser.</translation>
-<translation id="7979877361127045932">Skjul i Chromium-menyen</translation>
 <translation id="8013436988911883588">Når Chromium har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
 <translation id="81770708095080097">Denne filen er farlig, så Chromium har blokkert den.</translation>
 <translation id="8248265253516264921">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chromium å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>

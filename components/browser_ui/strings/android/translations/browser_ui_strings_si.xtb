@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">බොහෝ වෙබ් අඩවි මත විශේෂාංග කැඩී ගිය හැක</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1644574205037202324">ඉතිහාසය</translation>
+<translation id="1647582022260550163">ඔබට අවසර යළි සැකසීමට සහ කුකී සහ අඩවි දත්ත ඉවත් කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
 <translation id="1660204651932907780">අඩවිවලට ශබ්දය වාදනය කිරීමට ඉඩ දෙන්න (නිර්දේශිතයි)</translation>
 <translation id="1677097821151855053">ඔබව මතක තබා ගැනීමට කුකි සහ වෙනත් අඩවි දත්ත භාවිත කරයි, උදාහරණයක් ලෙස ඔබව පිරීමට හෝ වෙළඳ දැන්වීම් පුද්ගලිකකරණය කිරීමට. සියලුම වෙබ් අඩවි සඳහා කුකී කළමනාකරණය කිරීමට, <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="1688867105868176567">අඩවි දත්ත හිස් කරන්නද?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> සහ තවත් <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> සඳහා අවසර <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ ක්‍රියාත්මක කරන්න.</translation>
+<translation id="930525582205581608">මෙම අඩවිය අමතක කරන්නද?</translation>
 <translation id="965817943346481315">වෙබ් අඩවිය ආක්‍රමණශීලී හෝ නොමඟ යවන දැන්වීම් පෙන්වන්නේ නම් අවහිර කරන්න (නිර්දේශිතයි)</translation>
 <translation id="967624055006145463">දත්ත ගබඩා කර ඇත</translation>
 </translationbundle>

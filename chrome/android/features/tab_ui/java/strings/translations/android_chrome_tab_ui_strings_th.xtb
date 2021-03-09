@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">คุณจะได้รับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="3882834874697329510">หากต้องการรับการแจ้งเตือนเมื่อมีสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่ ให้เปิดการแจ้งเตือนในการตั้งค่า</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3996880007329611795">รับการแจ้งเตือน</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>

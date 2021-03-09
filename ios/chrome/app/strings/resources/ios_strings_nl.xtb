@@ -538,6 +538,8 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6524918542306337007">Incognitomodus is niet beschikbaar</translation>
 <translation id="6561262006871132942">Inzoomen</translation>
 <translation id="6585618849026997638">Je kunt terugkeren naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
+<translation id="6603393121510733479">Je organisatie heeft privé browsen uitgezet.
+<ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opties voor vertalen</translation>
 <translation id="6620279676667515405">Annuleren</translation>
 <translation id="6624219055418309072">Blokkeren in incognitomodus</translation>
@@ -582,6 +584,8 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6988572888918530647">Je Google-account beheren</translation>
 <translation id="6995899638241819463">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="6998989275928107238">Aan</translation>
+<translation id="7004032350256606903">Je organisatie vereist dat je privé browst.
+<ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent gebruikte tabbladen</translation>
 <translation id="7006788746334555276">Instellingen voor content</translation>
 <translation id="7015203776128479407">Aanvankelijke synchronisatie-instelling is niet voltooid. Synchronisatie is uitgeschakeld.</translation>
@@ -743,6 +747,8 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8756969031206844760">Wachtwoord updaten?</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
 <translation id="8803639129939845298">Beveiligd</translation>
+<translation id="8806823403540278281">Je organisatie vereist dat je privé browst. Tabbladen worden niet opgeslagen in de incognitomodus.
+<ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">Je wordt niet uitgelogd van je Google-account.</translation>
 <translation id="8870413625673593573">Recent gesloten</translation>

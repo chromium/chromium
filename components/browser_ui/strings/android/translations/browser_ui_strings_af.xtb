@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
+<translation id="1647582022260550163">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="1688867105868176567">Vee werfdata uit?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Skakel toestemmings vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
+<translation id="930525582205581608">Vergeet hierdie werf?</translation>
 <translation id="965817943346481315">Blokkeer as werf indringerige of misleidende advertensies wys (aanbeveel)</translation>
 <translation id="967624055006145463">Data geberg</translation>
 </translationbundle>

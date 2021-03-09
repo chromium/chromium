@@ -537,6 +537,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3037605927509011580">Vaia!</translation>
 <translation id="3041612393474885105">Información do certificado</translation>
 <translation id="3060227939791841287">C9 (sobre)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
 <translation id="3064966200440839136">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
 <translation id="3080254622891793721">Libro gráfico</translation>
@@ -774,6 +775,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3964661563329879394">{COUNT,plural, =0{Ningún}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
+<translation id="3973357910713125165">Botón Executar comprobación de seguranza de Chrome. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
 <translation id="3987405730340719549">Chrome determinou que este sitio podería ser falso ou fraudulento.
 
     Se cres que se trata dun erro, visita https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -855,6 +857,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;h4&gt;Paso 5: Recibe axuda adicional&lt;/h4&gt;
     &lt;p&gt;Se aínda ves este erro, contacta co propietario do sitio web.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Proba a executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Executa unha comprobación de seguranza na configuración de Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir a <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">A túa conexión a este sitio non é completamente segura</translation>
@@ -980,6 +983,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
+<translation id="4761869838909035636">Executar comprobación de seguranza de Chrome</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
 <translation id="4766713847338118463">Dúas grampas na parte inferior</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

@@ -540,6 +540,7 @@
 <translation id="3037605927509011580">Όπα! Κάτι πήγε στραβά!</translation>
 <translation id="3041612393474885105">Πληροφορίες πιστοποιητικού</translation>
 <translation id="3060227939791841287">C9 (Φάκελος)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για εκτέλεση του Ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3061707000357573562">Υπηρεσία ενημέρωσης κώδικα</translation>
 <translation id="3064966200440839136">Αποχώρηση από την κατάσταση ανώνυμης περιήγησης για πληρωμή μέσω εξωτερικής εφαρμογής. Συνέχεια;</translation>
 <translation id="3080254622891793721">Γραφικά</translation>
@@ -778,6 +779,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Κανένα}=1{Από 1 ιστότοπο }other{Από # ιστοτόπους }}</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="3973234410852337861">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> είναι αποκλεισμένος</translation>
+<translation id="3973357910713125165">Κουμπί Εκτέλεση Ελέγχου ασφαλείας Chrome, πατήστε Enter για εκτέλεση του Ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3987405730340719549">Το Chrome διαπίστωσε ότι αυτός ο ιστότοπος μπορεί να είναι ψεύτικος ή μη νόμιμος.
 
     Εάν πιστεύετε ότι αυτό το μήνυμα εμφανίζεται κατά λάθος, επισκεφτείτε τη διεύθυνση https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -860,6 +862,7 @@
     &lt;h4&gt;Βήμα 5: Λάβετε περισσότερη βοήθεια&lt;/h4&gt;
     &lt;p&gt;Εάν το σφάλμα εξακολουθεί να εμφανίζεται, επικοινωνήστε με τον κάτοχο του ιστοτόπου.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Δοκιμάστε να εκτελέσετε τον Διαγνωστικό έλεγχο δικτύου<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Εκτέλεση Ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Συνέχεια σε <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Έγκυρο</translation>
 <translation id="4250431568374086873">Η σύνδεσή σας σε αυτόν τον ιστότοπο δεν είναι πλήρως ασφαλής</translation>
@@ -985,6 +988,7 @@
 <translation id="4756388243121344051">&amp;Ιστορικό</translation>
 <translation id="4758311279753947758">Προσθήκη στοιχείων επικοινωνίας</translation>
 <translation id="4761104368405085019">Χρήση του μικροφώνου σας</translation>
+<translation id="4761869838909035636">Εκτέλεση Ελέγχου ασφαλείας Chrome</translation>
 <translation id="4764776831041365478">Η ιστοσελίδα στη διεύθυνση <ph name="URL" /> μπορεί να βρίσκεται προσωρινά εκτός λειτουργίας ή ίσως έχει μεταφερθεί μόνιμα σε νέα διεύθυνση ιστού.</translation>
 <translation id="4766713847338118463">Διπλή συρραφή στο κάτω μέρος</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

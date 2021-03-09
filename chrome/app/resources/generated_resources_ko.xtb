@@ -944,7 +944,6 @@
 
 부모 기기에 Family Link 앱을 설치하여 이 계정의 설정을 관리할 수 있습니다.  안내가 담긴 이메일을 보내 드렸습니다.</translation>
 <translation id="2040460856718599782">인증을 시도하는 중에 문제가 발생했습니다. 로그인 사용자 인증 정보를 확인하고 다시 시도해 주세요.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{유출된 비밀번호가 1개 있습니다.}other{유출된 비밀번호가 #개 있습니다.}}</translation>
 <translation id="2044014337866019681">세션을 잠금 해제하려면 <ph name="ACCOUNT" /> 계정을 인증하세요.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">단축키 도움말</translation>
@@ -1094,7 +1093,6 @@
 <translation id="2199719347983604670">Chrome 동기화 데이터</translation>
 <translation id="2200094388063410062">이메일</translation>
 <translation id="2200356397587687044">계속하려면 Chrome에 권한이 필요함</translation>
-<translation id="220138918934036434">버튼 숨기기</translation>
 <translation id="2202898655984161076">프린터를 나열하는 데 문제가 발생했습니다. <ph name="CLOUD_PRINT_NAME" />에 성공적으로 등록되지 못한 프린터가 있을 수 있습니다.</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
@@ -1983,7 +1981,6 @@
 <translation id="3190558889382726167">비밀번호 저장됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199127022143353223">서버</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}other{지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202131003361292969">경로</translation>
 <translation id="3202173864863109533">이 탭의 오디오가 음소거됩니다.</translation>
@@ -4469,7 +4466,6 @@
 <translation id="6078769373519310690">‘<ph name="CHROME_EXTENSION_NAME" />’에서 HID 기기에 연결하려고 합니다.</translation>
 <translation id="6080515710685820702">공유 컴퓨터를 사용 중이신가요? 시크릿 창에서 열어보세요.</translation>
 <translation id="6080689532560039067">시스템 시간 확인</translation>
-<translation id="6082651258230788217">툴바에서 보기</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 이름이 지정되지 않은 그룹에 속함</translation>
 <translation id="6085886413119427067">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다.</translation>
 <translation id="6086004606538989567">인증한 계정은 이 기기에 액세스할 권한이 없습니다.</translation>
@@ -6056,7 +6052,6 @@
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />(기본)</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
-<translation id="7898627924844766532">툴바에 보관</translation>
 <translation id="7898725031477653577">항상 번역</translation>
 <translation id="790040513076446191">개인정보 보호 관련 설정 조정</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>

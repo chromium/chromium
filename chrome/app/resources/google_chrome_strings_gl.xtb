@@ -101,7 +101,6 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3395323229510056640">Obter axuda sobre Chrome OS</translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
-<translation id="3398288718845740432">Ocultar no menú de Chrome</translation>
 <translation id="3434246496373299699">Chrome pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="3451115285585441894">Engadindo a Chrome...</translation>
 <translation id="345171907106878721">Engádete a Chrome</translation>
@@ -149,7 +148,6 @@
 <translation id="4571503333518166079">Ir á configuración de notificacións de Chrome</translation>
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
-<translation id="4631713731678262610">Ocultar no menú de Chrome</translation>
 <translation id="4633000520311261472">Para que Chrome resulte máis seguro, desactivamos algunhas extensións que non están enumeradas en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
 <translation id="4666328473657283332">Se queres acceder ás túas cousas de Chrome desde calquera dos teus dispositivos, inicia sesión para poder activar a sincronización.</translation>
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>

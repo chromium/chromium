@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">कयौँ साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1647582022260550163">तपाईं साँच्चिकै अनुमतिहरू रिसेट गर्न र कुकी तथा साइटसम्बन्धी डेटा मेटाउन चाहनुहुन्छ?</translation>
 <translation id="1660204651932907780">साइटहरूलाई आवाज प्ले गर्न अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="1677097821151855053">कुकी र साइटका अन्य डेटा तपाईंको जानकारी याद राख्न प्रयोग गरिन्छन्। जस्तै, कुकी र साइटका अन्य डेटा तपाईंलाई साइन इन गराउन वा तपाईंको चाखअनुसारका विज्ञापन देखाउन प्रयोग गरिन्छन्। सबै साइटका कुकीहरू व्यवस्थापन गर्न <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा जानुहोस्।</translation>
 <translation id="1688867105868176567">साइटको डेटा खाली गर्ने हो?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र थप <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई <ph name="APP_NAME" /> लाई अनुमति दिनुहोस्।</translation>
+<translation id="930525582205581608">यो साइटसम्बन्धी जानकारी मेटाउने हो?</translation>
 <translation id="965817943346481315">साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाएमा त्यसलाई रोक लगाउनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="967624055006145463">डेटा भण्डारण गरियो</translation>
 </translationbundle>

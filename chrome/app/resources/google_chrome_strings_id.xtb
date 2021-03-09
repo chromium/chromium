@@ -98,7 +98,6 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3395323229510056640">Dapatkan bantuan Chrome OS</translation>
 <translation id="3396977131400919238">Terjadi kesalahan pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
-<translation id="3398288718845740432">Sembunyikan di Menu Chrome</translation>
 <translation id="3434246496373299699">Chrome dapat memeriksa sandi saat Anda login dengan Akun Google</translation>
 <translation id="3451115285585441894">Menambahkan ke Chrome...</translation>
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
@@ -146,7 +145,6 @@
 <translation id="4571503333518166079">Buka setelan notifikasi Chrome</translation>
 <translation id="459622048091363950">Setelah Chrome memiliki akses, situs dapat meminta akses dari Anda.</translation>
 <translation id="4600710005438004015">Chrome tidak dapat diupdate ke versi terbaru, sehingga Anda tidak mendapatkan perbaikan keamanan dan fitur baru.</translation>
-<translation id="4631713731678262610">Sembunyikan di menu Chrome</translation>
 <translation id="4633000520311261472">Agar Chrome lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum pada <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
 <translation id="4666328473657283332">Untuk mengakses aktivitas Chrome di semua perangkat, login agar Anda dapat mengaktifkan sinkronisasi.</translation>
 <translation id="4728575227883772061">Penginstalan gagal karena kesalahan yang tidak diketahui. Jika Google Chrome sedang berjalan; tutup, lalu ulang kembali.</translation>

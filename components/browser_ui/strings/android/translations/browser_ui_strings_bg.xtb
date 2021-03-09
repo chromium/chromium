@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Функциите в много сайтове може да не работят правилно</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">История</translation>
+<translation id="1647582022260550163">Наистина ли искате да нулирате разрешенията и да изчистите „бисквитките“ и данните за сайта?</translation>
 <translation id="1660204651932907780">Разрешаване на сайтовете да възпроизвеждат звук (препоръчително)</translation>
 <translation id="1677097821151855053">„Бисквитките“ и другите данни за сайтове се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="1688867105868176567">Да се изчистят ли данните за сайта?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Включете разрешенията за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="930525582205581608">Да се забрави ли този сайт?</translation>
 <translation id="965817943346481315">Блокиране, ако на сайта се показват натрапчиви или подвеждащи реклами (препоръчително)</translation>
 <translation id="967624055006145463">Съхранени данни</translation>
 </translationbundle>

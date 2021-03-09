@@ -4469,12 +4469,6 @@
 <translation id="7146198347561863646">如果將這項政策設為啟用或不設定，系統會允許電源管理的 Wake Lock。擴充功能可透過電源管理擴充功能 API 和 ARC 應用程式，要求使用 Wake Lock。
 
       如果將這項政策設為停用，系統會忽略 Wake Lock 使用要求。</translation>
-<translation id="7147888508887603697">在 chrome://password-change 中啟用一個頁面，讓 SAML 使用者能在工作階段中變更 SAML 密碼，並確保 SAML 密碼和裝置的螢幕鎖定密碼能保持同步。
-
-      這項政策也會啟用通知功能，在 SAML 密碼即將到期時提醒 SAML 使用者，方便使用者立即在工作階段中變更密碼。
-      但是，只有當 SAML 識別資訊提供者在 SAML 登入流程中將密碼到期資訊傳送至裝置時，系統才會顯示這些通知。
-
-      如將這項政策設為「停用」或不設定，則無法在 chrome://password-change 變更 SAML 密碼；當 SAML 密碼即將過期時，系統也不會顯示通知。</translation>
 <translation id="7149042336307555519">允許用來進行作業系統更新的連線類型。由於作業系統更新檔案較大，可能會對連線流量造成沉重負荷，也可能會產生額外費用。因此當使用者使用較昂貴的連線類型 (目前僅有「cellular」) 時，系統預設不會啟用作業系統更新。
 
       系統可識別的連線類型 ID 包括 <ph name="CONNECTION_TYPE_ETHERNET_NAME" />、<ph name="CONNECTION_TYPE_WIFI_NAME" /> 和 <ph name="CONNECTION_TYPE_CELLULAR_NAME" />。</translation>

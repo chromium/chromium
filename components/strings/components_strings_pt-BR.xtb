@@ -534,6 +534,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3037605927509011580">Ah, não!</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="3064966200440839136">Saindo do modo de navegação anônima para pagar usando um aplicativo externo. Continuar?</translation>
 <translation id="3080254622891793721">Gráfico</translation>
@@ -771,6 +772,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
+<translation id="3973357910713125165">Botão "Executar a confirmação de segurança do Chrome". Pressione "Enter" para executar a confirmação de segurança nas configurações do Chrome</translation>
 <translation id="3987405730340719549">O Chrome determinou que este site pode ser falso ou fraudulento.
 
     Se você acha que essa mensagem foi mostrada por engano, acesse https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals (em inglês).</translation>
@@ -847,6 +849,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     &lt;h4&gt;Etapa 5: conseguir ajuda extra&lt;/h4&gt;
     &lt;p&gt;Se o erro persistir, entre em contato com o proprietário do site.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Rede<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Executar uma confirmação de segurança nas configurações do Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Ir para <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4250431568374086873">Sua conexão com esse site não é completamente segura</translation>
@@ -972,6 +975,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
 <translation id="4761104368405085019">Usar microfone</translation>
+<translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4764776831041365478">A página <ph name="URL" /> pode estar temporariamente indisponível ou pode ter sido movida permanentemente para um novo endereço da Web.</translation>
 <translation id="4766713847338118463">Dois grampos na parte inferior</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

@@ -944,7 +944,6 @@ Jika tidak, log keluar sekarang agar perubahan pada akaun ini akan dipaparkan pa
 
 Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peranti anda.  Kami telah menghantar arahan kepada anda dalam e-mel.</translation>
 <translation id="2040460856718599782">Op! Berlaku masalah semasa cuba mengesahkan anda. Sila semak bukti kelayakan log masuk anda sekali lagi dan cuba semula.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{Anda mempunyai 1 kata laluan yang terjejas}other{Anda mempunyai # kata laluan yang terjejas}}</translation>
 <translation id="2044014337866019681">Sila pastikan anda mengesahkan <ph name="ACCOUNT" /> untuk membuka kunci sesi.</translation>
 <translation id="204497730941176055">Nama Templat Sijil Microsoft</translation>
 <translation id="2045117674524495717">Pembantu Pintasan Papan Kekunci</translation>
@@ -1094,7 +1093,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2199719347983604670">Data daripada penyegerakan Chrome</translation>
 <translation id="2200094388063410062">E-mel</translation>
 <translation id="2200356397587687044">Chrome memerlukan kebenaran untuk meneruskan</translation>
-<translation id="220138918934036434">Sembunyikan butang</translation>
 <translation id="2202898655984161076">Terdapat masalah menyenaraikan pencetak. Beberapa pencetak anda mungkin tidak berjaya didaftarkan dengan <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2204034823255629767">Baca dan ubah apa sahaja yang anda taip</translation>
 <translation id="220858061631308971">Sila masukkan kod PIN ini pada "<ph name="DEVICE_NAME" />":</translation>
@@ -1983,7 +1981,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3190558889382726167">Kata laluan yang disimpan</translation>
 <translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3199127022143353223">Pelayan</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang}other{Chrome mengesyorkan agar anda menyemak kata laluan ini sekarang}}</translation>
 <translation id="3201422919974259695">Peranti USB yang tersedia akan dipaparkan di sini.</translation>
 <translation id="3202131003361292969">Laluan</translation>
 <translation id="3202173864863109533">Audio bagi tab ini sedang diredam.</translation>
@@ -4471,7 +4468,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" mahu menyambung ke peranti HID</translation>
 <translation id="6080515710685820702">Menggunakan komputer yang dikongsi? Cuba buka tetingkap inkognito.</translation>
 <translation id="6080689532560039067">Semak masa sistem anda</translation>
-<translation id="6082651258230788217">Tunjukkan dalam bar alat</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Sebahagian daripada kumpulan tidak bernama</translation>
 <translation id="6085886413119427067">Menentukan cara menyambung kepada tapak web melalui sambungan selamat</translation>
 <translation id="6086004606538989567">Akaun yang anda sahkan tidak dibenarkan mengakses peranti ini.</translation>
@@ -6058,7 +6054,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="7893153962594818789">Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> ini. Masukkan kata laluan anda dan hidupkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Lalai)</translation>
 <translation id="7897900149154324287">Pada masa hadapan, pastikan anda melentingkan peranti boleh dialih keluar anda dalam apl Fail sebelum mencabutnya. Jika tidak, anda mungkin kehilangan data.</translation>
-<translation id="7898627924844766532">Simpan dalam bar alat</translation>
 <translation id="7898725031477653577">Sentiasa terjemahkan</translation>
 <translation id="790040513076446191">Manipulasi tetapan yang berkaitan privasi</translation>
 <translation id="7901405293566323524">Hab Telefon</translation>

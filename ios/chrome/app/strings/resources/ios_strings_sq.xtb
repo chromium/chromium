@@ -538,6 +538,8 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6524918542306337007">Modaliteti "i fshehtë" nuk ofrohet</translation>
 <translation id="6561262006871132942">Zmadho</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
+<translation id="6603393121510733479">Organizata jote ka çaktivizuar shfletimin privat.
+<ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opsionet e "Përkthe"</translation>
 <translation id="6620279676667515405">Anulo</translation>
 <translation id="6624219055418309072">Blloko në modalitetin "i fshehtë"</translation>
@@ -582,6 +584,8 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="6988572888918530647">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="6995899638241819463">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="6998989275928107238">Për</translation>
+<translation id="7004032350256606903">Organizata jote kërkon që të shfletosh në mënyrë private.
+<ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
 <translation id="7006788746334555276">Cilësimet e përmbajtjes</translation>
 <translation id="7015203776128479407">Konfigurimi i sinkronizimit fillestar nuk përfundoi. Sinkronizimi është joaktiv.</translation>
@@ -743,6 +747,8 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
 <translation id="8775144690796719618">URL-ja është e pavlefshme</translation>
 <translation id="8803639129939845298">E sigurt</translation>
+<translation id="8806823403540278281">Organizata jote kërkon që të shfletosh në mënyrë private. Skedat nuk ruhen në modalitetin "e fshehtë".
+<ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="8840513115188359703">Nuk do të dalësh nga llogaria jote e Google</translation>
 <translation id="8870413625673593573">Të mbyllura së fundi</translation>

@@ -538,6 +538,8 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
+<translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcions del Traductor</translation>
 <translation id="6620279676667515405">Cancel·la</translation>
 <translation id="6624219055418309072">Bloqueja en mode d'incògnit</translation>
@@ -582,6 +584,8 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6988572888918530647">Gestiona el teu Compte de Google</translation>
 <translation id="6995899638241819463">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="6998989275928107238">Per a</translation>
+<translation id="7004032350256606903">La teva organització requereix que naveguis de manera privada.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Pestanyes recents</translation>
 <translation id="7006788746334555276">Configuració del contingut</translation>
 <translation id="7015203776128479407">La configuració de la sincronització inicial no ha finalitzat. La sincronització està desactivada.</translation>
@@ -743,6 +747,8 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8756969031206844760">Vols actualitzar la contrasenya?</translation>
 <translation id="8775144690796719618">URL no vàlid</translation>
 <translation id="8803639129939845298">Segur</translation>
+<translation id="8806823403540278281">La teva organització requereix que naveguis de manera privada. Les pestanyes no es desen en mode d'incògnit.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8840513115188359703">No se us tancarà la sessió del compte de Google.</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>

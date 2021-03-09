@@ -538,6 +538,8 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6524918542306337007">«حالت ناشناس» دردسترس نیست</translation>
 <translation id="6561262006871132942">بزرگ کردن</translation>
 <translation id="6585618849026997638">با اضافه کردن نشانک، می‌توانید به صفحه‌ای که برایتان مهم است برگردید</translation>
+<translation id="6603393121510733479">سازمانتان مرور خصوصی را خاموش کرده است.
+<ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">گزینه‌های ترجمه</translation>
 <translation id="6620279676667515405">لغو</translation>
 <translation id="6624219055418309072">مسدود در حالت «ناشناس»</translation>
@@ -582,6 +584,8 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6988572888918530647">‏مدیریت «حساب Google»</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
 <translation id="6998989275928107238">به</translation>
+<translation id="7004032350256606903">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید.
+<ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">برگه‌های جدید</translation>
 <translation id="7006788746334555276">تنظیمات محتوا</translation>
 <translation id="7015203776128479407">راه‌اندازی اولیه همگام‌سازی کامل نشد. همگام‌سازی خاموش است.</translation>
@@ -743,6 +747,8 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8803639129939845298">ایمن</translation>
+<translation id="8806823403540278281">سازمانتان از شما می‌خواهد به‌طور خصوصی مرور کنید. برگه‌ها در «حالت ناشناس» ذخیره نمی‌شود.
+<ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="8840513115188359703">‏از حساب Google خود خارج نمی‌شوید.</translation>
 <translation id="8870413625673593573">اخیراً بسته‌شده</translation>

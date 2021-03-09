@@ -538,6 +538,8 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6524918542306337007">Mode Samaran Tidak Tersedia</translation>
 <translation id="6561262006871132942">Perbesar</translation>
 <translation id="6585618849026997638">Anda dapat kembali ke halaman yang penting bagi Anda dengan menambahkan bookmark</translation>
+<translation id="6603393121510733479">Organisasi Anda menonaktifkan penjelajahan rahasia.
+<ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opsi Terjemahan</translation>
 <translation id="6620279676667515405">Batal</translation>
 <translation id="6624219055418309072">Blokir dalam mode Samaran</translation>
@@ -582,6 +584,8 @@ Coba gunakan sandi yang unik untuk setiap situs.</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>
 <translation id="6995899638241819463">Berikan peringatan jika sandi Anda terekspos saat terjadi pelanggaran data</translation>
 <translation id="6998989275928107238">Kepada</translation>
+<translation id="7004032350256606903">Organisasi mengharuskan Anda menjelajah secara pribadi.
+<ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Tab Terbaru</translation>
 <translation id="7006788746334555276">Setelan Konten</translation>
 <translation id="7015203776128479407">Penyiapan sinkronisasi awal belum selesai. Sinkronisasi nonaktif.</translation>
@@ -743,6 +747,8 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8756969031206844760">Perbarui sandi?</translation>
 <translation id="8775144690796719618">URL tidak valid</translation>
 <translation id="8803639129939845298">Aman</translation>
+<translation id="8806823403540278281">Organisasi mengharuskan Anda menjelajah secara pribadi. Tab tidak disimpan dalam mode Samaran.
+<ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmark</translation>
 <translation id="8840513115188359703">Anda tidak akan keluar dari Akun Google.</translation>
 <translation id="8870413625673593573">Baru Saja Ditutup</translation>

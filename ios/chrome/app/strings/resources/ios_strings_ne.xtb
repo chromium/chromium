@@ -538,10 +538,13 @@
 <translation id="6524918542306337007">इन्कोग्निटो मोड उपलब्ध छैन</translation>
 <translation id="6561262006871132942">जुम बढाउनुहोस्</translation>
 <translation id="6585618849026997638">तपाईं आफ्ना लागि महत्त्वपूर्ण पृष्ठ बुकमार्क गरी सजिलैसँग उक्त पृष्ठमा फर्कन सक्नुहुन्छ</translation>
+<translation id="6603393121510733479">तपाईंको सङ्गठनले गोप्य रूपमा ब्राउज गर्ने सुविधा अफ गरेको छ।
+<ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">अनुवादसम्बन्धी विकल्पहरू</translation>
 <translation id="6620279676667515405">रद्द गर्नुहोस्</translation>
 <translation id="6624219055418309072">इन्कोग्निटो मोडमा रोक लगाउनुहोस्</translation>
 <translation id="6628106477656132239">म्याद सकिने मिति अमान्य छ</translation>
+<translation id="6634432609054530164">तपाईंको सङ्गठनले इन्कोग्निटो मोड अफ गरेको छ</translation>
 <translation id="6638511529934826365">पाठ जुम गर्नुहोस्…</translation>
 <translation id="6639730758971422557">Safe Browsing अन गर्न <ph name="BEGIN_LINK" />सिंक तथा Google का सेवाहरू<ph name="END_LINK" /> खोल्नुहोस् अनि Safe Browsing मा ट्याप गर्नुहोस्।</translation>
 <translation id="6642362222295953972">विद्यमान ट्याबमा जानुहोस्</translation>
@@ -581,6 +584,8 @@
 <translation id="6988572888918530647">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
 <translation id="6998989275928107238">लाई</translation>
+<translation id="7004032350256606903">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ।
+<ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
 <translation id="7006788746334555276">सामग्री सेटिङहरू</translation>
 <translation id="7015203776128479407">सिंकसम्बन्धी प्रारम्भिक सेटअप पूरा भएन। सिंक सुविधा निष्क्रिय छ</translation>
@@ -742,6 +747,8 @@
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8775144690796719618">अमान्य URL</translation>
 <translation id="8803639129939845298">सुरक्षित छ</translation>
+<translation id="8806823403540278281">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले गोप्य रूपमा ब्राउज गर्नु पर्ने हुन्छ। इन्कोग्निटो मोडमा ब्राउज गर्दा ट्याबहरू सुरक्षित गरिँदैनन्।
+<ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8840513115188359703">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
 <translation id="8870413625673593573">हालै बन्द गरिएको</translation>

@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">বহুতো ছাইটৰ সুবিধাসমূহ ব্যাহত হ’ব পাৰে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1647582022260550163">আপুনি অনুমতিসমূহ ৰিছেট কৰি কুকি আৰু ছাইটৰ ডেটা মচিবলৈ বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="1660204651932907780">ছাইটবোৰক ধ্বনি প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="1677097821151855053">কুকিসমূহ আৰু ছাইটৰ অন্য ডেটা আপোনাক মনত ৰাখিবলৈ ব্যৱহাৰ কৰা হয়, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰাবলৈ অথবা বিজ্ঞাপনসমূহ ব্যক্তিগতকৰণ কৰিবলৈ। সকলো ছাইটৰ বাবে কুকিসমূহ পৰিচালনা কৰিবলৈ <ph name="BEGIN_LINK" />ছেটিংসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="1688867105868176567">ছাইটৰ ডেটা মচিবনে?</translation>
@@ -308,6 +309,7 @@
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />ত <ph name="APP_NAME" />ৰ বাবে অনুমতিসমূহ অন কৰক।</translation>
+<translation id="930525582205581608">এই ছাইটটো পাহৰি যাব নেকি?</translation>
 <translation id="965817943346481315">কোনো ছাইটে অননুমোদিত বা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুৱালে সেয়া অৱৰোধ কৰক ( চুপাৰিছ কৰা)</translation>
 <translation id="967624055006145463">ডেটা সঞ্চয় কৰা হ’ল</translation>
 </translationbundle>

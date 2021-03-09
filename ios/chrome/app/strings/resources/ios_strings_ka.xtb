@@ -538,6 +538,8 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6524918542306337007">ინკოგნიტო რეჟიმი მიუწვდომელია</translation>
 <translation id="6561262006871132942">მასშტაბის გადიდება</translation>
 <translation id="6585618849026997638">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
+<translation id="6603393121510733479">თქვენმა ორგანიზაციამ გამორთო კონფიდენციალური დათვალიერება.
+<ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">თარგმნის ვარიანტები</translation>
 <translation id="6620279676667515405">გაუქმება</translation>
 <translation id="6624219055418309072">ინკოგნიტო რეჟიმში დაბლოკვა</translation>
@@ -582,6 +584,8 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6988572888918530647">თქვენი Google ანგარიშის მართვა</translation>
 <translation id="6995899638241819463">გაფრთხილების მიღება მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში</translation>
 <translation id="6998989275928107238">ამასთან:</translation>
+<translation id="7004032350256606903">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ.
+<ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ბოლო ჩანართები</translation>
 <translation id="7006788746334555276">შინაარსის პარამეტრები</translation>
 <translation id="7015203776128479407">სინქრონიზაციის საწყისი დაყენება ვერ მოხერხდა. სინქრონიზაცია გამორთულია.</translation>
@@ -743,6 +747,8 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
 <translation id="8775144690796719618">URL არასწორია</translation>
 <translation id="8803639129939845298">დაცული</translation>
+<translation id="8806823403540278281">თქვენი ორგანიზაცია მოითხოვს, რომ ვები კონფიდენციალურ რეჟიმში დაათვალიეროთ. ჩანართები არ ინახება ინკოგნიტო რეჟიმში.
+<ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8840513115188359703">თქვენ არ გამოხვალთ თქვენი Google ანგარიშიდან.</translation>
 <translation id="8870413625673593573">ბოლოს დახურული</translation>

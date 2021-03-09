@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
+<translation id="3882834874697329510">Για να λαμβάνετε μια ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα, ενεργοποιήστε τις ειδοποιήσεις στις Ρυθμίσεις.</translation>
 <translation id="3940195383040445971">Παρακολούθηση τιμών σε καρτέλες</translation>
 <translation id="3996880007329611795">Λήψη ειδοποιήσεων</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>

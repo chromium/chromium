@@ -945,7 +945,6 @@
 
 デバイスにファミリー リンク アプリをインストールすると、このアカウントの設定を管理できます。手順を記載したメールをお送りしましたので、ご確認ください。</translation>
 <translation id="2040460856718599782">ユーザー認証時に問題が発生しました。ログイン情報をお確かめのうえ、もう一度お試しください。</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{不正使用されたパスワードが 1 件あります}other{不正使用されたパスワードが # 件あります}}</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
 <translation id="2045117674524495717">キーボード ショートカット ヘルパー</translation>
@@ -1095,7 +1094,6 @@
 <translation id="2199719347983604670">Chrome 同期のデータ</translation>
 <translation id="2200094388063410062">メール</translation>
 <translation id="2200356397587687044">続行するには Chrome に権限が必要です</translation>
-<translation id="220138918934036434">ボタンを非表示にする</translation>
 <translation id="2202898655984161076">プリンタのリスト作成中に問題が発生しました。一部のプリンタが <ph name="CLOUD_PRINT_NAME" /> に正常に登録されていない可能性があります。</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="220858061631308971">「<ph name="DEVICE_NAME" />」の PIN コードを入力してください:</translation>
@@ -1987,7 +1985,6 @@
 <translation id="3190558889382726167">パスワードを保存しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3199127022143353223">サーバー</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{このパスワードを今すぐ確認することをおすすめします}other{これらのパスワードを今すぐ確認することをおすすめします}}</translation>
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202131003361292969">パス</translation>
 <translation id="3202173864863109533">このタブの音声はミュートされています。</translation>
@@ -4484,7 +4481,6 @@
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」が HID デバイスへの接続を要求しています</translation>
 <translation id="6080515710685820702">共有のパソコンをお使いの場合は、シークレット ウィンドウをご活用ください。</translation>
 <translation id="6080689532560039067">システムの時刻の確認</translation>
-<translation id="6082651258230788217">ツールバーに表示</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6085886413119427067">ウェブサイトに安全に接続する方法を決定します</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
@@ -6079,7 +6075,6 @@
 <translation id="7893153962594818789">この <ph name="DEVICE_TYPE" /> では Bluetooth がオフになっています。パスワードを入力し、Bluetooth をオンにしてください。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (既定)</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
-<translation id="7898627924844766532">ツールバーに残す</translation>
 <translation id="7898725031477653577">常に翻訳する</translation>
 <translation id="790040513076446191">プライバシー関連設定を操作する</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

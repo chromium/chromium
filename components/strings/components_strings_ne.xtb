@@ -540,6 +540,7 @@
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome को सेटिङमा गई सुरक्षा जाँच गर्न Tab अनि Enter थिच्नुहोस्</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
 <translation id="3064966200440839136">कुनै बाह्य अनुप्रयोगमार्फत भुक्तानी गर्नका लागि इन्कोग्निटो मोडलाई छाडिँदै । जारी राख्ने हो?</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
@@ -774,6 +775,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट }other{# साइटहरूबाट }}</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> माथि रोक लगाइएको छ।</translation>
+<translation id="3973357910713125165">Chrome को सुरक्षा जाँच गर्नुहोस् नामक बटन, Chrome को सेटिङमा गई सुरक्षा जाँच गर्न Enter थिच्नुहोस्</translation>
 <translation id="3987405730340719549">Chrome ले यो साइट नक्कली वा छलपूर्ण हुन सक्छ भन्ने कुरा पत्ता लगाएको छ।
 
     तपाईंलाई यो त्रुटिवश देखाइएको हो जस्तो लाग्छ भने कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals मा जानुहोस्।</translation>
@@ -854,6 +856,7 @@
     &lt;h4&gt;चरण ५: अतिरिक्त मद्दत प्राप्त गर्नुहोस्‌&lt;/h4&gt;
     &lt;p&gt;तपाईंले अझै पनि यो त्रुटि देख्नुभएको खण्डमा वेबसाइटको मालिकलाई सम्पर्क गर्नुहोस्‌।&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
+<translation id="4229544452621580519">Chrome को सेटिङमा गई सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> मा जानुहोस्<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">मान्य</translation>
 <translation id="4250431568374086873">यस साइटमा तपाईँको जडान पूर्णतया सुरक्षित छैन</translation>
@@ -979,6 +982,7 @@
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
+<translation id="4761869838909035636">Chrome को सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="4764776831041365478"><ph name="URL" /> को वेबपेज अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="4766713847338118463">फेदमा दुई स्टिच</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

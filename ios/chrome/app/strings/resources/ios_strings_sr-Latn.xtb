@@ -538,6 +538,8 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="6524918542306337007">Režim bez arhiviranja nije dostupan</translation>
 <translation id="6561262006871132942">Uvećajte</translation>
 <translation id="6585618849026997638">Ako dodate obeleživač, možete da se vratite na stranicu koja vam je važna</translation>
+<translation id="6603393121510733479">Organizacija je isključila privatno pregledanje.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcije prevoda</translation>
 <translation id="6620279676667515405">Otkaži</translation>
 <translation id="6624219055418309072">Blokiraj u režimu bez arhiviranja</translation>
@@ -582,6 +584,8 @@ Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="6988572888918530647">Upravljajte Google nalogom</translation>
 <translation id="6995899638241819463">Upozori me ako su lozinke otkrivene pri upadu u podatke</translation>
 <translation id="6998989275928107238">Do</translation>
+<translation id="7004032350256606903">Organizacija zahteva da pregledate privatno.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
 <translation id="7006788746334555276">Podešavanja sadržaja</translation>
 <translation id="7015203776128479407">Početno podešavanje sinhronizacije nije završeno. Sinhronizacija je isključena.</translation>
@@ -743,6 +747,8 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8756969031206844760">Želite li da ažurirate lozinku?</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8803639129939845298">Bezbedan</translation>
+<translation id="8806823403540278281">Organizacija zahteva da pregledate privatno. Kartice se ne čuvaju u režimu bez arhiviranja.
+<ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="8840513115188359703">Nećemo vas odjaviti sa Google naloga.</translation>
 <translation id="8870413625673593573">Nedavno zatvoreno</translation>

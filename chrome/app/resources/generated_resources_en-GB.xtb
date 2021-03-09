@@ -945,7 +945,6 @@ Otherwise, sign out now so that the changes to this account will be reflected on
 
 You can manage this account’s settings by installing the Family Link app on your device.  We sent you instructions in an email.</translation>
 <translation id="2040460856718599782">Oops!  Something went wrong when trying to authenticate you. Please double-check your sign-in credentials and try again.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{You have 1 compromised password}other{You have # compromised passwords}}</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
 <translation id="2045117674524495717">Keyboard Shortcut Helper</translation>
@@ -1095,7 +1094,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2199719347983604670">Data from Chrome sync</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Chrome needs permission to continue</translation>
-<translation id="220138918934036434">Hide button</translation>
 <translation id="2202898655984161076">There was a problem while listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
 <translation id="220858061631308971">Please enter this PIN code on "<ph name="DEVICE_NAME" />":</translation>
@@ -1987,7 +1985,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3199127022143353223">Servers</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome recommends checking this password now}other{Chrome recommends checking these passwords now}}</translation>
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
@@ -4484,7 +4481,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6078769373519310690">'<ph name="CHROME_EXTENSION_NAME" />' wants to connect to a HID device</translation>
 <translation id="6080515710685820702">Using a shared computer? Try opening an incognito window.</translation>
 <translation id="6080689532560039067">Check your system time</translation>
-<translation id="6082651258230788217">Show in toolbar</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
@@ -6079,7 +6075,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7893153962594818789">Bluetooth is off on this <ph name="DEVICE_TYPE" />. Enter your password, and turn on Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
 <translation id="7897900149154324287">In the future, make sure that you eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.</translation>
-<translation id="7898627924844766532">Keep in toolbar</translation>
 <translation id="7898725031477653577">Always translate</translation>
 <translation id="790040513076446191">Manipulate privacy-related settings</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

@@ -536,6 +536,8 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
+<translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
+<ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcje tłumaczenia</translation>
 <translation id="6620279676667515405">Anuluj</translation>
 <translation id="6624219055418309072">Blokuj w trybie incognito</translation>
@@ -580,6 +582,8 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
 <translation id="6995899638241819463">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="6998989275928107238">Do</translation>
+<translation id="7004032350256606903">Twoja organizacja wymaga przeglądania prywatnego.
+<ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
 <translation id="7006788746334555276">Ustawienia treści</translation>
 <translation id="7015203776128479407">Nie ukończono początkowej konfiguracji synchronizacji. Synchronizacja jest wyłączona.</translation>
@@ -741,6 +745,8 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8756969031206844760">Zaktualizować hasło?</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8803639129939845298">Bezpieczne</translation>
+<translation id="8806823403540278281">Twoja organizacja wymaga przeglądania prywatnego. W trybie incognito karty nie są zapisywane.
+<ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8840513115188359703">Nie spowoduje to wylogowania z konta Google.</translation>
 <translation id="8870413625673593573">Ostatnio zamknięte</translation>

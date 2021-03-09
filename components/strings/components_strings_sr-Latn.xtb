@@ -540,6 +540,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3037605927509011580">O, ne!</translation>
 <translation id="3041612393474885105">Informacije o sertifikatu</translation>
 <translation id="3060227939791841287">C9 (koverat)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pokrenuli bezbednosnu proveru u Chrome podešavanjima</translation>
 <translation id="3061707000357573562">Usluga krpljenja</translation>
 <translation id="3064966200440839136">Napustićete režim bez arhiviranja da biste platili u spoljnoj aplikaciji. Želite li da nastavite?</translation>
 <translation id="3080254622891793721">Slika</translation>
@@ -777,6 +778,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Sa 1 sajta }one{Sa # sajta }few{Sa # sajta }other{Sa # sajtova }}</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> je blokiran</translation>
+<translation id="3973357910713125165">Dugme Pokrenite Chrome bezbednosnu proveru, pritisnite Enter da biste pokrenuli bezbednosnu proveru u Chrome podešavanjima</translation>
 <translation id="3987405730340719549">Chrome je utvrdio da je ovaj sajt možda lažan ili služi za prevaru.
 
     Ako mislite da se ovo prikazuje greškom, posetite https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -858,6 +860,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     &lt;h4&gt;5. korak: Potražite dodatnu pomoć&lt;/h4&gt;
     &lt;p&gt;Ako vam se i dalje prikazuje greška, kontaktirajte vlasnika veb-sajta.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pokušajte da pokrenete dijagnostiku mreže<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Pokrenite bezbednosnu proveru u Chrome podešavanjima</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Nastavite na <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Važeći</translation>
 <translation id="4250431568374086873">Veza sa ovim sajtom nije potpuno bezbedna</translation>
@@ -983,6 +986,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4756388243121344051">&amp;Istorija</translation>
 <translation id="4758311279753947758">Dodaj kontakt informacije</translation>
 <translation id="4761104368405085019">Korišćenje mikrofona</translation>
+<translation id="4761869838909035636">Pokrenite Chrome bezbednosnu proveru</translation>
 <translation id="4764776831041365478">Moguće je da veb-stranica na adresi <ph name="URL" /> privremeno ne funkcioniše ili da je trajno premeštena na novu veb adresu.</translation>
 <translation id="4766713847338118463">Dvostruko spajanje na dnu</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
+<translation id="3882834874697329510">Para recibir una alerta cuando hay un precio más bajo en una pestaña abierta, activa las notificaciones en la Configuración.</translation>
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="3996880007329611795">Recibir notificaciones</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>

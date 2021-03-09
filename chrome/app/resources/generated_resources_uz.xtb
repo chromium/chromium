@@ -943,7 +943,6 @@ Aks holda, hoziroq hisobdan chiqing va qurilmadagi sozlamalar oʻzgarmaydi.
 
 Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshqarishingiz mumkin.  Koʻrsatmalar email manzilingizga yuborildi.</translation>
 <translation id="2040460856718599782">Haqiqiylik tekshiruvini amalga oshirib bo‘lmadi. Hisob ma’lumotlarini tekshirib, qaytadan urinib ko‘ring.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{1 ta parolingiz oshkor qilingan}other{# ta parolingiz oshkor qilingan}}</translation>
 <translation id="2044014337866019681">Bu seansni qulfdan chiqarish uchun <ph name="ACCOUNT" /> hisobidan kiring.</translation>
 <translation id="204497730941176055">Microsoft sertifikati andozasi nomi</translation>
 <translation id="2045117674524495717">Tezkor tugmalar yordamchisi</translation>
@@ -1093,7 +1092,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2199719347983604670">Chrome sync maʼlumotlari</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Chrome davom etishga ruxsat so‘ramoqda</translation>
-<translation id="220138918934036434">Tugmani yashirish</translation>
 <translation id="2202898655984161076">Printerlar ro‘yxatini yuklashda xatolik yuz berdi. Ba’zi printerlar <ph name="CLOUD_PRINT_NAME" /> yordamida ro‘yxatdan o‘tkazilmagan bo‘lishi mumkin.</translation>
 <translation id="2204034823255629767">Kiritilayotgan matnni ko‘rish va o‘zagartirish</translation>
 <translation id="220858061631308971">“<ph name="DEVICE_NAME" />” qurilmasi PIN-kodini kiriting:</translation>
@@ -1985,7 +1983,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3190558889382726167">Parol saqlandi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
 <translation id="3199127022143353223">Serverlar</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome hoziroq bu parolingizni tekshirishni tavsiya qiladi}other{Chrome hoziroq bu parollaringizni tekshirishni tavsiya qiladi}}</translation>
 <translation id="3201422919974259695">Mavjud USB qurilmalar bu yerda chiqadi.</translation>
 <translation id="3202131003361292969">Fayl yo‘lagi</translation>
 <translation id="3202173864863109533">Bu ichki oyna ovozi o‘chirib qo‘yilgan</translation>
@@ -4482,7 +4479,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6078769373519310690">“<ph name="CHROME_EXTENSION_NAME" />” HID qurilmaga ulanmoqchi</translation>
 <translation id="6080515710685820702">Birovning kompyuteridamisiz? Inkognito oynadan foydalanib ko‘ring.</translation>
 <translation id="6080689532560039067">Tizim vaqtini tekshirish</translation>
-<translation id="6082651258230788217">Asboblar panelida ko‘rsatish</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – nomsiz guruhning qismi</translation>
 <translation id="6085886413119427067">Xavfsiz aloqadan foydalanadigan saytlarga qanday ulanishini aniqlaydi</translation>
 <translation id="6086004606538989567">Siz kirgan hisob bu qurilmadan foydalana olmaydi.</translation>
@@ -6076,7 +6072,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> qurilmasida Bluetooth o‘chiq. Parolingizni kiriting va Bluetooth adapterini yoqing.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (birlamchi)</translation>
 <translation id="7897900149154324287">Kelgusida, olinadigan qurilmani chiqarib olishdan oldin uni Fayllar ilovasida chiqarishni unutmang. Aks holda, ma’lumotlar o‘chib ketishi mumkin.</translation>
-<translation id="7898627924844766532">Asboblar paneliga saqlash</translation>
 <translation id="7898725031477653577">Har doim tarjima qilinsin</translation>
 <translation id="790040513076446191">Maxfiylik sozlamalari boshqaruvi</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

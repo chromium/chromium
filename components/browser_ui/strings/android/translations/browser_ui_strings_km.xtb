@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">មុខងារ​នៅលើ​គេហទំព័រ​ជាច្រើន​អាចដំណើរការមិន​ត្រឹមត្រូវ</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1644574205037202324">ប្រវត្តិ</translation>
+<translation id="1647582022260550163">តើអ្នក​ពិតជាចង់​កំណត់​ការអនុញ្ញាត​ឡើងវិញ និង​សម្អាតទិន្នន័យ​គេហទំព័រនិង​ខូគីមែនឬ?</translation>
 <translation id="1660204651932907780">អនុញ្ញាតឱ្យទំព័រចាក់សំឡេង (បានណែនាំ)</translation>
 <translation id="1677097821151855053">ខូគី និងទិន្នន័យគេហទំព័រផ្សេងទៀតត្រូវបានប្រើ ដើម្បីចងចាំអ្នក ឧទាហរណ៍ ដើម្បីនាំអ្នកចូលគណនី ឬដើម្បីកំណត់​ការផ្សាយ​ពាណិជ្ជកម្ម​ឱ្យ​ស្របនឹងអ្នក។ ដើម្បីគ្រប់គ្រងខូគីសម្រាប់គេហទំព័រទាំងអស់ សូមមើល<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="1688867105868176567">សម្អាតទិន្នន័យគេហទំព័រ?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ប៊្លូធូស</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> និង <ph name="NUM_MORE" /> ទៀត}}</translation>
 <translation id="913657688200966289">បើក​ការអនុញ្ញាត​សម្រាប់ <ph name="APP_NAME" /> នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>
+<translation id="930525582205581608">បំភ្លេច​គេហទំព័រនេះឬ?</translation>
 <translation id="965817943346481315">ទប់ស្កាត់ ​ប្រសិនបើ​គេហទំព័របង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​ដែលនាំឱ្យយល់ច្រឡំ ឬរំខាន (បានណែនាំ)</translation>
 <translation id="967624055006145463">​ទិន្នន័យដែល​បាន​រក្សា​ទុក</translation>
 </translationbundle>

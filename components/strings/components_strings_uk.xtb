@@ -538,6 +538,7 @@
 <translation id="3037605927509011580">От халепа!</translation>
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3060227939791841287">C9 (конверт)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть Tab, а тоді Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
 <translation id="3064966200440839136">Щоб оплатити в зовнішньому додатку, ви вийдете з режиму анонімного перегляду. Продовжити?</translation>
 <translation id="3080254622891793721">Зображення</translation>
@@ -775,6 +776,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Немає}=1{З 1 сайту }one{З # сайту }few{З # сайтів }many{З # сайтів }other{З # сайту }}</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
+<translation id="3973357910713125165">Кнопка "Виконати перевірку безпеки Chrome", натисніть Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3987405730340719549">Веб-переглядач Chrome визначив, що цей сайт може бути підробленим або шахрайським.
 
     Якщо ви вважаєте, що сталася помилка, перейдіть на сторінку https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
@@ -856,6 +858,7 @@
     &lt;h4&gt;Крок 5. Отримайте додаткову підтримку&lt;/h4&gt;
     &lt;p&gt;Якщо повідомлення про помилку не зникає, зв’яжіться з власником веб-сайту.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Проведіть діагностику мережі<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Виконайте перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Дійсний</translation>
 <translation id="4250431568374086873">Ваше з’єднання з цим сайтом не повністю захищене</translation>
@@ -981,6 +984,7 @@
 <translation id="4756388243121344051">&amp;Історія</translation>
 <translation id="4758311279753947758">Додати контактну інформацію</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
+<translation id="4761869838909035636">Виконати перевірку безпеки Chrome</translation>
 <translation id="4764776831041365478">Веб-сторінка за адресою <ph name="URL" /> може бути тимчасово недоступною або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="4766713847338118463">Двічі скріпити внизу</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

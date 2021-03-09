@@ -941,7 +941,6 @@
 
 您可以在设备上安装 Family Link 应用，从而管理此帐号的设置。我们已通过电子邮件将相关说明发送给您。</translation>
 <translation id="2040460856718599782">糟糕！尝试验证您的身份时出现错误。请仔细检查您的登录凭据，然后重试。</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{您有 1 个已泄露的密码}other{您有 # 个已泄露的密码}}</translation>
 <translation id="2044014337866019681">请确保您验证的帐号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
 <translation id="2045117674524495717">键盘快捷键助手</translation>
@@ -1091,7 +1090,6 @@
 <translation id="2199719347983604670">Chrome 同步的数据</translation>
 <translation id="2200094388063410062">电子邮件</translation>
 <translation id="2200356397587687044">Chrome 需要获得相应权限才能继续</translation>
-<translation id="220138918934036434">隐藏按钮</translation>
 <translation id="2202898655984161076">列出打印机时发生问题。您的某些打印机可能尚未成功使用“<ph name="CLOUD_PRINT_NAME" />”进行注册。</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
@@ -1979,7 +1977,6 @@
 <translation id="3190558889382726167">密码已保存</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199127022143353223">服务器</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome 建议您立即检查这个密码}other{Chrome 建议您立即检查这些密码}}</translation>
 <translation id="3201422919974259695">可用的 USB 设备会显示在此处。</translation>
 <translation id="3202131003361292969">路径</translation>
 <translation id="3202173864863109533">此标签页已静音。</translation>
@@ -4466,7 +4463,6 @@
 <translation id="6078769373519310690">“<ph name="CHROME_EXTENSION_NAME" />”想连接到 HID 设备</translation>
 <translation id="6080515710685820702">使用的是共用计算机？请尝试打开一个无痕式窗口。</translation>
 <translation id="6080689532560039067">检查系统时间</translation>
-<translation id="6082651258230788217">在工具栏中显示</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6085886413119427067">确定如何通过安全连接来连接到网站</translation>
 <translation id="6086004606538989567">您已验证的帐号无权访问此设备。</translation>
@@ -6053,7 +6049,6 @@
 <translation id="7893153962594818789">此 <ph name="DEVICE_TYPE" /> 上的蓝牙处于关闭状态。请输入您的密码，然后开启蓝牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />（默认）</translation>
 <translation id="7897900149154324287">日后在拔下您的可移动设备之前，请务必先使用“文件”菜单将其弹出。否则，您的数据可能会丢失。</translation>
-<translation id="7898627924844766532">固定在工具栏中</translation>
 <translation id="7898725031477653577">一律翻译</translation>
 <translation id="790040513076446191">管理隐私相关设置</translation>
 <translation id="7901405293566323524">手机中心</translation>

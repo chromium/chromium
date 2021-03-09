@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">খুলে রাখা কোনও ট্যাবে জিনিসের দাম কমলে আপনি তার বিজ্ঞপ্তি পাবেন</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
+<translation id="3882834874697329510">কোনও খোলা ট্যাবে কম দাম থাকলে বিজ্ঞপ্তি পেতে, 'সেটিংস' থেকে বিজ্ঞপ্তি চালু করুন।</translation>
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3996880007329611795">বিজ্ঞপ্তি পান</translation>
 <translation id="4133493477912226187">মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>

@@ -540,6 +540,7 @@
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3041612393474885105">Гэрчилгээний мэдээлэл</translation>
 <translation id="3060227939791841287">C9 (Дугтуй)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоо хэсэгт Аюулгүй байдлын шалгалтыг ажиллуулахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3061707000357573562">Patch үйлчилгээ</translation>
 <translation id="3064966200440839136">Гадаад апп-р төлбөр хийхийн тулд нууцлалын горимоос гарах гэж байна. Үргэлжлүүлэх үү?</translation>
 <translation id="3080254622891793721">График</translation>
@@ -778,6 +779,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас }other{# сайтаас }}</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-г блоклосон байна</translation>
+<translation id="3973357910713125165">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах товчлуур. Chrome-н тохиргоо хэсэгт Аюулгүй байдлын шалгалтыг ажиллуулахын тулд Enter дээр дарна уу</translation>
 <translation id="3987405730340719549">Энэ сайт нь хуурамч эсвэл залилангийн шинжтэй байж болно гэж Chrome тодорхойлсон.
 
     Хэрэв та үүнийг харуулсан нь алдаа гэж үзэж байвал https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals-р зочлоорой.</translation>
@@ -859,6 +861,7 @@
     &lt;h4&gt;Алхам 5: Нэмэлт тусламж авах&lt;/h4&gt;
     &lt;p&gt;Хэрэв та тус алдааг харсаар байвал вебсайтын эзэмшигчтэй холбогдоно уу.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Chrome-н тохиргоо хэсэгт Аюулгүй байдлын шалгалтыг ажиллуулна уу</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> руу үргэлжлүүлэх<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Хүчинтэй</translation>
 <translation id="4250431568374086873">Энэ сайтын холболт аюултай байж болзошгүй</translation>
@@ -984,6 +987,7 @@
 <translation id="4756388243121344051">&amp; Түүх</translation>
 <translation id="4758311279753947758">Харилцагчийн мэдээлэл нэмэх</translation>
 <translation id="4761104368405085019">Микрофоноо ашигла</translation>
+<translation id="4761869838909035636">Chrome-н Аюулгүй байдлын шалгалтыг ажиллуулах</translation>
 <translation id="4764776831041365478"><ph name="URL" /> холбоос бүхий веб хуудас нь түр хугацаагаар ажиллахгүй эсвэл шинэ веб хаягтай болсон байна.</translation>
 <translation id="4766713847338118463">Доод буланд хоёр удаа үдэх</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

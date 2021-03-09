@@ -538,6 +538,8 @@
 <translation id="6524918542306337007">Режимът „инкогнито“ не е налице</translation>
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>
+<translation id="6603393121510733479">Организацията ви е изключила режима за частно сърфиране.
+<ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Опции за превод</translation>
 <translation id="6620279676667515405">Отказ</translation>
 <translation id="6624219055418309072">Блокирани в режим „инкогнито“</translation>
@@ -582,6 +584,8 @@
 <translation id="6988572888918530647">Управление на профила ви в Google</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="6998989275928107238">До</translation>
+<translation id="7004032350256606903">Организацията ви изисква да сърфирате частно.
+<ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006788746334555276">Настройки за съдържанието</translation>
 <translation id="7015203776128479407">Първоначалното настройване на синхронизирането не бе завършено. Синхронизирането е изключено.</translation>
@@ -743,6 +747,8 @@
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8803639129939845298">Сигурно</translation>
+<translation id="8806823403540278281">Организацията ви изисква да сърфирате частно. В режим „инкогнито“ разделите не се запазват.
+<ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>

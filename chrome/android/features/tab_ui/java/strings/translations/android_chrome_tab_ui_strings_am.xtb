@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ይደርስዎታል</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}}</translation>
+<translation id="3882834874697329510">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ለማግኘት በቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="3996880007329611795">ማሳወቂያ ይድረሰዎት</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ ይቦደኑ?</translation>

@@ -538,6 +538,8 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
+<translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6620279676667515405">Annuler</translation>
 <translation id="6624219055418309072">Bloquer en mode navigation privée</translation>
@@ -582,6 +584,8 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6988572888918530647">Gérer votre compte Google</translation>
 <translation id="6995899638241819463">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="6998989275928107238">À</translation>
+<translation id="7004032350256606903">Votre organisation exige que vous utilisiez le mode navigation privée.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Onglets récents</translation>
 <translation id="7006788746334555276">Paramètres de contenu</translation>
 <translation id="7015203776128479407">La configuration de la synchronisation initiale n'était pas terminée. La synchronisation est désactivée.</translation>
@@ -743,6 +747,8 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
 <translation id="8775144690796719618">URL non valide.</translation>
 <translation id="8803639129939845298">Sécurisé</translation>
+<translation id="8806823403540278281">Votre organisation exige que vous utilisiez le mode navigation privée. Lorsque ce mode est utilisé, les onglets ne sont pas enregistrés.
+<ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8840513115188359703">Vous ne serez pas déconnecté de votre compte Google.</translation>
 <translation id="8870413625673593573">Récemment fermés</translation>

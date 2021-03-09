@@ -538,6 +538,8 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
+<translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
+<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Översättningsalternativ</translation>
 <translation id="6620279676667515405">Avbryt</translation>
 <translation id="6624219055418309072">Blockera i inkognitoläget</translation>
@@ -582,6 +584,8 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6988572888918530647">Hantera Google-kontot</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="6998989275928107238">Till</translation>
+<translation id="7004032350256606903">Organisationen kräver att du surfar privat.
+<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Senaste flikarna</translation>
 <translation id="7006788746334555276">Innehållsinställningar</translation>
 <translation id="7015203776128479407">Den initiala synkroniseringskonfigureringen avslutades inte. Synkroniseringen är inaktiverad.</translation>
@@ -743,6 +747,8 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>
 <translation id="8803639129939845298">Säkert</translation>
+<translation id="8806823403540278281">Organisationen kräver att du surfar privat. Flikar sparas inte i inkognitoläge.
+<ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bokmärken</translation>
 <translation id="8840513115188359703">Du loggas inte ut från Google-kontot.</translation>
 <translation id="8870413625673593573">Nyligen stängda</translation>

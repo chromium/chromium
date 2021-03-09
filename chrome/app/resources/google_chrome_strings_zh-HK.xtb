@@ -101,7 +101,6 @@
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="3395323229510056640">取得 Chrome 作業系統相關說明</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
-<translation id="3398288718845740432">隱藏在 Chrome 選單中</translation>
 <translation id="3434246496373299699">Chrome 可在您使用 Google 帳戶登入時檢查密碼</translation>
 <translation id="3451115285585441894">正在新增至 Chrome…</translation>
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
@@ -149,7 +148,6 @@
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="4600710005438004015">由於 Chrome 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
-<translation id="4631713731678262610">隱藏在 Chrome 選單中</translation>
 <translation id="4633000520311261472">為了提高 Chrome 的安全性，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下新增至瀏覽器。</translation>
 <translation id="4666328473657283332">如要透過所有裝置存取 Chrome 資料，請登入以便開啟同步處理功能。</translation>
 <translation id="4728575227883772061">安裝失敗，錯誤原因不明。如果目前正在執行 Google Chrome，請先關閉，然後再試一次。</translation>

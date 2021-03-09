@@ -207,7 +207,6 @@
 <translation id="7067091210845072982">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="7196312274710523067">Не може да се стартува Chromium. Обидете се повторно.</translation>
 <translation id="7197677400338048821">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
-<translation id="7205698830395646142">Сокриј во мени на Chromium</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
 <translation id="731644333568559921">Ажурирај &amp;Chromium OS</translation>
 <translation id="731795002583552498">Се ажурира Chromium</translation>
@@ -244,7 +243,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7907774600618164274">Chromium OS не се исклучи правилно.</translation>
 <translation id="7937630085815544518">Бевте најавени на Chromium како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
 <translation id="7975919845073681630">Ова е второстепена инсталација на Chromium и затоа не може да биде стандарден прелистувач.</translation>
-<translation id="7979877361127045932">Сокриј во мени на Chromium</translation>
 <translation id="8013436988911883588">Ако Chromium има пристап, тогаш и веб-сајтовите ќе може да ви бараат пристап.</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>

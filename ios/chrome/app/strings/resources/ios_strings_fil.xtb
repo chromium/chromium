@@ -538,6 +538,8 @@ Subukang gumamit ng natatanging password para sa bawat site.</translation>
 <translation id="6524918542306337007">Hindi Available ang Incognito Mode</translation>
 <translation id="6561262006871132942">Mag-zoom In</translation>
 <translation id="6585618849026997638">Mababalikan mo ang isang page na mahalaga sa iyo sa pamamagitan ng pagdaragdag ng bookmark</translation>
+<translation id="6603393121510733479">Na-off ng iyong organisasyon ang pribadong pag-browse.
+<ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Mga Opsyon sa Pagsasalin</translation>
 <translation id="6620279676667515405">Kanselahin</translation>
 <translation id="6624219055418309072">I-block sa Incognito</translation>
@@ -582,6 +584,8 @@ Subukang gumamit ng natatanging password para sa bawat site.</translation>
 <translation id="6988572888918530647">Pamahalaan ang Iyong Google Account</translation>
 <translation id="6995899638241819463">Balaan ka kung ma-expose ang mga password sa isang paglabag sa data</translation>
 <translation id="6998989275928107238">Para sa</translation>
+<translation id="7004032350256606903">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado.
+<ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Mga Kamakailang Tab</translation>
 <translation id="7006788746334555276">Mga Setting ng Nilalaman</translation>
 <translation id="7015203776128479407">Hindi natapos ang pag-set up ng unang pag-sync. Naka-off ang pag-sync.</translation>
@@ -743,6 +747,8 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8756969031206844760">I-update ang password?</translation>
 <translation id="8775144690796719618">Di-wastong URL</translation>
 <translation id="8803639129939845298">Secure</translation>
+<translation id="8806823403540278281">Ipinag-aatas sa iyo ng organisasyon mo na mag-browse nang pribado. Hindi nase-save ang mga tab sa Incognito mode.
+<ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8840513115188359703">Hindi ka masa-sign out sa iyong Google Account.</translation>
 <translation id="8870413625673593573">Recently Closed</translation>

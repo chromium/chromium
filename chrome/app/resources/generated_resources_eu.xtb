@@ -944,7 +944,6 @@ Bestela, amaitu saioa orain kontu honen aldaketak gailu honetan aplikatzeko.
 
 Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.  Posta elektronikoz bidali dizkizugu argibideak.</translation>
 <translation id="2040460856718599782">Arazoren bat izan da zu autentifikatzen saiatzean. Egiaztatu bi aldiz saioa hasteko erabili dituzun kredentzialak eta saiatu berriro.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{Arriskuan dagoen pasahitz bat daukazu}other{Arriskuan dauden # pasahitz dauzkazu}}</translation>
 <translation id="2044014337866019681">Ziurtatu <ph name="ACCOUNT" /> kontua ari zarela egiaztatzen saioa desblokeatzeko.</translation>
 <translation id="204497730941176055">Microsoft ziurtagiriaren txantiloiaren izena</translation>
 <translation id="2045117674524495717">Lasterbideei buruzko laguntza</translation>
@@ -1094,7 +1093,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2199719347983604670">Chrome-ren sinkronizazioaren datuak</translation>
 <translation id="2200094388063410062">Posta elektronikoa</translation>
 <translation id="2200356397587687044">Chrome-k baimena behar du aurrera egiteko</translation>
-<translation id="220138918934036434">Ezkutatu botoia</translation>
 <translation id="2202898655984161076">Arazo bat izan da inprimagailuak zerrendatzean. Agian inprimagailuetako batzuk ez dira behar bezala erregistratu <ph name="CLOUD_PRINT_NAME" /> zerbitzuan.</translation>
 <translation id="2204034823255629767">Irakurri eta aldatu idazten duzuna</translation>
 <translation id="220858061631308971">Idatzi PIN kodea "<ph name="DEVICE_NAME" />" gailuan:</translation>
@@ -1983,7 +1981,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3190558889382726167">Gorde da pasahitza</translation>
 <translation id="3192947282887913208">Audio-fitxategiak</translation>
 <translation id="3199127022143353223">Zerbitzariak</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Pasahitz hau orain egiaztatzea gomendatzen dizu Chrome-k}other{Pasahitz hauek orain egiaztatzea gomendatzen dizu Chrome-k}}</translation>
 <translation id="3201422919974259695">Hemen agertuko dira erabilgarri dauden USB gailuak.</translation>
 <translation id="3202131003361292969">Bide-izena</translation>
 <translation id="3202173864863109533">Fitxaren audioa desaktibatuta dago.</translation>
@@ -4471,7 +4468,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" luzapenak HID gailu batekin konektatu nahi du</translation>
 <translation id="6080515710685820702">Ordenagailua jende gehiagok erabiltzen du? Erabili arakatzailearen ezkutuko modua.</translation>
 <translation id="6080689532560039067">Egiaztatu sistemako ordua</translation>
-<translation id="6082651258230788217">Erakutsi tresna-barran</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />, talde izengabe batekoa</translation>
 <translation id="6085886413119427067">Webguneetara konexio seguru baten bidez nola konektatu zehazten du</translation>
 <translation id="6086004606538989567">Egiaztatu duzun kontuak ez du baimenik gailua atzitzeko.</translation>
@@ -6058,7 +6054,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7893153962594818789">Bluetooth-a desaktibatuta dago <ph name="DEVICE_TYPE" /> gailuan. Idatzi pasahitza eta aktibatu Bluetooth-a.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (lehenetsia)</translation>
 <translation id="7897900149154324287">Aurrerantzean, gailu aldagarria desentxufatu aurretik, egiaztatu Fitxategiak aplikaziotik kanporatzen duzula. Bestela, baliteke datuak galtzea.</translation>
-<translation id="7898627924844766532">Mantendu tresna-barran</translation>
 <translation id="7898725031477653577">Itzuli beti</translation>
 <translation id="790040513076446191">Aldatu pribatutasunarekin erlazionatutako ezarpenak</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

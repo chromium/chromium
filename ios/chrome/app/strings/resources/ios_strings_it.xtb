@@ -538,6 +538,8 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
+<translation id="6603393121510733479">La tua organizzazione ha disattivato la navigazione privata.
+<ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
 <translation id="6620279676667515405">Annulla</translation>
 <translation id="6624219055418309072">Blocca in modalità di navigazione in incognito</translation>
@@ -582,6 +584,8 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6988572888918530647">Gestisci il tuo Account Google</translation>
 <translation id="6995899638241819463">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="6998989275928107238">A</translation>
+<translation id="7004032350256606903">La tua organizzazione ti richiede di navigare in privato.
+<ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Schede recenti</translation>
 <translation id="7006788746334555276">Impostazioni contenuti</translation>
 <translation id="7015203776128479407">La configurazione della sincronizzazione iniziale non è stata terminata. La sincronizzazione è disattivata.</translation>
@@ -743,6 +747,8 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8775144690796719618">URL non valido</translation>
 <translation id="8803639129939845298">Sicuro</translation>
+<translation id="8806823403540278281">La tua organizzazione ti richiede di navigare in privato. Le schede non vengono salvate in modalità di navigazione in incognito.
+<ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>

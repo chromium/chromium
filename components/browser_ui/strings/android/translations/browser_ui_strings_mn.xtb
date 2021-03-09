@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1644574205037202324">Түүх</translation>
+<translation id="1647582022260550163">Та зөвшөөрлийг шинэчлэх, күүки болон сайтын өгөгдлийг арилгахдаа итгэлтэй байна уу?</translation>
 <translation id="1660204651932907780">Сайтуудад дуу тоглуулахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="1677097821151855053">Күүки болон сайтын бусад өгөгдлийг таныг нэвтрүүлэх эсвэл зарыг хувийн болгох зэргээр таныг санахад ашигладаг. Бүх сайтын күүкийг удирдахын тулд <ph name="BEGIN_LINK" />Тохиргоог<ph name="END_LINK" /> харна уу.</translation>
 <translation id="1688867105868176567">Сайтын өгөгдлийг устгах уу?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" />-н зөвшөөрлийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
+<translation id="930525582205581608">Энэ сайтыг мартах уу?</translation>
 <translation id="965817943346481315">Сайт төвөгтэй эсвэл хуурамч зар харуулсан тохиолдолд блоклох (санал болгосон)</translation>
 <translation id="967624055006145463">Хадгалсан өгөгдөл</translation>
 </translationbundle>

@@ -254,6 +254,7 @@
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Заустављено – папир је заглављен</translation>
+<translation id="6516990319416533844">Да бисте тестирали брзину пуњења батерије, дозволите да се батерија мало испразни</translation>
 <translation id="6517239166834772319">Истражите</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
 <translation id="65587193855025101">Положено</translation>
@@ -336,7 +337,7 @@
 <translation id="8477551185774834963">Кашњење DNS-а у мањој мери премашује дозвољену граничну вредност</translation>
 <translation id="8483248364096924578">IP адреса</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
-<translation id="8503836310948963452">Још само неколико минута…</translation>
+<translation id="8503836310948963452">Још само пар минута…</translation>
 <translation id="8576249514688522074">Није покренуто</translation>
 <translation id="8620617069779373398">Статус роминга</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>

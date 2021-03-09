@@ -538,6 +538,8 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6524918542306337007">O Modo de navegação anónima está indisponível</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
+<translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
+<ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
 <translation id="6620279676667515405">Cancelar</translation>
 <translation id="6624219055418309072">Bloquear na Navegação anónima</translation>
@@ -582,6 +584,8 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6988572888918530647">Faça a gestão da sua Conta Google</translation>
 <translation id="6995899638241819463">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="6998989275928107238">Para</translation>
+<translation id="7004032350256606903">A sua entidade requer que navegue em privado.
+<ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
 <translation id="7006788746334555276">Definições de Conteúdo</translation>
 <translation id="7015203776128479407">A configuração da sincronização inicial não foi concluída. A sincronização está desativada.</translation>
@@ -743,6 +747,8 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8756969031206844760">Pretende atualizar a palavra-passe?</translation>
 <translation id="8775144690796719618">URL inválido</translation>
 <translation id="8803639129939845298">Seguro</translation>
+<translation id="8806823403540278281">A sua entidade requer que navegue em privado. Os separados não são guardados no Modo de navegação anónima.
+<ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8840513115188359703">A sessão na sua Conta Google não é terminada.</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>

@@ -538,6 +538,8 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6524918542306337007">Način brez beleženja dejavnosti ni na voljo</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
+<translation id="6603393121510733479">Vaša organizacija je izklopila zasebno brskanje.
+<ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Možnosti prevajanja</translation>
 <translation id="6620279676667515405">Prekliči</translation>
 <translation id="6624219055418309072">Blokirano v načinu brez beleženja dejavnosti</translation>
@@ -582,6 +584,8 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="6988572888918530647">Upravljanje računa Google</translation>
 <translation id="6995899638241819463">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
 <translation id="6998989275928107238">Za</translation>
+<translation id="7004032350256606903">Vaša organizacija zahteva, da brskate zasebno.
+<ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
 <translation id="7006788746334555276">Nastavitve vsebine</translation>
 <translation id="7015203776128479407">Začetna nastavitev sinhronizacije ni bila dokončana. Sinhronizacija je izklopljena.</translation>
@@ -743,6 +747,8 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8756969031206844760">Želite posodobiti geslo?</translation>
 <translation id="8775144690796719618">Neveljaven URL</translation>
 <translation id="8803639129939845298">Varno</translation>
+<translation id="8806823403540278281">Vaša organizacija zahteva, da brskate zasebno. V anonimnem načinu se zavihki ne shranjujejo.
+<ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8840513115188359703">Iz Google Računa ne boste odjavljeni.</translation>
 <translation id="8870413625673593573">Nedavno zaprto</translation>

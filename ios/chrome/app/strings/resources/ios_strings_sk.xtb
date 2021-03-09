@@ -538,6 +538,8 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
+<translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.
+<ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Možnosti prekladu</translation>
 <translation id="6620279676667515405">Zrušiť</translation>
 <translation id="6624219055418309072">Blokovať v režime inkognito</translation>
@@ -582,6 +584,8 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6988572888918530647">Správa účtu</translation>
 <translation id="6995899638241819463">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="6998989275928107238">Komu</translation>
+<translation id="7004032350256606903">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito.
+<ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nedávne karty</translation>
 <translation id="7006788746334555276">Nastavenia obsahu</translation>
 <translation id="7015203776128479407">Počiatočné nastavenie synchronizácie nebolo dokončené. Synchronizácia je vypnutá.</translation>
@@ -743,6 +747,8 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
 <translation id="8775144690796719618">Neplatná webová adresa</translation>
 <translation id="8803639129939845298">Zabezpečené</translation>
+<translation id="8806823403540278281">Vaša organizácia vyžaduje, aby ste prehliadali v režime inkognito. Karty sa v režime inkognito neukladajú.
+<ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8840513115188359703">Neodhlásime vás z účtu Google.</translation>
 <translation id="8870413625673593573">Nedávno zatvorené</translation>

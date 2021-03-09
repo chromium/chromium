@@ -945,7 +945,6 @@ Altfel, deconectează-te acum, pentru ca modificările din cont să se reflecte 
 
 Poți gestiona setările contului dacă instalezi aplicația Family Link pe dispozitiv.  Ți-am trimis instrucțiuni într-un e-mail.</translation>
 <translation id="2040460856718599782">Hopa! A apărut o eroare la autentificarea dvs. Verificați încă o dată datele de conectare și încercați din nou.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{Ai o parolă compromisă}few{Ai # parole compromise.}other{Ai # de parole compromise.}}</translation>
 <translation id="2044014337866019681">Confirmă <ph name="ACCOUNT" /> pentru a debloca sesiunea.</translation>
 <translation id="204497730941176055">Nume șablon de certificat Microsoft</translation>
 <translation id="2045117674524495717">Ajutor pentru comenzi rapide de la tastatură</translation>
@@ -1095,7 +1094,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2199719347983604670">Datele din Sincronizarea Chrome</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Chrome are nevoie de permisiune pentru a continua</translation>
-<translation id="220138918934036434">Ascunde butonul</translation>
 <translation id="2202898655984161076">A apărut o problemă la listarea imprimantelor. Este posibil ca unele dintre imprimante să nu fi fost înregistrate la <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="2204034823255629767">Citește și modifică orice date introduse</translation>
 <translation id="220858061631308971">Introduceți acest cod PIN pe „<ph name="DEVICE_NAME" />”:</translation>
@@ -1984,7 +1982,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3199127022143353223">Servere</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome recomandă să verifici acum parola}few{Chrome recomandă să verifici acum parolele}other{Chrome recomandă să verifici acum parolele}}</translation>
 <translation id="3201422919974259695">Dispozitivele USB disponibile vor apărea aici.</translation>
 <translation id="3202131003361292969">Cale</translation>
 <translation id="3202173864863109533">Sunetul acestei file este dezactivat.</translation>
@@ -4472,7 +4469,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />” dorește să se conecteze la un dispozitiv HID</translation>
 <translation id="6080515710685820702">Folosești un computer comun? Încearcă să deschizi o fereastră incognito.</translation>
 <translation id="6080689532560039067">Verificați ora sistemului</translation>
-<translation id="6082651258230788217">Afișează în bara de instrumente</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – parte a unui grup nedenumit</translation>
 <translation id="6085886413119427067">Stabilește modul de conectare la site-uri printr-o conexiune securizată</translation>
 <translation id="6086004606538989567">Contul pe care l-ai confirmat nu este autorizat să acceseze acest dispozitiv.</translation>
@@ -6059,7 +6055,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7893153962594818789">Conexiunea Bluetooth este dezactivată pe acest dispozitiv <ph name="DEVICE_TYPE" />. Introdu parola și activează Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Prestabilit)</translation>
 <translation id="7897900149154324287">Pe viitor, asigurați-vă că eliminați dispozitivul amovibil din aplicația Fișiere înainte să îl deconectați. În caz contrar, este posibil să pierdeți date.</translation>
-<translation id="7898627924844766532">Păstrează în bara de instrumente</translation>
 <translation id="7898725031477653577">Tradu întotdeauna</translation>
 <translation id="790040513076446191">Manipulează setările privind confidențialitatea</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

@@ -538,6 +538,8 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6524918542306337007">មិនអាចប្រើមុខងារ​ឯកជនបានទេ</translation>
 <translation id="6561262006871132942">ពង្រីក</translation>
 <translation id="6585618849026997638">អ្នក​អាច​ត្រឡប់ទៅ​ទំព័រ​ដែលសំខាន់​ចំពោះអ្នក តាមរយៈ​ការបញ្ចូល​ចំណាំ​</translation>
+<translation id="6603393121510733479">ស្ថាប័នរបស់អ្នកបានបិទការរុករកលក្ខណៈឯកជន។
+<ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">ជម្រើស​បកប្រែ</translation>
 <translation id="6620279676667515405">បោះបង់</translation>
 <translation id="6624219055418309072">ទប់ស្កាត់ក្នុងមុខងារឯកជន</translation>
@@ -582,6 +584,8 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6988572888918530647">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>
 <translation id="6995899638241819463">ទទួលបាន​ការព្រមាន ប្រសិនបើ​ពាក្យសម្ងាត់​​បែកធ្លាយ​នៅក្នុង​ការបំពាន​ទិន្នន័យ</translation>
 <translation id="6998989275928107238">ទៅ</translation>
+<translation id="7004032350256606903">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នក​ធ្វើការរុករកជាលក្ខណៈឯកជន។
+<ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ផ្ទាំងថ្មីៗ</translation>
 <translation id="7006788746334555276">ការកំណត់មាតិកា</translation>
 <translation id="7015203776128479407">ការរៀបចំសមកាលកម្ម​ដំបូង​មិនបាន​បញ្ចប់​ទេ។ សមកាលកម្មបានបិទ។</translation>
@@ -743,6 +747,8 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8756969031206844760">ធ្វើ​បច្ចុប្បន្នភាព​ពាក្យសម្ងាត់?</translation>
 <translation id="8775144690796719618">URL មិនត្រឹមត្រូវ</translation>
 <translation id="8803639129939845298">សុវត្ថិភាព</translation>
+<translation id="8806823403540278281">ស្ថាប័នរបស់អ្នក​តម្រូវឱ្យអ្នក​ធ្វើការរុករកជាលក្ខណៈឯកជន។ ផ្ទាំងមិនត្រូវបានរក្សាទុកនៅក្នុងមុខងារ​ឯកជនទេ។
+<ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
 <translation id="8840513115188359703">អ្នកនឹងមិនត្រូវបាននាំចេញពីគណនី Google របស់អ្នកទេ។</translation>
 <translation id="8870413625673593573">បានបិទកន្លងទៅថ្មីៗ</translation>

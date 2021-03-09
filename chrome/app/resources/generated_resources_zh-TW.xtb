@@ -944,7 +944,6 @@
 
 你可以在裝置上安裝 Family Link 應用程式，以管理這個帳戶的設定。我們已透過電子郵件將相關操作說明傳送給你。</translation>
 <translation id="2040460856718599782">糟糕！嘗試驗證你的身分時發生錯誤。請重新檢查你的登入憑證，然後再試一次。</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{你有 1 組遭外洩的密碼}other{你有 # 組遭外洩的密碼}}</translation>
 <translation id="2044014337866019681">請確認你驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
 <translation id="2045117674524495717">鍵盤快速鍵說明</translation>
@@ -1094,7 +1093,6 @@
 <translation id="2199719347983604670">Chrome 同步功能資料</translation>
 <translation id="2200094388063410062">電子郵件</translation>
 <translation id="2200356397587687044">Chrome 需要權限才能繼續執行</translation>
-<translation id="220138918934036434">隱藏按鈕</translation>
 <translation id="2202898655984161076">列出印表機清單時發生問題，你的部分印表機尚未使用 <ph name="CLOUD_PRINT_NAME" /> 完成註冊。</translation>
 <translation id="2204034823255629767">讀取及變更你輸入的任何設定</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN 碼：</translation>
@@ -1982,7 +1980,6 @@
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199127022143353223">伺服器</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome 建議你立即檢查這組密碼}other{Chrome 建議你立即檢查這些密碼}}</translation>
 <translation id="3201422919974259695">可用的 USB 裝置將會顯示在這裡。</translation>
 <translation id="3202131003361292969">路徑</translation>
 <translation id="3202173864863109533">分頁音訊已關閉。</translation>
@@ -4469,7 +4466,6 @@
 <translation id="6078769373519310690">「<ph name="CHROME_EXTENSION_NAME" />」要求與 HID 裝置連線</translation>
 <translation id="6080515710685820702">你是與其他人共用電腦嗎？試試使用無痕式視窗。</translation>
 <translation id="6080689532560039067">請檢查你的系統時間</translation>
-<translation id="6082651258230788217">顯示在工具列中</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名群組</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="6086004606538989567">你驗證的帳戶未經授權，無法存取這部裝置。</translation>
@@ -6056,7 +6052,6 @@
 <translation id="7893153962594818789">這部 <ph name="DEVICE_TYPE" /> 的藍牙已關閉。請輸入你的密碼，然後開啟藍牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (預設)</translation>
 <translation id="7897900149154324287">往後請務必先從「檔案」應用程式中退出卸除式裝置再拔出，以免遺失資料。</translation>
-<translation id="7898627924844766532">固定在工具列中</translation>
 <translation id="7898725031477653577">一律翻譯</translation>
 <translation id="790040513076446191">操控隱私權相關設定</translation>
 <translation id="7901405293566323524">Phone Hub</translation>

@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
+<translation id="1647582022260550163">আপনি কি সত্যিই অনুমতি রিসেট করতে এবং কুকি ও সাইট ডেটা মুছে দিতে চান?</translation>
 <translation id="1660204651932907780">সাউন্ডটি প্লে করার জন্য সাইটটিতে অনুমতি দিন (প্রস্তাবিত)</translation>
 <translation id="1677097821151855053">কুকি এবং অন্যন্য সাইটের ডেটা আপনার অ্যাকাউন্টের তথ্য মনে রাখে, যেমন আপনাকে সাইন-ইন করানোর সময় অথবা আপনার পছন্দমতো বিজ্ঞাপন দেখানোর সময়। সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="1688867105868176567">সাইট ডেটা খালি করতে চান?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>
+<translation id="930525582205581608">এই সাইট সম্পর্কিত সবকিছু সরিয়ে দেবেন?</translation>
 <translation id="965817943346481315">সাইটে থাকা ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন ব্লক করুন (প্রস্তাবিত)</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 </translationbundle>

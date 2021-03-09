@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
+<translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
 <translation id="1660204651932907780">Թույլ տալ կայքերին նվագարկել ձայն (խորհուրդ է տրվում)</translation>
 <translation id="1677097821151855053">Քուքիները և կայքի այլ տվյալներ օգտագործվում են ձեզ հիշելու համար։ Դա անհրաժեշտ է, որպեսզի, օրինակ, դուք կարողանաք հաշիվ մտնել կամ ձեզ անհատականացված գովազդ ցուցադրվի։ Բոլոր կայքերի քուքիները կարող եք կառավարել <ph name="BEGIN_LINK" />Քուքիների կարգավորումներ<ph name="END_LINK" /> բաժնում։</translation>
 <translation id="1688867105868176567">Ջնջե՞լ կայքի տվյալները</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="913657688200966289">Միացնել <ph name="APP_NAME" />-ի թույլտվությունները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="930525582205581608">Հեռացնե՞լ այս կայքը</translation>
 <translation id="965817943346481315">Արգելափակել, եթե կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում (խորհուրդ է տրվում)</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
 </translationbundle>

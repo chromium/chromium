@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Ќе добиете известување ако има пониска цена во некоја отворена картичка</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
+<translation id="3882834874697329510">За да добиете известување ако има пониска цена во некоја отворена картичка, вклучете ги известувањата во „Поставки“.</translation>
 <translation id="3940195383040445971">Следете ги цените на картичките</translation>
 <translation id="3996880007329611795">Добивајте известувања</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>

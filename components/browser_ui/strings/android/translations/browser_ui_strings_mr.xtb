@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">अनेक साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1647582022260550163">तुम्हाला नक्की परवानग्या रीसेट करणे आणि कुकी व साइट डेटा साफ करणे हे करायचे आहे का?</translation>
 <translation id="1660204651932907780">साइटना ध्वनी प्ले करण्याची परवानगी द्या (शिफारस केलेले)</translation>
 <translation id="1677097821151855053">कुकी आणि इतर साइट डेटा तुम्हाला लक्षात ठेवण्यासाठी वापरला जातो, उदाहरणार्थ, तुम्हाला साइन इन करण्यासाठी किंवा जाहिराती पर्सनलाइझ करण्यासाठी. सर्व साइटसाठी कुकी व्यवस्थापित करण्याकरिता <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="1688867105868176567">साइट डेटा साफ करायचा?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्‍ये <ph name="APP_NAME" /> साठी परवानग्या सुरू करा.</translation>
+<translation id="930525582205581608">ही साइट विसरायची का?</translation>
 <translation id="965817943346481315">साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवत असल्यास ब्लॉक करा (शिफारस केलेले)</translation>
 <translation id="967624055006145463">डेटा स्टोअर केला</translation>
 </translationbundle>

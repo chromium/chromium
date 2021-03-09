@@ -538,6 +538,8 @@
 <translation id="6524918542306337007">"وضع التصفُّح المتخفي" غير متاح</translation>
 <translation id="6561262006871132942">تكبير</translation>
 <translation id="6585618849026997638">يمكنك الرجوع إلى أي صفحة تهمك من خلال إضافة إشارة مرجعية لها.</translation>
+<translation id="6603393121510733479">أوقفت مؤسستك وضع "التصفّح بخصوصيّة تامّة".
+<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">خيارات الترجمة</translation>
 <translation id="6620279676667515405">إلغاء</translation>
 <translation id="6624219055418309072">حظر في وضع التصفُّح المتخفّي</translation>
@@ -582,6 +584,8 @@
 <translation id="6988572888918530647">‏إدارة حسابك على Google</translation>
 <translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6998989275928107238">إلى</translation>
+<translation id="7004032350256606903">تطلُب مؤسستك منك التصفُّح بخصوصية تامّة.
+<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7006788746334555276">إعدادات المحتوى</translation>
 <translation id="7015203776128479407">لم ينتهِ إعداد المزامنة الأولية. تم إيقاف المزامنة.</translation>
@@ -743,6 +747,8 @@
 <translation id="8756969031206844760">هل تريد تحديث كلمة المرور؟</translation>
 <translation id="8775144690796719618">‏عنوان URL غير صالح</translation>
 <translation id="8803639129939845298">آمن</translation>
+<translation id="8806823403540278281">تطلُب مؤسستك منك التصفُّح بخصوصية تامّة. ولن يتم حفظ علامات التبويب في "وضع التصفُّح المتخفي".
+<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8840513115188359703">‏لن يتم تسجيل خروجك من حساب Google.</translation>
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>

@@ -941,7 +941,6 @@
 
 Құрылғыңызға Family Link қолданбасын орнату арқылы есептік жазбаңыздың параметрлерін басқара аласыз.  Нұсқауларды электрондық пошта арқылы жібереміз.</translation>
 <translation id="2040460856718599782">Сізді аутентификациялау кезінде бірдеңе дұрыс болмады. Есептік деректеріңізді қайта тексеріп, әрекетті қайталап көріңіз.</translation>
-<translation id="2040859730880153754">{COUNT,plural, =1{1 құпия сөзіңіз ұрланған.}other{# құпия сөзіңіз ұрланған.}}</translation>
 <translation id="2044014337866019681">Сеанстың құлпын ашу үшін <ph name="ACCOUNT" /> есептік жазбасының расталғанын тексеріңіз.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
 <translation id="2045117674524495717">Пернелер тіркесімі бойынша көмекші</translation>
@@ -1091,7 +1090,6 @@
 <translation id="2199719347983604670">Chrome Sync деректері</translation>
 <translation id="2200094388063410062">Электрондық пошта</translation>
 <translation id="2200356397587687044">Жалғастыру үшін Chrome браузеріне рұқсат қажет</translation>
-<translation id="220138918934036434">Жасыру түймесі</translation>
 <translation id="2202898655984161076">Принтерлерді көрсету кезінде қате орын алды. Кейбір принтерлеріңіз <ph name="CLOUD_PRINT_NAME" /> арқылы сәтті тіркелмеген болуы мүмкін.</translation>
 <translation id="2204034823255629767">Барлық тергендеріңізді оқу және өзгерту</translation>
 <translation id="220858061631308971">Бұл PIN кодын "<ph name="DEVICE_NAME" />" құрылғысына енгізіңіз:</translation>
@@ -1980,7 +1978,6 @@
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
 <translation id="3192947282887913208">Аудио файлдары</translation>
 <translation id="3199127022143353223">Серверлер</translation>
-<translation id="3200310363903241381">{COUNT,plural, =1{Chrome бұл құпия сөзді қазір тексеруге кеңес береді.}other{Chrome бұл құпия сөздерді қазір тексеруге кеңес береді.}}</translation>
 <translation id="3201422919974259695">Қолжетімді USB құрылғылары осы жерге шығады.</translation>
 <translation id="3202131003361292969">Жолы</translation>
 <translation id="3202173864863109533">Бұл қойынды аудиосының дыбысы өшірілуде.</translation>
@@ -4468,7 +4465,6 @@
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" кеңейтімі HID құрылғысына жалғанғысы келеді.</translation>
 <translation id="6080515710685820702">Ортақ компьютерді пайдаланып жатсыз ба? Инкогнито терезесін ашып көріңіз.</translation>
 <translation id="6080689532560039067">Жүйе уақытын тексеру</translation>
-<translation id="6082651258230788217">Құралдар тақтасында көрсету</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: атаусыз топқа кіреді</translation>
 <translation id="6085886413119427067">Қорғалған байланыс арқылы веб-сайттарға қосылу әдісін анықтайды.</translation>
 <translation id="6086004606538989567">Растаған есептік жазбаңыздың бұл құрылғыны пайдалануға рұқсаты жоқ.</translation>
@@ -6055,7 +6051,6 @@
 <translation id="7893153962594818789">Bluetooth функциясы бұл <ph name="DEVICE_TYPE" /> құрылғысында өшірулі. Құпия сөзді енгізіп, Bluetooth функциясын қосыңыз.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Әдепкі)</translation>
 <translation id="7897900149154324287">Келешекте алынбалы құрылғыңызды шығарудың алдында оны Файлдар қолданбасынан босатыңыз. Болмаса деректеріңіз жоғалуы мүмкін.</translation>
-<translation id="7898627924844766532">Құралдар тақтасында сақтау</translation>
 <translation id="7898725031477653577">Әрқашан аудару</translation>
 <translation id="790040513076446191">Құпиялылыққа қатысты параметрлерді басқару</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
