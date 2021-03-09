@@ -18,15 +18,12 @@
 
 namespace crashpad {
 
-size_t c16lcpy(base::char16* destination,
-               const base::char16* source,
-               size_t length) {
-  size_t source_length = std::char_traits<base::char16>::length(source);
+size_t c16lcpy(char16_t* destination, const char16_t* source, size_t length) {
+  size_t source_length = std::char_traits<char16_t>::length(source);
   if (source_length < length) {
-    std::char_traits<base::char16>::copy(
-        destination, source, source_length + 1);
+    std::char_traits<char16_t>::copy(destination, source, source_length + 1);
   } else if (length != 0) {
-    std::char_traits<base::char16>::copy(destination, source, length - 1);
+    std::char_traits<char16_t>::copy(destination, source, length - 1);
     destination[length - 1] = '\0';
   }
   return source_length;

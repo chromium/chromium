@@ -20,7 +20,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "util/file/file_reader.h"
 
 namespace crashpad {
@@ -42,7 +41,7 @@ bool ReadMinidumpUTF8String(FileReaderInterface* file_reader,
 //!     message logged.
 bool ReadMinidumpUTF16String(FileReaderInterface* file_reader,
                              RVA rva,
-                             base::string16* string);
+                             std::u16string* string);
 
 //! \brief Reads a MinidumpUTF16String from a minidump file at offset \a rva in
 //!     \a file_reader, and returns it in \a string.

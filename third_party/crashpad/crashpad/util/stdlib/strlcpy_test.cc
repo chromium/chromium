@@ -18,10 +18,10 @@
 #include <wchar.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/format_macros.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 
@@ -29,38 +29,38 @@ namespace crashpad {
 namespace test {
 namespace {
 
-size_t C16Len(const base::char16* s) {
-  return std::char_traits<base::char16>::length(s);
+size_t C16Len(const char16_t* s) {
+  return std::char_traits<char16_t>::length(s);
 }
 
-int C16Memcmp(const base::char16* s1, const base::char16* s2, size_t n) {
-  return std::char_traits<base::char16>::compare(s1, s2, n);
+int C16Memcmp(const char16_t* s1, const char16_t* s2, size_t n) {
+  return std::char_traits<char16_t>::compare(s1, s2, n);
 }
 
 TEST(strlcpy, c16lcpy) {
   // Use a destination buffer that’s larger than the length passed to c16lcpy.
   // The unused portion is a guard area that must not be written to.
   struct TestBuffer {
-    base::char16 lead_guard[64];
-    base::char16 data[128];
-    base::char16 trail_guard[64];
+    char16_t lead_guard[64];
+    char16_t data[128];
+    char16_t trail_guard[64];
   };
   TestBuffer expected_untouched;
   memset(&expected_untouched, 0xa5, sizeof(expected_untouched));
 
   // Test with M, é, Ā, ő, and Ḙ. This is a mix of characters that have zero and
   // nonzero low and high bytes.
-  static constexpr base::char16 test_characters[] =
-      {0x4d, 0xe9, 0x100, 0x151, 0x1e18};
+  static constexpr char16_t test_characters[] = {
+      0x4d, 0xe9, 0x100, 0x151, 0x1e18};
 
   for (size_t index = 0; index < base::size(test_characters); ++index) {
-    base::char16 test_character = test_characters[index];
+    char16_t test_character = test_characters[index];
     SCOPED_TRACE(base::StringPrintf(
         "character index %" PRIuS ", character 0x%x", index, test_character));
     for (size_t length = 0; length < 256; ++length) {
       SCOPED_TRACE(
           base::StringPrintf("index %" PRIuS, length));
-      base::string16 test_string(length, test_character);
+      std::u16string test_string(length, test_character);
 
       TestBuffer destination;
       memset(&destination, 0xa5, sizeof(destination));

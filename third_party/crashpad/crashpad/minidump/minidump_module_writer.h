@@ -26,7 +26,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_writable.h"
@@ -189,7 +188,7 @@ class MinidumpModuleMiscDebugRecordWriter final
  private:
   IMAGE_DEBUG_MISC image_debug_misc_;
   std::string data_;
-  base::string16 data_utf16_;
+  std::u16string data_utf16_;
 
   DISALLOW_COPY_AND_ASSIGN(MinidumpModuleMiscDebugRecordWriter);
 };
