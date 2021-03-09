@@ -63,7 +63,7 @@ class SessionDialog {
       : choices_(std::move(choices)),
         callback_(std::move(callback)),
         cancel_callback_(std::move(cancel_callback)),
-        ui_(gtk_builder_new_from_string(UI, -1)) {
+        ui_(TakeGObject(gtk_builder_new_from_string(UI, -1))) {
     gtk_label_set_text(
         GTK_LABEL(gtk_builder_get_object(ui_, "message")),
         l10n_util::GetStringUTF8(IDS_SESSION_DIALOG_MESSAGE).c_str());

@@ -18,11 +18,8 @@ std::string GetDecorationLayoutFromGtkWindow() {
   static const char kDefaultGtkLayout[] = "menu:minimize,maximize,close";
   return kDefaultGtkLayout;
 #else
-  static ScopedStyleContext context;
-  if (!context) {
-    context = GetStyleContextFromCss("");
-    gtk_style_context_add_class(context, "csd");
-  }
+  GtkCssContext context = GetStyleContextFromCss("");
+  gtk_style_context_add_class(context, "csd");
 
   gchar* layout_c = nullptr;
   gtk_style_context_get_style(context, "decoration-button-layout", &layout_c,

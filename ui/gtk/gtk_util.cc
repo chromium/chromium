@@ -32,8 +32,12 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
+#if BUILDFLAG(GTK_VERSION) < 4
 WEAK_GTK_FN(gtk_widget_path_iter_set_object_name);
 WEAK_GTK_FN(gtk_widget_path_iter_set_state);
+#endif
+
+namespace gtk {
 
 namespace {
 
@@ -112,9 +116,85 @@ int GetKeyEventProperty(const ui::KeyEvent& key_event,
   return (it != properties->end()) ? it->second[0] : 0;
 }
 
-}  // namespace
+float GetDeviceScaleFactor() {
+  views::LinuxUI* linux_ui = views::LinuxUI::instance();
+  return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
+}
 
-namespace gtk {
+GtkCssContext AppendCssNodeToStyleContextImpl(
+    GtkCssContext context,
+    GType gtype,
+    const std::string& name,
+    const std::string& object_name,
+    const std::vector<std::string>& classes,
+    GtkStateFlags state) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  auto* widget_object = object_name.empty()
+                            ? g_object_new(GTK_TYPE_WIDGET, nullptr)
+                            : g_object_new(GTK_TYPE_WIDGET, "css-name",
+                                           object_name.c_str(), nullptr);
+  ScopedGObject<GtkWidget> widget(GTK_WIDGET(widget_object));
+
+  if (!name.empty())
+    gtk_widget_set_name(widget, name.c_str());
+
+  std::vector<const char*> css_classes;
+  css_classes.reserve(classes.size() + 1);
+  for (const auto& css_class : classes)
+    css_classes.push_back(css_class.c_str());
+  css_classes.push_back(nullptr);
+  gtk_widget_set_css_classes(widget, css_classes.data());
+
+  gtk_widget_set_state_flags(widget, state, false);
+
+  gtk_widget_set_parent(widget, context);
+  return GtkCssContext(widget);
+#else
+  GtkWidgetPath* path =
+      context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
+              : gtk_widget_path_new();
+  gtk_widget_path_append_type(path, gtype);
+
+  if (!object_name.empty()) {
+    if (GtkCheckVersion(3, 20)) {
+      DCHECK(gtk_widget_path_iter_set_object_name);
+      gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
+    } else {
+      gtk_widget_path_iter_add_class(path, -1, object_name.c_str());
+    }
+  }
+
+  if (!name.empty())
+    gtk_widget_path_iter_set_name(path, -1, name.c_str());
+
+  for (const auto& css_class : classes)
+    gtk_widget_path_iter_add_class(path, -1, css_class.c_str());
+
+  if (GtkCheckVersion(3, 14)) {
+    DCHECK(gtk_widget_path_iter_set_state);
+    gtk_widget_path_iter_set_state(path, -1, state);
+  }
+
+  GtkCssContext child_context(TakeGObject(gtk_style_context_new()));
+  gtk_style_context_set_path(child_context, path);
+  if (GtkCheckVersion(3, 14)) {
+    gtk_style_context_set_state(child_context, state);
+  } else {
+    GtkStateFlags child_state = state;
+    if (context) {
+      child_state = static_cast<GtkStateFlags>(
+          child_state | gtk_style_context_get_state(context));
+    }
+    gtk_style_context_set_state(child_context, child_state);
+  }
+  gtk_style_context_set_scale(child_context, std::ceil(GetDeviceScaleFactor()));
+  gtk_style_context_set_parent(child_context, context);
+  gtk_widget_path_unref(path);
+  return GtkCssContext(child_context);
+#endif
+}
+
+}  // namespace
 
 void GtkInitFromCommandLine(const base::CommandLine& command_line) {
   CommonInitFromCommandLine(command_line);
@@ -125,7 +205,11 @@ void SetGtkTransientForAura(GtkWidget* dialog, aura::Window* parent) {
     return;
 
   gtk_widget_realize(dialog);
+#if BUILDFLAG(GTK_VERSION) >= 4
+  GdkWindow* gdk_window = gtk_native_get_surface(gtk_widget_get_native(dialog));
+#else
   GdkWindow* gdk_window = gtk_widget_get_window(dialog);
+#endif
   gfx::AcceleratedWidget parent_id = parent->GetHost()->GetAcceleratedWidget();
   GtkUi::GetDelegate()->SetGdkWindowTransientFor(gdk_window, parent_id);
 
@@ -172,15 +256,6 @@ void ParseButtonLayout(const std::string& button_string,
     }
   }
 }
-
-namespace {
-
-float GetDeviceScaleFactor() {
-  views::LinuxUI* linux_ui = views::LinuxUI::instance();
-  return linux_ui ? linux_ui->GetDeviceScaleFactor() : 1;
-}
-
-}  // namespace
 
 CairoSurface::CairoSurface(SkBitmap& bitmap)
     : surface_(cairo_image_surface_create_for_data(
@@ -240,6 +315,15 @@ bool GtkCheckVersion(int major, int minor, int micro) {
   return version >= std::make_tuple(major, minor, micro);
 }
 
+GtkCssContext::GtkCssContext(ScopedGObject<ContextType> context)
+    : context_(context) {}
+GtkCssContext::GtkCssContext() = default;
+GtkCssContext::GtkCssContext(const GtkCssContext&) = default;
+GtkCssContext::GtkCssContext(GtkCssContext&&) = default;
+GtkCssContext& GtkCssContext::operator=(const GtkCssContext&) = default;
+GtkCssContext& GtkCssContext::operator=(GtkCssContext&&) = default;
+GtkCssContext::~GtkCssContext() = default;
+
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state) {
   switch (state) {
     case ui::NativeTheme::kDisabled:
@@ -263,12 +347,8 @@ SkColor GdkRgbaToSkColor(const GdkRGBA& color) {
 }
 
 NO_SANITIZE("cfi-icall")
-ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
-                                               const std::string& css_node) {
-  GtkWidgetPath* path =
-      context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
-              : gtk_widget_path_new();
-
+GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
+                                          const std::string& css_node) {
   enum {
     CSS_TYPE,
     CSS_NAME,
@@ -277,6 +357,7 @@ ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
     CSS_PSEUDOCLASS,
     CSS_NONE,
   } part_type = CSS_TYPE;
+
   static const struct {
     const char* name;
     GtkStateFlags state_flag;
@@ -292,15 +373,17 @@ ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
       {"visited", GTK_STATE_FLAG_VISITED},
       {"checked", GTK_STATE_FLAG_CHECKED},
   };
+
+  GType gtype = G_TYPE_NONE;
+  std::string name;
+  std::string object_name;
+  std::vector<std::string> classes;
   GtkStateFlags state = GTK_STATE_FLAG_NORMAL;
+
   base::StringTokenizer t(css_node, ".:#()");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
   while (t.GetNext()) {
     if (t.token_is_delim()) {
-      if (t.token_begin() == css_node.begin()) {
-        // Special case for the first token.
-        gtk_widget_path_append_type(path, G_TYPE_NONE);
-      }
       switch (*t.token_begin()) {
         case '(':
           part_type = CSS_NAME;
@@ -323,28 +406,18 @@ ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
     } else {
       switch (part_type) {
         case CSS_NAME:
-          gtk_widget_path_iter_set_name(path, -1, t.token().c_str());
+          name = t.token();
           break;
         case CSS_OBJECT_NAME:
-          if (GtkCheckVersion(3, 20)) {
-            DCHECK(gtk_widget_path_iter_set_object_name);
-            gtk_widget_path_iter_set_object_name(path, -1, t.token().c_str());
-          } else {
-            gtk_widget_path_iter_add_class(path, -1, t.token().c_str());
-          }
+          object_name = t.token();
           break;
         case CSS_TYPE: {
-          GType type = g_type_from_name(t.token().c_str());
-          DCHECK(type);
-          gtk_widget_path_append_type(path, type);
-          if (GtkCheckVersion(3, 20) && t.token() == "GtkLabel") {
-            DCHECK(gtk_widget_path_iter_set_object_name);
-            gtk_widget_path_iter_set_object_name(path, -1, "label");
-          }
+          gtype = g_type_from_name(t.token().c_str());
+          DCHECK(gtype);
           break;
         }
         case CSS_CLASS:
-          gtk_widget_path_iter_add_class(path, -1, t.token().c_str());
+          classes.push_back(t.token());
           break;
         case CSS_PSEUDOCLASS: {
           GtkStateFlags state_flag = GTK_STATE_FLAG_NORMAL;
@@ -365,36 +438,16 @@ ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
 
   // Always add a "chromium" class so that themes can style chromium
   // widgets specially if they want to.
-  gtk_widget_path_iter_add_class(path, -1, "chromium");
+  classes.push_back("chromium");
 
-  if (GtkCheckVersion(3, 14)) {
-    DCHECK(gtk_widget_path_iter_set_state);
-    gtk_widget_path_iter_set_state(path, -1, state);
-  }
-
-  ScopedStyleContext child_context(gtk_style_context_new());
-  gtk_style_context_set_path(child_context, path);
-  if (GtkCheckVersion(3, 14)) {
-    gtk_style_context_set_state(child_context, state);
-  } else {
-    GtkStateFlags child_state = state;
-    if (context) {
-      child_state = static_cast<GtkStateFlags>(
-          child_state | gtk_style_context_get_state(context));
-    }
-    gtk_style_context_set_state(child_context, child_state);
-  }
-  gtk_style_context_set_scale(child_context, std::ceil(GetDeviceScaleFactor()));
-  gtk_style_context_set_parent(child_context, context);
-  gtk_widget_path_unref(path);
-  return child_context;
+  return AppendCssNodeToStyleContextImpl(context, gtype, name, object_name,
+                                         classes, state);
 }
 
-ScopedStyleContext GetStyleContextFromCss(const std::string& css_selector) {
+GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
   // Prepend a window node to the selector since all widgets must live
   // in a window, but we don't want to specify that every time.
-  auto context =
-      AppendCssNodeToStyleContext(nullptr, "GtkWindow#window.background");
+  auto context = AppendCssNodeToStyleContext({}, "GtkWindow#window.background");
 
   for (const auto& widget_type :
        base::SplitString(css_selector, base::kWhitespaceASCII,
@@ -404,7 +457,7 @@ ScopedStyleContext GetStyleContextFromCss(const std::string& css_selector) {
   return context;
 }
 
-SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
+SkColor GetFgColorFromStyleContext(GtkCssContext context) {
   GdkRGBA color;
 #if GTK_CHECK_VERSION(3, 90, 0)
   gtk_style_context_get_color(context, &color);
@@ -415,7 +468,7 @@ SkColor GetFgColorFromStyleContext(GtkStyleContext* context) {
   return GdkRgbaToSkColor(color);
 }
 
-SkColor GetBgColorFromStyleContext(GtkStyleContext* context) {
+SkColor GetBgColorFromStyleContext(GtkCssContext context) {
   // Backgrounds are more general than solid colors (eg. gradients),
   // but chromium requires us to boil this down to one color.  We
   // cannot use the background-color here because some themes leave it
@@ -439,7 +492,7 @@ SkColor GetFgColor(const std::string& css_selector) {
 }
 
 ScopedCssProvider GetCssProvider(const std::string& css) {
-  GtkCssProvider* provider = gtk_css_provider_new();
+  auto provider = TakeGObject(gtk_css_provider_new());
 #if GTK_CHECK_VERSION(3, 90, 0)
   gtk_css_provider_load_from_data(provider, css.c_str(), -1);
 #else
@@ -447,29 +500,29 @@ ScopedCssProvider GetCssProvider(const std::string& css) {
   gtk_css_provider_load_from_data(provider, css.c_str(), -1, &error);
   DCHECK(!error);
 #endif
-  return ScopedCssProvider(provider);
+  return provider;
 }
 
-void ApplyCssProviderToContext(GtkStyleContext* context,
+void ApplyCssProviderToContext(GtkCssContext context,
                                GtkCssProvider* provider) {
-  while (context) {
+  while (context.get()) {
     gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider),
                                    G_MAXUINT);
-    context = gtk_style_context_get_parent(context);
+    context = context.GetParent();
   }
 }
 
-void ApplyCssToContext(GtkStyleContext* context, const std::string& css) {
+void ApplyCssToContext(GtkCssContext context, const std::string& css) {
   auto provider = GetCssProvider(css);
   ApplyCssProviderToContext(context, provider);
 }
 
 void RenderBackground(const gfx::Size& size,
                       cairo_t* cr,
-                      GtkStyleContext* context) {
-  if (!context)
+                      GtkCssContext context) {
+  if (!context.get())
     return;
-  RenderBackground(size, cr, gtk_style_context_get_parent(context));
+  RenderBackground(size, cr, context.GetParent());
   gtk_render_background(context, cr, 0, 0, size.width(), size.height());
 }
 
@@ -504,10 +557,14 @@ SkColor GetSelectionBgColor(const std::string& css_selector) {
   return GdkRgbaToSkColor(selection_color);
 }
 
-bool ContextHasClass(GtkStyleContext* context, const std::string& style_class) {
+bool ContextHasClass(GtkCssContext context, const std::string& style_class) {
+#if BUILDFLAG(GTK_VERSION) >= 4
+  return gtk_style_context_has_class(context, style_class.c_str());
+#else
   return gtk_style_context_has_class(context, style_class.c_str()) ||
          gtk_widget_path_iter_has_class(gtk_style_context_get_path(context), -1,
                                         style_class.c_str());
+#endif
 }
 
 SkColor GetSeparatorColor(const std::string& css_selector) {

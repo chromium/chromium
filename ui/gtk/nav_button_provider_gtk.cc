@@ -138,11 +138,11 @@ gfx::Size LoadNavButtonIcon(
   }
   return {width, height};
 #else
-  ScopedGObject<GtkIconInfo> icon_info(gtk_icon_theme_lookup_icon_for_scale(
+  auto icon_info = TakeGObject(gtk_icon_theme_lookup_icon_for_scale(
       GetDefaultIconTheme(), icon_name, kNavButtonIconSize, scale,
       static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_USE_BUILTIN |
                                       GTK_ICON_LOOKUP_GENERIC_FALLBACK)));
-  NavButtonIcon icon_pixbuf(gtk_icon_info_load_symbolic_for_context(
+  auto icon_pixbuf = TakeGObject(gtk_icon_info_load_symbolic_for_context(
       icon_info, button_context, nullptr, nullptr));
   gfx::Size size{gdk_pixbuf_get_width(icon_pixbuf),
                  gdk_pixbuf_get_height(icon_pixbuf)};
@@ -173,12 +173,12 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
   return widget_rect.size();
 }
 
-ScopedStyleContext CreateHeaderContext(bool maximized) {
+GtkCssContext CreateHeaderContext(bool maximized) {
   std::string window_selector = "GtkWindow#window.background";
   if (maximized)
     window_selector += ".maximized";
   return AppendCssNodeToStyleContext(
-      AppendCssNodeToStyleContext(nullptr, window_selector),
+      AppendCssNodeToStyleContext({}, window_selector),
       "GtkHeaderBar#headerbar.header-bar.titlebar");
 }
 

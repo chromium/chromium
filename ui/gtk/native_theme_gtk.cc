@@ -24,14 +24,14 @@ enum BackgroundRenderMode {
   BG_RENDER_RECURSIVE,
 };
 
-ScopedStyleContext GetTooltipContext() {
+GtkCssContext GetTooltipContext() {
   return AppendCssNodeToStyleContext(
-      nullptr, GtkCheckVersion(3, 20) ? "#tooltip.background"
-                                      : "GtkWindow#window.background.tooltip");
+      {}, GtkCheckVersion(3, 20) ? "#tooltip.background"
+                                 : "GtkWindow#window.background.tooltip");
 }
 
 SkBitmap GetWidgetBitmap(const gfx::Size& size,
-                         GtkStyleContext* context,
+                         GtkCssContext context,
                          BackgroundRenderMode bg_mode,
                          bool render_frame) {
   DCHECK(bg_mode != BG_RENDER_NONE || render_frame);
@@ -60,7 +60,7 @@ SkBitmap GetWidgetBitmap(const gfx::Size& size,
 
 void PaintWidget(cc::PaintCanvas* canvas,
                  const gfx::Rect& rect,
-                 GtkStyleContext* context,
+                 GtkCssContext context,
                  BackgroundRenderMode bg_mode,
                  bool render_frame) {
   canvas->drawImage(cc::PaintImage::CreateFromBitmap(GetWidgetBitmap(
@@ -83,7 +83,7 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetBgColor("");
     case ui::NativeTheme::kColorId_DialogForeground:
     case ui::NativeTheme::kColorId_AvatarIconIncognito:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_BubbleFooterBackground:
       return GetBgColor("#statusbar");
 
@@ -115,18 +115,20 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_EnabledMenuItemForegroundColor:
     case ui::NativeTheme::kColorId_MenuDropIndicator:
     case ui::NativeTheme::kColorId_HighlightedMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem GtkLabel");
+      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem GtkLabel#label");
     case ui::NativeTheme::kColorId_SelectedMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:hover GtkLabel");
+      return GetFgColor(
+          "GtkMenu#menu GtkMenuItem#menuitem:hover GtkLabel#label");
     case ui::NativeTheme::kColorId_DisabledMenuItemForegroundColor:
-      return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem:disabled GtkLabel");
+      return GetFgColor(
+          "GtkMenu#menu GtkMenuItem#menuitem:disabled GtkLabel#label");
     case ui::NativeTheme::kColorId_AvatarIconGuest:
     case ui::NativeTheme::kColorId_MenuItemMinorTextColor:
       if (GtkCheckVersion(3, 20)) {
         return GetFgColor("GtkMenu#menu GtkMenuItem#menuitem #accelerator");
       }
       return GetFgColor(
-          "GtkMenu#menu GtkMenuItem#menuitem GtkLabel.accelerator");
+          "GtkMenu#menu GtkMenuItem#menuitem GtkLabel#label.accelerator");
     case ui::NativeTheme::kColorId_MenuSeparatorColor:
     case ui::NativeTheme::kColorId_AvatarHeaderArt:
       if (GtkCheckVersion(3, 20)) {
@@ -159,16 +161,17 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // Label
     case ui::NativeTheme::kColorId_LabelEnabledColor:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_LabelDisabledColor:
     case ui::NativeTheme::kColorId_LabelSecondaryColor:
-      return GetFgColor("GtkLabel:disabled");
+      return GetFgColor("GtkLabel#label:disabled");
     case ui::NativeTheme::kColorId_LabelTextSelectionColor:
-      return GetFgColor(GtkCheckVersion(3, 20) ? "GtkLabel #selection"
-                                               : "GtkLabel:selected");
+      return GetFgColor(GtkCheckVersion(3, 20) ? "GtkLabel#label #selection"
+                                               : "GtkLabel#label:selected");
     case ui::NativeTheme::kColorId_LabelTextSelectionBackgroundFocused:
-      return GetSelectionBgColor(GtkCheckVersion(3, 20) ? "GtkLabel #selection"
-                                                        : "GtkLabel:selected");
+      return GetSelectionBgColor(GtkCheckVersion(3, 20)
+                                     ? "GtkLabel#label #selection"
+                                     : "GtkLabel#label:selected");
 
     // Link
     case ui::NativeTheme::kColorId_LinkDisabled:
@@ -178,13 +181,13 @@ base::Optional<SkColor> SkColorFromColorId(
           0xBB);
     case ui::NativeTheme::kColorId_LinkPressed:
       if (GtkCheckVersion(3, 12))
-        return GetFgColor("GtkLabel.link:link:hover:active");
+        return GetFgColor("GtkLabel#label.link:link:hover:active");
       FALLTHROUGH;
     case ui::NativeTheme::kColorId_LinkEnabled: {
       if (GtkCheckVersion(3, 12))
-        return GetFgColor("GtkLabel.link:link");
+        return GetFgColor("GtkLabel#label.link:link");
 #if !GTK_CHECK_VERSION(3, 90, 0)
-      auto link_context = GetStyleContextFromCss("GtkLabel.view");
+      auto link_context = GetStyleContextFromCss("GtkLabel#label.view");
       GdkColor* color;
       gtk_style_context_get_style(link_context, "link-color", &color, nullptr);
       if (color) {
@@ -232,9 +235,9 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetBgColor("GtkButton#button");
     case ui::NativeTheme::kColorId_ButtonEnabledColor:
     case ui::NativeTheme::kColorId_ButtonUncheckedColor:
-      return GetFgColor("GtkButton#button.text-button GtkLabel");
+      return GetFgColor("GtkButton#button.text-button GtkLabel#label");
     case ui::NativeTheme::kColorId_ButtonDisabledColor:
-      return GetFgColor("GtkButton#button.text-button:disabled GtkLabel");
+      return GetFgColor("GtkButton#button.text-button:disabled GtkLabel#label");
     // TODO(thomasanderson): Add this once this CL lands:
     // https://chromium-review.googlesource.com/c/chromium/src/+/2053144
     // case ui::NativeTheme::kColorId_ButtonHoverColor:
@@ -250,7 +253,7 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_TextOnProminentButtonColor:
       return GetFgColor(
           "GtkTreeView#treeview.view "
-          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel");
+          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label");
     case ui::NativeTheme::kColorId_ProminentButtonDisabledColor:
       return GetBgColor("GtkButton#button.text-button:disabled");
     case ui::NativeTheme::kColorId_ButtonBorderColor:
@@ -270,9 +273,9 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // TabbedPane
     case ui::NativeTheme::kColorId_TabTitleColorActive:
-      return GetFgColor("GtkLabel");
+      return GetFgColor("GtkLabel#label");
     case ui::NativeTheme::kColorId_TabTitleColorInactive:
-      return GetFgColor("GtkLabel:disabled");
+      return GetFgColor("GtkLabel#label:disabled");
     case ui::NativeTheme::kColorId_TabBottomBorder:
       return GetBorderColor(GtkCheckVersion(3, 20) ? "GtkFrame#frame #border"
                                                    : "GtkFrame#frame");
@@ -324,7 +327,7 @@ base::Optional<SkColor> SkColorFromColorId(
       return GetFgColor("GtkButton#button.image-button:hover");
     case ui::NativeTheme::kColorId_TooltipText: {
       auto context = GetTooltipContext();
-      context = AppendCssNodeToStyleContext(context, "GtkLabel");
+      context = AppendCssNodeToStyleContext(context, "GtkLabel#label");
       return GetFgColorFromStyleContext(context);
     }
 
@@ -338,14 +341,15 @@ base::Optional<SkColor> SkColorFromColorId(
     case ui::NativeTheme::kColorId_TreeText:
     case ui::NativeTheme::kColorId_TableGroupingIndicatorColor:
       return GetFgColor(
-          "GtkTreeView#treeview.view GtkTreeView#treeview.view.cell GtkLabel");
+          "GtkTreeView#treeview.view GtkTreeView#treeview.view.cell "
+          "GtkLabel#label");
     case ui::NativeTheme::kColorId_TableSelectedText:
     case ui::NativeTheme::kColorId_TableSelectedTextUnfocused:
     case ui::NativeTheme::kColorId_TreeSelectedText:
     case ui::NativeTheme::kColorId_TreeSelectedTextUnfocused:
       return GetFgColor(
           "GtkTreeView#treeview.view "
-          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel");
+          "GtkTreeView#treeview.view.cell:selected:focus GtkLabel#label");
     case ui::NativeTheme::kColorId_TableSelectionBackgroundFocused:
     case ui::NativeTheme::kColorId_TableSelectionBackgroundUnfocused:
     case ui::NativeTheme::kColorId_TreeSelectionBackgroundFocused:
@@ -356,7 +360,8 @@ base::Optional<SkColor> SkColorFromColorId(
 
     // Table Header
     case ui::NativeTheme::kColorId_TableHeaderText:
-      return GetFgColor("GtkTreeView#treeview.view GtkButton#button GtkLabel");
+      return GetFgColor(
+          "GtkTreeView#treeview.view GtkButton#button GtkLabel#label");
     case ui::NativeTheme::kColorId_TableHeaderBackground:
       return GetBgColor("GtkTreeView#treeview.view GtkButton#button");
     case ui::NativeTheme::kColorId_TableHeaderSeparator:
@@ -435,9 +440,9 @@ NativeThemeGtk::NativeThemeGtk() {
 
   // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private, so
   // we need to initialize it indirectly.
-  ScopedGObject<GtkTreeModel> model{
-      GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING))};
-  ScopedGObject<GtkWidget> combo{gtk_combo_box_new_with_model(model)};
+  auto model =
+      TakeGObject(GTK_TREE_MODEL(gtk_tree_store_new(1, G_TYPE_STRING)));
+  auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
 
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }

@@ -133,7 +133,7 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
         width, height, width * 4);
     cairo_t* cr = cairo_create(surface);
 
-    ScopedStyleContext context = GetStyleContextFromCss("GtkButton#button");
+    GtkCssContext context = GetStyleContextFromCss("GtkButton#button");
     GtkStateFlags state_flags = StateToStateFlags(state_);
     if (focus_) {
       state_flags =
@@ -509,7 +509,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
   std::string content_types[] = {content_type, kUnknownContentType};
 
   for (size_t i = 0; i < base::size(content_types); ++i) {
-    ScopedGObject<GIcon> icon(g_content_type_get_icon(content_type.c_str()));
+    auto icon = TakeGObject(g_content_type_get_icon(content_type.c_str()));
 #if GTK_CHECK_VERSION(3, 98, 0)
     ScopedGObject<GtkIconPaintable> icon_paintable(
         gtk_icon_theme_lookup_by_gicon(theme, icon.get(), size, 1,
@@ -536,7 +536,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
     gtk_render_icon(gtk_widget_get_style_context(fake_window_), cr, texture, 0,
                     0);
 #else
-    ScopedGObject<GtkIconInfo> icon_info(gtk_icon_theme_lookup_by_gicon(
+    auto icon_info = TakeGObject(gtk_icon_theme_lookup_by_gicon(
         theme, icon.get(), size,
         static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE)));
     if (!icon_info)
@@ -880,7 +880,7 @@ void GtkUi::UpdateColors() {
   colors_[ThemeProperties::COLOR_NTP_HEADER] =
       GetBorderColor("GtkButton#button");
 
-  SkColor tab_text_color = GetFgColor("GtkLabel");
+  SkColor tab_text_color = GetFgColor("GtkLabel#label");
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED] = tab_text_color;
@@ -945,9 +945,9 @@ void GtkUi::UpdateColors() {
         tab_color;
 
     const SkColor background_tab_text_color =
-        GetFgColor(header_selector + " GtkLabel.title");
+        GetFgColor(header_selector + " GtkLabel#label.title");
     const SkColor background_tab_text_color_inactive =
-        GetFgColor(header_selector_inactive + " GtkLabel.title");
+        GetFgColor(header_selector_inactive + " GtkLabel#label.title");
 
     color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE] =
         background_tab_text_color;

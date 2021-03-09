@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ui/base/glib/scoped_gobject.h"
+#include "ui/gtk/gtk_buildflags.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
@@ -82,7 +83,48 @@ class CairoSurface {
 // |major|.|minor|.|micro|.
 bool GtkCheckVersion(int major, int minor = 0, int micro = 0);
 
-using ScopedStyleContext = ScopedGObject<GtkStyleContext>;
+class GtkCssContext {
+ public:
+#if BUILDFLAG(GTK_VERSION) >= 4
+  using ContextType = GtkWidget;
+#else
+  using ContextType = GtkStyleContext;
+#endif
+
+  explicit GtkCssContext(ScopedGObject<ContextType> context);
+  GtkCssContext();
+  GtkCssContext(const GtkCssContext&);
+  GtkCssContext(GtkCssContext&&);
+  GtkCssContext& operator=(const GtkCssContext&);
+  GtkCssContext& operator=(GtkCssContext&&);
+  ~GtkCssContext();
+
+  ContextType* get() { return context_; }
+
+  operator GtkStyleContext*() {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    return gtk_widget_get_style_context(context_);
+#else
+    return context_;
+#endif
+  }
+
+#if BUILDFLAG(GTK_VERSION) >= 4
+  operator GtkWidget*() { return context_; }
+#endif
+
+  GtkCssContext GetParent() {
+#if BUILDFLAG(GTK_VERSION) >= 4
+    return GtkCssContext(WrapGObject(gtk_widget_get_parent(context_)));
+#else
+    return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
+#endif
+  }
+
+ private:
+  ScopedGObject<ContextType> context_;
+};
+
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
 #if !GTK_CHECK_VERSION(3, 90, 0)
@@ -90,7 +132,7 @@ using ScopedCssProvider = ScopedGObject<GtkCssProvider>;
 
 // Template override cannot be in the gtk namespace.
 template <>
-inline void gtk::ScopedStyleContext::Unref() {
+inline void ScopedGObject<GtkStyleContext>::Unref() {
   // Versions of GTK earlier than 3.15.4 had a bug where a g_assert
   // would be triggered when trying to free a GtkStyleContext that had
   // a parent whose only reference was the child context in question.
@@ -123,24 +165,24 @@ SkColor GdkRgbaToSkColor(const GdkRGBA& color);
 // If |context| is nullptr, creates a new top-level style context
 // specified by parsing |css_node|.  Otherwise, creates the child
 // context with |context| as the parent.
-ScopedStyleContext AppendCssNodeToStyleContext(GtkStyleContext* context,
-                                               const std::string& css_node);
+GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
+                                          const std::string& css_node);
 
-// Parses |css_selector| into a GtkStyleContext.  The format is a
+// Parses |css_selector| into a StyleContext.  The format is a
 // sequence of whitespace-separated objects.  Each object may have at
 // most one object name at the beginning of the string, and any number
 // of '.'-prefixed classes and ':'-prefixed pseudoclasses.  An example
 // is "GtkButton.button.suggested-action:hover:active".  The caller
 // must g_object_unref() the returned context.
-ScopedStyleContext GetStyleContextFromCss(const std::string& css_selector);
+GtkCssContext GetStyleContextFromCss(const std::string& css_selector);
 
-SkColor GetFgColorFromStyleContext(GtkStyleContext* context);
+SkColor GetFgColorFromStyleContext(GtkCssContext context);
 
-SkColor GetBgColorFromStyleContext(GtkStyleContext* context);
+SkColor GetBgColorFromStyleContext(GtkCssContext context);
 
 // Overrides properties on |context| and all its parents with those
 // provided by |css|.
-void ApplyCssToContext(GtkStyleContext* context, const std::string& css);
+void ApplyCssToContext(GtkCssContext context, const std::string& css);
 
 // Get the 'color' property from the style context created by
 // GetStyleContextFromCss(|css_selector|).
@@ -152,7 +194,7 @@ ScopedCssProvider GetCssProvider(const std::string& css);
 // the background for |context| itself.
 void RenderBackground(const gfx::Size& size,
                       cairo_t* cr,
-                      GtkStyleContext* context);
+                      GtkCssContext context);
 
 // Renders a background from the style context created by
 // GetStyleContextFromCss(|css_selector|) into a 24x24 bitmap and
