@@ -813,7 +813,14 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
 
 // Test that autofill doesn't refill a text field initially modified by the
 // user.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
+// TODO(https://crbug.com/1185439): This test is flaky on Mac, Linux, and
+// ChromeOS.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
+#else
+#define MAYBE_ModifyTextFieldAndFill ModifyTextFieldAndFill
+#endif
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_ModifyTextFieldAndFill) {
   CreateTestProfile();
 
   // Load the test page.
