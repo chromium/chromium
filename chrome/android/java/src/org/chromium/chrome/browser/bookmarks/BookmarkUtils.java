@@ -51,6 +51,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -139,6 +140,14 @@ public class BookmarkUtils {
             SnackbarManager snackbarManager, Activity activity, boolean fromCustomTab) {
         BookmarkId bookmarkId =
                 addBookmarkInternal(activity, bookmarkModel, tab.getTitle(), tab.getOriginalUrl());
+
+        if (bookmarkId != null && bookmarkId.getType() == BookmarkType.NORMAL) {
+            @BrowserProfileType
+            int type = Profile.getBrowserProfileTypeFromProfile(
+                    Profile.fromWebContents(tab.getWebContents()));
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Bookmarks.AddedPerProfileType", type, BrowserProfileType.MAX_VALUE + 1);
+        }
 
         Snackbar snackbar = null;
         if (bookmarkId == null) {

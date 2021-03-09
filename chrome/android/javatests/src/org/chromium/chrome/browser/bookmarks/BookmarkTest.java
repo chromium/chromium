@@ -96,6 +96,7 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -1860,6 +1861,49 @@ public class BookmarkTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
+
+        openBookmarkManager();
+        pressBack();
+        waitForTabbedActivity();
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType",
+                        BrowserProfileType.REGULAR));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
+
+        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        openBookmarkManager();
+        pressBack();
+        waitForTabbedActivity();
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType"));
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Bookmarks.OpenBookmarkManager.PerProfileType",
+                        BrowserProfileType.INCOGNITO));
     }
 
     /**

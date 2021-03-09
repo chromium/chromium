@@ -1577,6 +1577,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
     This histogram records when a bookmark is added sliced on profile type.
+
+    This was not recorded for Android before M90. Reading list and partner
+    bookmarks aren't reported by it.
   </summary>
 </histogram>
 
@@ -1776,6 +1779,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     addition to their page URLs (e.g. http://www.google.com). OnFaviconChanged()
     is expected to be called less than 10 times per user per day with a
     non-empty |icon_url|.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkManager.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-03-01">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    This records the number of times the bookmark manager is opened from regular
+    or Incognito tab. This histogram only records the count from
+    ChromeTabbedActivity where we actually have the Bookmark manager UI.
+    Recorded when the bookmark menu item is clicked in Android.
   </summary>
 </histogram>
 

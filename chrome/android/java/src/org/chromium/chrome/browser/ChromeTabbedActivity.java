@@ -175,6 +175,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1830,6 +1831,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (currentTabIsNtp) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_BOOKMARKS_MANAGER);
             }
+
+            @BrowserProfileType
+            int type = getCurrentTabModel().isIncognito() ? BrowserProfileType.INCOGNITO
+                                                          : BrowserProfileType.REGULAR;
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Bookmarks.OpenBookmarkManager.PerProfileType", type,
+                    BrowserProfileType.MAX_VALUE + 1);
+
             RecordUserAction.record("MobileMenuAllBookmarks");
         } else if (id == R.id.recent_tabs_menu_id) {
             LoadUrlParams params =
