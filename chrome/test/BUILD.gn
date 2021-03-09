@@ -1549,7 +1549,6 @@ if (!is_android) {
       "../browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_browsertest.cc",
       "../browser/ui/webui/bookmarks/bookmarks_browsertest.cc",
       "../browser/ui/webui/bookmarks/bookmarks_browsertest.h",
-      "../browser/ui/webui/chrome_content_browser_client_webui_part_browsertest.cc",
       "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
@@ -3208,6 +3207,7 @@ if (!is_android) {
     if (enable_webui_tab_strip) {
       sources += [
         "../browser/ui/views/frame/webui_tab_strip_field_trial_browsertest.cc",
+        "../browser/ui/webui/tab_strip/chrome_content_browser_client_tab_strip_part_browsertest.cc",
         "../browser/ui/webui/tab_strip/tab_strip_ui_browsertest.cc",
       ]
     }

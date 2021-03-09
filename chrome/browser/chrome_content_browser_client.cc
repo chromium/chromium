@@ -501,7 +501,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
-#include "chrome/browser/ui/webui/chrome_content_browser_client_webui_part.h"
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/common/importer/profile_import.mojom.h"
@@ -653,6 +652,10 @@
 
 #if BUILDFLAG(ENABLE_VR) && !defined(OS_ANDROID)
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"  // nogncheck crbug.com/1125897
+#endif
+
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+#include "chrome/browser/ui/webui/tab_strip/chrome_content_browser_client_tab_strip_part.h"
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -1230,8 +1233,8 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
   extra_parts_.push_back(new ChromeContentBrowserClientChromeOsPart);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
-  extra_parts_.push_back(new ChromeContentBrowserClientWebUIPart);
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  extra_parts_.push_back(new ChromeContentBrowserClientTabStripPart);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
