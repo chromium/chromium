@@ -149,6 +149,10 @@ extern const char kEditPasswordsInSettingsDescription[];
 extern const char kEmbedderBlockRestoreUrlName[];
 extern const char kEmbedderBlockRestoreUrlDescription[];
 
+// Title and description for the flag to enable autofill address save prompts.
+extern const char kEnableAutofillAddressSavePromptName[];
+extern const char kEnableAutofillAddressSavePromptDescription[];
+
 // Title and description for the flag to enable the confirmational action sheet
 // for the tab grid "Close All" action.
 extern const char kEnableCloseAllTabsConfirmationName[];

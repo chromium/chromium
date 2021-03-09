@@ -166,6 +166,11 @@ const char kEmbedderBlockRestoreUrlName[] =
 const char kEmbedderBlockRestoreUrlDescription[] =
     "Embedders can prevent URLs from restoring.";
 
+const char kEnableAutofillAddressSavePromptName[] =
+    "Autofill Address Save Prompts";
+const char kEnableAutofillAddressSavePromptDescription[] =
+    "Enable the Autofill address save prompts.";
+
 const char kEnableCloseAllTabsConfirmationName[] =
     "Enable Close All Tabs confirmation";
 const char kEnableCloseAllTabsConfirmationDescription[] =
