@@ -31,12 +31,12 @@ class RespondWithFunction final : public ScriptFunction {
   RespondWithFunction(ScriptState* script_state, AppHistoryNavigateEvent* event)
       : ScriptFunction(script_state), event_(event) {}
 
- private:
   void Trace(Visitor* visitor) const final {
     ScriptFunction::Trace(visitor);
     visitor->Trace(event_);
   }
 
+ private:
   ScriptValue Call(ScriptValue) final {
     DCHECK(event_);
     event_ = nullptr;
