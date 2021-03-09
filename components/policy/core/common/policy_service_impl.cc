@@ -161,13 +161,19 @@ void RemapRenamedPolicies(PolicyMap* policies) {
 // Metrics should not be enforced so if this policy is set as mandatory
 // downgrade it to a recommended level policy.
 void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
-  PolicyMap::Entry* policy =
-      policies->GetMutable(policy::key::kMetricsReportingEnabled);
-  if (policy && policy->level != POLICY_LEVEL_RECOMMENDED && policy->value() &&
-      policy->value()->is_bool() && policy->value()->GetBool()) {
-    policy->level = POLICY_LEVEL_RECOMMENDED;
-    policy->AddMessage(PolicyMap::MessageType::kInfo,
-                       IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+  // Capture both the Chrome-only and device-level policies on Chrome OS.
+  const std::vector<const char*> metrics_keys = {
+      policy::key::kMetricsReportingEnabled,
+      policy::key::kDeviceMetricsReportingEnabled};
+  for (const char* policy_key : metrics_keys) {
+    PolicyMap::Entry* policy = policies->GetMutable(policy_key);
+    if (policy && policy->level != POLICY_LEVEL_RECOMMENDED &&
+        policy->value() && policy->value()->is_bool() &&
+        policy->value()->GetBool()) {
+      policy->level = POLICY_LEVEL_RECOMMENDED;
+      policy->AddMessage(PolicyMap::MessageType::kInfo,
+                         IDS_POLICY_IGNORED_MANDATORY_REPORTING_POLICY);
+    }
   }
 }
 
