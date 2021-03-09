@@ -285,6 +285,13 @@ void PrerenderHost::StartPrerendering() {
   // Start prerendering navigation.
   NavigationController::LoadURLParams load_url_params(attributes_->url);
   load_url_params.initiator_origin = initiator_origin_;
+
+  // Just use the referrer from attributes, as NoStatePrefetch does.
+  // TODO(crbug.com/1176054): For cross-origin prerender, follow the spec steps
+  // for "sufficiently-strict speculative navigation referrer policies".
+  if (attributes_->referrer)
+    load_url_params.referrer = Referrer(*attributes_->referrer);
+
   // TODO(https://crbug.com/1132746): Set up other fields of `load_url_params`
   // as well, and add tests for them.
   page_holder_->GetNavigationController().LoadURLWithParams(load_url_params);
