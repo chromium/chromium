@@ -65,7 +65,6 @@
 #include "remoting/host/host_config.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_exit_codes.h"
-#include "remoting/host/host_main.h"
 #include "remoting/host/host_power_save_blocker.h"
 #include "remoting/host/host_settings.h"
 #include "remoting/host/host_status_logger.h"
