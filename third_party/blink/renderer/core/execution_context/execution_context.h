@@ -407,6 +407,30 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   void FileSharedArrayBufferCreationIssue();
 
+  bool IsInRequestAnimationFrame() const {
+    return is_in_request_animation_frame_;
+  }
+
+  // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
+  // IsInRequestAnimationFrame() for the corresponding ExecutionContext will
+  // return true while this instance exists.
+  class ScopedRequestAnimationFrameStatus {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedRequestAnimationFrameStatus(ExecutionContext* context)
+        : context_(context) {
+      DCHECK(!context_->is_in_request_animation_frame_);
+      context_->is_in_request_animation_frame_ = true;
+    }
+    ~ScopedRequestAnimationFrameStatus() {
+      context_->is_in_request_animation_frame_ = false;
+    }
+
+   private:
+    ExecutionContext* context_;
+  };
+
  protected:
   explicit ExecutionContext(v8::Isolate* isolate, Agent*);
   ExecutionContext(const ExecutionContext&) = delete;
@@ -446,6 +470,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   bool has_filed_shared_array_buffer_transfer_issue_ = false;
   bool has_filed_shared_array_buffer_creation_issue_ = false;
+
+  bool is_in_request_animation_frame_ = false;
 
   Member<PublicURLManager> public_url_manager_;
 

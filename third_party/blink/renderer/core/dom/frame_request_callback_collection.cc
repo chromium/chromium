@@ -61,6 +61,8 @@ void FrameRequestCallbackCollection::ExecuteFrameCallbacks(
     double high_res_now_ms_legacy) {
   TRACE_EVENT0("blink",
                "FrameRequestCallbackCollection::ExecuteFrameCallbacks");
+  ExecutionContext::ScopedRequestAnimationFrameStatus scoped_raf_status(
+      context_);
 
   // First, generate a list of callbacks to consider.  Callbacks registered from
   // this point on are considered only for the "next" frame, not this one.
