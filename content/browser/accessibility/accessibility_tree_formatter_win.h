@@ -30,34 +30,34 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
 
  private:
   void RecursiveBuildTree(const Microsoft::WRL::ComPtr<IAccessible> node,
-                          base::DictionaryValue* dict,
+                          base::Value* dict,
                           LONG root_x,
                           LONG root_y) const;
 
   void AddProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                     base::DictionaryValue* dict,
+                     base::Value* dict,
                      LONG root_x,
                      LONG root_y) const;
   void AddMSAAProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                         base::DictionaryValue* dict,
+                         base::Value* dict,
                          LONG root_x,
                          LONG root_y) const;
   void AddSimpleDOMNodeProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                  base::DictionaryValue* dict) const;
+                                  base::Value* dict) const;
   bool AddIA2Properties(const Microsoft::WRL::ComPtr<IAccessible>,
-                        base::DictionaryValue* dict) const;
+                        base::Value* dict) const;
   void AddIA2ActionProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                              base::DictionaryValue* dict) const;
+                              base::Value* dict) const;
   void AddIA2HypertextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict) const;
+                                 base::Value* dict) const;
   void AddIA2TextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                            base::DictionaryValue* dict) const;
+                            base::Value* dict) const;
   void AddIA2TableProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict) const;
+                             base::Value* dict) const;
   void AddIA2TableCellProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict) const;
+                                 base::Value* dict) const;
   void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict) const;
+                             base::Value* dict) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
 };
