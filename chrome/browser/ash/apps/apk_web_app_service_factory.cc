@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -16,6 +17,10 @@ namespace ash {
 
 // static
 ApkWebAppService* ApkWebAppServiceFactory::GetForProfile(Profile* profile) {
+  // ApkWebAppService is not supported if web apps aren't available.
+  if (!web_app::AreWebAppsEnabled(profile))
+    return nullptr;
+
   return static_cast<ApkWebAppService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

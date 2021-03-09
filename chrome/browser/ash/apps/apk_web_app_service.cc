@@ -75,10 +75,9 @@ void ApkWebAppService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kWebAppToApkDictPref);
 }
 
-ApkWebAppService::ApkWebAppService(Profile* profile) : profile_(profile) {
-  // Do not set up observers if web apps aren't enabled in this profile.
-  if (!web_app::AreWebAppsEnabled(profile))
-    return;
+ApkWebAppService::ApkWebAppService(Profile* profile)
+    : profile_(profile), arc_app_list_prefs_(nullptr) {
+  DCHECK(web_app::AreWebAppsEnabled(profile));
 
   // Can be null in tests.
   arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
