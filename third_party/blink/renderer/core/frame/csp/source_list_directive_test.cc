@@ -509,6 +509,35 @@ TEST_F(SourceListDirectiveTest, ParseHost) {
   }
 }
 
+TEST_F(SourceListDirectiveTest, ParsePort) {
+  struct TestCase {
+    String sources;
+    bool valid;
+    int expected_port;
+  } cases[] = {
+      {"example.com", true, url::PORT_UNSPECIFIED},
+      {"example.com:80", true, 80},
+      {"http://example.com:80", true, 80},
+      {"https://example.com:80", true, 80},
+      {"https://example.com:90/path", true, 90},
+
+      {"http://example.com:", false},
+      {"https://example.com:/", false},
+      {"http://example.com:/path", false},
+  };
+
+  for (const auto& test : cases) {
+    network::mojom::blink::CSPSourceListPtr parsed =
+        CSPSourceListParse("default-src", test.sources, csp.Get());
+    EXPECT_EQ(CSPSourceListIsNone(*parsed), !test.valid)
+        << "CSPSourceListParse failed to parse: " << test.sources;
+    if (test.valid) {
+      ASSERT_EQ(1u, parsed->sources.size());
+      EXPECT_EQ(test.expected_port, parsed->sources[0]->port);
+    }
+  }
+}
+
 TEST_F(SourceListDirectiveTest, AllowHostWildcard) {
   KURL base;
   // When the host-part is "*", the port must still be checked.
