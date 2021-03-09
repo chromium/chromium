@@ -8,3 +8,5 @@ per-file checked_ptr*=keishi@chromium.org
 per-file madv_free*=lizeb@chromium.org
 per-file madv_free*=pasko@chromium.org
 per-file madv_free*=mthiesse@chromium.org
+per-file nonscannable_memory*=bikineev@chromium.com
+per-file nonscannable_memory*=mlippautz@chromium.com
