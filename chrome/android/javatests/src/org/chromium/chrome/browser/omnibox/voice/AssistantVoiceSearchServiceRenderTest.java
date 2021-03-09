@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -27,8 +27,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -48,6 +48,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH + "<Study",
         "force-fieldtrials=Study/Group"})
+@Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class AssistantVoiceSearchServiceRenderTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -85,8 +86,6 @@ public class AssistantVoiceSearchServiceRenderTest {
     @MediumTest
     @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:colorful_mic/true"})
     @Feature({"RenderTest"})
-    @DisableIf.Build(message = "Flaky on Android M runners, see https://crbug.com/1185744",
-            sdk_is_less_than = VERSION_CODES.O)
     public void
     testAssistantColorfulMic() throws IOException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
