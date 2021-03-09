@@ -228,9 +228,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Called when the database has been updated and schedules the next update.
   void DatabaseUpdated();
 
-  // Delete any *.store files from disk that are no longer used.
-  void DeleteUnusedStoreFiles();
-
   // Matches the full_hashes for a |check| with the hashes stored in
   // |artificially_marked_store_and_hash_prefixes_|. For each full hash match,
   // it populates |full_hash_to_store_and_hash_prefixes| with the matched hash
@@ -271,6 +268,13 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // using any of the following command line flags: "mark_as_phishing",
   // "mark_as_malware", "mark_as_uws".
   void PopulateArtificialDatabase();
+
+  // Rename *.store files on disk per |kStoreFilesToRename|.
+  void RenameOldStoreFiles();
+
+  // Renames the file at |old_path| to |new_path|.
+  static void RenameStoreFile(const base::FilePath& old_path,
+                              const base::FilePath& new_path);
 
   // Schedules a full-hash check for a given set of prefixes.
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
