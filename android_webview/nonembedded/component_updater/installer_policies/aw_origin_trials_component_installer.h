@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
+#include "base/callback_forward.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 
 namespace base {
@@ -16,10 +17,6 @@ class DictionaryValue;
 class FilePath;
 class Version;
 }  // namespace base
-
-namespace component_updater {
-class ComponentUpdateService;
-}  // namespace component_updater
 
 namespace android_webview {
 
@@ -48,10 +45,11 @@ class AwOriginTrialsComponentInstallerPolicy
   std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
 };
 
-// Call once during startup to make the component update service aware of
-// the origin trials update component.
+// Call once during startup to register the origin trials update component.
 void RegisterOriginTrialsComponent(
-    component_updater::ComponentUpdateService* update_service);
+    base::OnceCallback<bool(const update_client::CrxComponent&)>
+        register_callback,
+    base::OnceClosure registration_finished);
 
 }  // namespace android_webview
 

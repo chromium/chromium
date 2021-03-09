@@ -11,12 +11,16 @@
 #include "android_webview/nonembedded/component_updater/registration.h"
 #include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/component_updater/timer_update_scheduler.h"
+#include "components/component_updater/component_updater_utils.h"
+#include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
 
 namespace android_webview {
 
@@ -25,6 +29,10 @@ namespace {
 AwComponentUpdateService* g_aw_component_update_service_for_testing = nullptr;
 
 }  // namespace
+
+void SetAwComponentUpdateServiceForTesting(AwComponentUpdateService* service) {
+  g_aw_component_update_service_for_testing = service;
+}
 
 // static
 AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
@@ -35,11 +43,16 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
   return instance.get();
 }
 
-void SetAwComponentUpdateServiceForTesting(AwComponentUpdateService* service) {
-  g_aw_component_update_service_for_testing = service;
+// static
+void JNI_AwComponentUpdateService_StartComponentUpdateService(JNIEnv* env) {
+  AwComponentUpdateService::GetInstance()->StartComponentUpdateService();
 }
 
-AwComponentUpdateService::AwComponentUpdateService() = default;
+AwComponentUpdateService::AwComponentUpdateService()
+    : update_client_(
+          update_client::UpdateClientFactory(MakeAwComponentUpdaterConfigurator(
+              base::CommandLine::ForCurrentProcess(),
+              WebViewApkProcess::GetInstance()->GetPrefService()))) {}
 
 AwComponentUpdateService::~AwComponentUpdateService() = default;
 
@@ -53,12 +66,8 @@ bool AwComponentUpdateService::NotifyNewVersion(
 }
 
 // Start ComponentUpdateService once.
-void AwComponentUpdateService::MaybeStartComponentUpdateService() {
-  if (cus_)
-    return;
-
-  PrefService* pref_service =
-      WebViewApkProcess::GetInstance()->GetPrefService();
+void AwComponentUpdateService::StartComponentUpdateService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All dirs point to the webview component root dir. Has to be called after
   // init WebViewApkProcess, should only happen once per during startup.
@@ -67,21 +76,129 @@ void AwComponentUpdateService::MaybeStartComponentUpdateService() {
       /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
       /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
 
-  // TODO(crbug.com/1175051): stabilize and use BackgroundTaskUpdateScheduler
-  // instead.
-  cus_ = component_updater::ComponentUpdateServiceFactory(
-      MakeAwComponentUpdaterConfigurator(base::CommandLine::ForCurrentProcess(),
-                                         pref_service),
-      std::make_unique<component_updater::TimerUpdateScheduler>());
-
-  DCHECK(cus_);
-  RegisterComponentsForUpdate(cus_.get());
+  RegisterComponentsForUpdate(
+      base::BindRepeating(&AwComponentUpdateService::RegisterComponent,
+                          base::Unretained(this)),
+      base::BindOnce(
+          &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
-// static
-void JNI_AwComponentUpdateService_MaybeStartComponentUpdateService(
-    JNIEnv* env) {
-  AwComponentUpdateService::GetInstance()->MaybeStartComponentUpdateService();
+bool AwComponentUpdateService::RegisterComponent(
+    const update_client::CrxComponent& component) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // CrxUpdateService once we support logging metrics from nonembedded WebView.
+
+  if (component.app_id.empty() || !component.version.IsValid() ||
+      !component.installer) {
+    return false;
+  }
+
+  // Update the registration data if the component has been registered before.
+  auto it = components_.find(component.app_id);
+  if (it != components_.end()) {
+    it->second = component;
+    return true;
+  }
+
+  components_.insert(std::make_pair(component.app_id, component));
+  components_order_.push_back(component.app_id);
+  return true;
+}
+
+void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // CrxUpdateService once we support logging metrics from nonembedded WebView.
+
+  std::vector<std::string> secure_ids;    // Require HTTPS for update checks.
+  std::vector<std::string> unsecure_ids;  // Can fallback to HTTP.
+  for (const auto& id : components_order_) {
+    DCHECK(components_.find(id) != components_.end());
+
+    const auto component = component_updater::GetComponent(components_, id);
+    if (!component || component->requires_network_encryption)
+      secure_ids.push_back(id);
+    else
+      unsecure_ids.push_back(id);
+  }
+
+  if (unsecure_ids.empty() && secure_ids.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(on_finished));
+    return;
+  }
+
+  auto on_finished_callback = base::BindOnce(
+      [](base::OnceClosure on_finished, update_client::Error error) {
+        std::move(on_finished).Run();
+      },
+      std::move(on_finished));
+
+  if (!unsecure_ids.empty()) {
+    update_client_->Update(
+        unsecure_ids,
+        base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
+                       base::Unretained(this)),
+        {}, false,
+        base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       secure_ids.empty() ? std::move(on_finished_callback)
+                                          : update_client::Callback(),
+                       base::TimeTicks::Now()));
+  }
+
+  if (!secure_ids.empty()) {
+    update_client_->Update(
+        secure_ids,
+        base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
+                       base::Unretained(this)),
+        {}, false,
+        base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(on_finished_callback),
+                       base::TimeTicks::Now()));
+  }
+
+  return;
+}
+
+void AwComponentUpdateService::OnUpdateComplete(
+    update_client::Callback callback,
+    const base::TimeTicks& start_time,
+    update_client::Error error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // CrxUpdateService once we support logging metrics from nonembedded WebView.
+
+  if (!callback.is_null()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), error));
+  }
+}
+
+base::Optional<update_client::CrxComponent>
+AwComponentUpdateService::GetComponent(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return component_updater::GetComponent(components_, id);
+}
+
+std::vector<base::Optional<update_client::CrxComponent>>
+AwComponentUpdateService::GetCrxComponents(
+    const std::vector<std::string>& ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return component_updater::GetCrxComponents(components_, ids);
+}
+
+void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1183497): Notify Java AwComponentUpdateService once
+  // components have been registered and updated.
+  CheckForUpdates(base::DoNothing());
 }
 
 }  // namespace android_webview

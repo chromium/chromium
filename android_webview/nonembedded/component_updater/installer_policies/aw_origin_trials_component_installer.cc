@@ -47,11 +47,14 @@ void AwOriginTrialsComponentInstallerPolicy::ComponentReady(
 }
 
 void RegisterOriginTrialsComponent(
-    component_updater::ComponentUpdateService* update_service) {
+    base::OnceCallback<bool(const update_client::CrxComponent&)>
+        register_callback,
+    base::OnceClosure registration_finished) {
   base::MakeRefCounted<component_updater::ComponentInstaller>(
       std::make_unique<AwOriginTrialsComponentInstallerPolicy>(
           std::make_unique<AwComponentInstallerPolicyDelegate>()))
-      ->Register(update_service, base::OnceClosure());
+      ->Register(std::move(register_callback),
+                 std::move(registration_finished));
 }
 
 }  // namespace android_webview

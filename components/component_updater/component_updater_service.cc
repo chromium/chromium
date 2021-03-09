@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/component_updater/component_updater_service_internal.h"
+#include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
@@ -212,10 +213,7 @@ OnDemandUpdater& CrxUpdateService::GetOnDemandUpdater() {
 base::Optional<CrxComponent> CrxUpdateService::GetComponent(
     const std::string& id) const {
   DCHECK(thread_checker_.CalledOnValidThread());
-  const auto it = components_.find(id);
-  if (it != components_.end())
-    return it->second;
-  return base::nullopt;
+  return component_updater::GetComponent(components_, id);
 }
 
 const CrxUpdateItem* CrxUpdateService::GetComponentState(
@@ -379,10 +377,7 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
 std::vector<base::Optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  std::vector<base::Optional<CrxComponent>> components;
-  for (const auto& id : ids)
-    components.push_back(GetComponent(id));
-  return components;
+  return component_updater::GetCrxComponents(components_, ids);
 }
 
 void CrxUpdateService::OnUpdateComplete(Callback callback,

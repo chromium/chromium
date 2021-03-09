@@ -5,14 +5,15 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_REGISTRATION_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_REGISTRATION_H_
 
-namespace component_updater {
-class ComponentUpdateService;
-}  // namespace component_updater
+#include "base/callback_forward.h"
+#include "components/update_client/update_client.h"
 
 namespace android_webview {
 
 void RegisterComponentsForUpdate(
-    component_updater::ComponentUpdateService* component_update_service);
+    base::RepeatingCallback<bool(const update_client::CrxComponent&)>
+        register_callback,
+    base::OnceClosure on_finished);
 
 }  // namespace android_webview
 

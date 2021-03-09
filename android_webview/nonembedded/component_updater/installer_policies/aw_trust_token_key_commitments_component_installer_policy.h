@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 
 namespace base {
@@ -16,10 +17,6 @@ class DictionaryValue;
 class FilePath;
 class Version;
 }  // namespace base
-
-namespace component_updater {
-class ComponentUpdateService;
-}  // namespace component_updater
 
 namespace android_webview {
 
@@ -57,7 +54,9 @@ class AwTrustTokenKeyCommitmentsComponentInstallerPolicy
 // Call once during startup to make the component update service aware of
 // the trust tokens update component.
 void RegisterTrustTokensComponent(
-    component_updater::ComponentUpdateService* update_service);
+    base::OnceCallback<bool(const update_client::CrxComponent&)>
+        register_callback,
+    base::OnceClosure registration_finished);
 
 }  // namespace android_webview
 

@@ -24,7 +24,7 @@ public class AwComponentUpdateService extends JobService {
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
         if (WebViewApkApplication.initializeNative()) {
-            AwComponentUpdateServiceJni.get().maybeStartComponentUpdateService();
+            AwComponentUpdateServiceJni.get().startComponentUpdateService();
             return true;
         }
         Log.e(TAG, "couldn't init native, aborting starting AwComponentUpdaterService");
@@ -42,6 +42,6 @@ public class AwComponentUpdateService extends JobService {
 
     @NativeMethods
     interface Natives {
-        void maybeStartComponentUpdateService();
+        void startComponentUpdateService();
     }
 }

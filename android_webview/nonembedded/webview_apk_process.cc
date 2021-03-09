@@ -25,8 +25,10 @@ WebViewApkProcess* WebViewApkProcess::GetInstance() {
 }
 
 WebViewApkProcess::WebViewApkProcess() {
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-      "WebViewApkProcess");
+  if (!base::ThreadPoolInstance::Get()) {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+        "WebViewApkProcess");
+  }
 
   RegisterPathProvider();
   CreatePrefService();

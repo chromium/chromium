@@ -12,6 +12,7 @@
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
@@ -141,6 +142,11 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
       const AwComponentInstallerPolicyDelegateTest&) = delete;
   AwComponentInstallerPolicyDelegateTest& operator=(
       const AwComponentInstallerPolicyDelegateTest&) = delete;
+
+  static void SetUpTestSuite() {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+        "ComponentInstallerPolicyDelegateTest");
+  }
 
   // Override from testing::Test
   void SetUp() override {

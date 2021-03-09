@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -94,7 +95,7 @@ class CrxUpdateService : public ComponentUpdateService,
   scoped_refptr<UpdateClient> update_client_;
 
   // A collection of every registered component.
-  using Components = std::map<std::string, CrxComponent>;
+  using Components = base::flat_map<std::string, CrxComponent>;
   Components components_;
 
   // Maintains the order in which components have been registered. The position

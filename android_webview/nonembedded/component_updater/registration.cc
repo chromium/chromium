@@ -6,22 +6,26 @@
 
 #include <memory>
 
-#include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
 #include "android_webview/nonembedded/component_updater/installer_policies/aw_origin_trials_component_installer.h"
 #include "android_webview/nonembedded/component_updater/installer_policies/aw_trust_token_key_commitments_component_installer_policy.h"
+#include "base/barrier_closure.h"
 #include "base/callback.h"
-#include "base/check.h"
-#include "base/memory/scoped_refptr.h"
-#include "components/component_updater/component_installer.h"
+#include "base/callback_helpers.h"
 
 namespace android_webview {
 
-void RegisterComponentsForUpdate(
-    component_updater::ComponentUpdateService* component_update_service) {
-  DCHECK(component_update_service);
+// Update when changing the components WebView registers.
+constexpr int kNumWebViewComponents = 2;
 
-  RegisterOriginTrialsComponent(component_update_service);
-  RegisterTrustTokensComponent(component_update_service);
+void RegisterComponentsForUpdate(
+    base::RepeatingCallback<bool(const update_client::CrxComponent&)>
+        register_callback,
+    base::OnceClosure on_finished) {
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      kNumWebViewComponents, base::BindOnce(std::move(on_finished)));
+
+  RegisterOriginTrialsComponent(register_callback, barrier_closure);
+  RegisterTrustTokensComponent(register_callback, barrier_closure);
 }
 
 }  // namespace android_webview

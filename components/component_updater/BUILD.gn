@@ -17,6 +17,8 @@ static_library("component_updater") {
     "component_updater_switches.h",
     "component_updater_url_constants.cc",
     "component_updater_url_constants.h",
+    "component_updater_utils.cc",
+    "component_updater_utils.h",
     "configurator_impl.cc",
     "configurator_impl.h",
     "pref_names.cc",
