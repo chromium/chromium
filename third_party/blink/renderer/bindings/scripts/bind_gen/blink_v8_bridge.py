@@ -512,7 +512,7 @@ def make_default_value_expr(idl_type, default_value, use_new_union=False):
             initializer_expr = "nullptr"
             is_initialization_lightweight = True
             assignment_value = "nullptr"
-        elif type_info.value_t == "ScriptValue":
+        elif type_info.typename == "ScriptValue":
             initializer_expr = "${isolate}, v8::Null(${isolate})"
             initializer_deps = ["isolate"]
             assignment_value = "ScriptValue::CreateNull(${isolate})"

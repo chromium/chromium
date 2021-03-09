@@ -156,6 +156,19 @@ def create_union_members(union):
     return tuple(union_members)
 
 
+def make_check_assignment_value(cg_context, union_member, assignment_value):
+    assert isinstance(cg_context, CodeGenContext)
+    assert isinstance(union_member, _UnionMember)
+    assert isinstance(assignment_value, str)
+
+    if union_member.idl_type and union_member.idl_type.is_object:
+        return TextNode("DCHECK({}.IsObject());".format(assignment_value))
+    if union_member.type_info.is_gc_type:
+        return TextNode("DCHECK({});".format(assignment_value))
+
+    return None
+
+
 def make_content_type_enum_class_def(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -364,6 +377,8 @@ def make_constructors(cg_context):
                     "content_type_({})".format(member.content_type()),
                     "{}(value)".format(member.var_name),
                 ])
+            func_def.body.append(
+                make_check_assignment_value(cg_context, member, "value"))
         decls.append(func_def)
 
     return decls, None
@@ -419,6 +434,7 @@ def make_accessor_functions(cg_context):
             return_type="void")
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
+            make_check_assignment_value(cg_context, member, "value"),
             T("Clear();"),
             F("{} = value;", member.var_name),
             F("content_type_ = {};", member.content_type()),
