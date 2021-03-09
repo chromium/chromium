@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 
 class PrefService;
@@ -19,6 +20,16 @@ void RecordNearbyShareEstablishConnectionMetrics(
     bool success,
     bool cancelled,
     base::TimeDelta time_to_connect);
+
+void RecordNearbySharePayloadFileAttachmentTypeMetric(
+    sharing::mojom::FileMetadata::Type type,
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status);
+
+void RecordNearbySharePayloadTextAttachmentTypeMetric(
+    sharing::mojom::TextMetadata::Type type,
+    bool is_incoming,
+    location::nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,

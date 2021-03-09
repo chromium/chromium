@@ -52461,6 +52461,19 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Mojo pipe disconnection"/>
 </enum>
 
+<enum name="NearbyShareAttachmentType">
+  <int value="0" label="Unknown File Type"/>
+  <int value="1" label="Unknown Text Type"/>
+  <int value="2" label="Image"/>
+  <int value="3" label="Video"/>
+  <int value="4" label="App"/>
+  <int value="5" label="Audio"/>
+  <int value="6" label="Text"/>
+  <int value="7" label="URL"/>
+  <int value="8" label="Address"/>
+  <int value="9" label="Phone number"/>
+</enum>
+
 <enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Match"/>
