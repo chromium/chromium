@@ -235,7 +235,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
       const content::ToRenderFrameHost& adapter) {
     return EvalJs(adapter, R"(
       document.interestCohort()
-      .then(floc => floc)
+      .then(floc => JSON.stringify(floc, Object.keys(floc).sort()))
       .catch(error => 'rejected');
     )")
         .ExtractString();
@@ -620,10 +620,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/title1.html"));
 
-  // Promise resolved with the expected string.
-  EXPECT_EQ(base::StrCat({base::NumberToString(
+  // Promise resolved with the expected dictionary object.
+  EXPECT_EQ(base::StrCat({"{\"id\":\"",
+                          base::NumberToString(
                               FlocId::SimHashHistory({"initial-history.com"})),
-                          ".1.0"}),
+                          "\",\"version\":\"chrome.1.0\"}"}),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
@@ -642,10 +643,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   content::RenderFrameHost* child =
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
-  // Promise resolved with the expected string.
-  EXPECT_EQ(base::StrCat({base::NumberToString(
+  // Promise resolved with the expected dictionary object.
+  EXPECT_EQ(base::StrCat({"{\"id\":\"",
+                          base::NumberToString(
                               FlocId::SimHashHistory({"initial-history.com"})),
-                          ".1.0"}),
+                          "\",\"version\":\"chrome.1.0\"}"}),
             InvokeInterestCohortJsApi(child));
 }
 
@@ -664,10 +666,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   content::RenderFrameHost* child =
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
-  // Promise resolved with the expected string.
-  EXPECT_EQ(base::StrCat({base::NumberToString(
+  // Promise resolved with the expected dictionary object.
+  EXPECT_EQ(base::StrCat({"{\"id\":\"",
+                          base::NumberToString(
                               FlocId::SimHashHistory({"initial-history.com"})),
-                          ".1.0"}),
+                          "\",\"version\":\"chrome.1.0\"}"}),
             InvokeInterestCohortJsApi(child));
 }
 
@@ -695,10 +698,11 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   // Promise rejected as the cookies permission disallows the child's host.
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 
-  // Promise resolved with the expected string.
-  EXPECT_EQ(base::StrCat({base::NumberToString(
+  // Promise resolved with the expected dictionary object.
+  EXPECT_EQ(base::StrCat({"{\"id\":\"",
+                          base::NumberToString(
                               FlocId::SimHashHistory({"initial-history.com"})),
-                          ".1.0"}),
+                          "\",\"version\":\"chrome.1.0\"}"}),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
@@ -757,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
       browser(), https_server_.GetURL(test_host(), "/title1.html"));
 
   // Expect that the final id is 0 because the sorting-lsh was applied.
-  EXPECT_EQ("0.1.9", InvokeInterestCohortJsApi(web_contents()));
+  EXPECT_EQ("{\"id\":\"0\",\"version\":\"chrome.1.9\"}",
+            InvokeInterestCohortJsApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,

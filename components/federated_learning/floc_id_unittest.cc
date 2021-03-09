@@ -10,12 +10,26 @@
 #include "components/federated_learning/floc_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 
 namespace federated_learning {
+
+namespace {
+
+blink::mojom::InterestCohortPtr InterestCohortResult(
+    const std::string& id,
+    const std::string& version) {
+  blink::mojom::InterestCohortPtr result = blink::mojom::InterestCohort::New();
+  result->id = id;
+  result->version = version;
+  return result;
+}
 
 const base::Time kTime0 = base::Time();
 const base::Time kTime1 = base::Time::FromTimeT(1);
 const base::Time kTime2 = base::Time::FromTimeT(2);
+
+}  // namespace
 
 class FlocIdUnitTest : public testing::Test {
  public:
@@ -47,18 +61,24 @@ TEST_F(FlocIdUnitTest, Comparison) {
   EXPECT_NE(FlocId(0, kTime0, kTime0, 0), FlocId(0, kTime0, kTime0, 1));
 }
 
-TEST_F(FlocIdUnitTest, ToStringForJsApi) {
-  EXPECT_EQ("0.1.0", FlocId(0, kTime0, kTime0, 0).ToStringForJsApi());
-  EXPECT_EQ("12345.1.0", FlocId(12345, kTime0, kTime0, 0).ToStringForJsApi());
-  EXPECT_EQ("12345.1.2", FlocId(12345, kTime1, kTime1, 2).ToStringForJsApi());
+TEST_F(FlocIdUnitTest, ToInterestCohortForJsApi) {
+  EXPECT_EQ(InterestCohortResult("0", "chrome.1.0"),
+            FlocId(0, kTime0, kTime0, 0).ToInterestCohortForJsApi());
+  EXPECT_EQ(InterestCohortResult("12345", "chrome.1.0"),
+            FlocId(12345, kTime0, kTime0, 0).ToInterestCohortForJsApi());
+  EXPECT_EQ(InterestCohortResult("12345", "chrome.1.2"),
+            FlocId(12345, kTime1, kTime1, 2).ToInterestCohortForJsApi());
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       kFederatedLearningOfCohorts, {{"finch_config_version", "99"}});
 
-  EXPECT_EQ("0.99.0", FlocId(0, kTime0, kTime0, 0).ToStringForJsApi());
-  EXPECT_EQ("12345.99.0", FlocId(12345, kTime0, kTime0, 0).ToStringForJsApi());
-  EXPECT_EQ("12345.99.2", FlocId(12345, kTime1, kTime1, 2).ToStringForJsApi());
+  EXPECT_EQ(InterestCohortResult("0", "chrome.99.0"),
+            FlocId(0, kTime0, kTime0, 0).ToInterestCohortForJsApi());
+  EXPECT_EQ(InterestCohortResult("12345", "chrome.99.0"),
+            FlocId(12345, kTime0, kTime0, 0).ToInterestCohortForJsApi());
+  EXPECT_EQ(InterestCohortResult("12345", "chrome.99.2"),
+            FlocId(12345, kTime1, kTime1, 2).ToInterestCohortForJsApi());
 }
 
 TEST_F(FlocIdUnitTest, ReadFromPrefs_DefaultInvalid) {
@@ -113,7 +133,8 @@ TEST_F(FlocIdUnitTest, ReadFromPrefs_SavedValid) {
   EXPECT_EQ(3u, floc_id.finch_config_version());
   EXPECT_EQ(4u, floc_id.sorting_lsh_version());
   EXPECT_EQ(base::Time::FromTimeT(5), floc_id.compute_time());
-  EXPECT_EQ("123.3.4", floc_id.ToStringForJsApi());
+  EXPECT_EQ(InterestCohortResult("123", "chrome.3.4"),
+            floc_id.ToInterestCohortForJsApi());
 }
 
 TEST_F(FlocIdUnitTest, SaveToPrefs_InvalidFloc) {

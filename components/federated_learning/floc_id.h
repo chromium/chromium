@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/prefs/prefs_export.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
 
 #include <stdint.h>
 
@@ -54,10 +55,11 @@ class FlocId {
   // fresh profile prefs.
   bool IsValid() const;
 
-  // Dot-separated string of floc, finch config version, and sorting-lsh
-  // version. This is the format to be exposed to the JS API. Precondition:
-  // |id_| must be valid.
-  std::string ToStringForJsApi() const;
+  // Get the blink::mojom::InterestCohort representation of this floc, with
+  // interest_cohort.id being "<id>" and interest_cohort.version being
+  // "chrome.<finch_config_version>.<sorting_lsh_version>". This is the format
+  // to be exposed to the JS API. Precondition: |id_| must be valid.
+  blink::mojom::InterestCohortPtr ToInterestCohortForJsApi() const;
 
   // Returns the internal uint64_t number. Precondition: |id_| must be valid.
   uint64_t ToUint64() const;

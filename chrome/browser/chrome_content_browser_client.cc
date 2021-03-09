@@ -375,6 +375,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
@@ -5797,7 +5798,8 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
   }
 }
 
-std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
+blink::mojom::InterestCohortPtr
+ChromeContentBrowserClient::GetInterestCohortForJsApi(
     content::WebContents* web_contents,
     const GURL& url,
     const base::Optional<url::Origin>& top_frame_origin) {
@@ -5810,7 +5812,7 @@ std::string ChromeContentBrowserClient::GetInterestCohortForJsApi(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
   if (!floc_id_provider)
-    return std::string();
+    return blink::mojom::InterestCohort::New();
 
   return floc_id_provider->GetInterestCohortForJsApi(url, top_frame_origin);
 }

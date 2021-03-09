@@ -9,6 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
 #include "url/origin.h"
 
 namespace federated_learning {
@@ -22,7 +23,7 @@ class FlocIdProvider : public KeyedService {
   // Get the interest cohort in a particular context. Use the requesting
   // context's |url| and the first-party context |top_frame_origin| for the
   // access permission check.
-  virtual std::string GetInterestCohortForJsApi(
+  virtual blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const = 0;
 

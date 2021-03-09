@@ -89,7 +89,7 @@ class FlocIdProviderImpl : public FlocIdProvider,
   FlocIdProviderImpl(const FlocIdProviderImpl&) = delete;
   FlocIdProviderImpl& operator=(const FlocIdProviderImpl&) = delete;
 
-  std::string GetInterestCohortForJsApi(
+  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
       const GURL& url,
       const base::Optional<url::Origin>& top_frame_origin) const override;
 

@@ -188,7 +188,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
     // Interest Cohort API
     // TODO(yaoxia): Add web tests. http://crbug/1130074.
-    [CallWith=ScriptState, RaisesException, NewObject, SecureContext, RuntimeEnabled=InterestCohortAPI, MeasureAs=InterestCohortAPI_interestCohort_Method] Promise<DOMString> interestCohort();
+    [CallWith=ScriptState, RaisesException, NewObject, SecureContext, RuntimeEnabled=InterestCohortAPI, MeasureAs=InterestCohortAPI_interestCohort_Method] Promise<InterestCohort> interestCohort();
 
     // Text fragment directive API
     // https://wicg.github.io/scroll-to-text-fragment/#feature-detectability
