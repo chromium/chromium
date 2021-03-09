@@ -35,6 +35,12 @@ class DriveModuleElement extends mixinBehaviors
     };
   }
 
+  constructor() {
+    super();
+    /** @private {IntersectionObserver} */
+    this.intersectionObserver_ = null;
+  }
+
   /** @private */
   onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
@@ -67,6 +73,23 @@ class DriveModuleElement extends mixinBehaviors
         // drive item.
         return '';
     }
+  }
+
+  /** @private */
+  onDomChange_() {
+    if (!this.intersectionObserver_) {
+      this.intersectionObserver_ = new IntersectionObserver(entries => {
+        entries.forEach(({intersectionRatio, target}) => {
+          target.style.visibility =
+              intersectionRatio < 1 ? 'hidden' : 'visible';
+        });
+        this.dispatchEvent(new Event('change-visibility'));
+      }, {root: this, threshold: 1});
+    } else {
+      this.intersectionObserver_.disconnect();
+    }
+    this.shadowRoot.querySelectorAll('.file').forEach(
+        el => this.intersectionObserver_.observe(el));
   }
 }
 

@@ -4,7 +4,7 @@
 
 import {driveDescriptor, DriveProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {isVisible} from 'chrome://test/test_util.m.js';
+import {eventToPromise, isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
   /**
@@ -69,6 +69,37 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals('https://caz.com/', urls[2].href);
   });
 
+  test('documents are hidden at narrower widths', async () => {
+    const repeat = (n, fn) => Array(n).fill(0).map(fn);
+    testProxy.handler.setResultFor('getFiles', Promise.resolve({
+      files: repeat(3, () => ({
+                         justification: 'edited',
+                         title: 'foo',
+                         id: '123',
+                         type: drive.mojom.FileType.kDoc
+                       }))
+    }));
+
+    await driveDescriptor.initialize();
+    const module = driveDescriptor.element;
+    document.body.append(module);
+    module.$.fileRepeat.render();
+
+    const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
+    // Setting the module height ensures that the IntersectionRatio
+    // can only be made less than one by the width.
+    module.style.height = '260px';
+    const countHidden = async (width, count) => {
+      module.style.width = width;
+      var waitForEvent = eventToPromise('change-visibility', module);
+      await waitForEvent;
+      assertEquals(
+          count, items.filter(el => el.style.visibility === 'hidden').length);
+    };
+    await countHidden('200px', 2);
+    await countHidden('600px', 0);
+    await countHidden('400px', 1);
+  });
   test('documents do not show without data', async () => {
     testProxy.handler.setResultFor('getFiles', Promise.resolve({files: []}));
 

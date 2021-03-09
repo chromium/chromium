@@ -1,5 +1,6 @@
 <style>
   :host {
+    display: block;
     height: 100%;
     width: 100%;
   }
@@ -11,6 +12,7 @@
   .file {
     color: var(--cr-primary-text-color);
     display: block;
+    flex-shrink: 0;
     margin-inline-start: 16px;
     text-decoration: none;
     width: 165px;
@@ -43,7 +45,8 @@
   $i18n{modulesDriveTitle}
 </ntp-module-header>
 <div id="files">
-  <template id="fileRepeat" is="dom-repeat" items="[[files]]">
+  <template id="fileRepeat" is="dom-repeat" on-dom-change="onDomChange_"
+      items="[[files]]">
     <a class="file" href="[[item.url.url]]">
       <div class="file-icon-container">
         <img
