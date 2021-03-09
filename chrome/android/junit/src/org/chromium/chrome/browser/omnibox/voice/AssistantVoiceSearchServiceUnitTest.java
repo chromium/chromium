@@ -60,7 +60,7 @@ import java.util.List;
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class AssistantVoiceSearchServiceUnitTest {
-    AssistantVoiceSearchService mAssistantVoiceSearchService;
+    private static final int AGSA_VERSION_NUMBER = 11007;
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -76,6 +76,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Mock
     IdentityManager mIdentityManager;
 
+    AssistantVoiceSearchService mAssistantVoiceSearchService;
     SharedPreferencesManager mSharedPreferencesManager;
     PackageInfo mPackageInfo;
     Context mContext;
@@ -101,6 +102,7 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
+        doReturn(AGSA_VERSION_NUMBER).when(mGsaState).parseAgsaMajorMinorVersionAsInteger(any());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
@@ -245,6 +247,9 @@ public class AssistantVoiceSearchServiceUnitTest {
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 1));
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
 
         doReturn(true).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(false).when(mIdentityManager).hasPrimaryAccount();
@@ -252,6 +257,10 @@ public class AssistantVoiceSearchServiceUnitTest {
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_HISTOGRAM, /* eligible= */ 0));
+        Assert.assertEquals(2,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.AGSA_VERSION_HISTOGRAM, AGSA_VERSION_NUMBER));
+
         Assert.assertEquals(1,
                 ShadowRecordHistogram.getHistogramValueCountForTesting(
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,

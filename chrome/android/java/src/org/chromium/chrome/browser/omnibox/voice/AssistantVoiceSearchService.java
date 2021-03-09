@@ -52,6 +52,8 @@ public class AssistantVoiceSearchService
     @VisibleForTesting
     static final String USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM =
             "Assistant.VoiceSearch.UserEligibility.FailureReason";
+    @VisibleForTesting
+    static final String AGSA_VERSION_HISTOGRAM = "Assistant.VoiceSearch.AgsaVersion";
     private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "12.7.2.23";
     private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
 
@@ -305,6 +307,14 @@ public class AssistantVoiceSearchService
         boolean eligible = isDeviceEligibleForAssistant(
                 /* returnImmediately= */ false, /* outList */ failureReasons);
         RecordHistogram.recordBooleanHistogram(USER_ELIGIBILITY_HISTOGRAM, eligible);
+
+        // See notes in {@link GSAState#parseAgsaMajorMinorVersionAsInteger} for details about this
+        // number.
+        Integer versionNumber =
+                mGsaState.parseAgsaMajorMinorVersionAsInteger(mGsaState.getAgsaVersionName());
+        if (versionNumber != null) {
+            RecordHistogram.recordSparseHistogram(AGSA_VERSION_HISTOGRAM, (int) versionNumber);
+        }
 
         for (@EligibilityFailureReason int reason : failureReasons) {
             RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,

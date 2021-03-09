@@ -104,4 +104,59 @@ public final class GSAStateUnitTest {
 
         Assert.assertFalse(mGsaState.canAgsaHandleIntent(intent));
     }
+
+    @Test
+    public void parseAgsaMajorMinorVersionAsInteger() {
+        String versionName = "11.7";
+        Integer value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Major/minor verisons should be parsed correctly.", 11007, (int) value);
+
+        versionName = "12.72.100.1";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Verisons after major/minor should be ignored.", 12072, (int) value);
+
+        versionName = "999.999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test the upper edge case.", 999999, (int) value);
+
+        versionName = "0.0";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test the lower edge case.", 0, (int) value);
+
+        versionName = "0.1";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test 0 for major.", 1, (int) value);
+
+        versionName = "1.0";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNotNull(value);
+        Assert.assertEquals("Test 0 for minor.", 1000, (int) value);
+
+        // Exceed maximum for both major/minor.
+        versionName = "1000.999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "999.9999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+
+        // Formatting errors.
+        versionName = "999.";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = ".999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "999";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+        versionName = "12.7notavalidversion";
+        value = mGsaState.parseAgsaMajorMinorVersionAsInteger(versionName);
+        Assert.assertNull(value);
+    }
 }

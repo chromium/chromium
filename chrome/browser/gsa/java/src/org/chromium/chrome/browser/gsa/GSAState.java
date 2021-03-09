@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
@@ -29,6 +30,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class responsible for representing the current state of Chrome's integration with GSA.
@@ -66,6 +69,9 @@ public class GSAState {
      */
     @SuppressLint("StaticFieldLeak")
     private static GSAState sGSAState;
+
+    private static final Pattern MAJOR_MINOR_VERSION_PATTERN =
+            Pattern.compile("^(\\d+)\\.(\\d+)(\\.\\d+)*$");
 
     /**
      * The application context to use.
@@ -240,6 +246,44 @@ public class GSAState {
             PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
             return packageInfo.versionName;
         } catch (NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Converts the given version name into a reportable integer which contains the major and minor
+     * version.
+     * - The returned integer ranges between 1,000 - 999,999.
+     * - The major version is represented by the numbers in the hundred/ten/thousanths places.
+     * - The minor version is represented by the numbers in the tens/hundredths places.
+     * - The max for both major and minor versions is 999. If either exceeds the maximum, null is
+     *   returned.
+     *
+     * @param versionName The version name as a string (eg 11.9).
+     * @return The version name as an integer between 1,000 - 999,999 as described above or null if
+     *         the above conditions aren't satisfied.
+     */
+    public @Nullable Integer parseAgsaMajorMinorVersionAsInteger(String versionName) {
+        if (versionName == null) return null;
+
+        Matcher matcher = MAJOR_MINOR_VERSION_PATTERN.matcher(versionName);
+        if (!matcher.find() || matcher.groupCount() < 2) return null;
+
+        try {
+            int major = Integer.parseInt(matcher.group(1));
+            if (major > 999) {
+                Log.e(TAG, "Major verison exceeded maximum of 999.");
+                return null;
+            }
+
+            int minor = Integer.parseInt(matcher.group(2));
+            if (minor > 999) {
+                Log.e(TAG, "Minor verison exceeded maximum of 999.");
+                return null;
+            }
+            return major * 1000 + minor;
+        } catch (NumberFormatException e) {
+            Log.e(TAG, "Version was incorrectly formatted.");
             return null;
         }
     }
