@@ -4,10 +4,12 @@
 //
 package org.chromium.chrome.browser.share.share_sheet;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -248,6 +250,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         try {
             Bitmap bitmap =
                     ApiCompatibilityUtils.getBitmapByUri(mContext.getContentResolver(), imageUri);
+            // We don't want to use hardware bitmaps in case of software rendering. See
+            // https://crbug.com/1172883.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isHardwareBitmap(bitmap)) {
+                bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, /*mutable=*/false);
+            }
             RoundedCornerImageView imageView =
                     this.getContentView().findViewById(R.id.image_preview);
             imageView.setImageBitmap(bitmap);
@@ -257,6 +264,12 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         } catch (IOException e) {
             // If no image preview available, don't show a preview.
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private boolean isHardwareBitmap(Bitmap bitmap) {
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+        return bitmap.getConfig() == Bitmap.Config.HARDWARE;
     }
 
     private void setTitleStyle(int resId) {
