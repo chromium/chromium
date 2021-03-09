@@ -161,9 +161,8 @@ LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
       container_builder->BfcLineOffset() +
           border_scrollbar_padding.inline_start,
       *container_builder->BfcBlockOffset() + marker_block_offset};
-  LayoutUnit available_size = container_builder->InlineSize() -
-                              border_scrollbar_padding.inline_start -
-                              border_scrollbar_padding.inline_end;
+  const LayoutUnit available_size =
+      container_builder->ChildAvailableSize().inline_size;
   NGLayoutOpportunity opportunity =
       space.ExclusionSpace().FindLayoutOpportunity(origin_offset,
                                                    available_size);
