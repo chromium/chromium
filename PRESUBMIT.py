@@ -4707,6 +4707,132 @@ def CheckForWindowsLineEndings(input_api, output_api):
 
   return []
 
+def CheckForUseOfChromeAppsDeprecations(input_api, output_api):
+  """Check source code for use of Chrome App technologies being
+  deprecated.
+  """
+
+  def _CheckForDeprecatedTech(input_api, output_api,
+    detection_list, files_to_check = None, files_to_skip = None):
+
+    if (files_to_check or files_to_skip):
+      source_file_filter = lambda f: input_api.FilterSourceFile(
+        f, files_to_check=files_to_check,
+        files_to_skip=files_to_skip)
+    else:
+      source_file_filter = None
+
+    problems = []
+
+    for f in input_api.AffectedSourceFiles(source_file_filter):
+      if f.Action() == 'D':
+        continue
+      for _, line in f.ChangedContents():
+        if any( detect in line for detect in detection_list ):
+          problems.append(f.LocalPath())
+
+    return problems
+
+  # to avoid this presubmit script triggering warnings
+  files_to_skip = ['PRESUBMIT.py','PRESUBMIT_test.py']
+
+  problems =[]
+
+  # NMF: any files with extensions .nmf or NMF
+  _NMF_FILES = r'\.(nmf|NMF)$'
+  problems += _CheckForDeprecatedTech(input_api, output_api,
+    detection_list = [''], # any change to the file will trigger warning
+    files_to_check = [ r'.+%s' % _NMF_FILES ])
+
+  # MANIFEST: any manifest.json that in its diff includes "app":
+  _MANIFEST_FILES = r'(manifest\.json)$'
+  problems += _CheckForDeprecatedTech(input_api, output_api,
+    detection_list = ['"app":'],
+    files_to_check = [ r'.*%s' % _MANIFEST_FILES ])
+
+  # NaCl / PNaCl: any file that in its diff contains the strings in the list
+  problems += _CheckForDeprecatedTech(input_api, output_api,
+    detection_list = ['config=nacl','enable-nacl','cpu=pnacl', 'nacl_io'],
+    files_to_skip = files_to_skip + [ r"^native_client_sdk[\\/]"])
+
+  # PPAPI: any C/C++ file that in its diff includes a ppappi library
+  problems += _CheckForDeprecatedTech(input_api, output_api,
+    detection_list = ['#include "ppapi','#include <ppapi'],
+    files_to_check = (
+      r'.+%s' % _HEADER_EXTENSIONS,
+      r'.+%s' % _IMPLEMENTATION_EXTENSIONS ),
+    files_to_skip = [r"^ppapi[\\/]"] )
+
+  # Chrome Apps: any JS/TS file that references an API in the list below.
+  # This should include the list of Chrome Apps APIs that are not Chrome
+  # Extensions APIs as documented in:
+  # https://developer.chrome.com/docs/apps/migration/
+  detection_list_chrome_apps = [
+    'chrome.accessibilityFeatures',
+    'chrome.alarms',
+    'chrome.app.runtime',
+    'chrome.app.window',
+    'chrome.audio',
+    'chrome.bluetooth',
+    'chrome.bluetoothLowEnergy',
+    'chrome.bluetoothSocket',
+    'chrome.browser',
+    'chrome.commands',
+    'chrome.contextMenus',
+    'chrome.documentScan',
+    'chrome.events',
+    'chrome.extensionTypes',
+    'chrome.fileSystem',
+    'chrome.fileSystemProvider',
+    'chrome.gcm',
+    'chrome.hid',
+    'chrome.i18n',
+    'chrome.identity',
+    'chrome.idle',
+    'chrome.instanceID',
+    'chrome.mdns',
+    'chrome.mediaGalleries',
+    'chrome.networking.onc',
+    'chrome.notifications',
+    'chrome.permissions',
+    'chrome.power',
+    'chrome.printerProvider',
+    'chrome.runtime',
+    'chrome.serial',
+    'chrome.sockets.tcp',
+    'chrome.sockets.tcpServer',
+    'chrome.sockets.udp',
+    'chrome.storage',
+    'chrome.syncFileSystem',
+    'chrome.system.cpu',
+    'chrome.system.display',
+    'chrome.system.memory',
+    'chrome.system.network',
+    'chrome.system.storage',
+    'chrome.tts',
+    'chrome.types',
+    'chrome.usb',
+    'chrome.virtualKeyboard',
+    'chrome.vpnProvider',
+    'chrome.wallpaper'
+  ]
+  _JS_FILES = r'\.(js|ts)$'
+  problems += _CheckForDeprecatedTech(input_api, output_api,
+    detection_list = detection_list_chrome_apps,
+    files_to_check = [ r'.+%s' % _JS_FILES ],
+    files_to_skip = files_to_skip)
+
+  if problems:
+    return [output_api.PresubmitPromptWarning('You are adding/modifying code'
+    'related to technologies which will soon be deprecated (Chrome Apps, NaCl,'
+    ' PNaCl, PPAPI). See this blog post for more details:\n'
+    'https://blog.chromium.org/2020/08/changes-to-chrome-app-support-timeline.html\n'
+    'and this documentation for options to replace these technologies:\n'
+    'https://developer.chrome.com/docs/apps/migration/\n'+
+    '\n'.join(problems))]
+
+  return []
+
 
 def CheckSyslogUseWarningOnUpload(input_api, output_api, src_file_filter=None):
   """Checks that all source files use SYSLOG properly."""

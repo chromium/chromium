@@ -3614,6 +3614,166 @@ class MojomStabilityCheckTest(unittest.TestCase):
     ])
     self.assertEqual([], errors)
 
+class CheckForUseOfChromeAppsDeprecationsTest(unittest.TestCase):
+
+  ERROR_MSG_PIECE = 'technologies which will soon be deprecated'
+
+  # Each positive test is also a naive negative test for the other cases.
+
+  def testWarningNMF(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.NMF',
+            ['"program"', '"Z":"content"', 'B'],
+            ['"program"', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.NMF.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.NMF.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,2 +1,3 @@',
+                ' "program"',
+                '+"Z":"content"',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue( self.ERROR_MSG_PIECE in errors[0].message)
+    self.assertTrue( 'foo.NMF' in errors[0].message)
+
+  def testWarningManifest(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'manifest.json',
+            ['"app":', '"Z":"content"', 'B'],
+            ['"app":"', 'B'],
+            scm_diff='\n'.join([
+                '--- manifest.json.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ manifest.json.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,2 +1,3 @@',
+                ' "app"',
+                '+"Z":"content"',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue( self.ERROR_MSG_PIECE in errors[0].message)
+    self.assertTrue( 'manifest.json' in errors[0].message)
+
+  def testOKWarningManifestWithoutApp(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'manifest.json',
+            ['"name":', '"Z":"content"', 'B'],
+            ['"name":"', 'B'],
+            scm_diff='\n'.join([
+                '--- manifest.json.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ manifest.json.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,2 +1,3 @@',
+                ' "app"',
+                '+"Z":"content"',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(0, len(errors))
+
+  def testWarningPPAPI(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.hpp',
+            ['A', '#include <ppapi.h>', 'B'],
+            ['A', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.hpp.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.hpp.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,2 +1,3 @@',
+                ' A',
+                '+#include <ppapi.h>',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue( self.ERROR_MSG_PIECE in errors[0].message)
+    self.assertTrue( 'foo.hpp' in errors[0].message)
+
+  def testNoWarningPPAPI(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.txt',
+            ['A', 'Peppapig', 'B'],
+            ['A', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.txt.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.txt.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,2 +1,3 @@',
+                ' A',
+                '+Peppapig',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(0, len(errors))
+
+  def testWarningChromeApps(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.js',
+            ['A', 'chrome.app.window.init()', 'B'],
+            ['A', 'chrome.window.init()', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.js.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.js.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,3 +1,3 @@',
+                ' A',
+                '+chrome.app.window.init()',
+                ' B']),
+            action='M')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(1, len(errors))
+    self.assertTrue( self.ERROR_MSG_PIECE in errors[0].message)
+    self.assertTrue( 'foo.js' in errors[0].message)
+
+  def testOKChromeAppsRemoved(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+        MockAffectedFile(
+            'foo.js',
+            ['A', 'B'],
+            ['A', 'chrome.app.window.init()', 'B'],
+            scm_diff='\n'.join([
+                '--- foo.js.old  2020-12-02 20:40:54.430676385 +0100',
+                '+++ foo.js.new  2020-12-02 20:41:02.086700197 +0100',
+                '@@ -1,3 +1,2 @@',
+                ' A',
+                '-chrome.app.window.init()',
+                ' B']),
+            action='D')
+    ]
+    mock_output_api = MockOutputApi()
+    errors = PRESUBMIT.CheckForUseOfChromeAppsDeprecations(mock_input_api,
+                                                     mock_output_api)
+    self.assertEqual(0, len(errors))
 
 class CheckDeprecationOfPreferencesTest(unittest.TestCase):
   # Test that a warning is generated if a preference registration is removed
