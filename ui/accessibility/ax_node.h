@@ -41,11 +41,11 @@ class AX_EXPORT AXNode final {
   //
   // Note that we cannot use L"..." because it works correctly only on Windows.
   // TODO(nektar): Consider using UTF8 encoding instead, "\xEF\xBF\xBC".
-  static constexpr base::char16 kEmbeddedCharacter[] = {0xFFFC, 0x0000};
+  static constexpr char16_t kEmbeddedCharacter[] = {0xFFFC, 0x0000};
   // We compute the embedded character's length instead of manually typing it in
   // order to avoid the two variables getting out of sync in a future update.
   static constexpr int kEmbeddedCharacterLength =
-      int{sizeof(kEmbeddedCharacter) / sizeof(base::char16) - 1};
+      int{sizeof(kEmbeddedCharacter) / sizeof(char16_t) - 1};
 
   // Interface to the tree class that owns an AXNode. We use this instead
   // of letting AXNode have a pointer to its AXTree directly so that we're

@@ -244,8 +244,8 @@ void VerifyDecoratedWordsAreEqual(const DecoratedText& expected,
 // |reveal_index| filled with |reveal_char|.
 base::string16 GetObscuredString(size_t length,
                                  size_t reveal_index,
-                                 base::char16 reveal_char) {
-  std::vector<base::char16> arr(length, RenderText::kPasswordReplacementChar);
+                                 char16_t reveal_char) {
+  std::vector<char16_t> arr(length, RenderText::kPasswordReplacementChar);
   arr[reveal_index] = reveal_char;
   return base::string16(arr.begin(), arr.end());
 }
@@ -1222,10 +1222,10 @@ TEST_F(RenderTextTest, ObscuredText) {
   render_text->SetObscured(true);
 
   // Surrogate pairs are counted as one code point.
-  const base::char16 invalid_surrogates[] = {0xDC00, 0xD800, 0};
+  const char16_t invalid_surrogates[] = {0xDC00, 0xD800, 0};
   render_text->SetText(invalid_surrogates);
   EXPECT_EQ(GetObscuredString(2), render_text->GetDisplayText());
-  const base::char16 valid_surrogates[] = {0xD800, 0xDC00, 0};
+  const char16_t valid_surrogates[] = {0xD800, 0xDC00, 0};
   render_text->SetText(valid_surrogates);
   EXPECT_EQ(GetObscuredString(1), render_text->GetDisplayText());
   EXPECT_EQ(0U, render_text->cursor_position());
@@ -1346,7 +1346,7 @@ TEST_F(RenderTextTest, RevealObscuredText) {
 
   // Text with invalid surrogates (surrogates low 0xDC00 and high 0xD800).
   // Invalid surrogates are replaced by replacement character (e.g. 0xFFFD).
-  const base::char16 invalid_surrogates[] = {0xDC00, 0xD800, 'h', 'o', 'p', 0};
+  const char16_t invalid_surrogates[] = {0xDC00, 0xD800, 'h', 'o', 'p', 0};
   render_text->SetText(invalid_surrogates);
   EXPECT_EQ(GetObscuredString(5), render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(0);
@@ -1357,33 +1357,31 @@ TEST_F(RenderTextTest, RevealObscuredText) {
   EXPECT_EQ(GetObscuredString(5, 2, 'h'), render_text->GetDisplayText());
 
   // Text with valid surrogates before and after the reveal index.
-  const base::char16 valid_surrogates[] =
-      {0xD800, 0xDC00, 'h', 'o', 'p', 0xD800, 0xDC00, 0};
+  const char16_t valid_surrogates[] = {0xD800, 0xDC00, 'h',    'o',
+                                       'p',    0xD800, 0xDC00, 0};
   render_text->SetText(valid_surrogates);
   EXPECT_EQ(GetObscuredString(5), render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(0);
-  const base::char16 valid_expect_0_and_1[] = {
-      0xD800,
-      0xDC00,
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      0};
+  const char16_t valid_expect_0_and_1[] = {0xD800,
+                                           0xDC00,
+                                           RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           0};
   EXPECT_EQ(valid_expect_0_and_1, render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(1);
   EXPECT_EQ(valid_expect_0_and_1, render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(2);
   EXPECT_EQ(GetObscuredString(5, 1, 'h'), render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(5);
-  const base::char16 valid_expect_5_and_6[] = {
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar,
-      0xD800,
-      0xDC00,
-      0};
+  const char16_t valid_expect_5_and_6[] = {RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           0xD800,
+                                           0xDC00,
+                                           0};
   EXPECT_EQ(valid_expect_5_and_6, render_text->GetDisplayText());
   render_text->RenderText::SetObscuredRevealIndex(6);
   EXPECT_EQ(valid_expect_5_and_6, render_text->GetDisplayText());
@@ -2316,9 +2314,9 @@ TEST_F(RenderTextTest, SetWhitespaceElision) {
 TEST_F(RenderTextTest, ElidedObscuredText) {
   auto expected_render_text = std::make_unique<RenderTextHarfBuzz>();
   expected_render_text->SetDisplayRect(Rect(0, 0, 9999, 100));
-  const base::char16 elided_obscured_text[] = {
-      RenderText::kPasswordReplacementChar,
-      RenderText::kPasswordReplacementChar, kEllipsisUTF16[0], 0};
+  const char16_t elided_obscured_text[] = {RenderText::kPasswordReplacementChar,
+                                           RenderText::kPasswordReplacementChar,
+                                           kEllipsisUTF16[0], 0};
   expected_render_text->SetText(elided_obscured_text);
 
   RenderText* render_text = GetRenderText();
@@ -5331,8 +5329,8 @@ TEST_F(RenderTextTest, SetDisplayOffset) {
 
 TEST_F(RenderTextTest, SameFontForParentheses) {
   struct {
-    const base::char16 left_char;
-    const base::char16 right_char;
+    const char16_t left_char;
+    const char16_t right_char;
   } punctuation_pairs[] = {
     { '(', ')' },
     { '{', '}' },
@@ -6051,14 +6049,14 @@ TEST_F(RenderTextTest, Multiline_SurrogatePairsOrCombiningChars) {
 
   // Below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in UTF-16
   // as two code units forming a surrogate pair: 0xD834 0xDD1E.
-  const base::char16 kSurrogate[] = {0xD834, 0xDD1E, 0};
+  const char16_t kSurrogate[] = {0xD834, 0xDD1E, 0};
   const base::string16 text_surrogate(kSurrogate);
   const int kSurrogateWidth =
       GetStringWidth(kSurrogate, render_text->font_list());
 
   // Below is a Devanagari two-character combining sequence U+0921 U+093F. The
   // sequence forms a single display character and should not be separated.
-  const base::char16 kCombiningChars[] = {0x921, 0x93F, 0};
+  const char16_t kCombiningChars[] = {0x921, 0x93F, 0};
   const base::string16 text_combining(kCombiningChars);
   const int kCombiningCharsWidth =
       GetStringWidth(kCombiningChars, render_text->font_list());
@@ -6099,7 +6097,7 @@ TEST_F(RenderTextTest, Multiline_ZeroWidthChars) {
   render_text->SetMultiline(true);
   render_text->SetWordWrapBehavior(WRAP_LONG_WORDS);
 
-  const base::char16 kZeroWidthSpace = {0x200B};
+  const char16_t kZeroWidthSpace = {0x200B};
   const base::string16 text(ASCIIToUTF16("test") + kZeroWidthSpace +
                             ASCIIToUTF16("\n") + kZeroWidthSpace +
                             ASCIIToUTF16("test."));

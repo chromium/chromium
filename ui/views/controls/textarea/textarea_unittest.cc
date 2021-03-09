@@ -20,7 +20,7 @@
 
 namespace {
 
-const base::char16 kHebrewLetterSamekh = 0x05E1;
+const char16_t kHebrewLetterSamekh = 0x05E1;
 
 }  // namespace
 

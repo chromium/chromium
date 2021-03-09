@@ -82,7 +82,7 @@ class DummyTextInputClient : public TextInputClient {
 #endif
 
   int insert_char_count() const { return insert_char_count_; }
-  base::char16 last_insert_char() const { return last_insert_char_; }
+  char16_t last_insert_char() const { return last_insert_char_; }
   const std::vector<base::string16>& insert_text_history() const {
     return insert_text_history_;
   }
@@ -100,7 +100,7 @@ class DummyTextInputClient : public TextInputClient {
 
  private:
   int insert_char_count_;
-  base::char16 last_insert_char_;
+  char16_t last_insert_char_;
   std::vector<base::string16> insert_text_history_;
   std::vector<CompositionText> composition_history_;
   std::vector<gfx::Range> selection_history_;

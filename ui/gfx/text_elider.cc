@@ -115,8 +115,8 @@ bool GetDefaultWhitespaceElision(bool elide_in_middle,
 
 // U+2026 in utf8
 const char kEllipsis[] = "\xE2\x80\xA6";
-const base::char16 kEllipsisUTF16[] = { 0x2026, 0 };
-const base::char16 kForwardSlash = '/';
+const char16_t kEllipsisUTF16[] = {0x2026, 0};
+const char16_t kForwardSlash = '/';
 
 StringSlicer::StringSlicer(const base::string16& text,
                            const base::string16& ellipsis,
@@ -783,7 +783,7 @@ base::string16 TruncateString(const base::string16& string,
     return base::string16();  // No room for anything, even an ellipsis.
 
   // Added to the end of strings that are too big.
-  static const base::char16 kElideString[] = { 0x2026, 0 };
+  static const char16_t kElideString[] = {0x2026, 0};
 
   if (length == 1)
     return kElideString;  // Only room for an ellipsis.

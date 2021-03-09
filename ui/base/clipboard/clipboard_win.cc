@@ -382,8 +382,8 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
   if (!data)
     return;
 
-  result->assign(static_cast<const base::char16*>(::GlobalLock(data)),
-                 ::GlobalSize(data) / sizeof(base::char16));
+  result->assign(static_cast<const char16_t*>(::GlobalLock(data)),
+                 ::GlobalSize(data) / sizeof(char16_t));
   ::GlobalUnlock(data);
   TrimAfterNull(result);
 }
@@ -488,8 +488,8 @@ void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
 
   std::string data;
   ReadData(ClipboardFormatType::GetSvgType(), data_dst, &data);
-  result->assign(reinterpret_cast<const base::char16*>(data.data()),
-                 data.size() / sizeof(base::char16));
+  result->assign(reinterpret_cast<const char16_t*>(data.data()),
+                 data.size() / sizeof(char16_t));
 
   TrimAfterNull(result);
 }
@@ -629,8 +629,8 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   if (!data)
     return;
 
-  base::string16 bookmark(static_cast<const base::char16*>(::GlobalLock(data)),
-                          ::GlobalSize(data) / sizeof(base::char16));
+  base::string16 bookmark(static_cast<const char16_t*>(::GlobalLock(data)),
+                          ::GlobalSize(data) / sizeof(char16_t));
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
 

@@ -196,7 +196,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
       // TextInputClient::InsertChar().
       // Note: don't use |client| and use GetTextInputClient() here because
       // DispatchKeyEventPostIME may cause the current text input client change.
-      base::char16 ch = event->GetCharacter();
+      char16_t ch = event->GetCharacter();
       if (ch && GetTextInputClient())
         GetTextInputClient()->InsertChar(*event);
       should_stop_propagation = true;

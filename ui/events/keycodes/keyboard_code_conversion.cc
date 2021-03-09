@@ -24,7 +24,7 @@ bool IsRightSideDomCode(DomCode code) {
 
 }  // anonymous namespace
 
-base::char16 DomCodeToUsLayoutCharacter(DomCode dom_code, int flags) {
+char16_t DomCodeToUsLayoutCharacter(DomCode dom_code, int flags) {
   DomKey dom_key;
   KeyboardCode key_code;
   if (DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code) &&
@@ -54,7 +54,7 @@ bool DomCodeToUsLayoutDomKey(DomCode dom_code,
   for (const auto& it : kPrintableCodeMap) {
     if (it.dom_code == dom_code) {
       int state = ((flags & EF_SHIFT_DOWN) == EF_SHIFT_DOWN);
-      base::char16 ch = it.character[state];
+      char16_t ch = it.character[state];
       if ((flags & EF_CAPS_LOCK_ON) == EF_CAPS_LOCK_ON) {
         ch |= 0x20;
         if ((ch >= 'a') && (ch <= 'z'))

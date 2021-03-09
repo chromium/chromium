@@ -176,7 +176,7 @@ bool IsControlKeyModifier(int flags) {
 #endif
 }
 
-bool IsValidCharToInsert(const base::char16& ch) {
+bool IsValidCharToInsert(const char16_t& ch) {
   // Filter out all control characters, including tab and new line characters.
   return (ch >= 0x20 && ch < 0x7F) || ch > 0x9F;
 }
@@ -1460,7 +1460,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
   // on ChromeOS, Ctrl on Linux). But allow characters with the AltGr modifier.
   // On Windows AltGr is represented by Alt+Ctrl or Right Alt, and on Linux it's
   // a different flag that we don't care about.
-  const base::char16 ch = event.GetCharacter();
+  const char16_t ch = event.GetCharacter();
   const bool should_insert_char = IsValidCharToInsert(ch) &&
                                   !ui::IsSystemKeyModifier(event.flags()) &&
                                   !IsControlKeyModifier(event.flags());
@@ -1840,7 +1840,7 @@ void Textfield::SetActiveCompositionForAccessibility(
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, protected:
 
-void Textfield::DoInsertChar(base::char16 ch) {
+void Textfield::DoInsertChar(char16_t ch) {
   OnBeforeUserAction();
   skip_input_method_cancel_composition_ = true;
   model_->InsertChar(ch);

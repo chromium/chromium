@@ -367,7 +367,7 @@ class InputMethodChromeOSTest : public internal::InputMethodDelegate,
   CompositionText composition_text_;
   CompositionText confirmed_text_;
   base::string16 inserted_text_;
-  base::char16 inserted_char_;
+  char16_t inserted_char_;
   unsigned int on_input_method_changed_call_count_;
   int inserted_char_flags_;
 

@@ -301,7 +301,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // future). This character is embedded in the response to
   // IAccessibleText::get_text, indicating the position where a non-static text
   // child object appears.
-  static const base::char16 kEmbeddedCharacter;
+  static const char16_t kEmbeddedCharacter;
 
   // Get a node given its unique id or null in the case that the id is unknown.
   static AXPlatformNode* GetFromUniqueId(int32_t unique_id);

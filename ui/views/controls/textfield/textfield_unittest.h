@@ -90,9 +90,9 @@ class TextfieldTest : public ViewsTestBase, public TextfieldController {
                     bool shift,
                     bool control_or_command);
   void SendKeyEvent(ui::KeyboardCode key_code);
-  void SendKeyEvent(base::char16 ch);
-  void SendKeyEvent(base::char16 ch, int flags);
-  void SendKeyEvent(base::char16 ch, int flags, bool from_vk);
+  void SendKeyEvent(char16_t ch);
+  void SendKeyEvent(char16_t ch, int flags);
+  void SendKeyEvent(char16_t ch, int flags, bool from_vk);
   void DispatchMockInputMethodKeyEvent();
 
   // Sends a platform-specific move (and select) to the logical start of line.

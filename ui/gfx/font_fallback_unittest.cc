@@ -236,7 +236,7 @@ std::vector<FallbackFontTestCase> GetSampleFontTestCases() {
     const UScriptCode script = static_cast<UScriptCode>(i);
 
     // Make a sample text to test the script.
-    base::char16 text[8];
+    char16_t text[8];
     UErrorCode errorCode = U_ZERO_ERROR;
     int text_length = uscript_getSampleString(
         script, base::i18n::ToUCharPtr(text), base::size(text), &errorCode);

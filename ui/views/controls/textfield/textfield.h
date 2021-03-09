@@ -465,7 +465,7 @@ class VIEWS_EXPORT Textfield : public View,
   TextfieldModel* textfield_model() { return model_.get(); }
 
   // Inserts or appends a character in response to an IME operation.
-  virtual void DoInsertChar(base::char16 ch);
+  virtual void DoInsertChar(char16_t ch);
 
   // Returns the TextfieldModel's text/cursor/selection rendering model.
   gfx::RenderText* GetRenderText() const;

@@ -90,7 +90,7 @@ const ui::EventType kFocusEvent =
         ? ui::ET_GESTURE_TAP
         : ui::ET_GESTURE_TAP_DOWN;
 
-const base::char16 kHebrewLetterSamekh = 0x05E1;
+const char16_t kHebrewLetterSamekh = 0x05E1;
 
 // Convenience to make constructing a GestureEvent simpler.
 class GestureEventForTest : public ui::GestureEvent {
@@ -261,7 +261,7 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(ui::KeyEvent* key) {
       else
         client->ClearCompositionText();
     } else if (key->type() == ui::ET_KEY_PRESSED) {
-      base::char16 ch = key->GetCharacter();
+      char16_t ch = key->GetCharacter();
       if (ch)
         client->InsertChar(*key);
     }
@@ -550,15 +550,15 @@ void TextfieldTest::SendKeyEvent(ui::KeyboardCode key_code) {
   SendKeyEvent(key_code, false, false);
 }
 
-void TextfieldTest::SendKeyEvent(base::char16 ch) {
+void TextfieldTest::SendKeyEvent(char16_t ch) {
   SendKeyEvent(ch, ui::EF_NONE, false);
 }
 
-void TextfieldTest::SendKeyEvent(base::char16 ch, int flags) {
+void TextfieldTest::SendKeyEvent(char16_t ch, int flags) {
   SendKeyEvent(ch, flags, false);
 }
 
-void TextfieldTest::SendKeyEvent(base::char16 ch, int flags, bool from_vk) {
+void TextfieldTest::SendKeyEvent(char16_t ch, int flags, bool from_vk) {
   if (ch < 0x80) {
     ui::KeyboardCode code =
         ch == ' ' ? ui::VKEY_SPACE
@@ -3034,7 +3034,7 @@ TEST_F(TextfieldTest, GetCompositionCharacterBoundsTest) {
 TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
   InitTextfield();
 
-  const base::char16 kUtf16Chars[] = {
+  const char16_t kUtf16Chars[] = {
       // U+0020 SPACE
       0x0020,
       // U+1F408 (CAT) as surrogate pair

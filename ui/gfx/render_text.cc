@@ -47,7 +47,7 @@ namespace gfx {
 namespace {
 
 // Replacement codepoint for elided text.
-constexpr base::char16 kEllipsisCodepoint = 0x2026;
+constexpr char16_t kEllipsisCodepoint = 0x2026;
 
 // Fraction of the text size to raise the center of a strike-through line above
 // the baseline.
@@ -200,10 +200,10 @@ typename BreakList<T>::const_iterator IncrementBreakListIteratorToPosition(
 UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   // 'REPLACEMENT CHARACTER' used to replace an unknown,
   // unrecognized or unrepresentable character.
-  constexpr base::char16 kReplacementCodepoint = 0xFFFD;
+  constexpr char16_t kReplacementCodepoint = 0xFFFD;
   // Control Pictures block (see:
   // https://unicode.org/charts/PDF/U2400.pdf).
-  constexpr base::char16 kSymbolsCodepoint = 0x2400;
+  constexpr char16_t kSymbolsCodepoint = 0x2400;
 
   if (codepoint >= 0 && codepoint <= 0x1F) {
     // Replace codepoints with their visual symbols, which are
@@ -427,7 +427,7 @@ void ApplyRenderParams(const FontRenderParams& params,
 }  // namespace internal
 
 // static
-constexpr base::char16 RenderText::kPasswordReplacementChar;
+constexpr char16_t RenderText::kPasswordReplacementChar;
 constexpr bool RenderText::kDragToEndIfOutsideVerticalBounds;
 constexpr SkColor RenderText::kDefaultColor;
 constexpr SkColor RenderText::kDefaultSelectionBackgroundColor;

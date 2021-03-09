@@ -546,15 +546,15 @@ class VIEWS_EXPORT MenuController
   // |match_function| is used to determine which menus match.
   SelectByCharDetails FindChildForMnemonic(
       MenuItemView* parent,
-      base::char16 key,
-      bool (*match_function)(MenuItemView* menu, base::char16 mnemonic));
+      char16_t key,
+      bool (*match_function)(MenuItemView* menu, char16_t mnemonic));
 
   // Selects or accepts the appropriate menu item based on |details|.
   void AcceptOrSelect(MenuItemView* parent, const SelectByCharDetails& details);
 
   // Selects by mnemonic, and if that doesn't work tries the first character of
   // the title.
-  void SelectByChar(base::char16 key);
+  void SelectByChar(char16_t key);
 
   // For Windows and Aura we repost an event which dismisses the |source| menu.
   // The menu may also be canceled depending on the target of the event. |event|

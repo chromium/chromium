@@ -88,7 +88,7 @@ class VIEWS_EXPORT TextfieldModel {
   }
 
   // Inserts a character at the current cursor position.
-  void InsertChar(base::char16 c) {
+  void InsertChar(char16_t c) {
     InsertTextInternal(base::string16(&c, 1), true);
   }
 
@@ -99,7 +99,7 @@ class VIEWS_EXPORT TextfieldModel {
   }
 
   // Replaces the char at the current position with given character.
-  void ReplaceChar(base::char16 c) {
+  void ReplaceChar(char16_t c) {
     ReplaceTextInternal(base::string16(&c, 1), true);
   }
 

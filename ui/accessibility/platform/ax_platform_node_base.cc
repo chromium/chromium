@@ -63,7 +63,7 @@ bool FindDescendantRoleWithMaxDepth(AXPlatformNodeBase* node,
 
 }  // namespace
 
-const base::char16 AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
+const char16_t AXPlatformNodeBase::kEmbeddedCharacter = u'\xfffc';
 
 // Map from each AXPlatformNode's unique id to its instance.
 using UniqueIdMap = std::unordered_map<int32_t, AXPlatformNode*>;
@@ -1736,8 +1736,8 @@ bool AXPlatformNodeBase::IsSameHypertextCharacter(
 
   // For anything other than the "embedded character", we just compare the
   // characters directly.
-  base::char16 old_ch = old_hypertext.hypertext[old_char_index];
-  base::char16 new_ch = hypertext_.hypertext[new_char_index];
+  char16_t old_ch = old_hypertext.hypertext[old_char_index];
+  char16_t new_ch = hypertext_.hypertext[new_char_index];
   if (old_ch != new_ch)
     return false;
   if (new_ch != kEmbeddedCharacter)

@@ -40,8 +40,8 @@ enum class DomCode;
 // Returns true and sets the output parameters if the (dom_code, flags) pair
 // has an interpretation in the US English layout; otherwise the output
 // parameters are untouched.
-EVENTS_BASE_EXPORT base::char16 DomCodeToUsLayoutCharacter(DomCode dom_code,
-                                                           int flags);
+EVENTS_BASE_EXPORT char16_t DomCodeToUsLayoutCharacter(DomCode dom_code,
+                                                       int flags);
 EVENTS_BASE_EXPORT bool DomCodeToUsLayoutDomKey(DomCode dom_code,
                                                 int flags,
                                                 DomKey* dom_key,

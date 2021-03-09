@@ -22,7 +22,7 @@ bool SkipString16(base::PickleIterator* iter) {
   int len;
   if (!iter->ReadLength(&len))
     return false;
-  return iter->SkipBytes(len * sizeof(base::char16));
+  return iter->SkipBytes(len * sizeof(char16_t));
 }
 
 }  // namespace

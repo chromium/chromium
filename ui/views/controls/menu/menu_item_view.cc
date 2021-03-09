@@ -206,7 +206,7 @@ void MenuItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       break;
   }
 
-  base::char16 mnemonic = GetMnemonic();
+  char16_t mnemonic = GetMnemonic();
   if (mnemonic != '\0') {
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kKeyShortcuts,
@@ -275,7 +275,7 @@ base::string16 MenuItemView::GetAccessibleNameForMenuItem(
 
   // Filter out the "&" for accessibility clients.
   size_t index = 0;
-  const base::char16 amp = '&';
+  const char16_t amp = '&';
   while ((index = accessible_name.find(amp, index)) != base::string16::npos &&
          index + 1 < accessible_name.length()) {
     accessible_name.replace(index, accessible_name.length() - index,
@@ -611,7 +611,7 @@ const MenuItemView* MenuItemView::GetRootMenuItem() const {
   return item;
 }
 
-base::char16 MenuItemView::GetMnemonic() {
+char16_t MenuItemView::GetMnemonic() {
   if (!GetRootMenuItem()->has_mnemonics_ ||
       !MenuConfig::instance().use_mnemonics || !may_have_mnemonics()) {
     return 0;
@@ -622,7 +622,7 @@ base::char16 MenuItemView::GetMnemonic() {
     index = title_.find('&', index);
     if (index != base::string16::npos) {
       if (index + 1 != title_.size() && title_[index + 1] != '&') {
-        base::char16 char_array[] = {title_[index + 1], 0};
+        char16_t char_array[] = {title_[index + 1], 0};
         // TODO(jshin): What about Turkish locale? See http://crbug.com/81719.
         // If the mnemonic is capital I and the UI language is Turkish,
         // lowercasing it results in 'small dotless i', which is different

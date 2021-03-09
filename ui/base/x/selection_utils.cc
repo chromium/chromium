@@ -93,7 +93,7 @@ base::string16 RefCountedMemoryToString16(
     return base::string16();
 
   const unsigned char* front = memory->front();
-  return base::string16(reinterpret_cast<const base::char16*>(front), size / 2);
+  return base::string16(reinterpret_cast<const char16_t*>(front), size / 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -197,8 +197,8 @@ base::string16 SelectionData::GetHtml() const {
 
     // If the data starts with 0xFEFF, i.e., Byte Order Mark, assume it is
     // UTF-16, otherwise assume UTF-8.
-    if (size >= 2 && reinterpret_cast<const base::char16*>(data)[0] == 0xFEFF) {
-      markup.assign(reinterpret_cast<const base::char16*>(data) + 1,
+    if (size >= 2 && reinterpret_cast<const char16_t*>(data)[0] == 0xFEFF) {
+      markup.assign(reinterpret_cast<const char16_t*>(data) + 1,
                     (size / 2) - 1);
     } else {
       base::UTF8ToUTF16(reinterpret_cast<const char*>(data), size, &markup);

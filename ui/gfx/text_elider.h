@@ -27,8 +27,8 @@ namespace gfx {
 class FontList;
 
 GFX_EXPORT extern const char kEllipsis[];
-GFX_EXPORT extern const base::char16 kEllipsisUTF16[];
-GFX_EXPORT extern const base::char16 kForwardSlash;
+GFX_EXPORT extern const char16_t kEllipsisUTF16[];
+GFX_EXPORT extern const char16_t kForwardSlash;
 
 // Helper class to split + elide text, while respecting UTF-16 surrogate pairs
 // and combining character sequences.

@@ -279,8 +279,8 @@ TEST(TextEliderTest, ElideTextEllipsisFront) {
 // all occurrences of |second_char| are preceded by |first_char| in |text|. Can
 // be used to test surrogate pairs or two-character combining sequences.
 static void CheckCodeUnitPairs(const base::string16& text,
-                               base::char16 first_char,
-                               base::char16 second_char) {
+                               char16_t first_char,
+                               char16_t second_char) {
   for (size_t index = 0; index < text.length(); ++index) {
     EXPECT_NE(second_char, text[index]);
     if (text[index] == first_char) {
@@ -301,17 +301,17 @@ TEST(TextEliderTest, ElideTextAtomicSequences) {
   const FontList font_list;
   // The below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in
   // UTF-16 as two code units forming a surrogate pair: 0xD834 0xDD1E.
-  const base::char16 kSurrogate[] = {0xD834, 0xDD1E, 0};
+  const char16_t kSurrogate[] = {0xD834, 0xDD1E, 0};
   // The below is a Devanagari two-character combining sequence U+0921 U+093F.
   // The sequence forms a single display character and should not be separated.
-  const base::char16 kCombiningSequence[] = {0x921, 0x93F, 0};
+  const char16_t kCombiningSequence[] = {0x921, 0x93F, 0};
   std::vector<base::string16> pairs;
   pairs.push_back(kSurrogate);
   pairs.push_back(kCombiningSequence);
 
   for (const base::string16& pair : pairs) {
-    base::char16 first_char = pair[0];
-    base::char16 second_char = pair[1];
+    char16_t first_char = pair[0];
+    char16_t second_char = pair[1];
     base::string16 test_string = pair + UTF8ToUTF16("x") + pair;
     SCOPED_TRACE(test_string);
     const float test_string_width = GetStringWidthF(test_string, font_list);
@@ -624,7 +624,7 @@ TEST(TextEliderTest, StringSlicer_ElideMiddle_MultipleWhitespace) {
 TEST(TextEliderTest, StringSlicerSurrogate) {
   // The below is 'MUSICAL SYMBOL G CLEF' (U+1D11E), which is represented in
   // UTF-16 as two code units forming a surrogate pair: 0xD834 0xDD1E.
-  const base::char16 kSurrogate[] = {0xD834, 0xDD1E, 0};
+  const char16_t kSurrogate[] = {0xD834, 0xDD1E, 0};
   base::string16 text(UTF8ToUTF16("abc") + kSurrogate + UTF8ToUTF16("xyz"));
   base::string16 ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
@@ -645,7 +645,7 @@ TEST(TextEliderTest, StringSlicerSurrogate) {
   EXPECT_EQ(UTF8ToUTF16("a") + kEllipsisUTF16, slicer_mid.CutString(2, true));
 
   // String that starts with a dangling trailing surrogate.
-  base::char16 dangling_trailing_chars[] = {kSurrogate[1], 0};
+  char16_t dangling_trailing_chars[] = {kSurrogate[1], 0};
   base::string16 dangling_trailing_text(dangling_trailing_chars);
   StringSlicer slicer_dangling_trailing(dangling_trailing_text, ellipsis, false,
                                         false);
@@ -661,8 +661,8 @@ TEST(TextEliderTest, StringSlicerCombining) {
   // LATIN SMALL LETTER E + COMBINING ACUTE ACCENT + COMBINING CEDILLA
   // LATIN SMALL LETTER X + COMBINING ENCLOSING KEYCAP
   // DEVANAGARI LETTER DDA + DEVANAGARI VOWEL SIGN I
-  const base::char16 kText[] = {
-      'e', 0x301, 0x327, ' ', 'x', 0x20E3, ' ', 0x921, 0x93F, 0};
+  const char16_t kText[] = {'e',    0x301, 0x327, ' ',   'x',
+                            0x20E3, ' ',   0x921, 0x93F, 0};
   base::string16 text(kText);
   base::string16 ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);
@@ -692,7 +692,7 @@ TEST(TextEliderTest, StringSlicerCombining) {
             slicer_mid.CutString(9, true));
 
   // String that starts with a dangling combining mark.
-  base::char16 dangling_mark_chars[] = {text[1], 0};
+  char16_t dangling_mark_chars[] = {text[1], 0};
   base::string16 dangling_mark_text(dangling_mark_chars);
   StringSlicer slicer_dangling_mark(dangling_mark_text, ellipsis, false, false);
   EXPECT_EQ(base::string16(kEllipsisUTF16),
@@ -706,7 +706,7 @@ TEST(TextEliderTest, StringSlicerCombiningSurrogate) {
   // The following string contains a single combining character sequence:
   // MUSICAL SYMBOL G CLEF (U+1D11E) + MUSICAL SYMBOL COMBINING FLAG-1 (U+1D16E)
   // Represented as four UTF-16 code units.
-  const base::char16 kText[] = {0xD834, 0xDD1E, 0xD834, 0xDD6E, 0};
+  const char16_t kText[] = {0xD834, 0xDD1E, 0xD834, 0xDD6E, 0};
   base::string16 text(kText);
   base::string16 ellipsis(kEllipsisUTF16);
   StringSlicer slicer(text, ellipsis, false, false);

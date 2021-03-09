@@ -22,9 +22,9 @@ using base::i18n::UTF16CharIterator;
 
 namespace {
 
-constexpr base::char16 kAcceleratorChar = '&';
-constexpr base::char16 kOpenParenthesisChar = '(';
-constexpr base::char16 kCloseParenthesisChar = ')';
+constexpr char16_t kAcceleratorChar = '&';
+constexpr char16_t kOpenParenthesisChar = '(';
+constexpr char16_t kCloseParenthesisChar = ')';
 
 // Returns true if the specified character must be elided from a string.
 // Examples are combining marks and whitespace.

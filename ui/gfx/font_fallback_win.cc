@@ -224,7 +224,7 @@ bool GetFallbackFont(const Font& font,
   // Check that we have at least as much text as was claimed. If we have less
   // text than expected then DirectWrite will become confused and crash. This
   // shouldn't happen, but crbug.com/624905 shows that it happens sometimes.
-  constexpr base::char16 kNulCharacter = '\0';
+  constexpr char16_t kNulCharacter = '\0';
   if (text.find(kNulCharacter) != base::StringPiece16::npos)
     return false;
 

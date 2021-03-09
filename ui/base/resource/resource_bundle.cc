@@ -1073,7 +1073,7 @@ base::string16 ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   base::string16 msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg = base::string16(reinterpret_cast<const base::char16*>(data.data()),
+    msg = base::string16(reinterpret_cast<const char16_t*>(data.data()),
                          data.length() / 2);
   } else if (encoding == ResourceHandle::UTF8) {
     msg = base::UTF8ToUTF16(data);

@@ -412,7 +412,7 @@ void CheckUiDisplayNameForLocale(const std::string& locale,
 
   bool rtl_direction = true;
   for (size_t i = 0; i < result.length() - 1; i++) {
-    base::char16 ch = result.at(i);
+    char16_t ch = result.at(i);
     switch (ch) {
     case base::i18n::kLeftToRightMark:
     case base::i18n::kLeftToRightEmbeddingMark:
@@ -486,7 +486,7 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
 
   // ToUpper and ToLower should work with embedded NULLs.
   const size_t length_with_null = 4;
-  base::char16 buf_with_null[length_with_null] = { 0, 'a', 0, 'b' };
+  char16_t buf_with_null[length_with_null] = {0, 'a', 0, 'b'};
   base::string16 string16_with_null(buf_with_null, length_with_null);
 
   base::string16 upper_with_null = base::i18n::ToUpper(string16_with_null);

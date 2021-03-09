@@ -12,7 +12,7 @@ namespace ui {
 TEST(MenuLabelAcceleratorTest, GetMnemonic) {
   static const struct {
     const base::string16 label;
-    const base::char16 mneumonic;
+    const char16_t mneumonic;
   } cases[] = {
       {base::ASCIIToUTF16(""), 0},         {base::ASCIIToUTF16("Exit"), 0},
       {base::ASCIIToUTF16("E&xit"), 'x'},  {base::ASCIIToUTF16("E&&xit"), 0},

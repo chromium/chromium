@@ -26,17 +26,17 @@ namespace ui {
 
 namespace {
 
-const base::char16 kCombiningGrave = 0x0300;
-const base::char16 kCombiningAcute = 0x0301;
-const base::char16 kCombiningCircumflex = 0x0302;
-const base::char16 kCombiningHorn = 0x031B;
+const char16_t kCombiningGrave = 0x0300;
+const char16_t kCombiningAcute = 0x0301;
+const char16_t kCombiningCircumflex = 0x0302;
+const char16_t kCombiningHorn = 0x031B;
 
 }  // namespace
 
 class CharacterComposerTest : public testing::Test {
  protected:
   // Returns a |KeyEvent| for a dead key press.
-  KeyEvent* DeadKeyPress(base::char16 combining_character) const {
+  KeyEvent* DeadKeyPress(char16_t combining_character) const {
     KeyEvent* event =
         new KeyEvent(ET_KEY_PRESSED, VKEY_UNKNOWN, DomCode::NONE, EF_NONE,
                      DomKey::DeadKeyFromCombiningCharacter(combining_character),
@@ -45,14 +45,14 @@ class CharacterComposerTest : public testing::Test {
   }
 
   // Expects key is filtered and no character is composed.
-  void ExpectDeadKeyFiltered(base::char16 combining_character) {
+  void ExpectDeadKeyFiltered(char16_t combining_character) {
     std::unique_ptr<KeyEvent> event(DeadKeyPress(combining_character));
     EXPECT_TRUE(character_composer_.FilterKeyPress(*event));
     EXPECT_TRUE(character_composer_.composed_character().empty());
   }
 
   // Expects key is filtered and the given character is composed.
-  void ExpectDeadKeyComposed(base::char16 combining_character,
+  void ExpectDeadKeyComposed(char16_t combining_character,
                              const base::string16& expected_character) {
     std::unique_ptr<KeyEvent> event(DeadKeyPress(combining_character));
     EXPECT_TRUE(character_composer_.FilterKeyPress(*event));
@@ -63,7 +63,7 @@ class CharacterComposerTest : public testing::Test {
   KeyEvent* UnicodeKeyPress(KeyboardCode vkey,
                             DomCode code,
                             int flags,
-                            base::char16 character) const {
+                            char16_t character) const {
     KeyEvent* event =
         new KeyEvent(ET_KEY_PRESSED, vkey, code, flags,
                      DomKey::FromCharacter(character), EventTimeForNow());
@@ -74,7 +74,7 @@ class CharacterComposerTest : public testing::Test {
   void ExpectUnicodeKeyNotFiltered(KeyboardCode vkey,
                                    DomCode code,
                                    int flags,
-                                   base::char16 character) {
+                                   char16_t character) {
     std::unique_ptr<KeyEvent> event(
         UnicodeKeyPress(vkey, code, flags, character));
     EXPECT_FALSE(character_composer_.FilterKeyPress(*event));
@@ -85,7 +85,7 @@ class CharacterComposerTest : public testing::Test {
   void ExpectUnicodeKeyFiltered(KeyboardCode vkey,
                                 DomCode code,
                                 int flags,
-                                base::char16 character) {
+                                char16_t character) {
     std::unique_ptr<KeyEvent> event(
         UnicodeKeyPress(vkey, code, flags, character));
     EXPECT_TRUE(character_composer_.FilterKeyPress(*event));
@@ -96,7 +96,7 @@ class CharacterComposerTest : public testing::Test {
   void ExpectUnicodeKeyComposed(KeyboardCode vkey,
                                 DomCode code,
                                 int flags,
-                                base::char16 character,
+                                char16_t character,
                                 const base::string16& expected_character) {
     std::unique_ptr<KeyEvent> event(
         UnicodeKeyPress(vkey, code, flags, character));
@@ -181,12 +181,12 @@ TEST_F(CharacterComposerTest, FullyMatchingSequences) {
   ExpectUnicodeKeyComposed(VKEY_SPACE, DomCode::SPACE, EF_NONE, ' ',
                            base::string16(1, '\''));
   // Unmatched composition with printable character.
-  static constexpr base::char16 kApostropheS[] = {'\'', 's'};
+  static constexpr char16_t kApostropheS[] = {'\'', 's'};
   ExpectDeadKeyFiltered('\'');
   ExpectUnicodeKeyComposed(VKEY_S, DomCode::US_S, EF_NONE, 's',
                            base::string16(kApostropheS, 2));
   // Unmatched composition with dead key.
-  static constexpr base::char16 kApostropheApostrophe[] = {'\'', '\''};
+  static constexpr char16_t kApostropheApostrophe[] = {'\'', '\''};
   ExpectDeadKeyFiltered('\'');
   ExpectDeadKeyComposed('\'', base::string16(kApostropheApostrophe, 2));
 }
@@ -302,7 +302,7 @@ TEST_F(CharacterComposerTest, HexadecimalComposition) {
   ExpectUnicodeKeyComposed(VKEY_SPACE, DomCode::SPACE, EF_NONE, ' ',
                            base::string16(1, 0x3042));
   // MUSICAL KEYBOARD (U+1F3B9)
-  const base::char16 kMusicalKeyboard[] = {0xd83c, 0xdfb9};
+  const char16_t kMusicalKeyboard[] = {0xd83c, 0xdfb9};
   ExpectUnicodeKeyFiltered(VKEY_U, DomCode::US_U,
                            EF_SHIFT_DOWN | EF_CONTROL_DOWN, 'U');
   ExpectUnicodeKeyFiltered(VKEY_1, DomCode::DIGIT1, EF_NONE, '1');

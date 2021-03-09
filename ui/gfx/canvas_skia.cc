@@ -44,8 +44,7 @@ void ElideTextAndAdjustRange(const FontList& font_list,
                              float width,
                              base::string16* text,
                              Range* range) {
-  const base::char16 start_char =
-      (range->IsValid() ? text->at(range->start()) : 0);
+  const char16_t start_char = (range->IsValid() ? text->at(range->start()) : 0);
   *text = ElideText(*text, font_list, width, ELIDE_TAIL);
   if (!range->IsValid())
     return;

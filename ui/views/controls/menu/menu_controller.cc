@@ -147,13 +147,13 @@ constexpr base::TimeDelta kAlertAnimationThrobDuration =
     base::TimeDelta::FromMilliseconds(1000);
 
 // Returns true if the mnemonic of |menu| matches key.
-bool MatchesMnemonic(MenuItemView* menu, base::char16 key) {
+bool MatchesMnemonic(MenuItemView* menu, char16_t key) {
   return key != 0 && menu->GetMnemonic() == key;
 }
 
 // Returns true if |menu| doesn't have a mnemonic and first character of the its
 // title is |key|.
-bool TitleMatchesMnemonic(MenuItemView* menu, base::char16 key) {
+bool TitleMatchesMnemonic(MenuItemView* menu, char16_t key) {
   if (menu->GetMnemonic())
     return false;
 
@@ -1231,7 +1231,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
           ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN;
       const int flags = event->flags();
       if (exit_type() == ExitType::kNone && (flags & kKeyFlagsMask) == 0) {
-        base::char16 c = event->GetCharacter();
+        char16_t c = event->GetCharacter();
         SelectByChar(c);
         // SelectByChar can lead to this being deleted.
         if (!this_ref) {
@@ -2768,8 +2768,8 @@ void MenuController::CloseSubmenu() {
 
 MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
     MenuItemView* parent,
-    base::char16 key,
-    bool (*match_function)(MenuItemView* menu, base::char16 mnemonic)) {
+    char16_t key,
+    bool (*match_function)(MenuItemView* menu, char16_t mnemonic)) {
   SubmenuView* submenu = parent->GetSubmenu();
   DCHECK(submenu);
   SelectByCharDetails details;
@@ -2817,15 +2817,15 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
   }
 }
 
-void MenuController::SelectByChar(base::char16 character) {
+void MenuController::SelectByChar(char16_t character) {
   // Do not process while performing drag-and-drop.
   if (for_drop_)
     return;
   if (!character)
     return;
 
-  base::char16 char_array[] = {character, 0};
-  base::char16 key = base::i18n::ToLower(char_array)[0];
+  char16_t char_array[] = {character, 0};
+  char16_t key = base::i18n::ToLower(char_array)[0];
   MenuItemView* item = pending_state_.item;
   if (!item->SubmenuIsShowing())
     item = item->GetParentMenuItem();

@@ -402,7 +402,7 @@ class TSFTextStoreTestCallback {
     composition_range_.set_end(end);
   }
 
-  void SetTextBuffer(const base::char16* buffer) {
+  void SetTextBuffer(const char16_t* buffer) {
     text_buffer_.clear();
     text_buffer_.assign(buffer);
   }

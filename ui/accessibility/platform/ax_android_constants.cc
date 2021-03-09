@@ -38,6 +38,6 @@ const char kAXToggleButtonClassname[] = "android.widget.ToggleButton";
 const char kAXViewClassname[] = "android.view.View";
 const char kAXViewGroupClassname[] = "android.view.ViewGroup";
 const char kAXWebViewClassname[] = "android.webkit.WebView";
-const base::char16 kSecurePasswordBullet = 0x2022;
+const char16_t kSecurePasswordBullet = 0x2022;
 
 }  // namespace ui

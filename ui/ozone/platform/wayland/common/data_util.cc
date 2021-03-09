@@ -101,7 +101,7 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeData* os_exchange_data) {
     }
 
     std::string url_path = url.path();
-    url::RawCanonOutputT<base::char16> unescaped;
+    url::RawCanonOutputT<char16_t> unescaped;
     url::DecodeURLEscapeSequences(url_path.data(), url_path.size(),
                                   url::DecodeURLMode::kUTF8OrIsomorphic,
                                   &unescaped);

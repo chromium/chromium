@@ -481,7 +481,7 @@ DomKey NonPrintableXKeySymToDomKey(xkb_keysym_t keysym) {
       return DomKey::NONE;
   }
 }
-DomKey XKeySymToDomKey(xkb_keysym_t keysym, base::char16 character) {
+DomKey XKeySymToDomKey(xkb_keysym_t keysym, char16_t character) {
   DomKey dom_key = NonPrintableXKeySymToDomKey(keysym);
   if (dom_key != DomKey::NONE)
     return dom_key;

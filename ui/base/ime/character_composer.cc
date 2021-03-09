@@ -157,7 +157,7 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
 bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {
   DCHECK(composition_mode_ == HEX_MODE);
   const size_t kMaxHexSequenceLength = 8;
-  base::char16 c = event.GetCharacter();
+  char16_t c = event.GetCharacter();
   int hex_digit = 0;
   if (base::IsHexDigit(c)) {
     hex_digit = base::HexDigitToInt(c);

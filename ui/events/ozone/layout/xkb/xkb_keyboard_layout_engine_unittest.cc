@@ -38,16 +38,16 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
  public:
   enum class EntryType { NONE, PRINTABLE, KEYSYM };
   struct PrintableEntry {
-    base::char16 plain_character;
-    base::char16 shift_character;
-    base::char16 altgr_character;
+    char16_t plain_character;
+    char16_t shift_character;
+    char16_t altgr_character;
     DomCode dom_code;
   };
   struct KeysymEntry {
     DomCode dom_code;
     int flags;
     xkb_keysym_t keysym;
-    base::char16 character;
+    char16_t character;
   };
 
   struct RuleNames {
@@ -86,13 +86,11 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
     keysym_entry_ = entry;
   }
 
-  xkb_keysym_t CharacterToKeySym(base::char16 c) const {
-    return 0x01000000u + c;
-  }
+  xkb_keysym_t CharacterToKeySym(char16_t c) const { return 0x01000000u + c; }
 
   KeyboardCode GetKeyboardCode(DomCode dom_code,
                                int flags,
-                               base::char16 character) const {
+                               char16_t character) const {
     KeyboardCode key_code = DifficultKeyboardCode(
         dom_code, flags, key_code_converter_.DomCodeToXkbKeyCode(dom_code),
         flags, CharacterToKeySym(character), character);

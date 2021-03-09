@@ -689,7 +689,7 @@ class MenuControllerTest : public ViewsTestBase,
 
   void MenuHostOnDragComplete(MenuHost* host) { host->OnDragComplete(); }
 
-  void SelectByChar(base::char16 character) {
+  void SelectByChar(char16_t character) {
     menu_controller_->SelectByChar(character);
   }
 

@@ -21,10 +21,10 @@
 namespace ui {
 namespace {
 
-const base::char16 kActionCommit = L'C';
-const base::char16 kActionCompositionStart = L'S';
-const base::char16 kActionCompositionUpdate = L'U';
-const base::char16 kActionCompositionEnd = L'E';
+const char16_t kActionCommit = L'C';
+const char16_t kActionCompositionStart = L'S';
+const char16_t kActionCompositionUpdate = L'U';
+const char16_t kActionCompositionEnd = L'E';
 
 class TestResult {
  public:
@@ -94,7 +94,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
       std::vector<base::string16> parts = base::SplitString(
           action, base::string16(1, ':'), base::TRIM_WHITESPACE,
           base::SPLIT_WANT_ALL);
-      base::char16 id = parts[0][0];
+      char16_t id = parts[0][0];
       base::string16 param;
       if (parts.size() > 1)
         param = parts[1];

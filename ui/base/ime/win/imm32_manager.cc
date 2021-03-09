@@ -17,7 +17,7 @@
 
 // Following code requires wchar_t to be same as char16. It should always be
 // true on Windows.
-static_assert(sizeof(wchar_t) == sizeof(base::char16),
+static_assert(sizeof(wchar_t) == sizeof(char16_t),
               "wchar_t should be the same size as char16");
 
 ///////////////////////////////////////////////////////////////////////////////

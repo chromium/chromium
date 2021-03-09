@@ -25,7 +25,7 @@
 namespace ui {
 
 // Definition of static class members.
-constexpr base::char16 AXNode::kEmbeddedCharacter[];
+constexpr char16_t AXNode::kEmbeddedCharacter[];
 constexpr int AXNode::kEmbeddedCharacterLength;
 
 AXNode::AXNode(AXNode::OwnerTree* tree,

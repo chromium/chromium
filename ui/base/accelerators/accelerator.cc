@@ -431,11 +431,11 @@ base::string16 Accelerator::ApplyLongFormModifiers(
 
 base::string16 Accelerator::ApplyShortFormModifiers(
     base::string16 shortcut) const {
-  const base::char16 kCommandSymbol[] = {0x2318, 0};
-  const base::char16 kCtrlSymbol[] = {0x2303, 0};
-  const base::char16 kShiftSymbol[] = {0x21e7, 0};
-  const base::char16 kOptionSymbol[] = {0x2325, 0};
-  const base::char16 kNoSymbol[] = {0};
+  const char16_t kCommandSymbol[] = {0x2318, 0};
+  const char16_t kCtrlSymbol[] = {0x2303, 0};
+  const char16_t kShiftSymbol[] = {0x21e7, 0};
+  const char16_t kOptionSymbol[] = {0x2325, 0};
+  const char16_t kNoSymbol[] = {0};
 
   std::vector<base::string16> parts;
   parts.push_back(base::string16(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
