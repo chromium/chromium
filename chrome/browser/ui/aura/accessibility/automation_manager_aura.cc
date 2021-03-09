@@ -11,13 +11,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
-#include "extensions/browser/api/automation_internal/automation_event_router_interface.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
+#include "ui/accessibility/ax_event_bundle_sink.h"
 #include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/aura/env.h"
@@ -81,12 +81,7 @@ void AutomationManagerAura::Enable() {
 void AutomationManagerAura::Disable() {
   enabled_ = false;
   cache_ = std::make_unique<views::AXAuraObjCache>();
-  if (tree_) {
-    if (automation_event_router_interface_)
-      automation_event_router_interface_->DispatchTreeDestroyedEvent(
-          tree_->tree_id(), nullptr);
-    tree_.reset();
-  }
+  tree_.reset();
   tree_serializer_.reset();
   alert_window_.reset();
 
@@ -270,8 +265,8 @@ void AutomationManagerAura::SendPendingEvents() {
     tree_updates.push_back(focused_node_update);
   }
 
-  if (automation_event_router_interface_) {
-    automation_event_router_interface_->DispatchAccessibilityEvents(
+  if (event_bundle_sink_) {
+    event_bundle_sink_->DispatchAccessibilityEvents(
         ax_tree_id(), std::move(tree_updates),
         aura::Env::GetInstance()->last_mouse_location(), std::move(events));
   }

@@ -237,12 +237,15 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   std::vector<int32_t> update_ids = ProcessHooksOnEvent(event_data);
 
-  // Prep the event and send it to automation.
+  // Bundle the event and send it to automation.
+  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
+  event_bundle.tree_id = ax_tree_id();
+
   AccessibilityInfoDataWrapper* focused_node =
       android_focused_id_.has_value() ? GetFromId(*android_focused_id_)
                                       : nullptr;
-  std::vector<ui::AXEvent> events;
-  ui::AXEvent event;
+  event_bundle.events.emplace_back();
+  ui::AXEvent& event = event_bundle.events.back();
   event.event_type = ToAXEvent(
       event_data.event_type,
       GetPropertyOrNull(
@@ -256,9 +259,7 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
     event.event_from = ax::mojom::EventFrom::kAction;
   }
 
-  events.push_back(std::move(event));
-
-  HandleLiveRegions(&events);
+  HandleLiveRegions(&event_bundle.events);
 
   // Force the tree, to update, so unignored fields get updated.
   // On event type of WINDOW_STATE_CHANGED, update the entire tree so that
@@ -270,18 +271,15 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   update_ids.push_back(node_id_to_clear);
 
-  std::vector<ui::AXTreeUpdate> updates;
   for (const int32_t update_root : update_ids) {
-    ui::AXTreeUpdate update;
-    update.node_id_to_clear = update_root;
+    event_bundle.updates.emplace_back();
+    event_bundle.updates.back().node_id_to_clear = update_root;
     current_tree_serializer_->InvalidateSubtree(GetFromId(update_root));
-    current_tree_serializer_->SerializeChanges(GetFromId(update_root), &update);
-
-    updates.push_back(std::move(update));
+    current_tree_serializer_->SerializeChanges(GetFromId(update_root),
+                                               &event_bundle.updates.back());
   }
 
-  GetAutomationEventRouter()->DispatchAccessibilityEvents(
-      ax_tree_id(), std::move(updates), gfx::Point(), std::move(events));
+  GetAutomationEventRouter()->DispatchAccessibilityEvents(event_bundle);
 }
 
 extensions::AutomationEventRouterInterface*

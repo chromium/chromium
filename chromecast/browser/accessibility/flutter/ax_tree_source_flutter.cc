@@ -259,11 +259,13 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     focused_id_ = root_id_;
   }
 
-  std::vector<ui::AXEvent> events;
-  ui::AXEvent event;
+  ExtensionMsg_AccessibilityEventBundleParams event_bundle;
+  event_bundle.tree_id = ax_tree_id();
+
+  event_bundle.events.emplace_back();
+  ui::AXEvent& event = event_bundle.events.back();
   event.event_type = translated_event;
   event.id = event_data->source_id();
-  events.push_back(std::move(event));
 
   if (event_data->event_type() ==
       gallium::castos::OnAccessibilityEventRequest_EventType_CONTENT_CHANGED) {
@@ -271,7 +273,6 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
         GetFromId(event_data->source_id()));
   }
 
-  std::vector<ui::AXTreeUpdate> updates;
   if (event_data->event_type() !=
           gallium::castos::OnAccessibilityEventRequest_EventType_HOVER_ENTER &&
       event_data->event_type() !=
@@ -279,9 +280,9 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     // For every parent whose child has been moved, serialize an update.
     // This update will filter all the children that have moved.
     for (int32_t nid : parents_with_deleted_children) {
-      ui::AXTreeUpdate update;
-      current_tree_serializer_->SerializeChanges(GetFromId(nid), &update);
-      updates.push_back(std::move(update));
+      event_bundle.updates.emplace_back();
+      current_tree_serializer_->SerializeChanges(GetFromId(nid),
+                                                 &event_bundle.updates.back());
     }
 
     // If there were any children that were reparented, invalidate the entire
@@ -294,14 +295,13 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     reparented_children_.clear();
 
     // Handle routes added/removed from the tree.
-    HandleRoutes(&events);
+    HandleRoutes(&event_bundle.events);
 
-    ui::AXTreeUpdate update;
+    event_bundle.updates.emplace_back();
     current_tree_serializer_->SerializeChanges(
-        GetFromId(event_data->source_id()), &update);
-    updates.push_back(std::move(update));
+        GetFromId(event_data->source_id()), &event_bundle.updates.back());
 
-    HandleLiveRegions(&events);
+    HandleLiveRegions(&event_bundle.events);
 
     // b/162311902: For nodes that have scroll extents, rapidly changing the
     // value will result in queueing up the values and speak out one by one.
@@ -313,17 +313,15 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
 
   // Need to refocus
   if (need_focus_clear) {
-    ui::AXEvent focus_event;
+    event_bundle.events.emplace_back();
+    ui::AXEvent& focus_event = event_bundle.events.back();
     focus_event.event_type = ax::mojom::Event::kFocus;
     focus_event.id = focused_id_;
     focus_event.event_from = ax::mojom::EventFrom::kNone;
-    events.push_back(std::move(focus_event));
   }
 
-  if (event_router_) {
-    event_router_->DispatchAccessibilityEvents(ax_tree_id(), std::move(updates),
-                                               gfx::Point(), std::move(events));
-  }
+  if (event_router_)
+    event_router_->DispatchAccessibilityEvents(event_bundle);
 }
 
 void AXTreeSourceFlutter::NotifyActionResult(const ui::AXActionData& data,
