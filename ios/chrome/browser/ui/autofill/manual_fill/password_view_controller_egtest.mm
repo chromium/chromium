@@ -7,10 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -38,7 +35,6 @@ using chrome_test_util::ManualFallbackOtherPasswordsMatcher;
 using chrome_test_util::ManualFallbackOtherPasswordsDismissMatcher;
 using chrome_test_util::ManualFallbackPasswordButtonMatcher;
 using chrome_test_util::ManualFallbackPasswordTableViewWindowMatcher;
-using chrome_test_util::ManualFallbackSuggestPasswordMatcher;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::SettingsPasswordMatcher;
@@ -46,7 +42,6 @@ using chrome_test_util::SettingsPasswordSearchMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::TapWebElementWithIdInFrame;
-using chrome_test_util::UseSuggestedPasswordMatcher;
 
 namespace {
 
@@ -108,19 +103,6 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
 @end
 
 @implementation PasswordViewControllerTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testPasswordGenerationOnManualFallback)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEnableManualPasswordGeneration);
-  }
-  if ([self isRunningTest:@selector(testPasswordControllerKeepsRightSize)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kEnableManualPasswordGeneration);
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -656,46 +638,6 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   // Assert the password icon is not enabled and not visible.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
       assertWithMatcher:grey_notVisible()];
-}
-
-// Tests password generation on manual fallback.
-- (void)testPasswordGenerationOnManualFallback {
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:10.0];
-
-  const GURL URL = self.testServer->GetURL(kFormHTMLFile);
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
-
-  // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementPassword)];
-
-  // Wait for the accessory icon to appear.
-  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
-                 @"Keyboard Should be Shown");
-
-  // Tap on the passwords icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
-      performAction:grey_tap()];
-
-  // Verify the password controller table view is visible.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Select a 'Suggest Password...' option.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
-      performAction:grey_tap()];
-
-  // Confirm by tapping on the 'Use Suggested Password' button.
-  [[EarlGrey selectElementWithMatcher:UseSuggestedPasswordMatcher()]
-      performAction:grey_tap()];
-
-  // Verify Web Content.
-  NSString* javaScriptCondition =
-      [NSString stringWithFormat:@"document.getElementById('%s').value !== ''",
-                                 kFormElementPassword];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
 }
 
 @end

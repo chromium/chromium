@@ -537,13 +537,6 @@
 // Returns the matcher for the Activity View header.
 + (id<GREYMatcher>)activityViewHeaderWithTitle:(NSString*)pageTitle;
 
-// Returns a matcher for the button to trigger password generation on manual
-// fallback.
-+ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher;
-
-// Returns a matcher for the button to accept the generated password.
-+ (id<GREYMatcher>)useSuggestedPasswordMatcher;
-
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_APP_INTERFACE_H_

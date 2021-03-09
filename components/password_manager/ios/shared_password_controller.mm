@@ -52,27 +52,27 @@
 #error "This file requires ARC support."
 #endif
 
-using autofill::FieldRendererId;
 using autofill::FormActivityObserverBridge;
 using autofill::FormData;
-using autofill::FormRendererId;
 using autofill::PasswordFormGenerationData;
+using autofill::FormRendererId;
+using autofill::FieldRendererId;
 using base::SysNSStringToUTF16;
-using base::SysUTF16ToNSString;
 using base::SysUTF8ToNSString;
+using base::SysUTF16ToNSString;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
+using password_manager::metrics_util::LogPasswordDropdownShown;
+using password_manager::metrics_util::PasswordDropdownState;
 using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
 using password_manager::JsonStringToFormData;
-using password_manager::metrics_util::LogPasswordDropdownShown;
-using password_manager::metrics_util::PasswordDropdownState;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordGenerationFrameHelper;
+using password_manager::PasswordManagerInterface;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerDriver;
-using password_manager::PasswordManagerInterface;
 using password_manager::SerializePasswordFormFillData;
 
 namespace {
@@ -121,12 +121,6 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
   FieldRendererId _lastTypedfieldIdentifier;
   NSString* _lastTypedValue;
-
-  // Identifier of the last focused form.
-  FormRendererId _lastFocusedFormIdentifier;
-
-  // Identifier of the last focused field.
-  FieldRendererId _lastFocusedFieldIdentifier;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -161,17 +155,6 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 - (BOOL)isIncognito {
   DCHECK(_delegate.passwordManagerClient);
   return _delegate.passwordManagerClient->IsIncognito();
-}
-
-#pragma mark - PasswordGenerationProvider
-
-- (void)triggerPasswordGeneration {
-  if (!_lastFocusedFieldIdentifier) {
-    return;
-  }
-  [self generatePasswordForFormId:_lastFocusedFormIdentifier
-                  fieldIdentifier:_lastFocusedFieldIdentifier
-              isManuallyTriggered:YES];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -259,8 +242,6 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   _isPasswordGenerated = NO;
   _lastTypedfieldIdentifier = FieldRendererId();
   _lastTypedValue = nil;
-  _lastFocusedFormIdentifier = FormRendererId();
-  _lastFocusedFieldIdentifier = FieldRendererId();
 }
 
 #pragma mark - FormSuggestionProvider
@@ -407,8 +388,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       // Don't call completion because current suggestion state should remain
       // whether user injects a generated password or cancels.
       [self generatePasswordForFormId:uniqueFormID
-                      fieldIdentifier:uniqueFieldID
-                  isManuallyTriggered:NO];
+                      fieldIdentifier:uniqueFieldID];
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kGenerate,
@@ -569,24 +549,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 }
 
 - (void)generatePasswordForFormId:(FormRendererId)formIdentifier
-                  fieldIdentifier:(FieldRendererId)fieldIdentifier
-              isManuallyTriggered:(BOOL)isManuallyTriggered {
-  const autofill::PasswordFormGenerationData* generationData =
-      [self formForGenerationFromFormID:formIdentifier];
-  if (!isManuallyTriggered && !generationData) {
+                  fieldIdentifier:(FieldRendererId)fieldIdentifier {
+  if (![self formForGenerationFromFormID:formIdentifier])
     return;
-  }
-
-  BOOL shouldUpdateGenerationData =
-      !generationData ||
-      generationData->new_password_renderer_id != fieldIdentifier;
-  if (isManuallyTriggered && shouldUpdateGenerationData) {
-    PasswordFormGenerationData generation_data = {
-        .form_renderer_id = formIdentifier,
-        .new_password_renderer_id = fieldIdentifier,
-    };
-    [self formEligibleForGenerationFound:generation_data];
-  }
 
   // TODO(crbug.com/886583): pass correct |max_length|.
   base::string16 generatedPassword =
@@ -665,17 +630,15 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   DCHECK_EQ(_webState, webState);
 
   GURL pageURL;
-  if (!GetPageURLAndCheckTrustLevel(webState, &pageURL) || !frame ||
-      !frame->CanCallJavaScriptFunction() || params.input_missing) {
-    _lastFocusedFormIdentifier = FormRendererId();
-    _lastFocusedFieldIdentifier = FieldRendererId();
+  if (!GetPageURLAndCheckTrustLevel(webState, &pageURL))
     return;
-  }
 
-  if (params.type == "focus") {
-    _lastFocusedFormIdentifier = params.unique_form_id;
-    _lastFocusedFieldIdentifier = params.unique_field_id;
-  }
+  if (!frame || !frame->CanCallJavaScriptFunction())
+    return;
+
+  // Return early if |params| is not complete.
+  if (params.input_missing)
+    return;
 
   // If there's a change in password forms on a page, they should be parsed
   // again.

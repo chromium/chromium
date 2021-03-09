@@ -77,9 +77,6 @@ class WebStateList;
 // Stops observing all objects.
 - (void)disconnect;
 
-// Returns YES if the last focused field is of type 'password'.
-- (BOOL)lastFocusedFieldWasPassword;
-
 @end
 
 // Methods to allow injection in tests.

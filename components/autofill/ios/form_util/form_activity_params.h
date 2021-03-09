@@ -10,9 +10,6 @@
 
 namespace autofill {
 
-// HTML password field type.
-constexpr char kPasswordFieldType[] = "password";
-
 // Wraps information about event happening in a form.
 // Example HTML
 // <form name="np" id="np1" action="https://example.com/" method="post">

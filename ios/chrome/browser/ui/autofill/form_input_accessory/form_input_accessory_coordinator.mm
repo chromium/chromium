@@ -158,8 +158,7 @@
   [self.childCoordinators removeAllObjects];
 }
 
-- (void)startPasswordsFromButton:(UIButton*)button
-          invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+- (void)startPasswordsFromButton:(UIButton*)button {
   WebStateList* webStateList = self.browser->GetWebStateList();
   DCHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
@@ -168,8 +167,7 @@
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                                  URL:URL
-                    injectionHandler:self.injectionHandler
-              invokedOnPasswordField:invokedOnPasswordField];
+                    injectionHandler:self.injectionHandler];
   passwordCoordinator.delegate = self;
   if (IsIPadIdiom()) {
     [passwordCoordinator presentFromButton:button];
@@ -251,10 +249,7 @@
 
 - (void)passwordButtonPressed:(UIButton*)sender {
   [self stopChildren];
-  BOOL invokedOnPasswordField =
-      [self.formInputAccessoryMediator lastFocusedFieldWasPassword];
-  [self startPasswordsFromButton:sender
-          invokedOnPasswordField:invokedOnPasswordField];
+  [self startPasswordsFromButton:sender];
   [self.formInputAccessoryViewController lockManualFallbackView];
   [self.formInputAccessoryMediator disableSuggestions];
 }

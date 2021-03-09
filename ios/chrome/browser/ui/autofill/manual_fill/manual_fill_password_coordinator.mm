@@ -11,13 +11,11 @@
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,8 +47,7 @@
                                    browser:(Browser*)browser
                                        URL:(const GURL&)URL
                           injectionHandler:
-                              (ManualFillInjectionHandler*)injectionHandler
-                    invokedOnPasswordField:(BOOL)invokedOnPasswordField {
+                              (ManualFillInjectionHandler*)injectionHandler {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                           injectionHandler:injectionHandler];
@@ -64,15 +61,10 @@
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());
-    SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
-        self.browser->GetBrowserState());
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
-         initWithPasswordStore:passwordStore
-                 faviconLoader:faviconLoader
-                      webState:browser->GetWebStateList()->GetActiveWebState()
-                   syncService:syncService
-        invokedOnPasswordField:invokedOnPasswordField];
+        initWithPasswordStore:passwordStore
+                faviconLoader:faviconLoader];
     [_passwordMediator fetchPasswordsForURL:URL];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;

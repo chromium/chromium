@@ -11,7 +11,6 @@
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/password_manager/ios/password_form_helper.h"
-#import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_client_bridge.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_client.h"
@@ -49,10 +48,6 @@ class PasswordManagerClient;
 
 // An object that can provide suggestions from this PasswordController.
 @property(nonatomic, readonly) id<FormSuggestionProvider> suggestionProvider;
-
-// An object that can provide password generation from this PasswordController.
-@property(nonatomic, readonly) id<PasswordGenerationProvider>
-    generationProvider;
 
 // The PasswordManagerClient owned by this PasswordController.
 @property(nonatomic, readonly)
