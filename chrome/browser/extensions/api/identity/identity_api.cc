@@ -28,7 +28,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "chrome/common/url_constants.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -134,20 +133,8 @@ base::CallbackListSubscription IdentityAPI::RegisterOnShutdownCallback(
 }
 
 bool IdentityAPI::AreExtensionsRestrictedToPrimaryAccount() {
-  bool extensions_restricted_to_primary_account =
-      !AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
-      !AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_);
-  if (extensions_restricted_to_primary_account) {
-    // TODO(crbug.com/1181236): Remove AreExtensionsRestrictedToPrimaryAccount
-    // as it always returns false when sign-in is allowed.
-    CHECK(!profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
-        << "This is temporary check to verify that "
-           "AreExtensionsRestrictedToPrimaryAccount() returns true iff sign-in "
-           "is not allowed. In this case, chrome.identity API returns errors "
-           "when fetching access tokens. Therefore method "
-           "AreExtensionsRestrictedToPrimaryAccount() can be removed.";
-  }
-  return extensions_restricted_to_primary_account;
+  return !AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
+         !AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_);
 }
 
 IdentityAPI::IdentityAPI(Profile* profile,
