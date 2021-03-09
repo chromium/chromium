@@ -61,7 +61,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
         {apps::UrlHandlerInfo(origin_1_),
          apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {"/foo"})},
         {apps::UrlHandlerInfo(origin_2_),
-         apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {"/bar"})},
+         apps::UrlHandlerInfo(origin_2_, false, {"/abc"}, {"/bar"})},
     };
     association_manager->SetData(std::move(data));
     url_handler_manager->SetAssociationManagerForTesting(
@@ -123,7 +123,13 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     controller().UnregisterApp(app_id);
     controller().RegisterApp(std::move(web_app));
 
-    EXPECT_TRUE(url_handler_manager().UpdateUrlHandlers(app_id));
+    base::RunLoop run_loop;
+    url_handler_manager().UpdateUrlHandlers(
+        app_id, base::BindLambdaForTesting([&](bool success) {
+          EXPECT_TRUE(success);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
     return app_id;
   }
 
@@ -202,6 +208,12 @@ TEST_F(UrlHandlerManagerImplTest, RegisterAndUpdateApp) {
     EXPECT_EQ(params.profile_path, profile()->GetPath());
     EXPECT_EQ(params.app_id, app_id);
     EXPECT_EQ(params.url, kOriginUrl2);
+
+    // Check excluded path shouldn't match
+    cmd_2 = base::CommandLine(base::CommandLine::NO_PROGRAM);
+    cmd_2.AppendArg("https://origin-2.com/bar");
+    matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd_2);
+    EXPECT_TRUE(matches.empty());
   }
 }
 
@@ -283,7 +295,12 @@ TEST_F(UrlHandlerManagerImplTest, FeatureFlagDisabled_Update) {
     controller().UnregisterApp(app_id);
     controller().RegisterApp(std::move(web_app));
 
-    EXPECT_FALSE(url_handler_manager().UpdateUrlHandlers(app_id));
+    base::RunLoop run_loop;
+    url_handler_manager().UpdateUrlHandlers(
+        app_id, base::BindLambdaForTesting([&](bool success) {
+          EXPECT_FALSE(success);
+          run_loop.Quit();
+        }));
   }
 
   // Expect that url handlers have been removed.

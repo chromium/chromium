@@ -138,6 +138,15 @@ class OsIntegrationManager {
 
   virtual TestOsIntegrationManager* AsTestOsIntegrationManager();
 
+  void set_url_handler_manager(
+      std::unique_ptr<UrlHandlerManager> url_handler_manager) {
+    url_handler_manager_ = std::move(url_handler_manager);
+  }
+
+  virtual void UpdateUrlHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback);
+
  protected:
   AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   FileHandlerManager* file_handler_manager() {
@@ -161,10 +170,7 @@ class OsIntegrationManager {
       std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager) {
     protocol_handler_manager_ = std::move(protocol_handler_manager);
   }
-  void set_url_handler_manager(
-      std::unique_ptr<UrlHandlerManager> url_handler_manager) {
-    url_handler_manager_ = std::move(url_handler_manager);
-  }
+
   virtual void CreateShortcuts(const AppId& app_id,
                                bool add_to_desktop,
                                CreateShortcutsCallback callback);
@@ -214,7 +220,6 @@ class OsIntegrationManager {
   virtual void UpdateShortcuts(const AppId& app_id, base::StringPiece old_name);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebApplicationInfo& web_app_info);
-  virtual void UpdateUrlHandlers(const AppId& app_id);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);

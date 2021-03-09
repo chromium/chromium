@@ -35,7 +35,9 @@ class UrlHandlerManager {
   // Returns true if unregistration succeeds, false otherwise.
   virtual bool UnregisterUrlHandlers(const AppId& app_id) = 0;
   // Returns true if update succeeds, false otherwise.
-  virtual bool UpdateUrlHandlers(const AppId& app_id) = 0;
+  virtual void UpdateUrlHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback) = 0;
 
  protected:
   Profile* profile() const { return profile_; }

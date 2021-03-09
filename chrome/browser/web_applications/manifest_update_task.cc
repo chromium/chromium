@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/install_manager.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
@@ -62,20 +63,23 @@ bool HaveIconBitmapsChanged(const IconBitmaps& disk_icon_bitmaps,
 
 }  // namespace
 
-ManifestUpdateTask::ManifestUpdateTask(const GURL& url,
-                                       const AppId& app_id,
-                                       content::WebContents* web_contents,
-                                       StoppedCallback stopped_callback,
-                                       bool hang_for_testing,
-                                       const AppRegistrar& registrar,
-                                       const AppIconManager& icon_manager,
-                                       WebAppUiManager* ui_manager,
-                                       InstallManager* install_manager)
+ManifestUpdateTask::ManifestUpdateTask(
+    const GURL& url,
+    const AppId& app_id,
+    content::WebContents* web_contents,
+    StoppedCallback stopped_callback,
+    bool hang_for_testing,
+    const AppRegistrar& registrar,
+    const AppIconManager& icon_manager,
+    WebAppUiManager* ui_manager,
+    InstallManager* install_manager,
+    OsIntegrationManager& os_integration_manager)
     : content::WebContentsObserver(web_contents),
       registrar_(registrar),
       icon_manager_(icon_manager),
       ui_manager_(*ui_manager),
       install_manager_(*install_manager),
+      os_integration_manager_(os_integration_manager),
       url_(url),
       app_id_(app_id),
       stopped_callback_(std::move(stopped_callback)),
@@ -126,6 +130,7 @@ void ManifestUpdateTask::WebContentsDestroyed() {
     case Stage::kPendingWindowsClosed:
     case Stage::kPendingMaybeReadExistingIcons:
     case Stage::kPendingInstallation:
+    case Stage::kPendingAssociationsUpdate:
       // These stages should have stopped listening to the web contents.
       NOTREACHED();
       Observe(nullptr);
@@ -219,6 +224,12 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) &&
+      web_application_info_->url_handlers !=
+          registrar_.GetAppUrlHandlers(app_id_)) {
+    return true;
+  }
+
   // TODO(crbug.com/1072058): Check the manifest URL.
   // TODO(crbug.com/926083): Check more manifest fields.
   return false;
@@ -236,7 +247,7 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
 }
 
 void ManifestUpdateTask::LoadAndCheckIconContents() {
-  DCHECK(stage_ == Stage::kPendingInstallableData);
+  DCHECK_EQ(stage_, Stage::kPendingInstallableData);
   stage_ = Stage::kPendingIconDownload;
 
   DCHECK(web_application_info_.has_value());
@@ -252,7 +263,7 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
 }
 
 void ManifestUpdateTask::OnIconsDownloaded(bool success, IconsMap icons_map) {
-  DCHECK(stage_ == Stage::kPendingIconDownload);
+  DCHECK_EQ(stage_, Stage::kPendingIconDownload);
 
   if (!success) {
     DestroySelf(ManifestUpdateResult::kIconDownloadFailed);
@@ -268,7 +279,7 @@ void ManifestUpdateTask::OnIconsDownloaded(bool success, IconsMap icons_map) {
 
 void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
                                         IconBitmaps disk_icon_bitmaps) {
-  DCHECK(stage_ == Stage::kPendingIconReadFromDisk);
+  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
 
   if (disk_icon_bitmaps.empty()) {
     DestroySelf(ManifestUpdateResult::kIconReadFromDiskFailed);
@@ -312,7 +323,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
         base::BindOnce(&ManifestUpdateTask::OnAllShortcutsMenuIconsRead,
                        AsWeakPtr()));
   } else {
-    DestroySelf(ManifestUpdateResult::kAppUpToDate);
+    NoManifestUpdateRequired();
   }
 }
 
@@ -325,7 +336,7 @@ bool ManifestUpdateTask::IsUpdateNeededForIconContents(
 
 void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     ShortcutsMenuIconBitmaps disk_shortcuts_menu_icon_bitmaps) {
-  DCHECK(stage_ == Stage::kPendingIconReadFromDisk);
+  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
 
   DCHECK(web_application_info_.has_value());
 
@@ -335,7 +346,7 @@ void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     return;
   }
 
-  DestroySelf(ManifestUpdateResult::kAppUpToDate);
+  NoManifestUpdateRequired();
 }
 
 bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
@@ -357,6 +368,39 @@ bool ManifestUpdateTask::IsUpdateNeededForShortcutsMenuIconsContents(
   }
 
   return false;
+}
+
+bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
+  // Web app origin association update is tied to the manifest update process.
+  // If there are url handlers for the current app, associations need to be
+  // revalidated.
+  DCHECK(web_application_info_.has_value());
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers) &&
+      !web_application_info_->url_handlers.empty()) {
+    return true;
+  }
+
+  return false;
+}
+
+void ManifestUpdateTask::NoManifestUpdateRequired() {
+  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
+  stage_ = Stage::kPendingAssociationsUpdate;
+  if (!IsUpdateNeededForWebAppOriginAssociations()) {
+    DestroySelf(ManifestUpdateResult::kAppUpToDate);
+    return;
+  }
+
+  os_integration_manager_.UpdateUrlHandlers(
+      app_id_,
+      base::BindOnce(&ManifestUpdateTask::OnWebAppOriginAssociationsUpdated,
+                     AsWeakPtr()));
+}
+
+void ManifestUpdateTask::OnWebAppOriginAssociationsUpdated(bool success) {
+  DCHECK_EQ(stage_, Stage::kPendingAssociationsUpdate);
+  success ? DestroySelf(ManifestUpdateResult::kAppAssociationsUpdated)
+          : DestroySelf(ManifestUpdateResult::kAppAssociationsUpdateFailed);
 }
 
 void ManifestUpdateTask::OnAllAppWindowsClosed() {

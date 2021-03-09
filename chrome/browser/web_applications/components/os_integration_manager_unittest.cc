@@ -123,7 +123,11 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UpdateShortcutsMenu,
               (const AppId& app_id, const WebApplicationInfo& web_app_info),
               (override));
-  MOCK_METHOD(void, UpdateUrlHandlers, (const AppId& app_id), (override));
+  MOCK_METHOD(void,
+              UpdateUrlHandlers,
+              (const AppId& app_id,
+               base::OnceCallback<void(bool success)> callback),
+              (override));
 
   // Utility methods:
   MOCK_METHOD(std::unique_ptr<ShortcutInfo>,
@@ -284,7 +288,7 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
 
   EXPECT_CALL(manager, UpdateShortcuts(app_id, old_name)).Times(1);
   EXPECT_CALL(manager, UpdateShortcutsMenu(app_id, testing::_)).Times(1);
-  EXPECT_CALL(manager, UpdateUrlHandlers(app_id)).Times(1);
+  EXPECT_CALL(manager, UpdateUrlHandlers(app_id, testing::_)).Times(1);
 
   manager.UpdateOsHooks(app_id, old_name, web_app_info);
 }

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,6 +54,13 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "base/command_line.h"
+#include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
+#include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
+#endif
 
 namespace web_app {
 
@@ -1815,5 +1826,216 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
                              /*x=*/0, /*y=*/0),
             SK_ColorBLACK);
 }
+
+class ManifestUpdateManagerBrowserTest_UrlHandlers
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_UrlHandlers() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableUrlHandlers);
+  }
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  void SetUpUrlHandlerManager() {
+    auto url_handler_manager =
+        std::make_unique<UrlHandlerManagerImpl>(browser()->profile());
+
+    // Set up web app origin association manager and expected data.
+    auto association_manager =
+        std::make_unique<FakeWebAppOriginAssociationManager>();
+    url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
+    url::Origin bar_origin = url::Origin::Create(GURL("https://bar.com"));
+    std::map<apps::UrlHandlerInfo, apps::UrlHandlerInfo> data = {
+        {apps::UrlHandlerInfo(foo_origin),
+         apps::UrlHandlerInfo(foo_origin, false, /*paths*/ {},
+                              /*exclude_paths*/ {"/exclude"})},
+        {apps::UrlHandlerInfo(bar_origin),
+         apps::UrlHandlerInfo(bar_origin, false, /*paths*/ {},
+                              /*exclude_paths*/ {"/exclude"})},
+    };
+    association_manager->SetData(std::move(data));
+
+    url_handler_manager->SetAssociationManagerForTesting(
+        std::move(association_manager));
+    url_handler_manager->SetSubsystems(&(GetProvider().registrar()));
+    GetProvider().os_integration_manager().set_url_handler_manager(
+        std::move(url_handler_manager));
+  }
+#endif
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
+                       UpdateWithDifferentUrlHandlers) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "url_handlers": [$2]
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {
+                                          kInstallableIconList,
+                                          R"({"origin": "https://foo.com"})",
+                                      });
+  AppId app_id = InstallWebApp();
+  ASSERT_EQ(1u, GetProvider().registrar().GetAppUrlHandlers(app_id).size());
+
+  OverrideManifest(
+      kManifestTemplate,
+      {kInstallableIconList,
+       R"({"origin": "https://foo.com"}, {"origin": "https://bar.com"})"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+
+  apps::UrlHandlers url_handlers =
+      GetProvider().registrar().GetAppUrlHandlers(app_id);
+  ASSERT_EQ(2u, url_handlers.size());
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://foo.com")))));
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://bar.com")))));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
+                       UpdateFromNoUrlHandlersToHaveUrlHandlers) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1
+      $2
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {
+                                          kInstallableIconList,
+                                          R"()",
+                                      });
+  AppId app_id = InstallWebApp();
+  ASSERT_EQ(0u, GetProvider().registrar().GetAppUrlHandlers(app_id).size());
+
+  OverrideManifest(kManifestTemplate,
+                   {kInstallableIconList,
+                    R"(,"url_handlers": [{"origin": "https://foo.com"}])"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+
+  apps::UrlHandlers url_handlers =
+      GetProvider().registrar().GetAppUrlHandlers(app_id);
+  ASSERT_EQ(1u, url_handlers.size());
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://foo.com")))));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
+                       UpdateFromUrlHandlersToNoUrlHandlers) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1
+      $2
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate,
+                   {
+                       kInstallableIconList,
+                       R"(,"url_handlers": [{"origin": "https://foo.com"}])",
+                   });
+  AppId app_id = InstallWebApp();
+  apps::UrlHandlers url_handlers =
+      GetProvider().registrar().GetAppUrlHandlers(app_id);
+  ASSERT_EQ(1u, url_handlers.size());
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://foo.com")))));
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, R"()"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppUpdated);
+
+  url_handlers = GetProvider().registrar().GetAppUrlHandlers(app_id);
+  ASSERT_EQ(0u, url_handlers.size());
+}
+
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
+                       NoHandlersChangeUpdateAssociations) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "url_handlers": [
+        {
+          "origin": "https://foo.com"
+        },
+        {
+          "origin": "https://bar.com"
+        }
+      ]
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  apps::UrlHandlers url_handlers =
+      GetProvider().registrar().GetAppUrlHandlers(app_id);
+  ASSERT_EQ(2u, url_handlers.size());
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://foo.com")))));
+  EXPECT_TRUE(base::Contains(
+      url_handlers,
+      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://bar.com")))));
+
+  // Prepare for association fetching at manifest update.
+  SetUpUrlHandlerManager();
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+            ManifestUpdateResult::kAppAssociationsUpdated);
+
+  // Verify url handlers are saved to prefs.
+  base::CommandLine cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  cmd.AppendArg("https://foo.com/ok");
+  std::vector<UrlHandlerLaunchParams> matches =
+      UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
+  ASSERT_EQ(matches.size(), 1u);
+  // Check exclude paths came through.
+  cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  cmd.AppendArg("https://foo.com/exclude");
+  matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
+  ASSERT_EQ(matches.size(), 0u);
+
+  cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  cmd.AppendArg("https://bar.com/ok");
+  matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
+  ASSERT_EQ(matches.size(), 1u);
+  // Check exclude paths came through.
+  cmd = base::CommandLine(base::CommandLine::NO_PROGRAM);
+  cmd.AppendArg("https://bar.com/exclude");
+  matches = UrlHandlerManagerImpl::GetUrlHandlerMatches(cmd);
+  ASSERT_EQ(matches.size(), 0u);
+}
+#endif
 
 }  // namespace web_app

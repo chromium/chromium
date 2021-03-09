@@ -64,7 +64,9 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
 
   // Returns false and unregisters url handlers for |app_id| if
   // blink::features::kWebAppEnableUrlHandlers is disabled.
-  bool UpdateUrlHandlers(const AppId& app_id) override;
+  void UpdateUrlHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback) override;
 
   void SetAssociationManagerForTesting(
       std::unique_ptr<WebAppOriginAssociationManager> manager);
@@ -74,7 +76,10 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback,
       apps::UrlHandlers url_handlers);
-
+  void OnDidGetAssociationsAtUpdate(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback,
+      apps::UrlHandlers url_handlers);
   // Returns the local state pref service of the browser process.
   PrefService* GetLocalState();
 

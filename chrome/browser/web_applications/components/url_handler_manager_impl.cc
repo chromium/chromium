@@ -123,19 +123,35 @@ bool UrlHandlerManagerImpl::UnregisterUrlHandlers(const AppId& app_id) {
   return true;
 }
 
-bool UrlHandlerManagerImpl::UpdateUrlHandlers(const AppId& app_id) {
+void UrlHandlerManagerImpl::UpdateUrlHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback) {
   auto url_handlers = registrar()->GetAppUrlHandlers(app_id);
 
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableUrlHandlers)) {
     url_handler_prefs::RemoveWebApp(GetLocalState(), app_id,
                                     profile()->GetPath());
-    return false;
-  } else {
-    url_handler_prefs::UpdateWebApp(GetLocalState(), app_id,
-                                    profile()->GetPath(), url_handlers);
-    return true;
+    std::move(callback).Run(false);
+    return;
   }
+
+  association_manager_->GetWebAppOriginAssociations(
+      registrar()->GetAppManifestUrl(app_id), std::move(url_handlers),
+      base::BindOnce(&UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(callback)));
+}
+
+void UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate(
+    const AppId& app_id,
+    base::OnceCallback<void(bool success)> callback,
+    apps::UrlHandlers url_handlers) {
+  // TODO(crbug/1072058): Only overwrite existing url_handlers if associations
+  // changed. Allow this after user permission is implemented.
+  url_handler_prefs::UpdateWebApp(GetLocalState(), app_id, profile()->GetPath(),
+                                  std::move(url_handlers));
+  std::move(callback).Run(true);
 }
 
 void UrlHandlerManagerImpl::SetAssociationManagerForTesting(

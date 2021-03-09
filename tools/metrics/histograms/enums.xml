@@ -79921,6 +79921,8 @@ others/histograms.xml -->
   <int value="10" label="Icon download failed"/>
   <int value="11" label="Icon read from disk failed"/>
   <int value="12" label="App ID mismatch"/>
+  <int value="13" label="Web app origin associations update failed"/>
+  <int value="14" label="Web app origin associations updated"/>
 </enum>
 
 <enum name="WebAppMoverResult">
