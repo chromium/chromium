@@ -105,7 +105,7 @@ class CONTENT_EXPORT FrameTree {
     virtual void DidStartLoading(FrameTreeNode* frame_tree_node,
                                  bool to_different_document) = 0;
 
-    // This is called when all nodes in the FrameTreestoppedloading. This
+    // This is called when all nodes in the FrameTree stopped loading. This
     // corresponds to the browser UI stop showing a spinner or other visual
     // indicator for loading.
     virtual void DidStopLoading() = 0;
