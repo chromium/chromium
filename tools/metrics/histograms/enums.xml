@@ -59818,6 +59818,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Regular"/>
 </enum>
 
+<enum name="PciePeripheralConnectivityResult">
+<!-- This must be kept current with PciePeripheralConnectivityResults
+        located in ash/components/pcie_peripheral/pcie_peripheral_manager.cc -->
+
+  <int value="0" label="TBT-supported peripheral connected and allowed"/>
+  <int value="1" label="TBT-only peripheral connected and blocked by Pciguard"/>
+  <int value="2"
+      label="TBT-only peripheral connected and blocked due to guest session"/>
+  <int value="3" label="Alt-mode fallback due to Pciguard"/>
+  <int value="4" label="Alt-mode fallback in guest session"/>
+</enum>
+
 <enum name="PdfCompositionStatus">
   <int value="0" label="PDF compositor service finished successfully"/>
   <int value="1" label="PDF compositor service encountered memory map error"/>
