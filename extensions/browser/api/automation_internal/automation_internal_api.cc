@@ -151,15 +151,16 @@ class AutomationWebContentsObserver
   // content::WebContentsObserver overrides.
   void AccessibilityEventReceived(const content::AXEventNotificationDetails&
                                       content_event_bundle) override {
-    gfx::Point mouse_location;
+    ExtensionMsg_AccessibilityEventBundleParams extension_event_bundle;
+    extension_event_bundle.updates = content_event_bundle.updates;
+    extension_event_bundle.events = content_event_bundle.events;
+    extension_event_bundle.tree_id = content_event_bundle.ax_tree_id;
 #if defined(USE_AURA)
-    mouse_location = aura::Env::GetInstance()->last_mouse_location();
+    extension_event_bundle.mouse_location =
+        aura::Env::GetInstance()->last_mouse_location();
 #endif
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-    router->DispatchAccessibilityEvents(
-        std::move(content_event_bundle.ax_tree_id),
-        std::move(content_event_bundle.updates), mouse_location,
-        std::move(content_event_bundle.events));
+    router->DispatchAccessibilityEvents(extension_event_bundle);
   }
 
   void DidStartNavigation(content::NavigationHandle* navigation) override {
