@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_signal_type.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -55,17 +56,20 @@ class VideoTrackSignalUnderlyingSinkTest : public testing::Test {
     return MakeGarbageCollected<VideoTrackSignalUnderlyingSink>(track);
   }
 
-  ScriptValue CreateSignalChunk(ScriptState* script_state,
-                                const String& signal_name) {
+  ScriptValue CreateSignalChunk(
+      ScriptState* script_state,
+      const V8MediaStreamTrackSignalType& signal_type) {
     MediaStreamTrackSignal* signal = MediaStreamTrackSignal::Create();
-    signal->setSignalType(signal_name);
+    signal->setSignalType(signal_type);
     return ScriptValue(script_state->GetIsolate(),
                        ToV8(signal, script_state->GetContext()->Global(),
                             script_state->GetIsolate()));
   }
 
   ScriptValue CreateRequestFrameChunk(ScriptState* script_state) {
-    return CreateSignalChunk(script_state, "request-frame");
+    return CreateSignalChunk(
+        script_state, V8MediaStreamTrackSignalType(
+                          V8MediaStreamTrackSignalType::Enum::kRequestFrame));
   }
 
   ScriptValue CreateSetMinFrameRateChunk(
@@ -168,10 +172,6 @@ TEST_F(VideoTrackSignalUnderlyingSinkTest, WriteInvalidDataFails) {
 
   exception_state.ClearException();
   EXPECT_FALSE(exception_state.HadException());
-  underlying_sink->write(script_state,
-                         CreateSignalChunk(script_state, "invalid-signal"),
-                         nullptr, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
 
   // Writing null fails
   exception_state.ClearException();
