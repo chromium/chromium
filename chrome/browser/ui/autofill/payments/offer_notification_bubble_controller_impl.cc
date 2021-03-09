@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,32 +74,7 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
-
-  // Log bubble result according to the closed reason.
-  AutofillMetrics::OfferNotificationBubbleResultMetric metric;
-  switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kAccepted:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED;
-      break;
-    case PaymentsBubbleClosedReason::kClosed:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_CLOSED;
-      break;
-    case PaymentsBubbleClosedReason::kNotInteracted:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED;
-      break;
-    case PaymentsBubbleClosedReason::kLostFocus:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
-          OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
-      break;
-    default:
-      NOTREACHED();
-      return;
-  }
-  AutofillMetrics::LogOfferNotificationBubbleResultMetric(metric,
-                                                          is_user_gesture_);
+  // TODO(crbug.com/1093057): Add logging metrics.
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
@@ -169,7 +143,7 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_)
     observer_for_testing_->OnBubbleShown();
 
-  AutofillMetrics::LogOfferNotificationBubbleOfferMetric(is_user_gesture_);
+  // TODO(crbug.com/1093057): Add logging metrics.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl)

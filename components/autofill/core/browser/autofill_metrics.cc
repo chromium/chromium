@@ -1114,24 +1114,6 @@ void AutofillMetrics::LogLocalCardMigrationPromptMetric(
 }
 
 // static
-void AutofillMetrics::LogOfferNotificationBubbleOfferMetric(bool is_reshow) {
-  base::UmaHistogramBoolean(
-      "Autofill.OfferNotificationBubbleOffer.CardLinkedOffer", is_reshow);
-}
-
-// static
-void AutofillMetrics::LogOfferNotificationBubbleResultMetric(
-    OfferNotificationBubbleResultMetric metric,
-    bool is_reshow) {
-  DCHECK_LE(metric, OfferNotificationBubbleResultMetric::kMaxValue);
-  static const char first_show[] =
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.FirstShow";
-  static const char reshows[] =
-      "Autofill.OfferNotificationBubbleResult.CardLinkedOffer.Reshows";
-  base::UmaHistogramEnumeration(is_reshow ? reshows : first_show, metric);
-}
-
-// static
 void AutofillMetrics::LogSaveCardWithFirstAndLastNameOffered(bool is_local) {
   std::string histogram_name = "Autofill.SaveCardWithFirstAndLastNameOffered.";
   histogram_name += is_local ? "Local" : "Server";

@@ -21,16 +21,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<variants name="Autofill.OfferNotificationBubble.Type">
-  <variant name="CardLinkedOffer"
-      summary="The bubble for an offer that is linked to a credit card."/>
-</variants>
-
-<variants name="Autofill.PaymentBubble.Show">
-  <variant name="FirstShow" summary="The bubble is shown for the first time."/>
-  <variant name="Reshows" summary="The bubble is re-shown."/>
-</variants>
-
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
@@ -1317,31 +1307,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks whether the offer data is valid or not, measured whenever offer data
     is synced down via Sync.
   </summary>
-</histogram>
-
-<histogram name="Autofill.OfferNotificationBubbleOffer.{BubbleType}"
-    enum="BooleanPreviouslyShown" expires_after="2021-09-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records whether the offer notification bubble is the first such offer that
-    the user has been shown or is reshown due to user actions. The metric is
-    recorded when the bubble is shown.
-  </summary>
-  <token key="BubbleType" variants="Autofill.OfferNotificationBubble.Type"/>
-</histogram>
-
-<histogram
-    name="Autofill.OfferNotificationBubbleResult.{BubbleType}.{ShowType}"
-    enum="AutofillOfferNotificationBubbleResult" expires_after="2021-09-01">
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the reason for closing the offer notification bubble. Recorded when
-    the bubble is closed.
-  </summary>
-  <token key="BubbleType" variants="Autofill.OfferNotificationBubble.Type"/>
-  <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"

@@ -262,22 +262,6 @@ class AutofillMetrics {
     NUM_SAVE_CARD_PROMPT_RESULT_METRICS,
   };
 
-  // Metrics to track event when the offer notification bubble is closed.
-  enum class OfferNotificationBubbleResultMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
-    // The user explicitly acknowledged the bubble by clicking the ok button.
-    OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED = 0,
-    // The user explicitly closed the prompt with the close button or ESC.
-    OFFER_NOTIFICATION_BUBBLE_CLOSED = 1,
-    // The user did not interact with the prompt.
-    OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED = 2,
-    // The prompt lost focus and was deactivated.
-    OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS = 3,
-    kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
-  };
-
   enum CreditCardUploadFeedbackMetric {
     // The loading indicator animation which indicates uploading is in progress
     // is successfully shown.
@@ -1133,10 +1117,6 @@ class AutofillMetrics {
   static void LogLocalCardMigrationPromptMetric(
       LocalCardMigrationOrigin local_card_migration_origin,
       LocalCardMigrationPromptMetric metric);
-  static void LogOfferNotificationBubbleOfferMetric(bool is_reshow);
-  static void LogOfferNotificationBubbleResultMetric(
-      OfferNotificationBubbleResultMetric metric,
-      bool is_reshow);
 
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back
