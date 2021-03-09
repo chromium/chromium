@@ -617,7 +617,7 @@ LINUX_PERF_CALIBRATION = PerfPlatform(
     'linux-perf-calibration',
     'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
     _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS,
-    31,
+    28,
     'linux',
     is_calibration=True)
 
