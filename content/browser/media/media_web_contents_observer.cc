@@ -583,44 +583,14 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
   DCHECK(rfh);
 
   if (media_player_remotes_.contains(player_id)) {
-    // Collect debug information to help explain the numbers of attempts at
-    // |player_id| reuse that we're seeing.
-    // TODO(https://crbug.com/1172882): Remove once enough data has been
-    // collected.
-    const auto rfh_player_count = base::ranges::count_if(
-        media_player_remotes_, [player_id](const auto& player_id_and_remote) {
-          return player_id_and_remote.first.frame_routing_id ==
-                 player_id.frame_routing_id;
-        });
-    const auto renderer_exit_count =
-        RenderFrameHostImpl::FromID(player_id.frame_routing_id)
-            ->renderer_exit_count();
-
-    NavigationEntry* const previous_entry =
-        web_contents()->GetController().GetEntryAtOffset(-1);
-    const GURL previous_main_url =
-        previous_entry ? previous_entry->GetURL() : GURL();
-    // Also get the next entry in case this was a Back navigation.
-    NavigationEntry* const next_entry =
-        web_contents()->GetController().GetEntryAtOffset(1);
-    const GURL next_main_url = next_entry ? next_entry->GetURL() : GURL();
-
-    SCOPED_CRASH_KEY_BOOL("bug1172882", "is_main_frame", !rfh->GetParent());
-    SCOPED_CRASH_KEY_NUMBER("bug1172882", "rfh_player_count", rfh_player_count);
-    SCOPED_CRASH_KEY_NUMBER("bug1172882", "renderer_exit_count",
-                            renderer_exit_count);
-    SCOPED_CRASH_KEY_STRING256("bug1172882", "last_committed_url",
-                               rfh->GetLastCommittedURL().spec());
-    SCOPED_CRASH_KEY_STRING256("bug1172882", "main_url",
-                               web_contents()->GetLastCommittedURL().spec());
-    SCOPED_CRASH_KEY_STRING256("bug1172882", "previous_main_url",
-                               previous_main_url.spec());
-    SCOPED_CRASH_KEY_STRING256("bug1172882", "next_main_url",
-                               next_main_url.spec());
-    base::debug::DumpWithoutCrashing();
-
-    mojo::ReportBadMessage("Unexpected player_id reuse");
-    return;
+    // Original remote associated with |player_id| will be overridden. If the
+    // original player is still alive, this will break our ability to control
+    // it from the browser process. We don't know that the original player is
+    // actually still alive.
+    // TODO(https://crbug.com/1172882): Determine the root cause of duplication
+    // and/or refactor to make ID purely a browser-side concept.
+    LOG(ERROR) << __func__ << " Duplicate media player id ("
+               << player_id.delegate_id << ")";
   }
 
   media_player_remotes_[player_id].Bind(std::move(player_remote));
