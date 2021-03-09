@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.util.TypedValue;
+import android.view.Display.Mode;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,6 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.MathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.SysUtils;
@@ -216,6 +216,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
@@ -341,6 +342,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * Control the tab-reparenting tasks.
      */
     private TabReparentingController mTabReparentingController;
+
+    /**
+     * Listen to display change and start tab-reparenting if necessary.
+     */
+    private DisplayAndroidObserver mDisplayAndroidObserver;
 
     /**
      * The RootUiCoordinator associated with the activity. This variable is held to facilitate
@@ -1417,6 +1423,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mTabModelSelectorSupplier.destroy();
         }
 
+        if (mDisplayAndroidObserver != null) {
+            getWindowAndroid().getDisplay().removeObserver(mDisplayAndroidObserver);
+            mDisplayAndroidObserver = null;
+        }
+
         mActivityTabProvider.destroy();
 
         mComponent = null;
@@ -1518,6 +1529,29 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 ReparentingDelegateFactory.createReparentingControllerDelegate(
                         getTabModelSelector()),
                 AsyncTabParamsManagerSingleton.getInstance());
+
+        // This must be initialized after initialization of tab reparenting controller.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)) {
+            DisplayAndroid display = getWindowAndroid().getDisplay();
+            mDisplayAndroidObserver = new DisplayAndroidObserver() {
+                @Override
+                public void onDisplayModesChanged(List<Mode> supportedModes) {
+                    maybeOnScreenSizeChange();
+                }
+
+                @Override
+                public void onCurrentModeChanged(Mode currentMode) {
+                    maybeOnScreenSizeChange();
+                }
+
+                private void maybeOnScreenSizeChange() {
+                    if (didChangeTabletMode()) {
+                        onScreenLayoutSizeChange();
+                    }
+                }
+            };
+            display.addObserver(mDisplayAndroidObserver);
+        }
 
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
         // analyze daily power impact for a typical Chrome user. The flag only has an effect if the
@@ -1963,13 +1997,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)
-                && didChangeTabletMode()) {
-            onScreenLayoutSizeChange();
-            return;
-        }
-
         // We only handle VR UI mode and UI mode night changes. Any other changes should follow the
         // default behavior of recreating the activity. Note that if UI mode night changes, with or
         // without other changes, we will still recreate() until we get a callback from the
@@ -2637,5 +2664,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     @VisibleForTesting
     public boolean deferredStartupPostedForTesting() {
         return mDeferredStartupPosted;
+    }
+
+    @VisibleForTesting
+    public DisplayAndroidObserver getDisplayAndroidObserverForTesting() {
+        return mDisplayAndroidObserver;
     }
 }
