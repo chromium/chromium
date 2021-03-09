@@ -185,11 +185,11 @@ void DoesPrivateKeyExistAsync(
 
 }  // namespace
 
-OwnerSettingsServiceChromeOS::ManagementSettings::ManagementSettings() {
-}
+OwnerSettingsServiceChromeOS::ManagementSettings::ManagementSettings() =
+    default;
 
-OwnerSettingsServiceChromeOS::ManagementSettings::~ManagementSettings() {
-}
+OwnerSettingsServiceChromeOS::ManagementSettings::~ManagementSettings() =
+    default;
 
 OwnerSettingsServiceChromeOS::OwnerSettingsServiceChromeOS(
     DeviceSettingsService* device_settings_service,
@@ -494,8 +494,7 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
     const base::ListValue* accounts_list = NULL;
     if (value.GetAsList(&accounts_list)) {
       for (base::ListValue::const_iterator entry(accounts_list->begin());
-           entry != accounts_list->end();
-           ++entry) {
+           entry != accounts_list->end(); ++entry) {
         const base::DictionaryValue* entry_dict = NULL;
         if (entry->GetAsDictionary(&entry_dict)) {
           em::DeviceLocalAccountInfoProto* account =
@@ -692,6 +691,7 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
     //   kReportDeviceUsers
     //   kReportDeviceAppInfo
     //   kReportDeviceSystemInfo
+    //   kReportDevicePrintJobs
     //   kServiceAccountIdentity
     //   kSystemTimezonePolicy
     //   kVariationsRestrictParameter
@@ -763,9 +763,8 @@ void OwnerSettingsServiceChromeOS::StorePendingChanges() {
     UpdateDeviceSettings(change.first, *change.second.get(), settings);
   pending_changes_.clear();
 
-  std::unique_ptr<em::PolicyData> policy =
-      AssemblePolicy(user_id_, device_settings_service_->policy_data(),
-                     &settings);
+  std::unique_ptr<em::PolicyData> policy = AssemblePolicy(
+      user_id_, device_settings_service_->policy_data(), &settings);
   has_pending_fixups_ = false;
 
   scoped_refptr<base::TaskRunner> task_runner =

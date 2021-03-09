@@ -5672,6 +5672,8 @@
 
   "ReportDeviceSystemInfo": {},
 
+  "ReportDevicePrintJobs": {},
+
   "ReportUploadFrequency": {},
 
   "DeviceAllowNewUsers": {},

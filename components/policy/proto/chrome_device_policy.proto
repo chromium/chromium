@@ -141,6 +141,7 @@ message DeviceReportingProto {
   optional bool report_fan_info = 23 [default = false];
   optional bool report_vpd_info = 24 [default = false];
   optional bool report_system_info = 25 [default = false];
+  optional bool report_print_jobs = 26 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in

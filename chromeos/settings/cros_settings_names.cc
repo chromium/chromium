@@ -213,6 +213,10 @@ const char kReportDeviceVpdInfo[] = "cros.device_status.report_device_vpd_info";
 const char kReportDeviceSystemInfo[] =
     "cros.device_status.report_device_system_info";
 
+// A boolean pref that determines whether the user's print job history is
+// reported.
+const char kReportDevicePrintJobs[] = "cros.device_status.report_print_jobs";
+
 // Determines whether heartbeats should be sent to the policy service via
 // the GCM channel.
 const char kHeartbeatEnabled[] = "cros.device_status.heartbeat_enabled";

@@ -23830,6 +23830,7 @@ Called by update_document_policy_enum.py.-->
   <int value="832" label="LacrosSecondaryProfilesAllowed"/>
   <int value="833" label="GaiaLockScreenOfflineSigninTimeLimitDays"/>
   <int value="834" label="SamlLockScreenOfflineSigninTimeLimitDays"/>
+  <int value="835" label="ReportDevicePrintJobs"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

@@ -141,6 +141,7 @@ const char* const kKnownSettings[] = {
     kReportDeviceVpdInfo,
     kReportDeviceAppInfo,
     kReportDeviceSystemInfo,
+    kReportDevicePrintJobs,
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,
@@ -660,6 +661,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_system_info()) {
       new_values_cache->SetBoolean(kReportDeviceSystemInfo,
                                    reporting_policy.report_system_info());
+    }
+    if (reporting_policy.has_report_print_jobs()) {
+      new_values_cache->SetBoolean(kReportDevicePrintJobs,
+                                   reporting_policy.report_print_jobs());
     }
   }
 }
