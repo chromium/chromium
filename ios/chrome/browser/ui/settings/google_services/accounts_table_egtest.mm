@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/account_consistency_method.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
@@ -62,6 +63,12 @@ id<GREYMatcher> NoBookmarksLabel() {
   GREYAssertEqual(
       [ChromeEarlGrey numberOfSyncEntitiesWithType:syncer::BOOKMARKS], 0,
       @"No bookmarks should exist before tests start.");
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kSimplifySignOutIOS);
+  return config;
 }
 
 // Tests that the Sync and Account Settings screen are correctly popped if the
@@ -201,8 +208,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
+  [SigninEarlGreyUI signOut];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -227,8 +233,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -257,8 +262,7 @@ id<GREYMatcher> NoBookmarksLabel() {
   [BookmarkEarlGrey setupStandardBookmarks];
 
   // Sign out.
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];
@@ -286,8 +290,7 @@ id<GREYMatcher> NoBookmarksLabel() {
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity1];
-  [SigninEarlGreyUI
-      signOutWithConfirmationChoice:SignOutConfirmationChoiceClearData];
+  [SigninEarlGreyUI signOutAndClearDataFromDevice];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity2];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
