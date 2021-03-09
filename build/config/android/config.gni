@@ -248,6 +248,9 @@ if (is_android || is_chromeos) {
 
     # The target to use as the system WebView implementation.
     system_webview_apk_target = "//android_webview:system_webview_apk"
+
+    # Where to write failed expectations for bots to read.
+    expectations_failure_dir = "$root_build_dir/failed_expectations"
   }
 
   # We need a second declare_args block to make sure we are using the overridden
