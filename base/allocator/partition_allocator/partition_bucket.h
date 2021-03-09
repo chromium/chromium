@@ -145,7 +145,7 @@ struct PartitionBucket {
   uint8_t get_system_pages_per_slot_span();
 
   // Allocates a new slot span with size |num_partition_pages| from the
-  // current extent. Metadata within this slot span will be uninitialized.
+  // current extent. Metadata within this slot span will be initialized.
   // Returns nullptr on error.
   ALWAYS_INLINE SlotSpanMetadata<thread_safe>* AllocNewSlotSpan(
       PartitionRoot<thread_safe>* root,
