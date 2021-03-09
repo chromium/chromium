@@ -1678,6 +1678,8 @@ static_library("browser") {
     "speech/chrome_speech_recognition_manager_delegate.h",
     "speech/network_speech_recognizer.cc",
     "speech/network_speech_recognizer.h",
+    "speech/on_device_speech_recognizer.cc",
+    "speech/on_device_speech_recognizer.h",
     "speech/speech_recognizer.cc",
     "speech/speech_recognizer.h",
     "speech/speech_recognizer_delegate.cc",
@@ -4002,8 +4004,6 @@ static_library("browser") {
                                                               # to extensions
                                                               # section ?
       "speech/extension_api/tts_extension_api_constants.h",
-      "speech/on_device_speech_recognizer.cc",
-      "speech/on_device_speech_recognizer.h",
       "speech/speech_recognition_client_browser_interface.cc",
       "speech/speech_recognition_client_browser_interface.h",
       "speech/speech_recognition_client_browser_interface_factory.cc",

@@ -20,6 +20,7 @@ var runSpeechRecognitionAPI = function() {
     succeeded = true;
     LOG('r.onstart');
     notifyEmbedder(['recognition', 'onstart', '']);
+    r.abort();
   };
   r.onerror = function() {
     LOG('r.onerror');

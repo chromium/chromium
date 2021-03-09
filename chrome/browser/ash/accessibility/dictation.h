@@ -57,8 +57,6 @@ class Dictation : public SpeechRecognizerDelegate,
   // Saves current dictation result and stops listening.
   void DictationOff();
 
-  SpeechRecognizerStatus current_state_;
-
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;
   std::unique_ptr<ui::CompositionText> composition_;
 

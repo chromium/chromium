@@ -264,11 +264,10 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
   LaunchServiceWithAudioSourceFetcher();
 
-  // Ensure no crashes.
-  // TODO(crbug.com/1173135): Try to mock audio input, maybe with
-  // FakeStreamFactory, to test end-to-end.
+  // TODO(crbug.com/1173135): Test mock audio input for AudioSourceFetcher.
+  // Currently a sanity check as nothing happens yet.
+  audio_source_fetcher_->Start();
   audio_source_fetcher_->Stop();
-
   base::RunLoop().RunUntilIdle();
 }
 

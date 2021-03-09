@@ -72,8 +72,6 @@ void FakeSpeechRecognitionManager::StartSession(int session_id) {
   EXPECT_EQ(session_id, session_id_);
   EXPECT_TRUE(listener_ != nullptr);
 
-  listener_->OnRecognitionStart(session_id_);
-  // Delegate can get a copy of events.
   if (delegate_)
     delegate_->GetEventListener()->OnRecognitionStart(session_id_);
 
@@ -136,8 +134,6 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult() {
     return;
 
   VLOG(1) << "Setting fake recognition result.";
-  listener_->OnAudioStart(session_id_);
-  listener_->OnSoundStart(session_id_);
   listener_->OnAudioEnd(session_id_);
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
