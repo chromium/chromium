@@ -1341,7 +1341,6 @@ crbug.com/1050754 external/wpt/css/css-tables/visibility-collapse-rowspan-002.ht
 crbug.com/1050754 external/wpt/css/css-tables/visibility-collapse-rowspan-004-dynamic.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-tables/visibility-hidden-row-001.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-tables/visibility-hidden-row-002.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-tables/width-distribution/colspan_redistribution.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-tables/width-distribution/computing-column-measure-1.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-text-decor/inheritance.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-text-decor/parsing/text-decoration-computed.html [ Failure Pass ]
