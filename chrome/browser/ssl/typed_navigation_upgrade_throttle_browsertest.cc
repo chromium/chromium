@@ -16,6 +16,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "content/public/browser/web_contents.h"
@@ -320,11 +321,32 @@ class TypedNavigationUpgradeThrottleBrowserTest
   }
 
  private:
+  void WaitForAutocompleteControllerDone() {
+    AutocompleteController* controller =
+        omnibox()->model()->autocomplete_controller();
+    ASSERT_TRUE(controller);
+
+    if (controller->done())
+      return;
+
+    ui_test_utils::WaitForAutocompleteDone(browser());
+    ASSERT_TRUE(controller->done());
+  }
+
   void TypeUrlAndCheckNavigation(const std::string& url_without_scheme,
                                  const base::HistogramTester& histograms,
                                  NavigationExpectation expectation,
                                  size_t num_expected_navigations) {
     SetOmniboxText(url_without_scheme);
+    // Regression check for crbug.com/1184872: The first autocomplete result
+    // should be the same as the typed text, without a scheme.
+    OmniboxPopupModel* popup_model = omnibox()->model()->popup_model();
+    ASSERT_TRUE(popup_model);
+    WaitForAutocompleteControllerDone();
+    ASSERT_TRUE(popup_model->IsOpen());
+    EXPECT_EQ(base::UTF8ToUTF16(url_without_scheme),
+              popup_model->result().match_at(0).fill_into_edit);
+
     PressEnterAndWaitForNavigations(num_expected_navigations);
 
     ui_test_utils::HistoryEnumerator enumerator(browser()->profile());

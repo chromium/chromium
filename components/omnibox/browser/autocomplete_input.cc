@@ -78,6 +78,16 @@ void OffsetComponentsExcludingScheme(url::Parsed* parts, int offset) {
   }
 }
 
+bool HasScheme(const base::string16& input, const char* scheme) {
+  std::string utf8_input(base::UTF16ToUTF8(input));
+  url::Component view_source_scheme;
+  if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme,
+                                &view_source_scheme)) {
+    utf8_input.erase(0, view_source_scheme.end() + 1);
+  }
+  return url::FindAndCompareScheme(utf8_input, scheme, nullptr);
+}
+
 }  // namespace
 
 AutocompleteInput::AutocompleteInput()
@@ -613,12 +623,12 @@ int AutocompleteInput::NumNonHostComponents(const url::Parsed& parts) {
 
 // static
 bool AutocompleteInput::HasHTTPScheme(const base::string16& input) {
-  std::string utf8_input(base::UTF16ToUTF8(input));
-  url::Component scheme;
-  if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme, &scheme)) {
-    utf8_input.erase(0, scheme.end() + 1);
-  }
-  return url::FindAndCompareScheme(utf8_input, url::kHttpScheme, nullptr);
+  return HasScheme(input, url::kHttpScheme);
+}
+
+// static
+bool AutocompleteInput::HasHTTPSScheme(const base::string16& input) {
+  return HasScheme(input, url::kHttpsScheme);
 }
 
 void AutocompleteInput::UpdateText(const base::string16& text,

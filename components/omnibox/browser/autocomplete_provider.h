@@ -341,11 +341,12 @@ class AutocompleteProvider
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
 
-  // Trims "http:" and up to two subsequent slashes from |url|.  Returns the
+  // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
+  // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
   // number of characters that were trimmed.
   // NOTE: For a view-source: URL, this will trim from after "view-source:" and
   // return 0.
-  static size_t TrimHttpPrefix(base::string16* url);
+  static size_t TrimSchemePrefix(base::string16* url, bool trim_https);
 
   const size_t provider_max_matches_;
 
