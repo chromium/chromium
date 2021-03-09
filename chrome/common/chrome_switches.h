@@ -46,6 +46,7 @@ extern const char kAppId[];
 extern const char kAppLaunchUrlForShortcutsMenuItem[];
 extern const char kAppModeAuthCode[];
 extern const char kAppModeOAuth2Token[];
+extern const char kAppRunOnOsLoginMode[];
 extern const char kAppsGalleryDownloadURL[];
 extern const char kAppsGalleryUpdateURL[];
 extern const char kAppsGalleryURL[];

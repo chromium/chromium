@@ -503,7 +503,7 @@ std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
                                    const std::string& mime_type,
                                    bool no_display) {
   base::CommandLine cmd_line = shell_integration::CommandLineArgsForLauncher(
-      url, extension_id, profile_path);
+      url, extension_id, profile_path, "");
   cmd_line.SetProgram(chrome_exe_path);
   return GetDesktopFileContentsForCommand(cmd_line, app_name, url, title,
                                           icon_name, categories, mime_type,

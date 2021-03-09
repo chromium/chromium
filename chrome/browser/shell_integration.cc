@@ -109,7 +109,8 @@ bool IsRunningInAppMode() {
 base::CommandLine CommandLineArgsForLauncher(
     const GURL& url,
     const std::string& extension_app_id,
-    const base::FilePath& profile_path) {
+    const base::FilePath& profile_path,
+    const std::string& run_on_os_login_mode) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::CommandLine new_cmd_line(base::CommandLine::NO_PROGRAM);
@@ -129,6 +130,12 @@ base::CommandLine CommandLineArgsForLauncher(
     // Note: Do not change this flag!  Old Gears shortcuts will break if you do!
     new_cmd_line.AppendSwitchASCII(switches::kApp, url.spec());
   }
+
+  if (!run_on_os_login_mode.empty()) {
+    new_cmd_line.AppendSwitchASCII(switches::kAppRunOnOsLoginMode,
+                                   run_on_os_login_mode);
+  }
+
   return new_cmd_line;
 }
 

@@ -216,6 +216,9 @@ enum class RunOnOsLoginMode {
   kMinimized = 2,
 };
 
+// Command line parameter representing RunOnOsLoginMode::kWindowed.
+extern const char kRunOnOsLoginModeWindowed[];
+
 enum class RunOnOsLoginPolicy {
   // kAllowed: User can configure an app to run on OS Login.
   kAllowed = 0,

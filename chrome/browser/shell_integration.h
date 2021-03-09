@@ -125,7 +125,8 @@ bool IsRunningInAppMode();
 base::CommandLine CommandLineArgsForLauncher(
     const GURL& url,
     const std::string& extension_app_id,
-    const base::FilePath& profile_path);
+    const base::FilePath& profile_path,
+    const std::string& run_on_os_login_mode);
 
 // Append command line arguments for launching a new chrome.exe process
 // based on the current process.

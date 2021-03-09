@@ -12,6 +12,8 @@
 
 namespace web_app {
 
+const char kRunOnOsLoginModeWindowed[] = "windowed";
+
 namespace {
 
 // Note: This can never return kBrowser. This is because the user has

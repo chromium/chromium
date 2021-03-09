@@ -29,6 +29,7 @@
 #include "base/win/shortcut.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
@@ -148,6 +149,7 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
                             const ShortcutInfo& shortcut_info,
                             const std::vector<base::FilePath>& shortcut_paths,
                             ShortcutCreationReason creation_reason,
+                            const std::string& run_on_os_login_mode,
                             std::vector<base::FilePath>* out_filenames) {
   // Generates file name to use with persisted ico and shortcut file.
   base::FilePath icon_file = GetIconFilePath(web_app_path, shortcut_info.title);
@@ -162,8 +164,8 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line = shell_integration::CommandLineArgsForLauncher(
-      shortcut_info.url, shortcut_info.extension_id,
-      shortcut_info.profile_path);
+      shortcut_info.url, shortcut_info.extension_id, shortcut_info.profile_path,
+      run_on_os_login_mode);
 
   // TODO(evan): we rely on the fact that command_line_string() is
   // properly quoted for a Windows command line.  The method on
@@ -299,9 +301,9 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
                                      HWND hwnd,
                                      const ShortcutInfo& shortcut_info) {
   base::CommandLine command_line =
-      shell_integration::CommandLineArgsForLauncher(shortcut_info.url,
-                                                    shortcut_info.extension_id,
-                                                    shortcut_info.profile_path);
+      shell_integration::CommandLineArgsForLauncher(
+          shortcut_info.url, shortcut_info.extension_id,
+          shortcut_info.profile_path, "");
 
   command_line.SetProgram(GetChromeProxyPath());
   ui::win::SetRelaunchDetailsForWindow(command_line.GetCommandLineString(),
@@ -425,8 +427,10 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   if (shortcut_paths.empty())
     return false;
 
-  if (!CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
-                              creation_reason, nullptr)) {
+  if (!CreateShortcutsInPaths(
+          web_app_path, shortcut_info, shortcut_paths, creation_reason,
+          creation_locations.in_startup ? kRunOnOsLoginModeWindowed : "",
+          nullptr)) {
     return false;
   }
 
@@ -459,7 +463,7 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
         web_app_path, shortcut_info.profile_path, old_app_title,
         &was_pinned_to_taskbar, &shortcut_paths);
     CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
-                           SHORTCUT_CREATION_BY_USER, nullptr);
+                           SHORTCUT_CREATION_BY_USER, "", nullptr);
     // If the shortcut was pinned to the taskbar,
     // GetShortcutLocationsAndDeleteShortcuts will have deleted it. In that
     // case, re-pin it.

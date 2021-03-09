@@ -276,10 +276,16 @@ void WebAppLaunchManager::LaunchApplication(
   if (!provider_)
     return;
 
+  apps::mojom::AppLaunchSource launch_source =
+      apps::mojom::AppLaunchSource::kSourceCommandLine;
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+      command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
+    launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+  }
+
   apps::AppLaunchParams params(
       app_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW,
-      apps::mojom::AppLaunchSource::kSourceCommandLine);
+      WindowOpenDisposition::NEW_WINDOW, launch_source);
   params.command_line = command_line;
   params.current_directory = current_directory;
   params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
