@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -25,7 +24,8 @@ namespace policy {
 
 PolicyLoaderLacros::PolicyLoaderLacros(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : AsyncPolicyLoader(task_runner), task_runner_(task_runner) {
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
+      task_runner_(task_runner) {
   auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
   if (!lacros_chrome_service) {
     // LacrosChromeService should be available at this timing in production.
@@ -45,7 +45,6 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     return;
   }
   policy_fetch_response_ = init_params->device_account_policy.value();
-  last_modification_ = base::Time::Now();
 }
 
 PolicyLoaderLacros::~PolicyLoaderLacros() {
@@ -98,16 +97,10 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   return bundle;
 }
 
-base::Time PolicyLoaderLacros::LastModificationTime() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return last_modification_;
-}
-
 void PolicyLoaderLacros::NotifyPolicyUpdate(
     const std::vector<uint8_t>& policy_fetch_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   policy_fetch_response_ = policy_fetch_response;
-  last_modification_ = base::Time::Now();
   Reload(true);
 }
 

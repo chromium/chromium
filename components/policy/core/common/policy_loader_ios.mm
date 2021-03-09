@@ -88,7 +88,8 @@ namespace policy {
 PolicyLoaderIOS::PolicyLoaderIOS(
     SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : AsyncPolicyLoader(task_runner), weak_factory_(this) {
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
+      weak_factory_(this) {
   PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
   policy_schema_ = registry->schema_map()->GetSchema(ns);
 }

@@ -66,7 +66,7 @@ PolicyLoaderMac::PolicyLoaderMac(
     const base::FilePath& managed_policy_path,
     MacPreferences* preferences,
     CFStringRef application_id)
-    : AsyncPolicyLoader(task_runner),
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
       preferences_(preferences),
       managed_policy_path_(managed_policy_path),
       application_id_(CFStringCreateCopy(kCFAllocatorDefault, application_id)) {

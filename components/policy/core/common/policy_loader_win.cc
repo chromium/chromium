@@ -224,7 +224,7 @@ void CollectEnterpriseUMAs() {
 PolicyLoaderWin::PolicyLoaderWin(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const std::wstring& chrome_policy_key)
-    : AsyncPolicyLoader(task_runner),
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
       is_initialized_(false),
       chrome_policy_key_(chrome_policy_key),
       user_policy_changed_event_(

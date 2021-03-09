@@ -56,7 +56,7 @@ ConfigDirPolicyLoader::ConfigDirPolicyLoader(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& config_dir,
     PolicyScope scope)
-    : AsyncPolicyLoader(task_runner),
+    : AsyncPolicyLoader(task_runner, /*periodic_updates=*/true),
       task_runner_(task_runner),
       config_dir_(config_dir),
       scope_(scope) {}
