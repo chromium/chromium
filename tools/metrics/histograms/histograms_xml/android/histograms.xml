@@ -1080,10 +1080,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
-    expires_after="M89">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
+    expires_after="2021-12-15">
   <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1094,10 +1091,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FontLookup.FetchFontResult" enum="FetchFontResult"
-    expires_after="M89">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
+    expires_after="2021-12-15">
   <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1109,10 +1103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FontLookup.GmsFontRequest.Time" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
+    expires_after="2021-12-15">
   <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1124,10 +1115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FontLookup.MatchLocalFontByUniqueName.Time" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
+    expires_after="2021-12-15">
   <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>

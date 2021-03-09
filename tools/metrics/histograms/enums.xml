@@ -32095,9 +32095,6 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FetchFontName">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
   <int value="0" label="Other"/>
   <int value="1" label="Google Sans Regular"/>
   <int value="2" label="Google Sans Medium"/>
@@ -32105,9 +32102,6 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FetchFontResult">
-  <obsolete>
-    Removed Jan 2021.
-  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="Failed due to unexpected font name"/>
   <int value="2" label="Failed with non-OK status code on result"/>
