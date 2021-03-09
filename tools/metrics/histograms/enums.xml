@@ -23815,15 +23815,16 @@ Called by update_document_policy_enum.py.-->
   <int value="824" label="WebAppSettings"/>
   <int value="825" label="DevicePciPeripheralDataAccessEnabled"/>
   <int value="826" label="ContextAwareAccessSignalsAllowlist"/>
-  <int value="827" label="FetchKeepaliveDurationOnShutdown"/>
+  <int value="827" label="FetchKeepaliveDurationSecondsOnShutdown"/>
   <int value="828" label="AllowSystemNotifications"/>
-  <int value="829" label="SuppressDifferentOriginSubframeJSDialogs"/>
+  <int value="829" label="SuppressDifferentOriginSubframeDialogs"/>
   <int value="830" label="DeviceBorealisAllowed"/>
   <int value="831" label="UserBorealisAllowed"/>
   <int value="832" label="LacrosSecondaryProfilesAllowed"/>
   <int value="833" label="GaiaLockScreenOfflineSigninTimeLimitDays"/>
   <int value="834" label="SamlLockScreenOfflineSigninTimeLimitDays"/>
   <int value="835" label="ReportDevicePrintJobs"/>
+  <int value="836" label="AudioProcessHighPriorityEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

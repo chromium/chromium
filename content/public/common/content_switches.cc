@@ -1028,6 +1028,9 @@ const char kRaiseTimerFrequency[] = "raise-timer-frequency";
 // Causes the second GPU process used for gpu info collection to display a
 // dialog on launch.
 const char kGpu2StartupDialog[] = "gpu2-startup-dialog";
+
+// Use high priority for the audio process.
+const char kAudioProcessHighPriority[] = "audio-process-high-priority";
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)

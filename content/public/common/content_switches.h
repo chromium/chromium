@@ -286,6 +286,7 @@ CONTENT_EXPORT extern const char kPpapiAntialiasedTextEnabled[];
 CONTENT_EXPORT extern const char kPpapiSubpixelRenderingSetting[];
 CONTENT_EXPORT extern const char kRaiseTimerFrequency[];
 CONTENT_EXPORT extern const char kGpu2StartupDialog[];
+CONTENT_EXPORT extern const char kAudioProcessHighPriority[];
 #endif
 
 #if defined(ENABLE_IPC_FUZZER)

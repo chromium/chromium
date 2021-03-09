@@ -1235,6 +1235,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Performs a fast and orderly shutdown of the browser.
   virtual void SessionEnding() {}
+
+  // Returns true if the audio process should run with high priority. false
+  // otherwise.
+  virtual bool ShouldEnableAudioProcessHighPriority();
 #endif
 
   // Binds a new media remoter service to |receiver|, if supported by the

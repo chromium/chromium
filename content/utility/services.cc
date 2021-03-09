@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
@@ -16,7 +15,7 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "content/child/child_process.h"
-#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -176,7 +175,8 @@ auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
 #endif
 
 #if defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(features::kAudioProcessHighPriorityWin)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAudioProcessHighPriority)) {
     auto success =
         ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
     DCHECK(success);

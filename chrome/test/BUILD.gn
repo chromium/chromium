@@ -3088,6 +3088,11 @@ if (!is_android) {
         sources += [ "../browser/policy/audio_sandbox_enabled_browsertest.cc" ]
       }
     }
+    if (is_win) {
+      sources += [
+        "../browser/policy/audio_process_high_priority_enabled_browsertest.cc",
+      ]
+    }
     if (is_mac || is_win || is_chromeos_ash) {
       sources += [ "../browser/extensions/api/networking_cast_private/networking_cast_private_apitest.cc" ]
     }

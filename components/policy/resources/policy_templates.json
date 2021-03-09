@@ -25020,6 +25020,43 @@ If you disable this policy, web page scrolling to specific text fragments via UR
 
       If the policy is set to false, <ph name="BOREALIS_NAME">Borealis</ph> will be unavailable. Otherwise (when the policy is unset, or true) <ph name="BOREALIS_NAME">Borealis</ph> will be available if and only if no other policy or setting disables it.''',
     },
+    {
+      'name': 'AudioProcessHighPriorityEnabled',
+      'owners': ['file://services/audio/OWNERS', 'guidou@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.win:91-'],
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use high priority for audio process',
+        },
+        {
+          'value': False,
+          'caption': 'Use normal Priority for audio process',
+        },
+        {
+          'value': None,
+          'caption': 'Use default priority for audio process',
+        },
+      ],
+      'default': None,
+      'example_value': True,
+      'id': 836,
+      'caption': '''Allow the audio process to run with priority above normal on Windows''',
+      'tags': [],
+      'desc': '''This policy controls the priority of the audio process on Windows.
+      If this policy is enabled, the audio process will run with above normal priority.
+      If this policy is disabled, the audio process will run with normal priority.
+      If this policy is not set, the default configuration for the audio process will be used.
+      This policy is intended as a temporary measure to give enterprises the ability to
+      run audio with higher priority to address certain performance issues with audio capture.
+      This policy will be removed in the future.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -25949,6 +25986,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 835,
+  'highest_id_currently_used': 836,
   'highest_atomic_group_id_currently_used': 40
 }

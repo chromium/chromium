@@ -3893,6 +3893,10 @@ void ChromeContentBrowserClient::SessionEnding() {
   chrome::SessionEnding();
 }
 
+bool ChromeContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
+  return IsAudioProcessHighPriorityEnabled();
+}
+
 #endif  // defined(OS_WIN)
 
 void ChromeContentBrowserClient::

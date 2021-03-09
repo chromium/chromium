@@ -405,6 +405,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       sandbox::policy::SandboxType sandbox_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
   void SessionEnding() override;
+  bool ShouldEnableAudioProcessHighPriority() override;
 #endif
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,
