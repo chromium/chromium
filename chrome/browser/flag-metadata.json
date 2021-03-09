@@ -4584,6 +4584,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "scan-app-media-link",
+    "owners": [ "gavinwill", "jschettler" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "scanning-ui",
     "owners": [ "jschettler", "bmgordon" ],
     "expiry_milestone": 90

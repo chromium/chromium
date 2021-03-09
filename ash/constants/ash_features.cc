@@ -595,6 +595,10 @@ const base::Feature kReleaseNotesNotificationAllChannels{
 const base::Feature kReleaseNotesSuggestionChip{
     "ReleaseNotesSuggestionChip", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables showing a link to the Media app in the Scan app.
+const base::Feature kScanAppMediaLink{"ScanAppMediaLink",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables a scanning UI on Chrome OS.
 const base::Feature kScanningUI{"ScanningUI", base::FEATURE_ENABLED_BY_DEFAULT};
 

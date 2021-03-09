@@ -4653,6 +4653,11 @@ const char kScalableStatusAreaDescription[] =
     "Showing important notification icons in status area when the screen is "
     "sufficiently large.";
 
+const char kScanAppMediaLinkName[] = "Show Media app link in Scan app";
+const char kScanAppMediaLinkDescription[] =
+    "Enables showing a link in the Scan app to open scanned images in the Media"
+    " app.";
+
 const char kScanningUIName[] = "Scanning UI";
 const char kScanningUIDescription[] =
     "An experimental UI that allows users to interact with a connected "

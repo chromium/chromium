@@ -276,6 +276,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kReleaseNotesSuggestionChip;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFiltersInRecents;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kScanAppMediaLink;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kScanningUI;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSessionManagerLongKillTimeout;

@@ -2738,6 +2738,9 @@ extern const char kArcResizeLockDescription[];
 extern const char kScalableStatusAreaName[];
 extern const char kScalableStatusAreaDescription[];
 
+extern const char kScanAppMediaLinkName[];
+extern const char kScanAppMediaLinkDescription[];
+
 extern const char kScanningUIName[];
 extern const char kScanningUIDescription[];
 

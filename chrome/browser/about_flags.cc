@@ -6496,6 +6496,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"scan-app-media-link", flag_descriptions::kScanAppMediaLinkName,
+     flag_descriptions::kScanAppMediaLinkDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kScanAppMediaLink)},
     {"scanning-ui", flag_descriptions::kScanningUIName,
      flag_descriptions::kScanningUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kScanningUI)},

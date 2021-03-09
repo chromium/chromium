@@ -44984,6 +44984,7 @@ from previous Chrome versions.
   <int value="-711890895" label="enable-website-settings-manager"/>
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
+  <int value="-707407907" label="ScanAppMediaLink:enabled"/>
   <int value="-706733351" label="enable-floating-virtual-keyboard:enabled"/>
   <int value="-706159808" label="QuickAnswersOnEditableText:disabled"/>
   <int value="-705746939" label="ChromeDuet:enabled"/>
@@ -45730,6 +45731,7 @@ from previous Chrome versions.
   <int value="-11260186" label="enable-offline-pages-as-saved-pages"/>
   <int value="-10709540"
       label="OmniboxUIExperimentHideSuggestionUrlScheme:enabled"/>
+  <int value="-9701088" label="ScanAppMediaLink:disabled"/>
   <int value="-9599490" label="KernelnextVMs:disabled"/>
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
