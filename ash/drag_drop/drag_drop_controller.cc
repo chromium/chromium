@@ -445,6 +445,11 @@ gfx::LinearAnimation* DragDropController::CreateCancelAnimation(
 
 void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
+  ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
+                        event.root_location_f(), drag_operation_);
+  e.set_flags(event.flags());
+  ui::Event::DispatcherApi(&e).set_target(target);
+
   aura::client::DragUpdateInfo drag_info;
   if (target != drag_window_) {
     if (drag_window_) {
@@ -461,21 +466,12 @@ void DragDropController::DragUpdate(aura::Window* target,
       drag_window_->AddObserver(this);
     aura::client::DragDropDelegate* delegate =
         aura::client::GetDragDropDelegate(drag_window_);
-    if (delegate) {
-      ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                            event.root_location_f(), drag_operation_);
-      e.set_flags(event.flags());
-      ui::Event::DispatcherApi(&e).set_target(target);
+    if (delegate)
       delegate->OnDragEntered(e);
-    }
   } else {
     aura::client::DragDropDelegate* delegate =
         aura::client::GetDragDropDelegate(drag_window_);
     if (delegate) {
-      ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
-                            event.root_location_f(), drag_operation_);
-      e.set_flags(event.flags());
-      ui::Event::DispatcherApi(&e).set_target(target);
       drag_info = delegate->OnDragUpdated(e);
       bool is_drop_allowed = IsDragDropAllowed(drag_data_.get(), drag_info,
                                                /*is_drop=*/false);
@@ -493,6 +489,9 @@ void DragDropController::DragUpdate(aura::Window* target,
       Shell::Get()->cursor_manager()->SetCursor(cursor);
     }
   }
+
+  for (aura::client::DragDropClientObserver& observer : observers_)
+    observer.OnDragUpdated(e);
 
   if (drag_info.drag_operation != current_drag_info_.drag_operation) {
     for (aura::client::DragDropClientObserver& observer : observers_)

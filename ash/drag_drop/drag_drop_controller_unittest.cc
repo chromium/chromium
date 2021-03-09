@@ -49,6 +49,7 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 namespace {
@@ -212,6 +213,15 @@ class TestDragDropController : public DragDropController {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestDragDropController);
+};
+
+class MockObserver : public aura::client::DragDropClientObserver {
+ public:
+  // aura::client::DragDropClientObserver
+
+  MOCK_METHOD(void, OnDragStarted, (), (override));
+  MOCK_METHOD(void, OnDragUpdated, (const ui::DropTargetEvent&), (override));
+  MOCK_METHOD(void, OnDragEnded, (), (override));
 };
 
 class TestObserver : public aura::client::DragDropClientObserver {
@@ -1289,27 +1299,44 @@ TEST_F(DragDropControllerTest, TouchDragDropCompletesOnFling) {
   EXPECT_TRUE(drag_view->drag_done_received_);
 }
 
-TEST_F(DragDropControllerTest, DragStartedAndEndedEvents) {
-  TestObserver observer;
+TEST_F(DragDropControllerTest, DragObserverEvents) {
+  testing::StrictMock<MockObserver> observer;
   drag_drop_controller_->AddObserver(&observer);
 
   {
     auto data(std::make_unique<ui::OSExchangeData>());
     data->SetString(base::UTF8ToUTF16("I am being dragged"));
+    ui::OSExchangeData* data_ptr = data.get();
+
     std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
     aura::Window* window = widget->GetNativeWindow();
+
+    EXPECT_CALL(observer, OnDragStarted);
     drag_drop_controller_->StartDragAndDrop(
         std::move(data), window->GetRootWindow(), window, gfx::Point(5, 5),
         ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kMouse);
-
-    EXPECT_EQ(TestObserver::State::kDragStartedInvoked, observer.state());
+    testing::Mock::VerifyAndClearExpectations(&observer);
 
     ui::MouseEvent e(ui::ET_MOUSE_DRAGGED, gfx::Point(200, 0),
                      gfx::Point(200, 0), ui::EventTimeForNow(), ui::EF_NONE,
                      ui::EF_NONE);
-    drag_drop_controller_->Drop(window, e);
 
-    EXPECT_EQ(TestObserver::State::kDragEndedInvoked, observer.state());
+    {
+      testing::InSequence sequence;
+      EXPECT_CALL(observer, OnDragUpdated)
+          .WillOnce(testing::Invoke([&](const ui::DropTargetEvent& event) {
+            gfx::Point root_location_in_screen = event.root_location();
+            ::wm::ConvertPointToScreen(
+                static_cast<aura::Window*>(event.target())->GetRootWindow(),
+                &root_location_in_screen);
+            EXPECT_EQ(gfx::Point(200, 0), root_location_in_screen);
+            EXPECT_EQ(&event.data(), data_ptr);
+          }));
+      EXPECT_CALL(observer, OnDragEnded);
+    }
+
+    drag_drop_controller_->Drop(window, e);
+    testing::Mock::VerifyAndClearExpectations(&observer);
   }
 
   drag_drop_controller_->RemoveObserver(&observer);
