@@ -24,7 +24,7 @@
       "use_pulseaudio": false,
       "use_system_libsync": false,
       "use_v8_context_snapshot": false,
-      "use_vaapi": false
+      "use_vaapi": true
     }
   },
   "linux-autofill-captured-sites-rel": {
