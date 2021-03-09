@@ -93,10 +93,7 @@ source_set("base") {
 source_set("client_session_control") {
   sources = [ "client_session_control.h" ]
 
-  deps = [
-    "//remoting/protocol",
-    "//ui/events:events",
-  ]
+  deps = [ "//remoting/protocol" ]
 }
 
 source_set("clipboard") {
@@ -105,7 +102,6 @@ source_set("clipboard") {
   deps = [
     ":base",
     "//base",
-    "//remoting/base:base",
     "//remoting/proto",
     "//remoting/protocol",
   ]
@@ -331,23 +327,17 @@ static_library("common") {
     "//components/policy/core/common",
     "//crypto",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//media",
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/host/file_transfer:common",
     "//remoting/host/input_monitor",
     "//remoting/host/security_key",
-    "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/proto/remoting/v1:remote_support_host_messages",
     "//remoting/protocol",
     "//remoting/resources",
-    "//remoting/signaling:signaling",
     "//services/network:network_service",
-    "//services/network/public/cpp:cpp",
-    "//third_party/libjingle_xmpp",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/events:events",
 
     # //remoting uses the power_save_blocker directly. See crbug.com/689423
     "//services/device/wake_lock/power_save_blocker",
@@ -491,11 +481,9 @@ static_library("common") {
     ]
 
     deps += [
-      ":base",
       ":remoting_version",
       "//remoting/host/mac:constants",
       "//remoting/host/mac:permission_checking",
-      "//ui/events:events",
     ]
   }
 
@@ -520,29 +508,12 @@ static_library("common") {
       "touch_injector_win.cc",
       "touch_injector_win.h",
       "usage_stats_consent_win.cc",
-
-      # TODO(crbug.com/1184893): These are in //remoting/host/win:remoting_core, but we can't add a
-      # dep for it because it would make a circular dependency. These should be
-      # moved to a new build target that both can depend on if possible.
-      "host_main.h",
-      "win/core_resource.h",
-      "win/etw_trace_consumer.h",
-      "win/host_event_file_logger.h",
-      "win/host_event_logger.h",
-      "win/host_event_windows_event_logger.h",
-      "win/host_service.h",
-      "win/unprivileged_process_delegate.h",
-      "win/wts_session_process_delegate.h",
-      "worker_process_ipc_delegate.h",
     ]
     libs += [ "crypt32.lib" ]
     deps += [
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
       "//media",
-      "//media/base/win:media_foundation_util",
-      "//media/gpu:gpu",
-      "//mojo/core/embedder:embedder",
       "//remoting/host/win",
       "//remoting/host/win:messages",
       "//remoting/host/win:remoting_lib_idl",
@@ -571,16 +542,9 @@ static_library("test_support") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    ":client_session_control",
-    "//remoting/codec:encoder",
-    "//remoting/host/file_transfer:common",
-    "//remoting/host/security_key:security_key",
     "//remoting/proto",
-    "//remoting/protocol:protocol",
-    "//remoting/protocol:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/events:events",
   ]
   public_deps = [
     ":common",
@@ -652,32 +616,20 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
-    ":base",
-    ":client_session_control",
     ":common",
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//net:test_support",
-    "//remoting/codec:encoder",
     "//remoting/host/file_transfer:unit_tests",
-    "//remoting/host/input_monitor:input_monitor",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
     "//remoting/proto",
-    "//remoting/proto/remoting/v1:remote_support_host_messages",
-    "//remoting/protocol:test_support",
     "//remoting/resources",
-    "//remoting/signaling",
-    "//remoting/signaling:test_support",
-    "//remoting/signaling:unit_tests",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:base",
-    "//ui/events:events",
   ]
 
   if (is_linux && !is_chromeos) {
@@ -761,14 +713,10 @@ if (enable_remoting_host) {
       ]
 
       deps += [
-        ":common",
         "//google_apis",
         "//mojo/core/embedder",
         "//net",
-        "//remoting/base:base",
         "//remoting/host/setup",
-        "//services/network:network_service",
-        "//services/network/public/cpp:cpp",
       ]
     }
   }
@@ -865,29 +813,18 @@ if (enable_me2me_host) {
     ]
 
     deps = [
-      ":base",
       "//base",
       "//base:i18n",
       "//components/policy/core/common",
       "//ipc",
-      "//jingle:webrtc_glue",
       "//mojo/core/embedder",
       "//net",
       "//remoting/base",
-      "//remoting/base:authorization",
       "//remoting/host",
-      "//remoting/host/security_key:security_key",
       "//remoting/proto",
-      "//remoting/protocol:protocol",
-      "//remoting/signaling:signaling",
-      "//services/network/public/cpp:cpp",
       "//third_party/libjingle_xmpp",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
-
-    if (use_x11) {
-      deps += [ "//ui/events/platform/x11:x11" ]
-    }
 
     if (is_posix) {
       sources += [
@@ -907,12 +844,8 @@ if (enable_me2me_host) {
       libs = [ "pam" ]
     }
 
-    if (is_mac) {
-      deps += [ "//remoting/host/mac:permission_checking" ]
-
-      if (is_official_build) {
-        sources += [ "internal/internal_mac-inl.h" ]
-      }
+    if (is_mac && is_official_build) {
+      sources += [ "internal/internal_mac-inl.h" ]
     }
   }
 
@@ -930,13 +863,8 @@ if (enable_me2me_host) {
         "host_main.h",
       ]
       deps = [
-        ":base",
-        ":common",
         "//base",
         "//base:debugging_buildflags",
-        "//mojo/core/embedder:embedder",
-        "//remoting/base:breakpad",
-        "//remoting/host/setup:common",
       ]
     }
     if (is_mac) {
@@ -955,12 +883,8 @@ if (enable_me2me_host) {
         deps = [
           ":remoting_me2me_host_static",
           "//base",
-          "//mojo/core/embedder:embedder",
           "//remoting/base:breakpad",
-          "//remoting/host:base",
-          "//remoting/host:common",
           "//remoting/host/installer:credits",
-          "//remoting/host/setup:common",
           "//remoting/resources",
         ]
       }

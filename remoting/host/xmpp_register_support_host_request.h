@@ -15,6 +15,7 @@
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "testing/gtest/include/gtest/gtest_prod.h"
 
 namespace jingle_xmpp {
 class XmlElement;
