@@ -7064,8 +7064,24 @@ def generate_class_like(class_like):
             EmptyNode(),
         ])
 
+    debugging_namespace_name = name_style.namespace("v8",
+                                                    class_like.identifier)
     impl_source_blink_ns.body.extend([
-        CxxNamespaceNode(name="", body=callback_defs),
+        CxxNamespaceNode(
+            name="",
+            body=[
+                # Enclose the implementations with a namespace just in order to
+                # include the class_like name in a stacktrace, such as
+                #
+                #   blink::(anonymous namespace)::v8_class_like::XxxCallback
+                #
+                # Note that XxxCallback doesn't include the class_like name.
+                CxxNamespaceNode(name=debugging_namespace_name,
+                                 body=callback_defs),
+                EmptyNode(),
+                TextNode(
+                    "using namespace {};".format(debugging_namespace_name)),
+            ]),
         EmptyNode(),
         installer_function_defs,
         EmptyNode(),
