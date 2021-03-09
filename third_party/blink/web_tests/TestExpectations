@@ -5716,9 +5716,6 @@ crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.j
 # Temporarily disabled for https://crrev.com/c/2713104
 crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass Failure ]
 
-# Sheriff 2021-03-03
-crbug.com/1181007 [ Linux ] http/tests/serviceworker/window-close-during-registration.html [ Pass Failure ]
-
 # Sheriff 2021-03-04
 crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.html [ Pass Failure ]
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
@@ -5736,3 +5733,4 @@ crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html 
 
 # Sheriff 2021-03-09
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]
+crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html [ Pass Failure ]
