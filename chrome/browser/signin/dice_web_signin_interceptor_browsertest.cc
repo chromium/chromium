@@ -199,6 +199,8 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
       1);
   histogram_tester.ExpectTotalCount("Profile.Guest.SigninTransferred.Lifetime",
                                     intercept_to_guest ? 1 : 0);
+  histogram_tester.ExpectBucketCount("Profile.EphemeralGuest.Signin", true,
+                                     intercept_to_guest ? 1 : 0);
 }
 
 }  // namespace
@@ -630,6 +632,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchToGuest) {
 
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  adaptor.identity_test_env()->SetUnconsentedPrimaryAccount(account_info.email);
 
   // Check that the Guest profile was opened.
   ASSERT_TRUE(new_profile->IsEphemeralGuestProfile());
