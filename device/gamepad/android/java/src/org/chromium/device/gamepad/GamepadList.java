@@ -289,13 +289,17 @@ public class GamepadList {
                 final GamepadDevice device = getDevice(i);
                 if (device != null) {
                     device.updateButtonsAndAxesMapping();
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr, i,
-                            device.isStandardGamepad(), true, device.getName(),
+                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
+                            /*index=*/i, device.isStandardGamepad(), /*connected=*/true,
+                            device.getName(), device.getVendorId(), device.getProductId(),
                             device.getTimestamp(), device.getAxes(), device.getButtons(),
                             device.getButtonsLength());
                 } else {
-                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr, i, false,
-                            false, null, 0, null, null, 0);
+                    GamepadListJni.get().setGamepadData(GamepadList.this, webGamepadsPtr,
+                            /*index=*/i, /*mapping=*/false, /*connected=*/false,
+                            /*devicename=*/null, /*vendorId=*/0, /*productId=*/0,
+                            /*timestamp=*/0, /*axes=*/null, /*buttons=*/null,
+                            /*buttonsLength=*/0);
                 }
             }
         }
@@ -326,7 +330,7 @@ public class GamepadList {
     @NativeMethods
     interface Natives {
         void setGamepadData(GamepadList caller, long webGamepadsPtr, int index, boolean mapping,
-                boolean connected, String devicename, long timestamp, float[] axes, float[] buttons,
-                int buttonsLength);
+                boolean connected, String devicename, int vendorId, int productId, long timestamp,
+                float[] axes, float[] buttons, int buttonsLength);
     }
 }

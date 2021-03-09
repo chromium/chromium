@@ -44,6 +44,11 @@ class GamepadDevice {
     private int mDeviceId;
     // The index of the gamepad in the Navigator.
     private int mDeviceIndex;
+    // The vendor ID of the gamepad, or zero if the gamepad does not have a vendor ID.
+    private int mDeviceVendorId;
+    // The product ID of the gamepad, or zero if the gamepad does not have a product ID.
+    private int mDeviceProductId;
+
     // Last time the data for this gamepad was updated.
     private long mTimestamp;
 
@@ -75,6 +80,8 @@ class GamepadDevice {
         mDeviceIndex = index;
         mDeviceId = inputDevice.getId();
         mDeviceName = inputDevice.getName();
+        mDeviceVendorId = inputDevice.getVendorId();
+        mDeviceProductId = inputDevice.getProductId();
         mTimestamp = SystemClock.uptimeMillis();
         // Get axis ids and initialize axes values.
         final List<MotionRange> ranges = inputDevice.getMotionRanges();
@@ -126,6 +133,22 @@ class GamepadDevice {
      */
     public String getName() {
         return mDeviceName;
+    }
+
+    /**
+     * @return Vendor Id of the gamepad device.
+     * It can be zero if gamepad doesn't have a vendor ID.
+     */
+    public int getVendorId() {
+        return mDeviceVendorId;
+    }
+
+    /**
+     * @return The product ID of the gamepad.
+     * It can be zero if gamepad doesn't have a product ID.
+     */
+    public int getProductId() {
+        return mDeviceProductId;
     }
 
     /**

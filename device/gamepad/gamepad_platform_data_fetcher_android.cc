@@ -67,6 +67,8 @@ static void JNI_GamepadList_SetGamepadData(
     jboolean mapping,
     jboolean connected,
     const JavaParamRef<jstring>& devicename,
+    jint vendor_id,
+    jint product_id,
     jlong timestamp,
     const JavaParamRef<jfloatArray>& jaxes,
     const JavaParamRef<jfloatArray>& jbuttons,
@@ -95,11 +97,10 @@ static void JNI_GamepadList_SetGamepadData(
     // be mapped to vendor and product information but it is only available at
     // kernel level and it can not be queried using class
     // android.hardware.input.InputManager.
-    base::string16 gamepad_id;
-    base::android::ConvertJavaStringToUTF16(env, devicename, &gamepad_id);
-    pad.SetID(gamepad_id);
-
-    pad.mapping = mapping ? GamepadMapping::kStandard : GamepadMapping::kNone;
+    std::string gamepad_id =
+        base::android::ConvertJavaStringToUTF8(env, devicename);
+    GamepadDataFetcher::UpdateGamepadStrings(gamepad_id, vendor_id, product_id,
+                                             mapping, pad);
   }
 
   pad.connected = true;
