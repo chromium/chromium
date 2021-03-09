@@ -249,4 +249,16 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
   return generator.MakeNextPage(page_number);
 }
 
+feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
+  feedstore::WebFeedInfo result;
+  result.set_web_feed_id("id_" + name);
+  result.set_title("Title " + name);
+  result.mutable_favicon()->set_url("http://favicon/" + name);
+  result.set_follower_count(123);
+  result.set_visit_url("http://" + name + ".com");
+  feedstore::UriMatcher* matcher = result.add_uri_matchers();
+  matcher->set_domain_match("http://" + name + ".com");
+  return result;
+}
+
 }  // namespace feed

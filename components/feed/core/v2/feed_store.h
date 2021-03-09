@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
@@ -40,6 +41,10 @@ class FeedStore {
     std::vector<feedstore::StreamStructureSet> stream_structures;
     // These are sorted by increasing ID.
     std::vector<feedstore::StoredAction> pending_actions;
+  };
+  struct WebFeedStartupData {
+    feedstore::SubscribedWebFeeds subscribed_web_feeds;
+    feedstore::RecommendedWebFeedIndex recommended_feed_index;
   };
 
   explicit FeedStore(
@@ -110,6 +115,18 @@ class FeedStore {
   void UpgradeFromStreamSchemaV0(
       feedstore::Metadata old_metadata,
       base::OnceCallback<void(feedstore::Metadata)> callback);
+  void ReadWebFeedStartupData(
+      base::OnceCallback<void(WebFeedStartupData)> callback);
+  void WriteRecommendedFeeds(feedstore::RecommendedWebFeedIndex index,
+                             std::vector<feedstore::WebFeedInfo> web_feed_info,
+                             base::OnceClosure callback);
+  void WriteSubscribedFeeds(feedstore::SubscribedWebFeeds index,
+                            base::OnceClosure callback);
+  void ReadRecommendedWebFeedInfo(
+      const std::string& web_feed_id,
+      base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
+          callback);
+
   bool IsInitializedForTesting() const;
 
   leveldb_proto::ProtoDatabase<feedstore::Record>* GetDatabaseForTesting() {
@@ -161,6 +178,15 @@ class FeedStore {
   void OnWriteFinished(base::OnceCallback<void(bool)> callback, bool success);
   void OnReadMetadataFinished(
       base::OnceCallback<void(std::unique_ptr<feedstore::Metadata>)> callback,
+      bool read_ok,
+      std::unique_ptr<feedstore::Record> record);
+  void OnReadWebFeedStartupDataFinished(
+      base::OnceCallback<void(WebFeedStartupData)> callback,
+      bool read_ok,
+      std::unique_ptr<std::vector<feedstore::Record>> records);
+  void ReadRecommendedWebFeedInfoFinished(
+      base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
+          callback,
       bool read_ok,
       std::unique_ptr<feedstore::Record> record);
 

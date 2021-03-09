@@ -734,4 +734,168 @@ TEST_F(FeedStoreTest, UpgradeFromStreamSchemaV0) {
             StoredKeys());
 }
 
+TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
+  MakeFeedStore({});
+
+  CallbackReceiver<> receiver;
+  feedstore::RecommendedWebFeedIndex index;
+  index.add_entries()->set_web_feed_id("foo");
+  *index.mutable_entries(0)->add_matchers() =
+      MakeWebFeedInfo("foo").uri_matchers(0);
+  index.add_entries()->set_web_feed_id("bar");
+  *index.mutable_entries(1)->add_matchers() =
+      MakeWebFeedInfo("bar").uri_matchers(0);
+
+  store_->WriteRecommendedFeeds(
+      index, {MakeWebFeedInfo("foo"), MakeWebFeedInfo("bar")}, receiver.Bind());
+
+  fake_db_->UpdateCallback(true);
+
+  ASSERT_TRUE(receiver.called());
+
+  CallbackReceiver<FeedStore::WebFeedStartupData> startup_callback;
+  store_->ReadWebFeedStartupData(startup_callback.Bind());
+  fake_db_->LoadCallback(true);
+
+  ASSERT_TRUE(startup_callback.GetResult());
+
+  // Check that we can load the stored data.
+  std::string want = R"({
+  entries {
+    matchers {
+      domain_match: "http://foo.com"
+    }
+    web_feed_id: "foo"
+  }
+  entries {
+    matchers {
+      domain_match: "http://bar.com"
+    }
+    web_feed_id: "bar"
+  }
+}
+)";
+  EXPECT_STRINGS_EQUAL(
+      want, ToTextProto(startup_callback.GetResult()->recommended_feed_index));
+
+  CallbackReceiver<std::unique_ptr<feedstore::WebFeedInfo>> foo_callback;
+  store_->ReadRecommendedWebFeedInfo("id_foo", foo_callback.Bind());
+  fake_db_->GetCallback(true);
+  ASSERT_TRUE(foo_callback.GetResult());
+  ASSERT_TRUE(*foo_callback.GetResult());
+  EXPECT_STRINGS_EQUAL(R"({
+  web_feed_id: "id_foo"
+  uri_matchers {
+    domain_match: "http://foo.com"
+  }
+  title: "Title foo"
+  favicon {
+    url: "http://favicon/foo"
+  }
+  follower_count: 123
+  visit_url: "http://foo.com"
+}
+)",
+                       ToTextProto(**foo_callback.GetResult()));
+
+  CallbackReceiver<std::unique_ptr<feedstore::WebFeedInfo>> bar_callback;
+  store_->ReadRecommendedWebFeedInfo("id_bar", bar_callback.Bind());
+  fake_db_->GetCallback(true);
+  ASSERT_TRUE(bar_callback.GetResult());
+  ASSERT_TRUE(*bar_callback.GetResult());
+  EXPECT_STRINGS_EQUAL(R"({
+  web_feed_id: "id_bar"
+  uri_matchers {
+    domain_match: "http://bar.com"
+  }
+  title: "Title bar"
+  favicon {
+    url: "http://favicon/bar"
+  }
+  follower_count: 123
+  visit_url: "http://bar.com"
+}
+)",
+                       ToTextProto(**bar_callback.GetResult()));
+}
+
+TEST_F(FeedStoreTest, WriteSubscribedFeeds) {
+  MakeFeedStore({});
+
+  CallbackReceiver<> receiver;
+  feedstore::SubscribedWebFeeds subscribed_web_feeds;
+  *subscribed_web_feeds.add_feeds() = MakeWebFeedInfo("foo");
+  *subscribed_web_feeds.add_feeds() = MakeWebFeedInfo("bar");
+
+  store_->WriteSubscribedFeeds(subscribed_web_feeds, receiver.Bind());
+
+  fake_db_->UpdateCallback(true);
+
+  ASSERT_TRUE(receiver.called());
+
+  CallbackReceiver<FeedStore::WebFeedStartupData> startup_callback;
+  store_->ReadWebFeedStartupData(startup_callback.Bind());
+  fake_db_->LoadCallback(true);
+
+  ASSERT_TRUE(startup_callback.called());
+
+  std::string want = R"({
+  feeds {
+    web_feed_id: "id_foo"
+    uri_matchers {
+      domain_match: "http://foo.com"
+    }
+    title: "Title foo"
+    favicon {
+      url: "http://favicon/foo"
+    }
+    follower_count: 123
+    visit_url: "http://foo.com"
+  }
+  feeds {
+    web_feed_id: "id_bar"
+    uri_matchers {
+      domain_match: "http://bar.com"
+    }
+    title: "Title bar"
+    favicon {
+      url: "http://favicon/bar"
+    }
+    follower_count: 123
+    visit_url: "http://bar.com"
+  }
+}
+)";
+  EXPECT_STRINGS_EQUAL(
+      want, ToTextProto(startup_callback.GetResult()->subscribed_web_feeds));
+}
+
+TEST_F(FeedStoreTest, ReadWebFeedStartupDataNotPresent) {
+  MakeFeedStore({});
+
+  CallbackReceiver<FeedStore::WebFeedStartupData> startup_callback;
+  store_->ReadWebFeedStartupData(startup_callback.Bind());
+  fake_db_->LoadCallback(true);
+
+  ASSERT_TRUE(startup_callback.called());
+
+  EXPECT_STRINGS_EQUAL(
+      "{\n}\n",
+      ToTextProto(startup_callback.GetResult()->subscribed_web_feeds));
+  EXPECT_STRINGS_EQUAL(
+      "{\n}\n",
+      ToTextProto(startup_callback.GetResult()->recommended_feed_index));
+}
+
+TEST_F(FeedStoreTest, ReadRecommendedWebFeedInfoNotPresent) {
+  MakeFeedStore({});
+
+  CallbackReceiver<std::unique_ptr<feedstore::WebFeedInfo>> callback;
+  store_->ReadRecommendedWebFeedInfo("id_foo", callback.Bind());
+  fake_db_->GetCallback(true);
+
+  ASSERT_TRUE(callback.GetResult());
+  ASSERT_FALSE(*callback.GetResult());
+}
+
 }  // namespace feed

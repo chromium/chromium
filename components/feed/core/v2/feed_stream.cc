@@ -39,6 +39,7 @@
 #include "components/feed/core/v2/tasks/prefetch_images_task.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/v2/web_feed_index.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/offline_pages/task/closure_task.h"
@@ -210,7 +211,9 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
-  task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(this));
+  task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
+      store_,
+      base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
 
   UpdateCanUploadActionsWithNoticeCard();
 }
@@ -263,6 +266,13 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
       LoadStreamTask::LoadType::kInitialLoad, stream_type, this,
       base::BindOnce(&FeedStream::InitialStreamLoadComplete,
                      base::Unretained(this))));
+}
+
+void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
+  metadata_.Populate(result.metadata);
+  // TODO(crbug/1152592): Test that the index is populated once there's an API
+  // to access the data.
+  web_feed_index_.Populate(result.web_feed_startup_data);
 }
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {

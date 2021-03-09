@@ -64,6 +64,8 @@ source_set("feed_core_v2") {
     "tasks/upload_actions_task.h",
     "tasks/wait_for_store_initialize_task.cc",
     "tasks/wait_for_store_initialize_task.h",
+    "web_feed_index.cc",
+    "web_feed_index.h",
   ]
   deps = [
     ":common",
@@ -152,6 +154,7 @@ source_set("core_unit_tests") {
     "test/proto_printer.h",
     "test/stream_builder.cc",
     "test/stream_builder.h",
+    "web_feed_index_unittest.cc",
   ]
 
   deps = [

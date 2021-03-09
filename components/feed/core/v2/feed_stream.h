@@ -26,6 +26,8 @@
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
+#include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
+#include "components/feed/core/v2/web_feed_index.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/task/task_queue.h"
 
@@ -315,6 +317,8 @@ class FeedStream : public FeedStreamApi,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void InitializeComplete(WaitForStoreInitializeTask::Result result);
+
   // Re-evaluate whether or not activity logging should currently be enabled.
   void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
 
@@ -382,7 +386,10 @@ class FeedStream : public FeedStreamApi,
   RequestThrottler request_throttler_;
   base::TimeTicks signed_out_for_you_refreshes_until_;
   std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks_;
+
+  // State loaded at startup:
   Metadata metadata_;
+  WebFeedIndex web_feed_index_;
 
   bool is_activity_logging_enabled_ = false;
   // Whether the feed stream can upload actions with the notice card in the

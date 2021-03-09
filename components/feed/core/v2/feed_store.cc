@@ -32,8 +32,13 @@ namespace {
 // s/<stream-id>/<content-id>       -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
+// subs                             -> subscribed_web_feeds
+// recommendedIndex                 -> recommended_web_feed_index
+// R/<web_feed_id>                  -> recommended_web_feed
 constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
+constexpr char kSubscribedFeedsKey[] = "subs";
+constexpr char kRecommendedIndexKey[] = "recommendedIndex";
 constexpr base::StringPiece kForYouStreamId{"i"};
 constexpr base::StringPiece kFollowStreamId{"w"};
 
@@ -148,6 +153,12 @@ std::string KeyForRecord(const feedstore::Record& record) {
                             record.shared_state().content_id());
     case feedstore::Record::kMetadata:
       return kMetadataKey;
+    case feedstore::Record::kSubscribedWebFeeds:
+      return kSubscribedFeedsKey;
+    case feedstore::Record::kRecommendedWebFeed:
+      return base::StrCat({"R/", record.recommended_web_feed().web_feed_id()});
+    case feedstore::Record::kRecommendedWebFeedIndex:
+      return kRecommendedIndexKey;
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
@@ -197,6 +208,25 @@ feedstore::Record MakeRecord(feedstore::Metadata metadata) {
   return record;
 }
 
+feedstore::Record MakeRecord(feedstore::RecommendedWebFeedIndex index) {
+  feedstore::Record record;
+  *record.mutable_recommended_web_feed_index() = std::move(index);
+  return record;
+}
+
+feedstore::Record MakeRecord(
+    feedstore::SubscribedWebFeeds subscribed_web_feeds) {
+  feedstore::Record record;
+  *record.mutable_subscribed_web_feeds() = std::move(subscribed_web_feeds);
+  return record;
+}
+
+feedstore::Record MakeRecord(feedstore::WebFeedInfo web_feed_info) {
+  feedstore::Record record;
+  *record.mutable_recommended_web_feed() = std::move(web_feed_info);
+  return record;
+}
+
 template <typename T>
 std::pair<std::string, feedstore::Record> MakeKeyAndRecord(T record_data) {
   std::pair<std::string, feedstore::Record> result;
@@ -240,6 +270,12 @@ void SortActions(std::vector<feedstore::StoredAction>* actions) {
   std::sort(actions->begin(), actions->end(),
             [](const feedstore::StoredAction& a,
                const feedstore::StoredAction& b) { return a.id() < b.id(); });
+}
+
+base::OnceCallback<void(bool)> DropBoolParam(base::OnceClosure callback) {
+  return base::BindOnce(
+      [](base::OnceClosure callback, bool ok) { std::move(callback).Run(); },
+      std::move(callback));
 }
 
 }  // namespace
@@ -617,6 +653,60 @@ void FeedStore::ReadMetadata(
                                           GetWeakPtr(), std::move(callback)));
 }
 
+void FeedStore::ReadWebFeedStartupData(
+    base::OnceCallback<void(WebFeedStartupData)> callback) {
+  ReadMany({kSubscribedFeedsKey, kRecommendedIndexKey},
+           base::BindOnce(&FeedStore::OnReadWebFeedStartupDataFinished,
+                          GetWeakPtr(), std::move(callback)));
+}
+
+void FeedStore::OnReadWebFeedStartupDataFinished(
+    base::OnceCallback<void(WebFeedStartupData)> callback,
+    bool read_ok,
+    std::unique_ptr<std::vector<feedstore::Record>> records) {
+  WebFeedStartupData result;
+  if (records) {
+    for (feedstore::Record& r : *records) {
+      if (r.has_recommended_web_feed_index()) {
+        result.recommended_feed_index =
+            std::move(*r.mutable_recommended_web_feed_index());
+      } else if (r.has_subscribed_web_feeds()) {
+        result.subscribed_web_feeds =
+            std::move(*r.mutable_subscribed_web_feeds());
+      } else {
+        DLOG(ERROR) << "OnReadWebFeedStartupDataFinished: Got record with no "
+                       "useful data. data_case="
+                    << static_cast<int>(r.data_case());
+      }
+    }
+  }
+  std::move(callback).Run(std::move(result));
+}
+
+void FeedStore::WriteRecommendedFeeds(
+    feedstore::RecommendedWebFeedIndex index,
+    std::vector<feedstore::WebFeedInfo> web_feed_info,
+    base::OnceClosure callback) {
+  auto entries_to_save = std::make_unique<
+      leveldb_proto::ProtoDatabase<feedstore::Record>::KeyEntryVector>();
+  entries_to_save->push_back(MakeKeyAndRecord(std::move(index)));
+  for (auto& info : web_feed_info) {
+    entries_to_save->push_back(MakeKeyAndRecord(std::move(info)));
+  }
+
+  auto remove_record = [](const std::string& key) {
+    return key.size() > 1 && key[1] == '/' && key[0] == 'R';
+  };
+  database_->UpdateEntriesWithRemoveFilter(std::move(entries_to_save),
+                                           base::BindRepeating(remove_record),
+                                           DropBoolParam(std::move(callback)));
+}
+
+void FeedStore::WriteSubscribedFeeds(feedstore::SubscribedWebFeeds index,
+                                     base::OnceClosure callback) {
+  Write({MakeRecord(index)}, DropBoolParam(std::move(callback)));
+}
+
 void FeedStore::OnReadMetadataFinished(
     base::OnceCallback<void(std::unique_ptr<feedstore::Metadata>)> callback,
     bool read_ok,
@@ -648,9 +738,29 @@ void FeedStore::UpgradeFromStreamSchemaV0(
 
   database_->UpdateEntriesWithRemoveFilter(
       std::move(updates), base::BindRepeating(&IsAnyStreamRecordKey),
-      base::BindOnce([](base::OnceClosure callback,
-                        bool ok) { std::move(callback).Run(); },
-                     base::BindOnce(std::move(callback), std::move(metadata))));
+      DropBoolParam(base::BindOnce(std::move(callback), std::move(metadata))));
+}
+
+void FeedStore::ReadRecommendedWebFeedInfo(
+    const std::string& web_feed_id,
+    base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)>
+        callback) {
+  ReadSingle("R/" + web_feed_id,
+             base::BindOnce(&FeedStore::ReadRecommendedWebFeedInfoFinished,
+                            GetWeakPtr(), std::move(callback)));
+}
+
+void FeedStore::ReadRecommendedWebFeedInfoFinished(
+    base::OnceCallback<void(std::unique_ptr<feedstore::WebFeedInfo>)> callback,
+    bool read_ok,
+    std::unique_ptr<feedstore::Record> record) {
+  if (!record || !read_ok) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  std::move(callback).Run(
+      base::WrapUnique(record->release_recommended_web_feed()));
 }
 
 }  // namespace feed

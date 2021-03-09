@@ -8,8 +8,10 @@
 
 namespace feed {
 
-WaitForStoreInitializeTask::WaitForStoreInitializeTask(FeedStream* stream)
-    : stream_(stream), store_(stream->GetStore()) {}
+WaitForStoreInitializeTask::WaitForStoreInitializeTask(
+    FeedStore* store,
+    base::OnceCallback<void(Result)> callback)
+    : store_(store), callback_(std::move(callback)) {}
 WaitForStoreInitializeTask::~WaitForStoreInitializeTask() = default;
 
 void WaitForStoreInitializeTask::Run() {
@@ -21,6 +23,9 @@ void WaitForStoreInitializeTask::Run() {
 void WaitForStoreInitializeTask::OnStoreInitialized() {
   store_->ReadMetadata(base::BindOnce(
       &WaitForStoreInitializeTask::OnMetadataLoaded, base::Unretained(this)));
+  store_->ReadWebFeedStartupData(
+      base::BindOnce(&WaitForStoreInitializeTask::WebFeedStartupDataDone,
+                     base::Unretained(this)));
 }
 
 void WaitForStoreInitializeTask::OnMetadataLoaded(
@@ -30,16 +35,30 @@ void WaitForStoreInitializeTask::OnMetadataLoaded(
       metadata = std::make_unique<feedstore::Metadata>();
     }
     store_->UpgradeFromStreamSchemaV0(
-        std::move(*metadata), base::BindOnce(&WaitForStoreInitializeTask::Done,
-                                             base::Unretained(this)));
+        std::move(*metadata),
+        base::BindOnce(&WaitForStoreInitializeTask::MetadataDone,
+                       base::Unretained(this)));
     return;
   }
-  Done(std::move(*metadata));
+  MetadataDone(std::move(*metadata));
 }
 
-void WaitForStoreInitializeTask::Done(feedstore::Metadata metadata) {
-  stream_->GetMetadata()->Populate(std::move(metadata));
-  TaskComplete();
+void WaitForStoreInitializeTask::MetadataDone(feedstore::Metadata metadata) {
+  result_.metadata = std::move(metadata);
+  Done();
+}
+
+void WaitForStoreInitializeTask::WebFeedStartupDataDone(
+    FeedStore::WebFeedStartupData data) {
+  result_.web_feed_startup_data = std::move(data);
+  Done();
+}
+
+void WaitForStoreInitializeTask::Done() {
+  if (++done_count_ == 2) {
+    std::move(callback_).Run(std::move(result_));
+    TaskComplete();
+  }
 }
 
 }  // namespace feed

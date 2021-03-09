@@ -87,6 +87,9 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     bool signed_in = true,
     bool logging_enabled = true,
     bool privacy_notice_fulfilled = true);
+
+feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_TEST_STREAM_BUILDER_H_
