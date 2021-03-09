@@ -344,12 +344,6 @@ Polymer({
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses(
           this.boundOnSpellcheckDictionariesChanged_);
     }
-
-    // Recreate the set of spellcheck forced languages in case a forced
-    // spellcheck language was removed from the languages list.
-    this.set(
-        'languages.forcedSpellCheckLanguages',
-        this.getForcedSpellCheckLanguages_(this.languages.enabled));
     // </if>
 
     // Update translate target language.
@@ -389,38 +383,97 @@ Polymer({
       this.set(`languages.enabled.${i}.isManaged`, isForced || isBlocked);
     }
 
-    this.set(
-        'languages.forcedSpellCheckLanguages',
-        this.getForcedSpellCheckLanguages_(this.languages.enabled));
+    const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
+        this.getSpellCheckLanguages_(this.languages.supported);
+    this.set('languages.spellCheckOnLanguages', spellCheckOnLanguages);
+    this.set('languages.spellCheckOffLanguages', spellCheckOffLanguages);
   },
 
   /**
-   * Returns an array of language codes for the spellcheck languages that are
-   * force-enabled by policy, but that are not "enabled" languages.
-   * @param {!Array<!LanguageState>} enabledLanguages An array of enabled
-   *     languages.
-   * @return {!Array<!string>}
+   * Returns two arrays of SpellCheckLanguageStates for spell check languages:
+   * one for spell check on, one for spell check off.
+   * @param {!Array<!chrome.languageSettingsPrivate.Language>}
+   *     supportedLanguages The list of supported languages, normally
+   *     this.languages.supported.
+   * @return {{on: !Array<SpellCheckLanguageState>, off:
+   *     !Array<SpellCheckLanguageState>}}
    * @private
    */
-  getForcedSpellCheckLanguages_(enabledLanguages) {
-    const enabledSet = this.makeSetFromArray_(/** @type {!Array<string>} */ (
-        enabledLanguages.map(x => x.language.code)));
-    const spellCheckForcedDictionaries = /** @type {!Array<string>} */ (
-        this.getPref('spellcheck.forced_dictionaries').value);
+  getSpellCheckLanguages_(supportedLanguages) {
+    // The spell check preferences are prioritised in this order:
+    // forced_dictionaries, blocked_dictionaries, dictionaries.
 
-    const forcedLanguages = [];
-    for (let i = 0; i < spellCheckForcedDictionaries.length; i++) {
-      const code = spellCheckForcedDictionaries[i];
-      if (!enabledSet.has(code) && this.supportedLanguageMap_.has(code)) {
-        forcedLanguages.push({
-          language: this.supportedLanguageMap_.get(code),
-          isManaged: true,
+    // The set of all language codes seen thus far.
+    const /** !Set<string> */ seenCodes = new Set();
+
+    /**
+     * Gets the list of language codes indicated by the preference name, and
+     * de-duplicates it with all other language codes.
+     * @param {string} prefName
+     * @return {!Array<string>}
+     */
+    const getPrefAndDedupe = prefName => {
+      const /** !Array<string> */ result =
+          this.getPref(prefName).value.filter(x => !seenCodes.has(x));
+      result.forEach(code => seenCodes.add(code));
+      return result;
+    };
+
+    const forcedCodes = getPrefAndDedupe('spellcheck.forced_dictionaries');
+    const forcedCodesSet = new Set(forcedCodes);
+    const blockedCodes = getPrefAndDedupe('spellcheck.blocked_dictionaries');
+    const blockedCodesSet = new Set(blockedCodes);
+    const enabledCodes = getPrefAndDedupe('spellcheck.dictionaries');
+
+    const /** !Array<SpellCheckLanguageState> */ on = [];
+    // We want to add newly enabled languages to the end of the "on" list, so we
+    // should explicitly move the forced languages to the front of the list.
+    for (const code of [...forcedCodes, ...enabledCodes]) {
+      const language = this.supportedLanguageMap_.get(code);
+      // language could be undefined if code is not in supportedLanguageMap_.
+      // This should be rare, but could happen if supportedLanguageMap_ is
+      // missing languages or the prefs are manually modified. We want to fail
+      // gracefully if this happens - throwing an error here would cause
+      // language settings to not load.
+      if (language) {
+        on.push({
+          language,
+          isManaged: forcedCodesSet.has(code),
           spellCheckEnabled: true,
+          downloadDictionaryStatus: null,
           downloadDictionaryFailureCount: 0,
         });
       }
     }
-    return forcedLanguages;
+
+    // Because the list of "spell check supported" languages is only exposed
+    // through "supported languages", we need to filter that list along with
+    // whether we've seen the language before.
+    // We don't want to split this list in "forced" / "not-forced" like the
+    // spell check on list above, as we don't want to explicitly surface / hide
+    // blocked languages to the user.
+    const /** !Array<SpellCheckLanguageState> */ off = [];
+
+    for (const language of supportedLanguages) {
+      // If spell check is off for this language, it must either not be in any
+      // spell check pref, or be in the blocked dictionaries pref.
+      if (language.supportsSpellcheck &&
+          (!seenCodes.has(language.code) ||
+           blockedCodesSet.has(language.code))) {
+        off.push({
+          language,
+          isManaged: blockedCodesSet.has(language.code),
+          spellCheckEnabled: false,
+          downloadDictionaryStatus: null,
+          downloadDictionaryFailureCount: 0
+        });
+      }
+    }
+
+    return {
+      on,
+      off,
+    };
   },
 
   /** @private */
@@ -485,8 +538,8 @@ Polymer({
       this.enabledLanguageSet_.add(enabledLanguageStates[l].language.code);
     }
 
-    const forcedSpellCheckLanguages =
-        this.getForcedSpellCheckLanguages_(enabledLanguageStates);
+    const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
+        this.getSpellCheckLanguages_(supportedLanguages);
 
     const alwaysTranslateLangauges =
         alwaysTranslateCodes.map(code => this.getLanguage(code));
@@ -495,8 +548,9 @@ Polymer({
       supported: supportedLanguages,
       enabled: enabledLanguageStates,
       translateTarget: translateTarget,
-      forcedSpellCheckLanguages: forcedSpellCheckLanguages,
       alwaysTranslate: alwaysTranslateLangauges,
+      spellCheckOnLanguages,
+      spellCheckOffLanguages,
     });
 
     if (cr.isChromeOS || cr.isWindows) {
@@ -598,10 +652,8 @@ Polymer({
 
   // <if expr="not is_macosx">
   /**
-   * Updates the dictionary download status for languages in
-   * |this.languages.enabled| and |this.languages.forcedSpellCheckLanguages| in
-   * order to track the number of times a spell check dictionary download has
-   * failed.
+   * Updates the dictionary download status for spell check languages in order
+   * to track the number of times a spell check dictionary download has failed.
    * @param {!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>}
    *     statuses
    * @private
@@ -612,7 +664,9 @@ Polymer({
       statusMap.set(status.languageCode, status);
     });
 
-    ['enabled', 'forcedSpellCheckLanguages'].forEach(collectionName => {
+    const collectionNames =
+        ['enabled', 'spellCheckOnLanguages', 'spellCheckOffLanguages'];
+    collectionNames.forEach(collectionName => {
       this.languages[collectionName].forEach((languageState, index) => {
         const status = statusMap.get(languageState.language.code);
         if (!status) {

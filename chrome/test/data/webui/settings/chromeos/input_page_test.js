@@ -541,6 +541,42 @@ suite('input page', () => {
           'none');
     });
 
+    test('can disable non-enabled spell check language', () => {
+      // Add a new language to spellcheck.dictionaries which isn't enabled.
+      languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'nb']);
+      Polymer.dom.flush();
+
+      let newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+      // The spell check list should have en-US (enabled), sw (disabled) and
+      // nb (enabled).
+      assertEquals(3, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[0].querySelector('cr-toggle').checked);
+      assertTrue(newSpellCheckList[1].textContent.includes('Swahili'));
+      assertFalse(newSpellCheckList[1].querySelector('cr-toggle').checked);
+      assertTrue(newSpellCheckList[2].textContent.includes('Norwegian Bokmål'));
+      assertTrue(newSpellCheckList[2].querySelector('cr-toggle').checked);
+
+      // Disable nb.
+      newSpellCheckList[2].querySelector('cr-toggle').click();
+      Polymer.dom.flush();
+      newSpellCheckList =
+          spellCheckListContainer.querySelectorAll('.list-item');
+
+      // The spell check list should have en-US (enabled) and sw (disabled).
+      assertEquals(2, newSpellCheckList.length);
+      assertTrue(
+          newSpellCheckList[0].textContent.includes('English (United States)'));
+      assertTrue(newSpellCheckList[0].querySelector('cr-toggle').checked);
+      assertTrue(newSpellCheckList[1].textContent.includes('Swahili'));
+      assertFalse(newSpellCheckList[1].querySelector('cr-toggle').checked);
+
+      assertDeepEquals(
+          ['en-US'], languageHelper.prefs.spellcheck.dictionaries.value);
+    });
+
     test(
         'does not show force-off spell check when language is not enabled',
         () => {
@@ -613,11 +649,13 @@ suite('input page', () => {
       assertEquals(spellCheckList.length, spellCheckLanguagesCount);
     });
 
-    test('toggle is disabled when there is no supported languages', () => {
+    test('toggle is disabled when there are no supported languages', () => {
       assertFalse(spellCheckToggle.disabled);
 
       // Empty out supported languages
-      languageHelper.setPrefValue('settings.language.preferred_languages', '');
+      for (const lang of languageHelper.languages.enabled) {
+        languageHelper.disableLanguage(lang.language.code);
+      }
 
       assertTrue(spellCheckToggle.disabled);
       assertFalse(spellCheckToggle.checked);

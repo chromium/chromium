@@ -120,8 +120,22 @@ suite('languages page', function() {
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
 
-      // Force-disable the same language via policy.
+      // Add the same language to spellcheck.dictionaries, but don't enable it.
       languageHelper.setPrefValue('spellcheck.forced_dictionaries', []);
+      languageHelper.setPrefValue('spellcheck.dictionaries', ['nb']);
+      flush();
+      debugger;
+      const prefEnabledNbLanguageRow =
+          spellCheckCollapse.querySelectorAll('.list-item')[2];
+      assertTrue(!!prefEnabledNbLanguageRow);
+      assertTrue(prefEnabledNbLanguageRow.querySelector('cr-toggle').checked);
+
+      // Disable the language.
+      prefEnabledNbLanguageRow.querySelector('cr-toggle').click();
+      flush();
+      assertEquals(2, spellCheckCollapse.querySelectorAll('.list-item').length);
+
+      // Force-disable the same language via policy.
       languageHelper.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       languageHelper.enableLanguage('nb');
       flush();
@@ -228,10 +242,8 @@ suite('languages page', function() {
           languagesPage.$$('#enableSpellcheckingToggle').subLabel, undefined);
 
       // Empty out supported languages
-      languageHelper.setPrefValue('intl.accept_languages', '');
-      if (isChromeOS) {
-        languageHelper.setPrefValue(
-            'settings.language.preferred_languages', '');
+      for (const lang of languageHelper.languages.enabled) {
+        languageHelper.disableLanguage(lang.language.code);
       }
       assertTrue(languagesPage.$$('#enableSpellcheckingToggle').disabled);
       assertFalse(languageHelper.getPref('browser.enable_spellchecking').value);

@@ -202,7 +202,7 @@ Polymer({
   // <if expr="not is_macosx">
   observers: [
     'updateSpellcheckLanguages_(languages.enabled.*, ' +
-        'languages.forcedSpellCheckLanguages.*)',
+        'languages.spellCheckOnLanguages.*)',
     'updateSpellcheckEnabled_(prefs.browser.enable_spellchecking.*)',
   ],
   // </if>
@@ -241,20 +241,20 @@ Polymer({
   /**
    * Returns an array of enabled languages, plus spellcheck languages that are
    * force-enabled by policy.
-   * @return {!Array<!LanguageState|!ForcedLanguageState>}
+   * @return {!Array<!LanguageState|!SpellCheckLanguageState>}
    * @private
    */
   getSpellCheckLanguages_() {
     const supportedSpellcheckLanguages =
-        /** @type {!Array<!LanguageState|!ForcedLanguageState>} */ (
+        /** @type {!Array<!LanguageState|!SpellCheckLanguageState>} */ (
             this.languages.enabled.filter(
                 (item) => item.language.supportsSpellcheck));
     const supportedSpellcheckLanguagesSet =
         new Set(supportedSpellcheckLanguages.map(x => x.language.code));
 
-    this.languages.forcedSpellCheckLanguages.forEach(forcedLanguage => {
-      if (!supportedSpellcheckLanguagesSet.has(forcedLanguage.language.code)) {
-        supportedSpellcheckLanguages.push(forcedLanguage);
+    this.languages.spellCheckOnLanguages.forEach(spellCheckLang => {
+      if (!supportedSpellcheckLanguagesSet.has(spellCheckLang.language.code)) {
+        supportedSpellcheckLanguages.push(spellCheckLang);
       }
     });
 
@@ -405,7 +405,7 @@ Polymer({
   /**
    * Name only supports clicking when language is not managed, supports
    * spellcheck, and the dictionary has been downloaded with no errors.
-   * @param {!LanguageState|!ForcedLanguageState} item
+   * @param {!LanguageState|!SpellCheckLanguageState} item
    * @return {boolean}
    * @private
    */
