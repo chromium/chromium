@@ -727,13 +727,18 @@ void TableView::OnItemsAdded(int start, int length) {
   DCHECK_GE(length, 0);
   DCHECK_LE(start + length, GetRowCount());
 
-  for (int i = 0; i < length; ++i)
+  for (int i = 0; i < length; ++i) {
+    // Increment selection model counter at start.
     selection_model_.IncrementFrom(start);
 
-  // Create the accessibility view for the new row and insert it in the
-  // virtual accessibility tree.
-  for (int i = start; i < start + length; i++)
-    GetViewAccessibility().AddVirtualChildView(CreateRowAccessibilityView(i));
+    // Append new virtual row to accessibility view.
+    const int virtual_children_count =
+        GetViewAccessibility().virtual_children().size();
+    const int next_index =
+        header_ ? virtual_children_count - 1 : virtual_children_count;
+    GetViewAccessibility().AddVirtualChildView(
+        CreateRowAccessibilityView(next_index));
+  }
 
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
   PreferredSizeChanged();

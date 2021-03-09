@@ -501,12 +501,7 @@ class TableViewTest : public ViewsTestBase,
   }
 
   void VerifyTableViewAndAXOrder(std::string expected_view_order) {
-    auto& virtual_children = table_->GetViewAccessibility().virtual_children();
-
-    // Makes sure the virtual children count takes into account of the header
-    // row.
-    int virtual_row_count = table_->GetRowCount() + (helper_->header() ? 1 : 0);
-    EXPECT_EQ(virtual_row_count, int{virtual_children.size()});
+    VerifyAXRowIndexes();
 
     // The table views should match the expected view order.
     EXPECT_EQ(expected_view_order, GetRowsInViewOrderAsString(table_));
@@ -518,6 +513,33 @@ class TableViewTest : public ViewsTestBase,
     }
 
     EXPECT_EQ(expected_view_order, GetRowsInVirtualViewAsString(table_));
+  }
+
+  // Verifies that there is an unique, properly-indexed virtual row for every
+  // row.
+  void VerifyAXRowIndexes() {
+    auto& virtual_children = table_->GetViewAccessibility().virtual_children();
+
+    // Makes sure the virtual row count factors in the presence of the header.
+    const int first_row_index = helper_->header() ? 1 : 0;
+    const int virtual_row_count = table_->GetRowCount() + first_row_index;
+    EXPECT_EQ(virtual_row_count, int{virtual_children.size()});
+
+    // Make sure every virtual row is valid.
+    for (int index = first_row_index; index < virtual_row_count; index++) {
+      const auto& row = virtual_children[index];
+      ASSERT_TRUE(row);
+
+      // Normalize the row index to account for the presence of a header if
+      // necessary.
+      const int normalized_index = index - first_row_index;
+
+      // Make sure the stored row index matches the row index in the table.
+      const ui::AXNodeData& row_data = row->GetCustomData();
+      const int stored_index =
+          row_data.GetIntAttribute(ax::mojom::IntAttribute::kTableRowIndex);
+      EXPECT_EQ(stored_index, normalized_index);
+    }
   }
 
   // Helper function for comparing the bounds of |table_|'s virtual
