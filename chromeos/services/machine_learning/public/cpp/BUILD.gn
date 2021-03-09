@@ -21,8 +21,7 @@ source_set("cpp") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
+source_set("stub") {
   sources = [
     "fake_service_connection.cc",
     "fake_service_connection.h",
@@ -43,7 +42,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":cpp",
-    ":test_support",
+    ":stub",
     "//base/test:test_support",
     "//chromeos/dbus/dlcservice:test_support",
     "//chromeos/dbus/machine_learning",

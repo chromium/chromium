@@ -88,7 +88,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/services/assistant/public/shared",
-    "//chromeos/services/machine_learning/public/cpp:test_support",
+    "//chromeos/services/machine_learning/public/cpp:stub",
     "//chromeos/services/machine_learning/public/mojom",
     "//components/prefs:prefs",
     "//components/prefs:test_support",

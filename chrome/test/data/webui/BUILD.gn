@@ -411,7 +411,7 @@ if (include_js_tests) {
         "nearby_share/nearby_browsertest.js",
         "nearby_share/shared/nearby_shared_v3_browsertest.js",
       ]
-      deps += [ "//chromeos/services/machine_learning/public/cpp:test_support" ]
+      deps += [ "//chromeos/services/machine_learning/public/cpp:stub" ]
     }
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

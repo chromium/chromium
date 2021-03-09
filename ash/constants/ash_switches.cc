@@ -616,6 +616,10 @@ const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 // for testing the policy behaviour on the DUT.
 const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 
+// Uses fake ml service impl to simulate CrOS ml service daemon. This should
+// only be used for lacros_chrome_browsertests that requires ml service.
+const char kUseFakeMLServiceForTest[] = "use-fake-ml-service-for-test";
+
 bool MemoryPressureHandlingEnabled() {
   if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==
       kMemoryPressureHandlingOff) {
