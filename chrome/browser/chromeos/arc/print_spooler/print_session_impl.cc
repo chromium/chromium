@@ -211,32 +211,33 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
 // static
 mojo::PendingRemote<mojom::PrintSessionHost> PrintSessionImpl::Create(
     std::unique_ptr<content::WebContents> web_contents,
-    std::unique_ptr<CustomTab> custom_tab,
+    aura::Window* arc_window,
     mojo::PendingRemote<mojom::PrintSessionInstance> instance) {
-  DCHECK(custom_tab);
+  DCHECK(arc_window);
   if (!instance)
     return mojo::NullRemote();
 
   // This object will be deleted when the mojo connection is closed.
   mojo::PendingRemote<mojom::PrintSessionHost> remote;
-  new PrintSessionImpl(std::move(web_contents), std::move(custom_tab),
-                       std::move(instance),
+  new PrintSessionImpl(std::move(web_contents), arc_window, std::move(instance),
                        remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
 
 PrintSessionImpl::PrintSessionImpl(
     std::unique_ptr<content::WebContents> web_contents,
-    std::unique_ptr<CustomTab> custom_tab,
+    aura::Window* arc_window,
     mojo::PendingRemote<mojom::PrintSessionInstance> instance,
     mojo::PendingReceiver<mojom::PrintSessionHost> receiver)
-    : ArcCustomTabModalDialogHost(std::move(custom_tab), web_contents.get()),
+    : ArcCustomTabModalDialogHost(std::make_unique<CustomTab>(arc_window),
+                                  web_contents.get()),
       instance_(std::move(instance)),
       session_receiver_(this, std::move(receiver)),
       web_contents_(std::move(web_contents)) {
   session_receiver_.set_disconnect_handler(
       base::BindOnce(&PrintSessionImpl::Close, weak_ptr_factory_.GetWeakPtr()));
   web_contents_->SetUserData(UserDataKey(), base::WrapUnique(this));
+  arc_window_observation_.Observe(arc_window);
 
   aura::Window* window = web_contents_->GetNativeView();
   custom_tab_->Attach(window);
@@ -258,6 +259,11 @@ PrintSessionImpl::~PrintSessionImpl() {
 
   base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                              base::BindOnce(&DeletePrintDocument, file_path));
+}
+
+void PrintSessionImpl::OnWindowDestroying(aura::Window* window) {
+  // The parent window is being destroyed. Close this print session.
+  Close();
 }
 
 void PrintSessionImpl::CreatePreviewDocument(

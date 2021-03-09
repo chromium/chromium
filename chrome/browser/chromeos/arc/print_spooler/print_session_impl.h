@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/arc_custom_tab_modal_dialog_host.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
@@ -22,24 +23,26 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace arc {
-class CustomTab;
 
 // Implementation of PrintSessionHost interface. Also used by other classes to
 // send print-related messages to ARC.
 class PrintSessionImpl : public mojom::PrintSessionHost,
                          public ArcCustomTabModalDialogHost,
                          public content::WebContentsUserData<PrintSessionImpl>,
-                         public printing::mojom::PrintRenderer {
+                         public printing::mojom::PrintRenderer,
+                         public aura::WindowObserver {
  public:
   static mojo::PendingRemote<mojom::PrintSessionHost> Create(
       std::unique_ptr<content::WebContents> web_contents,
-      std::unique_ptr<CustomTab> custom_tab,
+      aura::Window* arc_window,
       mojo::PendingRemote<mojom::PrintSessionInstance> instance);
 
   PrintSessionImpl(const PrintSessionImpl&) = delete;
@@ -49,9 +52,12 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
   // Called when print preview is closed.
   void OnPrintPreviewClosed();
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
  private:
   PrintSessionImpl(std::unique_ptr<content::WebContents> web_contents,
-                   std::unique_ptr<CustomTab> custom_tab,
+                   aura::Window* arc_window,
                    mojo::PendingRemote<mojom::PrintSessionInstance> instance,
                    mojo::PendingReceiver<mojom::PrintSessionHost> receiver);
   friend class content::WebContentsUserData<PrintSessionImpl>;
@@ -111,6 +117,10 @@ class PrintSessionImpl : public mojom::PrintSessionHost,
 
   // Web contents for the ARC custom tab.
   std::unique_ptr<content::WebContents> web_contents_;
+
+  // Observes the ARC window.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      arc_window_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
