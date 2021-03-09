@@ -2168,12 +2168,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (handler.handleMenuOrKeyboardAction(id, fromMenu)) return true;
         }
 
+        @BrowserProfileType
+        int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
+
         if (id == R.id.preferences_id) {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(this);
             RecordUserAction.record("MobileMenuSettings");
-            @BrowserProfileType
-            int type = Profile.getBrowserProfileTypeFromProfile(getCurrentTabModel().getProfile());
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.OpenSettingsFromMenu.PerProfileType", type,
                     BrowserProfileType.MAX_VALUE + 1);
@@ -2206,6 +2207,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             RecordUserAction.record("MobileMenuHistory");
             HistoryManagerUtils.showHistoryManager(
                     this, currentTab, getTabModelSelector().isIncognitoSelected());
+            RecordHistogram.recordEnumeratedHistogram("Android.OpenHistoryFromMenu.PerProfileType",
+                    type, BrowserProfileType.MAX_VALUE + 1);
             return true;
         }
 
