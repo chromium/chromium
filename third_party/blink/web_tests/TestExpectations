@@ -5732,3 +5732,6 @@ crbug.com/1185675 [ Mac ] virtual/gpu-rasterization/images/color-profile-object.
 crbug.com/1185676 [ Mac ] http/tests/devtools/tracing/timeline-js/timeline-js-line-level-profile-end-to-end.js [ Pass Failure ]
 
 crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Pass Failure ]
+
+# Sheriff 2021-03-09
+crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]
