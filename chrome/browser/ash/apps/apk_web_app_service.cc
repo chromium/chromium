@@ -83,11 +83,11 @@ ApkWebAppService::ApkWebAppService(Profile* profile) : profile_(profile) {
   // Can be null in tests.
   arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
   if (arc_app_list_prefs_)
-    arc_app_list_prefs_->AddObserver(this);
+    arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
 
   provider_ = web_app::WebAppProvider::Get(profile);
   DCHECK(provider_);
-  registrar_observer_.Add(&provider_->registrar());
+  registrar_observer_.Observe(&provider_->registrar());
 }
 
 ApkWebAppService::~ApkWebAppService() = default;
@@ -242,10 +242,8 @@ void ApkWebAppService::UpdateShelfPin(
 
 void ApkWebAppService::Shutdown() {
   // Can be null in tests.
-  if (arc_app_list_prefs_) {
-    arc_app_list_prefs_->RemoveObserver(this);
+  if (arc_app_list_prefs_)
     arc_app_list_prefs_ = nullptr;
-  }
 }
 
 void ApkWebAppService::OnPackageInstalled(

@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/apps/apk_web_app_installer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -112,8 +112,11 @@ class ApkWebAppService : public KeyedService,
   ArcAppListPrefs* arc_app_list_prefs_;
   web_app::WebAppProvider* provider_;
 
-  ScopedObserver<web_app::AppRegistrar, web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::AppRegistrar, web_app::AppRegistrarObserver>
       registrar_observer_{this};
+
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      arc_app_list_prefs_observer_{this};
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppService> weak_ptr_factory_{this};
