@@ -3332,6 +3332,11 @@
     // TODO(https://crbug.com/1148474).
     "expiry_milestone": 130
   },
+    {
+    "name": "lacros-web-apps",
+    "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 98
+  },
   {
     "name": "launcher-search-normalization",
     "owners": ["adafang", "wrong", "tby"],

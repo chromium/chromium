@@ -555,6 +555,11 @@ const base::Feature kKernelnextVMs{"KernelnextVMs",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const base::Feature kLacrosWebApps{"LacrosWebApps",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enables LiteVideos, a data-saving optimization that throttles media requests
 // to reduce the bitrate of adaptive media streams. Only for Lite mode users
 // (formerly DataSaver).

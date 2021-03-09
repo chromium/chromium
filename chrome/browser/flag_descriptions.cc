@@ -4544,6 +4544,9 @@ const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
     "Support for the experimental lacros-chrome browser.";
 
+const char kLacrosWebAppsName[] = " Lacros web apps";
+const char kLacrosWebAppsDescription[] = "Support web apps in Lacros browser.";
+
 const char kLimitAltTabToActiveDeskName[] =
     "Limit Alt-Tab windows to active desk";
 const char kLimitAltTabToActiveDeskDescription[] =

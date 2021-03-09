@@ -5454,6 +5454,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullRestoreDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFullRestore)},
 
+    {"lacros-web-apps", flag_descriptions::kLacrosWebAppsName,
+     flag_descriptions::kLacrosWebAppsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kLacrosWebApps)},
+
     {"use-fake-device-for-media-stream",
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,

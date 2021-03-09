@@ -2663,6 +2663,9 @@ extern const char kLacrosStabilityMoreStableDescription[];
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 
+extern const char kLacrosWebAppsName[];
+extern const char kLacrosWebAppsDescription[];
+
 extern const char kLimitAltTabToActiveDeskName[];
 extern const char kLimitAltTabToActiveDeskDescription[];
 
