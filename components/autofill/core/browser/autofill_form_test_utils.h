@@ -59,7 +59,6 @@ struct TestFormAttributes {
   const char* url = kFormUrl;
   const char* action = kFormActionUrl;
   base::Optional<url::Origin> main_frame_origin = base::nullopt;
-  bool is_formless_checkout = false;
   bool is_form_tag = true;
 };
 

@@ -70,7 +70,6 @@ autofill::FormData GenerateWithDataAccessor(
   // First determine the main non-string attributes not specific to particular
   // fields.
   result.is_form_tag = accessor->ConsumeBit();
-  result.is_formless_checkout = accessor->ConsumeBit();
 
   // To minimize wasting bits, string-based data itself gets extracted after all
   // numbers and flags are. Their length can be determined now, however. A

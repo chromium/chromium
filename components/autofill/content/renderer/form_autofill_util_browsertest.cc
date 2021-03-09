@@ -443,7 +443,7 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
   }
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
@@ -484,7 +484,7 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
   }
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   const struct {
@@ -527,7 +527,7 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   EXPECT_FALSE(autofill::form_util::IsWebElementVisible(control_elements[1]));
 
   autofill::FormData target;
-  EXPECT_TRUE(UnownedPasswordFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   ASSERT_EQ(2u, target.fields.size());

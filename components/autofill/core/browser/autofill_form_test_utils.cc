@@ -118,7 +118,6 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
     field.should_autocomplete = field_description.should_autocomplete;
     form_data.fields.push_back(field);
   }
-  form_data.is_formless_checkout = test_form_attributes.is_formless_checkout;
   form_data.is_form_tag = test_form_attributes.is_form_tag;
 
   return form_data;

@@ -277,10 +277,7 @@ bool ClickElement(const WebDocument& document,
 
 class FormAutofillTest : public ChromeRenderViewTest {
  public:
-  FormAutofillTest() : ChromeRenderViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-  }
+  FormAutofillTest() : ChromeRenderViewTest() {}
   ~FormAutofillTest() override {}
 
 #if defined(OS_WIN)
@@ -664,20 +661,6 @@ class FormAutofillTest : public ChromeRenderViewTest {
     // selected text.
     EXPECT_EQ(0, firstname.SelectionStart());
     EXPECT_EQ(0, firstname.SelectionEnd());
-  }
-
-  void TestUnmatchedUnownedForm(const char* html, const char* url_override) {
-    if (url_override)
-      LoadHTMLWithUrlOverride(html, url_override);
-    else
-      LoadHTML(html);
-
-    WebLocalFrame* web_frame = GetMainFrame();
-    ASSERT_NE(nullptr, web_frame);
-
-    FormCache form_cache(web_frame);
-    std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
-    ASSERT_EQ(0U, forms.size());
   }
 
   void TestFindFormForInputElement(const char* html, bool unowned) {
@@ -3564,40 +3547,6 @@ TEST_F(FormAutofillTest, PreviewFormForUnownedNonEnglishForm) {
   TestPreviewForm(kUnownedNonEnglishFormHtml, true, nullptr);
 }
 
-// Data that looks like an unowned form should NOT be matched unless an
-// additional indicator is present, such as title tag or url, to prevent false
-// positives. The fields that have an autocomplete attribute should match since
-// there is no chance of making a prediction error.
-
-TEST_F(FormAutofillTest, UnmatchedFormNoURL) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml, nullptr);
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormPathWithoutKeywords) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml,
-                           "http://example.test/path_without_keywords");
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormKeywordInQueryOnly) {
-  TestUnmatchedUnownedForm(kUnownedUntitledFormHtml,
-                           "http://example.test/search?q=checkout+in+query");
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormTitleWithoutKeywords) {
-  std::string wrong_title_html(
-      "<TITLE>This title has nothing to do with autofill</TITLE>");
-  wrong_title_html += kUnownedUntitledFormHtml;
-  TestUnmatchedUnownedForm(wrong_title_html.c_str(), nullptr);
-}
-
-TEST_F(FormAutofillTest, UnmatchedFormNonASCII) {
-  std::string html("<HEAD><TITLE>Non-ASCII soft hyphen in the middle of "
-                   "keyword prevents a match here: check\xC2\xADout"
-                   "</TITLE></HEAD>");
-  html.append(kUnownedUntitledFormHtml);
-  TestUnmatchedUnownedForm(html.c_str(), nullptr);
-}
-
 
 TEST_F(FormAutofillTest, Labels) {
   ExpectJohnSmithLabelsAndIdAttributes(
@@ -5373,7 +5322,7 @@ TEST_F(FormAutofillTest,
   ASSERT_EQ(2U, fieldsets.size());
 
   FormData form;
-  EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 
@@ -5436,7 +5385,7 @@ TEST_F(FormAutofillTest,
   ASSERT_EQ(1U, fieldsets.size());
 
   FormData form;
-  EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 
@@ -5488,7 +5437,7 @@ TEST_F(FormAutofillTest, UnownedFormElementsAndFieldSetsToFormDataWithForm) {
   ASSERT_TRUE(fieldsets.empty());
 
   FormData form;
-  EXPECT_FALSE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  EXPECT_FALSE(UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
       extract_mask, &form, nullptr));
 }
@@ -5511,21 +5460,8 @@ TEST_F(FormAutofillTest, FormlessForms) {
   ASSERT_TRUE(fieldsets.empty());
 
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
     FormData form;
-    EXPECT_FALSE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
-        extract_mask, &form, nullptr));
-  }
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-    FormData form;
-    EXPECT_TRUE(UnownedCheckoutFormElementsAndFieldSetsToFormData(
+    EXPECT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
         fieldsets, control_elements, nullptr, frame->GetDocument(), nullptr,
         extract_mask, &form, nullptr));
   }
@@ -5535,29 +5471,28 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
   struct {
     const char* description;
     const char* html;
-    const bool has_extracted_form;
+    const size_t number_of_extracted_forms;
     const bool is_form_tag;
-    const bool is_formless_checkout;
   } test_cases[] = {
       // An empty form should not be extracted
       {"Empty Form",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "</FORM>",
-       false, true, false},
+       0u, true},
       // A form with less than three fields with no autocomplete type(s) should
       // be extracted because no minimum is being enforced for upload.
       {"Small Form no autocomplete",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='text' id='firstname'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with less than three fields with at least one autocomplete type
       // should be extracted.
       {"Small Form w/ autocomplete",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='text' id='firstname' autocomplete='given-name'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with three or more fields should be extracted.
       {"3 Field Form",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
@@ -5566,33 +5501,32 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
        "  <INPUT type='text' id='email'/>"
        "  <INPUT type='submit' value='Send'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // An input field with an autocomplete attribute outside of a form should
-      // be extracted. The is_formless_checkout attribute should
-      // then be true.
+      // be extracted.
       {"Small, formless, with autocomplete",
        "<INPUT type='text' id='firstname' autocomplete='given-name'/>"
        "<INPUT type='submit' value='Send'/>",
-       true, false, false},
+       1u, false},
       // An input field without an autocomplete attribute outside of a form,
       // with no checkout hints, should not be extracted.
       {"Small, formless, no autocomplete",
        "<INPUT type='text' id='firstname'/>"
        "<INPUT type='submit' value='Send'/>",
-       false, false, false},
+       1u, false},
       // A form with one field which is password gets extracted.
       {"Password-Only",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='password' id='pw'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
       // A form with two fields which are passwords should be extracted.
       {"two passwords",
        "<FORM name='TestForm' action='http://abc.com' method='post'>"
        "  <INPUT type='password' id='pw'/>"
        "  <INPUT type='password' id='new_pw'/>"
        "</FORM>",
-       true, true, false},
+       1u, true},
   };
 
   for (auto test_case : test_cases) {
@@ -5604,12 +5538,9 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
 
     FormCache form_cache(web_frame);
     std::vector<FormData> forms = form_cache.ExtractNewForms(nullptr);
-    EXPECT_EQ(test_case.has_extracted_form, forms.size() == 1);
-
-    if (test_case.has_extracted_form) {
-      EXPECT_EQ(test_case.is_form_tag, forms[0].is_form_tag);
-      EXPECT_EQ(test_case.is_formless_checkout, forms[0].is_formless_checkout);
-    }
+    EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
+    if (!forms.empty())
+      EXPECT_EQ(test_case.is_form_tag, forms.back().is_form_tag);
   }
 }
 

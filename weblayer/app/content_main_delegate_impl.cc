@@ -189,8 +189,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
         autofill::features::kAutofillExtractAllDatalists);
     enabled_features.push_back(
         autofill::features::kAutofillSkipComparingInferredLabels);
-    disabled_features.push_back(
-        autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
   }
 #endif
 

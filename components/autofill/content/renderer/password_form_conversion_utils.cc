@@ -171,7 +171,7 @@ std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
     return nullptr;
 
   auto form_data = std::make_unique<FormData>();
-  if (!UnownedPasswordFormElementsAndFieldSetsToFormData(
+  if (!UnownedFormElementsAndFieldSetsToFormData(
           fieldsets, control_elements, nullptr, frame.GetDocument(),
           field_data_manager, form_util::EXTRACT_VALUE, form_data.get(),
           nullptr /* FormFieldData */)) {

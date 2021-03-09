@@ -597,12 +597,6 @@ class FormStructure {
   // True if the form is a <form>.
   bool is_form_tag_ = true;
 
-  // True if the form is made of unowned fields (i.e., not within a <form> tag)
-  // in what appears to be a checkout flow. This attribute is only calculated
-  // and used if features::kAutofillRestrictUnownedFieldsToFormlessCheckout is
-  // enabled, to prevent heuristics from running on formless non-checkout.
-  bool is_formless_checkout_ = false;
-
   // True if all form fields are password fields.
   bool all_fields_are_passwords_ = false;
 

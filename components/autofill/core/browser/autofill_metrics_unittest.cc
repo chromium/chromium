@@ -9583,9 +9583,6 @@ TEST_F(AutofillMetricsTest, DISABLED_AutofillSuggestionShownTest) {
 }
 
 TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-
   // Set up our form data.
   FormData form;
   form.unique_renderer_id = MakeFormRendererId();

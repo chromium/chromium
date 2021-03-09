@@ -148,7 +148,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1150895) Remove once launched.
        autofill::features::kAutofillParsingPatternsLanguageDetection},
       // Disabled
-      {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {});
 }
 
 void FormStructureBrowserTest::SetUp() {

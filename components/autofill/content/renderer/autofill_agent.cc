@@ -88,7 +88,7 @@ namespace autofill {
 
 using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
-using form_util::UnownedCheckoutFormElementsAndFieldSetsToFormData;
+using form_util::UnownedFormElementsAndFieldSetsToFormData;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
 using GenerationShowing = PasswordAutofillAgent::GenerationShowing;
@@ -613,7 +613,7 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
   const ExtractMask extract_mask = static_cast<ExtractMask>(
       form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
 
-  return UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  return UnownedFormElementsAndFieldSetsToFormData(
       fieldsets, control_elements, nullptr, document, field_data_manager_.get(),
       extract_mask, output, nullptr);
 }

@@ -162,7 +162,6 @@ struct FormData {
   bool is_action_empty;
   url.mojom.Origin main_frame_origin;
   bool is_form_tag;
-  bool is_formless_checkout;
   FormRendererId unique_renderer_id;
   SubmissionIndicatorEvent submission_event;
   array<FormFieldData> fields;

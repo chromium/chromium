@@ -2253,7 +2253,6 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
   for (let index = 0; index < count; index++) {
     const keyword = keywords[index];
     if (title.includes(keyword) || path.includes(keyword)) {
-      form['is_formless_checkout'] = true;
       return __gCrWeb.fill.formOrFieldsetsToFormData(
           null /* formElement*/, null /* formControlElement */, fieldsets,
           controlElements, extractMask, form, null /* field */);

@@ -243,10 +243,6 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
 
   static bool is_form_tag(const autofill::FormData& r) { return r.is_form_tag; }
 
-  static bool is_formless_checkout(const autofill::FormData& r) {
-    return r.is_formless_checkout;
-  }
-
   static autofill::FormRendererId unique_renderer_id(
       const autofill::FormData& r) {
     return r.unique_renderer_id;

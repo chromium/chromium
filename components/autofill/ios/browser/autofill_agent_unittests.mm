@@ -331,36 +331,6 @@ TEST_F(AutofillAgentTests,
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
-// Tests that when a user initiated form activity is registered the script to
-// extract forms is executed.
-TEST_F(AutofillAgentTests,
-       CheckIfSuggestionsAvailable_UserInitiatedActivity1FrameMessaging) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
-  enabled_features.push_back(
-      autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
-  FormSuggestionProviderQuery* form_query =
-      [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(0)
-                                            fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(1)
-                                                  fieldType:@"text"
-                                                       type:@"focus"
-                                                 typedValue:@""
-                                                    frameID:@"frameID"];
-
-  [autofill_agent_ checkIfSuggestionsAvailableForForm:form_query
-                                          isMainFrame:YES
-                                       hasUserGesture:YES
-                                             webState:&fake_web_state_
-                                    completionHandler:nil];
-  fake_web_state_.WasShown();
-  EXPECT_EQ("__gCrWeb.autofill.extractForms(1, true);",
-            fake_main_frame_->GetLastJavaScriptCall());
-}
-
 // Tests that when a non user initiated form activity is registered the
 // completion callback passed to the call to check if suggestions are available
 // is invoked with no suggestions.

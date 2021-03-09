@@ -194,7 +194,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
   }
 
   FormData synthetic_form;
-  if (!UnownedCheckoutFormElementsAndFieldSetsToFormData(
+  if (!UnownedFormElementsAndFieldSetsToFormData(
           fieldsets, control_elements, nullptr, document, field_data_manager,
           extract_mask, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);

@@ -558,50 +558,6 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
                                      UNKNOWN_TYPE}}}});
 }
 
-// // Verify that the heuristics are not run for non checkout formless forms.
-TEST_F(FormStructureTestImpl, Heuristics_FormlessNonCheckoutForm) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-
-  CheckFormStructureTestData(
-      {{{.description_for_logging = "Heuristics_NonCheckoutForm",
-         .fields = {{.role = ServerFieldType::NAME_FIRST,
-                     .autocomplete_attribute = "given-name"},
-                    {.role = ServerFieldType::NAME_LAST,
-                     .autocomplete_attribute = "family-name"},
-                    {.role = ServerFieldType::EMAIL_ADDRESS,
-                     .autocomplete_attribute = "email"}}},
-        {
-            .determine_heuristic_type = true,
-            .is_autofillable = true,
-            .field_count = 3,
-            .autofill_count = 3,
-        },
-        {.expected_html_type = {HTML_TYPE_GIVEN_NAME, HTML_TYPE_FAMILY_NAME,
-                                HTML_TYPE_EMAIL},
-         .expected_heuristic_type = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS}}},
-
-       {{.description_for_logging = "Heuristics_FormlessNonCheckoutForm",
-         .fields = {{.role = ServerFieldType::NAME_FIRST,
-                     .autocomplete_attribute = "given-name"},
-                    {.role = ServerFieldType::NAME_LAST,
-                     .autocomplete_attribute = "family-name"},
-                    {.role = ServerFieldType::EMAIL_ADDRESS,
-                     .autocomplete_attribute = "email"}},
-         .is_form_tag = false},
-        {
-            .determine_heuristic_type = true,
-            .is_autofillable = true,
-            .field_count = 3,
-            .autofill_count = 3,
-        },
-        {.expected_html_type = {HTML_TYPE_GIVEN_NAME, HTML_TYPE_FAMILY_NAME,
-                                HTML_TYPE_EMAIL},
-         .expected_heuristic_type = {UNKNOWN_TYPE, UNKNOWN_TYPE,
-                                     UNKNOWN_TYPE}}}});
-}
-
 // All fields share a common prefix which could confuse the heuristics. Test
 // that the common prefixes are stripped out before running heuristics.
 // This test ensures that |parseable_name| is used for heuristics.

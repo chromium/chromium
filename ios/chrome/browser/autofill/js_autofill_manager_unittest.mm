@@ -299,47 +299,10 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
 
 // Tests forms extraction method
 // (fetchFormsWithRequirements:minimumRequiredFieldsCount:completionHandler:)
-// when formless forms are restricted to checkout flows. No form is expected to
-// be extracted here.
-TEST_F(JsAutofillManagerTest, ExtractFormlessForms_RestrictToFormlessCheckout) {
-  // Restrict formless forms to checkout flows.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-
-  LoadHtml(kUnownedUntitledFormHtml);
-
-  __block BOOL block_was_called = NO;
-  __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
-  base::test::ios::WaitUntilCondition(^bool() {
-    return block_was_called;
-  });
-
-  // Verify that the form is empty.
-  NSArray* resultArray = [NSJSONSerialization
-      JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
-                 options:0
-                   error:nil];
-  EXPECT_NSNE(nil, resultArray);
-  EXPECT_EQ(0u, resultArray.count);
-}
-
-// Tests forms extraction method
-// (fetchFormsWithRequirements:minimumRequiredFieldsCount:completionHandler:)
 // when all formless forms are extracted. A formless form is expected to be
 // extracted here.
 TEST_F(JsAutofillManagerTest, ExtractFormlessForms_AllFormlessForms) {
   // Allow all formless forms to be extracted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
 
   LoadHtml(kUnownedUntitledFormHtml);
 
@@ -437,11 +400,6 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsNames) {
 
 // Tests the generation of the name of the fields.
 TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
-  // Allow all formless forms to be extracted.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
-
   NSString* HTML =
       @"<html><body><form name='testform' method='post'>"
        // Field with name and id

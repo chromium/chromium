@@ -630,7 +630,6 @@ FormStructure::FormStructure(const FormData& form)
       target_url_(form.action),
       main_frame_origin_(form.main_frame_origin),
       is_form_tag_(form.is_form_tag),
-      is_formless_checkout_(form.is_formless_checkout),
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(AutofillTickClock::NowTicks()),
       passwords_were_revealed_(false),
@@ -1077,10 +1076,7 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
 
 bool FormStructure::ShouldRunHeuristics() const {
   return active_field_count() >= kMinRequiredFieldsForHeuristics &&
-         HasAllowedScheme(source_url_) &&
-         (is_form_tag_ || is_formless_checkout_ ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillRestrictUnownedFieldsToFormlessCheckout));
+         HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldBeQueried() const {
@@ -1516,7 +1512,6 @@ FormData FormStructure::ToFormData() const {
   data.action = target_url_;
   data.main_frame_origin = main_frame_origin_;
   data.is_form_tag = is_form_tag_;
-  data.is_formless_checkout = is_formless_checkout_;
   data.unique_renderer_id = unique_renderer_id_;
 
   for (const auto& field : fields_) {

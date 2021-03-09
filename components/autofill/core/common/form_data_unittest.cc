@@ -84,7 +84,7 @@ void SerializeInVersion5Format(const FormData& form_data,
     SerializeFormFieldData(form_data.fields[i], pickle);
   }
   pickle->WriteBool(form_data.is_form_tag);
-  pickle->WriteBool(form_data.is_formless_checkout);
+  pickle->WriteBool(/*is_formless_checkout=*/true);
 }
 
 void SerializeInVersion6Format(const FormData& form_data,
@@ -98,7 +98,21 @@ void SerializeInVersion6Format(const FormData& form_data,
     SerializeFormFieldData(form_data.fields[i], pickle);
   }
   pickle->WriteBool(form_data.is_form_tag);
-  pickle->WriteBool(form_data.is_formless_checkout);
+  pickle->WriteBool(/*is_formless_checkout=*/true);
+  pickle->WriteString(form_data.main_frame_origin.Serialize());
+}
+
+void SerializeInVersion7Format(const FormData& form_data,
+                               base::Pickle* pickle) {
+  pickle->WriteInt(7);
+  pickle->WriteString16(form_data.name);
+  pickle->WriteString(form_data.url.spec());
+  pickle->WriteString(form_data.action.spec());
+  pickle->WriteInt(static_cast<int>(form_data.fields.size()));
+  for (size_t i = 0; i < form_data.fields.size(); ++i) {
+    SerializeFormFieldData(form_data.fields[i], pickle);
+  }
+  pickle->WriteBool(form_data.is_form_tag);
   pickle->WriteString(form_data.main_frame_origin.Serialize());
 }
 
@@ -122,7 +136,6 @@ void FillInDummyFormData(FormData* data) {
   data->main_frame_origin =
       url::Origin::Create(GURL("https://origin-example.com"));
   data->is_form_tag = true;            // Default value.
-  data->is_formless_checkout = false;  // Default value.
 
   FormFieldData field_data;
   field_data.label = base::ASCIIToUTF16("label");
@@ -240,7 +253,6 @@ TEST(FormDataTest, Serialize_v4_Deserialize_vCurrent) {
 TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
   FormData data;
   FillInDummyFormData(&data);
-  data.is_formless_checkout = true;
 
   base::Pickle pickle;
   SerializeInVersion5Format(data, &pickle);
@@ -255,10 +267,23 @@ TEST(FormDataTest, Serialize_v5_Deserialize_vCurrent) {
 TEST(FormDataTest, Serialize_v6_Deserialize_vCurrent) {
   FormData data;
   FillInDummyFormData(&data);
-  data.is_formless_checkout = true;
 
   base::Pickle pickle;
   SerializeInVersion6Format(data, &pickle);
+
+  base::PickleIterator iter(pickle);
+  FormData actual;
+  EXPECT_TRUE(DeserializeFormData(&iter, &actual));
+
+  EXPECT_TRUE(actual.SameFormAs(data));
+}
+
+TEST(FormDataTest, Serialize_v7_Deserialize_vCurrent) {
+  FormData data;
+  FillInDummyFormData(&data);
+
+  base::Pickle pickle;
+  SerializeInVersion7Format(data, &pickle);
 
   base::PickleIterator iter(pickle);
   FormData actual;

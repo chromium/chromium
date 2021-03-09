@@ -185,7 +185,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug/1165780): Remove once shared labels are launched.
        features::kAutofillEnableSupportForParsingWithSharedLabels},
       // Disabled
-      {features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() {}

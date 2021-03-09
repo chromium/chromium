@@ -274,13 +274,6 @@ const base::Feature kAutofillProfileImportFromUnfocusableFields{
 const base::Feature kAutofillProfileServerValidation{
     "AutofillProfileServerValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether or not a group of fields not enclosed in a form can be
-// considered a form. If this is enabled, unowned fields will only constitute
-// a form if there are signals to suggest that this might a checkout page.
-const base::Feature kAutofillRestrictUnownedFieldsToFormlessCheckout{
-    "AutofillRestrictUnownedFieldsToFormlessCheckout",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether or not overall prediction are retrieved from the cache.
 const base::Feature kAutofillRetrieveOverallPredictionsFromCache{
     "AutofillRetrieveOverallPredictionsFromCache",

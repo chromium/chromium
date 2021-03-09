@@ -53,8 +53,7 @@ using autofill::FormRendererId;
                                    (void (^)(NSString*))completionHandler {
   DCHECK(completionHandler);
 
-  bool restrictUnownedFieldsToFormlessCheckout = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
+  bool restrictUnownedFieldsToFormlessCheckout = false;
   std::vector<base::Value> parameters;
   parameters.push_back(base::Value(static_cast<int>(requiredFieldsCount)));
   parameters.push_back(base::Value(restrictUnownedFieldsToFormlessCheckout));

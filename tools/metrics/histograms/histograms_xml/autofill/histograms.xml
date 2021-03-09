@@ -1882,6 +1882,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.UnownedFieldsWereFiltered" enum="Boolean"
     expires_after="M77">
+  <obsolete>
+    Removed 03/2021 as it is no longer needed for analysis.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill@google.com</owner>
   <summary>

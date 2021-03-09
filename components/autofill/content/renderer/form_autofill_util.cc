@@ -1369,10 +1369,8 @@ bool FormOrFieldsetsToFormData(
     FormFieldData* field) {
   static base::NoDestructor<WebString> kLabel("label");
 
-  if (form_element)
-    DCHECK(fieldsets.empty());
-  if (field)
-    DCHECK(form_control_element);
+  DCHECK(!form_element || fieldsets.empty());
+  DCHECK(!field || form_control_element);
 
   // A map from a FormFieldData's name to the FormFieldData itself.
   std::map<WebFormControlElement, FormFieldData*> element_map;
@@ -1461,29 +1459,6 @@ bool FormOrFieldsetsToFormData(
   for (const auto& field : form_fields)
     form->fields.push_back(*field);
   return true;
-}
-
-bool UnownedFormElementsAndFieldSetsToFormData(
-    const std::vector<blink::WebElement>& fieldsets,
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    const blink::WebFormControlElement* element,
-    const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
-    FormData* form,
-    FormFieldData* field) {
-  form->url = GetCanonicalOriginForDocument(document);
-  if (document.GetFrame() && document.GetFrame()->Top()) {
-    form->main_frame_origin = document.GetFrame()->Top()->GetSecurityOrigin();
-  } else {
-    form->main_frame_origin = url::Origin();
-  }
-
-  form->is_form_tag = false;
-
-  return FormOrFieldsetsToFormData(nullptr, element, fieldsets,
-                                   control_elements, field_data_manager,
-                                   extract_mask, form, field);
 }
 
 // Check if a script modified username is suitable for Password Manager to
@@ -1940,7 +1915,7 @@ std::vector<WebFormControlElement> GetUnownedAutofillableFormFieldElements(
       GetUnownedFormFieldElements(elements, fieldsets));
 }
 
-bool UnownedCheckoutFormElementsAndFieldSetsToFormData(
+bool UnownedFormElementsAndFieldSetsToFormData(
     const std::vector<blink::WebElement>& fieldsets,
     const std::vector<blink::WebFormControlElement>& control_elements,
     const blink::WebFormControlElement* element,
@@ -1949,102 +1924,18 @@ bool UnownedCheckoutFormElementsAndFieldSetsToFormData(
     ExtractMask extract_mask,
     FormData* form,
     FormFieldData* field) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillRestrictUnownedFieldsToFormlessCheckout)) {
-    return UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, element, document, field_data_manager,
-        extract_mask, form, field);
+  form->url = GetCanonicalOriginForDocument(document);
+  if (document.GetFrame() && document.GetFrame()->Top()) {
+    form->main_frame_origin = document.GetFrame()->Top()->GetSecurityOrigin();
+  } else {
+    form->main_frame_origin = url::Origin();
   }
 
-  // Only attempt formless Autofill on checkout flows. This avoids the many
-  // false positives found on the non-checkout web. See
-  // http://crbug.com/462375.
-  WebElement html_element = document.DocumentElement();
+  form->is_form_tag = false;
 
-  // For now this restriction only applies to English-language pages, because
-  // the keywords are not translated. Note that an empty "lang" attribute
-  // counts as English.
-  std::string lang;
-  if (!html_element.IsNull())
-    lang = html_element.GetAttribute("lang").Utf8();
-  if (!lang.empty() &&
-      !base::StartsWith(lang, "en", base::CompareCase::INSENSITIVE_ASCII)) {
-    return UnownedFormElementsAndFieldSetsToFormData(
-        fieldsets, control_elements, element, document, field_data_manager,
-        extract_mask, form, field);
-  }
-
-  // A potential problem is that this only checks document.title(), but should
-  // actually check the main frame's title. Thus it may make bad decisions for
-  // iframes.
-  base::string16 title(base::ToLowerASCII(document.Title().Utf16()));
-
-  // Don't check the path for url's without a standard format path component,
-  // such as data:.
-  std::string path;
-  GURL url(document.Url());
-  if (url.IsStandard())
-    path = base::ToLowerASCII(url.path());
-
-  const char* const kKeywords[] = {"payment",  "checkout", "address",
-                                   "delivery", "shipping", "wallet"};
-
-  for (const auto* keyword : kKeywords) {
-    // Compare char16 elements of |title| with char elements of |keyword| using
-    // operator==.
-    auto title_pos = std::search(title.begin(), title.end(), keyword,
-                                 keyword + strlen(keyword));
-    if (title_pos != title.end() || path.find(keyword) != std::string::npos) {
-      form->is_formless_checkout = true;
-      // Found a keyword: treat this as an unowned form.
-      return UnownedFormElementsAndFieldSetsToFormData(
-          fieldsets, control_elements, element, document, field_data_manager,
-          extract_mask, form, field);
-    }
-  }
-
-  // Since it's not a checkout flow, only add fields that have a non-"off"
-  // autocomplete attribute to the formless autofill.
-  static base::NoDestructor<WebString> kOffAttribute("off");
-  static base::NoDestructor<WebString> kFalseAttribute("false");
-  std::vector<WebFormControlElement> elements_with_autocomplete;
-  for (const WebFormControlElement& element : control_elements) {
-    blink::WebString autocomplete = element.GetAttribute("autocomplete");
-    if (autocomplete.length() && autocomplete != *kOffAttribute &&
-        autocomplete != *kFalseAttribute) {
-      elements_with_autocomplete.push_back(element);
-    }
-  }
-
-  // http://crbug.com/841784
-  // Capture the number of times this formless checkout logic prevents a from
-  // being autofilled (fill logic expects to receive a autofill field entry,
-  // possibly not fillable, for each control element).
-  // Note: this will be fixed by http://crbug.com/806987
-  UMA_HISTOGRAM_BOOLEAN(
-      "Autofill.UnownedFieldsWereFiltered",
-      elements_with_autocomplete.size() != control_elements.size());
-
-  if (elements_with_autocomplete.empty())
-    return false;
-
-  return UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, elements_with_autocomplete, element, document,
-      field_data_manager, extract_mask, form, field);
-}
-
-bool UnownedPasswordFormElementsAndFieldSetsToFormData(
-    const std::vector<blink::WebElement>& fieldsets,
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    const blink::WebFormControlElement* element,
-    const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
-    FormData* form,
-    FormFieldData* field) {
-  return UnownedFormElementsAndFieldSetsToFormData(
-      fieldsets, control_elements, element, document, field_data_manager,
-      extract_mask, form, field);
+  return FormOrFieldsetsToFormData(nullptr, element, fieldsets,
+                                   control_elements, field_data_manager,
+                                   extract_mask, form, field);
 }
 
 bool FindFormAndFieldForFormControlElement(
@@ -2067,7 +1958,7 @@ bool FindFormAndFieldForFormControlElement(
     std::vector<WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
         GetUnownedAutofillableFormFieldElements(document.All(), &fieldsets);
-    return UnownedCheckoutFormElementsAndFieldSetsToFormData(
+    return UnownedFormElementsAndFieldSetsToFormData(
         fieldsets, control_elements, &element, document, field_data_manager,
         extract_mask, form, field);
   }

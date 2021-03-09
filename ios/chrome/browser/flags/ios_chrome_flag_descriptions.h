@@ -42,11 +42,6 @@ extern const char kAutofillSaveCardDismissOnNavigationDescription[];
 extern const char kAutofillSaveCardInfobarEditSupportName[];
 extern const char kAutofillSaveCardInfobarEditSupportDescription[];
 
-// Title and description for the flag to restrict extraction of formless forms
-// to checkout flows.
-extern const char kAutofillRestrictUnownedFieldsToFormlessCheckoutName[];
-extern const char kAutofillRestrictUnownedFieldsToFormlessCheckoutDescription[];
-
 // Title and description for the flag to enable rich autofill queries on
 // Canary/Dev.
 extern const char kAutofillRichMetadataQueriesName[];

@@ -195,8 +195,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
       features.EnableIfNotSet(
           autofill::features::kAutofillSkipComparingInferredLabels);
-      features.DisableIfNotSet(
-          autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout);
     }
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {

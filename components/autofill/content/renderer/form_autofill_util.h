@@ -199,27 +199,14 @@ GetUnownedAutofillableFormFieldElements(
     std::vector<blink::WebElement>* fieldsets);
 
 // Fills |form| with the form data derived from |fieldsets|, |control_elements|
-// and |origin|. If |field| is non-NULL, fill it with the FormField
-// representation for |element|.
+// and |origin|. If |field| is not nullptr, fills it with the FormFieldData
+// representation of |element|.
 // |extract_mask| usage and the return value are the same as
 // WebFormElementToFormData() above.
-// This function will return false and not perform any extraction if
-// |document| does not pertain to checkout.
-bool UnownedCheckoutFormElementsAndFieldSetsToFormData(
-    const std::vector<blink::WebElement>& fieldsets,
-    const std::vector<blink::WebFormControlElement>& control_elements,
-    const blink::WebFormControlElement* element,
-    const blink::WebDocument& document,
-    const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
-    FormData* form,
-    FormFieldData* field);
-
-// Same as above, but without the requirement that the elements only be
-// related to checkout. Field properties of |control_elements| will be copied
-// from |field_data_manager|, if the argument is not null and has corresponding
-// entries (see properties in FieldPropertiesFlags).
-bool UnownedPasswordFormElementsAndFieldSetsToFormData(
+// Returns false iff the extraction fails because the number of fields exceeds
+// |kMaxParseableFields|, or |field| and |element| are not nullptr but
+// |element| is not among |control_elements|.
+bool UnownedFormElementsAndFieldSetsToFormData(
     const std::vector<blink::WebElement>& fieldsets,
     const std::vector<blink::WebFormControlElement>& control_elements,
     const blink::WebFormControlElement* element,

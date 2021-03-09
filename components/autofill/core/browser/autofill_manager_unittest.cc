@@ -99,7 +99,6 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-using features::kAutofillRestrictUnownedFieldsToFormlessCheckout;
 using mojom::SubmissionIndicatorEvent;
 using mojom::SubmissionSource;
 
@@ -8959,12 +8958,6 @@ class OnFocusOnFormFieldTest : public AutofillManagerTest,
 
     has_active_screen_reader_ = GetParam();
     external_delegate_->set_has_active_screen_reader(has_active_screen_reader_);
-
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled
-        {},
-        // Disabled
-        {kAutofillRestrictUnownedFieldsToFormlessCheckout});
   }
 
   void TearDown() override {
