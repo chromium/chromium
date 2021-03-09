@@ -37,6 +37,7 @@
               'device_type': 'sailfish',
             },
           ],
+          'shards': 2,
         },
       },
       'android-pie-x86-rel': {
