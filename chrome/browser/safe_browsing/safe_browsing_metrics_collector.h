@@ -13,6 +13,10 @@
 
 class PrefService;
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace safe_browsing {
 
 // This class is for logging Safe Browsing metrics regularly. Metrics are logged
@@ -65,6 +69,12 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     MANAGED = 2
   };
 
+  struct Event {
+    Event(EventType type, base::Time timestamp);
+    EventType type;
+    base::Time timestamp;
+  };
+
   explicit SafeBrowsingMetricsCollector(PrefService* pref_service_);
   ~SafeBrowsingMetricsCollector() override = default;
 
@@ -81,11 +91,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
-  struct Event {
-    Event(EventType type, base::Time timestamp);
-    EventType type;
-    base::Time timestamp;
-  };
+
   static bool IsBypassEventType(const EventType& type);
   static std::string GetUserStateMetricSuffix(const UserState& user_state);
   static std::string GetEventTypeMetricSuffix(const EventType& event_type);
@@ -104,6 +110,9 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // Helper functions for Safe Browsing events in pref.
   void AddSafeBrowsingEventAndUserStateToPref(UserState user_state,
                                               EventType event_type);
+  base::Optional<SafeBrowsingMetricsCollector::Event>
+  GetLatestEventFromEventType(UserState user_state, EventType event_type);
+  const base::Value* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,
                          EventType event_type,
                          base::Time since_time);

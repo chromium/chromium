@@ -332,6 +332,42 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,
+       LogEnhancedProtectionDisabledMetrics_GetLastEnabledInterval) {
+  base::HistogramTester histograms;
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromHours(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                               /* sample */ 0,
+                               /* expected count */ 1);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                              /* expected_count */ 1);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(1));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                               /* sample */ 1,
+                               /* expected count */ 1);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                              /* expected_count */ 2);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                              /* expected_count */ 2);
+
+  task_environment_->FastForwardBy(base::TimeDelta::FromDays(7));
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  histograms.ExpectBucketCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                               /* sample */ 7,
+                               /* expected count */ 1);
+  histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastEnabledInterval",
+                              /* expected_count */ 3);
+}
+
+TEST_F(SafeBrowsingMetricsCollectorTest,
        LogEnhancedProtectionDisabledMetrics_NotLoggedIfNoEvent) {
   base::HistogramTester histograms;
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
