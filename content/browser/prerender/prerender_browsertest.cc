@@ -329,6 +329,12 @@ class PrerenderBrowserTest
   }
 
  private:
+  void SetUpCommandLine(base::CommandLine* command_line) final {
+    // Useful for testing CSP:prefetch-src
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableExperimentalWebPlatformFeatures);
+  }
+
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -1269,6 +1275,96 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, IndexedDBAccess) {
   // Read the added object from the initial page.
   EXPECT_EQ(prerender_value, EvalJs(shell()->web_contents(),
                                     JsReplace("readData($1);", prerender_key)));
+}
+
+// Tests that prerendering is gated behind CSP:prefetch-src
+// TODO(https://crbug.com/1185679) This is currently not the case. Fix this.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
+  GURL initial_url = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Add CSP:prefetch-src */empty.html
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = "Content-Security-Policy";
+    meta.content = "prefetch-src */empty.html";
+    document.getElementsByTagName('head')[0].appendChild(meta);
+  )"));
+
+  const char* kConsolePattern =
+      "Refused to prefetch content from "
+      "'https://a.test:*/prerender/add_prerender.html' because it violates the "
+      "following Content Security Policy directive: \"prefetch-src "
+      "*/empty.html\"*";
+
+  // Check what happens when a prerendering is blocked:
+  {
+    GURL disallowed_url = GetUrl("/title1.html");
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace("add_prerender($1)", disallowed_url)));
+    observer.WaitForTrigger(disallowed_url);
+    // TODO(https://crbug.com/1185679): This should be false:
+    EXPECT_TRUE(
+        GetPrerenderHostRegistry().FindHostByUrlForTesting(disallowed_url));
+    // TODO(https://crbug.com/1185679): This should be 1.
+    EXPECT_EQ(0u, console_observer.messages().size());
+  }
+
+  // Check what happens when prerendering isn't blocked.
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    AddPrerender(GetUrl("/empty.html"));
+    EXPECT_EQ(0u, console_observer.messages().size());
+  }
+}
+
+// Tests that prerendering is gated behind CSP:default-src
+// TODO(https://crbug.com/1185679) This is currently not the case. Fix this.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
+  GURL initial_url = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Add CSP:prefetch-src */empty.html
+  EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+    const meta = document.createElement('meta');
+    meta.httpEquiv = "Content-Security-Policy";
+    meta.content = "default-src */empty.html; script-src 'unsafe-eval'";
+    document.getElementsByTagName('head')[0].appendChild(meta);
+  )"));
+
+  const char* kConsolePattern =
+      "Refused to prefetch content from "
+      "'https://a.test:*/prerender/add_prerender.html' because it violates the "
+      "following Content Security Policy directive: \"default-src "
+      "*/empty.html\"*";
+
+  // Check what happens when a prerendering is blocked:
+  {
+    GURL disallowed_url = GetUrl("/title1.html");
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace("add_prerender($1)", disallowed_url)));
+    observer.WaitForTrigger(disallowed_url);
+    // TODO(https://crbug.com/1185679): This should be false:
+    EXPECT_TRUE(
+        GetPrerenderHostRegistry().FindHostByUrlForTesting(disallowed_url));
+    // TODO(https://crbug.com/1185679): This should be 1.
+    EXPECT_EQ(0u, console_observer.messages().size());
+  }
+
+  // Check what happens when prerendering isn't blocked.
+  {
+    WebContentsConsoleObserver console_observer(web_contents());
+    console_observer.SetPattern(kConsolePattern);
+    AddPrerender(GetUrl("/empty.html"));
+    EXPECT_EQ(0u, console_observer.messages().size());
+  }
 }
 
 class PrerenderFileSystemAccessBrowserTest : public PrerenderBrowserTest {
