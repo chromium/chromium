@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/power_metrics/android_battery_metrics.h"
+#include "content/browser/android/battery_metrics.h"
 
 #include "base/android/radio_utils.h"
 #include "base/bind.h"
@@ -19,7 +19,7 @@
 const base::Feature kForegroundRadioStateCountWakeups{
     "ForegroundRadioStateCountWakeups", base::FEATURE_DISABLED_BY_DEFAULT};
 
-namespace power_metrics {
+namespace content {
 namespace {
 
 void Report30SecondRadioUsage(int64_t tx_bytes, int64_t rx_bytes, int wakeups) {
@@ -137,10 +137,17 @@ void ReportAveragedDrain(int capacity_consumed,
 constexpr base::TimeDelta AndroidBatteryMetrics::kMetricsInterval;
 constexpr base::TimeDelta AndroidBatteryMetrics::kRadioStateInterval;
 
+// static
+AndroidBatteryMetrics* AndroidBatteryMetrics::GetInstance() {
+  static base::NoDestructor<AndroidBatteryMetrics> instance;
+  return instance.get();
+}
+
 AndroidBatteryMetrics::AndroidBatteryMetrics()
     : app_visible_(false),
       on_battery_power_(base::PowerMonitor::IsOnBatteryPower()) {
   base::PowerMonitor::AddObserver(this);
+  content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   UpdateMetricsEnabled();
 }
 
@@ -148,7 +155,7 @@ AndroidBatteryMetrics::~AndroidBatteryMetrics() {
   base::PowerMonitor::RemoveObserver(this);
 }
 
-void AndroidBatteryMetrics::OnAppVisibilityChanged(bool visible) {
+void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   app_visible_ = visible;
   UpdateMetricsEnabled();
@@ -278,4 +285,4 @@ bool AndroidBatteryMetrics::IsMeasuringDrainExclusively() const {
   return observed_capacity_drops_ >= 2;
 }
 
-}  // namespace power_metrics
+}  // namespace content

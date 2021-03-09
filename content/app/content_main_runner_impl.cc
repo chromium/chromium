@@ -169,6 +169,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/system/sys_info.h"
+#include "content/browser/android/battery_metrics.h"
 #include "content/browser/android/browser_startup_controller.h"
 #include "content/common/android/cpu_affinity.h"
 #endif
@@ -1006,8 +1007,17 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
     tracing::InitTracingPostThreadPoolStartAndFeatureList();
 
+    // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
+    // initializing it again if it has already been initialized.
+    base::PowerMonitor::Initialize(
+        std::make_unique<base::PowerMonitorDeviceSource>());
+
 #if defined(OS_ANDROID)
     SetupCpuTimeMetrics();
+
+    // Requires base::PowerMonitor to be initialized first.
+    AndroidBatteryMetrics::GetInstance();
+
     // For child processes, this requires allowing of the
     // sched_setaffinity() syscall in the sandbox (baseline_policy_android.cc).
     // When this call is removed, the sandbox allowlist should be updated too.
@@ -1019,11 +1029,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
     discardable_shared_memory_manager_ =
         std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
-
-    // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
-    // initializing it again if it has already been initialized.
-    base::PowerMonitor::Initialize(
-        std::make_unique<base::PowerMonitorDeviceSource>());
 
     // Requires base::PowerMonitor to be initialized first.
     power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();

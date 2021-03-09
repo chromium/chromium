@@ -2,30 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POWER_METRICS_ANDROID_BATTERY_METRICS_H_
-#define COMPONENTS_POWER_METRICS_ANDROID_BATTERY_METRICS_H_
+#ifndef CONTENT_BROWSER_ANDROID_BATTERY_METRICS_H_
+#define CONTENT_BROWSER_ANDROID_BATTERY_METRICS_H_
 
 #include "base/android/radio_utils.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "content/common/process_visibility_tracker.h"
 
-namespace power_metrics {
+namespace content {
 
 // Records metrics around battery usage on Android. The metrics are only tracked
-// while the device is not charging and the app is visible (embedder should call
-// OnAppVisibilityChanged()). This class is not thread-safe.
-class AndroidBatteryMetrics : public base::PowerObserver {
+// while the device is not charging and the app is visible. This class is not
+// thread-safe.
+class AndroidBatteryMetrics
+    : public base::PowerObserver,
+      public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
+  static AndroidBatteryMetrics* GetInstance();
+
+  // ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
+  void OnVisibilityChanged(bool visible) override;
+
+ private:
+  friend class base::NoDestructor<AndroidBatteryMetrics>;
   AndroidBatteryMetrics();
   ~AndroidBatteryMetrics() override;
 
-  // Should be called by the embedder when the embedder app becomes visible or
-  // invisible.
-  void OnAppVisibilityChanged(bool visible);
-
- private:
   // base::PowerObserver implementation:
   void OnPowerStateChange(bool on_battery_power) override;
 
@@ -68,6 +74,6 @@ class AndroidBatteryMetrics : public base::PowerObserver {
   DISALLOW_COPY_AND_ASSIGN(AndroidBatteryMetrics);
 };
 
-}  // namespace power_metrics
+}  // namespace content
 
-#endif  // COMPONENTS_POWER_METRICS_ANDROID_BATTERY_METRICS_H_
+#endif  // CONTENT_BROWSER_ANDROID_BATTERY_METRICS_H_

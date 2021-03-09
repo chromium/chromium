@@ -96,15 +96,8 @@ VisibilityMetricsLogger* AwBrowserProcess::visibility_metrics_logger() {
   if (!visibility_metrics_logger_) {
     visibility_metrics_logger_ = std::make_unique<VisibilityMetricsLogger>();
 
-    // Now that we may become visible, also initialize AndroidBatteryMetrics.
-    battery_metrics_ = std::make_unique<power_metrics::AndroidBatteryMetrics>();
     visibility_metrics_logger_->SetOnVisibilityChangedCallback(
         base::BindRepeating([](bool visible) {
-          // TODO(crbug.com/1177542): make AndroidBatteryMetrics an observer of
-          // ProcessVisibilityTracker and remove this.
-          AwBrowserProcess::GetInstance()
-              ->battery_metrics_->OnAppVisibilityChanged(visible);
-
           content::OnBrowserVisibilityChanged(visible);
         }));
   }

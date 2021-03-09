@@ -3294,7 +3294,6 @@ static_library("browser") {
       "//components/payments/content/android",
       "//components/payments/content/android:jni_headers",
       "//components/permissions/android:native",
-      "//components/power_metrics",
       "//components/power_scheduler",
       "//components/query_tiles",
       "//components/reading_list/features:flags",

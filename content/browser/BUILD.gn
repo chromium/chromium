@@ -2033,6 +2033,8 @@ source_set("browser") {
       "android/app_web_message_port.cc",
       "android/background_sync_network_observer_android.cc",
       "android/background_sync_network_observer_android.h",
+      "android/battery_metrics.cc",
+      "android/battery_metrics.h",
       "android/browser_startup_controller.cc",
       "android/browser_startup_controller.h",
       "android/content_feature_list.cc",
