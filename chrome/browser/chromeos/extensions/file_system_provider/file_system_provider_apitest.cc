@@ -247,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, WriteFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Extension) {
-  ASSERT_TRUE(RunComponentExtensionTest("file_system_provider/extension"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "file_system_provider/extension", .load_as_component = true}))
       << message_;
 }
 
@@ -296,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, ExecuteAction) {
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_Extension) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(
-      RunComponentExtensionTest("file_system_provider/unresponsive_extension"))
+      RunExtensionTest({.name = "file_system_provider/unresponsive_extension",
+                        .load_as_component = true}))
       << message_;
 }
 

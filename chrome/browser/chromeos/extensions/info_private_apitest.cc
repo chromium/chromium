@@ -69,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSet) {
   ASSERT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kLanguageSendFunctionKeys));
 
-  ASSERT_TRUE(RunComponentExtensionTest("chromeos_info_private/basic"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "chromeos_info_private/basic", .load_as_component = true}))
       << message_;
 
   // Check that all accessibility settings have been flipped by the test.
@@ -91,8 +92,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSetDockedMagnifier) {
   PrefService* prefs = profile()->GetPrefs();
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled));
 
-  ASSERT_TRUE(RunComponentExtensionTestWithArg("chromeos_info_private/basic",
-                                               "dockedMagnifier"))
+  ASSERT_TRUE(RunExtensionTest({.name = "chromeos_info_private/basic",
+                                .custom_arg = "dockedMagnifier",
+                                .load_as_component = true}))
       << message_;
 
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kDockedMagnifierEnabled));
@@ -103,8 +105,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, TestGetAndSetScreenMagnifier) {
   ASSERT_FALSE(
       prefs->GetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled));
 
-  ASSERT_TRUE(RunComponentExtensionTestWithArg("chromeos_info_private/basic",
-                                               "screenMagnifier"))
+  ASSERT_TRUE(RunExtensionTest({.name = "chromeos_info_private/basic",
+                                .custom_arg = "screenMagnifier",
+                                .load_as_component = true}))
       << message_;
 
   ASSERT_TRUE(

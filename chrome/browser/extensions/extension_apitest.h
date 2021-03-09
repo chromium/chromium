@@ -101,15 +101,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // LoadOptions.
   bool RunExtensionTest(const char* extension_name) WARN_UNUSED_RESULT;
 
-  // Same as RunExtensionTest, but loads extension as component.
-  bool RunComponentExtensionTest(const std::string& extension_name)
-      WARN_UNUSED_RESULT;
-
-  // Same as RunComponentExtensionTest, but provides extra arg.
-  bool RunComponentExtensionTestWithArg(const std::string& extension_name,
-                                        const char* custom_arg)
-      WARN_UNUSED_RESULT;
-
   // If not empty, Load |extension_name|, load |page_url| and wait for pass /
   // fail notification from the extension API on the page. Note that if
   // |page_url| is not a valid url, it will be treated as a resource within

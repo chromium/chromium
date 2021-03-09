@@ -182,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/has_permissions_whitelisted"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_ime/has_permissions_whitelisted",
+       .load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunPlatformAppTestWithFlags(
@@ -193,8 +194,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNoPermissions) {
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/no_permissions_whitelisted"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_ime/no_permissions_whitelisted",
+       .load_as_component = true}))
       << message_;
 
   EXPECT_TRUE(RunPlatformAppTest(
@@ -208,8 +210,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
   command_line->AppendSwitchASCII(switches::kAppId,
                                   "jkghodnilhceideoidjikpgommlajknk");
 
-  EXPECT_TRUE(RunComponentExtensionTest(
-      "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen",
+       .load_as_component = true}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

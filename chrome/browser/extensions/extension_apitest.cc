@@ -170,19 +170,6 @@ bool ExtensionApiTest::RunExtensionTest(const RunOptions& run_options,
   return true;
 }
 
-bool ExtensionApiTest::RunComponentExtensionTest(
-    const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
-                              kFlagLoadAsComponent);
-}
-
-bool ExtensionApiTest::RunComponentExtensionTestWithArg(
-    const std::string& extension_name,
-    const char* custom_arg) {
-  return RunExtensionTestImpl(extension_name, std::string(), custom_arg,
-                              kFlagNone, kFlagLoadAsComponent);
-}
-
 bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
                                            const std::string& page_url) {
   return RunExtensionSubtestWithArgAndFlags(extension_name, page_url, nullptr,

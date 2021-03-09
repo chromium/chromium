@@ -20,5 +20,7 @@ class CommandLinePrivateApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CommandLinePrivateApiTest, Basics) {
-  EXPECT_TRUE(RunComponentExtensionTest("command_line/basics")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "command_line/basics", .load_as_component = true}))
+      << message_;
 }

@@ -9,5 +9,7 @@
 using ResourcesPrivateApiTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ResourcesPrivateApiTest, GetStrings) {
-  ASSERT_TRUE(RunComponentExtensionTest("resources_private/get_strings"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "resources_private/get_strings", .load_as_component = true}))
+      << message_;
 }
