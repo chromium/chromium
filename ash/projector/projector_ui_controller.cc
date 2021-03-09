@@ -51,16 +51,11 @@ void ProjectorUiController::ShowToolbar() {
 }
 
 void ProjectorUiController::CloseToolbar() {
+  if (!projector_bar_widget_)
+    return;
+
   projector_bar_widget_->Close();
   model_.SetBarEnabled(false);
-}
-
-void ProjectorUiController::ToggleToolbar() {
-  if (model_.bar_enabled()) {
-    CloseToolbar();
-  } else {
-    ShowToolbar();
-  }
 }
 
 void ProjectorUiController::OnKeyIdeaMarked() {

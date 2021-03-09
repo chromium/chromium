@@ -15,7 +15,8 @@ namespace ash {
 ProjectorControllerImpl::ProjectorControllerImpl()
     : ui_controller_(std::make_unique<ash::ProjectorUiController>(this)),
       metadata_controller_(
-          std::make_unique<ash::ProjectorMetadataController>()) {}
+          std::make_unique<ash::ProjectorMetadataController>()),
+      projector_session_(std::make_unique<ash::ProjectorSessionImpl>()) {}
 
 ProjectorControllerImpl::~ProjectorControllerImpl() = default;
 
@@ -54,6 +55,10 @@ void ProjectorControllerImpl::ShowToolbar() {
   // TODO(yilkal): Projector toolbar shouldn't be shown if soda is not
   // available.
   ui_controller_->ShowToolbar();
+}
+
+void ProjectorControllerImpl::CloseToolbar() {
+  ui_controller_->CloseToolbar();
 }
 
 void ProjectorControllerImpl::SetCaptionState(bool is_on) {

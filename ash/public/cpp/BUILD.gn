@@ -227,6 +227,8 @@ component("cpp") {
     "projector/projector_client.h",
     "projector/projector_controller.cc",
     "projector/projector_controller.h",
+    "projector/projector_session.cc",
+    "projector/projector_session.h",
     "quick_answers/controller/quick_answers_browser_client.cc",
     "quick_answers/controller/quick_answers_browser_client.h",
     "quick_answers/controller/quick_answers_controller.cc",

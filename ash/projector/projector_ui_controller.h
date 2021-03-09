@@ -28,9 +28,6 @@ class ASH_EXPORT ProjectorUiController {
   virtual void ShowToolbar();
   // Close Projector toolbar. Virtual for testing.
   virtual void CloseToolbar();
-  // Toggle Projector toolbar based on the toolbar visibility state.
-  // Virtual for testing.
-  virtual void ToggleToolbar();
   // Invoked when key idea is marked to show a toast. Virtual for testing.
   virtual void OnKeyIdeaMarked();
   // Invoked when transcription is available for rendering. Virtual for testing.

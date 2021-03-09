@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 
 namespace base {
@@ -40,6 +41,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
 
   // Shows projector toolbar.
   void ShowToolbar();
+  // Close projector toolbar.
+  void CloseToolbar();
 
   // Set caption on/off state.
   void SetCaptionState(bool is_on);
@@ -61,6 +64,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   bool is_eligible() const { return is_speech_recognition_available_; }
+  ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
  private:
   // Starts or stops the speech recognition session.
@@ -70,6 +74,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   ProjectorClient* client_ = nullptr;
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
+  std::unique_ptr<ProjectorSessionImpl> projector_session_;
 
   // Whether the caption bubble ui is being shown or not.
   bool is_caption_on_ = false;
