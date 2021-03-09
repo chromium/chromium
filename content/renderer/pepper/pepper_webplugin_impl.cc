@@ -29,7 +29,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -47,7 +46,6 @@ using blink::WebPlugin;
 using blink::WebPluginContainer;
 using blink::WebPluginParams;
 using blink::WebPrintParams;
-using blink::WebSize;
 using blink::WebString;
 using blink::WebURL;
 using blink::WebVector;

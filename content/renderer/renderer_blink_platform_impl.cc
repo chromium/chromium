@@ -118,7 +118,6 @@ using blink::Platform;
 using blink::WebAudioDevice;
 using blink::WebAudioLatencyHint;
 using blink::WebMediaStreamTrack;
-using blink::WebSize;
 using blink::WebString;
 using blink::WebURL;
 using blink::WebVector;

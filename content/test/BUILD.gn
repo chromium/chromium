@@ -369,8 +369,6 @@ static_library("test_support") {
     "test_web_contents_factory.cc",
     "web_contents_observer_consistency_checker.cc",
     "web_contents_observer_consistency_checker.h",
-    "web_gesture_curve_mock.cc",
-    "web_gesture_curve_mock.h",
   ]
 
   configs += [

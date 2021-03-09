@@ -8,7 +8,6 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "content/public/renderer/render_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -35,7 +34,7 @@ class FormControlClickDetectionTest : public ChromeRenderViewTest {
         "  <input type='button' id='button'></input><br>"
         "  <input type='button' id='button_2' disabled></input><br>"
         "</form>");
-    GetWebFrameWidget()->Resize(blink::WebSize(500, 500));
+    GetWebFrameWidget()->Resize(gfx::Size(500, 500));
     GetWebFrameWidget()->SetFocus(true);
     blink::WebDocument document = GetMainFrame()->GetDocument();
     text_ = document.GetElementById("text_1");

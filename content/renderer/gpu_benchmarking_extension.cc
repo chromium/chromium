@@ -120,7 +120,6 @@ using blink::GpuBenchmarkingContext;
 using blink::WebImageCache;
 using blink::WebLocalFrame;
 using blink::WebPrivatePtr;
-using blink::WebSize;
 using blink::WebView;
 
 namespace content {
@@ -491,7 +490,7 @@ static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
   const float kMarginLeft = 29.0f;   // 0.40 inch
   const int kContentWidth = 555;     // 7.71 inch
   const int kContentHeight = 735;    // 10.21 inch
-  blink::WebPrintParams params(blink::WebSize(kContentWidth, kContentHeight));
+  blink::WebPrintParams params(gfx::Size(kContentWidth, kContentHeight));
   params.printer_dpi = 300;
   uint32_t page_count = frame->PrintBegin(params, blink::WebNode());
   for (uint32_t i = 0; i < page_count; ++i) {

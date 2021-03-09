@@ -684,8 +684,8 @@ void WebPagePopupImpl::Resize(const gfx::Size& new_size_in_viewport) {
   SetWindowRect(IntRect(window_rect_in_dips));
 
   if (page_) {
-    MainFrame().View()->Resize(WebSize(new_size_in_viewport));
-    page_->GetVisualViewport().SetSize(WebSize(new_size_in_viewport));
+    MainFrame().View()->Resize(IntSize(new_size_in_viewport));
+    page_->GetVisualViewport().SetSize(IntSize(new_size_in_viewport));
   }
 }
 

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"

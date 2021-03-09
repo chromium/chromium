@@ -1077,7 +1077,7 @@ gfx::Size WebViewImpl::Size() {
 }
 
 void WebViewImpl::ResizeVisualViewport(const gfx::Size& new_size) {
-  GetPage()->GetVisualViewport().SetSize(WebSize(new_size));
+  GetPage()->GetVisualViewport().SetSize(IntSize(new_size));
   GetPage()->GetVisualViewport().ClampToBoundaries();
 }
 

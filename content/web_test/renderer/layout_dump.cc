@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -20,7 +19,6 @@ namespace content {
 using blink::TestWebFrameContentDumper;
 using blink::WebFrame;
 using blink::WebLocalFrame;
-using blink::WebSize;
 
 namespace {
 

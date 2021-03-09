@@ -33,7 +33,6 @@
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"

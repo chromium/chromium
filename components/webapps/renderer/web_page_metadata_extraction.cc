@@ -41,11 +41,11 @@ void AddInstallIcon(const WebElement& link,
 
   mojom::WebPageIconInfoPtr icon_info(mojom::WebPageIconInfo::New());
   if (link.HasAttribute("sizes")) {
-    blink::WebVector<blink::WebSize> icon_sizes =
+    blink::WebVector<gfx::Size> icon_sizes =
         blink::WebIconSizesParser::ParseIconSizes(link.GetAttribute("sizes"));
-    if (icon_sizes.size() == 1 && icon_sizes[0].width != 0 &&
-        icon_sizes[0].height == icon_sizes[0].width) {
-      icon_info->square_size_px = icon_sizes[0].width;
+    if (icon_sizes.size() == 1 && icon_sizes[0].width() != 0 &&
+        icon_sizes[0].height() == icon_sizes[0].width()) {
+      icon_info->square_size_px = icon_sizes[0].width();
     }
   }
   icon_info->url = url;

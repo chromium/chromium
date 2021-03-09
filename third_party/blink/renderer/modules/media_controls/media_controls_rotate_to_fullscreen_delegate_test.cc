@@ -8,7 +8,6 @@
 #include "services/device/public/mojom/screen_orientation.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/widget/screen_orientation.mojom-blink.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"

@@ -19,7 +19,6 @@
 #include "content/public/renderer/render_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -268,7 +267,7 @@ void AwRenderFrameExt::HitTest(const gfx::PointF& touch_center,
 
   const blink::WebHitTestResult result = webview->HitTestResultForTap(
       gfx::Point(touch_center.x(), touch_center.y()),
-      blink::WebSize(touch_area.width(), touch_area.height()));
+      gfx::Size(touch_area.width(), touch_area.height()));
   auto data = mojom::HitTestData::New();
 
   GURL absolute_image_url = result.AbsoluteImageURL();

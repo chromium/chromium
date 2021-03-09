@@ -454,7 +454,7 @@ TEST_P(PaintAndRasterInvalidationTest, FullInvalidationWithHTMLTransform) {
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
-  GetDocument().View()->Resize(WebSize(500, 500));
+  GetDocument().View()->Resize(IntSize(500, 500));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_THAT(GetRasterInvalidationTracking()->Invalidations(),

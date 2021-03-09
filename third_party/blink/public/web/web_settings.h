@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
-#include "third_party/blink/public/platform/web_size.h"
 
 namespace blink {
 

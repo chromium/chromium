@@ -215,7 +215,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
   void ScriptedPrint(bool user_initiated) override {
     // This is using the main frame for the size, but maybe it should be using
     // the frame's size.
-    blink::WebSize page_size_in_pixels =
+    gfx::Size page_size_in_pixels =
         frame_proxy()->GetLocalRootWebFrameWidget()->Size();
     if (page_size_in_pixels.IsEmpty())
       return;

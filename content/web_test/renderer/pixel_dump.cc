@@ -48,16 +48,16 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame) {
 
   uint32_t page_count =
       web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
-  blink::WebSize spool_size =
+  gfx::Size spool_size =
       web_frame->SpoolSizeInPixelsForTesting(page_size_in_pixels, page_count);
 
   bool is_opaque = false;
 
   SkBitmap bitmap;
-  if (!bitmap.tryAllocN32Pixels(spool_size.width, spool_size.height,
+  if (!bitmap.tryAllocN32Pixels(spool_size.width(), spool_size.height(),
                                 is_opaque)) {
-    LOG(ERROR) << "Failed to create bitmap width=" << spool_size.width
-               << " height=" << spool_size.height;
+    LOG(ERROR) << "Failed to create bitmap width=" << spool_size.width()
+               << " height=" << spool_size.height();
     return SkBitmap();
   }
 

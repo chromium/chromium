@@ -18,7 +18,6 @@
 #include "media/base/media_content_type.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/gfx/geometry/size.h"
 

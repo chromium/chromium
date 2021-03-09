@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 

@@ -5,10 +5,10 @@
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 
 #include <algorithm>
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 

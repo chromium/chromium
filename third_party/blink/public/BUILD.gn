@@ -241,7 +241,6 @@ source_set("blink_headers") {
     "platform/web_scrollbar_overlay_color_theme.h",
     "platform/web_security_origin.h",
     "platform/web_set_sink_id_callbacks.h",
-    "platform/web_size.h",
     "platform/web_source_buffer.h",
     "platform/web_source_buffer_client.h",
     "platform/web_spell_check_panel_host_client.h",

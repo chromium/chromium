@@ -390,7 +390,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     LoadHTML(kFormHTML);
 
     // Necessary for SimulateElementClick() to work correctly.
-    GetWebFrameWidget()->Resize(blink::WebSize(500, 500));
+    GetWebFrameWidget()->Resize(gfx::Size(500, 500));
     GetWebFrameWidget()->SetFocus(true);
 
     // Now retrieve the input elements so the test can access them.

@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "media/base/video_types.h"
 #include "media/capture/video_capturer_source.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace base {

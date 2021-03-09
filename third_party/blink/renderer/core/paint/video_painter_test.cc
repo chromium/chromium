@@ -8,7 +8,6 @@
 #include "cc/layers/layer.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
