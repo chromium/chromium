@@ -222,6 +222,10 @@ cr.define('settings_people_page_account_manager', function() {
 
       const account = await browserProxy.whenCalled('removeAccount');
       assertEquals('456', account.id);
+      // Add account button should be in focus now.
+      assertEquals(
+          accountManager.$$('#add-account-button'),
+          accountManager.root.activeElement);
     });
 
     test('Deep link to remove account button', async () => {

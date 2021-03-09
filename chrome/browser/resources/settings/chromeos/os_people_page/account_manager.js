@@ -445,5 +445,6 @@ Polymer({
     this.browserProxy_.removeAccount(
         /** @type {?settings.Account} */ (this.actionMenuAccount_));
     this.closeActionMenu_();
+    this.$$('#add-account-button').focus();
   },
 });
