@@ -283,6 +283,10 @@ suite('PrivacySandboxEnabled', function() {
     return flushTasks();
   });
 
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
   test('privacySandboxToast', async function() {
     assertFalse(page.$$('#toast').open);
 
@@ -325,5 +329,20 @@ suite('PrivacySandboxEnabled', function() {
         'Settings.PrivacySandbox.Block3PCookies',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     assertTrue(page.$$('#toast').open);
+
+    // Reselecting a non-3P cookie blocking setting should hide the toast.
+    page.$$('#allowAll').click();
+    await flushTasks();
+    assertFalse(page.$$('#toast').open);
+
+    // Navigating away from the page should hide the toast, even if navigated
+    // back to.
+    page.$$('#blockAll').click();
+    await flushTasks();
+    assertTrue(page.$$('#toast').open);
+    Router.getInstance().navigateTo(routes.BASIC);
+    Router.getInstance().navigateTo(routes.COOKIES);
+    await flushTasks();
+    assertFalse(page.$$('#toast').open);
   });
 });
