@@ -61904,6 +61904,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="kActivated"/>
   <int value="1" label="kDestroyed"/>
   <int value="2" label="kLowEndDevice"/>
+  <int value="3" label="kCrossOriginRedirect"/>
+  <int value="4" label="kCrossOriginNavigation"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

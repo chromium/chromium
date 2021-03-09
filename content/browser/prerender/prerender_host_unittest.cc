@@ -5,7 +5,9 @@
 #include "content/browser/prerender/prerender_host.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
@@ -53,6 +55,13 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     return web_contents;
   }
 
+  PrerenderHostRegistry* GetPrerenderHostRegistry() const {
+    return static_cast<StoragePartitionImpl*>(
+               BrowserContext::GetDefaultStoragePartition(
+                   browser_context_.get()))
+        ->GetPrerenderHostRegistry();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -65,17 +74,16 @@ TEST_F(PrerenderHostTest, Activate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  ASSERT_TRUE(initiator_rfh);
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
   const GURL kPrerenderingUrl("https://example.com/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
-  auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
-      *web_contents);
-
-  // Start the prerendering navigation.
-  prerender_host->StartPrerendering();
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *web_contents,
+                                   initiator_rfh->GetLastCommittedOrigin());
+  PrerenderHost* prerender_host =
+      registry->FindHostById(prerender_frame_tree_node_id);
 
   // Finish the prerendering navigation. Normally we could use
   // EmbeddedTestServer to provide a response, but this test uses
@@ -101,18 +109,17 @@ TEST_F(PrerenderHostTest, DontActivate) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("https://example.com/"));
   RenderFrameHostImpl* initiator_rfh = web_contents->GetMainFrame();
-  ASSERT_TRUE(initiator_rfh);
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
 
   const GURL kPrerenderingUrl("https://example.com/next");
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
-  auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
-      *web_contents);
 
   // Start the prerendering navigation, but don't activate it.
-  prerender_host->StartPrerendering();
-  prerender_host.reset();
+  const int prerender_frame_tree_node_id =
+      registry->CreateAndStartHost(std::move(attributes), *web_contents,
+                                   initiator_rfh->GetLastCommittedOrigin());
+  registry->AbandonHost(prerender_frame_tree_node_id);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }
 

@@ -6,6 +6,7 @@
 
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
+#include "content/browser/prerender/prerender_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
 #include "content/browser/renderer_host/back_forward_cache_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
@@ -122,6 +123,9 @@ void NavigationThrottleRunner::RegisterNavigationThrottles() {
 
   // Block certain requests that are not permitted for portals.
   AddThrottle(PortalNavigationThrottle::MaybeCreateThrottleFor(request));
+
+  // Block certain requests that are not permitted for prerendering.
+  AddThrottle(PrerenderNavigationThrottle::MaybeCreateThrottleFor(request));
 
   // Intercept federated identity requests.
   AddThrottle(FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(request));

@@ -328,6 +328,11 @@ RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHostForTesting() {
   return page_holder_->GetMainFrame();
 }
 
+void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
+                                      FinalStatus status) {
+  RecordFinalStatus(status);
+}
+
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
   switch (blink::features::kPrerender2ImplementationParam.Get()) {
     case blink::features::Prerender2Implementation::kWebContents: {

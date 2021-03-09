@@ -12,7 +12,6 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
-#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "third_party/blink/public/common/features.h"
@@ -85,11 +84,22 @@ int PrerenderHostRegistry::CreateAndStartHost(
 void PrerenderHostRegistry::AbandonHost(int frame_tree_node_id) {
   TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHost",
                "frame_tree_node_id", frame_tree_node_id);
-  auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (found != prerender_host_by_frame_tree_node_id_.end()) {
-    auto initial_url = found->second->GetInitialUrl();
-    frame_tree_node_id_by_url_.erase(initial_url);
-    prerender_host_by_frame_tree_node_id_.erase(found);
+  AbandonHostInternal(frame_tree_node_id);
+}
+
+void PrerenderHostRegistry::AbandonHostAsync(
+    int frame_tree_node_id,
+    PrerenderHost::FinalStatus final_status) {
+  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHostAsync",
+               "frame_tree_node_id", frame_tree_node_id);
+  // Remove the prerender host from the host maps so that it's not used for
+  // activation during asynchronous deletion.
+  std::unique_ptr<PrerenderHost> prerender_host =
+      AbandonHostInternal(frame_tree_node_id);
+  prerender_host->RecordFinalStatus(PassKey(), final_status);
+  if (prerender_host) {
+    // Asynchronously delete the prerender host.
+    GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(prerender_host));
   }
 }
 
@@ -178,6 +188,13 @@ void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {
   reserved_prerender_host_by_frame_tree_node_id_.erase(frame_tree_node_id);
 }
 
+PrerenderHost* PrerenderHostRegistry::FindHostById(int frame_tree_node_id) {
+  auto id_iter = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (id_iter == prerender_host_by_frame_tree_node_id_.end())
+    return nullptr;
+  return id_iter->second.get();
+}
+
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   auto id_iter = frame_tree_node_id_by_url_.find(prerendering_url);
@@ -188,6 +205,17 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
       prerender_host_by_frame_tree_node_id_.find(prerender_frame_tree_node_id);
   DCHECK(host_iter != prerender_host_by_frame_tree_node_id_.end());
   return host_iter->second.get();
+}
+
+std::unique_ptr<PrerenderHost> PrerenderHostRegistry::AbandonHostInternal(
+    int frame_tree_node_id) {
+  auto found = prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  if (found == prerender_host_by_frame_tree_node_id_.end())
+    return nullptr;
+  std::unique_ptr<PrerenderHost> prerender_host = std::move(found->second);
+  frame_tree_node_id_by_url_.erase(prerender_host->GetInitialUrl());
+  prerender_host_by_frame_tree_node_id_.erase(found);
+  return prerender_host;
 }
 
 void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {

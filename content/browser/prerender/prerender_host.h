@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -16,8 +17,10 @@
 #include "url/gurl.h"
 
 namespace content {
+
 class FrameTree;
 class NavigationController;
+class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class WebContentsImpl;
 
@@ -42,7 +45,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kActivated = 0,
     kDestroyed = 1,
     kLowEndDevice = 2,
-    kMaxValue = kLowEndDevice
+    kCrossOriginRedirect = 3,
+    kCrossOriginNavigation = 4,
+    kMaxValue = kCrossOriginNavigation
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
@@ -72,10 +77,17 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // ActivatePrerenderedContents().
   RenderFrameHostImpl* GetPrerenderedMainFrameHostForTesting();
 
+  // Tells the reason of the destruction of this host. PrerenderHostRegistry
+  // uses this before abandoning the host.
+  void RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
+                         FinalStatus status);
+
   // Waits until the page load finishes.
   void WaitForLoadStopForTesting();
 
   const GURL& GetInitialUrl() const;
+
+  url::Origin initiator_origin() const { return initiator_origin_; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
