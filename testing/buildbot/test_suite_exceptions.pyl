@@ -833,9 +833,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter', # https://crbug.com/1010211
         ],
-        # TODO(crbug.com/1183540): Remove experimental once the test sharding is
-        # optimized for batched tests, and does not cause timeout.
-        'experiment_percentage': 10,
       },
       'android-pie-x86-rel': {
         'args': [
