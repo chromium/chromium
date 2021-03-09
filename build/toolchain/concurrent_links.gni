@@ -8,10 +8,10 @@
 assert(current_toolchain == default_toolchain)
 
 import("//build/config/android/config.gni")
+import("//build/config/apple/symbols.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
-import("//build/config/mac/symbols.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 

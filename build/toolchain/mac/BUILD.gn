@@ -12,8 +12,8 @@ import("../goma.gni")
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
 }
+import("//build/config/apple/symbols.gni")
 import("//build/config/mac/mac_sdk.gni")
-import("//build/config/mac/symbols.gni")
 
 assert((is_ios && host_os == "mac") || host_os != "win")
 

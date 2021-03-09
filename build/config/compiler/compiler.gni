@@ -21,7 +21,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
 }
 
 if (is_apple) {
-  import("//build/config/mac/symbols.gni")
+  import("//build/config/apple/symbols.gni")
 }
 
 declare_args() {

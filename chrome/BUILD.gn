@@ -38,10 +38,10 @@ if (is_android) {
 } else if (is_mac) {
   import("//build/apple/tweak_info_plist.gni")
   import("//build/compiled_action.gni")
+  import("//build/config/apple/symbols.gni")
   import("//build/config/mac/base_rules.gni")
   import("//build/config/mac/mac_sdk.gni")
   import("//build/config/mac/rules.gni")
-  import("//build/config/mac/symbols.gni")
   import("//build/util/branding.gni")
   import("//build/util/version.gni")
   import("//chrome/browser/buildflags.gni")

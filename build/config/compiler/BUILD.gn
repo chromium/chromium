@@ -33,7 +33,7 @@ if (current_cpu == "x64") {
   import("//build/config/x64.gni")
 }
 if (is_mac) {
-  import("//build/config/mac/symbols.gni")
+  import("//build/config/apple/symbols.gni")
 }
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
