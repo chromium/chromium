@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 2,
-  "time_generated": "2021-03-02T19:57:26.339Z",
+  "time_generated": "2021-03-09T00:05:57.662Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -55,7 +55,7 @@
     {
       "id": 7,
       "name": "RUN_CHROME_SAFETY_CHECK",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/safetyCheck",
       "description": "Run a Safety Check in Chrome settings",
       "tags": ""
@@ -63,7 +63,7 @@
     {
       "id": 8,
       "name": "MANAGE_SECURITY_SETTINGS",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/security",
       "description": "Manage your Safe Browsing and more in Chrome settings",
       "tags": ""
@@ -71,7 +71,7 @@
     {
       "id": 9,
       "name": "MANAGE_COOKIES",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/cookies",
       "description": "Manage your cookie preferences in Chrome settings",
       "tags": ""
@@ -79,7 +79,7 @@
     {
       "id": 10,
       "name": "MANAGE_ADDRESSES",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/addresses",
       "description": "Add and manage addresses in Chrome settings",
       "tags": ""
@@ -87,7 +87,7 @@
     {
       "id": 11,
       "name": "MANAGE_SYNC",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/syncSetup/advanced",
       "description": "Manage what info you sync in Chrome settings",
       "tags": ""
@@ -95,7 +95,7 @@
     {
       "id": 12,
       "name": "MANAGE_SITE_SETTINGS",
-      "enabled": false,
+      "enabled": true,
       "url": "chrome://settings/content",
       "description": "Manage permissions and data stored across sites in Chrome settings",
       "tags": ""
@@ -103,7 +103,7 @@
     {
       "id": 13,
       "name": "CREATE_GOOGLE_DOC",
-      "enabled": false,
+      "enabled": true,
       "url": "https://doc.new",
       "description": "Create a new Google Doc quickly",
       "tags": ""
@@ -111,7 +111,7 @@
     {
       "id": 14,
       "name": "CREATE_GOOGLE_SHEET",
-      "enabled": false,
+      "enabled": true,
       "url": "https://sheet.new",
       "description": "Create a new Google Sheet quickly",
       "tags": ""
@@ -119,7 +119,7 @@
     {
       "id": 15,
       "name": "CREATE_GOOGLE_SLIDE",
-      "enabled": false,
+      "enabled": true,
       "url": "https://slide.new",
       "description": "Create new Google Slides quickly",
       "tags": ""
@@ -127,7 +127,7 @@
     {
       "id": 16,
       "name": "CREATE_GOOGLE_CALENDAR_EVENT",
-      "enabled": false,
+      "enabled": true,
       "url": "https://cal.new",
       "description": "Create a new Google Calendar event quickly",
       "tags": ""
@@ -135,7 +135,7 @@
     {
       "id": 17,
       "name": "CREATE_GOOGLE_SITE",
-      "enabled": false,
+      "enabled": true,
       "url": "https://site.new",
       "description": "Create a new Google Site quickly",
       "tags": ""
@@ -143,7 +143,7 @@
     {
       "id": 18,
       "name": "CREATE_GOOGLE_KEEP_NOTE",
-      "enabled": false,
+      "enabled": true,
       "url": "https://keep.new",
       "description": "Create a new Google Keep note quickly",
       "tags": ""
@@ -151,7 +151,7 @@
     {
       "id": 19,
       "name": "CREATE_GOOGLE_FORM",
-      "enabled": false,
+      "enabled": true,
       "url": "https://form.new",
       "description": "Create a new Google Form quickly",
       "tags": ""
@@ -159,7 +159,7 @@
     {
       "id": 20,
       "name": "COMPOSE_EMAIL_IN_GMAIL",
-      "enabled": false,
+      "enabled": true,
       "url": "https://mail.new",
       "description": "Create an email in Gmail quickly",
       "tags": ""
@@ -167,7 +167,7 @@
     {
       "id": 21,
       "name": "SEE_CHROME_TIPS",
-      "enabled": false,
+      "enabled": true,
       "url": "",
       "description": "Learn about new Chrome features",
       "tags": ""
@@ -175,7 +175,7 @@
     {
       "id": 22,
       "name": "MANAGE_GOOGLE_ACCOUNT",
-      "enabled": false,
+      "enabled": true,
       "url": "",
       "description": "Manage your Google Account",
       "tags": ""
@@ -183,7 +183,7 @@
     {
       "id": 23,
       "name": "CLEAR_YOUTUBE_HISTORY",
-      "enabled": false,
+      "enabled": true,
       "url": "",
       "description": "Clear your YouTube history in My Activity",
       "tags": ""
@@ -4976,21 +4976,38 @@
               "required": false,
               "single": true,
               "synonyms": [
-                "run"
+                "activate",
+                "perform",
+                "run",
+                "use"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "chrome"
+                "checkup",
+                "check"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "safety check"
+                "passwords",
+                "security",
+                "password",
+                "safety"
               ]
             }
           ],
@@ -5003,17 +5020,40 @@
           "id": 8,
           "groups": [
             {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "browsing",
+                "manage",
+                "browse",
+                "change",
+                "alter",
+                "use"
+              ]
+            },
+            {
               "required": false,
               "single": true,
               "synonyms": [
-                "manage"
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "security settings"
+                "enhanced protection",
+                "standard protection",
+                "security settings",
+                "security keys",
+                "certificates",
+                "secure dns",
+                "securely",
+                "safely",
+                "safe"
               ]
             }
           ],
@@ -5029,19 +5069,46 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "manage"
+                "allow all",
+                "disallow",
+                "control",
+                "manage",
+                "block",
+                "allow",
+                "alter",
+                "use"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
+                "do not track",
                 "cookies"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "google",
+                "chrome"
+              ]
+            },
+            {
+              "required": false,
+              "single": false,
+              "synonyms": [
+                "third party",
+                "all"
               ]
             }
           ],
           "cover_cases": [
-            "manage cookies"
+            "manage cookies",
+            "disallow all third-party cookies"
           ],
           "enabled": false
         },
@@ -5052,14 +5119,34 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "manage"
+                "control",
+                "manage",
+                "adjust",
+                "delete",
+                "change",
+                "store",
+                "edit",
+                "add"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "addresses"
+                "shipping address",
+                "new address",
+                "addresses",
+                "address"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             }
           ],
@@ -5075,7 +5162,14 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "manage"
+                "customize",
+                "control",
+                "disable",
+                "manage",
+                "adjust",
+                "change",
+                "edit",
+                "add"
               ]
             },
             {
@@ -5083,6 +5177,16 @@
               "single": true,
               "synonyms": [
                 "sync"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             }
           ],
@@ -5098,14 +5202,31 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "manage"
+                "customize",
+                "control",
+                "manage",
+                "adjust",
+                "change",
+                "edit"
               ]
             },
             {
               "required": true,
               "single": true,
               "synonyms": [
-                "site settings"
+                "site permissions",
+                "site settings",
+                "permissions"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome",
+                "google"
               ]
             }
           ],
