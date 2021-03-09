@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/base_rules.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -470,7 +470,7 @@ template("create_signed_bundle") {
         invoker.partial_info_plist,
       ]
 
-      _plist_compiler_path = "//build/config/mac/plist_util.py"
+      _plist_compiler_path = "//build/apple/plist_util.py"
 
       code_signing_sources += _partial_info_plists
       code_signing_sources += [ _plist_compiler_path ]
@@ -523,7 +523,7 @@ template("ios_info_plist") {
     _info_plist = _info_plist_target_output[0]
   }
 
-  info_plist(target_name) {
+  apple_info_plist(target_name) {
     format = "binary1"
     extra_substitutions = []
     if (defined(invoker.extra_substitutions)) {
@@ -537,6 +537,10 @@ template("ios_info_plist") {
       "IOS_SDK_BUILD=$ios_sdk_build",
       "IOS_SDK_NAME=$ios_sdk_name$ios_sdk_version",
       "IOS_SUPPORTED_PLATFORM=$ios_sdk_platform",
+      "BUILD_MACHINE_OS_BUILD=$machine_os_build",
+      "IOS_DEPLOYMENT_TARGET=$ios_deployment_target",
+      "XCODE_BUILD=$xcode_build",
+      "XCODE_VERSION=$xcode_version",
     ]
     plist_templates = [
       "//build/config/ios/BuildInfo.plist",
@@ -1991,7 +1995,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
   action(_info_plist_merge_plist) {
     testonly = true
-    script = "//build/config/mac/plist_util.py"
+    script = "//build/apple/plist_util.py"
 
     sources = [
       "$_xctrunner_path/Info.plist",
