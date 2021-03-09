@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -37,6 +38,8 @@ bool ShouldIgnoreContents(const Node& node) {
     return false;
   return (!element->ShouldSerializeEndTag() &&
           !IsA<HTMLInputElement>(*element)) ||
+         (IsA<TextControlElement>(*element) &&
+          !To<TextControlElement>(*element).SuggestedValue().IsEmpty()) ||
          IsA<HTMLIFrameElement>(*element) || IsA<HTMLImageElement>(*element) ||
          IsA<HTMLMeterElement>(*element) || IsA<HTMLObjectElement>(*element) ||
          IsA<HTMLProgressElement>(*element) ||
