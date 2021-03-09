@@ -30,8 +30,8 @@ class IOBuffer;
 class MTPDeviceAsyncDelegate {
  public:
   // A callback to be called when GetFileInfo method call succeeds.
-  typedef base::Callback<
-      void(const base::File::Info& file_info)> GetFileInfoSuccessCallback;
+  using GetFileInfoSuccessCallback =
+      base::OnceCallback<void(const base::File::Info& file_info)>;
 
   // A callback to be called when CreateDirectory method call succeeds.
   typedef base::RepeatingClosure CreateDirectorySuccessCallback;
@@ -98,10 +98,9 @@ class MTPDeviceAsyncDelegate {
 
   // Gets information about the given |file_path| and invokes the appropriate
   // callback asynchronously when complete.
-  virtual void GetFileInfo(
-      const base::FilePath& file_path,
-      const GetFileInfoSuccessCallback& success_callback,
-      const ErrorCallback& error_callback) = 0;
+  virtual void GetFileInfo(const base::FilePath& file_path,
+                           GetFileInfoSuccessCallback success_callback,
+                           const ErrorCallback& error_callback) = 0;
 
   // Creates a directory to |directory_path|. When |exclusive| is true, this
   // returns base::File::FILE_ERROR_EXISTS if a directory already exists for

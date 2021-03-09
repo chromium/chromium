@@ -36,7 +36,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
   // IO thread by the async filesystem file util. They forward to
   // similarly-named methods on the UI thread.
   void GetFileInfo(const base::FilePath& file_path,
-                   const GetFileInfoSuccessCallback& success_callback,
+                   GetFileInfoSuccessCallback success_callback,
                    const ErrorCallback& error_callback) override;
 
   void CreateDirectory(const base::FilePath& directory_path,

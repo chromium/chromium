@@ -95,7 +95,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
 
   // MTPDeviceAsyncDelegate:
   void GetFileInfo(const base::FilePath& file_path,
-                   const GetFileInfoSuccessCallback& success_callback,
+                   GetFileInfoSuccessCallback success_callback,
                    const ErrorCallback& error_callback) override;
   void CreateDirectory(
       const base::FilePath& directory_path,
@@ -189,7 +189,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   //
   // If the GetFileInfo() fails, |file_info| is not set and |error_callback| is
   // invoked to notify the caller about the platform file |error|.
-  void OnGetFileInfo(const GetFileInfoSuccessCallback& success_callback,
+  void OnGetFileInfo(GetFileInfoSuccessCallback success_callback,
                      const ErrorCallback& error_callback,
                      base::File::Info* file_info,
                      base::File::Error error);

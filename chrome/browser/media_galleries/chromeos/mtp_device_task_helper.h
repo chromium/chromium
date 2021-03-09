@@ -42,8 +42,8 @@ class MTPDeviceTaskHelper {
 
   typedef base::Callback<void(bool succeeded)> OpenStorageCallback;
 
-  typedef MTPDeviceAsyncDelegate::GetFileInfoSuccessCallback
-      GetFileInfoSuccessCallback;
+  using GetFileInfoSuccessCallback =
+      MTPDeviceAsyncDelegate::GetFileInfoSuccessCallback;
 
   typedef base::Closure CreateDirectorySuccessCallback;
 
@@ -86,7 +86,7 @@ class MTPDeviceTaskHelper {
   // If there is an error, |error_callback| is invoked on the IO thread to
   // notify the caller about the file error.
   void GetFileInfo(uint32_t file_id,
-                   const GetFileInfoSuccessCallback& success_callback,
+                   GetFileInfoSuccessCallback success_callback,
                    const ErrorCallback& error_callback);
 
   // Forwards CreateDirectory request to the MediaTransferProtocolManager.
@@ -184,7 +184,7 @@ class MTPDeviceTaskHelper {
   // When |entries| has a size other than 1, or if |error| is true, then an
   // error has occurred. In this case, |error_callback| is invoked on the IO
   // thread to notify the caller.
-  void OnGetFileInfo(const GetFileInfoSuccessCallback& success_callback,
+  void OnGetFileInfo(GetFileInfoSuccessCallback success_callback,
                      const ErrorCallback& error_callback,
                      std::vector<device::mojom::MtpFileEntryPtr> entries,
                      bool error) const;

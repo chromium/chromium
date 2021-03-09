@@ -52,15 +52,17 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
     PendingTaskInfo(const base::FilePath& path,
                     content::BrowserThread::ID thread_id,
                     const base::Location& location,
-                    const base::Closure& task);
-    PendingTaskInfo(const PendingTaskInfo& other);
+                    base::OnceClosure task);
+    PendingTaskInfo(PendingTaskInfo&& other);
+    PendingTaskInfo(const PendingTaskInfo&) = delete;
+    PendingTaskInfo& operator=(const PendingTaskInfo&) = delete;
     ~PendingTaskInfo();
 
     base::FilePath path;
     base::FilePath cached_path;
     const content::BrowserThread::ID thread_id;
     const base::Location location;
-    const base::Closure task;
+    base::OnceClosure task;
   };
 
   class MTPFileNode;
@@ -84,7 +86,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
 
   // MTPDeviceAsyncDelegate:
   void GetFileInfo(const base::FilePath& file_path,
-                   const GetFileInfoSuccessCallback& success_callback,
+                   GetFileInfoSuccessCallback success_callback,
                    const ErrorCallback& error_callback) override;
   void CreateDirectory(const base::FilePath& directory_path,
                        const bool exclusive,
@@ -146,7 +148,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // The internal methods correspond to the similarly named methods above.
   // The |root_node_| cache should be filled at this point.
   void GetFileInfoInternal(const base::FilePath& file_path,
-                           const GetFileInfoSuccessCallback& success_callback,
+                           GetFileInfoSuccessCallback success_callback,
                            const ErrorCallback& error_callback);
   void CreateDirectoryInternal(
       const std::vector<base::FilePath>& components,
@@ -233,13 +235,13 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // If the device is uninitialized, store the |task_info| in a pending task
   // queue and runs the pending tasks in the queue once the device is
   // successfully initialized.
-  void EnsureInitAndRunTask(const PendingTaskInfo& task_info);
+  void EnsureInitAndRunTask(PendingTaskInfo task_info);
 
   // Runs a task. If |task_info.path| is empty, or if the path is cached, runs
   // the task immediately.
   // Otherwise, fills the cache first before running the task.
   // |task_info.task| runs on the UI thread.
-  void RunTask(const PendingTaskInfo& task_info);
+  void RunTask(PendingTaskInfo task_info);
 
   // Writes data from the device to the snapshot file path based on the
   // parameters in |current_snapshot_request_info_| by doing a call-and-reply to
@@ -263,7 +265,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Called when GetFileInfo() succeeds. |file_info| specifies the
   // requested file details. |success_callback| is invoked to notify the caller
   // about the requested file details.
-  void OnDidGetFileInfo(const GetFileInfoSuccessCallback& success_callback,
+  void OnDidGetFileInfo(GetFileInfoSuccessCallback success_callback,
                         const base::File::Info& file_info);
 
   // Called when GetFileInfo() of |directory_path| succeeded at checking the
