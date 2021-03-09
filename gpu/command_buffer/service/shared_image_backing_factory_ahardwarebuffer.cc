@@ -584,7 +584,8 @@ bool SharedImageBackingFactoryAHB::ValidateUsage(
   if (size.width() < 1 || size.height() < 1 ||
       size.width() > max_gl_texture_size_ ||
       size.height() > max_gl_texture_size_) {
-    LOG(ERROR) << "CreateSharedImage: invalid size";
+    LOG(ERROR) << "CreateSharedImage: invalid size=" << size.ToString()
+               << " max_gl_texture_size=" << max_gl_texture_size_;
     return false;
   }
 
