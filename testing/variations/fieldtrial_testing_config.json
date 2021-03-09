@@ -5214,6 +5214,21 @@
             ]
         }
     ],
+    "PageInfoDiscoverability": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoDiscoverability"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoV2": [
         {
             "platforms": [
