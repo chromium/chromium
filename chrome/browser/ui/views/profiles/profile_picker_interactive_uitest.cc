@@ -64,6 +64,12 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     bool control = false;
     bool shift = false;
     bool command = true;
+    // Mac needs the widget to get focused (once again) for
+    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
+    // keybinding manually right in the run of the test actually replaces the
+    // need of this call.
+    ASSERT_TRUE(
+        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
 #else
     // Use Ctrl-Shift-W on other platforms.
     bool control = true;
@@ -82,6 +88,12 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
     bool alt = false;
     bool command = true;
     ui::KeyboardCode key = ui::VKEY_OEM_4;
+    // Mac needs the widget to get focused (once again) for
+    // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
+    // keybinding manually right in the run of the test actually replaces the
+    // need of this call.
+    ASSERT_TRUE(
+        ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));
 #else
     // Use Ctrl-left on other platforms.
     bool alt = true;

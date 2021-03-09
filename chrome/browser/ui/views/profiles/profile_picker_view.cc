@@ -916,7 +916,7 @@ void ProfilePickerView::ShowScreen(content::WebContents* contents,
                                    bool show_toolbar,
                                    bool enable_navigating_back) {
   web_view_->SetWebContents(contents);
-  web_view_->RequestFocus();
+  contents->Focus();
 
   // Change visibility of the toolbar after swapping wc in `web_view_` to make
   // it easier for tests to detect changing of the screen.
