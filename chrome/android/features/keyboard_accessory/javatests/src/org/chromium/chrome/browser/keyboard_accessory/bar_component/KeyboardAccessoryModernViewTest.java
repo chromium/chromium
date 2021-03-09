@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -219,6 +220,26 @@ public class KeyboardAccessoryModernViewTest {
         });
 
         onViewWaiting(withText("Johnathan")).perform(click());
+
+        assertTrue(clickRecorded.get());
+    }
+
+    @Test
+    @MediumTest
+    public void testAddsLongClickableAutofillSuggestions() {
+        AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(VISIBLE, true);
+            mModel.get(BAR_ITEMS).set(new BarItem[] {
+                    new AutofillBarItem(
+                            new AutofillSuggestion("Johnathan", "Smith", "", DropdownItem.NO_ICON,
+                                    false, 1, false, false, false),
+                            new Action("Unused", AUTOFILL_SUGGESTION,
+                                    result -> {}, result -> clickRecorded.set(true))),
+                    createTabs()});
+        });
+
+        onViewWaiting(withText("Johnathan")).perform(longClick());
 
         assertTrue(clickRecorded.get());
     }

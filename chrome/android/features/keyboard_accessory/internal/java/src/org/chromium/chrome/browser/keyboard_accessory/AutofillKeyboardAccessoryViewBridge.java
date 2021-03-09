@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.content.Context;
-import android.content.DialogInterface;
 
 import androidx.annotation.Nullable;
 
@@ -25,8 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
  * --enable-autofill-keyboard-accessory-view is passed on the command line.
  */
 @JNINamespace("autofill")
-public class AutofillKeyboardAccessoryViewBridge
-        implements AutofillDelegate, DialogInterface.OnClickListener {
+public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
@@ -68,9 +66,7 @@ public class AutofillKeyboardAccessoryViewBridge
     @Override
     public void accessibilityFocusCleared() {}
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        assert which == DialogInterface.BUTTON_POSITIVE;
+    private void onDeletionConfirmed() {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get().deletionConfirmed(
                 mNativeAutofillKeyboardAccessory, AutofillKeyboardAccessoryViewBridge.this);
@@ -126,14 +122,10 @@ public class AutofillKeyboardAccessoryViewBridge
         mChipProvider.notifyObservers(suggestions);
     }
 
-    // Helper methods for AutofillSuggestion. These are copied from AutofillPopupBridge (which
-    // should
-    // eventually disappear).
-
     @CalledByNative
-    private void confirmDeletion(String title, String body) throws Exception {
-        // TODO(fhorschig): If deletion is implemented, build a ModalDialogView!
-        throw new Exception("Not implemented yet!");
+    private void confirmDeletion(String title, String body) {
+        assert mManualFillingComponent != null;
+        mManualFillingComponent.confirmOperation(title, body, this::onDeletionConfirmed);
     }
 
     @CalledByNative

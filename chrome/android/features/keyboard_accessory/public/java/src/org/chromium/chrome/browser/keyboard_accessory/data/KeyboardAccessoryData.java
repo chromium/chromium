@@ -147,11 +147,17 @@ public class KeyboardAccessoryData {
     public static final class Action {
         private final String mCaption;
         private final Callback<Action> mActionCallback;
+        private final Callback<Action> mLongPressCallback;
         private @AccessoryAction int mType;
 
         public Action(String caption, @AccessoryAction int type, Callback<Action> actionCallback) {
+            this(caption, type, actionCallback, null);
+        }
+        public Action(String caption, @AccessoryAction int type, Callback<Action> actionCallback,
+                @Nullable Callback<Action> longPressCallback) {
             mCaption = caption;
             mActionCallback = actionCallback;
+            mLongPressCallback = longPressCallback;
             mType = type;
         }
 
@@ -161,6 +167,10 @@ public class KeyboardAccessoryData {
 
         public Callback<Action> getCallback() {
             return mActionCallback;
+        }
+
+        public Callback<Action> getLongPressCallback() {
+            return mLongPressCallback;
         }
 
         public @AccessoryAction int getActionType() {

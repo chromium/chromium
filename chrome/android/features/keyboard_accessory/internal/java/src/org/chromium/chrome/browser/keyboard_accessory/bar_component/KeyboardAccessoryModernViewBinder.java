@@ -87,6 +87,12 @@ class KeyboardAccessoryModernViewBinder {
                 item.maybeEmitEventForIPH();
                 action.getCallback().onResult(action);
             });
+            if (action.getLongPressCallback() != null) {
+                chipView.setOnLongClickListener(view -> {
+                    action.getLongPressCallback().onResult(action);
+                    return true; // Click event consumed!
+                });
+            }
         }
     }
 

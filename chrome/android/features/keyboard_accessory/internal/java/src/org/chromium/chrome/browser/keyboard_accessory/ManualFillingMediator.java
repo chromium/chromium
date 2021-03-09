@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.helper.ConfirmationHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
@@ -93,6 +94,7 @@ class ManualFillingMediator extends EmptyTabObserver
     private TabModelSelectorTabModelObserver mTabModelObserver;
     private DropdownPopupWindow mPopup;
     private BottomSheetController mBottomSheetController;
+    private ConfirmationHelper mConfirmationHelper;
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
         @Override
@@ -130,13 +132,14 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void initialize(KeyboardAccessoryCoordinator keyboardAccessory,
             AccessorySheetCoordinator accessorySheet, WindowAndroid windowAndroid,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController, ConfirmationHelper confirmationHelper) {
         mActivity = (ChromeActivity) windowAndroid.getActivity().get();
         assert mActivity != null;
         mWindowAndroid = windowAndroid;
         mWindowAndroid.getApplicationBottomInsetProvider().addSupplier(mViewportInsetSupplier);
         mKeyboardAccessory = keyboardAccessory;
         mBottomSheetController = sheetController;
+        mConfirmationHelper = confirmationHelper;
         mModel.set(PORTRAIT_ORIENTATION, hasPortraitOrientation());
         mModel.addObserver(this::onPropertyChanged);
         mAccessorySheet = accessorySheet;
@@ -283,6 +286,7 @@ class ManualFillingMediator extends EmptyTabObserver
 
     void pause() {
         if (!isInitialized()) return;
+        mConfirmationHelper.dismiss();
         // When pause is called, the accessory needs to disappear fast since some UI forced it to
         // close (e.g. a scene changed or the screen was turned off).
         mKeyboardAccessory.skipClosingAnimationOnce();
@@ -491,6 +495,10 @@ class ManualFillingMediator extends EmptyTabObserver
      */
     void swapSheetWithKeyboard() {
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
+    }
+
+    void confirmOperation(String title, String message, Runnable confirmedCallback) {
+        mConfirmationHelper.showConfirmation(title, message, confirmedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {

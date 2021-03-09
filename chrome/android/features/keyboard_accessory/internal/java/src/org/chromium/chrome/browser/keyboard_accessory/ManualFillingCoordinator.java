@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.helper.ConfirmationHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -48,15 +49,18 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         }
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         initialize(windowAndroid, new KeyboardAccessoryCoordinator(mMediator, barStub),
-                new AccessorySheetCoordinator(sheetStub), sheetController);
+                new AccessorySheetCoordinator(sheetStub), sheetController,
+                new ConfirmationHelper(windowAndroid.getContext()));
         mComponentSupplier.set(this);
         mComponentSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
 
     @VisibleForTesting
     void initialize(WindowAndroid windowAndroid, KeyboardAccessoryCoordinator accessoryBar,
-            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController) {
-        mMediator.initialize(accessoryBar, accessorySheet, windowAndroid, sheetController);
+            AccessorySheetCoordinator accessorySheet, BottomSheetController sheetController,
+            ConfirmationHelper confirmationHelper) {
+        mMediator.initialize(
+                accessoryBar, accessorySheet, windowAndroid, sheetController, confirmationHelper);
     }
 
     @Override
@@ -142,6 +146,11 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public boolean removeObserver(Observer observer) {
         return mObserverList.addObserver(observer);
+    }
+
+    @Override
+    public void confirmOperation(String title, String message, Runnable confirmedCallback) {
+        mMediator.confirmOperation(title, message, confirmedCallback);
     }
 
     @VisibleForTesting

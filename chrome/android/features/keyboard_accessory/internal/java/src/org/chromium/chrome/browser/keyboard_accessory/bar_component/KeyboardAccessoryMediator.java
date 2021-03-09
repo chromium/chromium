@@ -199,11 +199,14 @@ class KeyboardAccessoryMediator
     private KeyboardAccessoryData.Action createAutofillAction(AutofillDelegate delegate, int pos) {
         return new KeyboardAccessoryData.Action(
                 null, // Unused. The AutofillSuggestion has more meaningful labels.
-                AccessoryAction.AUTOFILL_SUGGESTION, result -> {
+                AccessoryAction.AUTOFILL_SUGGESTION,
+                result
+                -> {
                     ManualFillingMetricsRecorder.recordActionSelected(
                             AccessoryAction.AUTOFILL_SUGGESTION);
                     delegate.suggestionSelected(pos);
-                });
+                },
+                result -> { delegate.deleteSuggestion(pos); });
     }
 
     private @BarItem.Type int toBarItemType(@AccessoryAction int accessoryAction) {
