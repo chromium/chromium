@@ -481,7 +481,8 @@ class SafetyCheckMediator implements PasswordCheck.Observer, SafetyCheckCommonOb
         if (state == PasswordsState.SIGNED_OUT) {
             listener = (p) -> {
                 // Open the sign in page.
-                mSigninLauncher.launchActivity(p.getContext(), SigninAccessPoint.SAFETY_CHECK);
+                mSigninLauncher.launchActivityIfAllowed(
+                        p.getContext(), SigninAccessPoint.SAFETY_CHECK);
                 return true;
             };
         } else if (state == PasswordsState.COMPROMISED_EXIST || state == PasswordsState.SAFE) {
