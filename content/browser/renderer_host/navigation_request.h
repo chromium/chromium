@@ -202,8 +202,6 @@ class CONTENT_EXPORT NavigationRequest
       bool override_user_agent,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker);
@@ -836,8 +834,6 @@ class CONTENT_EXPORT NavigationRequest
       NavigationEntryImpl* navitation_entry,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed);

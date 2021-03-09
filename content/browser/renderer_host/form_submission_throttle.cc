@@ -66,8 +66,7 @@ FormSubmissionThrottle::CheckContentSecurityPolicyFormAction(
 
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  if (request->common_params()
-          .initiator_csp_info->should_check_main_world_csp ==
+  if (request->common_params().should_check_main_world_csp ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
     return NavigationThrottle::PROCEED;
   }

@@ -917,28 +917,23 @@ struct PendingNavigation {
   mojom::BeginNavigationParamsPtr begin_navigation_params;
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
   mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client;
-  mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator;
 
   PendingNavigation(
       mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_navigation_params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-      mojo::PendingRemote<blink::mojom::NavigationInitiator>
-          navigation_initiator);
+      mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client);
 };
 
 PendingNavigation::PendingNavigation(
     mojom::CommonNavigationParamsPtr common_params,
     mojom::BeginNavigationParamsPtr begin_navigation_params,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator)
+    mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client)
     : common_params(std::move(common_params)),
       begin_navigation_params(std::move(begin_navigation_params)),
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
-      navigation_client(std::move(navigation_client)),
-      navigation_initiator(std::move(navigation_initiator)) {}
+      navigation_client(std::move(navigation_client)) {}
 
 // static
 RenderFrameHost* RenderFrameHost::FromID(GlobalFrameRoutingId id) {
@@ -2532,7 +2527,6 @@ void RenderFrameHostImpl::Init() {
         std::move(pending_navigate_->begin_navigation_params),
         std::move(pending_navigate_->blob_url_loader_factory),
         std::move(pending_navigate_->navigation_client),
-        std::move(pending_navigate_->navigation_initiator),
         EnsurePrefetchedSignedExchangeCache(),
         MaybeCreateWebBundleHandleTracker());
     pending_navigate_.reset();
@@ -5574,7 +5568,6 @@ void RenderFrameHostImpl::BeginNavigation(
     mojom::BeginNavigationParamsPtr begin_params,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
     mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>
         initiator_policy_container_host_keep_alive_handle) {
   if (frame_tree_node_->render_manager()->is_attaching_inner_delegate()) {
@@ -5664,8 +5657,7 @@ void RenderFrameHostImpl::BeginNavigation(
   if (waiting_for_init_) {
     pending_navigate_ = std::make_unique<PendingNavigation>(
         std::move(validated_params), std::move(begin_params),
-        std::move(blob_url_loader_factory), std::move(navigation_client),
-        std::move(navigation_initiator));
+        std::move(blob_url_loader_factory), std::move(navigation_client));
     return;
   }
 
@@ -5680,7 +5672,7 @@ void RenderFrameHostImpl::BeginNavigation(
   frame_tree_node()->navigator().OnBeginNavigation(
       frame_tree_node(), std::move(validated_params), std::move(begin_params),
       std::move(blob_url_loader_factory), std::move(navigation_client),
-      std::move(navigation_initiator), EnsurePrefetchedSignedExchangeCache(),
+      EnsurePrefetchedSignedExchangeCache(),
       MaybeCreateWebBundleHandleTracker());
 }
 

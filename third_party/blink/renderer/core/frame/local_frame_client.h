@@ -46,7 +46,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/use_counter/css_property_id.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -164,10 +163,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::TimeTicks input_start_time,
       const String& href_translate,
       const base::Optional<WebImpression>& impression,
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-          initiator_csp,
       network::mojom::IPAddressSpace,
-      mojo::PendingRemote<mojom::blink::NavigationInitiator>,
       const LocalFrameToken* initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_handle) = 0;

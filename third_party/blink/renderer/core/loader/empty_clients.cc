@@ -105,9 +105,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     base::TimeTicks,
     const String&,
     const base::Optional<WebImpression>&,
-    WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
     network::mojom::IPAddressSpace,
-    mojo::PendingRemote<mojom::blink::NavigationInitiator>,
     const LocalFrameToken* initiator_frame_token,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>) {}
 

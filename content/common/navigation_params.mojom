@@ -39,21 +39,6 @@ struct PageState;
 [Native]
 enum PageTransition;
 
-// Represents the Content Security Policy of the initator of the navigation.
-struct InitiatorCSPInfo {
-  // Whether or not the CSP of the main world should apply. When the navigation
-  // is initiated from a content script in an isolated world, the CSP defined
-  // in the main world should not apply.
-  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
-  // world which has initiated the navigation should be passed.
-  // See https://crbug.com/702540
-  network.mojom.CSPDisposition should_check_main_world_csp =
-      network.mojom.CSPDisposition.CHECK;
-
-  // The relevant CSP policies.
-  array<network.mojom.ContentSecurityPolicy> initiator_csp;
-};
-
 enum NavigationType {
   // Reload the page, validating only cache entry for the main resource.
   RELOAD,
@@ -235,8 +220,14 @@ struct CommonNavigationParams {
   // propagated across client redirects.
   bool text_fragment_token = false;
 
-  // We require a copy of the relevant CSP to perform navigation checks.
-  InitiatorCSPInfo initiator_csp_info;
+  // Whether or not the CSP of the main world should apply. When the navigation
+  // is initiated from a content script in an isolated world, the CSP defined
+  // in the main world should not apply.
+  // TODO(arthursonzogni): Instead of this boolean, the origin of the isolated
+  // world which has initiated the navigation should be passed.
+  // See https://crbug.com/702540
+  network.mojom.CSPDisposition should_check_main_world_csp =
+      network.mojom.CSPDisposition.CHECK;
 
   // The origin trial features activated in the initiator that should be applied
   // in the document being navigated to. The int values are blink

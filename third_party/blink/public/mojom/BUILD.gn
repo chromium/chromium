@@ -846,7 +846,6 @@ mojom("mojom_core") {
     "frame/frame_owner_properties.mojom",
     "frame/frame_policy.mojom",
     "frame/frame_visual_properties.mojom",
-    "frame/navigation_initiator.mojom",
 
     # transferable_message.mojom depends the other three messaging/ mojom files.
     "messaging/cloneable_message.mojom",

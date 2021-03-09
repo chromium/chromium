@@ -857,8 +857,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       std::move(commit_params), browser_initiated,
       false /* from_begin_navigation */, false /* is_for_commit */, frame_entry,
       entry, std::move(navigation_ui_data), mojo::NullAssociatedRemote(),
-      mojo::NullRemote(), rfh_restored_from_back_forward_cache,
-      initiator_process_id, was_opener_suppressed));
+      rfh_restored_from_back_forward_cache, initiator_process_id,
+      was_opener_suppressed));
 
   if (frame_entry) {
     navigation_request->blob_url_loader_factory_ =
@@ -895,7 +895,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
     bool override_user_agent,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker) {
@@ -967,19 +966,19 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 
   // `was_opener_suppressed` can be true for renderer initiated navigations, but
   // only in cases which get routed through `CreateBrowserInitiated()` instead.
-  std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
-      frame_tree_node, std::move(common_params), std::move(begin_params),
-      std::move(commit_params),
-      false,    // browser_initiated
-      true,     // from_begin_navigation
-      false,    // is_for_commit
-      nullptr,  // frame_entry
-      entry,
-      nullptr,  // navigation_ui_data
-      std::move(navigation_client), std::move(navigation_initiator),
-      nullptr,  // rfh_restored_from_back_forward_cache
-      initiator_process_id,
-      /*was_opener_suppressed=*/false));
+  std::unique_ptr<NavigationRequest> navigation_request(
+      new NavigationRequest(frame_tree_node, std::move(common_params),
+                            std::move(begin_params), std::move(commit_params),
+                            false,    // browser_initiated
+                            true,     // from_begin_navigation
+                            false,    // is_for_commit
+                            nullptr,  // frame_entry
+                            entry,
+                            nullptr,  // navigation_ui_data
+                            std::move(navigation_client),
+                            nullptr,  // rfh_restored_from_back_forward_cache
+                            initiator_process_id,
+                            /*was_opener_suppressed=*/false));
   navigation_request->blob_url_loader_factory_ =
       std::move(blob_url_loader_factory);
   navigation_request->prefetched_signed_exchange_cache_ =
@@ -1029,7 +1028,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
           network::mojom::SourceLocation::New(),
           false /* started_from_context_menu */,
           gesture == NavigationGestureUser, false /* has_text_fragment_token */,
-          CreateInitiatorCSPInfo(),
+          network::mojom::CSPDisposition::CHECK,
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
           false /* is_history_navigation_in_new_child_frame */,
@@ -1076,7 +1075,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
       false /* from_begin_navigation */, true /* is_for_commit */,
       nullptr /* frame_navigation_entry */, nullptr /* navigation_entry */,
       nullptr /* navigation_ui_data */, mojo::NullAssociatedRemote(),
-      mojo::NullRemote(), nullptr /* rfh_restored_from_back_forward_cache */,
+      nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       false /* was_opener_suppressed */));
 
@@ -1108,7 +1107,6 @@ NavigationRequest::NavigationRequest(
     NavigationEntryImpl* entry,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
-    mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator,
     RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed)
@@ -3842,7 +3840,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   if (common_params_->url.SchemeIs(url::kAboutScheme))
     return net::OK;
 
-  if (common_params_->initiator_csp_info->should_check_main_world_csp ==
+  if (common_params_->should_check_main_world_csp ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
     return net::OK;
   }

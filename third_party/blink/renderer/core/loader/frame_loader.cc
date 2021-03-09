@@ -49,7 +49,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -69,7 +68,6 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
-#include "third_party/blink/renderer/core/frame/csp/navigation_initiator_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -690,17 +688,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                            ? mojom::RequestContextFrameType::kTopLevel
                            : mojom::RequestContextFrameType::kNested);
 
-  mojo::PendingRemote<mojom::blink::NavigationInitiator> navigation_initiator;
-  WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp;
-  if (origin_window && origin_window->GetContentSecurityPolicy()
-                           ->ExperimentalFeaturesEnabled()) {
-    ContentSecurityPolicy* origin_window_csp =
-        origin_window->GetContentSecurityPolicy();
-    initiator_csp = mojo::Clone(origin_window_csp->GetParsedPolicies());
-    NavigationInitiatorImpl::From(*origin_window)
-        .BindReceiver(navigation_initiator.InitWithNewPipeAndPassReceiver());
-  }
-
   // TODO(arthursonzogni): 'frame-src' check is disabled on the
   // renderer side, but is enforced on the browser side.
   // See http://crbug.com/692595 for understanding why it
@@ -797,8 +784,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetTriggeringEventInfo(), request.Form(),
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
-      request.Impression(), std::move(initiator_csp), initiator_address_space,
-      std::move(navigation_initiator), request.GetInitiatorFrameToken(),
+      request.Impression(), initiator_address_space,
+      request.GetInitiatorFrameToken(),
       request.TakeInitiatorPolicyContainerKeepAliveHandle());
 }
 

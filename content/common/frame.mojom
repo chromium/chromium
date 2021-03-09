@@ -35,7 +35,6 @@ import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
-import "third_party/blink/public/mojom/frame/navigation_initiator.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
@@ -710,7 +709,6 @@ interface FrameHost {
       BeginNavigationParams begin_params,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
       pending_associated_remote<NavigationClient>? navigation_client,
-      pending_remote<blink.mojom.NavigationInitiator>? navigation_initiator,
       pending_remote<blink.mojom.PolicyContainerHostKeepAliveHandle>?
           initiator_policy_container_keep_alive_handle);
 

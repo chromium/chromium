@@ -40,7 +40,6 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
@@ -70,7 +69,6 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -483,9 +481,7 @@ void LocalFrameClientImpl::BeginNavigation(
     base::TimeTicks input_start_time,
     const String& href_translate,
     const base::Optional<WebImpression>& impression,
-    WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> initiator_csp,
     network::mojom::IPAddressSpace initiator_address_space,
-    mojo::PendingRemote<mojom::blink::NavigationInitiator> navigation_initiator,
     const LocalFrameToken* initiator_frame_token,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
         initiator_policy_container_keep_alive_handle) {
@@ -533,13 +529,7 @@ void LocalFrameClientImpl::BeginNavigation(
     // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
     // set.
   }
-  for (auto& csp_policy : initiator_csp) {
-    navigation_info->initiator_csp.emplace_back(
-        ConvertToPublic(std::move(csp_policy)));
-  }
   navigation_info->initiator_address_space = initiator_address_space;
-  navigation_info->navigation_initiator_remote =
-      std::move(navigation_initiator);
 
   navigation_info->impression = impression;
 

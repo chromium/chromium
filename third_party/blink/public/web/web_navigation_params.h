@@ -20,7 +20,6 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
-#include "third_party/blink/public/mojom/frame/navigation_initiator.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
@@ -134,14 +133,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // When navigation initiated from the user input, this tracks
   // the input start time.
   base::TimeTicks input_start;
-
-  // This is the navigation relevant CSP to be used during request and response
-  // checks.
-  WebVector<WebContentSecurityPolicy> initiator_csp;
-
-  // The navigation initiator, if any.
-  CrossVariantMojoRemote<mojom::NavigationInitiatorInterfaceBase>
-      navigation_initiator_remote;
 
   // Specifies whether or not a MHTML Archive can be used to load a subframe
   // resource instead of doing a network request.

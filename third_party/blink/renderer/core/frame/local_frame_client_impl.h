@@ -122,10 +122,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       base::TimeTicks input_start_time,
       const String& href_translate,
       const base::Optional<WebImpression>& impression,
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-          initiator_csp,
       network::mojom::IPAddressSpace,
-      mojo::PendingRemote<mojom::blink::NavigationInitiator>,
       const LocalFrameToken* initiator_frame_token,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
           initiator_policy_container_keep_alive_handle) override;

@@ -552,14 +552,6 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       has_download_sandbox_flag, info->blocking_downloads_in_sandbox_enabled,
       from_ad, &download_policy);
 
-  auto initiator_csp_info = mojom::InitiatorCSPInfo::New();
-  initiator_csp_info->should_check_main_world_csp =
-      info->should_check_main_world_content_security_policy;
-  for (const auto& policy : info->initiator_csp) {
-    initiator_csp_info->initiator_csp.push_back(
-        BuildContentSecurityPolicy(policy));
-  }
-
   return mojom::CommonNavigationParams::New(
       info->url_request.Url(), info->url_request.RequestorOrigin(),
       std::move(referrer), url_request_extra_data->transition_type(),
@@ -571,7 +563,8 @@ mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       blink::GetRequestBodyForWebURLRequest(info->url_request),
       std::move(source_location), false /* started_from_context_menu */,
       info->url_request.HasUserGesture(),
-      info->url_request.HasTextFragmentToken(), std::move(initiator_csp_info),
+      info->url_request.HasTextFragmentToken(),
+      info->should_check_main_world_content_security_policy,
       initiator_origin_trial_features, info->href_translate.Latin1(),
       is_history_navigation_in_new_child_frame, info->input_start);
 }
@@ -5869,9 +5862,6 @@ void RenderFrameImpl::BeginNavigationInternal(
       navigation_client_remote.InitWithNewEndpointAndPassReceiver());
   navigation_client_impl_->MarkWasInitiatedInThisFrame();
 
-  mojo::PendingRemote<blink::mojom::NavigationInitiator> navigation_initiator =
-      std::move(info->navigation_initiator_remote);
-
   bool current_frame_has_download_sandbox_flag = !frame_->IsAllowedToDownload();
   bool has_download_sandbox_flag =
       info->initiator_frame_has_download_sandbox_flag ||
@@ -5887,7 +5877,7 @@ void RenderFrameImpl::BeginNavigationInternal(
                                  load_flags, has_download_sandbox_flag, from_ad,
                                  is_history_navigation_in_new_child_frame),
       std::move(begin_navigation_params), std::move(blob_url_token),
-      std::move(navigation_client_remote), std::move(navigation_initiator),
+      std::move(navigation_client_remote),
       std::move(initiator_policy_container_keep_alive_handle));
 }
 

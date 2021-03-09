@@ -735,8 +735,8 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       previews_state, navigation_start, frame_entry.method(),
       post_body ? post_body : post_data_, network::mojom::SourceLocation::New(),
       has_started_from_context_menu(), has_user_gesture(),
-      false /* has_text_fragment_token */, CreateInitiatorCSPInfo(),
-      std::vector<int>(), std::string(),
+      false /* has_text_fragment_token */,
+      network::mojom::CSPDisposition::CHECK, std::vector<int>(), std::string(),
       false /* is_history_navigation_in_new_child_frame */, input_start);
 }
 
