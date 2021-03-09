@@ -58,6 +58,11 @@ class CrosActionModuleHelper {
       observer->OnOpenAndroidApp(app_info, info);
   }
 
+  void ScheduleWait() {
+    for (auto* observer : action_observers())
+      observer->OnScheduleWait(/*id=*/012, /*time_ms=*/123);
+  }
+
  private:
   const std::vector<assistant::action::AssistantActionObserver*>&
   action_observers() {
@@ -96,6 +101,7 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   MOCK_METHOD(void,
               OnOpenAppResponse,
               (const chromeos::assistant::AndroidAppInfo& app_info));
+  MOCK_METHOD(void, OnWaitStarted, ());
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -248,6 +254,13 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnOpenAppResponse) {
       }));
 
   action_module_helper().OpenAndroidApp(fake_app_info);
+  observer_mock().FlushForTesting();
+}
+
+TEST_F(ConversationObserverTest, ShouldReceiveOnWaitStarted) {
+  EXPECT_CALL(observer_mock(), OnWaitStarted());
+
+  action_module_helper().ScheduleWait();
   observer_mock().FlushForTesting();
 }
 

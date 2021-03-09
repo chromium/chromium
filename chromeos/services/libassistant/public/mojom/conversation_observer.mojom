@@ -42,6 +42,10 @@ interface ConversationObserver{
   // Assistant got open Android app response from server.
   OnOpenAppResponse(AndroidAppInfo app_info);
 
+  // Assistant has started waiting. This occur during execution of a routine to
+  // give the user time to digest a response before continuing execution.
+  OnWaitStarted();
+
   // Libassistant is removing the notification with the given id.
   OnNotificationRemoved(string id);
 

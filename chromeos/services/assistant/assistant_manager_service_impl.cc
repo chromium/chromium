@@ -524,30 +524,6 @@ void AssistantManagerServiceImpl::OnOpenUrlResponse(const GURL& url,
   receive_url_response_ = url.spec();
 }
 
-void AssistantManagerServiceImpl::OnScheduleWait(int id, int time_ms) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnScheduleWait, id, time_ms);
-  DCHECK(features::IsWaitSchedulingEnabled());
-
-  // Schedule a wait for |time_ms|, notifying the CrosActionModule when the wait
-  // has finished so that it can inform LibAssistant to resume execution.
-  main_task_runner()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const base::WeakPtr<AssistantManagerServiceImpl>& weak_ptr,
-             int id) {
-            if (weak_ptr && weak_ptr->action_module()) {
-              weak_ptr->action_module()->OnScheduledWaitDone(
-                  id, /*cancelled=*/false);
-            }
-          },
-          weak_factory_.GetWeakPtr(), id),
-      base::TimeDelta::FromMilliseconds(time_ms));
-
-  // Notify subscribers that a wait has been started.
-  for (auto& it : interaction_subscribers_)
-    it.OnWaitStarted();
-}
-
 void AssistantManagerServiceImpl::OnShowNotification(
     const action::Notification& notification) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnShowNotification,

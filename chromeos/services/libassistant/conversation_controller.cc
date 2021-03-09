@@ -372,6 +372,30 @@ void ConversationController::OnOpenAndroidApp(
       [](auto) {});
 }
 
+void ConversationController::OnScheduleWait(int id, int time_ms) {
+  ENSURE_MOJOM_THREAD(&ConversationController::OnScheduleWait, id, time_ms);
+
+  DCHECK(assistant::features::IsWaitSchedulingEnabled());
+
+  // Schedule a wait for |time_ms|, notifying the CrosActionModule when the wait
+  // has finished so that it can inform LibAssistant to resume execution.
+  mojom_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::WeakPtr<ConversationController>& weak_ptr, int id) {
+            if (weak_ptr) {
+              weak_ptr->action_module_->OnScheduledWaitDone(
+                  id, /*cancelled=*/false);
+            }
+          },
+          weak_factory_.GetWeakPtr(), id),
+      base::TimeDelta::FromMilliseconds(time_ms));
+
+  // Notify subscribers that a wait has been started.
+  for (auto& observer : observers_)
+    observer->OnWaitStarted();
+}
+
 void ConversationController::SendVoicelessInteraction(
     const std::string& interaction,
     const std::string& description,

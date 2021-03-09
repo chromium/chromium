@@ -55,10 +55,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantInteractionSubscriber
 
   // Assistant got an instantaneous speech level update in dB.
   virtual void OnSpeechLevelUpdated(float speech_level) {}
-
-  // Assistant has started waiting. This occur during execution of a routine to
-  // give the user time to digest a response before continuing execution.
-  virtual void OnWaitStarted() {}
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {

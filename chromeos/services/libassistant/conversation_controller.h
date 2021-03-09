@@ -78,6 +78,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnOpenAndroidApp(
       const chromeos::assistant::AndroidAppInfo& app_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
+  void OnScheduleWait(int id, int time_ms) override;
 
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;

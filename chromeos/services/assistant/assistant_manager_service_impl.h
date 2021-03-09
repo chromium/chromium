@@ -173,7 +173,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void AddRemoteConversationObserver(ConversationObserver* observer) override;
 
   // AssistantActionObserver overrides:
-  void OnScheduleWait(int id, int time_ms) override;
   void OnShowNotification(const action::Notification& notification) override;
   void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
                           const InteractionInfo& interaction) override;
