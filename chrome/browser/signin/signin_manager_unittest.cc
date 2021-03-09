@@ -179,9 +179,7 @@ TEST_F(
       identity_manager()->HasPrimaryAccount(ConsentLevel::kNotRequired));
 
   // Update with a valid token.
-  UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager(), account.account_id,
-      GoogleServiceAuthError::AuthErrorNone());
+  SetRefreshTokenForAccount(identity_manager(), account.account_id, "");
   ExpectUnconsentedPrimaryAccountSetEvent(account);
   EXPECT_EQ(
       identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kNotRequired),

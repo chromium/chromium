@@ -23,17 +23,16 @@ class SigninManager : public KeyedService,
 
   // Computes and returns the unconsented primary account (UPA).
   // - If a primary account with sync consent exists, the UPA is equal to it.
-  // - Otherwise, the UPA is the first account in cookies and must have a
-  // refresh token. For the UPA to be computed, it needs fresh cookies and
-  // tokens to be loaded.
+  // - The UPA is the first account in cookies and must have a refresh token.
+  // For the UPA to be computed, it needs fresh cookies and tokens to be loaded.
   // - If tokens are not loaded or cookies are not fresh, the UPA can't be
   // computed but if one already exists it might be invalid. That can happen if
   // cookies are fresh but are empty or the first account is different than the
   // current UPA, the other cases are if tokens are not loaded but the current
   // UPA's refresh token has been rekoved or tokens are loaded but the current
   // UPA does not have a refresh token. If the UPA is invalid, it needs to be
-  // cleared, an empty UPA is returned. If it is still valid, returns
-  // |base::nullopt| which is no op.
+  // cleared, |base::nullopt| is returned. If it is still valid, returns the
+  // valid UPA.
   base::Optional<CoreAccountInfo> ComputeUnconsentedPrimaryAccountInfo() const;
 
   // signin::IdentityManager::Observer implementation.
