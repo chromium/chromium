@@ -102,9 +102,6 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     private void validateAccountsInternal(boolean accountsChanged) {
         // Ensure System accounts have been seeded.
         mAccountTrackerService.checkAndSeedSystemAccounts();
-        if (!accountsChanged) {
-            mAccountTrackerService.validateSystemAccounts();
-        }
         if (mSigninManager.isOperationInProgress()) {
             // Wait for ongoing sign-in/sign-out operation to finish before validating accounts.
             mSigninManager.runAfterOperationInProgress(
