@@ -53,6 +53,7 @@
 
 namespace gfx {
 class Point;
+class ScrollOffset;
 }  // namespace gfx
 
 namespace ui {
@@ -677,8 +678,8 @@ class WebLocalFrame : public WebFrame {
   // not be accurate if the page layout is out-of-date.
 
   // The scroll offset from the top-left corner of the frame in pixels.
-  virtual WebSize GetScrollOffset() const = 0;
-  virtual void SetScrollOffset(const WebSize&) = 0;
+  virtual gfx::ScrollOffset GetScrollOffset() const = 0;
+  virtual void SetScrollOffset(const gfx::ScrollOffset&) = 0;
 
   // The size of the document in this frame.
   virtual gfx::Size DocumentSize() const = 0;

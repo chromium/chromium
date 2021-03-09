@@ -287,7 +287,7 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
       WebView()->GetBrowserControls().Params());
 
   // Scroll layout viewport and verify visibleContentRect.
-  WebView()->MainFrameImpl()->SetScrollOffset(WebSize(0, 50));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 50));
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
   EXPECT_EQ(IntRect(IntPoint(0, 0), size - scrollbar_size),
@@ -392,7 +392,7 @@ TEST_P(VisualViewportTest, TestResizeAfterVerticalScroll) {
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 200));
 
   // Scroll main frame to the bottom of the document
-  WebView()->MainFrameImpl()->SetScrollOffset(WebSize(0, 400));
+  WebView()->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 400));
   EXPECT_EQ(ScrollOffset(0, 400),
             GetFrame()->View()->LayoutViewport()->GetScrollOffset());
 

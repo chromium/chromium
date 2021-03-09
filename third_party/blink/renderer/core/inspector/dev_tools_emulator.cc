@@ -443,13 +443,13 @@ void DevToolsEmulator::ApplyViewportOverride(TransformationMatrix* transform) {
 
   // Translate while taking into account current scroll offset.
   // TODO(lukasza): https://crbug.com/734201: Add OOPIF support.
-  WebSize scroll_offset =
+  gfx::ScrollOffset scroll_offset =
       web_view_->MainFrame()->IsWebLocalFrame()
           ? web_view_->MainFrame()->ToWebLocalFrame()->GetScrollOffset()
-          : WebSize();
+          : gfx::ScrollOffset();
   gfx::PointF visual_offset = web_view_->VisualViewportOffset();
-  float scroll_x = scroll_offset.width + visual_offset.x();
-  float scroll_y = scroll_offset.height + visual_offset.y();
+  float scroll_x = scroll_offset.x() + visual_offset.x();
+  float scroll_y = scroll_offset.y() + visual_offset.y();
   transform->Translate(-viewport_override_->position.X() + scroll_x,
                        -viewport_override_->position.Y() + scroll_y);
 

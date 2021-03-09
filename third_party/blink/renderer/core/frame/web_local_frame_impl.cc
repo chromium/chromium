@@ -783,15 +783,16 @@ void WebLocalFrameImpl::CopyToFindPboard() {
     GetFrame()->GetSystemClipboard()->CopyToFindPboard(SelectionAsText());
 }
 
-WebSize WebLocalFrameImpl::GetScrollOffset() const {
-  if (ScrollableArea* scrollable_area = LayoutViewport())
-    return scrollable_area->ScrollOffsetInt();
-  return WebSize();
+gfx::ScrollOffset WebLocalFrameImpl::GetScrollOffset() const {
+  if (ScrollableArea* scrollable_area = LayoutViewport()) {
+    return gfx::ScrollOffset(scrollable_area->GetScrollOffset());
+  }
+  return gfx::ScrollOffset();
 }
 
-void WebLocalFrameImpl::SetScrollOffset(const WebSize& offset) {
+void WebLocalFrameImpl::SetScrollOffset(const gfx::ScrollOffset& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    scrollable_area->SetScrollOffset(ScrollOffset(offset.width, offset.height),
+    scrollable_area->SetScrollOffset(ScrollOffset(offset.x(), offset.y()),
                                      mojom::blink::ScrollType::kProgrammatic);
   }
 }

@@ -1325,7 +1325,8 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
       web_view->SmoothScroll(root_document_scroll_to.Width(),
                              root_document_scroll_to.Height(),
                              base::TimeDelta());
-      iframe->SetScrollOffset(iframe_scroll_to);
+      iframe->SetScrollOffset(gfx::ScrollOffset(iframe_scroll_to.Width(),
+                                                iframe_scroll_to.Height()));
       UpdateAllLifecyclePhases(web_view);
       RunPendingTasks();
 

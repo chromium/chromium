@@ -40,15 +40,16 @@ std::string DumpFrameHeaderIfNeeded(WebLocalFrame* frame) {
 
 std::string DumpFrameScrollPosition(WebLocalFrame* frame) {
   std::string result;
-  WebSize offset = frame->GetScrollOffset();
-  if (offset.width > 0 || offset.height > 0) {
+  gfx::ScrollOffset offset = frame->GetScrollOffset();
+  if (offset.x() > 0 || offset.y() > 0) {
     if (frame->Parent()) {
       auto* frame_proxy = static_cast<WebFrameTestProxy*>(frame->Client());
       result = std::string("frame '") + frame_proxy->GetFrameNameForWebTests() +
                "' ";
     }
-    base::StringAppendF(&result, "scrolled to %d,%d\n", offset.width,
-                        offset.height);
+    base::StringAppendF(&result, "scrolled to %d,%d\n",
+                        base::ClampFloor(offset.x()),
+                        base::ClampFloor(offset.y()));
   }
 
   return result;

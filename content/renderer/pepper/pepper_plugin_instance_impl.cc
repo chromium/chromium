@@ -1213,12 +1213,14 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::Size scroll_offset = gfx::ScaleToRoundedSize(
-      container_->GetDocument().GetFrame()->GetScrollOffset(),
-      viewport_to_dip_scale_);
+  gfx::ScrollOffset scroll_offset =
+      container_->GetDocument().GetFrame()->GetScrollOffset();
+  scroll_offset.Scale(viewport_to_dip_scale_);
 
-  view_data_.scroll_offset = PP_MakePoint(scroll_offset.width(),
-                                          scroll_offset.height());
+  gfx::Vector2d floored_scroll_offset =
+      ScrollOffsetToFlooredVector2d(scroll_offset);
+  view_data_.scroll_offset =
+      PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 
   // The view size may have changed and we might need to update
   // our registration of event listeners.

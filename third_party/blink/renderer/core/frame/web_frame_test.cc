@@ -2956,13 +2956,13 @@ class WebFrameResizeTest : public WebFrameTest {
   void TestResizeYieldsCorrectScrollAndScale(
       const char* url,
       const float initial_page_scale_factor,
-      const WebSize scroll_offset,
-      const WebSize viewport_size,
+      const gfx::ScrollOffset& scroll_offset,
+      const gfx::Size& viewport_size,
       const bool should_scale_relative_to_viewport_width) {
     RegisterMockedHttpURLLoad(url);
 
     const float aspect_ratio =
-        static_cast<float>(viewport_size.width) / viewport_size.height;
+        static_cast<float>(viewport_size.width()) / viewport_size.height();
 
     frame_test_helpers::WebViewHelper web_view_helper;
     web_view_helper.InitializeAndLoad(base_url_ + url, nullptr, nullptr,
@@ -2971,8 +2971,7 @@ class WebFrameResizeTest : public WebFrameTest {
 
     // Origin scrollOffsets preserved under resize.
     {
-      web_view_helper.Resize(
-          gfx::Size(viewport_size.width, viewport_size.height));
+      web_view_helper.Resize(viewport_size);
       web_view_helper.GetWebView()->SetPageScaleFactor(
           initial_page_scale_factor);
       ASSERT_EQ(gfx::Size(viewport_size),
@@ -2980,34 +2979,34 @@ class WebFrameResizeTest : public WebFrameTest {
       ASSERT_EQ(initial_page_scale_factor,
                 web_view_helper.GetWebView()->PageScaleFactor());
       web_view_helper.Resize(
-          gfx::Size(viewport_size.height, viewport_size.width));
+          gfx::Size(viewport_size.height(), viewport_size.width()));
       float expected_page_scale_factor =
           initial_page_scale_factor *
           (should_scale_relative_to_viewport_width ? 1 / aspect_ratio : 1);
       EXPECT_NEAR(expected_page_scale_factor,
                   web_view_helper.GetWebView()->PageScaleFactor(), 0.05f);
-      EXPECT_EQ(WebSize(), web_view_helper.LocalMainFrame()->GetScrollOffset());
+      EXPECT_EQ(gfx::ScrollOffset(),
+                web_view_helper.LocalMainFrame()->GetScrollOffset());
     }
 
     // Resizing just the height should not affect pageScaleFactor or
     // scrollOffset.
     {
-      web_view_helper.Resize(
-          gfx::Size(viewport_size.width, viewport_size.height));
+      web_view_helper.Resize(viewport_size);
       web_view_helper.GetWebView()->SetPageScaleFactor(
           initial_page_scale_factor);
       web_view_helper.LocalMainFrame()->SetScrollOffset(scroll_offset);
       UpdateAllLifecyclePhases(web_view_helper.GetWebView());
-      const WebSize expected_scroll_offset =
+      const gfx::ScrollOffset expected_scroll_offset =
           web_view_helper.LocalMainFrame()->GetScrollOffset();
       web_view_helper.Resize(
-          gfx::Size(viewport_size.width, viewport_size.height * 0.8f));
+          gfx::Size(viewport_size.width(), viewport_size.height() * 0.8f));
       EXPECT_EQ(initial_page_scale_factor,
                 web_view_helper.GetWebView()->PageScaleFactor());
       EXPECT_EQ(expected_scroll_offset,
                 web_view_helper.LocalMainFrame()->GetScrollOffset());
       web_view_helper.Resize(
-          gfx::Size(viewport_size.width, viewport_size.height * 0.8f));
+          gfx::Size(viewport_size.width(), viewport_size.height() * 0.8f));
       EXPECT_EQ(initial_page_scale_factor,
                 web_view_helper.GetWebView()->PageScaleFactor());
       EXPECT_EQ(expected_scroll_offset,
@@ -3022,8 +3021,8 @@ TEST_F(WebFrameResizeTest,
   // long as the content adjusts according to the device-width.
   const char* url = "resize_scroll_mobile.html";
   const float kInitialPageScaleFactor = 1;
-  const WebSize scroll_offset(0, 50);
-  const WebSize viewport_size(120, 160);
+  const gfx::ScrollOffset scroll_offset(0, 50);
+  const gfx::Size viewport_size(120, 160);
   const bool kShouldScaleRelativeToViewportWidth = true;
 
   TestResizeYieldsCorrectScrollAndScale(url, kInitialPageScaleFactor,
@@ -3038,8 +3037,8 @@ TEST_F(WebFrameResizeTest, ResizeYieldsCorrectScrollAndScaleForMinimumScale) {
   // on rotation and not do anything strange.
   const char* url = "resize_scroll_minimum_scale.html";
   const float kInitialPageScaleFactor = 1;
-  const WebSize scroll_offset(0, 0);
-  const WebSize viewport_size(240, 320);
+  const gfx::ScrollOffset scroll_offset(0, 0);
+  const gfx::Size viewport_size(240, 320);
   const bool kShouldScaleRelativeToViewportWidth = false;
 
   TestResizeYieldsCorrectScrollAndScale(url, kInitialPageScaleFactor,
@@ -3052,8 +3051,8 @@ TEST_F(WebFrameResizeTest, ResizeYieldsCorrectScrollAndScaleForFixedWidth) {
   // viewport width.
   const char* url = "resize_scroll_fixed_width.html";
   const float kInitialPageScaleFactor = 2;
-  const WebSize scroll_offset(0, 200);
-  const WebSize viewport_size(240, 320);
+  const gfx::ScrollOffset scroll_offset(0, 200);
+  const gfx::Size viewport_size(240, 320);
   const bool kShouldScaleRelativeToViewportWidth = true;
 
   TestResizeYieldsCorrectScrollAndScale(url, kInitialPageScaleFactor,
@@ -3066,8 +3065,8 @@ TEST_F(WebFrameResizeTest, ResizeYieldsCorrectScrollAndScaleForFixedLayout) {
   // viewport width.
   const char* url = "resize_scroll_fixed_layout.html";
   const float kInitialPageScaleFactor = 2;
-  const WebSize scroll_offset(200, 400);
-  const WebSize viewport_size(320, 240);
+  const gfx::ScrollOffset scroll_offset(200, 400);
+  const gfx::Size viewport_size(320, 240);
   const bool kShouldScaleRelativeToViewportWidth = true;
 
   TestResizeYieldsCorrectScrollAndScale(url, kInitialPageScaleFactor,
@@ -3162,7 +3161,8 @@ void SetScaleAndScrollAndLayout(WebViewImpl* web_view,
                                 const gfx::Point& scroll,
                                 float scale) {
   web_view->SetPageScaleFactor(scale);
-  web_view->MainFrameImpl()->SetScrollOffset(WebSize(scroll.x(), scroll.y()));
+  web_view->MainFrameImpl()->SetScrollOffset(
+      gfx::ScrollOffset(scroll.x(), scroll.y()));
   web_view->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 }
@@ -4254,7 +4254,7 @@ TEST_F(WebFrameTest, ReloadPreservesState) {
   web_view_helper.InitializeAndLoad(base_url_ + url, &client);
   web_view_helper.Resize(gfx::Size(kPageWidth, kPageHeight));
   web_view_helper.LocalMainFrame()->SetScrollOffset(
-      WebSize(kPageWidth / 4, kPageHeight / 4));
+      gfx::ScrollOffset(kPageWidth / 4, kPageHeight / 4));
   web_view_helper.GetWebView()->SetPageScaleFactor(kPageScaleFactor);
 
   // Reload the page and end up at the same url. State should not be propagated.
@@ -4262,8 +4262,8 @@ TEST_F(WebFrameTest, ReloadPreservesState) {
       WebFrameLoadType::kReload);
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
       web_view_helper.LocalMainFrame());
-  EXPECT_EQ(0, web_view_helper.LocalMainFrame()->GetScrollOffset().width);
-  EXPECT_EQ(0, web_view_helper.LocalMainFrame()->GetScrollOffset().height);
+  EXPECT_EQ(gfx::ScrollOffset(),
+            web_view_helper.LocalMainFrame()->GetScrollOffset());
   EXPECT_EQ(1.0f, web_view_helper.GetWebView()->PageScaleFactor());
 }
 
@@ -7902,7 +7902,7 @@ TEST_F(WebFrameTest, FrameViewScrollAccountsForBrowserControls) {
   web_view->SetPageScaleFactor(2.0f);
   UpdateAllLifecyclePhases(web_view_helper.GetWebView());
 
-  web_view->MainFrameImpl()->SetScrollOffset(WebSize(0, 2000));
+  web_view->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 2000));
   EXPECT_EQ(ScrollOffset(0, 1900),
             frame_view->LayoutViewport()->GetScrollOffset());
 
@@ -7918,7 +7918,7 @@ TEST_F(WebFrameTest, FrameViewScrollAccountsForBrowserControls) {
   web_view->MainFrameWidget()->ApplyViewportChangesForTesting(
       {gfx::ScrollOffset(), gfx::Vector2dF(), 1.0f, false,
        20.0f / browser_controls_height, 0, cc::BrowserControlsState::kBoth});
-  web_view->MainFrameImpl()->SetScrollOffset(WebSize(0, 2000));
+  web_view->MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(0, 2000));
   EXPECT_EQ(ScrollOffset(0, 1940),
             frame_view->LayoutViewport()->GetScrollOffset());
 
@@ -8322,9 +8322,9 @@ TEST_F(WebFrameTest, FullscreenRestoreScaleFactorUponExiting) {
   // resize and switching fullscreen state operations on WebView, with the
   // interference from Android status bars like a real device does.
   // This verifies we handle the transition and restore states correctly.
-  WebSize screen_size_minus_status_bars_minus_url_bar(598, 303);
-  WebSize screen_size_minus_status_bars(598, 359);
-  WebSize screen_size(640, 384);
+  gfx::Size screen_size_minus_status_bars_minus_url_bar(598, 303);
+  gfx::Size screen_size_minus_status_bars(598, 359);
+  gfx::Size screen_size(640, 384);
 
   RegisterMockedHttpURLLoad("fullscreen_restore_scale_factor.html");
   frame_test_helpers::WebViewHelper web_view_helper;
@@ -8332,15 +8332,15 @@ TEST_F(WebFrameTest, FullscreenRestoreScaleFactorUponExiting) {
       base_url_ + "fullscreen_restore_scale_factor.html", nullptr, nullptr,
       &ConfigureAndroid);
   UpdateScreenInfoAndResizeView(
-      &web_view_helper, screen_size_minus_status_bars_minus_url_bar.width,
-      screen_size_minus_status_bars_minus_url_bar.height);
+      &web_view_helper, screen_size_minus_status_bars_minus_url_bar.width(),
+      screen_size_minus_status_bars_minus_url_bar.height());
   auto* layout_view = web_view_helper.GetWebView()
                           ->MainFrameImpl()
                           ->GetFrameView()
                           ->GetLayoutView();
-  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.width,
+  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.width(),
             layout_view->LogicalWidth().Floor());
-  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.height,
+  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.height(),
             layout_view->LogicalHeight().Floor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->PageScaleFactor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->MinimumPageScaleFactor());
@@ -8356,12 +8356,12 @@ TEST_F(WebFrameTest, FullscreenRestoreScaleFactorUponExiting) {
   web_view_impl->DidEnterFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   UpdateScreenInfoAndResizeView(&web_view_helper,
-                                screen_size_minus_status_bars.width,
-                                screen_size_minus_status_bars.height);
-  UpdateScreenInfoAndResizeView(&web_view_helper, screen_size.width,
-                                screen_size.height);
-  EXPECT_EQ(screen_size.width, layout_view->LogicalWidth().Floor());
-  EXPECT_EQ(screen_size.height, layout_view->LogicalHeight().Floor());
+                                screen_size_minus_status_bars.width(),
+                                screen_size_minus_status_bars.height());
+  UpdateScreenInfoAndResizeView(&web_view_helper, screen_size.width(),
+                                screen_size.height());
+  EXPECT_EQ(screen_size.width(), layout_view->LogicalWidth().Floor());
+  EXPECT_EQ(screen_size.height(), layout_view->LogicalHeight().Floor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->PageScaleFactor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->MinimumPageScaleFactor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->MaximumPageScaleFactor());
@@ -8369,14 +8369,14 @@ TEST_F(WebFrameTest, FullscreenRestoreScaleFactorUponExiting) {
   web_view_impl->DidExitFullscreen();
   UpdateAllLifecyclePhases(web_view_impl);
   UpdateScreenInfoAndResizeView(&web_view_helper,
-                                screen_size_minus_status_bars.width,
-                                screen_size_minus_status_bars.height);
+                                screen_size_minus_status_bars.width(),
+                                screen_size_minus_status_bars.height());
   UpdateScreenInfoAndResizeView(
-      &web_view_helper, screen_size_minus_status_bars_minus_url_bar.width,
-      screen_size_minus_status_bars_minus_url_bar.height);
-  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.width,
+      &web_view_helper, screen_size_minus_status_bars_minus_url_bar.width(),
+      screen_size_minus_status_bars_minus_url_bar.height());
+  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.width(),
             layout_view->LogicalWidth().Floor());
-  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.height,
+  EXPECT_EQ(screen_size_minus_status_bars_minus_url_bar.height(),
             layout_view->LogicalHeight().Floor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->PageScaleFactor());
   EXPECT_FLOAT_EQ(1.0, web_view_impl->MinimumPageScaleFactor());
@@ -13468,11 +13468,11 @@ TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
   // Make the page scale and scroll with the given parameters.
   EXPECT_EQ(0.5f, WebView().PageScaleFactor());
   WebView().SetPageScaleFactor(2.0f);
-  WebView().MainFrameImpl()->SetScrollOffset(WebSize(94, 111));
+  WebView().MainFrameImpl()->SetScrollOffset(gfx::ScrollOffset(94, 111));
   WebView().SetVisualViewportOffset(gfx::PointF(12, 20));
   EXPECT_EQ(2.0f, WebView().PageScaleFactor());
-  EXPECT_EQ(94, WebView().MainFrameImpl()->GetScrollOffset().width);
-  EXPECT_EQ(111, WebView().MainFrameImpl()->GetScrollOffset().height);
+  EXPECT_EQ(94, WebView().MainFrameImpl()->GetScrollOffset().x());
+  EXPECT_EQ(111, WebView().MainFrameImpl()->GetScrollOffset().y());
   EXPECT_EQ(12, WebView().VisualViewportOffset().x());
   EXPECT_EQ(20, WebView().VisualViewportOffset().y());
 
@@ -13493,8 +13493,8 @@ TEST_F(WebFrameSimTest, EnterFullscreenResetScrollAndScaleState) {
       DocumentUpdateReason::kTest);
 
   EXPECT_EQ(0.5f, WebView().PageScaleFactor());
-  EXPECT_EQ(94, WebView().MainFrameImpl()->GetScrollOffset().width);
-  EXPECT_EQ(111, WebView().MainFrameImpl()->GetScrollOffset().height);
+  EXPECT_EQ(94, WebView().MainFrameImpl()->GetScrollOffset().x());
+  EXPECT_EQ(111, WebView().MainFrameImpl()->GetScrollOffset().y());
   EXPECT_EQ(0, WebView().VisualViewportOffset().x());
   EXPECT_EQ(0, WebView().VisualViewportOffset().y());
 }

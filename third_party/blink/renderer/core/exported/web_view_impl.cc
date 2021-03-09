@@ -658,12 +658,13 @@ gfx::Rect WebViewImpl::WidenRectWithinPageBounds(const gfx::Rect& source,
   DCHECK(MainFrame());
   DCHECK(MainFrame()->IsWebLocalFrame());
   gfx::Size max_size = MainFrame()->ToWebLocalFrame()->DocumentSize();
-  IntSize scroll_offset = MainFrame()->ToWebLocalFrame()->GetScrollOffset();
+  gfx::ScrollOffset scroll_offset =
+      MainFrame()->ToWebLocalFrame()->GetScrollOffset();
 
   int left_margin = target_margin;
   int right_margin = target_margin;
 
-  const int absolute_source_x = source.x() + scroll_offset.Width();
+  const int absolute_source_x = source.x() + scroll_offset.x();
   if (left_margin > absolute_source_x) {
     left_margin = absolute_source_x;
     right_margin = std::max(left_margin, minimum_margin);
@@ -680,7 +681,7 @@ gfx::Rect WebViewImpl::WidenRectWithinPageBounds(const gfx::Rect& source,
   const int new_x = source.x() - left_margin;
 
   DCHECK_GE(new_width, 0);
-  DCHECK_LE(scroll_offset.Width() + new_x + new_width, max_size.width());
+  DCHECK_LE(scroll_offset.x() + new_x + new_width, max_size.width());
 
   return gfx::Rect(new_x, source.y(), new_width, source.height());
 }
