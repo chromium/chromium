@@ -3506,22 +3506,22 @@ Here are some things you can try to get started.
       </message>
 
       <!-- PciePeripheral notifications -->
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE" translateable="false" desc="Notification title to indicate to users that their peripheral device's performance may be limited.">
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_TITLE" desc="Notification title to indicate to users that their peripheral device's performance may be limited.">
         Peripheral performance may be limited
       </message>
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY" translateable="false" desc="Notification body text that explains to users that their peripheral performance may be limited and to change their Peripheral Data Access Protection settings in the Settings app.">
-        If peripheral performance is limited, change your data access protection for peripherals to optimize.
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_BODY" desc="Notification body text that explains to users that their peripheral performance may be limited and to change their Peripheral Data Access Protection settings in the Settings app.">
+        Changing your data access protection for peripherals setting can optimize performance
       </message>
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_SETTINGS_BUTTON_TEXT" translateable="false" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_SETTINGS_BUTTON_TEXT" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
         Settings
       </message>
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_LEARN_MORE_BUTTON_TEXT" translateable="false" desc="Notification button text, if the user clicks on the button it will redirect them to the Help webpage.">
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_LEARN_MORE_BUTTON_TEXT" desc="Notification button text, if the user clicks on the button it will redirect them to the Help webpage.">
         Learn more
       </message>
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE" translateable="false" desc="Notification body text that explains to the user that their peripheral may be at limited performance because the user is in Guest mode.">
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_PERFORMANCE_LIMITED_GUEST_MODE" desc="Notification body text that explains to the user that their peripheral may be at limited performance because the user is in Guest mode.">
         Peripheral performance may be limited in Guest mode
       </message>
-      <message name="IDS_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED" translateable="false" desc="Notification body text that explains to the user that their peripheral is not supported in Guest mode due to security reasons.">
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED" desc="Notification body text that explains to the user that their peripheral is not supported in Guest mode due to security reasons.">
         Peripheral not supported in Guest mode for security reasons
       </message>
     </messages>

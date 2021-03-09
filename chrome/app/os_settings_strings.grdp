@@ -3512,28 +3512,25 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">
     Enable Verified Access
   </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE" translateable="false" desc="The title of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
     Data access protection for peripherals
   </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION" translateable="false" desc="The description of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
-    Some devices require you to disable Data Access Protection to work properly or at full performance. Disabling protection can leave your device vulnerable to unauthorized access from your peripheral to your personal data.
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_TOGGLE_DESCRIPTION" desc="The description of the toggle to enable/disable peripheral data access protection. Peripheral data access protection refers to the system (ChromeOS) preventing external peripherals (e.g. Thunderbolt docks) from accessing the device's memory.">
+    Some devices require you to disable data access protection to work properly or at full performance.
   </message>
-  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE" translateable="false" desc="The title of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
-    Are you sure you want to disable data access protection for peripherals?
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_TITLE" desc="The title of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
+    Disable data access protection for peripherals
   </message>
-  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION" translateable="false" desc="The description of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
-    Make sure there are no malicious peripherals or unauthorized access to your device, as these may put your data and privacy at risk. This may take a few seconds to take effect.
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DESCRIPTION" desc="The description of the dialog that asks users for confirmation that they indeed do want to disable Data Access Protection.">
+    Disabling can make your peripherals perform better, but may expose your personal data through unauthorized usage.
   </message>
-  <message name="IDS_OS_SETTINGS_DISABLING_DATA_ACCESS_PROTECTION_DIALOG_TITLE" translateable="false" desc="The title of the dialog that states that the system is currently disabling Data Access Protection.">
-    Disabling data access protection for peripherals
+  <message name="IDS_OS_SETTINGS_DISABLE_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_SUB_DESCRIPTION" desc="The description of the dialog that states that disabling peripheral data acces protection may reset the user's peripherals and may take a few seconds.">
+    Your displays and peripherals may reset briefly. This may take a few seconds to take effect.
   </message>
-  <message name="IDS_OS_SETTINGS_DISABLING_DATA_ACCESS_PROTECTION_DIALOG_DESCRIPTION" translateable="false" desc="The description of the dialog that states that the system is currently disabling Data Access Protection.">
-    This may take a few seconds. Your displays and peripherals may reset briefly.
-  </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL" translateable="false" desc="The label of the cancel button for the data access protection confirmation dialog">
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_CANCEL_BUTTON_LABEL" desc="The label of the cancel button for the data access protection confirmation dialog">
     Cancel
   </message>
-  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL" translateable="false" desc="The label of the confirmation button to disable data access protection">
+  <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL" desc="The label of the confirmation button to disable data access protection">
     Disable
   </message>
 
