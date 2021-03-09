@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -5950,6 +5951,13 @@ void Element::NotifyInlineStyleMutation() {
       GetDocument().GetPage()) {
     GetDocument().GetPage()->Animator().SetHasInlineStyleMutation();
   }
+}
+
+bool Element::ShouldCompositeForDocumentTransition() const {
+  auto* document_transition_supplement =
+      DocumentTransitionSupplement::FromIfExists(GetDocument());
+  return document_transition_supplement &&
+         document_transition_supplement->GetTransition()->IsActiveElement(this);
 }
 
 inline void Element::SetInlineStyleFromString(

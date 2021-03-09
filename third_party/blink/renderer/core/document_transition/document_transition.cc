@@ -5,7 +5,8 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -16,7 +17,8 @@
 namespace blink {
 namespace {
 
-const int32_t kDefaultDurationMs = 300;
+constexpr base::TimeDelta kDefaultDuration =
+    base::TimeDelta::FromMilliseconds(300);
 
 DocumentTransition::Request::Effect ParseEffect(const String& input) {
   using MapType = HashMap<String, DocumentTransition::Request::Effect>;
@@ -40,6 +42,19 @@ DocumentTransition::Request::Effect ParseEffect(const String& input) {
                                  : DocumentTransition::Request::Effect::kNone;
 }
 
+base::TimeDelta ParseDuration(const DocumentTransitionPrepareOptions* options) {
+  return options->hasDuration()
+             ? base::TimeDelta::FromMilliseconds(options->duration())
+             : kDefaultDuration;
+}
+
+DocumentTransition::Request::Effect ParseRootTransition(
+    const DocumentTransitionPrepareOptions* options) {
+  return options->hasRootTransition()
+             ? ParseEffect(options->rootTransition())
+             : DocumentTransition::Request::Effect::kNone;
+}
+
 }  // namespace
 
 DocumentTransition::DocumentTransition(Document* document)
@@ -50,6 +65,7 @@ void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(prepare_promise_resolver_);
   visitor->Trace(start_promise_resolver_);
+  visitor->Trace(active_shared_elements_);
 
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
@@ -65,6 +81,7 @@ void DocumentTransition::ContextDestroyed() {
     start_promise_resolver_->Detach();
     start_promise_resolver_ = nullptr;
   }
+  active_shared_elements_.clear();
 }
 
 bool DocumentTransition::HasPendingActivity() const {
@@ -73,9 +90,10 @@ bool DocumentTransition::HasPendingActivity() const {
   return false;
 }
 
-ScriptPromise DocumentTransition::prepare(ScriptState* script_state,
-                                          const DocumentTransitionInit* params,
-                                          ExceptionState& exception_state) {
+ScriptPromise DocumentTransition::prepare(
+    ScriptState* script_state,
+    const DocumentTransitionPrepareOptions* options,
+    ExceptionState& exception_state) {
   // Reject any previous prepare promises.
   if (state_ == State::kPreparing || state_ == State::kPrepared) {
     if (prepare_promise_resolver_) {
@@ -106,15 +124,19 @@ ScriptPromise DocumentTransition::prepare(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // We're going to be creating a new transition, initialize the params.
-  ParseAndSetTransitionParameters(params);
+  // We're going to be creating a new transition, parse the options.
+  auto duration = ParseDuration(options);
+  auto effect = ParseRootTransition(options);
+  if (options->hasSharedElements())
+    active_shared_elements_ = options->sharedElements();
+  prepare_shared_element_count_ = active_shared_elements_.size();
 
   prepare_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   state_ = State::kPreparing;
   pending_request_ = Request::CreatePrepare(
-      effect_, duration_,
+      effect, duration,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
@@ -123,12 +145,31 @@ ScriptPromise DocumentTransition::prepare(ScriptState* script_state,
   return prepare_promise_resolver_->Promise();
 }
 
-ScriptPromise DocumentTransition::start(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
+ScriptPromise DocumentTransition::start(
+    ScriptState* script_state,
+    const DocumentTransitionStartOptions* options,
+    ExceptionState& exception_state) {
   if (state_ != State::kPrepared) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Transition must be prepared before it can be started.");
+    return ScriptPromise();
+  }
+
+  DCHECK(active_shared_elements_.IsEmpty());
+  if (options->hasSharedElements())
+    active_shared_elements_ = options->sharedElements();
+
+  // We need to have the same amount of shared elements (even if null) as the
+  // prepared ones.
+  if (prepare_shared_element_count_ != active_shared_elements_.size()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        String::Format("Start request sharedElement count (%u) must match the "
+                       "prepare sharedElement count (%u).",
+                       active_shared_elements_.size(),
+                       prepare_shared_element_count_));
+    active_shared_elements_.clear();
     return ScriptPromise();
   }
 
@@ -171,6 +212,7 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   prepare_promise_resolver_->Resolve();
   prepare_promise_resolver_ = nullptr;
   state_ = State::kPrepared;
+  active_shared_elements_.clear();
 }
 
 void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
@@ -188,6 +230,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
   state_ = State::kIdle;
+  active_shared_elements_.clear();
 }
 
 std::unique_ptr<DocumentTransition::Request>
@@ -195,12 +238,8 @@ DocumentTransition::TakePendingRequest() {
   return std::move(pending_request_);
 }
 
-void DocumentTransition::ParseAndSetTransitionParameters(
-    const DocumentTransitionInit* params) {
-  duration_ = base::TimeDelta::FromMilliseconds(
-      params->hasDuration() ? params->duration() : kDefaultDurationMs);
-  effect_ = params->hasRootTransition() ? ParseEffect(params->rootTransition())
-                                        : Request::Effect::kNone;
+bool DocumentTransition::IsActiveElement(const Element* element) const {
+  return active_shared_elements_.Contains(element);
 }
 
 }  // namespace blink

@@ -13,9 +13,9 @@
   // - Rejects any previous unresolved prepare() promises.
   // - Returns a promise that resolves after the transition has been
   //   prepared.
-  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionInit params = {});
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionPrepareOptions options = {});
 
   // Can only be called after prepare(), during the task during
   // which prepare() most recently resolved.
-  [CallWith=ScriptState, RaisesException] Promise<void> start();
+  [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionStartOptions options = {});
 };

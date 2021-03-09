@@ -17,7 +17,8 @@ enum RootTransitionType {
   "reveal-up"
 };
 
-dictionary DocumentTransitionInit {
-  RootTransitionType rootTransition = "none";
-  DOMTimeStamp duration = 0;
+dictionary DocumentTransitionPrepareOptions {
+  RootTransitionType rootTransition;
+  DOMTimeStamp duration;
+  sequence<Element?> sharedElements;
 };

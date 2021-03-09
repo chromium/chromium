@@ -947,6 +947,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void NotifyInlineStyleMutation();
 
+  // Returns true if this element should composite due to a document transition.
+  // See third_party/blink/renderer/core/document_transition/README.md for more
+  // information.
+  bool ShouldCompositeForDocumentTransition() const;
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();

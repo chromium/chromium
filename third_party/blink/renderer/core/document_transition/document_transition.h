@@ -10,13 +10,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
 class Document;
-class DocumentTransitionInit;
+class DocumentTransitionPrepareOptions;
+class DocumentTransitionStartOptions;
 class ScriptState;
 
 class CORE_EXPORT DocumentTransition
@@ -41,12 +43,17 @@ class CORE_EXPORT DocumentTransition
 
   // JavaScript API implementation.
   ScriptPromise prepare(ScriptState*,
-                        const DocumentTransitionInit*,
+                        const DocumentTransitionPrepareOptions*,
                         ExceptionState&);
-  ScriptPromise start(ScriptState*, ExceptionState&);
+  ScriptPromise start(ScriptState*,
+                      const DocumentTransitionStartOptions*,
+                      ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.
   std::unique_ptr<Request> TakePendingRequest();
+
+  // Returns true if the given element is active in this transition.
+  bool IsActiveElement(const Element*) const;
 
  private:
   friend class DocumentTransitionTest;
@@ -58,16 +65,23 @@ class CORE_EXPORT DocumentTransition
   void NotifyPrepareFinished(uint32_t sequence_id);
   void NotifyStartFinished(uint32_t sequence_id);
 
-  void ParseAndSetTransitionParameters(const DocumentTransitionInit* params);
-
   Member<Document> document_;
 
   State state_ = State::kIdle;
 
   Member<ScriptPromiseResolver> prepare_promise_resolver_;
   Member<ScriptPromiseResolver> start_promise_resolver_;
-  base::TimeDelta duration_;
-  Request::Effect effect_ = Request::Effect::kNone;
+
+  // `active_shared_elements_` represents elements that are identified as shared
+  // during the current step of the transition. Specifically, it represents
+  // `prepare()` call sharedElements if the state is kPreparing and `start()`
+  // call sharedElements if the state is kStarted.
+  // `prepare_shared_element_count_` represents the number of shared elements
+  // that were specified in the `prepare()` call. This is used to verify that
+  // the number of shared elements specified in the `prepare()` and `start()`
+  // calls is the same.
+  HeapVector<Member<Element>> active_shared_elements_;
+  wtf_size_t prepare_shared_element_count_ = 0u;
 
   std::unique_ptr<Request> pending_request_;
 
