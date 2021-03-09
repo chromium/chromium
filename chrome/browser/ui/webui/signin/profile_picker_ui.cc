@@ -123,6 +123,10 @@ void AddStrings(content::WebUIDataSource* html_source) {
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_TEXT},
       {"selectAvatarDoneButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_AVATAR_DONE},
+      {"profileSwitchTitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_TITLE},
+      {"profileSwitchSubtitle", IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE},
+      {"switchButtonLabel",
+       IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
 
       // Color picker.
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
@@ -179,12 +183,12 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
 
   std::unique_ptr<ProfilePickerHandler> handler =
       std::make_unique<ProfilePickerHandler>();
-  ProfilePickerHandler* raw_handler = handler.get();
+  profile_picker_handler_ = handler.get();
   web_ui->AddMessageHandler(std::move(handler));
 
   if (web_ui->GetWebContents()->GetURL().query() ==
       chrome::kChromeUIProfilePickerStartupQuery) {
-    raw_handler->EnableStartupMetrics();
+    profile_picker_handler_->EnableStartupMetrics();
   }
 
   AddStrings(html_source);
@@ -210,6 +214,10 @@ void ProfilePickerUI::BindInterface(
     customize_themes_factory_receiver_.reset();
   }
   customize_themes_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
+  return profile_picker_handler_;
 }
 
 void ProfilePickerUI::CreateCustomizeThemesHandler(

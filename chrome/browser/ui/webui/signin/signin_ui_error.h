@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/strings/string16.h"
 
 // Holds different sign-in error types along with error messages for displaying
@@ -33,10 +34,14 @@ class SigninUIError {
   static SigninUIError WrongReauthAccount(const std::string& email,
                                           const std::string& current_email);
   static SigninUIError AccountAlreadyUsedByAnotherProfile(
-      const std::string& email);
+      const std::string& email,
+      const base::FilePath& another_profile_path);
   static SigninUIError ProfileWasUsedByAnotherAccount(
       const std::string& email,
       const std::string& last_email);
+
+  SigninUIError(const SigninUIError& other);
+  SigninUIError& operator=(const SigninUIError& other);
 
   // Returns true if the instance contains a non-error type.
   bool IsOk() const;
@@ -44,6 +49,10 @@ class SigninUIError {
   Type type() const;
   const base::string16& email() const;
   const base::string16& message() const;
+
+  // Should be called only if `type()` == //
+  // `Type::kAccountAlreadyUsedByAnotherProfile`.
+  const base::FilePath& another_profile_path() const;
 
   bool operator==(const SigninUIError& other) const;
   bool operator!=(const SigninUIError& other) const;
@@ -57,6 +66,9 @@ class SigninUIError {
   Type type_;
   base::string16 email_;
   base::string16 message_;
+
+  // Defined only for Type::kAccountAlreadyUsedByAnotherProfile
+  base::FilePath another_profile_path_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UI_ERROR_H_

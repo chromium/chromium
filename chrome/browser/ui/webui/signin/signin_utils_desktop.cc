@@ -87,7 +87,8 @@ SigninUIError CanOfferSignin(Profile* profile,
           std::string profile_email = base::UTF16ToUTF8(entry->GetUserName());
           if (gaia_id == profile_gaia_id ||
               gaia::AreEmailsSame(email, profile_email)) {
-            return SigninUIError::AccountAlreadyUsedByAnotherProfile(email);
+            return SigninUIError::AccountAlreadyUsedByAnotherProfile(
+                email, entry->GetPath());
           }
         }
       }

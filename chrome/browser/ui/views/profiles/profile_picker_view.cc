@@ -254,6 +254,14 @@ GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
 }
 
 // static
+base::FilePath ProfilePicker::GetSwitchProfilePath() {
+  if (g_profile_picker_view) {
+    return g_profile_picker_view->GetSwitchProfilePath();
+  }
+  return base::FilePath();
+}
+
+// static
 void ProfilePicker::SwitchToSignIn(
     SkColor profile_color,
     base::OnceCallback<void(bool)> switch_finished_callback) {
@@ -274,6 +282,13 @@ void ProfilePicker::CancelSignIn() {
 void ProfilePicker::SwitchToSyncConfirmation() {
   if (g_profile_picker_view) {
     g_profile_picker_view->SwitchToSyncConfirmation();
+  }
+}
+
+// static
+void ProfilePicker::SwitchToProfileSwitch(const base::FilePath& profile_path) {
+  if (g_profile_picker_view) {
+    g_profile_picker_view->SwitchToProfileSwitch(profile_path);
   }
 }
 
@@ -531,9 +546,8 @@ void ProfilePickerView::Clear() {
   DeleteDelegate();
 }
 
-void ProfilePickerView::OnSystemProfileCreated(
-    Profile* system_profile,
-    Profile::CreateStatus status) {
+void ProfilePickerView::OnSystemProfileCreated(Profile* system_profile,
+                                               Profile::CreateStatus status) {
   DCHECK_NE(status, Profile::CREATE_STATUS_LOCAL_FAIL);
   if (status != Profile::CREATE_STATUS_INITIALIZED)
     return;
@@ -612,7 +626,6 @@ void ProfilePickerView::SwitchToSignIn(
 
 void ProfilePickerView::CancelSignIn() {
   DCHECK(sign_in_);
-  DCHECK_EQ(web_view_->GetWebContents(), sign_in_->contents.get());
 
   g_browser_process->profile_manager()->ScheduleProfileForDeletion(
       sign_in_->profile->GetPath(), base::DoNothing());
@@ -732,6 +745,18 @@ void ProfilePickerView::SwitchToSyncConfirmation() {
       sign_in_->contents->GetWebUI()->GetController());
   sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(
       sign_in_->profile_color);
+}
+
+void ProfilePickerView::SwitchToProfileSwitch(
+    const base::FilePath& profile_path) {
+  DCHECK(sign_in_);
+  sign_in_->is_aborted = true;
+
+  switch_profile_path_ = profile_path;
+  ShowScreen(system_profile_contents_.get(),
+             GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
+             /*show_toolbar=*/false,
+             /*enable_navigating_back=*/false);
 }
 
 void ProfilePickerView::WindowClosing() {
@@ -1057,6 +1082,10 @@ void ProfilePickerView::OnProfileNameAvailable() {
 void ProfilePickerView::FinishSignedInCreationFlow(
     BrowserOpenedCallback callback,
     bool enterprise_sync_consent_needed) {
+  DCHECK(sign_in_);
+  // Sign-in flow is aborted, do nothing.
+  if (sign_in_->is_aborted)
+    return;
   // This can get called first time from a special case handling (such as the
   // Settings link) and than second time when the consent flow finishes. We need
   // to make sure only the first call gets handled.
@@ -1218,6 +1247,10 @@ base::FilePath ProfilePickerView::GetForceSigninProfilePath() const {
 
 GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
   return on_select_profile_target_url_;
+}
+
+base::FilePath ProfilePickerView::GetSwitchProfilePath() const {
+  return switch_profile_path_;
 }
 
 BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)

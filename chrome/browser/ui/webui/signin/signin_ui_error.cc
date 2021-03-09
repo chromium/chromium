@@ -41,10 +41,13 @@ SigninUIError SigninUIError::WrongReauthAccount(
 
 // static
 SigninUIError SigninUIError::AccountAlreadyUsedByAnotherProfile(
-    const std::string& email) {
-  return SigninUIError(
+    const std::string& email,
+    const base::FilePath& another_profile_path) {
+  SigninUIError error(
       Type::kAccountAlreadyUsedByAnotherProfile, email,
       l10n_util::GetStringUTF16(IDS_SYNC_USER_NAME_IN_USE_ERROR));
+  error.another_profile_path_ = another_profile_path;
+  return error;
 }
 
 // static
@@ -56,6 +59,9 @@ SigninUIError SigninUIError::ProfileWasUsedByAnotherAccount(
       l10n_util::GetStringFUTF16(IDS_SYNC_USED_PROFILE_ERROR,
                                  base::UTF8ToUTF16(last_email)));
 }
+
+SigninUIError::SigninUIError(const SigninUIError& other) = default;
+SigninUIError& SigninUIError::operator=(const SigninUIError& other) = default;
 
 bool SigninUIError::IsOk() const {
   return type_ == Type::kOk;
@@ -73,9 +79,15 @@ const base::string16& SigninUIError::message() const {
   return message_;
 }
 
+const base::FilePath& SigninUIError::another_profile_path() const {
+  DCHECK(type() == Type::kAccountAlreadyUsedByAnotherProfile);
+  return another_profile_path_;
+}
+
 bool SigninUIError::operator==(const SigninUIError& other) const {
-  return std::tie(type_, email_, message_) ==
-         std::tie(other.type_, other.email_, other.message_);
+  return std::tie(type_, email_, message_, another_profile_path_) ==
+         std::tie(other.type_, other.email_, other.message_,
+                  other.another_profile_path_);
 }
 
 bool SigninUIError::operator!=(const SigninUIError& other) const {

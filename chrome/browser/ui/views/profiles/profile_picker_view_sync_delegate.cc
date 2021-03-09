@@ -91,6 +91,15 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
   ProfileMetrics::LogProfileAddSignInFlowOutcome(
       ProfileMetrics::ProfileAddSignInFlowOutcome::kLoginError);
 
+  // Show the profile switch confirmation screen inside of the profile picker if
+  // the user cannot sign in because the account already used by another
+  // profile.
+  if (error.type() ==
+      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    ProfilePicker::SwitchToProfileSwitch(error.another_profile_path());
+    return;
+  }
+
   // Open the browser and when it's done, show the login error.
   // TODO(crbug.com/1126913): In some cases, the current behavior is not ideal
   // because it is not designed with profile creation in mind. Concretely, for

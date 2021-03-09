@@ -137,6 +137,24 @@ export class ManageProfilesBrowserProxy {
 
   /** Records impression of a sign-in promo to metrics. */
   recordSignInPromoImpression() {}
+
+  /**
+   * Gets a profile for which the profile switch screen is shown.
+   * @return {!Promise<!ProfileState>}
+   */
+  getSwitchProfile() {}
+
+  /**
+   * Switches to an already existing profile at `profile_path`.
+   * @param {string} profilePath
+   */
+  confirmProfileSwitch(profilePath) {}
+
+  /**
+   * Cancels the profile switch which aborts the sign-in profile creation
+   * flow.
+   */
+  cancelProfileSwitch() {}
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -211,6 +229,21 @@ export class ManageProfilesBrowserProxyImpl {
   /** @override */
   recordSignInPromoImpression() {
     chrome.send('recordSignInPromoImpression');
+  }
+
+  /** @override */
+  getSwitchProfile() {
+    return sendWithPromise('getSwitchProfile');
+  }
+
+  /** @override */
+  confirmProfileSwitch(profilePath) {
+    chrome.send('confirmProfileSwitch', [profilePath]);
+  }
+
+  /** @override */
+  cancelProfileSwitch() {
+    chrome.send('cancelProfileSwitch');
   }
 }
 

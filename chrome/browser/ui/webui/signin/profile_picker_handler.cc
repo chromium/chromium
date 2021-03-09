@@ -168,6 +168,29 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
   }
 }
 
+base::Value CreateProfileEntry(const ProfileAttributesEntry* entry,
+                               int avatar_icon_size) {
+  base::Value profile_entry(base::Value::Type::DICTIONARY);
+  profile_entry.SetKey("profilePath", util::FilePathToValue(entry->GetPath()));
+  profile_entry.SetStringKey("localProfileName", entry->GetLocalProfileName());
+  profile_entry.SetBoolKey(
+      "isSyncing", entry->GetSigninState() ==
+                       SigninState::kSignedInWithConsentedPrimaryAccount);
+  profile_entry.SetBoolKey("needsSignin", entry->IsSigninRequired());
+  // GAIA full name/user name can be empty, if the profile is not signed in to
+  // chrome.
+  profile_entry.SetStringKey("gaiaName", entry->GetGAIAName());
+  profile_entry.SetStringKey("userName", entry->GetUserName());
+  profile_entry.SetBoolKey("isManaged",
+                           AccountInfo::IsManaged(entry->GetHostedDomain()));
+  gfx::Image icon =
+      profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
+                                   avatar_icon_size, avatar_icon_size);
+  std::string icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
+  profile_entry.SetStringKey("avatarIcon", icon_url);
+  return profile_entry;
+}
+
 }  // namespace
 
 ProfilePickerHandler::ProfilePickerHandler() = default;
@@ -238,6 +261,18 @@ void ProfilePickerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "createProfile",
       base::BindRepeating(&ProfilePickerHandler::HandleCreateProfile,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSwitchProfile",
+      base::BindRepeating(&ProfilePickerHandler::HandleGetSwitchProfile,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "confirmProfileSwitch",
+      base::BindRepeating(&ProfilePickerHandler::HandleConfirmProfileSwitch,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "cancelProfileSwitch",
+      base::BindRepeating(&ProfilePickerHandler::HandleCancelProfileSwitch,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setProfileName",
@@ -421,6 +456,46 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
       base::BindRepeating(&ProfilePickerHandler::OnProfileCreated,
                           weak_factory_.GetWeakPtr(), profile_color,
                           create_shortcut));
+}
+
+void ProfilePickerHandler::HandleGetSwitchProfile(const base::ListValue* args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args->GetSize());
+  const base::Value& callback_id = args->GetList()[0];
+  int avatar_icon_size =
+      kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
+  base::FilePath profile_path = ProfilePicker::GetSwitchProfilePath();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_path);
+  CHECK(entry);
+  base::Value dict = CreateProfileEntry(entry, avatar_icon_size);
+  ResolveJavascriptCallback(callback_id, std::move(dict));
+}
+
+void ProfilePickerHandler::HandleConfirmProfileSwitch(
+    const base::ListValue* args) {
+  const base::Value* profile_path_value = nullptr;
+  if (!args->Get(0, &profile_path_value))
+    return;
+
+  base::Optional<base::FilePath> profile_path =
+      util::ValueToFilePath(*profile_path_value);
+  if (!profile_path)
+    return;
+
+  // TODO(https://crbug.com/1182206): remove the profile used for the sign-in
+  // flow.
+  profiles::SwitchToProfile(
+      *profile_path, /*always_create=*/false,
+      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                          weak_factory_.GetWeakPtr(), false, false));
+}
+
+void ProfilePickerHandler::HandleCancelProfileSwitch(
+    const base::ListValue* args) {
+  ProfilePicker::CancelSignIn();
 }
 
 void ProfilePickerHandler::OnProfileCreated(
@@ -692,33 +767,14 @@ ProfilePickerHandler::GetProfileAttributes() {
 }
 
 base::Value ProfilePickerHandler::GetProfilesList() {
-  base::ListValue profiles_list;
+  base::Value profiles_list(base::Value::Type::LIST);
   std::vector<ProfileAttributesEntry*> entries = GetProfileAttributes();
   const int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
   for (const ProfileAttributesEntry* entry : entries) {
-    auto profile_entry = std::make_unique<base::DictionaryValue>();
-    profile_entry->SetKey("profilePath",
-                          util::FilePathToValue(entry->GetPath()));
-    profile_entry->SetString("localProfileName", entry->GetLocalProfileName());
-    profile_entry->SetBoolPath(
-        "isSyncing", entry->GetSigninState() ==
-                         SigninState::kSignedInWithConsentedPrimaryAccount);
-    profile_entry->SetBoolPath("needsSignin", entry->IsSigninRequired());
-    // GAIA full name/user name can be empty, if the profile is not signed in to
-    // chrome.
-    profile_entry->SetString("gaiaName", entry->GetGAIAName());
-    profile_entry->SetString("userName", entry->GetUserName());
-    profile_entry->SetBoolPath(
-        "isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
-    gfx::Image icon =
-        profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size),
-                                     true, avatar_icon_size, avatar_icon_size);
-    std::string icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
-    profile_entry->SetString("avatarIcon", icon_url);
-    profiles_list.Append(std::move(profile_entry));
+    profiles_list.Append(CreateProfileEntry(entry, avatar_icon_size));
   }
-  return std::move(profiles_list);
+  return profiles_list;
 }
 
 void ProfilePickerHandler::AddProfileToList(

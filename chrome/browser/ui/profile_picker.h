@@ -90,6 +90,11 @@ class ProfilePicker {
   // uses the same new profile created by `SwitchToSignIn()`.
   static void SwitchToSyncConfirmation();
 
+  // When the sign-in flow cannot be completed because another profile at
+  // `profile_path` is already syncing with a chosen account, shows the profile
+  // switch screen. It uses the system profile.
+  static void SwitchToProfileSwitch(const base::FilePath& profile_path);
+
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
   // dialog and creates a new one.
@@ -107,6 +112,10 @@ class ProfilePicker {
   // Getter of the target page  url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
   static GURL GetOnSelectProfileTargetUrl();
+
+  // Getter of the path of profile which is displayed on the profile switch
+  // screen.
+  static base::FilePath GetSwitchProfilePath();
 
   // Hides the profile picker.
   static void Hide();

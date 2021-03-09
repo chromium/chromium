@@ -87,6 +87,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // for GAIA sign-in (that uses the ThemeProvider of the current profile).
     SkColor profile_color;
 
+    // Controls whether `profile` browser window should be shown at the end of
+    // the sign-in flow.
+    bool is_aborted = false;
+
     base::string16 name_for_signed_in_profile;
     base::OnceClosure on_profile_name_available;
 
@@ -123,6 +127,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
       Profile::CreateStatus status);
   // Switches the layout to the sync confirmation screen.
   void SwitchToSyncConfirmation();
+  // Switches the layout to the profile switch screen.
+  void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -225,9 +231,13 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // signin.
   base::FilePath GetForceSigninProfilePath() const;
 
-  // Getter of the target page  url. If not empty and is valid, it opens on
+  // Getter of the target page url. If not empty and is valid, it opens on
   // profile selection instead of the new tab page.
   GURL GetOnSelectProfileTargetUrl() const;
+
+  // Getter of the path of profile which is displayed on the profile switch
+  // screen.
+  base::FilePath GetSwitchProfilePath() const;
 
   ScopedKeepAlive keep_alive_;
   ProfilePicker::EntryPoint entry_point_ =
@@ -261,9 +271,12 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
   ProfilePickerForceSigninDialogHost dialog_host_;
 
-  // A target page  url that opens on profile selection instead of the new tab
+  // A target page url that opens on profile selection instead of the new tab
   // page.
   GURL on_select_profile_target_url_;
+
+  // Path to a profile that should be displayed on the profile switch screen.
+  base::FilePath switch_profile_path_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

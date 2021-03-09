@@ -19,6 +19,7 @@ const Pages = {
   LOCAL_PROFILE_CUSTOMIZATION: 2,
   LOAD_SIGNIN: 3,
   LOAD_FORCE_SIGNIN: 4,
+  PROFILE_SWITCH: 5,
 };
 
 /**
@@ -28,6 +29,7 @@ const Pages = {
 export const Routes = {
   MAIN: 'main-view',
   NEW_PROFILE: 'new-profile',
+  PROFILE_SWITCH: 'profile-switch',
 };
 
 /**
@@ -57,6 +59,8 @@ function computeStep(route) {
         return ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION;
       }
       return ProfileCreationSteps.PROFILE_TYPE_CHOICE;
+    case Routes.PROFILE_SWITCH:
+      return 'profileSwitch';
     default:
       assertNotReached();
   }
@@ -72,6 +76,15 @@ if (!history.state || !history.state.route || !history.state.step) {
             route: Routes.NEW_PROFILE,
             step: computeStep(Routes.NEW_PROFILE),
             isFirst: true,
+          },
+          '', path);
+      break;
+    case `/${Routes.PROFILE_SWITCH}`:
+      history.replaceState(
+          {
+            route: Routes.PROFILE_SWITCH,
+            step: computeStep(Routes.PROFILE_SWITCH),
+            isFirst: true
           },
           '', path);
       break;
@@ -104,6 +117,9 @@ export function recordPageVisited(step) {
     case ProfileCreationSteps.LOAD_FORCE_SIGNIN:
       page = Pages.LOAD_FORCE_SIGNIN;
       break;
+    case 'profileSwitch':
+      page = Pages.PROFILE_SWITCH;
+      break;
     default:
       assertNotReached();
   }
@@ -132,7 +148,8 @@ window.addEventListener('popstate', notifyObservers);
  * @param {!Routes} route
  */
 export function navigateTo(route) {
-  assert([Routes.MAIN, Routes.NEW_PROFILE].includes(route));
+  assert(
+      [Routes.MAIN, Routes.NEW_PROFILE, Routes.PROFILE_SWITCH].includes(route));
   navigateToStep(route, computeStep(route));
 }
 

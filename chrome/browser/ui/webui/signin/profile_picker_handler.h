@@ -36,6 +36,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
  private:
   friend class ProfilePickerHandlerTest;
+  FRIEND_TEST_ALL_PREFIXES(
+      ProfilePickerCreationFlowBrowserTest,
+      CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch);
+  FRIEND_TEST_ALL_PREFIXES(
+      ProfilePickerCreationFlowBrowserTest,
+      CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
   void HandleMainViewInitialize(const base::ListValue* args);
   void HandleLaunchSelectedProfile(bool open_settings,
@@ -52,6 +58,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::ListValue* args);
   void HandleGetAvailableIcons(const base::ListValue* args);
   void HandleCreateProfile(const base::ListValue* args);
+
+  // Profile switch screen:
+  void HandleGetSwitchProfile(const base::ListValue* args);
+  void HandleConfirmProfileSwitch(const base::ListValue* args);
+  void HandleCancelProfileSwitch(const base::ListValue* args);
 
   // |args| is unused.
   void HandleRecordSignInPromoImpression(const base::ListValue* args);

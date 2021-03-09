@@ -26,7 +26,14 @@
     <template>
       <local-profile-customization slot="view"
           profile-theme-info="{{newProfileThemeInfo}}">
-      </local-profile-customizatione>
+      </local-profile-customization>
+    </template>
+  </cr-lazy-render>
+
+  <cr-lazy-render id="profileSwitch">
+    <template>
+      <profile-switch slot="view">
+      </profile-switch>
     </template>
   </cr-lazy-render>
 </cr-view-manager>

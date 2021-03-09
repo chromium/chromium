@@ -116,6 +116,8 @@ Polymer({
         return this.i18n('profileTypeChoiceTitle');
       case ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION:
         return this.i18n('localProfileCreationTitle');
+      case 'profileSwitch':
+        return this.i18n('profileSwitchTitle');
       default:
         return '';
     }
@@ -132,6 +134,8 @@ Polymer({
       case Routes.NEW_PROFILE:
         return Promise.all(
             [this.initializeNewProfileThemeInfo_(), ensureLazyLoaded()]);
+      case Routes.PROFILE_SWITCH:
+        return ensureLazyLoaded();
       default:
         // |this.currentRoute_| should be set by now.
         assertNotReached();
