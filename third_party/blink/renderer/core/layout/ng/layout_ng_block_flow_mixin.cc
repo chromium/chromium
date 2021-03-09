@@ -292,6 +292,7 @@ template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyAsBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyBase>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyRun>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutRubyText>;
+template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutTableCaption>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutTableCell>;
 

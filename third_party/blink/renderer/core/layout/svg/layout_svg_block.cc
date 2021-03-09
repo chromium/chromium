@@ -35,10 +35,12 @@
 
 namespace blink {
 
-LayoutSVGBlock::LayoutSVGBlock(SVGElement* element)
+LayoutSVGBlock::LayoutSVGBlock(Element* element)
     : LayoutBlockFlow(element),
       needs_transform_update_(true),
-      transform_uses_reference_box_(false) {}
+      transform_uses_reference_box_(false) {
+  DCHECK(IsA<SVGElement>(element));
+}
 
 SVGElement* LayoutSVGBlock::GetElement() const {
   NOT_DESTROYED();

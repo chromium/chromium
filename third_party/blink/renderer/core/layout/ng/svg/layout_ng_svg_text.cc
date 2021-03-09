@@ -9,7 +9,7 @@
 namespace blink {
 
 LayoutNGSVGText::LayoutNGSVGText(Element* element)
-    : LayoutNGBlockFlow(element) {
+    : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element) {
   DCHECK(IsA<SVGTextElement>(element));
 }
 
@@ -20,12 +20,17 @@ const char* LayoutNGSVGText::GetName() const {
 
 bool LayoutNGSVGText::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectSVG || LayoutNGBlockFlow::IsOfType(type);
+  return type == kLayoutObjectSVG ||
+         LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
 }
 
 bool LayoutNGSVGText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   return true;
+}
+
+void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
+  UpdateNGBlockLayout();
 }
 
 }  // namespace blink

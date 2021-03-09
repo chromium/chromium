@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_LAYOUT_NG_SVG_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_LAYOUT_NG_SVG_TEXT_H_
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
 
 namespace blink {
 
 // The LayoutNG representation of SVG <text>.
-class LayoutNGSVGText final : public LayoutNGBlockFlow {
+class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
  public:
   explicit LayoutNGSVGText(Element* element);
 
@@ -21,6 +21,9 @@ class LayoutNGSVGText final : public LayoutNGBlockFlow {
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;
+
+  // LayoutBlock override:
+  void UpdateBlockLayout(bool relayout_children) override;
 };
 
 }  // namespace blink

@@ -36,7 +36,7 @@ class SVGElement;
 //   flipped blocks direction in the "containing block".
 class LayoutSVGBlock : public LayoutBlockFlow {
  public:
-  explicit LayoutSVGBlock(SVGElement*);
+  explicit LayoutSVGBlock(Element*);
 
   // These mapping functions map coordinates in HTML spaces.
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
