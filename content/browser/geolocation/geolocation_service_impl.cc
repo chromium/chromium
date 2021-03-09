@@ -28,7 +28,7 @@ GeolocationServiceImplContext::~GeolocationServiceImplContext() {
 void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
+    PermissionCallback callback) {
   if (request_id_ != PermissionController::kNoPendingOperation) {
     mojo::ReportBadMessage(
         "GeolocationService client may only create one Geolocation at a "
@@ -44,7 +44,7 @@ void GeolocationServiceImplContext::RequestPermission(
 }
 
 void GeolocationServiceImplContext::HandlePermissionStatus(
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
+    PermissionCallback callback,
     blink::mojom::PermissionStatus permission_status) {
   request_id_ = PermissionController::kNoPendingOperation;
   std::move(callback).Run(permission_status);
