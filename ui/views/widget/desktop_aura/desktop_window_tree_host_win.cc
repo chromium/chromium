@@ -878,7 +878,6 @@ void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
 
 void DesktopWindowTreeHostWin::HandleMove() {
   CheckForMonitorChange();
-  native_widget_delegate_->OnNativeWidgetMove();
   OnHostMovedInPixels(GetBoundsInPixels().origin());
 }
 
