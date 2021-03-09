@@ -40,8 +40,15 @@ void HatsHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
         profile(), /*create_if_necessary=*/true);
 
     if (hats_service) {
-      hats_service->LaunchSurvey(demo_enabled ? kHatsSurveyTriggerTesting
-                                              : kHatsSurveyTriggerSatisfaction);
+      if (demo_enabled) {
+        hats_service->LaunchSurvey(kHatsSurveyTriggerTesting, base::DoNothing(),
+                                   base::DoNothing(),
+                                   {{"Test Field 1", true},
+                                    {"Test Field 2", false},
+                                    {"Test Field 3", true}});
+      } else {
+        hats_service->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
+      }
     }
   }
 }

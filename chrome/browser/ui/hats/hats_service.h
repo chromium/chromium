@@ -54,22 +54,39 @@ extern const char kHatsShouldShowSurveyReasonHistogram[];
 class HatsService : public KeyedService {
  public:
   struct SurveyConfig {
-    SurveyConfig(double probability, std::string en_site_id, bool user_prompted)
-        : probability_(probability),
-          en_site_id_(std::move(en_site_id)),
-          user_prompted_(user_prompted) {}
+    // Constructs a SurveyConfig by inspecting |feature|. This includes checking
+    // if the feature is enabled, as well as inspecting the feature parameters
+    // for the survey probability, and if |presupplied_trigger_id| is not
+    // provided, the trigger ID.
+    SurveyConfig(
+        const base::Feature* feature,
+        const std::string& trigger,
+        const base::Optional<std::string>& presupplied_trigger_id =
+            base::nullopt,
+        const std::vector<std::string>& product_specific_data_fields = {});
+    SurveyConfig();
+    SurveyConfig(const SurveyConfig&);
+    ~SurveyConfig();
 
-    SurveyConfig() = default;
+    // Whether the survey is currently enabled and can be shown.
+    bool enabled = false;
 
     // Probability [0,1] of how likely a chosen user will see the survey.
-    double probability_;
+    double probability = 0.0f;
 
-    // Site ID for the survey.
-    std::string en_site_id_;
+    // The trigger for this survey within the browser.
+    std::string trigger;
+
+    // Trigger ID for the survey.
+    std::string trigger_id;
 
     // The survey will prompt every time because the user has explicitly decided
     // to take the survey e.g. clicking a link.
-    bool user_prompted_;
+    bool user_prompted = false;
+
+    // Product Specific Data fields which are sent with the survey
+    // response.
+    std::vector<std::string> product_specific_data_fields;
   };
 
   struct SurveyMetadata {
@@ -90,7 +107,8 @@ class HatsService : public KeyedService {
    public:
     DelayedSurveyTask(HatsService* hats_service,
                       const std::string& trigger,
-                      content::WebContents* web_contents);
+                      content::WebContents* web_contents,
+                      const std::map<std::string, bool>& product_specific_data);
 
     // Not copyable or movable
     DelayedSurveyTask(const DelayedSurveyTask&) = delete;
@@ -116,6 +134,7 @@ class HatsService : public KeyedService {
    private:
     HatsService* hats_service_;
     std::string trigger_;
+    std::map<std::string, bool> product_specific_data_;
     base::WeakPtrFactory<DelayedSurveyTask> weak_ptr_factory_{this};
   };
 
@@ -151,16 +170,23 @@ class HatsService : public KeyedService {
   // Launches survey with identifier |trigger| if appropriate.
   // |success_callback| is called when the survey is shown to the user.
   // |failure_callback| is called if the survey does not launch for any reason.
+  // |product_specific_data| should contain key-value pairs where the keys match
+  // the field names set for the survey in hats_service.cc, and the values are
+  // those which will be associated with the survey response.
   virtual void LaunchSurvey(
       const std::string& trigger,
       base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing());
+      base::OnceClosure failure_callback = base::DoNothing(),
+      const std::map<std::string, bool>& product_specific_data = {});
 
   // Launches survey (with id |trigger|) with a timeout |timeout_ms| if
   // appropriate. Survey will be shown at the active window/tab by the
   // time of launching. Rejects (and returns false) if the underlying task
   // posting fails.
-  virtual bool LaunchDelayedSurvey(const std::string& trigger, int timeout_ms);
+  virtual bool LaunchDelayedSurvey(
+      const std::string& trigger,
+      int timeout_ms,
+      const std::map<std::string, bool>& product_specific_data = {});
 
   // Launches survey (with id |trigger|) with a timeout |timeout_ms| for tab
   // |web_contents| if appropriate. |web_contents| required to be non-nullptr.
@@ -172,13 +198,13 @@ class HatsService : public KeyedService {
   virtual bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
-      int timeout_ms);
+      int timeout_ms,
+      const std::map<std::string, bool>& product_specific_data = {});
 
   // Updates the user preferences to record that the survey associated with
-  // |survey_id| was shown to the user. |survey_id| is the unique_id provided
-  // to the HaTS Service to identify a survey. This is the trigger ID for HaTS
-  // Next, and the site ID for HaTS v1.
-  void RecordSurveyAsShown(std::string survey_id);
+  // |survey_id| was shown to the user. |trigger_id| is the HaTS next Trigger
+  // ID for the survey.
+  void RecordSurveyAsShown(std::string trigger_id);
 
   // Indicates to the service that the HaTS Next dialog has been closed.
   // Virtual to allow mocking in tests.
@@ -204,13 +230,17 @@ class HatsService : public KeyedService {
   friend class DelayedSurveyTask;
   FRIEND_TEST_ALL_PREFIXES(HatsServiceProbabilityOne, SingleHatsNextDialog);
 
-  void LaunchSurveyForWebContents(const std::string& trigger,
-                                  content::WebContents* web_contents);
+  void LaunchSurveyForWebContents(
+      const std::string& trigger,
+      content::WebContents* web_contents,
+      const std::map<std::string, bool>& product_specific_data);
 
-  void LaunchSurveyForBrowser(Browser* browser,
-                              const std::string& trigger,
-                              base::OnceClosure success_callback,
-                              base::OnceClosure failure_callback);
+  void LaunchSurveyForBrowser(
+      Browser* browser,
+      const std::string& trigger,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::map<std::string, bool>& product_specific_data);
 
   // Returns true is the survey trigger specified should be shown.
   bool ShouldShowSurvey(const std::string& trigger) const;
@@ -218,10 +248,12 @@ class HatsService : public KeyedService {
   // Check whether the survey is reachable and under capacity and show it.
   // |success_callback| is called when the survey is shown to the user.
   // |failure_callback| is called if the survey does not launch for any reason.
-  void CheckSurveyStatusAndMaybeShow(Browser* browser,
-                                     const std::string& trigger,
-                                     base::OnceClosure success_callback,
-                                     base::OnceClosure failure_callback);
+  void CheckSurveyStatusAndMaybeShow(
+      Browser* browser,
+      const std::string& trigger,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::map<std::string, bool>& product_specific_data);
 
   // Remove |task| from the set of |pending_tasks_|.
   void RemoveTask(const DelayedSurveyTask& task);

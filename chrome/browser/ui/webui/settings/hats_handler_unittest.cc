@@ -54,9 +54,9 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(HatsHandlerTest, HandleTryShowHatsSurvey) {
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000));
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerSettingsPrivacy,
+                                       web_contents(), 20000, testing::_));
   base::ListValue args;
   handler()->HandleTryShowHatsSurvey(&args);
   task_environment()->RunUntilIdle();

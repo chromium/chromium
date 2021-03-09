@@ -474,10 +474,15 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Shows User Happiness Tracking Survey's dialog after the survey associated
   // with |site_id| has been successfully loaded. Failure to load the survey
-  // will result in the dialog not being shown.
-  virtual void ShowHatsDialog(const std::string& site_id,
-                              base::OnceClosure success_callback,
-                              base::OnceClosure failure_callback) = 0;
+  // will result in the dialog not being shown. |product_specific_data| should
+  // contain key-value pairs where the keys match the field names set for
+  // the survey in hats_service.cc, and the values are those which will be
+  // associated with the survey response.
+  virtual void ShowHatsDialog(
+      const std::string& site_id,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::map<std::string, bool>& product_specific_data) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;

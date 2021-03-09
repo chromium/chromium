@@ -6,6 +6,8 @@
 
 #include "chrome/browser/ui/browser_dialogs.h"
 
+#include "base/base64url.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/util/values/values_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -118,17 +120,20 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
 BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)
 END_METADATA
 
-HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
-                                     const std::string& trigger_id,
-                                     base::OnceClosure success_callback,
-                                     base::OnceClosure failure_callback)
+HatsNextWebDialog::HatsNextWebDialog(
+    Browser* browser,
+    const std::string& trigger_id,
+    base::OnceClosure success_callback,
+    base::OnceClosure failure_callback,
+    const std::map<std::string, bool>& product_specific_data)
     : HatsNextWebDialog(
           browser,
           trigger_id,
           GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
           base::TimeDelta::FromSeconds(10),
           std::move(success_callback),
-          std::move(failure_callback)) {}
+          std::move(failure_callback),
+          product_specific_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -142,12 +147,14 @@ void HatsNextWebDialog::OnProfileWillBeDestroyed(Profile* profile) {
   otr_profile_ = nullptr;
 }
 
-HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
-                                     const std::string& trigger_id,
-                                     const GURL& hats_survey_url,
-                                     const base::TimeDelta& timeout,
-                                     base::OnceClosure success_callback,
-                                     base::OnceClosure failure_callback)
+HatsNextWebDialog::HatsNextWebDialog(
+    Browser* browser,
+    const std::string& trigger_id,
+    const GURL& hats_survey_url,
+    const base::TimeDelta& timeout,
+    base::OnceClosure success_callback,
+    base::OnceClosure failure_callback,
+    const std::map<std::string, bool>& product_specific_data)
     : BubbleDialogDelegateView(
           browser->is_type_devtools()
               ? static_cast<views::View*>(
@@ -164,7 +171,8 @@ HatsNextWebDialog::HatsNextWebDialog(Browser* browser,
       hats_survey_url_(hats_survey_url),
       timeout_(timeout),
       success_callback_(std::move(success_callback)),
-      failure_callback_(std::move(failure_callback)) {
+      failure_callback_(std::move(failure_callback)),
+      product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -209,6 +217,19 @@ HatsNextWebDialog::~HatsNextWebDialog() {
 GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   GURL param_url =
       net::AppendQueryParameter(hats_survey_url_, "trigger_id", trigger_id_);
+
+  // Append any Product Specific Data to the query. This will be interpreted
+  // by the wrapper website and provided to the HaTS backend service.
+  base::DictionaryValue dict;
+  for (const auto& field_value : product_specific_data_)
+    dict.SetStringKey(field_value.first, field_value.second ? "true" : "false");
+
+  std::string product_specific_data_json;
+  base::JSONWriter::Write(dict, &product_specific_data_json);
+
+  param_url = net::AppendQueryParameter(param_url, "product_specific_data",
+                                        product_specific_data_json);
+
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
     param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");

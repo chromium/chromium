@@ -3496,12 +3496,16 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(
                                   focus_first_profile_button);
 }
 
-void BrowserView::ShowHatsDialog(const std::string& site_id,
-                                 base::OnceClosure success_callback,
-                                 base::OnceClosure failure_callback) {
+void BrowserView::ShowHatsDialog(
+    const std::string& site_id,
+    base::OnceClosure success_callback,
+    base::OnceClosure failure_callback,
+    const std::map<std::string, bool>& product_specific_data) {
   // Self deleting on close.
   new HatsNextWebDialog(browser(), site_id, std::move(success_callback),
-                        std::move(failure_callback));
+                        std::move(failure_callback), product_specific_data
+
+  );
 }
 
 ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {
