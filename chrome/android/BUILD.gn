@@ -576,6 +576,7 @@ android_library("chrome_java") {
     "//chrome/browser/notifications/scheduler/public:jni_enums",
     "//chrome/browser/supervised_user/supervised_user_error_page:enums_srcjar",
     "//components/autofill_assistant/browser:autofill_assistant_enums_java",
+    "//components/autofill_assistant/browser:autofill_assistant_intent_strings_java",
     "//components/browsing_data/core:browsing_data_utils_java",
     "//components/browsing_data/core:clear_browsing_data_tab_java",
     "//components/data_reduction_proxy/core/browser:data_reduction_proxy_savings_cleared_enum_java",

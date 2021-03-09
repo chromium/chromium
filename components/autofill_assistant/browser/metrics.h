@@ -333,7 +333,7 @@ class Metrics {
     kMaxValue = LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
   };
 
-  static void RecordDropOut(DropOutReason reason);
+  static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
   static void RecordPaymentRequestAutofillChanged(bool changed, bool success);

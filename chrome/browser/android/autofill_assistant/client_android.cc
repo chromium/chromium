@@ -53,6 +53,9 @@ namespace {
 // the UI.
 const char* const kCancelActionName = "cancel";
 
+// Intent not set constant.
+const char* const kIntentNotSet = "NotSet";
+
 }  // namespace
 
 static base::android::ScopedJavaLocalRef<jobject>
@@ -84,7 +87,7 @@ ClientAndroid::~ClientAndroid() {
     // In the case of an unexpected closing of the activity or tab, controller_
     // will not yet have been cleaned up (since that happens when a web
     // contents object gets destroyed).
-    Metrics::RecordDropOut(Metrics::DropOutReason::CONTENT_DESTROYED);
+    Metrics::RecordDropOut(Metrics::DropOutReason::CONTENT_DESTROYED, intent_);
   }
 
   Java_AutofillAssistantClient_clearNativePtr(AttachCurrentThread(),
@@ -131,6 +134,9 @@ bool ClientAndroid::Start(JNIEnv* env,
       env, jexperiment_ids, jparameter_names, jparameter_values, jis_cct,
       jonboarding_shown, /* is_direct_action = */ false, jcaller_account,
       jinitial_url, /* jusername = */ nullptr);
+
+  intent_ = trigger_context->GetScriptParameters().GetIntent().value_or(
+      kIntentNotSet);
 
   if (VLOG_IS_ON(2)) {
     std::string experiment_ids =
@@ -514,7 +520,7 @@ content::WebContents* ClientAndroid::GetWebContents() const {
 
 void ClientAndroid::RecordDropOut(Metrics::DropOutReason reason) {
   if (started_)
-    Metrics::RecordDropOut(reason);
+    Metrics::RecordDropOut(reason, intent_);
 
   started_ = false;
 }
@@ -536,7 +542,7 @@ void ClientAndroid::Shutdown(Metrics::DropOutReason reason) {
 
 void ClientAndroid::SafeDestroyControllerAndUI(Metrics::DropOutReason reason) {
   if (started_) {
-    Metrics::RecordDropOut(reason);
+    Metrics::RecordDropOut(reason, intent_);
   }
 
   DestroyUI();

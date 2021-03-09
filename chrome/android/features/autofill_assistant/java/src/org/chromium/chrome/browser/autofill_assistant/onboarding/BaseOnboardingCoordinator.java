@@ -42,7 +42,7 @@ import java.util.Map;
  */
 @JNINamespace("autofill_assistant")
 public abstract class BaseOnboardingCoordinator implements OnboardingView {
-    private static final String INTENT_IDENTFIER = "INTENT";
+    public static final String INTENT_IDENTFIER = "INTENT";
     private static final String FETCH_TIMEOUT_IDENTIFIER = "ONBOARDING_FETCH_TIMEOUT_MS";
     private static final String BUY_MOVIE_TICKETS_INTENT = "BUY_MOVIE_TICKET";
     private static final String RENT_CAR_INTENT = "RENT_CAR";
@@ -102,7 +102,8 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
      * events.
      */
     public void show(Callback<Integer> callback) {
-        AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_SHOWN);
+        AutofillAssistantMetrics.recordOnBoarding(
+                OnBoarding.OB_SHOWN, mParameters.get(INTENT_IDENTFIER));
         mOnboardingShown = true;
 
         initViewImpl(callback);

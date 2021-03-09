@@ -45,6 +45,7 @@ class ScriptParameters {
   base::Optional<bool> GetEnabled() const;
   base::Optional<std::string> GetOriginalDeeplink() const;
   base::Optional<bool> GetTriggerScriptExperiment() const;
+  base::Optional<std::string> GetIntent() const;
 
   // Details parameters.
   base::Optional<bool> GetDetailsShowInitial() const;

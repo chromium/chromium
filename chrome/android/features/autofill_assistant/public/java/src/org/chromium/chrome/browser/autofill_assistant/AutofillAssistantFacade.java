@@ -111,8 +111,9 @@ public class AutofillAssistantFacade {
             }
         }
 
+        String intent = arguments.getParameters().get("INTENT");
         // Have an "attempted starts" baseline for the drop out histogram.
-        AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START);
+        AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
         waitForTabWithWebContents(activity, tab -> {
             if (arguments.containsTriggerScript()) {
                 // Create a field trial and assign experiment arm based on script parameter. This
@@ -142,7 +143,8 @@ public class AutofillAssistantFacade {
             if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled() == null) {
                 AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(tab, (moduleEntry) -> {
                     if (moduleEntry == null || activity.isActivityFinishingOrDestroyed()) {
-                        AutofillAssistantMetrics.recordDropOut(DropOutReason.DFM_INSTALL_FAILED);
+                        AutofillAssistantMetrics.recordDropOut(
+                                DropOutReason.DFM_INSTALL_FAILED, intent);
                         if (arguments.containsTriggerScript()) {
                             AutofillAssistantMetrics.recordLiteScriptFinished(tab.getWebContents(),
                                     LiteScriptStarted.LITE_SCRIPT_DFM_UNAVAILABLE);

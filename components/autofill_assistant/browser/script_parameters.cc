@@ -78,6 +78,9 @@ const char kOriginalDeeplinkParameterName[] = "ORIGINAL_DEEPLINK";
 const char kTriggerScriptExperimentParameterName[] =
     "TRIGGER_SCRIPT_EXPERIMENT";
 
+// The intent parameter.
+const char kIntent[] = "INTENT";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 5> kAllowlistedTriggerScriptParameters = {
@@ -198,6 +201,10 @@ base::Optional<std::string> ScriptParameters::GetOriginalDeeplink() const {
 base::Optional<bool> ScriptParameters::GetTriggerScriptExperiment() const {
   return GetTypedParameter<bool>(parameters_,
                                  kTriggerScriptExperimentParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetIntent() const {
+  return GetParameter(kIntent);
 }
 
 base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {
