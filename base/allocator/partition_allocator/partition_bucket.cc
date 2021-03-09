@@ -392,6 +392,16 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // rounded up.
   PA_DCHECK(commit_end > commit_start);
 
+  // The slot being returned is considered allocated.
+  slot_span->num_allocated_slots++;
+  // Round down, because a slot that doesn't fully fit in the new page(s) isn't
+  // provisioned.
+  uint16_t slots_to_provision = (commit_end - return_slot) / size;
+  slot_span->num_unprovisioned_slots -= slots_to_provision;
+  PA_DCHECK(slot_span->num_allocated_slots +
+                slot_span->num_unprovisioned_slots <=
+            get_slots_per_span());
+
   // If lazy commit is enabled, meaning system pages in the slot span come
   // in an initially decommitted state, commit them here.
   // Note, we can't use PageKeepPermissionsIfPossible, because we have no
@@ -402,32 +412,36 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
                                      PageUpdatePermissions);
   }
 
-  // The slot being returned is considered allocated, and no longer
-  // unprovisioned.
-  slot_span->num_allocated_slots++;
-  slot_span->num_unprovisioned_slots--;
-
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
   char* next_slot_end = next_slot + size;
+  size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     auto* entry = new (next_slot) PartitionFreelistEntry();
     if (!slot_span->freelist_head) {
       PA_DCHECK(!prev_entry);
+      PA_DCHECK(!free_list_entries_added);
       slot_span->SetFreelistHead(entry);
     } else {
+      PA_DCHECK(free_list_entries_added);
       prev_entry->SetNext(entry);
     }
     next_slot = next_slot_end;
     next_slot_end = next_slot + size;
     prev_entry = entry;
-    slot_span->num_unprovisioned_slots--;
+#if DCHECK_IS_ON()
+    free_list_entries_added++;
+#endif
   }
 
 #if DCHECK_IS_ON()
+  // The only provisioned slot not added to the free list is the one being
+  // returned.
+  PA_DCHECK(slots_to_provision == free_list_entries_added + 1);
   // We didn't necessarily provision more than one slot (e.g. if |slot_size|
   // is large), meaning that |slot_span->freelist_head| can be nullptr.
   if (slot_span->freelist_head) {
+    PA_DCHECK(free_list_entries_added);
     slot_span->freelist_head->CheckFreeList();
   }
 #endif
