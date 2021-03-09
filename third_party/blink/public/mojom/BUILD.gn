@@ -467,10 +467,6 @@ mojom("mojom_platform") {
           cpp = "::blink::Impression"
         },
         {
-          mojom = "blink.mojom.CustomContextMenuItemContext"
-          cpp = "::blink::MenuItem"
-        },
-        {
           mojom = "blink.mojom.UntrustworthyContextMenuParams"
           cpp = "::blink::UntrustworthyContextMenuParams"
         },
