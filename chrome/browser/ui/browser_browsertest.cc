@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -2962,20 +2961,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_FALSE(nav_observer.was_same_document());
 }
 
-// TODO(1184168): Flaky on linux dbg, linux asan, and linux CFI.
-#if defined(OS_LINUX) &&                                        \
-    (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||          \
-     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-     BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC))
-#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterCrash \
-  DISABLED_SameDocumentHistoryNavigationWithNothingCommittedAfterCrash
-#else
-#define MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterCrash \
-  SameDocumentHistoryNavigationWithNothingCommittedAfterCrash
-#endif
 IN_PROC_BROWSER_TEST_F(
     BrowserTest,
-    MAYBE_SameDocumentHistoryNavigationWithNothingCommittedAfterCrash) {
+    SameDocumentHistoryNavigationWithNothingCommittedAfterCrash) {
   content::SlowHttpResponse::GotRequestCallback got_slow_request;
 
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
