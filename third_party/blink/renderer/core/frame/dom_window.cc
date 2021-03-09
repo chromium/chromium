@@ -519,6 +519,18 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
   if (accessing_frame->IsCrossOriginToMainFrame())
     return;
 
+  // See https://crbug.com/1183571
+  // We assumed accessing_frame->IsCrossOriginToMainFrame() implies
+  // accessing_frame->Tree().Top() to be a LocalFrame. This might not be the
+  // case after all, some crashes are reported. This block speculatively returns
+  // early to avoid crashing.
+  // TODO(https://crbug.com/1183571): Check if crashes are still happening and
+  // remove this block.
+  if (!accessing_frame->Tree().Top().IsLocalFrame()) {
+    NOTREACHED();
+    return;
+  }
+
   LocalFrame& accessing_main_frame =
       To<LocalFrame>(accessing_frame->Tree().Top());
   const LocalFrameToken accessing_main_frame_token =
