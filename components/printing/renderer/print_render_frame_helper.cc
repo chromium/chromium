@@ -2267,7 +2267,18 @@ mojom::PrintPagesParamsPtr PrintRenderFrameHelper::GetPrintSettingsFromUser(
   print_pages_params_.reset();
 
   mojom::PrintPagesParamsPtr print_settings;
-  GetPrintManagerHost()->ScriptedPrint(std::move(params), &print_settings);
+  base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+  GetPrintManagerHost()->ScriptedPrint(
+      std::move(params), base::BindOnce(
+                             [](base::RepeatingClosure quit_closure,
+                                mojom::PrintPagesParamsPtr* output,
+                                mojom::PrintPagesParamsPtr input) {
+                               *output = std::move(input);
+                               std::move(quit_closure).Run();
+                             },
+                             loop.QuitClosure(), &print_settings));
+  // Runs the nested run loop until ScriptedPrint() gets the reply.
+  loop.Run();
   return print_settings;
   // WARNING: |this| may be gone at this point. Do not do any more work here
   // and just return.

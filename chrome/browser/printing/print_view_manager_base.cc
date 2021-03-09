@@ -279,9 +279,6 @@ void ScriptedPrintReply(mojom::PrintManagerHost::ScriptedPrintCallback callback,
     return;
   }
 
-  // Resets SetBlocked().
-  content::RenderProcessHost::FromID(process_id)->SetBlocked(false);
-
   if (!params) {
     // Fills |params| with initial values.
     params = mojom::PrintPagesParams::New();
@@ -656,11 +653,6 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost* render_frame_host =
       print_manager_host_receivers_.GetCurrentTargetFrame();
-
-  // PrinterQuery::GetSettings() triggers the print setting dialog box. So, it
-  // sets SetBlocked() to avoid the unresponsive dialog while the dialog is
-  // shown.
-  render_frame_host->GetProcess()->SetBlocked(true);
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
