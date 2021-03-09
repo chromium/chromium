@@ -68,8 +68,9 @@ void ThreadControllerPowerMonitor::OnSuspend() {
     return;
   DCHECK(!is_power_suspended_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("base", "ThreadController::Suspended",
-                                    this);
+  TRACE_EVENT_BEGIN("base", "ThreadController::Suspended",
+                    perfetto::Track(reinterpret_cast<uint64_t>(this),
+                                    perfetto::ThreadTrack::Current()));
   is_power_suspended_ = true;
 }
 
@@ -80,8 +81,9 @@ void ThreadControllerPowerMonitor::OnResume() {
   // It is possible a suspend was already happening before the observer was
   // added to the power monitor. Ignoring the resume notification in that case.
   if (is_power_suspended_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("base", "ThreadController::Suspended",
-                                    this);
+    TRACE_EVENT_END("base" /* ThreadController::Suspended */,
+                    perfetto::Track(reinterpret_cast<uint64_t>(this),
+                                    perfetto::ThreadTrack::Current()));
     is_power_suspended_ = false;
   }
 }
