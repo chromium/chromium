@@ -14,12 +14,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/transform.h"
 
 namespace ui {
@@ -468,6 +468,29 @@ void AXNode::ComputeLineStartOffsets(std::vector<int>* line_offsets,
         child->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
     *start_offset += static_cast<int>(text.length());
   }
+}
+
+SkColor AXNode::ComputeColor() const {
+  return ComputeColorAttribute(ax::mojom::IntAttribute::kColor);
+}
+
+SkColor AXNode::ComputeBackgroundColor() const {
+  return ComputeColorAttribute(ax::mojom::IntAttribute::kBackgroundColor);
+}
+
+SkColor AXNode::ComputeColorAttribute(ax::mojom::IntAttribute attr) const {
+  SkColor color = GetIntAttribute(attr);
+  AXNode* ancestor = parent();
+
+  // If the color has some transparency, keep blending with background
+  // colors until we get an opaque color or reach the root.
+  while (ancestor && SkColorGetA(color) != SK_AlphaOPAQUE) {
+    SkColor background_color = ancestor->GetIntAttribute(attr);
+    color = color_utils::GetResultingPaintColor(color, background_color);
+    ancestor = ancestor->parent();
+  }
+
+  return color;
 }
 
 const std::string& AXNode::GetInheritedStringAttribute(

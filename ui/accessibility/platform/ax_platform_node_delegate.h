@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -415,6 +416,10 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual bool IsOrderedSet() const = 0;
   virtual base::Optional<int> GetPosInSet() const = 0;
   virtual base::Optional<int> GetSetSize() const = 0;
+
+  // Computed colors, taking blending into account.
+  virtual SkColor GetColor() const = 0;
+  virtual SkColor GetBackgroundColor() const = 0;
 
   //
   // Events.

@@ -51,6 +51,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textchildprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_relation_win.h"
+#include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/display/win/screen_win.h"
@@ -4843,7 +4844,12 @@ base::Optional<LCID> AXPlatformNodeWin::GetCultureAttributeAsLCID() const {
 
 COLORREF AXPlatformNodeWin::GetIntAttributeAsCOLORREF(
     ax::mojom::IntAttribute attribute) const {
-  const SkColor color = GetIntAttribute(attribute);
+  SkColor color;
+  auto maybe_value = ComputeAttribute(delegate_, attribute);
+  if (maybe_value.has_value())
+    color = maybe_value.value();
+  else
+    color = GetIntAttribute(attribute);
   return skia::SkColorToCOLORREF(color);
 }
 

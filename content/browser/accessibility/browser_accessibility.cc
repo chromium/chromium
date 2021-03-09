@@ -2146,6 +2146,14 @@ base::Optional<int> BrowserAccessibility::GetSetSize() const {
   return node()->GetSetSize();
 }
 
+SkColor BrowserAccessibility::GetColor() const {
+  return node()->ComputeColor();
+}
+
+SkColor BrowserAccessibility::GetBackgroundColor() const {
+  return node()->ComputeBackgroundColor();
+}
+
 bool BrowserAccessibility::IsInListMarker() const {
   return node()->IsInListMarker();
 }

@@ -100,6 +100,13 @@ base::Optional<int32_t> ComputeAttribute(
     const ui::AXPlatformNodeDelegate* delegate,
     ax::mojom::IntAttribute attribute) {
   base::Optional<int32_t> maybe_value = base::nullopt;
+
+  // Color-related attributes.
+  if (attribute == ax::mojom::IntAttribute::kColor)
+    return delegate->GetColor();
+  else if (attribute == ax::mojom::IntAttribute::kBackgroundColor)
+    return delegate->GetBackgroundColor();
+
   // Table-related nodes.
   if (delegate->IsTableCellOrHeader())
     maybe_value = GetCellAttribute(delegate, attribute);

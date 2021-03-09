@@ -282,6 +282,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSAltText) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSBackgroundColorTransparent) {
+  RunCSSTest(FILE_PATH_LITERAL("background-color-transparent.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCSSBeforeAfterBlock) {
   RunCSSTest(FILE_PATH_LITERAL("before-after-block.html"));
 }

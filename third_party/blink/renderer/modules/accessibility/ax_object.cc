@@ -2045,7 +2045,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     children_dirty_ = CanHaveChildren();
     cached_is_inert_or_aria_hidden_ = is_inert_or_aria_hidden;
   }
-  cached_background_color_ = ComputeBackgroundColor();
   cached_is_descendant_of_leaf_node_ = !!LeafNodeAncestor();
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
   cached_has_inherited_presentational_role_ =
@@ -3182,11 +3181,6 @@ String AXObject::TextFromAriaDescribedby(AXRelatedObjectVector* related_objects,
   HeapVector<Member<Element>> elements;
   ElementsFromAttribute(elements, html_names::kAriaDescribedbyAttr, ids);
   return TextFromElements(true, visited, elements, related_objects);
-}
-
-RGBA32 AXObject::BackgroundColor() const {
-  UpdateCachedAttributeValuesIfNeeded();
-  return cached_background_color_;
 }
 
 AccessibilityOrientation AXObject::Orientation() const {

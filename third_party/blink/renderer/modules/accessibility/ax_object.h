@@ -640,8 +640,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
 
   virtual const AtomicString& AccessKey() const { return g_null_atom; }
-  RGBA32 BackgroundColor() const;
-  virtual RGBA32 ComputeBackgroundColor() const { return Color::kTransparent; }
+  virtual RGBA32 BackgroundColor() const { return Color::kTransparent; }
   virtual RGBA32 GetColor() const { return Color::kBlack; }
   // Used by objects of role ColorWellRole.
   virtual RGBA32 ColorValue() const { return Color::kTransparent; }
@@ -1327,7 +1326,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // The following cached attribute values (the ones starting with m_cached*)
   // are only valid if last_modification_count_ matches
   // AXObjectCacheImpl::ModificationCount().
-  mutable RGBA32 cached_background_color_;
   mutable bool cached_is_ignored_ : 1;
   mutable bool cached_is_ignored_but_included_in_tree_ : 1;
   mutable bool cached_is_inert_or_aria_hidden_ : 1;

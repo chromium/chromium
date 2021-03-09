@@ -2302,46 +2302,24 @@ RGBA32 AXNodeObject::ColorValue() const {
   return color.Rgb();
 }
 
-RGBA32 AXNodeObject::ComputeBackgroundColor() const {
-  if (!GetLayoutObject())
-    return AXObject::BackgroundColor();
+RGBA32 AXNodeObject::BackgroundColor() const {
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object)
+    return Color::kTransparent;
 
-  Color blended_color = Color::kTransparent;
-  // Color::blend should be called like this: background.blend(foreground).
-  for (LayoutObject* layout_object = GetLayoutObject(); layout_object;
-       layout_object = layout_object->Parent()) {
-    const AXObject* ax_parent = AXObjectCache().GetOrCreate(layout_object);
-    if (ax_parent && ax_parent != this) {
-      Color parent_color = ax_parent->BackgroundColor();
-      blended_color = parent_color.Blend(blended_color);
-      return blended_color.Rgb();
-    }
-
-    const ComputedStyle* style = layout_object->Style();
-    if (!style || !style->HasBackground())
-      continue;
-
-    Color current_color =
-        style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-    blended_color = current_color.Blend(blended_color);
-    // Continue blending until we get no transparency.
-    if (!blended_color.HasAlpha())
-      break;
-  }
-
-  // If we still have some transparency, blend in the document base color.
-  if (blended_color.HasAlpha()) {
+  if (IsWebArea()) {
     LocalFrameView* view = DocumentFrameView();
-    if (view) {
-      Color document_base_color = view->BaseBackgroundColor();
-      blended_color = document_base_color.Blend(blended_color);
-    } else {
-      // Default to a white background.
-      blended_color.BlendWithWhite();
-    }
+    if (view)
+      return view->BaseBackgroundColor().Rgb();
+    else
+      return Color::kWhite;
   }
 
-  return blended_color.Rgb();
+  const ComputedStyle* style = layout_object->Style();
+  if (!style || !style->HasBackground())
+    return Color::kTransparent;
+
+  return style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Rgb();
 }
 
 RGBA32 AXNodeObject::GetColor() const {
