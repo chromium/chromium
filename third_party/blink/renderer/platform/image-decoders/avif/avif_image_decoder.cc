@@ -103,24 +103,12 @@ gfx::ColorSpace GetColorSpace(const avifImage* image) {
 // color space of |image| to RGB.
 // media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels() uses libyuv
 // for the YUV-to-RGB conversion.
-//
-// NOTE: Ideally, this function should be a static method of
-// media::PaintCanvasVideoRenderer. We did not do that because
-// media::PaintCanvasVideoRenderer uses the JPEG matrix coefficients for all
-// full-range YUV color spaces, but we want to use the JPEG matrix coefficients
-// only for full-range BT.601 YUV.
 bool IsColorSpaceSupportedByPCVR(const avifImage* image) {
   SkYUVColorSpace yuv_color_space;
-  if (!GetColorSpace(image).ToSkYUVColorSpace(image->depth, &yuv_color_space))
-    return false;
-  const bool color_space_is_supported =
-      yuv_color_space == kJPEG_Full_SkYUVColorSpace ||
-      yuv_color_space == kRec601_Limited_SkYUVColorSpace ||
-      yuv_color_space == kRec709_Limited_SkYUVColorSpace ||
-      yuv_color_space == kBT2020_8bit_Limited_SkYUVColorSpace;
   // libyuv supports the alpha channel only with the I420 pixel format, which is
   // 8-bit YUV 4:2:0.
-  return color_space_is_supported &&
+  return GetColorSpace(image).ToSkYUVColorSpace(image->depth,
+                                                &yuv_color_space) &&
          (!image->alphaPlane ||
           (image->depth == 8 && image->yuvFormat == AVIF_PIXEL_FORMAT_YUV420 &&
            image->alphaRange == AVIF_RANGE_FULL));
