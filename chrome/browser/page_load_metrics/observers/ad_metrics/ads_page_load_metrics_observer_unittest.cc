@@ -810,9 +810,14 @@ class AdsPageLoadMetricsObserverTest
   bool DisableSettingPrefServiceInUserPrefs() override { return true; }
   bool DisableAddingNavigationThrottles() override { return true; }
 
+  const std::string& application_locale() { return application_locale_; }
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
-        /*heavy_ad_service=*/nullptr, clock_.get(), test_blocklist_.get());
+        /*heavy_ad_service=*/nullptr,
+        base::BindRepeating(&AdsPageLoadMetricsObserverTest::application_locale,
+                            base::Unretained(this)),
+        clock_.get(), test_blocklist_.get());
     ads_observer_ = observer.get();
 
     // Mock the noise provider to make tests deterministic. Tests can override
@@ -836,6 +841,7 @@ class AdsPageLoadMetricsObserverTest
     return TestingProfile::Builder().Build();
   }
 
+  std::string application_locale_ = "en-US";
   std::unique_ptr<HeavyAdBlocklist> test_blocklist_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;

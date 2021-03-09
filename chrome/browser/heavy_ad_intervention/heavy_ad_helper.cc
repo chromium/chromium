@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/browser_process.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -18,7 +17,7 @@
 
 namespace heavy_ads {
 
-std::string PrepareHeavyAdPage() {
+std::string PrepareHeavyAdPage(const std::string& application_locale) {
   int resource_id = IDR_SECURITY_INTERSTITIAL_QUIET_HTML;
   std::string uncompressed;
   base::StringPiece template_html(
@@ -47,8 +46,7 @@ std::string PrepareHeavyAdPage() {
   load_time_data.SetBoolean("overridable", false);
   load_time_data.SetBoolean("is_giant", false);
 
-  webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
-                                 &load_time_data);
+  webui::SetLoadTimeDataDefaults(application_locale, &load_time_data);
 
   // "body" is the id of the template's root node.
   std::string heavy_ad_html =

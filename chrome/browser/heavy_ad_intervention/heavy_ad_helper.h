@@ -11,7 +11,7 @@ namespace heavy_ads {
 
 // Returns a string containing HTML of an error page for the heavy ad
 // intervention.
-std::string PrepareHeavyAdPage();
+std::string PrepareHeavyAdPage(const std::string& application_locale);
 
 }  // namespace heavy_ads
 

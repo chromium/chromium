@@ -7,8 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/aborts_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer.h"
@@ -133,7 +135,9 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
         AdsPageLoadMetricsObserver::CreateIfNeeded(
             tracker->GetWebContents(),
             HeavyAdServiceFactory::GetForBrowserContext(
-                tracker->GetWebContents()->GetBrowserContext()));
+                tracker->GetWebContents()->GetBrowserContext()),
+            base::BindRepeating(&BrowserProcess::GetApplicationLocale,
+                                base::Unretained(g_browser_process)));
     if (ads_observer)
       tracker->AddObserver(std::move(ads_observer));
 

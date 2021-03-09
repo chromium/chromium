@@ -164,13 +164,16 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(ad_metrics::HeavyAdStatus status) {
 
 // static
 std::unique_ptr<AdsPageLoadMetricsObserver>
-AdsPageLoadMetricsObserver::CreateIfNeeded(content::WebContents* web_contents,
-                                           HeavyAdService* heavy_ad_service) {
+AdsPageLoadMetricsObserver::CreateIfNeeded(
+    content::WebContents* web_contents,
+    HeavyAdService* heavy_ad_service,
+    const ApplicationLocaleGetter& application_locale_getter) {
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
       !subresource_filter::ContentSubresourceFilterThrottleManager::
           FromWebContents(web_contents))
     return nullptr;
-  return std::make_unique<AdsPageLoadMetricsObserver>(heavy_ad_service);
+  return std::make_unique<AdsPageLoadMetricsObserver>(
+      heavy_ad_service, application_locale_getter);
 }
 
 // static
@@ -228,6 +231,7 @@ int AdsPageLoadMetricsObserver::HeavyAdThresholdNoiseProvider::
 
 AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
     HeavyAdService* heavy_ad_service,
+    const ApplicationLocaleGetter& application_locale_getter,
     base::TickClock* clock,
     HeavyAdBlocklist* blocklist)
     : subresource_observer_(this),
@@ -235,6 +239,7 @@ AdsPageLoadMetricsObserver::AdsPageLoadMetricsObserver(
       restricted_navigation_ad_tagging_enabled_(base::FeatureList::IsEnabled(
           features::kRestrictedNavigationAdTagging)),
       heavy_ad_service_(heavy_ad_service),
+      application_locale_getter_(application_locale_getter),
       heavy_ad_blocklist_(blocklist),
       heavy_ad_privacy_mitigations_enabled_(
           base::FeatureList::IsEnabled(features::kHeavyAdPrivacyMitigations)),
@@ -1327,7 +1332,8 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
 
   GetDelegate().GetWebContents()->GetController().LoadPostCommitErrorPage(
       render_frame_host, render_frame_host->GetLastCommittedURL(),
-      heavy_ads::PrepareHeavyAdPage(), net::ERR_BLOCKED_BY_CLIENT);
+      heavy_ads::PrepareHeavyAdPage(application_locale_getter_.Run()),
+      net::ERR_BLOCKED_BY_CLIENT);
 }
 
 bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {

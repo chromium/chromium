@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -43,6 +44,7 @@ class AdsPageLoadMetricsObserver
   using AggregateFrameData = ad_metrics::AggregateFrameData;
   using FrameTreeData = ad_metrics::FrameTreeData;
   using ResourceMimeType = ad_metrics::ResourceMimeType;
+  using ApplicationLocaleGetter = base::RepeatingCallback<const std::string&()>;
 
   // Helper class that generates a random amount of noise to apply to thresholds
   // for heavy ads. A different noise should be generated for each frame.
@@ -72,7 +74,8 @@ class AdsPageLoadMetricsObserver
   // returns nullptr.
   static std::unique_ptr<AdsPageLoadMetricsObserver> CreateIfNeeded(
       content::WebContents* web_contents,
-      HeavyAdService* heavy_ad_service);
+      HeavyAdService* heavy_ad_service,
+      const ApplicationLocaleGetter& application_local_getter);
 
   // For a given subframe, returns whether or not the subframe's url would be
   // considering same origin to the main frame's url. |use_parent_origin|
@@ -84,9 +87,11 @@ class AdsPageLoadMetricsObserver
 
   // |clock| and |blocklist| should be set only by tests. In particular,
   // |blocklist| should be set only if |heavy_ad_service| is null.
-  explicit AdsPageLoadMetricsObserver(HeavyAdService* heavy_ad_service,
-                                      base::TickClock* clock = nullptr,
-                                      HeavyAdBlocklist* blocklist = nullptr);
+  explicit AdsPageLoadMetricsObserver(
+      HeavyAdService* heavy_ad_service,
+      const ApplicationLocaleGetter& application_local_getter,
+      base::TickClock* clock = nullptr,
+      HeavyAdBlocklist* blocklist = nullptr);
   ~AdsPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver
@@ -306,6 +311,8 @@ class AdsPageLoadMetricsObserver
   // Pointer to the HeavyAdService from which the heavy ad blocklist is obtained
   // in production.
   HeavyAdService* heavy_ad_service_;
+
+  ApplicationLocaleGetter application_locale_getter_;
 
   // Pointer to the blocklist used to throttle the heavy ad intervention. Can
   // be replaced by tests.
