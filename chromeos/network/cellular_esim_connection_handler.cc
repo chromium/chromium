@@ -131,14 +131,6 @@ void CellularESimConnectionHandler::CompleteConnectionAttempt(
   if (timer_.IsRunning())
     timer_.Stop();
 
-  // If there was an error, but we've already inhibited scans, we need to
-  // uninhibit scans before returning a result to ensure that cellular
-  // connectivity continues to work.
-  if (inhibit_lock_) {
-    UninhibitScans(error_name);
-    return;
-  }
-
   TransitionToConnectionState(ConnectionState::kIdle);
   std::unique_ptr<ConnectionRequestMetadata> metadata =
       std::move(request_queue_.front());
@@ -153,6 +145,9 @@ void CellularESimConnectionHandler::CompleteConnectionAttempt(
   }
 
   ProcessRequestQueue();
+
+  // In case of errors, metadata will be destroyed at this point along with
+  // it's inhibit_lock and the cellular device will uninhibit automatically.
 }
 
 const NetworkState*
@@ -217,7 +212,7 @@ void CellularESimConnectionHandler::OnInhibitScanResult(
     return;
   }
 
-  inhibit_lock_ = std::move(inhibit_lock);
+  request_queue_.front()->inhibit_lock = std::move(inhibit_lock);
   TransitionToConnectionState(
       ConnectionState::kRequestingProfilesBeforeEnabling);
   RequestInstalledProfiles();
@@ -251,7 +246,11 @@ void CellularESimConnectionHandler::OnRequestInstalledProfilesResult(
   }
 
   if (state_ == ConnectionState::kRequestingProfilesAfterEnabling) {
-    UninhibitScans(/*error_before_uninhibit=*/base::nullopt);
+    // Reset the inhibit_lock so that the device will be uninhibited
+    // automatically.
+    request_queue_.front()->inhibit_lock.reset();
+    TransitionToConnectionState(ConnectionState::kWaitingForConnectable);
+    CheckForConnectable();
     return;
   }
 
@@ -289,23 +288,8 @@ void CellularESimConnectionHandler::OnEnableCarrierProfileResult(
   RequestInstalledProfiles();
 }
 
-void CellularESimConnectionHandler::UninhibitScans(
-    const base::Optional<std::string>& error_before_uninhibit) {
-  DCHECK(inhibit_lock_);
-
-  TransitionToConnectionState(ConnectionState::kUninhibitingScans);
-  inhibit_lock_.reset();
-
-  if (error_before_uninhibit) {
-    CompleteConnectionAttempt(*error_before_uninhibit);
-    return;
-  }
-
-  TransitionToConnectionState(ConnectionState::kWaitingForConnectable);
-  CheckForConnectable();
-}
-
 void CellularESimConnectionHandler::CheckForConnectable() {
+  DCHECK_EQ(state_, ConnectionState::kWaitingForConnectable);
   const NetworkState* network_state = GetNetworkStateForCurrentOperation();
   if (!network_state) {
     CompleteConnectionAttempt(NetworkConnectionHandler::kErrorNotFound);
@@ -358,9 +342,6 @@ std::ostream& operator<<(
     case CellularESimConnectionHandler::ConnectionState::
         kRequestingProfilesAfterEnabling:
       stream << "[Requesting profiles after enabling]";
-      break;
-    case CellularESimConnectionHandler::ConnectionState::kUninhibitingScans:
-      stream << "[Uninhibiting scans]";
       break;
     case CellularESimConnectionHandler::ConnectionState::kWaitingForConnectable:
       stream << "[Waiting for network to become connectable]";

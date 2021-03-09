@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
                               network_handler::ErrorCallback error_callback);
     ~ConnectionRequestMetadata();
 
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
     std::string service_path;
     base::OnceClosure success_callback;
     network_handler::ErrorCallback error_callback;
@@ -77,7 +78,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
     kRequestingProfilesBeforeEnabling,
     kEnablingProfile,
     kRequestingProfilesAfterEnabling,
-    kUninhibitingScans,
     kWaitingForConnectable
   };
   friend std::ostream& operator<<(std::ostream& stream,
@@ -119,8 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
 
   ConnectionState state_ = ConnectionState::kIdle;
   base::queue<std::unique_ptr<ConnectionRequestMetadata>> request_queue_;
-
-  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock_;
 
   base::WeakPtrFactory<CellularESimConnectionHandler> weak_ptr_factory_{this};
 };
