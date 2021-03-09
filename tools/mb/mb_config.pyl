@@ -118,8 +118,8 @@
       # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild',
 
-      'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google',
+      'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google',
       'android-nougat-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
@@ -433,8 +433,8 @@
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Linux Builder': 'gpu_tests_release_trybot',
       'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot',
-      'GPU Win x64 Builder': 'gpu_tests_release_trybot_resource_whitelisting',
-      'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_whitelisting_code_coverage',
+      'GPU Win x64 Builder': 'gpu_tests_release_trybot_resource_allowlisting',
+      'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot',
       'Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_fastbuild',
     },
@@ -587,7 +587,7 @@
       'linux-swangle-x64': 'angle_deqp_release_trybot',
       'linux-swangle-x86': 'angle_deqp_release_trybot_x86',
       'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_deterministic_mac',
-      'win-swangle-chromium-x86': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+      'win-swangle-chromium-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
       'win-swangle-tot-angle-x86': 'angle_deqp_release_trybot_x86',
       'win-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot',
@@ -655,7 +655,7 @@
       'V8 Blink Mac': 'release_bot_blink',
       'V8 Blink Win': 'release_bot_blink',
       'V8 Linux GN': 'release_bot',
-      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_x86_resource_allowlisting',
     },
 
     'chromium.updater': {
@@ -781,9 +781,9 @@
       'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
       'android-lollipop-arm-rel': 'android_release_trybot_webview_google',
-      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_whitelisting_fastbuild_java_coverage',
-      'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
+      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage',
+      'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google',
+      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google',
       'android-nougat-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
@@ -1107,7 +1107,7 @@
       'linux-swangle-try-x64': 'angle_deqp_release_trybot',
       'linux-swangle-try-x86': 'angle_deqp_release_trybot_x86',
       'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot_deterministic_mac',
-      'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+      'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-try-tot-angle-x64': 'angle_deqp_release_trybot',
       'win-swangle-try-tot-angle-x86': 'angle_deqp_release_trybot_x86',
       'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
@@ -1139,19 +1139,19 @@
       'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86',
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot',
       'gpu-fyi-try-win10-nvidia-sk-dawn-rel-64': 'gpu_tests_sk_dawn_release_trybot',
-      'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_whitelisting_invert_fieldtrials',
+      'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot',
-      'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_whitelisting_code_coverage',
+      'win10_chromium_x64_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot',
-      'win7-rel': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+      'win7-rel': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win_x64_archive': 'release_trybot',
       'win_archive': 'release_trybot_x86',
       'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols',
-      'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+      'win_chromium_compile_rel_ng': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win_chromium_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols',
       'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot',
       'win_mojo': 'release_trybot_x86',
@@ -1171,7 +1171,7 @@
     },
 
     'tryserver.webrtc': {
-      'win_chromium_compile': 'gpu_tests_release_trybot_resource_whitelisting',
+      'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting',
       'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols',
       'mac_chromium_compile': 'gpu_tests_release_trybot',
       'linux_chromium_compile': 'release_trybot',
@@ -1397,9 +1397,9 @@
       'webview_google',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_resource_whitelisting_webview_google': [
+    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'x86',
-      'android_fastbuild', 'resource_whitelisting', 'webview_google',
+      'android_fastbuild', 'resource_allowlisting', 'webview_google',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_google': [
@@ -1457,9 +1457,9 @@
       'webview_google',
     ],
 
-    'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google': [
+    'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
-      'resource_whitelisting', 'webview_google',
+      'resource_allowlisting', 'webview_google',
     ],
 
     'android_release_trybot_x86_fastbuild_webview_google': [
@@ -2066,13 +2066,13 @@
 
     'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild': [
       'gpu_tests', 'android', 'release_bot', 'minimal_symbols', 'arm64',
-      'resource_whitelisting', 'static_angle', 'android_fastbuild',
+      'resource_allowlisting', 'static_angle', 'android_fastbuild',
       'webview_google',
     ],
 
     'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage': [
       'gpu_tests', 'android', 'release_bot', 'minimal_symbols', 'arm64',
-      'resource_whitelisting', 'static_angle', 'android_fastbuild', 'webview_google',
+      'resource_allowlisting', 'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_java_coverage',
     ],
 
@@ -2080,7 +2080,7 @@
     # android_webview_unittests target.
     'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage': [
       'gpu_tests', 'android', 'release_bot', 'arm64',
-      'resource_whitelisting', 'static_angle', 'android_fastbuild', 'webview_google',
+      'resource_allowlisting', 'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_clang_coverage',
     ],
 
@@ -2097,9 +2097,9 @@
       'android_fastbuild',
     ],
 
-    'gpu_tests_android_release_trybot_arm64_resource_whitelisting_fastbuild_java_coverage': [
+    'gpu_tests_android_release_trybot_arm64_resource_allowlisting_fastbuild_java_coverage': [
       'gpu_tests', 'android', 'release_trybot', 'arm64', 'static_angle',
-      'resource_whitelisting', 'android_fastbuild', 'webview_google',
+      'resource_allowlisting', 'android_fastbuild', 'webview_google',
       'use_java_coverage', 'partial_code_coverage_instrumentation',
     ],
 
@@ -2184,20 +2184,20 @@
       'gpu_tests', 'release_trybot', 'mac_deterministic_build', 'invert_fieldtrials',
     ],
 
-    'gpu_tests_release_trybot_resource_whitelisting': [
-      'gpu_tests', 'release_trybot', 'resource_whitelisting',
+    'gpu_tests_release_trybot_resource_allowlisting': [
+      'gpu_tests', 'release_trybot', 'resource_allowlisting',
     ],
 
     # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
     # standard Windows trybot and the dedicated coverage trybot is no longer
     # needed.
-    'gpu_tests_release_trybot_resource_whitelisting_code_coverage': [
-      'gpu_tests', 'release_trybot', 'resource_whitelisting',
+    'gpu_tests_release_trybot_resource_allowlisting_code_coverage': [
+      'gpu_tests', 'release_trybot', 'resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'gpu_tests_release_trybot_resource_whitelisting_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'resource_whitelisting', 'invert_fieldtrials',
+    'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
+      'gpu_tests', 'release_trybot', 'resource_allowlisting', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_x86': [
@@ -2224,8 +2224,8 @@
       'gpu_tests', 'release_trybot', 'v8_pointer_compression',
     ],
 
-    'gpu_tests_release_trybot_x86_resource_whitelisting': [
-      'gpu_tests', 'release_trybot', 'x86', 'resource_whitelisting',
+    'gpu_tests_release_trybot_x86_resource_allowlisting': [
+      'gpu_tests', 'release_trybot', 'x86', 'resource_allowlisting',
     ],
 
     'gpu_tests_sk_dawn_release_trybot': [
@@ -2456,7 +2456,7 @@
     ],
 
     'official_goma_x64_pgo': [
-      'official', 'goma', 'x64', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_whitelisting',
+      'official', 'goma', 'x64', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_allowlisting',
     ],
 
     'official_goma_x86': [
@@ -2468,7 +2468,7 @@
     ],
 
     'official_goma_x86_pgo': [
-      'official', 'goma', 'x86', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_whitelisting',
+      'official', 'goma', 'x86', 'static', 'no_symbols', 'pgo_phase_1', 'no_resource_allowlisting',
     ],
 
     'official_optimize_goma': [
@@ -3257,7 +3257,7 @@
       'gn_args': 'optimize_webui=false',
     },
 
-    'no_resource_whitelisting': {
+    'no_resource_allowlisting': {
       'gn_args': 'enable_resource_allowlist_generation=false',
     },
 
@@ -3387,7 +3387,7 @@
       'mixins': ['release_trybot', 'dcheck_off',],
     },
 
-    'resource_whitelisting': {
+    'resource_allowlisting': {
       'gn_args': 'enable_resource_allowlist_generation=true',
     },
 
