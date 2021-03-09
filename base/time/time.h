@@ -2,36 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Time represents an absolute point in coordinated universal time (UTC),
+// `Time` represents an absolute point in coordinated universal time (UTC),
 // internally represented as microseconds (s/1,000,000) since the Windows epoch
 // (1601-01-01 00:00:00 UTC). System-dependent clock interface routines are
-// defined in time_PLATFORM.cc. Note that values for Time may skew and jump
+// defined in time_PLATFORM.cc. Note that values for `Time` may skew and jump
 // around as the operating system makes adjustments to synchronize (e.g., with
-// NTP servers). Thus, client code that uses the Time class must account for
+// NTP servers). Thus, client code that uses the `Time` class must account for
 // this.
 //
-// TimeDelta represents a duration of time, internally represented in
+// `TimeDelta` represents a duration of time, internally represented in
 // microseconds.
 //
-// TimeTicks and ThreadTicks represent an abstract time that is most of the time
-// incrementing, for use in measuring time durations. Internally, they are
+// `TimeTicks` and `ThreadTicks` represent an abstract time that is most of the
+// time incrementing, for use in measuring time durations. Internally, they are
 // represented in microseconds. They cannot be converted to a human-readable
-// time, but are guaranteed not to decrease (unlike the Time class). Note that
-// TimeTicks may "stand still" (e.g., if the computer is suspended), and
-// ThreadTicks will "stand still" whenever the thread has been de-scheduled by
-// the operating system.
+// time, but are guaranteed not to decrease (unlike the `Time` class). Note
+// that `TimeTicks` may "stand still" (e.g., if the computer is suspended), and
+// `ThreadTicks` will "stand still" whenever the thread has been de-scheduled
+// by the operating system.
 //
-// All time classes are copyable, assignable, and occupy 64-bits per instance.
-// As a result, prefer passing them by value:
+// All time classes are copyable, assignable, and occupy 64 bits per instance.
+// Prefer to pass them by value, e.g.:
+//
 //   void MyFunction(TimeDelta arg);
-// If circumstances require, you may also pass by const reference:
-//   void MyFunction(const TimeDelta& arg);  // Not preferred.
 //
-// Definitions of operator<< are provided to make these types work with
-// DCHECK_EQ() and other log macros. For human-readable formatting, see
-// "base/i18n/time_formatting.h".
+// All time classes support `operator<<` with logging streams, e.g. `LOG(INFO)`.
+// For human-readable formatting, use //base/i18n/time_formatting.h.
 //
-// So many choices!  Which time class should you use?  Examples:
+// Example use cases for different time classes:
 //
 //   Time:        Interpreting the wall-clock time provided by a remote system.
 //                Detecting whether cached resources have expired. Providing the
@@ -47,6 +45,19 @@
 //
 //   ThreadTicks: Benchmarking how long the current thread has been doing actual
 //                work.
+//
+// Serialization:
+//
+// Use the helpers in //base/util/values/values_util.h when serializing `Time`
+// or `TimeDelta` to/from `base::Value`.
+//
+// Otherwise:
+//
+// - Time: use `FromDeltaSinceWindowsEpoch()`/`ToDeltaSinceWindowsEpoch()`.
+// - TimeDelta: use `FromMicroseconds()`/`InMicroseconds()`.
+//
+// `TimeTicks` and `ThreadTicks` do not have a stable origin; serialization for
+// the purpose of persistence is not supported.
 
 #ifndef BASE_TIME_TIME_H_
 #define BASE_TIME_TIME_H_
@@ -449,12 +460,10 @@ class TimeBase {
     return TimeClass(std::numeric_limits<int64_t>::min());
   }
 
-  // For serializing only. Use FromInternalValue() to reconstitute. Please don't
-  // use this and do arithmetic on it, as it is more error prone than using the
-  // provided operators.
-  //
-  // DEPRECATED - Do not use in new code. For serializing Time values, prefer
-  // Time::ToDeltaSinceWindowsEpoch().InMicroseconds(). http://crbug.com/634507
+  // For legacy serialization only. When serializing to `base::Value`, prefer
+  // the helpers from //base/util/values/values_util.h instead. Otherwise, use
+  // `Time::ToDeltaSinceWindowsEpoch()` for `Time` and
+  // `TimeDelta::InMiseconds()` for `TimeDelta`. See http://crbug.com/634507.
   constexpr int64_t ToInternalValue() const { return us_; }
 
   // The amount of time since the origin (or "zero") point. This is a syntactic
@@ -607,8 +616,11 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   static Time NowFromSystemTime();
 
   // Converts to/from TimeDeltas relative to the Windows epoch (1601-01-01
-  // 00:00:00 UTC). Prefer these methods for opaque serialization and
-  // deserialization of time values, e.g.
+  // 00:00:00 UTC).
+  //
+  // For serialization, when handling `base::Value`, prefer the helpers in
+  // //base/util/values/values_util.h instead. Otherwise, use these methods for
+  // opaque serialization and deserialization, e.g.
   //
   //   // Serialization:
   //   base::Time last_updated = ...;
@@ -617,6 +629,8 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   //   // Deserialization:
   //   base::Time last_updated = base::Time::FromDeltaSinceWindowsEpoch(
   //       base::TimeDelta::FromMicroseconds(LoadFromDatabase()));
+  //
+  // Do not use `FromInternalValue()` or `ToInternalValue()` for this purpose.
   static Time FromDeltaSinceWindowsEpoch(TimeDelta delta);
   TimeDelta ToDeltaSinceWindowsEpoch() const;
 
@@ -763,13 +777,15 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   Time UTCMidnight() const { return Midnight(false); }
   Time LocalMidnight() const { return Midnight(true); }
 
-  // Converts an integer value representing Time to a class. This may be used
-  // when deserializing a |Time| structure, using a value known to be
-  // compatible. It is not provided as a constructor because the integer type
-  // may be unclear from the perspective of a caller.
+  // For legacy deserialization only. Converts an integer value representing
+  // Time to a class. This may be used when deserializing a |Time| structure,
+  // using a value known to be compatible. It is not provided as a constructor
+  // because the integer type may be unclear from the perspective of a caller.
   //
-  // DEPRECATED - Do not use in new code. For deserializing Time values, prefer
-  // Time::FromDeltaSinceWindowsEpoch(). http://crbug.com/634507
+  // DEPRECATED - Do not use in new code. When deserializing from `base::Value`,
+  // prefer the helpers from //base/util/values/values_util.h instead.
+  // Otherwise, use `Time::FromDeltaSinceWindowsEpoch()` for `Time` and
+  // `TimeDelta::FromMiseconds()` for `TimeDelta`. http://crbug.com/634507
   static constexpr Time FromInternalValue(int64_t us) { return Time(us); }
 
  private:
@@ -1029,7 +1045,9 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // may be unclear from the perspective of a caller.
   //
   // DEPRECATED - Do not use in new code. For deserializing TimeTicks values,
-  // prefer TimeTicks + TimeDelta(). http://crbug.com/634507
+  // prefer TimeTicks + TimeDelta(); however, be aware that the origin is not
+  // fixed and may vary. Serializing for persistence is strongly discouraged.
+  // http://crbug.com/634507
   static constexpr TimeTicks FromInternalValue(int64_t us) {
     return TimeTicks(us);
   }
@@ -1101,7 +1119,9 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // may be unclear from the perspective of a caller.
   //
   // DEPRECATED - Do not use in new code. For deserializing ThreadTicks values,
-  // prefer ThreadTicks + TimeDelta(). http://crbug.com/634507
+  // prefer ThreadTicks + TimeDelta(); however, be aware that the origin is not
+  // fixed and may vary. Serializing for persistence is strongly
+  // discouraged. http://crbug.com/634507
   static constexpr ThreadTicks FromInternalValue(int64_t us) {
     return ThreadTicks(us);
   }
