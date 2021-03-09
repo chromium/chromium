@@ -11,7 +11,7 @@
 #include "base/tracing_buildflags.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"  // nogncheck
 #else
 
 namespace perfetto {
@@ -33,5 +33,15 @@ struct check_traced_value_support {
 }  // namespace perfetto
 
 #endif  // !BUILDFLAG(ENABLE_BASE_TRACING)
+
+namespace base {
+namespace trace_event {
+
+class BlameContext;
+class ConvertableToTraceFormat;
+class TracedValue;
+
+}  // namespace trace_event
+}  // namespace base
 
 #endif  // BASE_TRACE_EVENT_BASE_TRACING_FORWARD_H_

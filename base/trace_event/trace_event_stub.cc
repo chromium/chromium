@@ -17,6 +17,9 @@ void TracedValue::AppendAsTraceFormat(std::string* out) const {}
 
 MemoryDumpProvider::~MemoryDumpProvider() = default;
 
+// static
+constexpr const char* const MemoryDumpManager::kTraceCategory;
+
 }  // namespace trace_event
 }  // namespace base
 

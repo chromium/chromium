@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/trace_event/base_tracing.h"
+
 namespace base {
 
 TestPendingTask::TestPendingTask() : nestability(NESTABLE) {}

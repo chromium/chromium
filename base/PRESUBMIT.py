@@ -79,8 +79,8 @@ def _CheckNoTraceEventInclude(input_api, output_api):
     return [ output_api.PresubmitError(
         'Base code should include "base/trace_event/base_tracing.h" instead\n' +
         'of trace_event implementation headers. If you need to include an\n' +
-        'implementation header, verify that base_unittests still passes\n' +
-        'with gn arg "enable_base_tracing = false" and add\n' +
+        'implementation header, verify that "gn check" and base_unittests\n' +
+        'still pass with gn arg "enable_base_tracing = false" and add\n' +
         '"// no-presubmit-check" after the include. \n' +
         '\n'.join(locations)) ]
   return []
@@ -110,10 +110,10 @@ def _WarnPbzeroIncludes(input_api, output_api):
                              files_to_skip)
   if locations:
     return [ output_api.PresubmitPromptWarning(
-        'Please verify that base_unittests still builds & passes with gn\n' +
-        'arg "enable_base_tracing = false" when adding typed trace events\n' +
-        'to //base. You can use "#if BUILDFLAG(ENABLE_BASE_TRACING)" to\n' +
-        'exclude pbzero headers and anything not supported by\n' +
+        'Please verify that "gn check" and base_unittests still pass with\n' +
+        'gn arg "enable_base_tracing = false" when adding typed trace\n' +
+        'events to //base. You can use "#if BUILDFLAG(ENABLE_BASE_TRACING)"\n' +
+        'to exclude pbzero headers and anything not supported by\n' +
         '//base/trace_event/trace_event_stub.h.\n' +
         '\n'.join(locations)) ]
   return []

@@ -17,7 +17,7 @@
 #include "base/tracing_buildflags.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"  // nogncheck
 #endif
 
 namespace base {

@@ -169,6 +169,12 @@ class BASE_EXPORT MemoryDumpProvider {
   MemoryDumpProvider() = default;
 };
 
+class BASE_EXPORT MemoryDumpManager {
+ public:
+  static constexpr const char* const kTraceCategory =
+      TRACE_DISABLED_BY_DEFAULT("memory-infra");
+};
+
 }  // namespace trace_event
 }  // namespace base
 

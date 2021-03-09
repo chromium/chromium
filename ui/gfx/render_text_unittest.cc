@@ -49,6 +49,8 @@
 #include "ui/gfx/text_utils.h"
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include "base/win/windows_version.h"
 #endif
 
