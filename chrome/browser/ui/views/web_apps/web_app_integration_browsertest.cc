@@ -73,6 +73,8 @@ class WebAppIntegrationBrowserTest
     return std::vector<Profile*>{browser()->profile()};
   }
 
+  bool IsSyncTest() override { return false; }
+
   bool UserSigninInternal() override {
     NOTREACHED();
     return false;

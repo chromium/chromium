@@ -63,6 +63,8 @@ class TwoClientWebAppsIntegrationSyncTest
     return SyncTest::GetAllProfiles();
   }
 
+  bool IsSyncTest() override { return true; }
+
   bool UserSigninInternal() override { return SyncTest::SetupSync(); }
 
   void TurnSyncOff() override {
@@ -196,6 +198,10 @@ class TwoClientWebAppsIntegrationSyncTest
   }
 };
 
+// This test is a part of the web app integration test suite, which is
+// documented in //chrome/browser/ui/views/web_apps/README.md. For information
+// about diagnosing, debugging and/or disabling tests, please look to the
+// README file.
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsIntegrationSyncTest, Default) {
   helper_.ParseParams(GetParam());
 

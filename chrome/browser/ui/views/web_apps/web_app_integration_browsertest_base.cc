@@ -82,6 +82,26 @@ class TestAppLauncherHandler : public AppLauncherHandler {
   }
 };
 
+std::string BuildScopedTrace(const std::string& action_string,
+                             const std::vector<std::string>& testing_actions,
+                             bool is_sync_test) {
+  const std::string test_case = base::JoinString(testing_actions, ", ");
+  return base::StringPrintf(
+      "\nFailed test case: %s\n"
+      "Failed action: %s\n"
+      "To disable this test, add the following line to "
+      "//chrome/test/data/web_apps/TestExpectations:\n"
+      "crbug.com/XXXXX [ %s ] [ Skip ] %s\n"
+      "To run this test in isolation, run the following command:\n"
+      "out/Default/%s_tests --gtest_filter=\"*%s*\" "
+      "--web-app-integration-test-case=%s\n",
+      test_case.c_str(), action_string.c_str(), kPlatformName,
+      test_case.c_str(), is_sync_test ? "sync_integration" : "browser",
+      is_sync_test ? "TwoClientWebAppsIntegrationSyncTest"
+                   : "WebAppIntegrationBrowserTest",
+      test_case.c_str());
+}
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -249,7 +269,6 @@ void WebAppIntegrationBrowserTestBase::SetUpOnMainThread() {
 void WebAppIntegrationBrowserTestBase::ParseParams(std::string action_strings) {
   // Useful for debugging since all tests are run in a single parameterized
   // test.
-  LOG(ERROR) << "Test case: " << action_strings;
   testing_actions_ = base::SplitString(
       action_strings, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
@@ -357,6 +376,8 @@ WebAppIntegrationBrowserTestBase::BuildAllPlatformTestCaseSet(
 // alphabetical order.
 void WebAppIntegrationBrowserTestBase::ExecuteAction(
     const std::string& action_string) {
+  SCOPED_TRACE(BuildScopedTrace(action_string, testing_actions(),
+                                delegate_->IsSyncTest()));
   if (base::EndsWith(action_string, "site_b")) {
     FAIL() << "site_b actions not yet supported: " << action_string;
   }

@@ -93,6 +93,7 @@ class WebAppIntegrationBrowserTestBase {
     virtual void AddBlankTabAndShow(Browser* browser) = 0;
     virtual net::EmbeddedTestServer* EmbeddedTestServer() = 0;
     virtual std::vector<Profile*> GetAllProfiles() = 0;
+    virtual bool IsSyncTest() = 0;
     virtual bool UserSigninInternal() = 0;
     virtual void TurnSyncOff() = 0;
     virtual void TurnSyncOn() = 0;
