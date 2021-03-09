@@ -232,6 +232,7 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
             base::BindRepeating(
                 &CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp)));
     infos.at(SystemAppType::CONNECTIVITY_DIAGNOSTICS).show_in_launcher = false;
+    infos.at(SystemAppType::CONNECTIVITY_DIAGNOSTICS).show_in_search = false;
   }
 
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::ECHE)) {
