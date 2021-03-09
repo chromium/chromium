@@ -30,7 +30,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
 import {Router} from '../router.m.js';
 
-import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.m.js';
+import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 
 Polymer({
   is: 'settings-about-page',

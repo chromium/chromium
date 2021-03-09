@@ -5,7 +5,7 @@
 import './settings_ui/settings_ui.js';
 
 export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus} from './about_page/about_page_browser_proxy.m.js';
+export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus} from './about_page/about_page_browser_proxy.js';
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
 export {MultiStoreExceptionEntry} from './autofill_page/multi_store_exception_entry.js';
 export {MultiStorePasswordUiEntry} from './autofill_page/multi_store_password_ui_entry.js';

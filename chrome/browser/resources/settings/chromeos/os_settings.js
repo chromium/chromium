@@ -79,7 +79,7 @@ import './os_settings_search_box/os_settings_search_box.m.js';
 import './os_toolbar/os_toolbar.m.js';
 import './parental_controls_page/parental_controls_page.m.js';
 
-export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
+export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
 export {pageVisibility} from '../page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.m.js';

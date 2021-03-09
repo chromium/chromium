@@ -101,6 +101,7 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "a11y_page/captions_browser_proxy.js",
+    "about_page/about_page_browser_proxy.js",
     "appearance_page/appearance_browser_proxy.js",
     "appearance_page/fonts_browser_proxy.js",
     "autofill_page/merge_exceptions_store_copies_behavior.js",
@@ -171,7 +172,6 @@ preprocess_if_expr("preprocess_generated") {
     "a11y_page/a11y_page.js",
     "a11y_page/captions_subpage.m.js",
     "a11y_page/live_caption_section.m.js",
-    "about_page/about_page_browser_proxy.m.js",
     "about_page/about_page.js",
     "appearance_page/appearance_fonts_page.js",
     "appearance_page/appearance_page.js",
@@ -367,7 +367,6 @@ group("closure_compile") {
   deps = [
     ":local_resources",
     "a11y_page:closure_compile",
-    "about_page:closure_compile",
     "controls:closure_compile",
     "languages_page:closure_compile",
     "people_page:closure_compile",
@@ -516,7 +515,7 @@ js_library("settings") {
     ":lifetime_browser_proxy.m",
     ":metrics_browser_proxy",
     ":open_window_proxy",
-    "about_page:about_page_browser_proxy.m",
+    "about_page:about_page_browser_proxy",
     "autofill_page:multi_store_exception_entry",
     "autofill_page:multi_store_password_ui_entry",
     "autofill_page:password_manager_proxy",

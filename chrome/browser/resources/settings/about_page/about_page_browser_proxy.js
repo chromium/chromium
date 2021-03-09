@@ -8,8 +8,8 @@
  */
 
 // clang-format off
-// #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
-// #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 // <if expr="chromeos">
@@ -19,7 +19,7 @@
  *   url: string,
  * }}
  */
-/* #export */ let RegulatoryInfo;
+export let RegulatoryInfo;
 
 /**
  * @typedef {{
@@ -28,7 +28,7 @@
  *   isLts: boolean,
  * }}
  */
-/* #export */ let ChannelInfo;
+export let ChannelInfo;
 
 /**
  * @typedef {{
@@ -37,7 +37,7 @@
  *   osVersion: string,
  * }}
  */
-/* #export */ let VersionInfo;
+export let VersionInfo;
 
 /**
  * @typedef {{
@@ -45,7 +45,7 @@
  *   size: (string|undefined),
  * }}
  */
-/* #export */ let AboutPageUpdateInfo;
+export let AboutPageUpdateInfo;
 
 /**
  * @typedef {{
@@ -59,7 +59,7 @@ let EndOfLifeInfo;
  * Enumeration of all possible browser channels.
  * @enum {string}
  */
-/* #export */ const BrowserChannel = {
+export const BrowserChannel = {
   BETA: 'beta-channel',
   CANARY: 'canary-channel',
   DEV: 'dev-channel',
@@ -71,7 +71,7 @@ let EndOfLifeInfo;
  *   updateAvailable: boolean,
  * }}
  */
-/* #export */ let TPMFirmwareUpdateStatusChangedEvent;
+export let TPMFirmwareUpdateStatusChangedEvent;
 // </if>
 
 /**
@@ -79,7 +79,7 @@ let EndOfLifeInfo;
  * the ones defined at |AboutHandler::UpdateStatusToString|.
  * @enum {string}
  */
-/* #export */ const UpdateStatus = {
+export const UpdateStatus = {
   CHECKING: 'checking',
   UPDATING: 'updating',
   NEARLY_UPDATED: 'nearly_updated',
@@ -104,7 +104,7 @@ let EndOfLifeInfo;
  *   text: (string|undefined)
  * }}
  */
-/* #export */ let PromoteUpdaterStatus;
+export let PromoteUpdaterStatus;
 
 /**
  * @typedef {{
@@ -116,32 +116,31 @@ let EndOfLifeInfo;
  *   size: (string|undefined),
  * }}
  */
-/* #export */ let UpdateStatusChangedEvent;
+export let UpdateStatusChangedEvent;
 
-cr.define('settings', function() {
-  /**
-   * @param {!BrowserChannel} channel
-   * @param {boolean} isLts
-   * @return {string}
-   */
-  /* #export */ function browserChannelToI18nId(channel, isLts) {
-    if (isLts) {
-      return 'aboutChannelLongTermStable';
-    }
-
-    switch (channel) {
-      case BrowserChannel.BETA:
-        return 'aboutChannelBeta';
-      case BrowserChannel.CANARY:
-        return 'aboutChannelCanary';
-      case BrowserChannel.DEV:
-        return 'aboutChannelDev';
-      case BrowserChannel.STABLE:
-        return 'aboutChannelStable';
-    }
-
-    assertNotReached();
+/**
+ * @param {!BrowserChannel} channel
+ * @param {boolean} isLts
+ * @return {string}
+ */
+export function browserChannelToI18nId(channel, isLts) {
+  if (isLts) {
+    return 'aboutChannelLongTermStable';
   }
+
+  switch (channel) {
+    case BrowserChannel.BETA:
+      return 'aboutChannelBeta';
+    case BrowserChannel.CANARY:
+      return 'aboutChannelCanary';
+    case BrowserChannel.DEV:
+      return 'aboutChannelDev';
+    case BrowserChannel.STABLE:
+      return 'aboutChannelStable';
+  }
+
+  assertNotReached();
+}
 
   /**
    * @param {!BrowserChannel} currentChannel
@@ -149,236 +148,226 @@ cr.define('settings', function() {
    * @return {boolean} Whether the target channel is more stable than the
    *     current channel.
    */
-  /* #export */ function isTargetChannelMoreStable(
-      currentChannel, targetChannel) {
-    // List of channels in increasing stability order.
-    const channelList = [
-      BrowserChannel.CANARY,
-      BrowserChannel.DEV,
-      BrowserChannel.BETA,
-      BrowserChannel.STABLE,
-    ];
-    const currentIndex = channelList.indexOf(currentChannel);
-    const targetIndex = channelList.indexOf(targetChannel);
-    return currentIndex < targetIndex;
-  }
+export function isTargetChannelMoreStable(currentChannel, targetChannel) {
+  // List of channels in increasing stability order.
+  const channelList = [
+    BrowserChannel.CANARY,
+    BrowserChannel.DEV,
+    BrowserChannel.BETA,
+    BrowserChannel.STABLE,
+  ];
+  const currentIndex = channelList.indexOf(currentChannel);
+  const targetIndex = channelList.indexOf(targetChannel);
+  return currentIndex < targetIndex;
+}
 
   /** @interface */
-  /* #export */ class AboutPageBrowserProxy {
-    /**
-     * Indicates to the browser that the page is ready.
-     */
-    pageReady() {}
-
-    /**
-     * Request update status from the browser. It results in one or more
-     * 'update-status-changed' WebUI events.
-     */
-    refreshUpdateStatus() {}
-
-    // <if expr="chromeos">
-    /** Opens the release notes app. */
-    launchReleaseNotes() {}
-    // </if>
-
-
-    /** Opens the help page. */
-    openHelpPage() {}
-
-    // <if expr="_google_chrome">
-    /**
-     * Opens the feedback dialog.
-     */
-    openFeedbackDialog() {}
-
-    // </if>
-
-    // <if expr="chromeos">
-    /** Opens the diagnostics page. */
-    openDiagnostics() {}
-
-    /** Opens the OS help page. */
-    openOsHelpPage() {}
-
-    /**
-     * Checks for available update and applies if it exists.
-     */
-    requestUpdate() {}
-
-    /**
-     * Checks for the update with specified version and size and applies over
-     * cellular. The target version and size are the same as were received from
-     * 'update-status-changed' WebUI event. We send this back all the way to
-     * update engine for it to double check with update server in case there's a
-     * new update available. This prevents downloading the new update that user
-     * didn't agree to.
-     * @param {string} target_version
-     * @param {string} target_size
-     */
-    requestUpdateOverCellular(target_version, target_size) {}
-
-    /**
-     * @param {!BrowserChannel} channel
-     * @param {boolean} isPowerwashAllowed
-     */
-    setChannel(channel, isPowerwashAllowed) {}
-
-    /**
-     * Requests channel info from the version updater. This may have latency if
-     * the version updater is busy, for example with downloading updates.
-     * @return {!Promise<!ChannelInfo>}
-     */
-    getChannelInfo() {}
-
-    /** @return {!Promise<!boolean>} */
-    canChangeChannel() {}
-
-    /** @return {!Promise<!VersionInfo>} */
-    getVersionInfo() {}
-
-    /** @return {!Promise<?RegulatoryInfo>} */
-    getRegulatoryInfo() {}
-
-    /**
-     * Checks if the device has reached end-of-life status and will no longer
-     * receive updates.
-     * @return {!Promise<!EndOfLifeInfo>}
-     */
-    getEndOfLifeInfo() {}
-
-    /**
-     * Request TPM firmware update status from the browser. It results in one or
-     * more 'tpm-firmware-update-status-changed' WebUI events.
-     */
-    refreshTPMFirmwareUpdateStatus() {}
-    // </if>
-
-    // <if expr="_google_chrome and is_macosx">
-    /**
-     * Triggers setting up auto-updates for all users.
-     */
-    promoteUpdater() {}
-    // </if>
-
-    // <if expr="chromeos">
-    /**
-     * Checks if the device is connected to the internet.
-     * @return {!Promise<boolean>}
-     */
-    checkInternetConnection() {}
-    // </if>
-  }
+export class AboutPageBrowserProxy {
+  /**
+   * Indicates to the browser that the page is ready.
+   */
+  pageReady() {}
 
   /**
-   * @implements {settings.AboutPageBrowserProxy}
+   * Request update status from the browser. It results in one or more
+   * 'update-status-changed' WebUI events.
    */
-  /* #export */ class AboutPageBrowserProxyImpl {
-    /** @override */
-    pageReady() {
-      chrome.send('aboutPageReady');
-    }
+  refreshUpdateStatus() {}
 
-    /** @override */
-    refreshUpdateStatus() {
-      chrome.send('refreshUpdateStatus');
-    }
+  // <if expr="chromeos">
+  /** Opens the release notes app. */
+  launchReleaseNotes() {}
+  // </if>
 
-    // <if expr="_google_chrome and is_macosx">
-    /** @override */
-    promoteUpdater() {
-      chrome.send('promoteUpdater');
-    }
 
-    // </if>
+  /** Opens the help page. */
+  openHelpPage() {}
 
-    /** @override */
-    launchReleaseNotes() {
-      chrome.send('launchReleaseNotes');
-    }
+  // <if expr="_google_chrome">
+  /**
+   * Opens the feedback dialog.
+   */
+  openFeedbackDialog() {}
 
-    /** @override */
-    openHelpPage() {
-      chrome.send('openHelpPage');
-    }
+  // </if>
 
-    // <if expr="_google_chrome">
-    /** @override */
-    openFeedbackDialog() {
-      chrome.send('openFeedbackDialog');
-    }
+  // <if expr="chromeos">
+  /** Opens the diagnostics page. */
+  openDiagnostics() {}
 
-    // </if>
+  /** Opens the OS help page. */
+  openOsHelpPage() {}
 
-    // <if expr="chromeos">
-    /** @override */
-    openDiagnostics() {
-      chrome.send('openDiagnostics');
-    }
+  /**
+   * Checks for available update and applies if it exists.
+   */
+  requestUpdate() {}
 
-    /** @override */
-    openOsHelpPage() {
-      chrome.send('openOsHelpPage');
-    }
+  /**
+   * Checks for the update with specified version and size and applies over
+   * cellular. The target version and size are the same as were received from
+   * 'update-status-changed' WebUI event. We send this back all the way to
+   * update engine for it to double check with update server in case there's a
+   * new update available. This prevents downloading the new update that user
+   * didn't agree to.
+   * @param {string} target_version
+   * @param {string} target_size
+   */
+  requestUpdateOverCellular(target_version, target_size) {}
 
-    /** @override */
-    requestUpdate() {
-      chrome.send('requestUpdate');
-    }
+  /**
+   * @param {!BrowserChannel} channel
+   * @param {boolean} isPowerwashAllowed
+   */
+  setChannel(channel, isPowerwashAllowed) {}
 
-    /** @override */
-    requestUpdateOverCellular(target_version, target_size) {
-      chrome.send('requestUpdateOverCellular', [target_version, target_size]);
-    }
+  /**
+   * Requests channel info from the version updater. This may have latency if
+   * the version updater is busy, for example with downloading updates.
+   * @return {!Promise<!ChannelInfo>}
+   */
+  getChannelInfo() {}
 
-    /** @override */
-    setChannel(channel, isPowerwashAllowed) {
-      chrome.send('setChannel', [channel, isPowerwashAllowed]);
-    }
+  /** @return {!Promise<!boolean>} */
+  canChangeChannel() {}
 
-    /** @override */
-    getChannelInfo() {
-      return cr.sendWithPromise('getChannelInfo');
-    }
+  /** @return {!Promise<!VersionInfo>} */
+  getVersionInfo() {}
 
-    /** @override */
-    canChangeChannel() {
-      return cr.sendWithPromise('canChangeChannel');
-    }
+  /** @return {!Promise<?RegulatoryInfo>} */
+  getRegulatoryInfo() {}
 
-    /** @override */
-    getVersionInfo() {
-      return cr.sendWithPromise('getVersionInfo');
-    }
+  /**
+   * Checks if the device has reached end-of-life status and will no longer
+   * receive updates.
+   * @return {!Promise<!EndOfLifeInfo>}
+   */
+  getEndOfLifeInfo() {}
 
-    /** @override */
-    getRegulatoryInfo() {
-      return cr.sendWithPromise('getRegulatoryInfo');
-    }
+  /**
+   * Request TPM firmware update status from the browser. It results in one or
+   * more 'tpm-firmware-update-status-changed' WebUI events.
+   */
+  refreshTPMFirmwareUpdateStatus() {}
+  // </if>
 
-    /** @override */
-    getEndOfLifeInfo() {
-      return cr.sendWithPromise('getEndOfLifeInfo');
-    }
+  // <if expr="_google_chrome and is_macosx">
+  /**
+   * Triggers setting up auto-updates for all users.
+   */
+  promoteUpdater() {}
+  // </if>
 
-    /** @override */
-    checkInternetConnection() {
-      return cr.sendWithPromise('checkInternetConnection');
-    }
+  // <if expr="chromeos">
+  /**
+   * Checks if the device is connected to the internet.
+   * @return {!Promise<boolean>}
+   */
+  checkInternetConnection() {}
+  // </if>
+}
 
-    /** @override */
-    refreshTPMFirmwareUpdateStatus() {
-      chrome.send('refreshTPMFirmwareUpdateStatus');
-    }
-    // </if>
+/**
+ * @implements {AboutPageBrowserProxy}
+ */
+export class AboutPageBrowserProxyImpl {
+  /** @override */
+  pageReady() {
+    chrome.send('aboutPageReady');
   }
 
-  cr.addSingletonGetter(AboutPageBrowserProxyImpl);
+  /** @override */
+  refreshUpdateStatus() {
+    chrome.send('refreshUpdateStatus');
+  }
 
-  // #cr_define_end
-  return {
-    AboutPageBrowserProxy: AboutPageBrowserProxy,
-    AboutPageBrowserProxyImpl: AboutPageBrowserProxyImpl,
-    browserChannelToI18nId: browserChannelToI18nId,
-    isTargetChannelMoreStable: isTargetChannelMoreStable,
-  };
-});
+  // <if expr="_google_chrome and is_macosx">
+  /** @override */
+  promoteUpdater() {
+    chrome.send('promoteUpdater');
+  }
+
+  // </if>
+
+  /** @override */
+  launchReleaseNotes() {
+    chrome.send('launchReleaseNotes');
+  }
+
+  /** @override */
+  openHelpPage() {
+    chrome.send('openHelpPage');
+  }
+
+  // <if expr="_google_chrome">
+  /** @override */
+  openFeedbackDialog() {
+    chrome.send('openFeedbackDialog');
+  }
+
+  // </if>
+
+  // <if expr="chromeos">
+  /** @override */
+  openDiagnostics() {
+    chrome.send('openDiagnostics');
+  }
+
+  /** @override */
+  openOsHelpPage() {
+    chrome.send('openOsHelpPage');
+  }
+
+  /** @override */
+  requestUpdate() {
+    chrome.send('requestUpdate');
+  }
+
+  /** @override */
+  requestUpdateOverCellular(target_version, target_size) {
+    chrome.send('requestUpdateOverCellular', [target_version, target_size]);
+  }
+
+  /** @override */
+  setChannel(channel, isPowerwashAllowed) {
+    chrome.send('setChannel', [channel, isPowerwashAllowed]);
+  }
+
+  /** @override */
+  getChannelInfo() {
+    return sendWithPromise('getChannelInfo');
+  }
+
+  /** @override */
+  canChangeChannel() {
+    return sendWithPromise('canChangeChannel');
+  }
+
+  /** @override */
+  getVersionInfo() {
+    return sendWithPromise('getVersionInfo');
+  }
+
+  /** @override */
+  getRegulatoryInfo() {
+    return sendWithPromise('getRegulatoryInfo');
+  }
+
+  /** @override */
+  getEndOfLifeInfo() {
+    return sendWithPromise('getEndOfLifeInfo');
+  }
+
+  /** @override */
+  checkInternetConnection() {
+    return sendWithPromise('checkInternetConnection');
+  }
+
+  /** @override */
+  refreshTPMFirmwareUpdateStatus() {
+    chrome.send('refreshTPMFirmwareUpdateStatus');
+  }
+  // </if>
+}
+
+addSingletonGetter(AboutPageBrowserProxyImpl);
