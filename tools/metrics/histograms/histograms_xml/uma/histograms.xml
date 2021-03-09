@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.LogUpload.ResponseOrErrorCode.HTTP"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-04-15">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-22">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
