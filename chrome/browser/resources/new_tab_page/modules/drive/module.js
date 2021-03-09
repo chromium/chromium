@@ -91,6 +91,16 @@ class DriveModuleElement extends mixinBehaviors
     this.shadowRoot.querySelectorAll('.file').forEach(
         el => this.intersectionObserver_.observe(el));
   }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onFileClick_(e) {
+    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+    const index = this.$.fileRepeat.indexForElement(e.target);
+    chrome.metricsPrivate.recordSmallCount('NewTabPage.Drive.FileClick', index);
+  }
 }
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);

@@ -47,7 +47,8 @@
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" on-dom-change="onDomChange_"
       items="[[files]]">
-    <a class="file" href="[[item.url.url]]">
+    <a class="file" href="[[item.url.url]]" on-click="onFileClick_"
+        on-auxclick="onFileClick_">
       <div class="file-icon-container">
         <img
             class="file-icon"
