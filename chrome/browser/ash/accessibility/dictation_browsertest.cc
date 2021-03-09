@@ -32,6 +32,8 @@ class DictationTest : public InProcessBrowserTest {
             .composition_text;
   }
   ~DictationTest() override = default;
+  DictationTest(const DictationTest&) = delete;
+  DictationTest& operator=(const DictationTest&) = delete;
 
   void SetUpOnMainThread() override {
     ui::IMEBridge::Get()->SetInputContextHandler(input_context_handler_.get());
@@ -50,6 +52,12 @@ class DictationTest : public InProcessBrowserTest {
     GetManager()->dictation_->OnTextInputStateChanged(client);
   }
 
+  void ToggleDictation() {
+    GetManager()->ToggleDictation();
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+
   ui::CompositionText GetLastCompositionText() {
     return input_context_handler_->last_update_composition_arg()
         .composition_text;
@@ -60,9 +68,7 @@ class DictationTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEnds) {
-  AccessibilityManager* manager = GetManager();
-
-  manager->ToggleDictation();
+  ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFirstSpeechResult, false /* is_final */);
@@ -81,11 +87,10 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEnds) {
 
 IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
-
   EnableChromeVox();
   EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
 
-  manager->ToggleDictation();
+  ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFirstSpeechResult, false /* is_final */);
@@ -100,17 +105,22 @@ IN_PROC_BROWSER_TEST_F(DictationTest, RecognitionEndsWithChromeVoxEnabled) {
             input_context_handler_->last_commit_text());
 }
 
-IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
-  AccessibilityManager* manager = GetManager();
+IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationBeforeSpeech) {
+  ToggleDictation();
+  ToggleDictation();
+  EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
+  EXPECT_EQ(0, input_context_handler_->commit_text_call_count());
+}
 
-  manager->ToggleDictation();
+IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictation) {
+  ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFinalSpeechResult, false /* is_final */);
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
             GetLastCompositionText().text);
 
-  manager->ToggleDictation();
+  ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
             input_context_handler_->last_commit_text());
@@ -122,13 +132,13 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   EnableChromeVox();
   EXPECT_TRUE(manager->IsSpokenFeedbackEnabled());
 
-  manager->ToggleDictation();
+  ToggleDictation();
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
   SendSpeechResult(kFinalSpeechResult, false /* is_final */);
   EXPECT_EQ(GetLastCompositionText().text, empty_composition_text_.text);
 
-  manager->ToggleDictation();
+  ToggleDictation();
   EXPECT_EQ(1, input_context_handler_->commit_text_call_count());
   EXPECT_EQ(base::ASCIIToUTF16(kFinalSpeechResult),
             input_context_handler_->last_commit_text());
@@ -136,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
 
 IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   // Turn on dictation and say something.
-  AccessibilityManager::Get()->ToggleDictation();
+  ToggleDictation();
   SendSpeechResult(kFirstSpeechResult, true /* is_final */);
 
   // Speech goes to the default IMEInputContextHandler.
@@ -149,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
   ui::IMEBridge::Get()->SetInputContextHandler(&input_context_handler2);
 
   // Turn on dictation and say something else.
-  AccessibilityManager::Get()->ToggleDictation();
+  ToggleDictation();
   SendSpeechResult(kSecondSpeechResult, true /* is_final */);
 
   // Speech goes to the new IMEInputContextHandler.
@@ -161,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(DictationTest, SwitchInputContext) {
 
 IN_PROC_BROWSER_TEST_F(DictationTest, ChangeInputField) {
   // Turn on dictation and start speaking.
-  AccessibilityManager::Get()->ToggleDictation();
+  ToggleDictation();
   SendSpeechResult(kFinalSpeechResult, false /* is_final */);
 
   // Change the input state to a new client.

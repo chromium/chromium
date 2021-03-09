@@ -14,11 +14,14 @@
 // Requires cleanup. See crbug.com/800374.
 enum SpeechRecognizerStatus {
   SPEECH_RECOGNIZER_OFF = 0,
+  // Ready for SpeechRecognizer::Start() to be called.
   SPEECH_RECOGNIZER_READY,
+  // Beginning to listen for speech, but have not received any yet.
   SPEECH_RECOGNIZER_RECOGNIZING,
+  // Sounds are being recognized.
   SPEECH_RECOGNIZER_IN_SPEECH,
-  SPEECH_RECOGNIZER_STOPPING,
-  SPEECH_RECOGNIZER_NETWORK_ERROR,
+  // There was an error.
+  SPEECH_RECOGNIZER_ERROR,
 };
 
 // Delegate for speech recognizer. All methods are called from the thread on
