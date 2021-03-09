@@ -846,7 +846,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2021-07-04">
+    enum="FeedLoadStreamStatus" expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -880,7 +880,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2021-07-04">
+    enum="FeedLoadStreamStatus" expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -962,7 +962,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-07-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-09-05">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -982,7 +982,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2021-07-04">
+    enum="GoogleServiceAuthError" expires_after="2021-09-05">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1197,7 +1197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.TimeSpentInFeed" units="ms"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1267,7 +1267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1313,7 +1313,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.Failure"
-    enum="Boolean" expires_after="2021-07-04">
+    enum="Boolean" expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1324,7 +1324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration"
-    units="ms" expires_after="2021-07-04">
+    units="ms" expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1360,7 +1360,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisitDuration" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>harringtond@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>

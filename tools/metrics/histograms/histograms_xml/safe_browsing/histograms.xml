@@ -87,7 +87,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome"
-    enum="ApkDownloadTelemetryOutcome" expires_after="2021-07-01">
+    enum="ApkDownloadTelemetryOutcome" expires_after="2021-09-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1324,7 +1324,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.Event"
-    enum="SuspiciousSiteTriggerEvent" expires_after="2021-07-01">
+    enum="SuspiciousSiteTriggerEvent" expires_after="2021-09-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1334,7 +1334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason"
-    enum="TriggerManagerReason" expires_after="2021-07-01">
+    enum="TriggerManagerReason" expires_after="2021-09-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1494,7 +1494,7 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"
-    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2021-07-01">
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2021-09-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1530,7 +1530,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
-    units="entries" expires_after="2021-07-04">
+    units="entries" expires_after="2021-09-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1583,7 +1583,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessPartialUpdate.RemovalsHashesCount"
-    units="entries" expires_after="2021-07-04">
+    units="entries" expires_after="2021-09-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

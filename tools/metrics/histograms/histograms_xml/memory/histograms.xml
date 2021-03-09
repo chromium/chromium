@@ -1665,7 +1665,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Contents.MemAllocatedMB" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>
@@ -1676,7 +1676,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Contents.MemAvailableMB" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>
@@ -1689,7 +1689,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Contents.MemGraphicsMB" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>
@@ -1710,7 +1710,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Extensions.MemAllocatedMB" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>
@@ -1734,7 +1734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Extensions.MemGraphicsMB" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>

@@ -1317,7 +1317,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.iOS.InfoBar.PasswordUpdate" enum="Boolean"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>djean@chromium.org</owner>
   <owner>sczs@google.com</owner>
   <summary>
@@ -2023,7 +2023,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.SaveUIDismissalReasonAfterUnblacklisting"
-    enum="PasswordManagerUIDismissalReason" expires_after="2021-06-20">
+    enum="PasswordManagerUIDismissalReason" expires_after="2021-09-05">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2339,7 +2339,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.WellKnownChangePassword.GstaticFetchErrorCode"
-    enum="NetErrorCodes" expires_after="2021-07-04">
+    enum="NetErrorCodes" expires_after="2021-09-05">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2349,7 +2349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PasswordManager.WellKnownChangePassword.GstaticFetchHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2021-07-04">
+    enum="HttpResponseCode" expires_after="2021-09-05">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

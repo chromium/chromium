@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.DownloadDangerPrompt"
-    enum="SBClientDownloadExtensions" expires_after="2021-07-04">
+    enum="SBClientDownloadExtensions" expires_after="2021-09-05">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -415,7 +415,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Download.Later.UI.DialogChoice"
-    enum="DownloadLaterDialogChoice" expires_after="2021-07-01">
+    enum="DownloadLaterDialogChoice" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="DownloadDialogSource" -->
 
   <owner>xingliu@chromium.org</owner>
@@ -428,7 +428,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Later.UI.Events" enum="DownloadLaterUiEvent"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -819,7 +819,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.Service.Files.FreeDiskSpace" units="%"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>xingliu@chromium.org</owner>
   <summary>
     The percentage of free disk space to total disk space. Recorded during

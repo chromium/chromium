@@ -386,7 +386,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.FailureReason"
-    enum="ChromeStartupDelegateFailureType" expires_after="2021-07-01">
+    enum="ChromeStartupDelegateFailureType" expires_after="2021-09-05">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -396,7 +396,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.ChromeStartupDelegate.Result"
-    enum="ChromeStartupDelegateResult" expires_after="2021-07-01">
+    enum="ChromeStartupDelegateResult" expires_after="2021-09-05">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1593,7 +1593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.Omnibox.InvalidMatch" enum="MatchResult"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>ender@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>

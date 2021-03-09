@@ -724,7 +724,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderAdded"
-    enum="WebRequest.ResponseHeader" expires_after="2021-07-01">
+    enum="WebRequest.ResponseHeader" expires_after="2021-09-05">
   <owner>karandeepb@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
@@ -1544,7 +1544,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache"
-    enum="BooleanCacheHit" expires_after="2021-07-04">
+    enum="BooleanCacheHit" expires_after="2021-09-05">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>snijhara@google.com</owner>

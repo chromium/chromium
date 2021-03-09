@@ -1336,7 +1336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.NTP.Chip.SearchClicked" units="index"
-    expires_after="2021-06-20">
+    expires_after="2021-09-05">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

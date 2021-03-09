@@ -625,7 +625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>lucmult@chromium.org</owner>
   <owner>majewski@chromium.org</owner>
   <summary>Chrome OS File Browser: the source of file sharing action.</summary>

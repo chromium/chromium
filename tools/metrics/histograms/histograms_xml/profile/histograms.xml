@@ -84,7 +84,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Avatar" enum="ProfileAvatar"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>The frequency of selection of each avatar.</summary>
@@ -171,7 +171,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
@@ -364,7 +364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>rogerta@chromium.org</owner>
   <summary>
     Counts of users added and deleted. Percentages are not meaningful. Please

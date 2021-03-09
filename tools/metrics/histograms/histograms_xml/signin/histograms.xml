@@ -109,7 +109,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AccountTracker.GaiaIdMigrationState"
-    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2021-07-04">
+    enum="OAuth2LoginAccountRevokedMigrationState" expires_after="2021-09-05">
   <owner>msarda@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>
@@ -249,7 +249,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
-    units="accounts" expires_after="2021-07-04">
+    units="accounts" expires_after="2021-09-05">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -593,7 +593,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>fernandex@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>

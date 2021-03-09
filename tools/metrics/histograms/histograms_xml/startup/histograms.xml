@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Startup.AfterStartupTaskCount" units="units"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>michaeln@chromium.org</owner>
   <summary>
     The number of after-startup tasks that were queued prior to startup
@@ -577,7 +577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Startup.MobileSessionStartFromApps"
-    enum="MobileSessionCallerApp" expires_after="2021-07-04">
+    enum="MobileSessionCallerApp" expires_after="2021-09-05">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>The calling application (if any).</summary>

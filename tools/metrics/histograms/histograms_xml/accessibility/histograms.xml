@@ -659,7 +659,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -734,7 +734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled"
-    enum="BooleanEnabled" expires_after="2021-07-04">
+    enum="BooleanEnabled" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -772,7 +772,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.WebsiteBlocked"
-    enum="BooleanEnabled" expires_after="2021-07-04">
+    enum="BooleanEnabled" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>

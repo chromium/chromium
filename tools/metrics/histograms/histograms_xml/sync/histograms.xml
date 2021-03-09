@@ -645,7 +645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeOrphanMetadata"
-    enum="SyncModelTypes" expires_after="2021-07-04">
+    enum="SyncModelTypes" expires_after="2021-09-05">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

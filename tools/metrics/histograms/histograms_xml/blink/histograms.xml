@@ -541,7 +541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingCommit.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -607,7 +607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -688,7 +688,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPFileFormat" enum="WebPFileFormat"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>mcasas@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -722,7 +722,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.EffectiveZoom" units="%" expires_after="2021-07-04">
+<histogram name="Blink.EffectiveZoom" units="%" expires_after="2021-09-05">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -984,7 +984,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1140,7 +1140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.IncrementalDecodeNeeded"
-    enum="IncrementalDecodeNeeded" expires_after="2021-07-04">
+    enum="IncrementalDecodeNeeded" expires_after="2021-09-05">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
   <summary>
@@ -1260,7 +1260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.JavascriptDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1342,7 +1342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2010,7 +2010,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ScrollDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2057,7 +2057,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2533,7 +2533,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2573,7 +2573,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold"
-    enum="NQEEffectiveConnectionType" expires_after="2021-07-04">
+    enum="NQEEffectiveConnectionType" expires_after="2021-09-05">
   <owner>sclittle@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>

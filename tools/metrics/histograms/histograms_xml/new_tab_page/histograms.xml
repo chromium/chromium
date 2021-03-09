@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="NewTabPage.ActionAndroid2" enum="NewTabPageActionAndroid2"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>twellington@chromium.org</owner>
   <owner>finkm@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.ArticlesListVisible"
-    enum="BooleanVisible" expires_after="2021-07-01">
+    enum="BooleanVisible" expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -209,7 +209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.MenuOpened" units="index"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.MoreButtonClicked" units="index"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -461,7 +461,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.ShownAge" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1774,7 +1774,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.TimeSpent" units="ms" expires_after="2021-07-01">
+<histogram name="NewTabPage.TimeSpent" units="ms" expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1824,7 +1824,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.UserClassifier.AverageHoursToOpenNTP" units="hours"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1835,7 +1835,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.UserClassifier.AverageHoursToShowSuggestions"
-    units="hours" expires_after="2021-07-01">
+    units="hours" expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1847,7 +1847,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.UserClassifier.AverageHoursToUseSuggestions"
-    units="hours" expires_after="2021-07-01">
+    units="hours" expires_after="2021-09-05">
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

@@ -55,7 +55,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.BacklightLevelOnBattery" units="%"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The level of the backlight as a percentage when the user is on battery.
@@ -445,7 +445,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain" units="0.1 mAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -479,7 +479,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds.Exclusive" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -499,7 +499,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30SecondsAvg" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -514,7 +514,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30SecondsAvg.Exclusive"
-    units="uAh" expires_after="2021-07-03">
+    units="uAh" expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -530,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.Exclusive" units="0.1 mAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -578,7 +578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2021-07-03">
+    enum="RadioSignalLevel" expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>

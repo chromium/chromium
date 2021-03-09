@@ -752,7 +752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.ThirdParty.Origins.LocalStorageAccess2"
-    units="Count" expires_after="2021-07-04">
+    units="Count" expires_after="2021-09-05">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

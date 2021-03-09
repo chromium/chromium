@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Platform.AnyCrashesDaily" units="count per day"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -34,7 +34,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.AnyCrashesWeekly" units="count per week"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.BootMode.DevSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2021-07-01">
+    enum="Platform.BootMode.SwitchStatus" expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>dossym@chromium.org</owner>
   <summary>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.BootMode.FirmwareWriteProtect"
-    enum="Platform.BootMode.FirmwareWriteProtect" expires_after="2021-07-01">
+    enum="Platform.BootMode.FirmwareWriteProtect" expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>dossym@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.BootMode.WriteProtectSwitch"
-    enum="Platform.BootMode.SwitchStatus" expires_after="2021-07-01">
+    enum="Platform.BootMode.SwitchStatus" expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>dossym@chromium.org</owner>
   <summary>
@@ -135,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.CompressedSwapSize" units="MB"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.CpuFrequencyThermalScaling" units="%"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-performance@google.com</owner>
   <summary>
@@ -484,7 +484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesDaily" units="count per day"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -495,7 +495,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesPerActiveYear" units="count per year"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashesWeekly" units="count per week"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -540,7 +540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.KernelCrashInterval" units="seconds"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>grundler@chromium.org</owner>
   <owner>groeck@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>
@@ -551,7 +551,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.LogicalCpuCount" units="units"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-performance@google.com</owner>
   <summary>
@@ -952,7 +952,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapInLong" units="pages/second"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -977,7 +977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapOutLong" units="pages/second"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -986,7 +986,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.SwapOutShort" units="pages/second"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1188,7 +1188,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.TPM.FirmwareUpdate.Attempts" units="attempts"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1201,7 +1201,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.TPM.FirmwareUpdate.Result"
-    enum="TPMFirmwareUpdateResult" expires_after="2021-07-01">
+    enum="TPMFirmwareUpdateResult" expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Status of a complete TPM firmware update attempt.</summary>
@@ -1231,7 +1231,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -1390,7 +1390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.ZramCompressedSize" units="MB"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1400,7 +1400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.ZramCompressionRatioPercent" units="%"
-    expires_after="2021-07-02">
+    expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>
@@ -1498,7 +1498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PlatformThread.Mac.AttemptedRealtimePeriod"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
   <owner>olka@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <summary>
@@ -1508,7 +1508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PlatformThread.Mac.SucceededRealtimePeriod"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
   <owner>olka@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
   <summary>

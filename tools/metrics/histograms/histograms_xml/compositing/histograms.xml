@@ -556,7 +556,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Compositing.ResourcePoolMemoryUsage" units="MB"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>sunnyps@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -566,7 +566,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.AggregateUs"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
   <owner>weiliangc@chromium.org</owner>
   <summary>
     Time spent aggregating compositor frames from different surfaces in

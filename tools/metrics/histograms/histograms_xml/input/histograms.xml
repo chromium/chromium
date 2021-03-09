@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.Actions" enum="ImeHandwritingActions"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.Handwriting.CharsEdited10s" units="chars"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>shend@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -605,7 +605,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.CharactersPerSession"
-    units="units" expires_after="2021-07-06">
+    units="units" expires_after="2021-09-05">
   <owner>keithlee@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -684,7 +684,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.KeyboardContainerOnCommit"
-    enum="VirtualKeyboardContainerType" expires_after="2021-07-01">
+    enum="VirtualKeyboardContainerType" expires_after="2021-09-05">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -694,7 +694,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.Handwriting.KeyboardWidthOnCommit"
-    units="px" expires_after="2021-07-01">
+    units="px" expires_after="2021-09-05">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -792,7 +792,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.ResizableWindowWidth" units="px"
-    expires_after="2021-07-06">
+    expires_after="2021-09-05">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -803,7 +803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InputMethod.VirtualKeyboard.SessionDuration" units="units"
-    expires_after="2021-07-06">
+    expires_after="2021-09-05">
   <owner>keithlee@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The duration in seconds of a typing session.</summary>

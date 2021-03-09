@@ -574,7 +574,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Scheduler.BackgroundTask.Start" units="hours"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>xingliu@chromium.org</owner>
   <owner>hesen@chromium.org</owner>
   <summary>
@@ -584,7 +584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Scheduler.IconDb.InitResult"
-    enum="BooleanSuccess" expires_after="2021-07-01">
+    enum="BooleanSuccess" expires_after="2021-09-05">
   <owner>xingliu@chromium.org</owner>
   <owner>hesen@chromium.org</owner>
   <summary>
@@ -626,7 +626,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Scheduler.Impression.Count" units="records"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
   <owner>xingliu@chromium.org</owner>
@@ -678,7 +678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Scheduler.NotificationDb.InitResult"
-    enum="BooleanSuccess" expires_after="2021-07-01">
+    enum="BooleanSuccess" expires_after="2021-09-05">
   <owner>xingliu@chromium.org</owner>
   <owner>hesen@chromium.org</owner>
   <summary>
@@ -709,7 +709,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Notifications.Scheduler.NotificationLifeCycleEvent"
     enum="NotificationSchedulerNotificationLifeCycleEvent"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
   <owner>xingliu@chromium.org</owner>
@@ -745,7 +745,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Scheduler.UserAction"
-    enum="NotificationSchedulerUserActionType" expires_after="2021-07-01">
+    enum="NotificationSchedulerUserActionType" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="NotificationSchedulerClientType" -->
 
   <owner>xingliu@chromium.org</owner>

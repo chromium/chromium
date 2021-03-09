@@ -254,7 +254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>
