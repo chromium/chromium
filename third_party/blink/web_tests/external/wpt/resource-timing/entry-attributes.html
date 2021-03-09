@@ -46,18 +46,7 @@ function assert_positive(entry, attributes) {
   });
 }
 
-promise_test(async () => {
-  // Clean up entries from scripts includes.
-  performance.clearResourceTimings();
-  await load_image("resources/fake_responses.py#hash=1");
-  const entry_list = performance.getEntriesByType("resource");
-  if (entry_list.length != 1) {
-    throw new Error("There should be one entry for one resource");
-  }
-  const entry = entry_list[0];
-  assert_true(entry.name.includes('#hash=1'),
-    "There should be a hash in the resource name");
-
+function assert_http_resource(entry) {
   assert_ordered(entry, [
     "fetchStart",
     "domainLookupStart",
@@ -86,6 +75,21 @@ promise_test(async () => {
     "encodedBodySize",
     "decodedBodySize",
   ]);
+}
+
+promise_test(async () => {
+  // Clean up entries from scripts includes.
+  performance.clearResourceTimings();
+  await load_image("resources/fake_responses.py#hash=1");
+  const entry_list = performance.getEntriesByType("resource");
+  if (entry_list.length != 1) {
+    throw new Error("There should be one entry for one resource");
+  }
+  const entry = entry_list[0];
+  assert_true(entry.name.includes('#hash=1'),
+    "There should be a hash in the resource name");
+
+  assert_http_resource(entry);
 }, "URL fragments should be present in the 'name' attribute");
 
 </script>
