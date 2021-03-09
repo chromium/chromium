@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -382,11 +383,16 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
   autocorrect_manager_->OnSurroundingTextChanged(text, cursor_pos, anchor_pos);
   if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
+      std::vector<size_t> selection_indices = {anchor_pos, cursor_pos};
+      std::string utf8_text =
+          base::UTF16ToUTF8AndAdjustOffsets(text, &selection_indices);
+
       auto selection = ime::mojom::SelectionRange::New();
-      selection->anchor = anchor_pos;
-      selection->focus = cursor_pos;
+      selection->anchor = selection_indices[0];
+      selection->focus = selection_indices[1];
+
       remote_to_engine_->OnSurroundingTextChanged(
-          base::UTF16ToUTF8(text), offset_pos, std::move(selection));
+          std::move(utf8_text), offset_pos, std::move(selection));
     }
   } else {
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,

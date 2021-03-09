@@ -251,5 +251,46 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   InputMethodManager::Shutdown();
 }
 
+TEST_F(NativeInputMethodEngineTest,
+       SurroundingTextChangeConvertsToUtf8Correctly) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel));
+  ui::MockIMEInputContextHandler mock_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
+    EXPECT_CALL(mock_input_channel, OnFocus(::testing::_));
+    // Each character in "你好" is three UTF-8 code units.
+    EXPECT_CALL(mock_input_channel,
+                OnSurroundingTextChanged(u8"你好",
+                                         /*offset=*/0,
+                                         MojoEq(ime::mojom::SelectionRange(
+                                             /*anchor=*/6, /*focus=*/6))));
+  }
+
+  engine.Enable(kEngineIdUs);
+  engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true));
+  // Each character in "你好" is one UTF-16 code unit.
+  engine.SetSurroundingText(u"你好",
+                            /*cursor_pos=*/2,
+                            /*anchor_pos=*/2,
+                            /*offset=*/0);
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
 }  // namespace
 }  // namespace chromeos
