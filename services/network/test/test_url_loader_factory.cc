@@ -81,7 +81,8 @@ bool TestURLLoaderFactory::IsPending(const std::string& url,
     if (candidate.request.url == url) {
       if (request_out)
         *request_out = &candidate.request;
-      return candidate.client.is_connected();
+      if (candidate.client.is_connected())
+        return true;
     }
   }
   return false;

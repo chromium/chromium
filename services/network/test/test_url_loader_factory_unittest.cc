@@ -172,6 +172,17 @@ TEST_F(TestURLLoaderFactoryTest, IsPending) {
   EXPECT_TRUE(factory()->IsPending(url));
   client()->Unbind();
   EXPECT_FALSE(factory()->IsPending(url));
+
+  // Cleanup between tests.
+  client()->Unbind();
+  factory()->ClearResponses();
+
+  // Now with multiple requests
+  StartRequest(url);
+  client()->Unbind();
+  EXPECT_FALSE(factory()->IsPending(url));
+  StartRequest(url);
+  EXPECT_TRUE(factory()->IsPending(url));
 }
 
 TEST_F(TestURLLoaderFactoryTest, IsPendingLoadFlags) {
