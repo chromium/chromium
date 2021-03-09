@@ -960,7 +960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.ShowedDownloadWarning" enum="DownloadItem.DangerType"
-    expires_after="2021-08-22">
+    expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
@@ -968,6 +968,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     be shown on the shelf, e.g., if chrome://downloads is already open when the
     download completes, or if an extension is using the downloads API. Grouped
     by the type of danger.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
@@ -1009,12 +1011,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.UserValidatedDangerousDownload"
-    enum="DownloadItem.DangerType" expires_after="2021-08-22">
+    enum="DownloadItem.DangerType" expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-team@chromium.org</owner>
   <summary>
     User chose to save a download which was marked dangerous. Grouped by the
     type of danger.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 

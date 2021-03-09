@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2021-10-30">
+    enum="BooleanCompleted" expires_after="2022-03-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -137,6 +137,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     to process a response. If not, the URL loader will be deferred until the
     Safe Browsing check is completed. Logs each time the URL loader dispatches
     WillProcessResponse() and the Safe Browsing check doesn't block the URL.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
@@ -910,32 +912,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Enhanced" enum="BooleanEnabled"
-    expires_after="2021-08-09">
+    expires_after="2022-03-08">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the Safe Browsing enhanced protection service is currently enabled.
     Recorded for all non-Incognito profiles on profile startup.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.Extended" enum="BooleanEnabled"
-    expires_after="2021-08-09">
+    expires_after="2022-03-08">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the Safe Browsing extended reporting service is currently enabled.
     Recorded for all non-Incognito profiles on profile startup.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.General" enum="BooleanEnabled"
-    expires_after="2021-08-09">
+    expires_after="2022-03-08">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the Safe Browsing service is currently enabled. Recorded for all
     non-Incognito profiles on profile startup.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 

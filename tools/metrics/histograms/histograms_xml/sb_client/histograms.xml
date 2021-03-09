@@ -22,17 +22,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2021-08-15">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-03-08">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
-    Records a histogram of the reason why downloads are marked as being
-    malicious or clean by the improved SafeBrowsing binary download protection.
-    Note that UNSUPPORTED_URL_SCHEME was split out of the INVALID_URL bucket in
-    M41. The NOT_BINARY_FILE check was moved before the UNSUPPORTED_URL_SCHEME
-    check in M42. The WHITELISTED_URL check was moved to before NOT_BINARY_FILE
-    in M62.
+    Records the reason why downloads are marked as being malicious or clean by
+    the improved SafeBrowsing binary download protection. Note that
+    UNSUPPORTED_URL_SCHEME was split out of the INVALID_URL bucket in M41. The
+    NOT_BINARY_FILE check was moved before the UNSUPPORTED_URL_SCHEME check in
+    M42. The WHITELISTED_URL check was moved to before NOT_BINARY_FILE in M62.
+    This is logged after after download scanned by Safe Browsing.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
@@ -300,7 +302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.ClassificationStart" enum="BooleanHit"
-    expires_after="2021-07-18">
+    expires_after="2022-03-08">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -308,6 +310,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     number of top page navigations by users with SBClientPhishing enabled). The
     name is slightly misleading as it is recorded before
     &quot;Preclassification&quot; happens.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
@@ -437,13 +441,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2021-09-17">
+    enum="BooleanIsPhishing" expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records whether the local phishing detection model detects phishing. This
     histogram is logged each time the model is run (roughly on every navigation
     to a non-allowlisted site)
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
@@ -471,10 +477,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult"
-    enum="ClientSidePhishingResult" expires_after="2021-08-08">
+    enum="ClientSidePhishingResult" expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>The result enum received from the renderer-side classifier</summary>
+  <summary>
+    The result enum received from the renderer-side classifier. This is recorded
+    after every renderer classification (roughly every page load not on the
+    allowlist).
+
+    This metric is used to populate a dashboard on go/crsb-site.
+  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
@@ -535,13 +547,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2021-09-17">
+    enum="BooleanIsPhishing" expires_after="2022-03-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records whether the server-side phishing detection model detects phishing.
     This histogram is logged each time we contact Safe Browsing to evaluate
     whether a site is phishing.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 

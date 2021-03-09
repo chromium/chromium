@@ -40,6 +40,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
+
+    This metric is used to populate a dashboard on go/crsb-site.
   </summary>
 </histogram>
 
