@@ -2043,8 +2043,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputColor) {
   RunHtmlTest(FILE_PATH_LITERAL("input-color.html"));
 }
 
+// TODO(https://crbug.com/1186378): Flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputColorWithPopupOpen) {
+                       DISABLED_AccessibilityInputColorWithPopupOpen) {
   RunHtmlTest(FILE_PATH_LITERAL("input-color-with-popup-open.html"));
 }
 
