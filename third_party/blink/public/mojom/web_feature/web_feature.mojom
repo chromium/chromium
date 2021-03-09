@@ -1858,8 +1858,6 @@ enum WebFeature {
   kRTCDataChannelInitMaxRetransmitTime = 2478,
   kRTCPeerConnectionCreateDataChannelMaxPacketLifeTime = 2479,
   kV8SpeechGrammarList_AddFromUri_Method = 2480,
-  kV8SpeechRecognitionEvent_Interpretation_AttributeGetter = 2481,
-  kV8SpeechRecognitionEvent_Emma_AttributeGetter = 2482,
   kV8SpeechSynthesis_Speak_Method = 2483,
   kLegacySymantecCertMainFrameResource = 2484,
   kLegacySymantecCertInSubresource = 2485,

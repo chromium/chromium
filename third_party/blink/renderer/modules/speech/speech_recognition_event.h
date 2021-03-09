@@ -34,8 +34,6 @@
 
 namespace blink {
 
-class Document;
-
 class SpeechRecognitionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -57,11 +55,6 @@ class SpeechRecognitionEvent final : public Event {
 
   uint32_t resultIndex() const { return result_index_; }
   SpeechRecognitionResultList* results() const { return results_; }
-
-  // These two methods are here to satisfy the specification which requires
-  // these attributes to exist.
-  Document* interpretation() { return nullptr; }
-  Document* emma() { return nullptr; }
 
   // Event
   const AtomicString& InterfaceName() const override;
