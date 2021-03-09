@@ -41,7 +41,7 @@ void PasswordChangeHandler::HandleInitialize(const base::ListValue* value) {
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
     params.SetKey("userName", base::Value(user->GetDisplayEmail()));
-  CallJavascriptFunction("insession.password.change.loadAuthExtension", params);
+  CallJavascriptFunction("$(\'main-element\').loadAuthExtension", params);
 }
 
 void PasswordChangeHandler::HandleChangePassword(

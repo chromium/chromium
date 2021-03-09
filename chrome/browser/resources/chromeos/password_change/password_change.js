@@ -7,54 +7,56 @@
  * with cryptohome password.
  */
 
-cr.define('insession.password.change', function() {
-  'use strict';
-
-  let authExtHost;
-
-  /**
-   * Initialize the UI.
-   */
-  function initialize() {
-    const signinFrame = $('main-element').getSigninFrame();
-    authExtHost = new cr.samlPasswordChange.Authenticator(signinFrame);
-    authExtHost.addEventListener('authCompleted', onAuthCompleted_);
-    chrome.send('initialize');
-  }
-
-  function onAuthCompleted_(e) {
-    chrome.send(
-        'changePassword', [e.detail.old_passwords, e.detail.new_passwords]);
-  }
-
-  /**
-   * Loads auth extension.
-   * @param {Object} data Parameters for auth extension.
-   */
-  function loadAuthExtension(data) {
-    authExtHost.load(data);
-  }
-
-  return {
-    initialize: initialize,
-    loadAuthExtension: loadAuthExtension,
-  };
-});
-
-document.addEventListener(
-    'DOMContentLoaded', insession.password.change.initialize);
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://password-change/strings.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
 
 Polymer({
   is: 'password-change',
   behaviors: [I18nBehavior],
 
+  /**
+   * The UI component that hosts IdP pages.
+   * @type {!cr.samlPasswordChange.Authenticator|undefined}
+   */
+  authenticator_: undefined,
+
   /** @override */
-  attached() {
-    this.$.dialog.showModal();
+  ready() {
+    const signinFrame = this.getSigninFrame_();
+    this.authenticator_ = new cr.samlPasswordChange.Authenticator(signinFrame);
+    this.authenticator_.addEventListener(
+        'authCompleted', this.onAuthCompleted_);
+    chrome.send('initialize');
   },
 
-  getSigninFrame() {
-    return this.$['signin-frame'];
+  /**
+   * Loads auth extension.
+   * @param {Object} data Parameters for auth extension.
+   */
+  loadAuthExtension(data) {
+    this.authenticator_.load(data);
+  },
+
+  /**
+   * @return {!Element}
+   * @private
+   */
+  getSigninFrame_() {
+    // Note: Can't use |this.$|, since it returns cached references to elements
+    // originally present in DOM, while the signin-frame is dynamically
+    // recreated (see Authenticator.setWebviewPartition()).
+    const signinFrame = this.shadowRoot.getElementById('signinFrame');
+    assert(signinFrame);
+    return signinFrame;
+  },
+
+  /** @private */
+  onAuthCompleted_(e) {
+    chrome.send(
+        'changePassword', [e.detail.old_passwords, e.detail.new_passwords]);
   },
 
   /** @private */
