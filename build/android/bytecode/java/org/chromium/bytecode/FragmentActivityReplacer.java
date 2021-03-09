@@ -28,14 +28,25 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
     private static final String REQUIRE_ACTIVITY_METHOD_NAME = "requireActivity";
 
     public static void main(String[] args) throws IOException {
-        // Invoke this script using //build/android/gyp/bytecode_processor.py
-        if (args.length != 2) {
-            System.err.println("Expected 2 arguments: [input.jar] [output.jar]");
+        // Invoke this script using //build/android/gyp/bytecode_rewriter.py
+        if (!(args.length == 2 || args.length == 3 && args[0].equals("--single-androidx"))) {
+            System.err.println("Expected arguments: [--single-androidx] <input.jar> <output.jar>");
             System.exit(1);
         }
 
-        FragmentActivityReplacer rewriter = new FragmentActivityReplacer();
-        rewriter.rewrite(new File(args[0]), new File(args[1]));
+        if (args.length == 2) {
+            FragmentActivityReplacer rewriter = new FragmentActivityReplacer(false);
+            rewriter.rewrite(new File(args[0]), new File(args[1]));
+        } else {
+            FragmentActivityReplacer rewriter = new FragmentActivityReplacer(true);
+            rewriter.rewrite(new File(args[1]), new File(args[2]));
+        }
+    }
+
+    private final boolean mSingleAndroidX;
+
+    public FragmentActivityReplacer(boolean singleAndroidX) {
+        mSingleAndroidX = singleAndroidX;
     }
 
     @Override
@@ -45,7 +56,7 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
 
     @Override
     protected ClassVisitor getClassVisitorForClass(String classPath, ClassVisitor delegate) {
-        ClassVisitor invocationVisitor = new InvocationReplacer(delegate);
+        ClassVisitor invocationVisitor = new InvocationReplacer(delegate, mSingleAndroidX);
         switch (classPath) {
             case "androidx/fragment/app/Fragment.class":
                 return new FragmentClassVisitor(invocationVisitor);
@@ -61,8 +72,11 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
      * the replaced method.
      */
     private static class InvocationReplacer extends ClassVisitor {
-        private InvocationReplacer(ClassVisitor baseVisitor) {
+        private final boolean mSingleAndroidX;
+
+        private InvocationReplacer(ClassVisitor baseVisitor, boolean singleAndroidX) {
             super(Opcodes.ASM7, baseVisitor);
+            mSingleAndroidX = singleAndroidX;
         }
 
         @Override
@@ -80,6 +94,10 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                                     || name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME))) {
                         super.visitMethodInsn(
                                 opcode, owner, name, NEW_METHOD_DESCRIPTOR, isInterface);
+                        if (mSingleAndroidX) {
+                            super.visitTypeInsn(
+                                    Opcodes.CHECKCAST, "androidx/fragment/app/FragmentActivity");
+                        }
                     } else {
                         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
                     }
