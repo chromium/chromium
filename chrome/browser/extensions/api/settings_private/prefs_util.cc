@@ -824,7 +824,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetCrosSettingsPref(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::Value* value = CrosSettings::Get()->GetPref(name);
   if (!value) {
-    LOG(ERROR) << "Cros settings pref not found: " << name;
+    LOG(WARNING) << "Cros settings pref not found: " << name;
     return nullptr;
   }
   pref_object->key = name;
