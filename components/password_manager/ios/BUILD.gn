@@ -32,6 +32,7 @@ component("ios") {
     "js_password_manager.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
+    "password_generation_provider.h",
     "password_manager_client_bridge.h",
     "password_manager_driver_bridge.h",
     "password_manager_ios_util.h",

@@ -256,6 +256,12 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return _sharedPasswordController;
 }
 
+#pragma mark - PasswordGenerationProvider
+
+- (id<PasswordGenerationProvider>)generationProvider {
+  return _sharedPasswordController;
+}
+
 #pragma mark - IOSChromePasswordManagerClientBridge
 
 - (WebState*)webState {

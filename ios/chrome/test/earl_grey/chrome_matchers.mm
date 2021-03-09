@@ -687,4 +687,12 @@ id<GREYMatcher> ActivityViewHeader(NSString* page_title) {
   return [ChromeMatchersAppInterface activityViewHeaderWithTitle:page_title];
 }
 
+id<GREYMatcher> ManualFallbackSuggestPasswordMatcher() {
+  return [ChromeMatchersAppInterface manualFallbackSuggestPasswordMatcher];
+}
+
+id<GREYMatcher> UseSuggestedPasswordMatcher() {
+  return [ChromeMatchersAppInterface useSuggestedPasswordMatcher];
+}
+
 }  // namespace chrome_test_util
