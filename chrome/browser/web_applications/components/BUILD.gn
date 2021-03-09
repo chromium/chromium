@@ -146,6 +146,8 @@ source_set("components") {
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
+      "url_handler_launch_params.cc",
+      "url_handler_launch_params.h",
       "url_handler_manager_impl.cc",
       "url_handler_manager_impl.h",
       "url_handler_prefs.cc",
@@ -153,8 +155,10 @@ source_set("components") {
     ]
   }
 
-  public_deps =
-      [ "//components/services/app_service/public/cpp:app_share_target" ]
+  public_deps = [
+    "//components/services/app_service/public/cpp:app_share_target",
+    "//components/services/app_service/public/cpp:app_url_handling",
+  ]
 
   deps = [
     "//base",
@@ -168,7 +172,6 @@ source_set("components") {
     "//components/crx_file",
     "//components/keyed_service/content",
     "//components/pref_registry",
-    "//components/services/app_service/public/cpp:app_url_handling",
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/app_service/public/mojom",
     "//components/site_engagement/content",
@@ -194,10 +197,7 @@ source_set("components") {
   }
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-    deps += [
-      "//base/util/values:values_util",
-      "//components/services/app_service/public/cpp:app_url_handling",
-    ]
+    deps += [ "//base/util/values:values_util" ]
   }
 }
 

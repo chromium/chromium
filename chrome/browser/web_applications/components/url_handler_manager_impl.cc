@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -24,63 +23,42 @@
 namespace web_app {
 
 UrlHandlerManagerImpl::UrlHandlerManagerImpl(Profile* profile)
-    : UrlHandlerManager(profile),
-      association_manager_(std::make_unique<WebAppOriginAssociationManager>()) {
-}
+    : UrlHandlerManager(profile) {}
 
 UrlHandlerManagerImpl::~UrlHandlerManagerImpl() = default;
 
 // static
 std::vector<UrlHandlerLaunchParams> UrlHandlerManagerImpl::GetUrlHandlerMatches(
     const base::CommandLine& command_line) {
-  std::vector<UrlHandlerLaunchParams> results;
-
   if (!base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
-    return results;
+    return {};
 
   // Return early to not interfere with switch based app launches.
   if (command_line.HasSwitch(switches::kApp) ||
       command_line.HasSwitch(switches::kAppId)) {
-    return results;
+    return {};
   }
 
-  std::vector<GURL> urls;
-  for (const auto& arg : command_line.GetArgs()) {
-#if defined(OS_WIN)
-    GURL potential_url(base::WideToUTF16(arg));
-#else
-    GURL potential_url(arg);
-#endif
-    if (potential_url.is_valid() && potential_url.IsStandard())
-      urls.push_back(potential_url);
-  }
   // Only handle commandline with single URL. If multiple URLs are found, return
   // early so they can be handled normally. If the OS calls the system default
   // browser to handle a URL activation, this is usually with a single URL.
-  if (urls.empty() || urls.size() > 1)
-    return results;
+  if (command_line.GetArgs().size() != 1)
+    return {};
 
-  if (!urls.front().SchemeIs(url::kHttpsScheme))
-    return results;
+#if defined(OS_WIN)
+  GURL url(base::WideToUTF16(command_line.GetArgs()[0]));
+#else
+  GURL url(command_line.GetArgs()[0]);
+#endif
+
+  if (!url.is_valid() || !url.IsStandard() || !url.SchemeIs(url::kHttpsScheme))
+    return {};
 
   PrefService* local_state = g_browser_process->local_state();
   if (!local_state)
-    return results;
+    return {};
 
-  base::Optional<std::vector<url_handler_prefs::Match>> prefs_matches =
-      url_handler_prefs::FindMatchingUrlHandlers(local_state, urls.front());
-  if (!prefs_matches || prefs_matches->empty())
-    return results;
-
-  for (const auto& prefs_match : *prefs_matches) {
-    const auto& target_app_id = prefs_match.app_id;
-    const auto& target_profile_path = prefs_match.profile_path;
-    if (target_app_id.empty())
-      continue;
-
-    results.emplace_back(target_profile_path, target_app_id, urls.front());
-  }
-  return results;
+  return url_handler_prefs::FindMatchingUrlHandlers(local_state, url);
 }
 
 void UrlHandlerManagerImpl::RegisterUrlHandlers(
@@ -99,7 +77,7 @@ void UrlHandlerManagerImpl::RegisterUrlHandlers(
     return;
   }
 
-  association_manager_->GetWebAppOriginAssociations(
+  association_manager().GetWebAppOriginAssociations(
       registrar()->GetAppManifestUrl(app_id), std::move(url_handlers),
       base::BindOnce(&UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall,
                      weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -136,7 +114,7 @@ void UrlHandlerManagerImpl::UpdateUrlHandlers(
     return;
   }
 
-  association_manager_->GetWebAppOriginAssociations(
+  association_manager().GetWebAppOriginAssociations(
       registrar()->GetAppManifestUrl(app_id), std::move(url_handlers),
       base::BindOnce(&UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate,
                      weak_ptr_factory_.GetWeakPtr(), app_id,
@@ -152,11 +130,6 @@ void UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate(
   url_handler_prefs::UpdateWebApp(GetLocalState(), app_id, profile()->GetPath(),
                                   std::move(url_handlers));
   std::move(callback).Run(true);
-}
-
-void UrlHandlerManagerImpl::SetAssociationManagerForTesting(
-    std::unique_ptr<WebAppOriginAssociationManager> manager) {
-  association_manager_ = std::move(manager);
 }
 
 PrefService* UrlHandlerManagerImpl::GetLocalState() {

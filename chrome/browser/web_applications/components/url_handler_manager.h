@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 
 class Profile;
 
@@ -39,13 +42,20 @@ class UrlHandlerManager {
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback) = 0;
 
+  void SetAssociationManagerForTesting(
+      std::unique_ptr<WebAppOriginAssociationManager> manager);
+
  protected:
   Profile* profile() const { return profile_; }
   AppRegistrar* registrar() const { return registrar_; }
+  WebAppOriginAssociationManager& association_manager() {
+    return *association_manager_;
+  }
 
  private:
   Profile* const profile_;
   AppRegistrar* registrar_;
+  std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
 };
 
 }  // namespace web_app

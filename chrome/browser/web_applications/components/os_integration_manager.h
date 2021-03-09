@@ -134,6 +134,8 @@ class OsIntegrationManager {
   // Getter for testing FileHandlerManager
   FileHandlerManager& file_handler_manager_for_testing();
 
+  UrlHandlerManager& url_handler_manager_for_testing();
+
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
   virtual TestOsIntegrationManager* AsTestOsIntegrationManager();

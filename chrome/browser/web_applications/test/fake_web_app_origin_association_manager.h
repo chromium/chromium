@@ -18,7 +18,8 @@ class FakeWebAppOriginAssociationManager
   FakeWebAppOriginAssociationManager();
   ~FakeWebAppOriginAssociationManager() override;
 
-  // Sends back |url_handlers| as is.
+  // Sends back preset data.
+  // Sends back |url_handlers| as is if pass_through_ is set.
   void GetWebAppOriginAssociations(
       const GURL& manifest_url,
       apps::UrlHandlers url_handlers,
@@ -26,10 +27,13 @@ class FakeWebAppOriginAssociationManager
 
   void SetData(std::map<apps::UrlHandlerInfo, apps::UrlHandlerInfo> data);
 
+  void set_pass_through(bool value) { pass_through_ = value; }
+
  private:
   // Maps a url handler to the corresponding result to send back in the
   // callback.
   std::map<apps::UrlHandlerInfo, apps::UrlHandlerInfo> data_;
+  bool pass_through_ = false;
 };
 
 }  // namespace web_app

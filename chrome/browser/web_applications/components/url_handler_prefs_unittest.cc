@@ -64,20 +64,14 @@ class UrlHandlerPrefsTest : public ::testing::Test {
     return web_app;
   }
 
-  void CheckMatches(
-      const base::Optional<std::vector<url_handler_prefs::Match>>& matches,
-      const std::vector<WebApp*>& apps,
-      const std::vector<base::FilePath>& profile_paths) {
-    if (!matches) {
-      EXPECT_TRUE(apps.empty());
-      EXPECT_TRUE(profile_paths.empty());
-    }
+  void CheckMatches(const std::vector<UrlHandlerLaunchParams>& matches,
+                    const std::vector<WebApp*>& apps,
+                    const std::vector<base::FilePath>& profile_paths) {
+    EXPECT_TRUE(matches.size() == apps.size());
+    EXPECT_TRUE(matches.size() == profile_paths.size());
 
-    EXPECT_TRUE(matches->size() == apps.size());
-    EXPECT_TRUE(matches->size() == profile_paths.size());
-
-    for (size_t i = 0; i < matches->size(); i++) {
-      const url_handler_prefs::Match& match = (*matches)[i];
+    for (size_t i = 0; i < matches.size(); i++) {
+      const UrlHandlerLaunchParams& match = matches[i];
       EXPECT_EQ(match.app_id, apps[i]->app_id());
       EXPECT_EQ(match.profile_path, profile_paths[i]);
     }
@@ -101,15 +95,18 @@ TEST_F(UrlHandlerPrefsTest, AddAndRemoveApp) {
       WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(), profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(),
+                                    profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, AddAndRemoveAppWithPaths) {
@@ -118,15 +115,18 @@ TEST_F(UrlHandlerPrefsTest, AddAndRemoveAppWithPaths) {
   const auto web_app = WebAppWithUrlHandlers(app_url_1_, {handler});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(), profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(),
+                                    profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, AddAndRemoveAppWithMultipleUrlHandlers) {
@@ -135,22 +135,39 @@ TEST_F(UrlHandlerPrefsTest, AddAndRemoveAppWithMultipleUrlHandlers) {
                    apps::UrlHandlerInfo(origin_2_, false, {"/abc"}, {"/foo"})});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(),
+                                    profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(0u, matches.size());
+  }
+}
+
+TEST_F(UrlHandlerPrefsTest, MatchContainsInputUrl) {
+  const auto web_app =
+      WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
+  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                               web_app->url_handlers());
   auto matches =
       url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  url_handler_prefs::RemoveWebApp(LocalState(), web_app->app_id(), profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  EXPECT_EQ(1u, matches.size());
+  EXPECT_EQ(origin_url_1_, matches[0].url);
 }
 
 TEST_F(UrlHandlerPrefsTest, AddMultipleAppsAndRemoveOne) {
@@ -164,31 +181,34 @@ TEST_F(UrlHandlerPrefsTest, AddMultipleAppsAndRemoveOne) {
       {apps::UrlHandlerInfo(origin_1_), apps::UrlHandlerInfo(origin_2_)});
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
                                web_app_2->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
-               {profile_1_, profile_1_});
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
-               {profile_1_, profile_1_});
-
-  url_handler_prefs::RemoveWebApp(LocalState(), web_app_1->app_id(),
-                                  profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
+                 {profile_1_, profile_1_});
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
+                 {profile_1_, profile_1_});
+  }
+  {
+    url_handler_prefs::RemoveWebApp(LocalState(), web_app_1->app_id(),
+                                    profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, RemoveAppNotFound) {
@@ -196,42 +216,43 @@ TEST_F(UrlHandlerPrefsTest, RemoveAppNotFound) {
       WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
   url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
                                web_app_1->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_1.get()}, {profile_1_});
-
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_1.get()}, {profile_1_});
+  }
   const GURL not_added("https://not-added.com/");
   const auto web_app_2 =
       WebAppWithUrlHandlers(not_added, {apps::UrlHandlerInfo(origin_1_)});
   url_handler_prefs::RemoveWebApp(LocalState(), web_app_2->app_id(),
                                   profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_1.get()}, {profile_1_});
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_1.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, OneAppWithManyOrigins) {
   const auto web_app = WebAppWithUrlHandlers(
       app_url_1_,
       {apps::UrlHandlerInfo(origin_1_), apps::UrlHandlerInfo(origin_2_)});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               web_app->url_handlers());
-
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
+  {
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 web_app->url_handlers());
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, AddAppAgainWithDifferentHandlers) {
@@ -239,41 +260,42 @@ TEST_F(UrlHandlerPrefsTest, AddAppAgainWithDifferentHandlers) {
       app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/abc"}, {"/foo"})});
   url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_1_,
                                web_app_1->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_1.get()}, {profile_1_});
-
-  // Excluded, shouldn't match
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_1_.GetURL().Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_1.get()}, {profile_1_});
+  }
+  {
+    // Excluded, shouldn't match
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("foo"));
+    EXPECT_EQ(0u, matches.size());
+  }
 
   const auto web_app_2 = WebAppWithUrlHandlers(
       app_url_1_, {apps::UrlHandlerInfo(origin_1_, false, {"/foo"}, {"/abc"}),
                    apps::UrlHandlerInfo(origin_2_)});
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
                                web_app_2->url_handlers());
-
-  // Excluded, shouldn't match
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_1_.GetURL().Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
-
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  {
+    // Excluded, shouldn't match
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_1_.GetURL().Resolve("foo"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, DifferentAppsWithSameHandler) {
@@ -285,10 +307,9 @@ TEST_F(UrlHandlerPrefsTest, DifferentAppsWithSameHandler) {
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
                                web_app_2->url_handlers());
 
-  const auto matches =
+  auto matches =
       url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
+  EXPECT_EQ(2u, matches.size());
   CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
                {profile_1_, profile_1_});
 }
@@ -300,21 +321,21 @@ TEST_F(UrlHandlerPrefsTest, MultipleProfiles_Match) {
                                web_app_1->url_handlers());
   url_handler_prefs::AddWebApp(LocalState(), web_app_1->app_id(), profile_2_,
                                web_app_1->url_handlers());
-
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_1.get(), web_app_1.get()},
-               {profile_1_, profile_2_});
-
-  url_handler_prefs::RemoveWebApp(LocalState(), web_app_1->app_id(),
-                                  profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_1.get()}, {profile_2_});
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_1.get(), web_app_1.get()},
+                 {profile_1_, profile_2_});
+  }
+  {
+    url_handler_prefs::RemoveWebApp(LocalState(), web_app_1->app_id(),
+                                    profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_1.get()}, {profile_2_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, MultipleProfiles_RemoveProfile) {
@@ -328,19 +349,19 @@ TEST_F(UrlHandlerPrefsTest, MultipleProfiles_RemoveProfile) {
                                web_app_1->url_handlers());
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_2_,
                                web_app_2->url_handlers());
-
-  url_handler_prefs::RemoveProfile(LocalState(), profile_2_);
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_1.get()}, {profile_1_});
-
-  url_handler_prefs::RemoveProfile(LocalState(), profile_1_);
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    url_handler_prefs::RemoveProfile(LocalState(), profile_2_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_1.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::RemoveProfile(LocalState(), profile_1_);
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, ClearEntries) {
@@ -353,14 +374,16 @@ TEST_F(UrlHandlerPrefsTest, ClearEntries) {
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_2_,
                                web_app_2->url_handlers());
   url_handler_prefs::Clear(LocalState());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, SubdomainMatch) {
@@ -375,30 +398,30 @@ TEST_F(UrlHandlerPrefsTest, SubdomainMatch) {
       {apps::UrlHandlerInfo(origin_1_, /*has_origin_wildcard*/ true)});
   url_handler_prefs::AddWebApp(LocalState(), web_app_2->app_id(), profile_1_,
                                web_app_2->url_handlers());
-
-  // Both handlers should match a URL with an exact origin.
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
-               {profile_1_, profile_1_});
-
-  // Only the handler that has an origin with wildcard prefix should match a URL
-  // that has a longer origin.
-  GURL en_origin_url_1("https://en.origin-1.com/abc");
-  GURL www_en_origin_url_1("https://www.en.origin-1.com/abc");
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), en_origin_url_1);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
-
-  matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
-                                                       www_en_origin_url_1);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  {
+    // Both handlers should match a URL with an exact origin.
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_1.get(), web_app_2.get()},
+                 {profile_1_, profile_1_});
+  }
+  {
+    // Only the handler that has an origin with wildcard prefix should match a
+    // URL that has a longer origin.
+    GURL en_origin_url_1("https://en.origin-1.com/abc");
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
+                                                              en_origin_url_1);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
+  {
+    GURL www_en_origin_url_1("https://www.en.origin-1.com/abc");
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), www_en_origin_url_1);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app_2.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, SubdomainMatch_DifferentLevels) {
@@ -420,19 +443,20 @@ TEST_F(UrlHandlerPrefsTest, SubdomainMatch_DifferentLevels) {
                                web_app_2->url_handlers());
 
   // Both handlers should match a URL that has a longer origin.
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), en_origin_url_1);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_2.get(), web_app_1.get()},
-               {profile_1_, profile_1_});
-
-  matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
-                                                       www_en_origin_url_1);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(2u, matches->size());
-  CheckMatches(matches, {web_app_2.get(), web_app_1.get()},
-               {profile_1_, profile_1_});
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(LocalState(),
+                                                              en_origin_url_1);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_2.get(), web_app_1.get()},
+                 {profile_1_, profile_1_});
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), www_en_origin_url_1);
+    EXPECT_EQ(2u, matches.size());
+    CheckMatches(matches, {web_app_2.get(), web_app_1.get()},
+                 {profile_1_, profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, SubdomainMatch_WildcardAsSubdomain) {
@@ -446,20 +470,17 @@ TEST_F(UrlHandlerPrefsTest, SubdomainMatch_WildcardAsSubdomain) {
 
   auto matches = url_handler_prefs::FindMatchingUrlHandlers(
       LocalState(), GURL("https://example.com"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
+  EXPECT_EQ(1u, matches.size());
   CheckMatches(matches, {web_app.get()}, {profile_1_});
 
   matches = url_handler_prefs::FindMatchingUrlHandlers(
       LocalState(), GURL("https://foo.example.com"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
+  EXPECT_EQ(1u, matches.size());
   CheckMatches(matches, {web_app.get()}, {profile_1_});
 
   matches = url_handler_prefs::FindMatchingUrlHandlers(
       LocalState(), GURL("https://example.me"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  EXPECT_EQ(0u, matches.size());
 }
 
 TEST_F(UrlHandlerPrefsTest, MatchPaths) {
@@ -471,68 +492,72 @@ TEST_F(UrlHandlerPrefsTest, MatchPaths) {
 
   // Get origin url without paths
   GURL origin_url = origin_1_.GetURL();
-  // Exact match
-  auto matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  // "/path/to/" and "/path/to" are different
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar/"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-
-  // No match
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-
-  // Slash is required at the start of a path to match
-  handler = apps::UrlHandlerInfo(origin_1_, false, {"foo/bar"}, {});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               {handler});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-
-  // Test wildcard that matches everything
-  handler = apps::UrlHandlerInfo(origin_1_, false, {"*"}, {});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               {handler});
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar/baz"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  // Test wildcard with prefix
-  handler = apps::UrlHandlerInfo(origin_1_, false, {"/foo/*"}, {});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               {handler});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  // No match because "/foo" and "/foo/" are different
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    // Exact match
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // "/path/to/" and "/path/to" are different
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar/"));
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    // No match
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo"));
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    // Slash is required at the start of a path to match
+    handler = apps::UrlHandlerInfo(origin_1_, false, {"foo/bar"}, {});
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 {handler});
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar"));
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    // Test wildcard that matches everything
+    handler = apps::UrlHandlerInfo(origin_1_, false, {"*"}, {});
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 {handler});
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar/baz"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // Test wildcard with prefix
+    handler = apps::UrlHandlerInfo(origin_1_, false, {"/foo/*"}, {});
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 {handler});
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // No match because "/foo" and "/foo/" are different
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo"));
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, MatchPathsAndExcludePaths) {
@@ -541,59 +566,63 @@ TEST_F(UrlHandlerPrefsTest, MatchPathsAndExcludePaths) {
   const auto web_app = WebAppWithUrlHandlers(app_url_1_, {handler});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
-  // Get origin url without paths
+
   GURL origin_url = origin_1_.GetURL();
-  auto matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  // Only exclude paths
-  handler = apps::UrlHandlerInfo(origin_1_, false, {}, {"/foo/bar"});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               {handler});
-  // Exact match with the excluded path, not matching
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-  // Everything else matches
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  // Both paths and exclude paths exist
-  handler = apps::UrlHandlerInfo(origin_1_, false, {"/foo*"}, {"/foo/bar*"});
-  url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
-                               {handler});
-  // Match path and not exclude path
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  // Match exclude path
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("foo/bar/baz"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-  // Doesn't match path or exclude path
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url.Resolve("abc"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    // Get origin url without paths
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // Only exclude paths
+    handler = apps::UrlHandlerInfo(origin_1_, false, {}, {"/foo/bar"});
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 {handler});
+    // Exact match with the excluded path, not matching
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar"));
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    // Everything else matches
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // Both paths and exclude paths exist
+    handler = apps::UrlHandlerInfo(origin_1_, false, {"/foo*"}, {"/foo/bar*"});
+    url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                 {handler});
+    // Match path and not exclude path
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // Match exclude path
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("foo/bar/baz"));
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    // Doesn't match path or exclude path
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url.Resolve("abc"));
+    EXPECT_EQ(0u, matches.size());
+  }
 
   // Not matching if it matches an exclude path, even if it matches a path.
   handler = apps::UrlHandlerInfo(origin_1_, false, {"/foo*"}, {"*"});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                {handler});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
+  auto matches = url_handler_prefs::FindMatchingUrlHandlers(
       LocalState(), origin_url.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  EXPECT_EQ(0u, matches.size());
 }
 
 TEST_F(UrlHandlerPrefsTest, UpdateApp) {
@@ -601,23 +630,25 @@ TEST_F(UrlHandlerPrefsTest, UpdateApp) {
       WebAppWithUrlHandlers(app_url_1_, {apps::UrlHandlerInfo(origin_1_)});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
-  auto matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  url_handler_prefs::UpdateWebApp(LocalState(), web_app->app_id(), profile_1_,
-                                  {apps::UrlHandlerInfo(origin_2_)});
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
-  matches =
-      url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::UpdateWebApp(LocalState(), web_app->app_id(), profile_1_,
+                                    {apps::UrlHandlerInfo(origin_2_)});
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_1_);
+    EXPECT_EQ(0u, matches.size());
+  }
+  {
+    auto matches =
+        url_handler_prefs::FindMatchingUrlHandlers(LocalState(), origin_url_2_);
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
 }
 
 TEST_F(UrlHandlerPrefsTest, UpdateAppWithPaths) {
@@ -626,35 +657,39 @@ TEST_F(UrlHandlerPrefsTest, UpdateAppWithPaths) {
                    apps::UrlHandlerInfo(origin_2_, false, {"/c"}, {"/d"})});
   url_handler_prefs::AddWebApp(LocalState(), web_app->app_id(), profile_1_,
                                web_app->url_handlers());
-  auto matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url_1_.Resolve("a"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url_2_.Resolve("c"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-
-  url_handler_prefs::UpdateWebApp(
-      LocalState(), web_app->app_id(), profile_1_,
-      {apps::UrlHandlerInfo(origin_1_, false, {"/a"}, {"/b"}),
-       apps::UrlHandlerInfo(origin_2_, false, {"/foo"}, {"/bar"})});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url_1_.Resolve("a"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url_2_.Resolve("foo"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(1u, matches->size());
-  CheckMatches(matches, {web_app.get()}, {profile_1_});
-  // No longer match since it's removed
-  matches = url_handler_prefs::FindMatchingUrlHandlers(
-      LocalState(), origin_url_2_.Resolve("c"));
-  EXPECT_TRUE(matches.has_value());
-  EXPECT_EQ(0u, matches->size());
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url_1_.Resolve("a"));
+    EXPECT_EQ(1u, matches.size());
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url_2_.Resolve("c"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    url_handler_prefs::UpdateWebApp(
+        LocalState(), web_app->app_id(), profile_1_,
+        {apps::UrlHandlerInfo(origin_1_, false, {"/a"}, {"/b"}),
+         apps::UrlHandlerInfo(origin_2_, false, {"/foo"}, {"/bar"})});
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url_1_.Resolve("a"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url_2_.Resolve("foo"));
+    EXPECT_EQ(1u, matches.size());
+    CheckMatches(matches, {web_app.get()}, {profile_1_});
+  }
+  {
+    // No longer match since it's removed
+    auto matches = url_handler_prefs::FindMatchingUrlHandlers(
+        LocalState(), origin_url_2_.Resolve("c"));
+    EXPECT_EQ(0u, matches.size());
+  }
 }
 
 }  // namespace web_app

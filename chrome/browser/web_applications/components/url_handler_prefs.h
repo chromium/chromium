@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
@@ -69,14 +69,6 @@ namespace web_app {
 // }
 namespace url_handler_prefs {
 
-struct Match {
-  Match() = default;
-  Match(const AppId& app_id, const base::FilePath& profile_path);
-
-  AppId app_id;
-  base::FilePath profile_path;
-};
-
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 void AddWebApp(PrefService* local_state,
@@ -103,7 +95,7 @@ void Clear(PrefService* local_state);
 // |url| is a fully specified URL, eg. "https://contoso.com/abc/def".
 // TODO(crbug/1072058): Filter out inactive handlers when user permission is
 // implemented.
-base::Optional<std::vector<Match>> FindMatchingUrlHandlers(
+std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
     PrefService* local_state,
     const GURL& url);
 

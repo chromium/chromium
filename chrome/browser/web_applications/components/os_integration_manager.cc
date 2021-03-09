@@ -292,6 +292,11 @@ FileHandlerManager& OsIntegrationManager::file_handler_manager_for_testing() {
   return *file_handler_manager_;
 }
 
+UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
+  DCHECK(url_handler_manager_);
+  return *url_handler_manager_;
+}
+
 ScopedOsHooksSuppress OsIntegrationManager::ScopedSuppressOsHooksForTesting() {
 // Creating OS hooks on ChromeOS doesn't write files to disk, so it's
 // unnecessary to suppress and it provides better crash coverage.

@@ -22,10 +22,15 @@ void FakeWebAppOriginAssociationManager::GetWebAppOriginAssociations(
     apps::UrlHandlers url_handlers,
     OnDidGetWebAppOriginAssociations callback) {
   apps::UrlHandlers result;
-  for (const auto& url_handler : url_handlers) {
-    auto it = data_.find(url_handler);
-    if (it != data_.end())
-      result.push_back(it->second);
+
+  if (pass_through_) {
+    result = url_handlers;
+  } else {
+    for (const auto& url_handler : url_handlers) {
+      auto it = data_.find(url_handler);
+      if (it != data_.end())
+        result.push_back(it->second);
+    }
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

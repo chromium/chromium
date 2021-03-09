@@ -6,7 +6,9 @@
 
 #include <algorithm>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/util/values/values_util.h"
@@ -16,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 namespace url_handler_prefs {
@@ -77,18 +80,18 @@ bool UrlPathMatches(const std::string& url_path, const base::Value& paths) {
 }
 
 // Given a list of handlers that matched an origin, apply the rules in each
-// handler against |url| and return only handlers that match |url|.
+// handler against |url| and return only handlers that match |url| by appending
+// to |matches|.
 // |origin_trimmed| indicates if the input URL's origin had to be shortened to
 // find a matching key. If true, filter out and matches that did not allow an
 // origin prefix wildcard in their manifest.
-base::Optional<std::vector<Match>> FilterMatches(
-    const base::Value& all_handlers,
-    const GURL& url,
-    bool origin_trimmed) {
+void FilterAndAddMatches(const base::Value& all_handlers,
+                         const GURL& url,
+                         bool origin_trimmed,
+                         std::vector<UrlHandlerLaunchParams>& matches) {
   if (!all_handlers.is_list())
-    return base::nullopt;
+    return;
 
-  std::vector<Match> matches;
   for (auto& handler : all_handlers.GetList()) {
     if (!handler.is_dict())
       continue;
@@ -132,39 +135,35 @@ base::Optional<std::vector<Match>> FilterMatches(
     }
 
     if (path_matches)
-      matches.emplace_back(*app_id, *profile_path);
+      matches.emplace_back(*profile_path, *app_id, url);
   }
-  return matches;
 }
 
 // Returns the URL handlers stored in |pref_value| that match |url|'s origin.
-base::Optional<std::vector<Match>> FindMatches(const base::Value& pref_value,
-                                               const GURL& url) {
+std::vector<UrlHandlerLaunchParams> FindMatches(const base::Value& pref_value,
+                                                const GURL& url) {
+  std::vector<UrlHandlerLaunchParams> matches;
+
   if (!pref_value.is_dict())
-    return base::nullopt;
+    return matches;
 
   url::Origin origin = url::Origin::Create(url);
   if (origin.opaque())
-    return base::nullopt;
+    return matches;
 
-  if (origin.scheme() != "https")
-    return base::nullopt;
+  if (origin.scheme() != url::kHttpsScheme)
+    return matches;
 
   std::string origin_str = origin.Serialize();
   bool origin_trimmed(false);
-  std::vector<Match> matches;
-  for (;;) {
+
+  while (true) {
     const base::Value* const all_handlers = pref_value.FindListKey(origin_str);
     if (all_handlers) {
       DCHECK(UrlMatchesOrigin(url, origin_str, origin_trimmed));
-      base::Optional<std::vector<Match>> matches_local =
-          FilterMatches(*all_handlers, url, origin_trimmed);
-      if (matches_local) {
-        matches.insert(matches.end(),
-                       std::make_move_iterator(matches_local->begin()),
-                       std::make_move_iterator(matches_local->end()));
-      }
+      FilterAndAddMatches(*all_handlers, url, origin_trimmed, matches);
     }
+
     // If a key matching the input URL's origin is not found, shorten the origin
     // by sub-domain and try again. This enables matching against manifest
     // "url_handlers" origins that contain wildcard prefixes.
@@ -259,14 +258,6 @@ void RemoveEntries(base::Value& pref_value,
 }
 }  // namespace
 
-Match::Match(const AppId& app_id, const base::FilePath& profile_path)
-    : app_id(app_id), profile_path(profile_path) {
-  // Match should either be default constructed with both fields empty, or using
-  // this constructor with both fields non-empty.
-  DCHECK(!app_id.empty());
-  DCHECK(!profile_path.empty());
-}
-
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   DCHECK(registry);
   registry->RegisterDictionaryPref(prefs::kWebAppsUrlHandlerInfo);
@@ -360,16 +351,16 @@ void Clear(PrefService* local_state) {
   pref_value->DictClear();
 }
 
-base::Optional<std::vector<Match>> FindMatchingUrlHandlers(
+std::vector<UrlHandlerLaunchParams> FindMatchingUrlHandlers(
     PrefService* local_state,
     const GURL& url) {
   if (!url.is_valid())
-    return base::nullopt;
+    return {};
 
   const base::Value* const pref_value =
       local_state->Get(prefs::kWebAppsUrlHandlerInfo);
   if (!pref_value || !pref_value->is_dict())
-    return base::nullopt;
+    return {};
 
   return FindMatches(*pref_value, url);
 }
