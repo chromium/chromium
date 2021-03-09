@@ -85,7 +85,7 @@ extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableMachineCertRequest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
+extern const char kEnableOOBEChromeVoxHintTimerForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisablePerUserTimezone[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableRollbackOption[];
@@ -280,9 +280,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOobeUseTabletModeFirstRun();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsAueReachedForUpdateRequiredForTest();
 
-// Returns true if the OOBE ChromeVox hint timer is disabled for testing.
+// Returns true if the OOBE ChromeVox hint timer is enabled for testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsOOBEChromeVoxHintTimerDisabledForTesting();
+bool IsOOBEChromeVoxHintTimerEnabledForTesting();
 
 }  // namespace switches
 }  // namespace chromeos

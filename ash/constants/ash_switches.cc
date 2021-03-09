@@ -237,10 +237,10 @@ const char kDisableLoginAnimations[] = "disable-login-animations";
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 
-// Disables the ChromeVox hint timer in OOBE, which can lead to unexpected
-// behavior during tests.
-const char kDisableOOBEChromeVoxHintTimerForTesting[] =
-    "disable-oobe-chromevox-hint-timer-for-testing";
+// Enables the ChromeVox hint timer in OOBE for testing purposes. Can be used
+// to override the dev mode behavior, which disables this feature by default.
+const char kEnableOOBEChromeVoxHintTimerForTesting[] =
+    "enable-oobe-chromevox-hint-timer-for-testing";
 
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
@@ -694,9 +694,9 @@ bool IsAueReachedForUpdateRequiredForTest() {
       kUpdateRequiredAueForTest);
 }
 
-bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
+bool IsOOBEChromeVoxHintTimerEnabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kDisableOOBEChromeVoxHintTimerForTesting);
+      kEnableOOBEChromeVoxHintTimerForTesting);
 }
 
 }  // namespace switches

@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -557,8 +559,15 @@ void WelcomeScreen::NotifyLocaleChange() {
 }
 
 void WelcomeScreen::StartChromeVoxHintTimer() {
-  if (!features::IsOobeChromeVoxHintEnabled() ||
-      chromeos::switches::IsOOBEChromeVoxHintTimerDisabledForTesting()) {
+  if (!features::IsOobeChromeVoxHintEnabled())
+    return;
+
+  // This is done so that developers and testers don't repeatedly receive
+  // the hint when flashing. However, this still ensures that the timer gets
+  // activated for tests that need it.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSystemDevMode) &&
+      !chromeos::switches::IsOOBEChromeVoxHintTimerEnabledForTesting()) {
     return;
   }
 
