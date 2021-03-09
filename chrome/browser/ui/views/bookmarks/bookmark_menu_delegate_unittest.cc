@@ -68,8 +68,11 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_.reset(
-        new BookmarkMenuDelegate(browser(), nullptr, nullptr));
+    bookmark_menu_delegate_.reset(new BookmarkMenuDelegate(
+        browser(), base::BindRepeating([]() {
+          return static_cast<content::PageNavigator*>(nullptr);
+        }),
+        nullptr));
   }
 
   void NewAndInitDelegateForPermanent() {

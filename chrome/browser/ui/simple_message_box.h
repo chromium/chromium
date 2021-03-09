@@ -56,9 +56,15 @@ void ShowWarningMessageBoxWithCheckbox(
 
 // As above, but two buttons are displayed and the return value indicates which
 // is chosen.
-MessageBoxResult ShowQuestionMessageBox(gfx::NativeWindow parent,
-                                        const base::string16& title,
-                                        const base::string16& message);
+MessageBoxResult ShowQuestionMessageBoxSync(gfx::NativeWindow parent,
+                                            const base::string16& title,
+                                            const base::string16& message);
+
+void ShowQuestionMessageBox(
+    gfx::NativeWindow parent,
+    const base::string16& title,
+    const base::string16& message,
+    base::OnceCallback<void(MessageBoxResult)> callback);
 
 // Shows a dialog box with the given |title| and |message|, and with two buttons
 // labeled with |yes_text| and |no_text|. If |parent| is non-NULL, the box will

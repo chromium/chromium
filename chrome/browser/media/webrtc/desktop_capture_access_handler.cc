@@ -220,7 +220,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
               ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
               : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
           application_name);
-      chrome::MessageBoxResult result = chrome::ShowQuestionMessageBox(
+      chrome::MessageBoxResult result = chrome::ShowQuestionMessageBoxSync(
           parent_window,
           l10n_util::GetStringFUTF16(
               IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE, application_name),

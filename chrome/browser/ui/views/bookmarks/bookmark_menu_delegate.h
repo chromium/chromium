@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -58,9 +59,10 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
     HIDE_PERMANENT_FOLDERS
   };
 
-  BookmarkMenuDelegate(Browser* browser,
-                       content::PageNavigator* navigator,
-                       views::Widget* parent);
+  BookmarkMenuDelegate(
+      Browser* browser,
+      base::RepeatingCallback<content::PageNavigator*()> get_navigator,
+      views::Widget* parent);
   ~BookmarkMenuDelegate() override;
 
   // Creates the menus from the model.
@@ -70,9 +72,6 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
             size_t start_child_index,
             ShowOptions show_options,
             BookmarkLaunchLocation location);
-
-  // Sets the PageNavigator.
-  void SetPageNavigator(content::PageNavigator* navigator);
 
   // Returns the id given to the next menu.
   int next_menu_id() const { return next_menu_id_; }
@@ -188,7 +187,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   Browser* const browser_;
   Profile* profile_;
 
-  content::PageNavigator* page_navigator_;
+  base::RepeatingCallback<content::PageNavigator*()> get_navigator_;
 
   // Parent of menus.
   views::Widget* parent_;
