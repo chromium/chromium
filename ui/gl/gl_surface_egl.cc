@@ -1013,16 +1013,26 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
   g_egl_robust_resource_init_supported =
       HasEGLExtension("EGL_ANGLE_robust_resource_initialization");
 
-  // TODO(oetuaho@nvidia.com): Surfaceless is disabled on Android as a temporary
-  // workaround, since code written for Android WebView takes different paths
-  // based on whether GL surface objects have underlying EGL surface handles,
-  // conflicting with the use of surfaceless. See https://crbug.com/382349
-#if defined(OS_ANDROID)
-  DCHECK(!g_egl_surfaceless_context_supported);
-#else
   // Check if SurfacelessEGL is supported.
   g_egl_surfaceless_context_supported =
       HasEGLExtension("EGL_KHR_surfaceless_context");
+
+  // TODO(oetuaho@nvidia.com): Surfaceless is disabled on Android as a temporary
+  // workaround, since code written for Android WebView takes different paths
+  // based on whether GL surface objects have underlying EGL surface handles,
+  // conflicting with the use of surfaceless. ANGLE can still expose surfacelss
+  // because it is emulated with pbuffers if native support is not present. See
+  // https://crbug.com/382349.
+
+#if defined(OS_ANDROID)
+  // Use the WebGL compatibility extension for detecting ANGLE. ANGLE always
+  // exposes it.
+  bool is_angle = g_egl_create_context_webgl_compatability_supported;
+  if (!is_angle) {
+    g_egl_surfaceless_context_supported = false;
+  }
+#endif
+
   if (g_egl_surfaceless_context_supported) {
     // EGL_KHR_surfaceless_context is supported but ensure
     // GL_OES_surfaceless_context is also supported. We need a current context
@@ -1040,7 +1050,6 @@ bool GLSurfaceEGL::InitializeOneOffCommon() {
       context->ReleaseCurrent(surface.get());
     }
   }
-#endif
 
   // The native fence sync extension is a bit complicated. It's reported as
   // present for ChromeOS, but Android currently doesn't report this extension
