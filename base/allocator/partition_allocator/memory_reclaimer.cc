@@ -130,7 +130,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   // Lastly decommit empty slot spans and lastly try to discard unused pages at
   // the end of the remaining active slots.
   {
-    using PCScan = internal::PCScan<internal::ThreadSafe>;
+    using PCScan = internal::PCScan;
     const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
                                      ? PCScan::InvocationMode::kForcedBlocking
                                      : PCScan::InvocationMode::kBlocking;

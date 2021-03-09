@@ -25,7 +25,7 @@ class PCScanTest : public testing::Test {
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::RefCount::kDisabled});
-    PCScan<ThreadSafe>::Instance().RegisterScannableRoot(allocator_.root());
+    PCScan::Instance().RegisterScannableRoot(allocator_.root());
   }
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
@@ -34,14 +34,13 @@ class PCScanTest : public testing::Test {
   }
 
   void RunPCScan() {
-    PCScan<true>::Instance().PerformScan(
-        PCScan<ThreadSafe>::InvocationMode::kBlocking);
+    PCScan::Instance().PerformScan(PCScan::InvocationMode::kBlocking);
   }
 
   bool IsInQuarantine(void* ptr) const {
     return QuarantineBitmapFromPointer(
                QuarantineBitmapType::kMutator,
-               PCScan<true>::Instance().quarantine_data_.epoch(), ptr)
+               PCScan::Instance().quarantine_data_.epoch(), ptr)
         ->CheckBit(reinterpret_cast<uintptr_t>(ptr));
   }
 
@@ -322,8 +321,8 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
                                       PartitionOptions::Quarantine::kAllowed,
                                       PartitionOptions::RefCount::kDisabled});
 
-  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
-  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);
+  PCScan::Instance().RegisterScannableRoot(&source_root);
+  PCScan::Instance().RegisterScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -345,8 +344,8 @@ TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
                                       PartitionOptions::Quarantine::kAllowed,
                                       PartitionOptions::RefCount::kDisabled});
 
-  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&source_root);
-  PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&value_root);
+  PCScan::Instance().RegisterScannableRoot(&source_root);
+  PCScan::Instance().RegisterNonScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -370,8 +369,8 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
        base::PartitionOptions::Quarantine::kAllowed,
        PartitionOptions::RefCount::kDisabled});
 
-  PCScan<ThreadSafe>::Instance().RegisterNonScannableRoot(&source_root);
-  PCScan<ThreadSafe>::Instance().RegisterScannableRoot(&value_root);
+  PCScan::Instance().RegisterNonScannableRoot(&source_root);
+  PCScan::Instance().RegisterScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);

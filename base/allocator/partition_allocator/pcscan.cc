@@ -172,12 +172,10 @@ void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
           << ", survival rate: " << static_cast<double>(new_size) / last_size;
 }
 
-template <bool thread_safe>
-ALWAYS_INLINE uintptr_t
-GetObjectStartInSuperPage(uintptr_t maybe_ptr,
-                          const PartitionRoot<thread_safe>& root) {
+ALWAYS_INLINE uintptr_t GetObjectStartInSuperPage(uintptr_t maybe_ptr,
+                                                  const PCScan::Root& root) {
   char* allocation_start =
-      GetSlotStartInSuperPage<thread_safe>(reinterpret_cast<char*>(maybe_ptr));
+      GetSlotStartInSuperPage<ThreadSafe>(reinterpret_cast<char*>(maybe_ptr));
   if (!allocation_start) {
     // |maybe_ptr| refers to a garbage or is outside of the payload region.
     return 0;
@@ -342,7 +340,7 @@ class StatsCollector final {
 // Internal singleton that keeps cold data.
 class PCScanInternal final {
  public:
-  using Root = PartitionRoot<ThreadSafe>;
+  using Root = PCScan::Root;
 
   static constexpr size_t kMaxNumberOfRoots = 8u;
   class Roots final : private std::array<Root*, kMaxNumberOfRoots> {
@@ -431,7 +429,7 @@ PCScanInternal::PCScanInternal() {
 #endif
 }
 
-void CommitQuarantineBitmaps(PartitionRoot<ThreadSafe>& root) {
+void CommitQuarantineBitmaps(PCScan::Root& root) {
   size_t quarantine_bitmaps_size_to_commit = CommittedQuarantineBitmapsSize();
   for (auto* super_page_extent = root.first_extent; super_page_extent;
        super_page_extent = super_page_extent->next) {
@@ -493,8 +491,7 @@ void PCScanInternal::ClearRootsForTesting() {
 }  // namespace
 
 // This class is responsible for performing the entire PCScan task.
-template <bool thread_safe>
-class PCScan<thread_safe>::PCScanTask final {
+class PCScan::PCScanTask final {
  public:
   static void* operator new(size_t size) {
     return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
@@ -507,9 +504,8 @@ class PCScan<thread_safe>::PCScanTask final {
   // Creates and initializes a PCScan state.
   explicit PCScanTask(PCScan& pcscan);
 
-  // Only allow moving to make sure that the state is not redundantly copied.
-  PCScanTask(PCScanTask&&) noexcept = default;
-  PCScanTask& operator=(PCScanTask&&) noexcept = default;
+  PCScanTask(PCScanTask&&) noexcept = delete;
+  PCScanTask& operator=(PCScanTask&&) noexcept = delete;
 
   // Execute PCScan. Must be executed only once.
   void RunOnce() &&;
@@ -517,7 +513,7 @@ class PCScan<thread_safe>::PCScanTask final {
  private:
   class ScanLoop;
 
-  using SlotSpan = SlotSpanMetadata<thread_safe>;
+  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
   struct ScanArea {
     ScanArea(uintptr_t* begin, uintptr_t* end) : begin(begin), end(end) {}
@@ -591,7 +587,7 @@ class PCScan<thread_safe>::PCScanTask final {
   // objects.
   size_t SweepQuarantine();
 
-  PCScan<thread_safe>& pcscan_;
+  PCScan& pcscan_;
   // Cache the pcscan epoch to avoid the compiler loading the atomic
   // QuarantineData::epoch_ on each access.
   const size_t pcscan_epoch_;
@@ -603,11 +599,9 @@ class PCScan<thread_safe>::PCScanTask final {
   StatsCollector stats_;
 };
 
-template <bool thread_safe>
 template <typename LookupPolicy>
 ALWAYS_INLINE QuarantineBitmap*
-PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
-    uintptr_t maybe_ptr) const {
+PCScan::PCScanTask::TryFindScannerBitmapForPointer(uintptr_t maybe_ptr) const {
   // First, check if |maybe_ptr| points to a valid super page or a quarantined
   // card.
   LookupPolicy lookup{*this};
@@ -633,11 +627,9 @@ PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
 // TryMarkObjectInNormalBucketPool() marks it again in the bitmap and clears
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
-template <bool thread_safe>
 template <typename LookupPolicy>
 ALWAYS_INLINE size_t
-PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
-    uintptr_t maybe_ptr) const {
+PCScan::PCScanTask::TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const {
   using AccessType = QuarantineBitmap::AccessType;
   // Check if maybe_ptr points somewhere to the heap.
   auto* scanner_bitmap =
@@ -649,16 +641,15 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
       Root::FromPointerInNormalBucketPool(reinterpret_cast<char*>(maybe_ptr));
 
   // Check if pointer was in the quarantine bitmap.
-  const uintptr_t base =
-      GetObjectStartInSuperPage<thread_safe>(maybe_ptr, *root);
+  const uintptr_t base = GetObjectStartInSuperPage(maybe_ptr, *root);
   if (!base || !scanner_bitmap->template CheckBit<AccessType::kNonAtomic>(base))
     return 0;
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
 
-  auto target_slot_span =
+  auto* target_slot_span =
       SlotSpan::FromSlotInnerPtr(reinterpret_cast<void*>(base));
-  PA_DCHECK(root == PartitionRoot<thread_safe>::FromSlotSpan(target_slot_span));
+  PA_DCHECK(root == Root::FromSlotSpan(target_slot_span));
 
   const size_t usable_size = target_slot_span->GetUsableSize(root);
   // Range check for inner pointers.
@@ -676,9 +667,7 @@ PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
   return target_slot_span->bucket->slot_size;
 }
 
-template <bool thread_safe>
-void PCScan<
-    thread_safe>::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
+void PCScan::PCScanTask::ClearQuarantinedObjectsAndFilterSuperPages() {
   using AccessType = QuarantineBitmap::AccessType;
 
   StatsCollector::ScannerScope clear_scope(stats_,
@@ -722,8 +711,7 @@ void PCScan<
 
 // Class used to perform actual scanning. Dispatches at runtime based on
 // supported SIMD extensions.
-template <bool thread_safe>
-class PCScan<thread_safe>::PCScanTask::ScanLoop final {
+class PCScan::PCScanTask::ScanLoop final {
  public:
   explicit ScanLoop(const PCScanTask& pcscan_task)
       : scan_function_(GetScanFunction()),
@@ -917,8 +905,7 @@ class PCScan<thread_safe>::PCScanTask::ScanLoop final {
 #endif
 };
 
-template <bool thread_safe>
-size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
+size_t PCScan::PCScanTask::ScanPartitions() {
   StatsCollector::ScannerScope scan_scope(stats_,
                                           StatsCollector::ScannerId::kScan);
 
@@ -956,8 +943,7 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
   return new_quarantine_size;
 }
 
-template <bool thread_safe>
-size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
+size_t PCScan::PCScanTask::SweepQuarantine() {
   using AccessType = QuarantineBitmap::AccessType;
 
   StatsCollector::ScannerScope sweep_scope(stats_,
@@ -996,8 +982,7 @@ size_t PCScan<thread_safe>::PCScanTask::SweepQuarantine() {
   return swept_bytes;
 }
 
-template <bool thread_safe>
-PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
+PCScan::PCScanTask::PCScanTask(PCScan& pcscan)
     : pcscan_(pcscan),
       pcscan_epoch_(pcscan.quarantine_data_.epoch()),
       stats_(PCScanInternal::Instance().process_name()) {
@@ -1022,28 +1007,27 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
            super_page != super_page_extent->super_pages_end;
            super_page += kSuperPageSize) {
         // TODO(bikineev): Consider following freelists instead of slot spans.
-        const size_t visited_slot_spans =
-            IterateSlotSpans<thread_safe>(
-                super_page, true /*with_quarantine*/,
-                [this](SlotSpan* slot_span) -> bool {
-                  if (slot_span->is_empty() || slot_span->is_decommitted()) {
-                    return false;
-                  }
-                  auto* payload_begin = static_cast<uintptr_t*>(
-                      SlotSpan::ToSlotSpanStartPtr(slot_span));
-                  size_t provisioned_size = slot_span->GetProvisionedSize();
-                  // Free & decommitted slot spans are skipped.
-                  PA_DCHECK(provisioned_size > 0);
-                  auto* payload_end =
-                      payload_begin + (provisioned_size / sizeof(uintptr_t));
-                  if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
-                    large_scan_areas_.push_back({payload_begin, payload_end,
-                                                 slot_span->bucket->slot_size});
-                  } else {
-                    scan_areas_.push_back({payload_begin, payload_end});
-                  }
-                  return true;
-                });
+        const size_t visited_slot_spans = IterateSlotSpans<ThreadSafe>(
+            super_page, true /*with_quarantine*/,
+            [this](SlotSpan* slot_span) -> bool {
+              if (slot_span->is_empty() || slot_span->is_decommitted()) {
+                return false;
+              }
+              auto* payload_begin = static_cast<uintptr_t*>(
+                  SlotSpan::ToSlotSpanStartPtr(slot_span));
+              size_t provisioned_size = slot_span->GetProvisionedSize();
+              // Free & decommitted slot spans are skipped.
+              PA_DCHECK(provisioned_size > 0);
+              auto* payload_end =
+                  payload_begin + (provisioned_size / sizeof(uintptr_t));
+              if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
+                large_scan_areas_.push_back(
+                    {payload_begin, payload_end, slot_span->bucket->slot_size});
+              } else {
+                scan_areas_.push_back({payload_begin, payload_end});
+              }
+              return true;
+            });
         // If we haven't visited any slot spans, all the slot spans in the
         // super-page are either empty or decommitted. This means that all the
         // objects are freed and there are no quarantined objects.
@@ -1071,8 +1055,7 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan)
   }
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::PCScanTask::RunOnce() && {
+void PCScan::PCScanTask::RunOnce() && {
   size_t new_quarantine_size = 0;
   size_t swept_bytes = 0;
 
@@ -1103,8 +1086,7 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   PA_CHECK(pcscan_.in_progress_.exchange(false, std::memory_order_acq_rel));
 }
 
-template <bool thread_safe>
-class PCScan<thread_safe>::PCScanThread final {
+class PCScan::PCScanThread final {
  public:
   using TaskHandle = std::unique_ptr<PCScanTask>;
 
@@ -1153,17 +1135,14 @@ class PCScan<thread_safe>::PCScanThread final {
   TaskHandle posted_task_;
 };
 
-template <bool thread_safe>
-constexpr size_t PCScan<thread_safe>::QuarantineData::kQuarantineSizeMinLimit;
+constexpr size_t PCScan::QuarantineData::kQuarantineSizeMinLimit;
 
-template <bool thread_safe>
-void PCScan<thread_safe>::QuarantineData::ResetAndAdvanceEpoch() {
+void PCScan::QuarantineData::ResetAndAdvanceEpoch() {
   last_size_ = current_size_.exchange(0, std::memory_order_relaxed);
   epoch_.fetch_add(1, std::memory_order_relaxed);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
+void PCScan::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
   static constexpr double kQuarantineSizeFraction = 0.1;
   // |heap_size| includes the current quarantine size, we intentionally leave
   // some slack till hitting the limit.
@@ -1173,8 +1152,7 @@ void PCScan<thread_safe>::QuarantineData::GrowLimitIfNeeded(size_t heap_size) {
       std::memory_order_relaxed);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
+void PCScan::PerformScan(InvocationMode invocation_mode) {
 #if DCHECK_IS_ON()
   const auto& internal = PCScanInternal::Instance();
   const auto& scannable_roots = internal.scannable_roots();
@@ -1207,8 +1185,7 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   }
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
+void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
   if (!PCScanInternal::Instance().scannable_roots().size())
     return;
   if (invocation_mode == InvocationMode::kForcedBlocking ||
@@ -1216,69 +1193,23 @@ void PCScan<thread_safe>::PerformScanIfNeeded(InvocationMode invocation_mode) {
     PerformScan(invocation_mode);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::RegisterScannableRoot(Root* root) {
+void PCScan::RegisterScannableRoot(Root* root) {
   PCScanInternal::Instance().RegisterScannableRoot(root);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::RegisterNonScannableRoot(Root* root) {
+void PCScan::RegisterNonScannableRoot(Root* root) {
   PCScanInternal::Instance().RegisterNonScannableRoot(root);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::SetProcessName(const char* process_name) {
+void PCScan::SetProcessName(const char* process_name) {
   PCScanInternal::Instance().SetProcessName(process_name);
 }
 
-template <bool thread_safe>
-void PCScan<thread_safe>::ClearRootsForTesting() {
+void PCScan::ClearRootsForTesting() {
   PCScanInternal::Instance().ClearRootsForTesting();  // IN-TEST
 }
 
-// TODO(bikineev): Untemplatize the main PCScan class when chromium clang plugin
-// is fixed. To reduce the number of internal templates, explicitly specialize
-// all non-thread safe function members to immediately crash.
-
-// These not-thread-safe classes are never instantiated so just explicitly
-// specialize them to be incomplete.
-template <>
-class PCScan<NotThreadSafe>::PCScanTask;
-template <>
-class PCScan<NotThreadSafe>::PCScanThread;
-
-// These not-thread-safe functions are still instantiated, so make sure they are
-// never called.
-template <>
-void PCScan<NotThreadSafe>::PerformScan(InvocationMode) {
-  PA_CHECK(false);
-}
-template <>
-void PCScan<NotThreadSafe>::PerformScanIfNeeded(InvocationMode) {
-  PA_CHECK(false);
-}
-template <>
-void PCScan<NotThreadSafe>::RegisterScannableRoot(Root*) {
-  PA_CHECK(false);
-}
-template <>
-void PCScan<NotThreadSafe>::RegisterNonScannableRoot(Root*) {
-  PA_CHECK(false);
-}
-template <>
-void PCScan<NotThreadSafe>::SetProcessName(const char*) {
-  PA_CHECK(false);
-}
-template <>
-void PCScan<NotThreadSafe>::ClearRootsForTesting() {
-  PA_CHECK(false);
-}
-
-template <bool thread_safe>
-PCScan<thread_safe> PCScan<thread_safe>::instance_ PA_CONSTINIT;
-
-template class PCScan<ThreadSafe>;
-template class PCScan<NotThreadSafe>;
+PCScan PCScan::instance_ PA_CONSTINIT;
 
 }  // namespace internal
 }  // namespace base

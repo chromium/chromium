@@ -46,7 +46,7 @@ void NonScannableAllocator::EnablePCScan() {
                                     PartitionOptions::ThreadCache::kDisabled,
                                     PartitionOptions::Quarantine::kAllowed,
                                     PartitionOptions::RefCount::kDisabled));
-  auto& pcscan = internal::PCScan<internal::ThreadSafe>::Instance();
+  auto& pcscan = internal::PCScan::Instance();
   pcscan.RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);
 }

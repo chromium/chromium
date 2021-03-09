@@ -42,8 +42,7 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }();
 
   if (name) {
-    base::internal::PCScan<base::internal::ThreadSafe>::Instance()
-        .SetProcessName(name);
+    base::internal::PCScan::Instance().SetProcessName(name);
   }
 }
 

@@ -398,7 +398,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 
 #if PA_ALLOW_PCSCAN
 void EnablePCScan() {
-  auto& pcscan = internal::PCScan<internal::ThreadSafe>::Instance();
+  auto& pcscan = internal::PCScan::Instance();
   pcscan.RegisterScannableRoot(Allocator());
   if (Allocator() != AlignedAllocator())
     pcscan.RegisterScannableRoot(AlignedAllocator());

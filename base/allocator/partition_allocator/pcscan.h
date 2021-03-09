@@ -39,11 +39,10 @@ namespace internal {
 // unreachable and therefore can be safely reclaimed.
 //
 // The driver class encapsulates the entire PCScan infrastructure.
-template <bool thread_safe>
 class BASE_EXPORT PCScan final {
  public:
-  using Root = PartitionRoot<thread_safe>;
-  using SlotSpan = SlotSpanMetadata<thread_safe>;
+  using Root = PartitionRoot<ThreadSafe>;
+  using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
   enum class InvocationMode {
     kBlocking,
@@ -69,7 +68,7 @@ class BASE_EXPORT PCScan final {
   // quarantined objects.
   void RegisterNonScannableRoot(Root* root);
 
-  ALWAYS_INLINE void MoveToQuarantine(void* ptr, SlotSpan* slot_span);
+  ALWAYS_INLINE void MoveToQuarantine(void* ptr, size_t slot_size);
 
   // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
@@ -91,6 +90,8 @@ class BASE_EXPORT PCScan final {
 
   class QuarantineData final {
    public:
+    inline constexpr QuarantineData();
+
     // Account freed bytes. Returns true if limit was reached.
     ALWAYS_INLINE bool Account(size_t bytes);
 
@@ -116,7 +117,7 @@ class BASE_EXPORT PCScan final {
     size_t last_size_ = 0;
   };
 
-  constexpr PCScan() = default;
+  inline constexpr PCScan();
 
   // Performs scanning unconditionally.
   void PerformScan(InvocationMode invocation_mode);
@@ -128,16 +129,18 @@ class BASE_EXPORT PCScan final {
   std::atomic<bool> in_progress_{false};
 };
 
-template <bool thread_safe>
-bool PCScan<thread_safe>::QuarantineData::Account(size_t size) {
+// To please Chromium's clang plugin.
+constexpr PCScan::QuarantineData::QuarantineData() = default;
+
+ALWAYS_INLINE bool PCScan::QuarantineData::Account(size_t size) {
   size_t size_before = current_size_.fetch_add(size, std::memory_order_relaxed);
   return size_before + size > size_limit_.load(std::memory_order_relaxed);
 }
 
-template <bool thread_safe>
-ALWAYS_INLINE void PCScan<thread_safe>::MoveToQuarantine(void* ptr,
-                                                         SlotSpan* slot_span) {
-  PA_DCHECK(!slot_span->bucket->is_direct_mapped());
+// To please Chromium's clang plugin.
+constexpr PCScan::PCScan() = default;
+
+ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
   auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
                                                  quarantine_data_.epoch(), ptr);
   const bool is_double_freed =
@@ -145,8 +148,7 @@ ALWAYS_INLINE void PCScan<thread_safe>::MoveToQuarantine(void* ptr,
   if (UNLIKELY(is_double_freed))
     DoubleFreeAttempt();
 
-  const bool is_limit_reached =
-      quarantine_data_.Account(slot_span->bucket->slot_size);
+  const bool is_limit_reached = quarantine_data_.Account(slot_size);
   if (UNLIKELY(is_limit_reached)) {
     // Perform a quick check if another scan is already in progress.
     if (in_progress_.load(std::memory_order_relaxed))

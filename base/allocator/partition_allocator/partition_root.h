@@ -152,7 +152,7 @@ struct BASE_EXPORT PartitionRoot {
       internal::PartitionSuperPageExtentEntry<thread_safe>;
   using DirectMapExtent = internal::PartitionDirectMapExtent<thread_safe>;
   using ScopedGuard = internal::ScopedGuard<thread_safe>;
-  using PCScan = internal::PCScan<thread_safe>;
+  using PCScan = internal::PCScan;
 
   // Defines whether objects should be quarantined for this root.
   enum class QuarantineMode : uint8_t {
@@ -842,7 +842,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // by default.
   if (UNLIKELY(root->IsQuarantineEnabled()) &&
       LIKELY(!slot_span->bucket->is_direct_mapped())) {
-    PCScan::Instance().MoveToQuarantine(ptr, slot_span);
+    PCScan::Instance().MoveToQuarantine(ptr, slot_span->bucket->slot_size);
     return;
   }
 
