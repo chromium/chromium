@@ -26,7 +26,7 @@ constexpr const char* kAllClassesButSymbols[] = {kLowerCase, kUpperCase,
 constexpr const char* kAllClassesButSymbolsAndAlphabetic[] = {
     kLowerCase, kUpperCase, kNumeric};
 
-bool IsCharInClass(base::char16 c, const std::string& class_name) {
+bool IsCharInClass(char16_t c, const std::string& class_name) {
   if (class_name == kLowerCase) {
     return 'a' <= c && c <= 'z';
   } else if (class_name == kUpperCase) {
@@ -46,7 +46,7 @@ bool IsCharInClass(base::char16 c, const std::string& class_name) {
 size_t CountCharsInClass(const base::string16& password,
                          const std::string& class_name) {
   size_t num = 0;
-  for (base::char16 c : password) {
+  for (char16_t c : password) {
     if (IsCharInClass(c, class_name))
       ++num;
   }
@@ -240,7 +240,7 @@ TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
   // Then ensure that 'a's and 'b's are generated at the expected frequencies
   // as an indicator that the override was respected.
   size_t num_as_and_bs = 0;
-  for (base::char16 c : password) {
+  for (char16_t c : password) {
     if (c == 'a' || c == 'b')
       ++num_as_and_bs;
   }
@@ -262,7 +262,7 @@ TEST_F(PasswordGeneratorTest, AllCharactersAreGenerated) {
     base::string16 password = GeneratePassword(spec_);
     size_t num_as = 0;
     size_t num_bs = 0;
-    for (base::char16 c : password) {
+    for (char16_t c : password) {
       if (c == 'a')
         ++num_as;
       if (c == 'b')

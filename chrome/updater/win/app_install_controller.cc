@@ -40,7 +40,7 @@ namespace {
 
 // TODO(sorin): remove the hardcoding of the application name.
 // https://crbug.com/1065588
-constexpr base::char16 kAppNameChrome[] = u"Google Chrome";
+constexpr char16_t kAppNameChrome[] = u"Google Chrome";
 
 // Implements a simple inter-thread communication protocol based on Windows
 // messages exchanged between the application installer and its UI.

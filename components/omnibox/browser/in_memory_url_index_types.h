@@ -20,8 +20,8 @@
 
 typedef std::vector<base::string16> String16Vector;
 typedef base::flat_set<base::string16> String16Set;
-typedef base::flat_set<base::char16> Char16Set;
-typedef std::vector<base::char16> Char16Vector;
+typedef base::flat_set<char16_t> Char16Set;
+typedef std::vector<char16_t> Char16Vector;
 
 // A vector that contains the offsets at which each word starts within a string.
 typedef std::vector<size_t> WordStarts;
@@ -136,7 +136,7 @@ typedef std::map<base::string16, WordID> WordMap;
 
 // A map from character to the word_ids of words containing that character.
 typedef base::flat_set<WordID> WordIDSet;  // An index into the WordList.
-typedef std::map<base::char16, WordIDSet> CharWordIDMap;
+typedef std::map<char16_t, WordIDSet> CharWordIDMap;
 
 // A map from word (by word_id) to history items containing that word.
 typedef history::URLID HistoryID;

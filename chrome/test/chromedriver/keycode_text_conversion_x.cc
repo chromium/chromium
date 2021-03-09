@@ -182,7 +182,7 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   return true;
 }
 
-bool ConvertCharToKeyCode(base::char16 key,
+bool ConvertCharToKeyCode(char16_t key,
                           ui::KeyboardCode* key_code,
                           int* necessary_modifiers,
                           std::string* error_msg) {

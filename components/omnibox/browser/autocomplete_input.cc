@@ -461,7 +461,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // "dep missing: @test/", which should not be parsed as a URL (with the
   // username "dep missing: ").
   if (parts->path.is_nonempty() && !username_has_space) {
-    base::char16 c = text[parts->path.end() - 1];
+    char16_t c = text[parts->path.end() - 1];
     if ((c == '\\') || (c == '/'))
       return metrics::OmniboxInputType::URL;
   }
@@ -578,7 +578,7 @@ base::string16 AutocompleteInput::FormattedStringWithEquivalentMeaning(
     size_t* offset) {
   if (!url_formatter::CanStripTrailingSlash(url))
     return formatted_url;
-  const base::string16 url_with_path(formatted_url + base::char16('/'));
+  const base::string16 url_with_path(formatted_url + char16_t('/'));
   if (AutocompleteInput::Parse(formatted_url, std::string(), scheme_classifier,
                                nullptr, nullptr, nullptr) ==
       AutocompleteInput::Parse(url_with_path, std::string(), scheme_classifier,

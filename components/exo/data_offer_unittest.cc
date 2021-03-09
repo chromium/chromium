@@ -134,8 +134,8 @@ bool ReadString16(base::ScopedFD fd, base::string16* out) {
       break;
     it += result;
   }
-  *out = base::string16(reinterpret_cast<base::char16*>(buffer.data()),
-                        (it - buffer.begin()) / sizeof(base::char16));
+  *out = base::string16(reinterpret_cast<char16_t*>(buffer.data()),
+                        (it - buffer.begin()) / sizeof(char16_t));
   return true;
 }
 

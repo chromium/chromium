@@ -131,7 +131,7 @@ TEST(KeyConverter, WebDriverSpecialChar) {
   std::vector<KeyEvent> key_events;
   builder.SetKeyCode(ui::VKEY_SPACE)->SetText(" ", " ")->Generate(&key_events);
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE00DU));
+  keys.push_back(static_cast<char16_t>(0xE00DU));
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -140,7 +140,7 @@ TEST(KeyConverter, WebDriverSpecialNonCharKey) {
   std::vector<KeyEvent> key_events;
   builder.SetKeyCode(ui::VKEY_F1)->Generate(&key_events);
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE031U));
+  keys.push_back(static_cast<char16_t>(0xE031U));
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -224,7 +224,7 @@ TEST(KeyConverter, UppercaseCharUsesShiftOnlyIfNecessary) {
   key_events.push_back(
       shift_builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE008U));
+  keys.push_back(static_cast<char16_t>(0xE008U));
   keys.append(base::UTF8ToUTF16("aBc"));
   CheckEventsReleaseModifiers(keys, key_events);
 }
@@ -257,14 +257,14 @@ TEST(KeyConverter, ToggleModifiers) {
   key_events.push_back(
       builder.SetType(kKeyUpEventType)->SetModifiers(0)->Build());
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE008U));
-  keys.push_back(static_cast<base::char16>(0xE008U));
-  keys.push_back(static_cast<base::char16>(0xE009U));
-  keys.push_back(static_cast<base::char16>(0xE009U));
-  keys.push_back(static_cast<base::char16>(0xE00AU));
-  keys.push_back(static_cast<base::char16>(0xE00AU));
-  keys.push_back(static_cast<base::char16>(0xE03DU));
-  keys.push_back(static_cast<base::char16>(0xE03DU));
+  keys.push_back(static_cast<char16_t>(0xE008U));
+  keys.push_back(static_cast<char16_t>(0xE008U));
+  keys.push_back(static_cast<char16_t>(0xE009U));
+  keys.push_back(static_cast<char16_t>(0xE009U));
+  keys.push_back(static_cast<char16_t>(0xE00AU));
+  keys.push_back(static_cast<char16_t>(0xE00AU));
+  keys.push_back(static_cast<char16_t>(0xE03DU));
+  keys.push_back(static_cast<char16_t>(0xE03DU));
   CheckEventsReleaseModifiers(keys, key_events);
 }
 
@@ -405,10 +405,10 @@ TEST(KeyConverter, ModifiersState) {
                            ->Build());
 
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE008U));
-  keys.push_back(static_cast<base::char16>(0xE009U));
-  keys.push_back(static_cast<base::char16>(0xE00AU));
-  keys.push_back(static_cast<base::char16>(0xE03DU));
+  keys.push_back(static_cast<char16_t>(0xE008U));
+  keys.push_back(static_cast<char16_t>(0xE009U));
+  keys.push_back(static_cast<char16_t>(0xE00AU));
+  keys.push_back(static_cast<char16_t>(0xE03DU));
 
   CheckEvents(keys, key_events, false /* release_modifiers */,
               kShiftKeyModifierMask | kControlKeyModifierMask |
@@ -431,8 +431,8 @@ TEST(KeyConverter, ReleaseModifiers) {
                            ->Build());
   key_events.push_back(builder.SetKeyCode(ui::VKEY_CONTROL)->Build());
   base::string16 keys;
-  keys.push_back(static_cast<base::char16>(0xE008U));
-  keys.push_back(static_cast<base::char16>(0xE009U));
+  keys.push_back(static_cast<char16_t>(0xE008U));
+  keys.push_back(static_cast<char16_t>(0xE009U));
 
   CheckEvents(keys, key_events, true /* release_modifiers */, 0);
 }

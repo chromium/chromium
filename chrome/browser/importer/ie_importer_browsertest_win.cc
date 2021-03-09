@@ -84,12 +84,12 @@ const BookmarkInfo kIESortedBookmarks[] = {
   {false, 0, {}, L"c", "http://www.google.com/3"},
 };
 
-const base::char16 kIEIdentifyUrl[] =
+const char16_t kIEIdentifyUrl[] =
     u"http://A79029D6-753E-4e27-B807-3D46AB1545DF.com:8080/path?key=value";
-const base::char16 kIEIdentifyTitle[] = u"Unittest GUID";
-const base::char16 kIECacheItemUrl[] =
+const char16_t kIEIdentifyTitle[] = u"Unittest GUID";
+const char16_t kIECacheItemUrl[] =
     u"http://B2EF40C8-2569-4D7E-97EA-BAD9DF468D9C.com";
-const base::char16 kIECacheItemTitle[] = u"Unittest Cache Item GUID";
+const char16_t kIECacheItemTitle[] = u"Unittest Cache Item GUID";
 
 const wchar_t kFaviconStreamSuffix[] = L"url:favicon:$DATA";
 const char kDummyFaviconImageData[] =
@@ -104,8 +104,8 @@ const char kDummyFaviconImageData[] =
     "\x00\xFF\x00\x00"; // The pixel
 
 struct FaviconGroup {
-  const base::char16* favicon_url;
-  const base::char16* site_url[2];
+  const char16_t* favicon_url;
+  const char16_t* site_url[2];
 };
 
 const FaviconGroup kIEFaviconGroup[2] = {

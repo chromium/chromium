@@ -86,7 +86,7 @@ base::Optional<std::string> ExtractPhoneNumber(
 
 std::string GetUnescapedURLContent(const GURL& url) {
   std::string content_string(url.GetContent());
-  url::RawCanonOutputT<base::char16> unescaped_content;
+  url::RawCanonOutputT<char16_t> unescaped_content;
   url::DecodeURLEscapeSequences(content_string.data(), content_string.size(),
                                 url::DecodeURLMode::kUTF8OrIsomorphic,
                                 &unescaped_content);

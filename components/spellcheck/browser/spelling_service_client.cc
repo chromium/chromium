@@ -80,8 +80,8 @@ bool SpellingServiceClient::RequestTextCheck(
 
   // Replace typographical apostrophes with typewriter apostrophes, so that
   // server word breaker behaves correctly.
-  const base::char16 kApostrophe = 0x27;
-  const base::char16 kRightSingleQuotationMark = 0x2019;
+  const char16_t kApostrophe = 0x27;
+  const char16_t kRightSingleQuotationMark = 0x2019;
   base::string16 text_copy = text;
   std::replace(text_copy.begin(), text_copy.end(), kRightSingleQuotationMark,
                kApostrophe);

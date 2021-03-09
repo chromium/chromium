@@ -137,8 +137,9 @@ template<> void DownloadQueryTest::AddFilter(
   CHECK(query_.AddFilter(name, base::Value(cpp_value)));
 }
 
-template<> void DownloadQueryTest::AddFilter(
-    DownloadQuery::FilterType name, const base::char16* cpp_value) {
+template <>
+void DownloadQueryTest::AddFilter(DownloadQuery::FilterType name,
+                                  const char16_t* cpp_value) {
   CHECK(query_.AddFilter(name, base::Value(cpp_value)));
 }
 

@@ -1596,7 +1596,7 @@ base::string16 OmniboxEditModel::MaybeStripKeyword(
 
 base::string16 OmniboxEditModel::MaybePrependKeyword(
     const base::string16& text) const {
-  return is_keyword_selected() ? (keyword_ + base::char16(' ') + text) : text;
+  return is_keyword_selected() ? (keyword_ + char16_t(' ') + text) : text;
 }
 
 void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,

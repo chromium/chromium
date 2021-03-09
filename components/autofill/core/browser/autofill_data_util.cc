@@ -361,9 +361,9 @@ bool IsCJKName(base::StringPiece16 name) {
   // well.
   //
   // The middle dot is used as a separator for foreign names in Japanese.
-  static const base::char16 kKatakanaMiddleDot = u'\u30FB';
+  static const char16_t kKatakanaMiddleDot = u'\u30FB';
   // A (common?) typo for 'KATAKANA MIDDLE DOT' (U+30FB).
-  static const base::char16 kMiddleDot = u'\u00B7';
+  static const char16_t kMiddleDot = u'\u00B7';
   bool previous_was_cjk = false;
   size_t word_count = 0;
   for (base::i18n::UTF16CharIterator iter(name); !iter.end(); iter.Advance()) {
@@ -382,7 +382,7 @@ bool IsCJKName(base::StringPiece16 name) {
 }
 
 NameParts SplitName(base::StringPiece16 name) {
-  static const base::char16 kWordSeparators[] = {
+  static const char16_t kWordSeparators[] = {
       u' ',       // ASCII space.
       u',',       // ASCII comma.
       u'\u3000',  // 'IDEOGRAPHIC SPACE' (U+3000).

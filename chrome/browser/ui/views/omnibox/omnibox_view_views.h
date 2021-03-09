@@ -439,7 +439,7 @@ class OmniboxViewViews : public OmniboxView,
   void OnFocus() override;
   void OnBlur() override;
   base::string16 GetSelectionClipboardText() const override;
-  void DoInsertChar(base::char16 ch) override;
+  void DoInsertChar(char16_t ch) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
   void ExecuteTextEditCommand(ui::TextEditCommand command) override;
   bool ShouldShowPlaceholderText() const override;

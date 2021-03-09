@@ -51,13 +51,13 @@ using structured_address::VerificationStatus;
 //  - 0x2022 - Bullet.
 //  - 0x2006 - SIX-PER-EM SPACE (small space between bullets).
 //  - 0x2060 - WORD-JOINER (makes obfuscated string undivisible).
-const base::char16 kMidlineEllipsis[] = {
+const char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
 
 namespace {
 
-const base::char16 kCreditCardObfuscationSymbol = '*';
+const char16_t kCreditCardObfuscationSymbol = '*';
 
 const int kMaxNicknameLength = 25;
 
@@ -308,7 +308,7 @@ bool CreditCard::IsNicknameValid(const base::string16& nickname) {
   }
 
   // Must not contain digits.
-  for (base::char16 c : nickname) {
+  for (char16_t c : nickname) {
     if (base::IsAsciiDigit(c))
       return false;
   }

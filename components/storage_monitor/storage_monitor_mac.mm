@@ -41,7 +41,7 @@ base::string16 JoinName(const base::string16& name,
     return name;
   if (name.empty())
     return addition;
-  return name + static_cast<base::char16>(' ') + addition;
+  return name + static_cast<char16_t>(' ') + addition;
 }
 
 StorageInfo::Type GetDeviceType(bool is_removable, bool has_dcim) {

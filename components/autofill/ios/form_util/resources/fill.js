@@ -1273,7 +1273,7 @@ __gCrWeb.fill.InferLabelFromValueAttr = function(element) {
  *
  * It is based on the logic in
  *     bool IsLabelValid(base::StringPiece16 inferred_label,
- *         const std::vector<base::char16>& stop_words)
+ *         const std::vector<char16_t>& stop_words)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  * The list of characters that are considered special is hard-coded in a regexp.
  *

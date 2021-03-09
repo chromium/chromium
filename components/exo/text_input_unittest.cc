@@ -292,7 +292,7 @@ TEST_F(TextInputTest, InsertCharCtrlV) {
 TEST_F(TextInputTest, InsertCharNormalKey) {
   text_input()->Activate(surface());
 
-  base::char16 ch = 'x';
+  char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
 
   EXPECT_CALL(*delegate(), Commit(base::string16(1, ch))).Times(1);

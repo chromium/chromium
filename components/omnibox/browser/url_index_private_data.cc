@@ -906,7 +906,7 @@ void URLIndexPrivateData::AddWordToIndex(const base::string16& term,
 
     // For each character in the newly added word add the word to the character
     // index.
-    for (base::char16 uni_char : Char16SetFromString16(term))
+    for (char16_t uni_char : Char16SetFromString16(term))
       char_word_map_[uni_char].insert(word_pos->second);
   }
 
@@ -952,7 +952,7 @@ void URLIndexPrivateData::RemoveRowWordsFromIndex(const history::URLRow& row) {
 
     // The word is no longer in use. Reconcile any changes to character usage.
     base::string16 word = word_list_[word_id];
-    for (base::char16 uni_char : Char16SetFromString16(word)) {
+    for (char16_t uni_char : Char16SetFromString16(word)) {
       auto char_word_map_iter = char_word_map_.find(uni_char);
       char_word_map_iter->second.erase(word_id);
       if (char_word_map_iter->second.empty())
@@ -1189,7 +1189,7 @@ bool URLIndexPrivateData::RestoreCharWordMap(
     actual_item_count = entry.word_id_size();
     if (actual_item_count == 0 || actual_item_count != expected_item_count)
       return false;
-    base::char16 uni_char = static_cast<base::char16>(entry.char_16());
+    char16_t uni_char = static_cast<char16_t>(entry.char_16());
     const RepeatedField<int32_t>& word_ids = entry.word_id();
     char_word_map_[uni_char] = WordIDSet(word_ids.begin(), word_ids.end());
   }

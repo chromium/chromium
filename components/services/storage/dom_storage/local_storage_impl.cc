@@ -367,12 +367,12 @@ class LocalStorageImpl::StorageAreaHolder final
         continue;
       // Check if key is actually 8-bit safe.
       bool is_8bit = true;
-      for (size_t i = 1; i < it.first.size(); i += sizeof(base::char16)) {
+      for (size_t i = 1; i < it.first.size(); i += sizeof(char16_t)) {
         // Don't just cast to char16* as that could be undefined behavior.
         // Instead use memcpy for the conversion, which compilers will generally
         // optimize away anyway.
-        base::char16 char_val;
-        memcpy(&char_val, it.first.data() + i, sizeof(base::char16));
+        char16_t char_val;
+        memcpy(&char_val, it.first.data() + i, sizeof(char16_t));
         if (char_val & 0xff00) {
           is_8bit = false;
           break;
@@ -385,9 +385,9 @@ class LocalStorageImpl::StorageAreaHolder final
       std::vector<uint8_t> key(1 + (it.first.size() - 1) / 2);
       key[0] = kLatin1Format;
       for (size_t in = 1, out = 1; in < it.first.size();
-           in += sizeof(base::char16), out++) {
-        base::char16 char_val;
-        memcpy(&char_val, it.first.data() + in, sizeof(base::char16));
+           in += sizeof(char16_t), out++) {
+        char16_t char_val;
+        memcpy(&char_val, it.first.data() + in, sizeof(char16_t));
         key[out] = char_val;
       }
       // Delete incorrect key.
@@ -760,9 +760,9 @@ std::vector<uint8_t> LocalStorageImpl::MigrateString(
   }
   const uint8_t* data = reinterpret_cast<const uint8_t*>(input.data());
   std::vector<uint8_t> result;
-  result.reserve(input.size() * sizeof(base::char16) + 1);
+  result.reserve(input.size() * sizeof(char16_t) + 1);
   result.push_back(kUTF16Format);
-  result.insert(result.end(), data, data + input.size() * sizeof(base::char16));
+  result.insert(result.end(), data, data + input.size() * sizeof(char16_t));
   return result;
 }
 

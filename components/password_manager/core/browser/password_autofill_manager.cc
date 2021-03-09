@@ -61,7 +61,7 @@ using AutoselectFirstSuggestion =
     autofill::AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
 using IsLoading = autofill::Suggestion::IsLoading;
 
-constexpr base::char16 kPasswordReplacementChar = 0x2022;
+constexpr char16_t kPasswordReplacementChar = 0x2022;
 
 // Returns |username| unless it is empty. For an empty |username| returns a
 // localised string saying this username is empty. Use this for displaying the

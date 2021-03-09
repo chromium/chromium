@@ -102,7 +102,7 @@ bool LegacyDomStorageDatabase::CommitChanges(
           SQL_FROM_HERE, "INSERT INTO ItemTable VALUES (?,?)"));
       statement.BindString16(0, key);
       statement.BindBlob(1, value.string().data(),
-                         value.string().length() * sizeof(base::char16));
+                         value.string().length() * sizeof(char16_t));
       known_to_be_empty_ = false;
       did_insert = true;
     }

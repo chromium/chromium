@@ -1415,7 +1415,7 @@ bool MatchesCommand(const std::string& method,
       std::string name = command_path_parts[i];
       name.erase(0, 1);
       CHECK(name.length());
-      url::RawCanonOutputT<base::char16> output;
+      url::RawCanonOutputT<char16_t> output;
       url::DecodeURLEscapeSequences(
           path_parts[i].data(), path_parts[i].length(),
           url::DecodeURLMode::kUTF8OrIsomorphic, &output);

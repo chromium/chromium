@@ -185,7 +185,7 @@ void ContentAnalysisDelegate::BypassWarnings() {
 
     int64_t content_size = 0;
     for (const base::string16& entry : data_.text)
-      content_size += (entry.size() * sizeof(base::char16));
+      content_size += (entry.size() * sizeof(char16_t));
 
     ReportAnalysisConnectorWarningBypass(
         profile_, url_, "Text data", std::string(), "text/plain",
@@ -371,7 +371,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
     enterprise_connectors::ContentAnalysisResponse response) {
   int64_t content_size = 0;
   for (const base::string16& entry : data_.text)
-    content_size += (entry.size() * sizeof(base::char16));
+    content_size += (entry.size() * sizeof(char16_t));
   RecordDeepScanMetrics(access_point_,
                         base::TimeTicks::Now() - upload_start_time_,
                         content_size, result, response);

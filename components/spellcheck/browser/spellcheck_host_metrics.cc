@@ -63,7 +63,7 @@ void SpellCheckHostMetrics::RecordCheckedWordStats(const base::string16& word,
   // Collects actual number of checked words, excluding duplication.
   base::MD5Digest digest;
   base::MD5Sum(reinterpret_cast<const unsigned char*>(word.c_str()),
-         word.size() * sizeof(base::char16), &digest);
+               word.size() * sizeof(char16_t), &digest);
   checked_word_hashes_.insert(base::MD5DigestToBase16(digest));
 
   RecordWordCounts();

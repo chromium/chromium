@@ -254,7 +254,7 @@ void GetCertificateInfo(const base::FilePath& filename,
 }
 
 bool IsMicrosoftModule(base::StringPiece16 subject) {
-  static constexpr base::char16 kMicrosoft[] = u"Microsoft ";
+  static constexpr char16_t kMicrosoft[] = u"Microsoft ";
   return base::StartsWith(subject, kMicrosoft);
 }
 

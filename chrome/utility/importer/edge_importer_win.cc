@@ -34,7 +34,7 @@
 namespace {
 
 // Toolbar favorites are placed under this special folder name.
-const base::char16 kFavoritesBarTitle[] = u"_Favorites_Bar_";
+const char16_t kFavoritesBarTitle[] = u"_Favorites_Bar_";
 const wchar_t kSpartanDatabaseFile[] = L"spartan.edb";
 
 struct EdgeFavoriteEntry {

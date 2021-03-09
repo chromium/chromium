@@ -37,7 +37,7 @@ void SpellcheckCharAttribute::SetDefaultLanguage(const std::string& language) {
 
 bool SpellcheckCharAttribute::IsTextInSameScript(
     const base::string16& text) const {
-  const base::char16* data = text.data();
+  const char16_t* data = text.data();
   const size_t length = text.length();
   for (size_t index = 0; index < length; /* U16_NEXT post-increments */) {
     uint32_t code = 0;
@@ -367,7 +367,7 @@ bool SpellcheckWordIterator::IsInitialized() const {
   return !!iterator_;
 }
 
-bool SpellcheckWordIterator::SetText(const base::char16* text, size_t length) {
+bool SpellcheckWordIterator::SetText(const char16_t* text, size_t length) {
   DCHECK(!!iterator_);
 
   // Set the text to be split by this iterator.

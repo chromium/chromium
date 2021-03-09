@@ -1144,7 +1144,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   //
   // In this special case, chop off the trailing slash and search again.
   if (offset == base::string16::npos && !original_text.empty() &&
-      original_text.back() == base::char16('/')) {
+      original_text.back() == char16_t('/')) {
     offset = GetText().find(original_text.substr(0, original_text.size() - 1));
   }
 
@@ -2090,7 +2090,7 @@ base::string16 OmniboxViewViews::GetSelectionClipboardText() const {
   return SanitizeTextForPaste(Textfield::GetSelectionClipboardText());
 }
 
-void OmniboxViewViews::DoInsertChar(base::char16 ch) {
+void OmniboxViewViews::DoInsertChar(char16_t ch) {
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.

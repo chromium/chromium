@@ -753,10 +753,10 @@ TEST_F(LocalStorageImplTest, Migration) {
 static std::string EncodeKeyAsUTF16(const std::string& origin,
                                     const base::string16& key) {
   std::string result = '_' + origin + '\x00' + '\x00';
-  std::copy(reinterpret_cast<const char*>(key.data()),
-            reinterpret_cast<const char*>(key.data()) +
-                key.size() * sizeof(base::char16),
-            std::back_inserter(result));
+  std::copy(
+      reinterpret_cast<const char*>(key.data()),
+      reinterpret_cast<const char*>(key.data()) + key.size() * sizeof(char16_t),
+      std::back_inserter(result));
   return result;
 }
 

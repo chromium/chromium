@@ -76,7 +76,7 @@ void WriteString16ToPickle(base::Pickle* pickle,
                            int* bytes_written,
                            int max_bytes,
                            const base::string16& str) {
-  int num_bytes = str.size() * sizeof(base::char16);
+  int num_bytes = str.size() * sizeof(char16_t);
   if (*bytes_written + num_bytes < max_bytes) {
     *bytes_written += num_bytes;
     pickle->WriteString16(str);

@@ -61,7 +61,7 @@ class SpellcheckLanguage {
   //   |*optional_suggestions|. If optional_suggestions is nullptr, suggested
   //   words will not be looked up. Note that doing suggest lookups can be slow.
   SpellcheckWordResult SpellCheckWord(
-      const base::char16* text_begin,
+      const char16_t* text_begin,
       size_t position_in_text,
       size_t text_length,
       int tag,

@@ -46,7 +46,7 @@ struct ComponentResult {
 };
 
 ComponentResult IDNToUnicodeOneComponent(
-    const base::char16* comp,
+    const char16_t* comp,
     size_t comp_len,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
@@ -403,7 +403,7 @@ base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
 // if conversion was made. Sets |has_idn_component| to true if the input has
 // IDN, regardless of whether it was converted to unicode or not.
 ComponentResult IDNToUnicodeOneComponent(
-    const base::char16* comp,
+    const char16_t* comp,
     size_t comp_len,
     base::StringPiece top_level_domain,
     base::StringPiece16 top_level_domain_unicode,
@@ -416,7 +416,7 @@ ComponentResult IDNToUnicodeOneComponent(
 
   // Early return if the input cannot be an IDN component.
   // Valid punycode must not end with a dash.
-  static const base::char16 kIdnPrefix[] = {'x', 'n', '-', '-'};
+  static const char16_t kIdnPrefix[] = {'x', 'n', '-', '-'};
   if (comp_len <= base::size(kIdnPrefix) ||
       memcmp(comp, kIdnPrefix, sizeof(kIdnPrefix)) != 0 ||
       comp[comp_len - 1] == '-') {

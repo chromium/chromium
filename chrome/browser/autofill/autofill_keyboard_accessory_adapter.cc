@@ -17,7 +17,7 @@
 
 namespace autofill {
 
-constexpr base::char16 kLabelSeparator = ' ';
+constexpr char16_t kLabelSeparator = ' ';
 constexpr size_t kMaxBulletCount = 8;
 
 namespace {

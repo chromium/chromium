@@ -73,9 +73,9 @@ WebVector<WebString> ConvertToWebStringFromUtf8(
   return result;
 }
 
-bool IsApostrophe(base::char16 c) {
-  const base::char16 kApostrophe = 0x27;
-  const base::char16 kRightSingleQuotationMark = 0x2019;
+bool IsApostrophe(char16_t c) {
+  const char16_t kApostrophe = 0x27;
+  const char16_t kRightSingleQuotationMark = 0x2019;
   return c == kApostrophe || c == kRightSingleQuotationMark;
 }
 
@@ -85,7 +85,7 @@ bool IsApostrophe(base::char16 c) {
 void PreserveOriginalApostropheTypes(const base::string16& misspelled_word,
                                      base::string16* spelling_suggestion) {
   auto it = spelling_suggestion->begin();
-  for (const base::char16& c : misspelled_word) {
+  for (const char16_t& c : misspelled_word) {
     if (IsApostrophe(c)) {
       it = std::find_if(it, spelling_suggestion->end(), IsApostrophe);
       if (it == spelling_suggestion->end())
@@ -213,7 +213,7 @@ void SpellCheck::AddSpellcheckLanguage(base::File file,
   languages_.back()->Init(std::move(file), language);
 }
 
-bool SpellCheck::SpellCheckWord(const base::char16* text_begin,
+bool SpellCheck::SpellCheckWord(const char16_t* text_begin,
                                 size_t position_in_text,
                                 size_t text_length,
                                 int tag,
@@ -227,7 +227,7 @@ bool SpellCheck::SpellCheckWord(const base::char16* text_begin,
 }
 
 bool SpellCheck::SpellCheckWord(
-    const base::char16* text_begin,
+    const char16_t* text_begin,
     size_t position_in_text,
     size_t text_length,
     int tag,
@@ -250,7 +250,7 @@ bool SpellCheck::SpellCheckWord(
 }
 
 bool SpellCheck::SpellCheckWord(
-    const base::char16* text_begin,
+    const char16_t* text_begin,
     size_t position_in_text,
     size_t text_length,
     int tag,

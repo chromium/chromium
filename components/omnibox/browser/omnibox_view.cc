@@ -106,8 +106,8 @@ base::string16 OmniboxView::SanitizeTextForPaste(const base::string16& text) {
     output +=
         text.substr(begin, (end == base::string16::npos) ? end : (end - begin));
   };
-  constexpr base::char16 kNewline[] = {'\n', 0};
-  constexpr base::char16 kSpace[] = {' ', 0};
+  constexpr char16_t kNewline[] = {'\n', 0};
+  constexpr char16_t kSpace[] = {' ', 0};
   while (true) {
     // Copy this non-whitespace sequence.
     size_t begin = end;

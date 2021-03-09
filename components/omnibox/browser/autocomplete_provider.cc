@@ -255,7 +255,7 @@ size_t AutocompleteProvider::TrimHttpPrefix(base::string16* url) {
   if (!AutocompleteInput::HasHTTPScheme(*url))
     return 0;
   size_t scheme_pos =
-      url->find(base::ASCIIToUTF16(url::kHttpScheme) + base::char16(':'));
+      url->find(base::ASCIIToUTF16(url::kHttpScheme) + char16_t(':'));
   DCHECK_NE(base::string16::npos, scheme_pos);
 
   // Erase scheme plus up to two slashes.

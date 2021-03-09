@@ -23,7 +23,7 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A midline horizontal ellipsis (U+22EF).
-extern const base::char16 kMidlineEllipsis[];
+extern const char16_t kMidlineEllipsis[];
 
 namespace internal {
 

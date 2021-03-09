@@ -5,7 +5,7 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 
 namespace {
-constexpr base::char16 kUnderscore = '_';
+constexpr char16_t kUnderscore = '_';
 }  // namespace
 
 using base::i18n::BreakIterator;

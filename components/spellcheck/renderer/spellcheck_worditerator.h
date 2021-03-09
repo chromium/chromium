@@ -145,7 +145,7 @@ class SpellcheckWordIterator {
   // Set text to be iterated. (This text does not have to be NULL-terminated.)
   // This function also resets internal state so we can reuse this iterator
   // without calling Initialize().
-  bool SetText(const base::char16* text, size_t length);
+  bool SetText(const char16_t* text, size_t length);
 
   // Advances |iterator_| through |text_| and gets the current status of the
   // word iterator within |text|:
@@ -190,7 +190,7 @@ class SpellcheckWordIterator {
                  base::string16* output_string) const;
 
   // The pointer to the input string from which we are extracting words.
-  const base::char16* text_;
+  const char16_t* text_;
 
   // The language-specific attributes used for filtering out non-word
   // characters.

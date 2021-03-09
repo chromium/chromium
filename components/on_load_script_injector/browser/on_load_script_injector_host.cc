@@ -47,7 +47,7 @@ void OnLoadScriptInjectorHost<ScriptId>::AddScript(
   // Convert script to UTF-16.
   base::string16 script_utf16 = base::UTF8ToUTF16(script);
   size_t script_utf16_size =
-      (base::CheckedNumeric<size_t>(script_utf16.size()) * sizeof(base::char16))
+      (base::CheckedNumeric<size_t>(script_utf16.size()) * sizeof(char16_t))
           .ValueOrDie();
   base::WritableSharedMemoryRegion script_shared_memory =
       base::WritableSharedMemoryRegion::Create(script_utf16_size);

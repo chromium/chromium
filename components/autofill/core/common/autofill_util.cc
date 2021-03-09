@@ -161,9 +161,8 @@ bool SanitizedFieldIsEmpty(const base::string16& value) {
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
   static base::string16 formatting =
-      (base::ASCIIToUTF16("-_()/") +
-       base::char16(base::i18n::kRightToLeftMark) +
-       base::char16(base::i18n::kLeftToRightMark))
+      (base::ASCIIToUTF16("-_()/") + char16_t(base::i18n::kRightToLeftMark) +
+       char16_t(base::i18n::kLeftToRightMark))
           .append(base::kWhitespaceUTF16);
 
   return (value.find_first_not_of(formatting) == base::StringPiece::npos);

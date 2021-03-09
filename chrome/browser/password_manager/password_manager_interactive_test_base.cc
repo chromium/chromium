@@ -32,7 +32,7 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
       RenderFrameHost(),
       base::StringPrintf("document.getElementById('%s').focus();",
                          element_id.c_str())));
-  for (base::char16 character : value) {
+  for (char16_t character : value) {
     ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
     const ui::PrintableCodeEntry* code_entry = std::find_if(
         std::begin(ui::kPrintableCodeMap), std::end(ui::kPrintableCodeMap),

@@ -155,7 +155,7 @@ struct AutocompleteMatch {
 
   // Null-terminated array of characters that are not valid within |contents|
   // and |description| strings.
-  static const base::char16 kInvalidChars[];
+  static const char16_t kInvalidChars[];
 
   // Document subtype, for AutocompleteMatchType::DOCUMENT.
   // Update kDocumentTypeStrings when updating DocumentType.

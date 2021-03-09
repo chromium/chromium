@@ -28,9 +28,9 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
 // the character using the current keyboard layout. Returns true on success.
 // If an error occurs |error_msg| will be set to the error message, otherwise
 // it will be set to the empty string.
-bool ConvertCharToKeyCode(base::char16 key,
+bool ConvertCharToKeyCode(char16_t key,
                           ui::KeyboardCode* key_code,
-                          int *necessary_modifiers,
+                          int* necessary_modifiers,
                           std::string* error_msg);
 
 #if defined(OS_WIN)
@@ -43,7 +43,7 @@ bool ConvertKeyCodeToTextOzone(ui::KeyboardCode key_code,
                                int modifiers,
                                std::string* text,
                                std::string* error_msg);
-bool ConvertCharToKeyCodeOzone(base::char16 key,
+bool ConvertCharToKeyCodeOzone(char16_t key,
                                ui::KeyboardCode* key_code,
                                int* necessary_modifiers,
                                std::string* error_msg);

@@ -38,9 +38,10 @@ bool ConvertKeyCodeToText(
   return true;
 }
 
-bool ConvertCharToKeyCode(
-    base::char16 key, ui::KeyboardCode* key_code, int *necessary_modifiers,
-    std::string* error_msg) {
+bool ConvertCharToKeyCode(char16_t key,
+                          ui::KeyboardCode* key_code,
+                          int* necessary_modifiers,
+                          std::string* error_msg) {
   short vkey_and_modifiers = ::VkKeyScanW(key);
   bool translated = vkey_and_modifiers != -1 &&
                     LOBYTE(vkey_and_modifiers) != 0xFF &&

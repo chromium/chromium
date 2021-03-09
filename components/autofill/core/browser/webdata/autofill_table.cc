@@ -634,14 +634,14 @@ CreditCard::ServerStatus ServerStatusStringToEnum(const std::string& status) {
 // example, Substitute("hello_world!", "_%", '!'') returns "hello!_world!!".
 base::string16 Substitute(const base::string16& s,
                           const base::string16& special_chars,
-                          const base::char16& escaper) {
+                          const char16_t& escaper) {
   // Prepend |escaper| to the list of |special_chars|.
   base::string16 escape_wildcards(special_chars);
   escape_wildcards.insert(escape_wildcards.begin(), escaper);
 
   // Prepend the |escaper| just before |special_chars| in |s|.
   base::string16 result(s);
-  for (base::char16 c : escape_wildcards) {
+  for (char16_t c : escape_wildcards) {
     for (size_t pos = 0; (pos = result.find(c, pos)) != base::string16::npos;
          pos += 2) {
       result.insert(result.begin() + pos, escaper);

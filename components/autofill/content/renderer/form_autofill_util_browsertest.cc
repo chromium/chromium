@@ -205,8 +205,8 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
-  std::vector<base::char16> stop_words;
-  stop_words.push_back(static_cast<base::char16>('-'));
+  std::vector<char16_t> stop_words;
+  stop_words.push_back(static_cast<char16_t>('-'));
   static const AutofillFieldUtilCase test_cases[] = {
       {"DIV table test 1", kDivTableExample1, kDivTableExample1Expected},
       {"DIV table test 2", kDivTableExample2, kDivTableExample2Expected},
@@ -259,8 +259,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
   };
-  std::vector<base::char16> stop_words;
-  stop_words.push_back(static_cast<base::char16>('-'));
+  std::vector<char16_t> stop_words;
+  stop_words.push_back(static_cast<char16_t>('-'));
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);

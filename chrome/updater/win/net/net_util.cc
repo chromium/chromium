@@ -19,13 +19,13 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
   auto hr = HRESULTFromLastError();
   if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
     return hr;
-  std::vector<wchar_t> buffer(num_bytes / sizeof(base::char16));
+  std::vector<wchar_t> buffer(num_bytes / sizeof(wchar_t));
   if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
     return HRESULTFromLastError();
   }
-  DCHECK_EQ(0u, num_bytes % sizeof(base::char16));
-  buffer.resize(num_bytes / sizeof(base::char16));
+  DCHECK_EQ(0u, num_bytes % sizeof(wchar_t));
+  buffer.resize(num_bytes / sizeof(wchar_t));
   value->assign(buffer.begin(), buffer.end());
   return S_OK;
 }

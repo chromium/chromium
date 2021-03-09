@@ -27,7 +27,7 @@
 namespace {
 
 #if !defined(OS_ANDROID)
-const base::char16 kDot = '.';
+const char16_t kDot = '.';
 
 // Build a path from the first |num_components| elements in |path_elements|.
 // Prepends |path_prefix|, appends |filename|, inserts ellipsis if appropriate.

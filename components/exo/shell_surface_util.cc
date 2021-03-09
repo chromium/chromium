@@ -301,7 +301,7 @@ bool ConsumedByIme(aura::Window* window, const ui::KeyEvent& event) {
   // treat keydown as a trigger of text inputs. We need suppression for keydown.
   //
   // Same condition as components/arc/ime/arc_ime_service.cc#InsertChar.
-  const base::char16 ch = event.GetCharacter();
+  const char16_t ch = event.GetCharacter();
   const bool is_control_char =
       (0x00 <= ch && ch <= 0x1f) || (0x7f <= ch && ch <= 0x9f);
   if (!is_control_char && !ui::IsSystemKeyModifier(event.flags()))

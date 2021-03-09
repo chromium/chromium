@@ -389,7 +389,7 @@ void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
       web_app_info->icon_bitmaps.maskable[bitmap.width()] = std::move(bitmap);
   }
 
-  base::char16 icon_letter =
+  char16_t icon_letter =
       web_app_info->title.empty()
           ? GenerateIconLetterFromUrl(web_app_info->start_url)
           : GenerateIconLetterFromAppName(web_app_info->title);

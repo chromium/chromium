@@ -53,7 +53,7 @@ void Capture(std::string* result, scoped_refptr<base::RefCountedMemory> data) {
 
 void CaptureUTF16(std::string* result,
                   scoped_refptr<base::RefCountedMemory> data) {
-  base::UTF16ToUTF8(data->front_as<base::char16>(), data->size() / 2, result);
+  base::UTF16ToUTF8(data->front_as<char16_t>(), data->size() / 2, result);
 }
 
 }  // namespace

@@ -16,7 +16,7 @@ namespace password_manager {
 
 namespace {
 
-constexpr base::char16 kUser[] = u"user";
+constexpr char16_t kUser[] = u"user";
 
 class IsPossibleUsernameValidTest : public testing::Test {
  protected:

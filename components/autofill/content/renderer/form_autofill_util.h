@@ -314,7 +314,7 @@ base::string16 FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
 bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
-                                    const std::vector<base::char16>& stop_words,
+                                    const std::vector<char16_t>& stop_words,
                                     base::string16* label,
                                     FormFieldData::LabelSource* label_source);
 

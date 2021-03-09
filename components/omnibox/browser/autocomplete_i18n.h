@@ -33,7 +33,7 @@
 // characters will be compared case-sensitively.
 struct SimpleCaseInsensitiveCompareUCS2 {
  public:
-  bool operator()(base::char16 x, base::char16 y) const {
+  bool operator()(char16_t x, char16_t y) const {
     return u_tolower(x) == u_tolower(y);
   }
 };

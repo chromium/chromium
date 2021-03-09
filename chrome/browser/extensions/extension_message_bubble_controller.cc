@@ -155,7 +155,7 @@ base::string16 ExtensionMessageBubbleController::GetExtensionListForDisplay() {
     extension_list.push_back(delegate_->GetOverflowText(
         base::NumberToString16(old_size - kMaxExtensionsToShow)));
   }
-  const base::char16 bullet_point = 0x2022;
+  const char16_t bullet_point = 0x2022;
   base::string16 prefix = bullet_point + base::ASCIIToUTF16(" ");
   for (base::string16& str : extension_list)
     str.insert(0, prefix);

@@ -260,7 +260,7 @@ class AutocompleteProvider
   // Returns a string describing this provider's type.
   const char* GetName() const;
 
-  typedef std::multimap<base::char16, base::string16> WordMap;
+  typedef std::multimap<char16_t, base::string16> WordMap;
 
   // Finds the matches for |find_text| in |text|, classifies those matches,
   // merges those classifications with |original_class|, and returns the merged

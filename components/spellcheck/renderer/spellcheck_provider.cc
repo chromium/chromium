@@ -361,7 +361,7 @@ void SpellCheckProvider::OnRespondSpellingService(
 
 bool SpellCheckProvider::HasWordCharacters(const base::string16& text,
                                            size_t index) const {
-  const base::char16* data = text.data();
+  const char16_t* data = text.data();
   size_t length = text.length();
   while (index < length) {
     uint32_t code = 0;

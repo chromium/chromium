@@ -163,7 +163,7 @@ class BulletedPermissionsList : public views::View {
                                  views::DISTANCE_RELATED_CONTROL_VERTICAL));
     }
 
-    const base::char16 bullet_point[] = {0x2022, 0};
+    const char16_t bullet_point[] = {0x2022, 0};
     auto bullet_label =
         std::make_unique<views::Label>(base::string16(bullet_point));
 

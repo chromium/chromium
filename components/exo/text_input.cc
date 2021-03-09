@@ -139,7 +139,7 @@ void TextInput::InsertText(const base::string16& text,
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
-  base::char16 ch = event.GetCharacter();
+  char16_t ch = event.GetCharacter();
   if (u_isprint(ch)) {
     InsertText(
         base::string16(1, ch),

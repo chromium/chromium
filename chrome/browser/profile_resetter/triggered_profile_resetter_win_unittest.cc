@@ -95,7 +95,7 @@ TEST_F(TriggeredProfileResetterTest, HasLongToolName) {
       L"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
       L"ToolMcToolToolMcToolToolMcToolThisIsTheToolThatNeverEndsYesItGoesOnAnd"
       L"OnMyFriend";
-  const base::char16 kExpectedToolName[] =
+  const char16_t kExpectedToolName[] =
       u"ToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcToolToolMcTool"
       u"ToolMcToolToolMcToolToolMcTool";
   SetRegTimestampAndToolName(kLongToolName, nullptr);

@@ -61,12 +61,12 @@ static_assert(kMaxPRegFileSize <= std::numeric_limits<ptrdiff_t>::max(),
 const size_t kMaxKeyNameComponents = 1024;
 
 // Constants for PReg file delimiters.
-const base::char16 kDelimBracketOpen = L'[';
-const base::char16 kDelimBracketClose = L']';
-const base::char16 kDelimSemicolon = L';';
+const char16_t kDelimBracketOpen = L'[';
+const char16_t kDelimBracketClose = L']';
+const char16_t kDelimSemicolon = L';';
 
 // Registry path separator.
-const base::char16 kRegistryPathSeparator[] = {L'\\', L'\0'};
+const char16_t kRegistryPathSeparator[] = {L'\\', L'\0'};
 
 // Magic strings for the PReg value field to trigger special actions.
 const char kActionTriggerPrefix[] = "**";
@@ -81,14 +81,14 @@ const char kActionTriggerSoft[] = "soft";
 // in which case -1 is returned. The calling code must guarantee that
 // end - *cursor does not overflow ptrdiff_t.
 int NextChar(const uint8_t** cursor, const uint8_t* end) {
-  // Only read the character if a full base::char16 is available.
+  // Only read the character if a full char16_t is available.
   // This comparison makes sure no overflow can happen.
   if (*cursor >= end ||
-      end - *cursor < static_cast<ptrdiff_t>(sizeof(base::char16)))
+      end - *cursor < static_cast<ptrdiff_t>(sizeof(char16_t)))
     return -1;
 
   int result = **cursor | (*(*cursor + 1) << 8);
-  *cursor += sizeof(base::char16);
+  *cursor += sizeof(char16_t);
   return result;
 }
 
@@ -135,14 +135,13 @@ bool ReadFieldString(const uint8_t** cursor,
 // resulting UTF8 string contains invalid characters.
 bool DecodePRegStringValue(const std::vector<uint8_t>& data,
                            std::string* value) {
-  size_t len = data.size() / sizeof(base::char16);
+  size_t len = data.size() / sizeof(char16_t);
   if (len <= 0) {
     value->clear();
     return true;
   }
 
-  const base::char16* chars =
-      reinterpret_cast<const base::char16*>(data.data());
+  const char16_t* chars = reinterpret_cast<const char16_t*>(data.data());
   base::string16 utf16_str;
   std::transform(chars, chars + len - 1, std::back_inserter(utf16_str),
                  base::ByteSwapToLE16);

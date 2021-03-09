@@ -74,7 +74,7 @@ bool ConvertCharToKeyCodeOzone
 #else
 bool ConvertCharToKeyCode
 #endif
-    (base::char16 key,
+    (char16_t key,
      ui::KeyboardCode* key_code,
      int* necessary_modifiers,
      std::string* error_msg) {

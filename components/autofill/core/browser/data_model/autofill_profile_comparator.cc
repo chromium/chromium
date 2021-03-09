@@ -32,7 +32,7 @@ using i18n::phonenumbers::PhoneNumberUtil;
 namespace autofill {
 namespace {
 
-const base::char16 kSpace[] = {L' ', L'\0'};
+const char16_t kSpace[] = {L' ', L'\0'};
 
 bool ContainsNewline(base::StringPiece16 text) {
   return text.find('\n') != base::StringPiece16::npos;

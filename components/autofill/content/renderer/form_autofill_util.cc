@@ -279,17 +279,17 @@ base::string16 FindChildTextWithIgnoreList(
 }
 
 bool IsLabelValid(base::StringPiece16 inferred_label,
-                  const std::vector<base::char16>& stop_words) {
+                  const std::vector<char16_t>& stop_words) {
   // If |inferred_label| has any character other than those in |stop_words|.
   auto* first_non_stop_word = std::find_if(
       inferred_label.begin(), inferred_label.end(),
-      [&stop_words](base::char16 c) { return !base::Contains(stop_words, c); });
+      [&stop_words](char16_t c) { return !base::Contains(stop_words, c); });
   return first_non_stop_word != inferred_label.end();
 }
 
 // Shared function for InferLabelFromPrevious() and InferLabelFromNext().
 bool InferLabelFromSibling(const WebFormControlElement& element,
-                           const std::vector<base::char16>& stop_words,
+                           const std::vector<char16_t>& stop_words,
                            bool forward,
                            base::string16* label,
                            FormFieldData::LabelSource* label_source) {
@@ -440,7 +440,7 @@ void FindElementsWithButtonFeatures(const WebElementCollection& elements,
 // or   Some Text <img><input ...>
 // or   <b>Some Text</b><br/> <input ...>.
 bool InferLabelFromPrevious(const WebFormControlElement& element,
-                            const std::vector<base::char16>& stop_words,
+                            const std::vector<char16_t>& stop_words,
                             base::string16* label,
                             FormFieldData::LabelSource* label_source) {
   return InferLabelFromSibling(element, stop_words, false /* forward? */, label,
@@ -450,7 +450,7 @@ bool InferLabelFromPrevious(const WebFormControlElement& element,
 // Same as InferLabelFromPrevious(), but in the other direction.
 // Useful for cases like: <span><input type="checkbox">Label For Checkbox</span>
 bool InferLabelFromNext(const WebFormControlElement& element,
-                        const std::vector<base::char16>& stop_words,
+                        const std::vector<char16_t>& stop_words,
                         base::string16* label,
                         FormFieldData::LabelSource* label_source) {
   return InferLabelFromSibling(element, stop_words, true /* forward? */, label,
@@ -778,7 +778,7 @@ std::vector<std::string> AncestorTagNames(
 // Infers corresponding label for |element| from surrounding context in the DOM,
 // e.g. the contents of the preceding <p> tag or text element.
 bool InferLabelForElement(const WebFormControlElement& element,
-                          const std::vector<base::char16>& stop_words,
+                          const std::vector<char16_t>& stop_words,
                           base::string16* label,
                           FormFieldData::LabelSource* label_source) {
   if (IsCheckableElement(ToWebInputElement(&element))) {
@@ -1414,14 +1414,14 @@ bool FormOrFieldsetsToFormData(
   // List of characters a label can't be entirely made of (this list can grow).
   // Since the term |stop_words| is a known text processing concept we use here
   // it to refer to such characters. They are not to be confused with words.
-  std::vector<base::char16> stop_words;
-  stop_words.push_back(static_cast<base::char16>(' '));
-  stop_words.push_back(static_cast<base::char16>('*'));
-  stop_words.push_back(static_cast<base::char16>(':'));
-  stop_words.push_back(static_cast<base::char16>('-'));
-  stop_words.push_back(static_cast<base::char16>(L'\u2013'));
-  stop_words.push_back(static_cast<base::char16>('('));
-  stop_words.push_back(static_cast<base::char16>(')'));
+  std::vector<char16_t> stop_words;
+  stop_words.push_back(static_cast<char16_t>(' '));
+  stop_words.push_back(static_cast<char16_t>('*'));
+  stop_words.push_back(static_cast<char16_t>(':'));
+  stop_words.push_back(static_cast<char16_t>('-'));
+  stop_words.push_back(static_cast<char16_t>(L'\u2013'));
+  stop_words.push_back(static_cast<char16_t>('('));
+  stop_words.push_back(static_cast<char16_t>(')'));
 
   // Loop through the form control elements, extracting the label text from
   // the DOM.  We use the |fields_extracted| vector to make sure we assign the
@@ -2255,7 +2255,7 @@ base::string16 FindChildTextWithIgnoreListForTesting(
 }
 
 bool InferLabelForElementForTesting(const WebFormControlElement& element,
-                                    const std::vector<base::char16>& stop_words,
+                                    const std::vector<char16_t>& stop_words,
                                     base::string16* label,
                                     FormFieldData::LabelSource* label_source) {
   return InferLabelForElement(element, stop_words, label, label_source);

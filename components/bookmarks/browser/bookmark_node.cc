@@ -22,12 +22,10 @@ namespace bookmarks {
 namespace {
 
 // Whitespace characters to strip from bookmark titles.
-const base::char16 kInvalidChars[] = {
-  '\n', '\r', '\t',
-  0x2028,  // Line separator
-  0x2029,  // Paragraph separator
-  0
-};
+const char16_t kInvalidChars[] = {'\n',   '\r', '\t',
+                                  0x2028,  // Line separator
+                                  0x2029,  // Paragraph separator
+                                  0};
 
 }  // namespace
 

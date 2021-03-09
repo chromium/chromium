@@ -527,7 +527,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void FillElementWithValue(const std::string& element_name,
                             const std::string& value) {
-    for (base::char16 character : value) {
+    for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = std::find_if(
           std::begin(ui::kPrintableCodeMap), std::end(ui::kPrintableCodeMap),

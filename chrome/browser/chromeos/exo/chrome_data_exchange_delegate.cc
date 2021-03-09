@@ -55,11 +55,11 @@ constexpr char kUriListSeparator[] = "\r\n";
 constexpr char kVmFileScheme[] = "vmfile";
 
 // Mime types used in FilesApp to copy/paste files to clipboard.
-constexpr base::char16 kFilesAppMimeTag[] = u"fs/tag";
-constexpr base::char16 kFilesAppTagExo[] = u"exo";
-constexpr base::char16 kFilesAppMimeSources[] = u"fs/sources";
+constexpr char16_t kFilesAppMimeTag[] = u"fs/tag";
+constexpr char16_t kFilesAppTagExo[] = u"exo";
+constexpr char16_t kFilesAppMimeSources[] = u"fs/sources";
 constexpr char kFilesAppSeparator[] = "\n";
-constexpr base::char16 kFilesAppSeparator16[] = u"\n";
+constexpr char16_t kFilesAppSeparator16[] = u"\n";
 
 storage::FileSystemContext* GetFileSystemContext() {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();

@@ -54,9 +54,10 @@ bool ConvertKeyCodeToText(
   return true;
 }
 
-bool ConvertCharToKeyCode(
-    base::char16 key, ui::KeyboardCode* key_code, int *necessary_modifiers,
-    std::string* error_msg) {
+bool ConvertCharToKeyCode(char16_t key,
+                          ui::KeyboardCode* key_code,
+                          int* necessary_modifiers,
+                          std::string* error_msg) {
   base::string16 key_string;
   key_string.push_back(key);
   std::string key_string_utf8 = base::UTF16ToUTF8(key_string);

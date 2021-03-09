@@ -138,12 +138,11 @@ bool AutocompleteMatch::DocumentTypeFromInteger(int value,
 }
 
 // static
-const base::char16 AutocompleteMatch::kInvalidChars[] = {
-  '\n', '\r', '\t',
-  0x2028,  // Line separator
-  0x2029,  // Paragraph separator
-  0
-};
+const char16_t AutocompleteMatch::kInvalidChars[] = {
+    '\n',   '\r', '\t',
+    0x2028,  // Line separator
+    0x2029,  // Paragraph separator
+    0};
 
 // static
 const char AutocompleteMatch::kEllipsis[] = "... ";

@@ -36,7 +36,7 @@ using chrome::mojom::AvailableContentType;
 std::string ConvertToUTF16Base64(const std::string& text) {
   base::string16 text_utf16 = base::UTF8ToUTF16(text);
   std::string utf16_bytes;
-  for (base::char16 c : text_utf16) {
+  for (char16_t c : text_utf16) {
     utf16_bytes.push_back(static_cast<char>(c >> 8));
     utf16_bytes.push_back(static_cast<char>(c & 0xff));
   }

@@ -387,7 +387,7 @@ base::string16 BaseSearchProvider::GetFillIntoEdit(
   base::string16 fill_into_edit;
 
   if (suggest_result.from_keyword())
-    fill_into_edit.append(template_url->keyword() + base::char16(' '));
+    fill_into_edit.append(template_url->keyword() + char16_t(' '));
 
   fill_into_edit.append(suggest_result.suggestion());
 

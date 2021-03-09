@@ -46,9 +46,9 @@ bool ValidateAndConvertValue(const JET_COLTYP column_type,
                              const std::vector<uint8_t>& column_data,
                              base::string16* value) {
   if ((column_type == JET_coltypLongText) &&
-      ((column_data.size() % sizeof(base::char16)) == 0)) {
+      ((column_data.size() % sizeof(char16_t)) == 0)) {
     base::string16& value_ref = *value;
-    size_t char_length = column_data.size() / sizeof(base::char16);
+    size_t char_length = column_data.size() / sizeof(char16_t);
     value_ref.resize(char_length);
     memcpy(&value_ref[0], &column_data[0], column_data.size());
     // Remove any trailing NUL characters.
