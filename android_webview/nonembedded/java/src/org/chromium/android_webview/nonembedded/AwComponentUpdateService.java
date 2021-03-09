@@ -24,7 +24,8 @@ public class AwComponentUpdateService extends JobService {
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
         if (WebViewApkApplication.initializeNative()) {
-            AwComponentUpdateServiceJni.get().startComponentUpdateService();
+            AwComponentUpdateServiceJni.get().startComponentUpdateService(
+                    () -> { jobFinished(params, /* needReschedule= */ false); });
             return true;
         }
         Log.e(TAG, "couldn't init native, aborting starting AwComponentUpdaterService");
@@ -33,15 +34,13 @@ public class AwComponentUpdateService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        // TODO(crbug.com/1177393) call jobFinished when component_updater::ComponentUpdateService
-        // finishes checking for updates. We are leaving scheduling of the recurring update job for
-        // the native service for now. Always return true for now because we don't know if the
-        // native update service has finished or not.
-        return true;
+        // This should only be called if the service needs to be shut down before we've called
+        // jobFinished. Request reschedule so we can finish downloading component updates.
+        return /*reschedule= */ true;
     }
 
     @NativeMethods
     interface Natives {
-        void startComponentUpdateService();
+        void startComponentUpdateService(Runnable finishedCallback);
     }
 }

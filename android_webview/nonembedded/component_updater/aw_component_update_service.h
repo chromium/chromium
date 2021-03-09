@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -31,7 +32,8 @@ class MockAwComponentUpdateService;
 class AwComponentUpdateService {
  public:
   static AwComponentUpdateService* GetInstance();
-  void StartComponentUpdateService();
+  void StartComponentUpdateService(
+      const base::android::JavaParamRef<jobject>& j_finished_callback);
 
   virtual bool NotifyNewVersion(const std::string& component_id,
                                 const base::FilePath& install_dir,
@@ -54,7 +56,8 @@ class AwComponentUpdateService {
       const std::string& id) const;
   std::vector<base::Optional<update_client::CrxComponent>> GetCrxComponents(
       const std::vector<std::string>& ids);
-  void ScheduleUpdatesOfRegisteredComponents();
+  void ScheduleUpdatesOfRegisteredComponents(
+      base::OnceClosure on_finished_updates);
 
   scoped_refptr<update_client::UpdateClient> update_client_;
 

@@ -11,6 +11,8 @@
 #include "android_webview/nonembedded/component_updater/registration.h"
 #include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
+#include "base/android/callback_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -44,8 +46,11 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 }
 
 // static
-void JNI_AwComponentUpdateService_StartComponentUpdateService(JNIEnv* env) {
-  AwComponentUpdateService::GetInstance()->StartComponentUpdateService();
+void JNI_AwComponentUpdateService_StartComponentUpdateService(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_finished_callback) {
+  AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
+      j_finished_callback);
 }
 
 AwComponentUpdateService::AwComponentUpdateService()
@@ -66,7 +71,8 @@ bool AwComponentUpdateService::NotifyNewVersion(
 }
 
 // Start ComponentUpdateService once.
-void AwComponentUpdateService::StartComponentUpdateService() {
+void AwComponentUpdateService::StartComponentUpdateService(
+    const base::android::JavaParamRef<jobject>& j_finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All dirs point to the webview component root dir. Has to be called after
@@ -81,7 +87,10 @@ void AwComponentUpdateService::StartComponentUpdateService() {
                           base::Unretained(this)),
       base::BindOnce(
           &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(base::android::RunRunnableAndroid,
+                         base::android::ScopedJavaGlobalRef<jobject>(
+                             j_finished_callback))));
 }
 
 bool AwComponentUpdateService::RegisterComponent(
@@ -193,12 +202,11 @@ AwComponentUpdateService::GetCrxComponents(
   return component_updater::GetCrxComponents(components_, ids);
 }
 
-void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents() {
+void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(
+    base::OnceClosure on_finished_updates) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1183497): Notify Java AwComponentUpdateService once
-  // components have been registered and updated.
-  CheckForUpdates(base::DoNothing());
+  CheckForUpdates(std::move(on_finished_updates));
 }
 
 }  // namespace android_webview
