@@ -162,7 +162,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Variations.Headers.URLValidationResult{VariationsHeadersURLValidationResult}"
-    enum="VariationsHeadersURLValidationResult" expires_after="2021-03-15">
+    enum="VariationsHeadersURLValidationResult" expires_after="2022-03-15">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
