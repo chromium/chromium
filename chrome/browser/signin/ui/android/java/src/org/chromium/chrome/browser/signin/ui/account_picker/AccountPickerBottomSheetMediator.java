@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -53,6 +54,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         OnClickListener onDismissClicked = v -> {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.DISMISSED_BUTTON);
+            SigninPreferencesManager.getInstance()
+                    .incrementAccountPickerBottomSheetActiveDismissalCount();
             dismissBottomSheetRunnable.run();
         };
         mModel = AccountPickerBottomSheetProperties.createModel(
@@ -229,6 +232,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
+        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {

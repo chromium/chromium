@@ -496,9 +496,15 @@ const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
 const FeatureEntry::FeatureParam kHideDismissButton[] = {
     {"dismiss_button", "hide"}};
 
+const FeatureEntry::FeatureParam kSuppressBottomSheet[] = {
+    {"consecutive_active_dismissal_limit", "3"}};
+
 const FeatureEntry::FeatureVariation kMobileIdentityConsistencyVariations[] = {
     {"Hide Dismiss Button", kHideDismissButton, base::size(kHideDismissButton),
-     nullptr}};
+     nullptr},
+    {"Suppress Bottom Sheet", kSuppressBottomSheet,
+     base::size(kSuppressBottomSheet), nullptr},
+};
 #endif  // OS_ANDROID
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

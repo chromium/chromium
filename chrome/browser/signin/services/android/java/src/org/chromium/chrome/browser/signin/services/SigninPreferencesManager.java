@@ -211,4 +211,27 @@ public class SigninPreferencesManager {
     public int getAccountPickerBottomSheetShownCount() {
         return mManager.readInt(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
     }
+
+    /**
+     * Increments the active dismissal count for the account picker bottom sheet.
+     */
+    public void incrementAccountPickerBottomSheetActiveDismissalCount() {
+        mManager.incrementInt(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
+    }
+
+    /**
+     * Returns the number of times account picker bottom sheet has been actively dismissed.
+     */
+    public int getAccountPickerBottomSheetActiveDismissalCount() {
+        return mManager.readInt(
+                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
+    }
+
+    /**
+     * Clears the active dismissal count for the account picker bottom sheet.
+     */
+    public void clearAccountPickerBottomSheetActiveDismissalCount() {
+        mManager.removeKey(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT);
+    }
 }

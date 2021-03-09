@@ -49,6 +49,8 @@ public class AccountPickerBottomSheetCoordinator {
                 // Return for other dismiss cases so we don't record web signin metrics for them.
                 return;
             }
+            SigninPreferencesManager.getInstance()
+                    .incrementAccountPickerBottomSheetActiveDismissalCount();
             SigninMetricsUtils.logWebSignin();
         }
 

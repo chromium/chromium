@@ -263,6 +263,9 @@ enum class AccountConsistencyPromoAction : int {
   // User has completed the account addition flow triggered from the bottom
   // sheet.
   ADD_ACCOUNT_COMPLETED,
+  // The bottom sheet was suppressed as the user hit consecutive active
+  // dismissal limit.
+  SUPPRESSED_CONSECUTIVE_DISMISSALS,
 
   MAX,
 };
