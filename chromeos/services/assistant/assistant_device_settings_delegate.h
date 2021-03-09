@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom-forward.h"
 
 namespace assistant {
 namespace api {
@@ -24,14 +25,14 @@ namespace chromeos {
 namespace assistant {
 
 struct DeviceSetting;
-class ServiceContext;
 class Setting;
 
 // Delegate that handles Assistant actions related to retrieving/modifying
 // the device settings, like Bluetooth or WiFi.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantDeviceSettingsDelegate {
  public:
-  explicit AssistantDeviceSettingsDelegate(ServiceContext* context);
+  explicit AssistantDeviceSettingsDelegate(
+      chromeos::libassistant::mojom::DeviceSettingsDelegate* mojom_delegate);
   AssistantDeviceSettingsDelegate(AssistantDeviceSettingsDelegate&) = delete;
   AssistantDeviceSettingsDelegate& operator=(AssistantDeviceSettingsDelegate&) =
       delete;

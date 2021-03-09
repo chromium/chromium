@@ -23,6 +23,8 @@ component("lib") {
     "assistant_interaction_logger.h",
     "assistant_manager_service.cc",
     "assistant_manager_service.h",
+    "device_settings_host.cc",
+    "device_settings_host.h",
     "fake_assistant_manager_service_impl.cc",
     "fake_assistant_manager_service_impl.h",
     "fake_assistant_settings_impl.cc",

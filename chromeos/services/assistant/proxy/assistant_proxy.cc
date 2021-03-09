@@ -82,6 +82,8 @@ void AssistantProxy::BindControllers(
       pending_audio_input_controller_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
       pending_audio_output_delegate_remote;
+  mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+      pending_device_settings_delegate_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::ConversationController>
       pending_conversation_controller_remote;
   mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
@@ -108,6 +110,8 @@ void AssistantProxy::BindControllers(
 
   pending_audio_output_delegate_receiver_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
+  pending_device_settings_delegate_receiver_ =
+      pending_device_settings_delegate_remote.InitWithNewPipeAndPassReceiver();
   libassistant_service_remote_->Bind(
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
       pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
@@ -119,6 +123,7 @@ void AssistantProxy::BindControllers(
           .InitWithNewPipeAndPassReceiver(),
       timer_controller_.BindNewPipeAndPassReceiver(),
       std::move(pending_audio_output_delegate_remote),
+      std::move(pending_device_settings_delegate_remote),
       std::move(pending_media_delegate_remote),
       std::move(pending_platform_delegate_remote),
       std::move(pending_timer_delegate_remote));
@@ -158,6 +163,12 @@ mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
 AssistantProxy::ExtractAudioOutputDelegate() {
   DCHECK(pending_audio_output_delegate_receiver_.is_valid());
   return std::move(pending_audio_output_delegate_receiver_);
+}
+
+mojo::PendingReceiver<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+AssistantProxy::ExtractDeviceSettingsDelegate() {
+  DCHECK(pending_device_settings_delegate_receiver_.is_valid());
+  return std::move(pending_device_settings_delegate_receiver_);
 }
 
 mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>

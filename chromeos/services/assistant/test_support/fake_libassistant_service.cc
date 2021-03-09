@@ -65,6 +65,8 @@ void FakeLibassistantService::Bind(
         timer_controller,
     mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
         audio_output_delegate,
+    mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+        device_settings_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
         media_delegate,
     mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>

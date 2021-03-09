@@ -9,6 +9,7 @@ import "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom"
 import "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom";
 import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/display_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom";
 import "chromeos/services/libassistant/public/mojom/media_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/platform_delegate.mojom";
 import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
@@ -36,6 +37,7 @@ interface LibassistantService {
     pending_receiver<SpeakerIdEnrollmentController> enrollment_controller,
     pending_receiver<TimerController> timer_controller,
     pending_remote<AudioOutputDelegate> audio_output_delegate,
+    pending_remote<DeviceSettingsDelegate> device_settings_delegate,
     pending_remote<MediaDelegate> media_delegate,
     pending_remote<PlatformDelegate> platform_delegate,
     pending_remote<TimerDelegate> timer_delegate

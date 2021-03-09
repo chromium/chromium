@@ -8,29 +8,34 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/assistant/controller/assistant_notification_controller.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/device_actions.h"
-#include "chromeos/services/assistant/service_context.h"
+#include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
 
 namespace client_op = ::assistant::api::client_op;
+
+using chromeos::libassistant::mojom::DeviceSettingsDelegate;
+using chromeos::libassistant::mojom::GetBrightnessResultPtr;
 
 namespace chromeos {
 namespace assistant {
 
 class Setting {
  public:
-  Setting() = default;
+  explicit Setting(DeviceSettingsDelegate* delegate) : delegate_(*delegate) {}
   Setting(Setting&) = delete;
   Setting& operator=(Setting&) = delete;
   virtual ~Setting() = default;
 
   virtual const char* setting_id() const = 0;
   virtual void Modify(const client_op::ModifySettingArgs& request) = 0;
+
+  DeviceSettingsDelegate& delegate() { return delegate_; }
+
+ private:
+  DeviceSettingsDelegate& delegate_;
 };
 
 namespace {
@@ -142,46 +147,34 @@ void HandleSliderChange(client_op::ModifySettingArgs request,
   LogUnsupportedChange(request);
 }
 
-class SettingWithDeviceAction : public Setting {
+class WifiSetting : public Setting {
  public:
-  explicit SettingWithDeviceAction(ServiceContext* context)
-      : context_(context) {}
-
-  DeviceActions* device_actions() { return context_->device_actions(); }
-
- private:
-  ServiceContext* context_;
-};
-
-class WifiSetting : public SettingWithDeviceAction {
- public:
-  using SettingWithDeviceAction::SettingWithDeviceAction;
+  using Setting::Setting;
 
   const char* setting_id() const override { return kWiFiDeviceSettingId; }
 
   void Modify(const client_op::ModifySettingArgs& request) override {
-    HandleOnOffChange(request, [&](bool enabled) {
-      this->device_actions()->SetWifiEnabled(enabled);
-    });
+    HandleOnOffChange(
+        request, [&](bool enabled) { delegate().SetWifiEnabled(enabled); });
   }
 };
 
-class BluetoothSetting : public SettingWithDeviceAction {
+class BluetoothSetting : public Setting {
  public:
-  using SettingWithDeviceAction::SettingWithDeviceAction;
+  using Setting::Setting;
 
   const char* setting_id() const override { return kBluetoothDeviceSettingId; }
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
-      this->device_actions()->SetBluetoothEnabled(enabled);
+      delegate().SetBluetoothEnabled(enabled);
     });
   }
 };
 
 class DoNotDisturbSetting : public Setting {
  public:
-  explicit DoNotDisturbSetting(ServiceContext* context) : context_(context) {}
+  using Setting::Setting;
 
   const char* setting_id() const override {
     return kDoNotDisturbDeviceSettingId;
@@ -189,21 +182,14 @@ class DoNotDisturbSetting : public Setting {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
-      this->assistant_notification_controller()->SetQuietMode(enabled);
+      delegate().SetDoNotDisturbEnabled(enabled);
     });
   }
-
- private:
-  ash::AssistantNotificationController* assistant_notification_controller() {
-    return context_->assistant_notification_controller();
-  }
-
-  ServiceContext* context_;
 };
 
-class SwitchAccessSetting : public SettingWithDeviceAction {
+class SwitchAccessSetting : public Setting {
  public:
-  using SettingWithDeviceAction::SettingWithDeviceAction;
+  using Setting::Setting;
 
   const char* setting_id() const override {
     return kSwitchAccessDeviceSettingId;
@@ -211,49 +197,48 @@ class SwitchAccessSetting : public SettingWithDeviceAction {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
-      this->device_actions()->SetSwitchAccessEnabled(enabled);
+      delegate().SetSwitchAccessEnabled(enabled);
     });
   }
 };
 
-class NightLightSetting : public SettingWithDeviceAction {
+class NightLightSetting : public Setting {
  public:
-  using SettingWithDeviceAction::SettingWithDeviceAction;
+  using Setting::Setting;
 
   const char* setting_id() const override { return kNightLightDeviceSettingId; }
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
-      this->device_actions()->SetNightLightEnabled(enabled);
+      delegate().SetNightLightEnabled(enabled);
     });
   }
 };
 
-class BrightnessSetting : public SettingWithDeviceAction {
+class BrightnessSetting : public Setting {
  public:
-  explicit BrightnessSetting(ServiceContext* context)
-      : SettingWithDeviceAction(context), weak_factory_(this) {}
+  explicit BrightnessSetting(DeviceSettingsDelegate* delegate)
+      : Setting(delegate), weak_factory_(this) {}
 
   const char* setting_id() const override {
     return kScreenBrightnessDeviceSettingId;
   }
 
   void Modify(const client_op::ModifySettingArgs& request) override {
-    device_actions()->GetScreenBrightnessLevel(base::BindOnce(
+    delegate().GetScreenBrightnessLevel(base::BindOnce(
         [](base::WeakPtr<BrightnessSetting> this_,
-           client_op::ModifySettingArgs request, bool success,
-           double current_value) {
-          if (!success || !this_) {
+           client_op::ModifySettingArgs request,
+           GetBrightnessResultPtr result) {
+          if (!result || !this_) {
             LOG(WARNING) << "Failed to get brightness level";
             return;
           }
           HandleSliderChange(
               request,
               [&this_](double new_value) {
-                this_->device_actions()->SetScreenBrightnessLevel(new_value,
-                                                                  true);
+                this_->delegate().SetScreenBrightnessLevel(new_value, true);
               },
-              [current_value]() { return current_value; });
+              [current_value = result->level]() { return current_value; });
         },
         weak_factory_.GetWeakPtr(), request));
   }
@@ -265,13 +250,13 @@ class BrightnessSetting : public SettingWithDeviceAction {
 }  // namespace
 
 AssistantDeviceSettingsDelegate::AssistantDeviceSettingsDelegate(
-    ServiceContext* context) {
-  AddSetting(std::make_unique<WifiSetting>(context));
-  AddSetting(std::make_unique<BluetoothSetting>(context));
-  AddSetting(std::make_unique<NightLightSetting>(context));
-  AddSetting(std::make_unique<DoNotDisturbSetting>(context));
-  AddSetting(std::make_unique<BrightnessSetting>(context));
-  AddSetting(std::make_unique<SwitchAccessSetting>(context));
+    DeviceSettingsDelegate* delegate) {
+  AddSetting(std::make_unique<WifiSetting>(delegate));
+  AddSetting(std::make_unique<BluetoothSetting>(delegate));
+  AddSetting(std::make_unique<NightLightSetting>(delegate));
+  AddSetting(std::make_unique<DoNotDisturbSetting>(delegate));
+  AddSetting(std::make_unique<BrightnessSetting>(delegate));
+  AddSetting(std::make_unique<SwitchAccessSetting>(delegate));
 }
 
 AssistantDeviceSettingsDelegate::~AssistantDeviceSettingsDelegate() = default;

@@ -84,6 +84,7 @@ void LibassistantService::Bind(
         speaker_id_enrollment_controller,
     mojo::PendingReceiver<mojom::TimerController> timer_controller,
     mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+    mojo::PendingRemote<mojom::DeviceSettingsDelegate> device_settings_delegate,
     mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
     mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
     mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) {

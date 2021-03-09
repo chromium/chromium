@@ -40,12 +40,16 @@ void LibassistantServiceTester::Start() {
 void LibassistantServiceTester::BindControllers() {
   mojo::PendingRemote<mojom::AudioOutputDelegate>
       pending_audio_output_delegate_remote;
+  mojo::PendingRemote<mojom::DeviceSettingsDelegate>
+      pending_device_settings_delegate_remote;
   mojo::PendingRemote<mojom::MediaDelegate> pending_media_delegate_remote;
   mojo::PendingRemote<mojom::PlatformDelegate> pending_platform_delegate_remote;
   mojo::PendingRemote<mojom::TimerDelegate> pending_timer_delegate_remote;
 
   pending_audio_output_delegate_ =
       pending_audio_output_delegate_remote.InitWithNewPipeAndPassReceiver();
+  pending_device_settings_delegate_ =
+      pending_device_settings_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_media_delegate_ =
       pending_media_delegate_remote.InitWithNewPipeAndPassReceiver();
   pending_platform_delegate_ =
@@ -62,6 +66,7 @@ void LibassistantServiceTester::BindControllers() {
                 speaker_id_enrollment_controller_.BindNewPipeAndPassReceiver(),
                 timer_controller_.BindNewPipeAndPassReceiver(),
                 std::move(pending_audio_output_delegate_remote),
+                std::move(pending_device_settings_delegate_remote),
                 std::move(pending_media_delegate_remote),
                 std::move(pending_platform_delegate_remote),
                 std::move(pending_timer_delegate_remote));

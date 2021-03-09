@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
+#include "chromeos/services/assistant/device_settings_host.h"
 #include "chromeos/services/assistant/test_support/fake_service_context.h"
 #include "chromeos/services/assistant/test_support/scoped_device_actions.h"
 #include "libassistant/shared/public/platform_audio_output.h"
@@ -97,6 +98,7 @@ class AssistantDeviceSettingsDelegateTest : public testing::Test {
 
   void SetUp() override {
     service_context_ = std::make_unique<FakeServiceContext>();
+    host_ = std::make_unique<DeviceSettingsHost>(service_context_.get());
 
     CreateAssistantDeviceSettingsDelegate();
   }
@@ -117,12 +119,12 @@ class AssistantDeviceSettingsDelegateTest : public testing::Test {
   AssistantDeviceSettingsDelegate* delegate() { return delegate_.get(); }
 
   void CreateAssistantDeviceSettingsDelegate() {
-    delegate_ = std::make_unique<AssistantDeviceSettingsDelegate>(
-        service_context_.get());
+    delegate_ = std::make_unique<AssistantDeviceSettingsDelegate>(host_.get());
   }
 
  private:
   std::unique_ptr<FakeServiceContext> service_context_;
+  std::unique_ptr<DeviceSettingsHost> host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> delegate_;
 };
 

@@ -32,6 +32,7 @@
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
+#include "chromeos/services/assistant/device_settings_host.h"
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
 #include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/platform/audio_output_delegate_impl.h"
@@ -196,6 +197,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       platform_delegate_(std::make_unique<PlatformDelegateImpl>()),
       context_(context),
       delegate_(std::move(delegate)),
+      device_settings_host_(std::make_unique<DeviceSettingsHost>(context)),
       media_host_(std::make_unique<MediaHost>(AssistantClient::Get(),
                                               &interaction_subscribers_)),
       timer_host_(std::make_unique<TimerHost>(context)),
@@ -238,8 +240,10 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   timer_host_->Initialize(&assistant_proxy_->timer_controller(),
                           assistant_proxy_->ExtractTimerDelegate());
 
-  settings_delegate_ =
-      std::make_unique<AssistantDeviceSettingsDelegate>(context);
+  device_settings_host_->Bind(
+      assistant_proxy_->ExtractDeviceSettingsDelegate());
+  settings_delegate_ = std::make_unique<AssistantDeviceSettingsDelegate>(
+      device_settings_host_.get());
 }
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {

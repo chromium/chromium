@@ -63,6 +63,7 @@ class AssistantMediaSession;
 class AssistantProxy;
 class AudioInputHost;
 class AudioOutputDelegateImpl;
+class DeviceSettingsHost;
 class MediaHost;
 class PlatformDelegateImpl;
 class ServiceContext;
@@ -275,6 +276,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
+  std::unique_ptr<DeviceSettingsHost> device_settings_host_;
   std::unique_ptr<MediaHost> media_host_;
   std::unique_ptr<TimerHost> timer_host_;
   std::unique_ptr<AudioOutputDelegateImpl> audio_output_delegate_;

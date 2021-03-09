@@ -84,6 +84,8 @@ class AssistantProxy {
   ExtractAudioInputController();
   mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
   ExtractAudioOutputDelegate();
+  mojo::PendingReceiver<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+  ExtractDeviceSettingsDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
   ExtractMediaDelegate();
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
@@ -129,6 +131,8 @@ class AssistantProxy {
       audio_input_controller_;
   mojo::PendingReceiver<chromeos::libassistant::mojom::AudioOutputDelegate>
       pending_audio_output_delegate_receiver_;
+  mojo::PendingReceiver<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+      pending_device_settings_delegate_receiver_;
   mojo::PendingReceiver<chromeos::libassistant::mojom::MediaDelegate>
       media_delegate_;
   mojo::PendingReceiver<chromeos::libassistant::mojom::PlatformDelegate>
