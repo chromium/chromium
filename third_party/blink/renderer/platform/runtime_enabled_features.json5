@@ -913,9 +913,6 @@
       status: "experimental"
     },
     {
-      name: "FeaturePolicyVibrateFeature"
-    },
-    {
       name: "FetchUploadStreaming",
       origin_trial_feature_name: "FetchUploadStreaming",
       status: "experimental",
