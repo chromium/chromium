@@ -44,7 +44,7 @@ class AppsGridViewTestApi {
 
   AppListItemView* GetViewAtIndex(GridIndex index) const;
 
-  views::View* GetViewAtVisualIndex(int page, int slot) const;
+  AppListItemView* GetViewAtVisualIndex(int page, int slot) const;
 
   gfx::Rect GetItemTileRectAtVisualIndex(int page, int slot) const;
 
