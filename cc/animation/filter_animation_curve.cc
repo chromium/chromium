@@ -5,96 +5,9 @@
 #include "cc/animation/filter_animation_curve.h"
 
 #include "base/memory/ptr_util.h"
+#include "ui/gfx/animation/keyframe/keyframed_animation_curve-inl.h"
 
 namespace cc {
-
-// TODO(crbug.com/747185): All code in this namespace duplicates code from
-// ui/gfx/keyframe/animation/ unnecessarily.
-namespace {
-
-template <class KeyframeType>
-void InsertKeyframe(std::unique_ptr<KeyframeType> keyframe,
-                    std::vector<std::unique_ptr<KeyframeType>>* keyframes) {
-  // Usually, the keyframes will be added in order, so this loop would be
-  // unnecessary and we should skip it if possible.
-  if (!keyframes->empty() && keyframe->Time() < keyframes->back()->Time()) {
-    for (size_t i = 0; i < keyframes->size(); ++i) {
-      if (keyframe->Time() < keyframes->at(i)->Time()) {
-        keyframes->insert(keyframes->begin() + i, std::move(keyframe));
-        return;
-      }
-    }
-  }
-
-  keyframes->push_back(std::move(keyframe));
-}
-
-struct TimeValues {
-  base::TimeDelta start_time;
-  base::TimeDelta duration;
-  double progress;
-};
-
-template <typename KeyframeType>
-TimeValues GetTimeValues(const KeyframeType& start_frame,
-                         const KeyframeType& end_frame,
-                         double scaled_duration,
-                         base::TimeDelta time) {
-  TimeValues values;
-  values.start_time = start_frame.Time() * scaled_duration;
-  values.duration = (end_frame.Time() * scaled_duration) - values.start_time;
-  const base::TimeDelta elapsed = time - values.start_time;
-  values.progress = (elapsed.is_inf() || values.duration.is_zero())
-                        ? 1.0
-                        : (elapsed / values.duration);
-  return values;
-}
-
-template <typename KeyframeType>
-base::TimeDelta TransformedAnimationTime(
-    const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
-    const std::unique_ptr<gfx::TimingFunction>& timing_function,
-    double scaled_duration,
-    base::TimeDelta time) {
-  if (timing_function) {
-    const auto values = GetTimeValues(*keyframes.front(), *keyframes.back(),
-                                      scaled_duration, time);
-    time = (values.duration * timing_function->GetValue(values.progress)) +
-           values.start_time;
-  }
-
-  return time;
-}
-
-template <typename KeyframeType>
-size_t GetActiveKeyframe(
-    const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
-    double scaled_duration,
-    base::TimeDelta time) {
-  DCHECK_GE(keyframes.size(), 2ul);
-  size_t i = 0;
-  while ((i < keyframes.size() - 2) &&  // Last keyframe is never active.
-         (time >= (keyframes[i + 1]->Time() * scaled_duration)))
-    ++i;
-
-  return i;
-}
-
-template <typename KeyframeType>
-double TransformedKeyframeProgress(
-    const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
-    double scaled_duration,
-    base::TimeDelta time,
-    size_t i) {
-  const double progress =
-      GetTimeValues(*keyframes[i], *keyframes[i + 1], scaled_duration, time)
-          .progress;
-  return keyframes[i]->timing_function()
-             ? keyframes[i]->timing_function()->GetValue(progress)
-             : progress;
-}
-
-}  // namespace
 
 void FilterAnimationCurve::Tick(base::TimeDelta t,
                                 int property_id,
@@ -149,6 +62,10 @@ std::unique_ptr<FilterKeyframe> FilterKeyframe::Clone() const {
   if (timing_function())
     func = timing_function()->Clone();
   return FilterKeyframe::Create(Time(), Value(), std::move(func));
+}
+
+base::TimeDelta KeyframedFilterAnimationCurve::TickInterval() const {
+  return ComputeTickInterval(timing_function_, scaled_duration(), keyframes_);
 }
 
 void KeyframedFilterAnimationCurve::AddKeyframe(

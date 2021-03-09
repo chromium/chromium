@@ -64,6 +64,7 @@ class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
   // AnimationCurve implementation
   base::TimeDelta Duration() const override;
   std::unique_ptr<gfx::AnimationCurve> Clone() const override;
+  base::TimeDelta TickInterval() const override;
 
   // FilterAnimationCurve implementation
   FilterOperations GetValue(base::TimeDelta t) const override;

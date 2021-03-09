@@ -26,6 +26,7 @@ component("keyframe") {
     "keyframe_effect.h",
     "keyframe_model.cc",
     "keyframe_model.h",
+    "keyframed_animation_curve-inl.h",
     "keyframed_animation_curve.cc",
     "keyframed_animation_curve.h",
     "target_property.h",

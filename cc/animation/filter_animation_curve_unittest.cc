@@ -24,7 +24,7 @@ void ExpectBrightness(double brightness, const FilterOperations& filter) {
 }
 
 // Tests that a filter animation with one keyframe works as expected.
-TEST(KeyframedAnimationCurveTest, OneFilterKeyframe) {
+TEST(FilterAnimationCurveTest, OneFilterKeyframe) {
   std::unique_ptr<KeyframedFilterAnimationCurve> curve(
       KeyframedFilterAnimationCurve::Create());
   FilterOperations operations;
@@ -40,7 +40,7 @@ TEST(KeyframedAnimationCurveTest, OneFilterKeyframe) {
 }
 
 // Tests that a filter animation with two keyframes works as expected.
-TEST(KeyframedAnimationCurveTest, TwoFilterKeyframe) {
+TEST(FilterAnimationCurveTest, TwoFilterKeyframe) {
   std::unique_ptr<KeyframedFilterAnimationCurve> curve(
       KeyframedFilterAnimationCurve::Create());
   FilterOperations operations1;
@@ -60,7 +60,7 @@ TEST(KeyframedAnimationCurveTest, TwoFilterKeyframe) {
 }
 
 // Tests that a filter animation with three keyframes works as expected.
-TEST(KeyframedAnimationCurveTest, ThreeFilterKeyframe) {
+TEST(FilterAnimationCurveTest, ThreeFilterKeyframe) {
   std::unique_ptr<KeyframedFilterAnimationCurve> curve(
       KeyframedFilterAnimationCurve::Create());
   FilterOperations operations1;
@@ -86,7 +86,7 @@ TEST(KeyframedAnimationCurveTest, ThreeFilterKeyframe) {
 
 // Tests that a filter animation with multiple keys at a given time works
 // sanely.
-TEST(KeyframedAnimationCurveTest, RepeatedFilterKeyTimes) {
+TEST(FilterAnimationCurveTest, RepeatedFilterKeyTimes) {
   std::unique_ptr<KeyframedFilterAnimationCurve> curve(
       KeyframedFilterAnimationCurve::Create());
   // A step function.
