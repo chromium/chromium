@@ -61,6 +61,22 @@ void SynthesizePaste() {
   host->DeliverEventToSink(&control_release);
 }
 
+bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
+                 const ui::DataTransferEndpoint* const endpoint) {
+  const ui::EndpointType endpoint_type =
+      endpoint ? endpoint->type() : ui::EndpointType::kDefault;
+
+  for (const auto& ept : saved_endpoints) {
+    if (ept.type() == endpoint_type) {
+      if (endpoint_type != ui::EndpointType::kUrl)
+        return true;
+      else if (ept.IsSameOriginWith(*endpoint))
+        return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 DlpClipboardNotifier::DlpClipboardNotifier() {
@@ -143,11 +159,15 @@ void DlpClipboardNotifier::WarnOnPaste(
   }
 
   auto proceed_cb =
-      base::BindRepeating(&DlpClipboardNotifier::ProceedOnWarn,
+      base::BindRepeating(&DlpClipboardNotifier::ProceedPressed,
                           base::Unretained(this), CloneEndpoint(data_dst));
+  auto cancel_cb =
+      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
+                          base::Unretained(this), CloneEndpoint(data_dst));
+
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
-                    std::move(proceed_cb));
+                    std::move(proceed_cb), std::move(cancel_cb));
 }
 
 void DlpClipboardNotifier::WarnOnBlinkPaste(
@@ -167,30 +187,28 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
   Observe(web_contents);
 
   auto proceed_cb =
-      base::BindRepeating(&DlpClipboardNotifier::ProceedOnBlinkWarn,
+      base::BindRepeating(&DlpClipboardNotifier::BlinkProceedPressed,
                           base::Unretained(this), CloneEndpoint(data_dst));
+  auto cancel_cb =
+      base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
+                          base::Unretained(this), CloneEndpoint(data_dst));
+
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name),
-                    std::move(proceed_cb));
+                    std::move(proceed_cb), std::move(cancel_cb));
 }
 
-bool DlpClipboardNotifier::DidUserProceedOnWarn(
+bool DlpClipboardNotifier::DidUserApproveDst(
     const ui::DataTransferEndpoint* const data_dst) {
-  const ui::EndpointType dst_type =
-      data_dst ? data_dst->type() : ui::EndpointType::kDefault;
-
-  for (const auto& endpoint : approved_dsts_) {
-    if (endpoint.type() == dst_type) {
-      if (dst_type != ui::EndpointType::kUrl)
-        return true;
-      else if (endpoint.IsSameOriginWith(*data_dst))
-        return true;
-    }
-  }
-  return false;
+  return HasEndpoint(approved_dsts_, data_dst);
 }
 
-void DlpClipboardNotifier::ProceedOnWarn(
+bool DlpClipboardNotifier::DidUserCancelDst(
+    const ui::DataTransferEndpoint* const data_dst) {
+  return HasEndpoint(cancelled_dsts_, data_dst);
+}
+
+void DlpClipboardNotifier::ProceedPressed(
     const ui::DataTransferEndpoint& data_dst,
     views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
@@ -198,7 +216,7 @@ void DlpClipboardNotifier::ProceedOnWarn(
   SynthesizePaste();
 }
 
-void DlpClipboardNotifier::ProceedOnBlinkWarn(
+void DlpClipboardNotifier::BlinkProceedPressed(
     const ui::DataTransferEndpoint& data_dst,
     views::Widget* widget) {
   DCHECK(!blink_paste_cb_.is_null());
@@ -208,8 +226,16 @@ void DlpClipboardNotifier::ProceedOnBlinkWarn(
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
+void DlpClipboardNotifier::CancelWarningPressed(
+    const ui::DataTransferEndpoint& data_dst,
+    views::Widget* widget) {
+  cancelled_dsts_.push_back(data_dst);
+  CloseWidget(widget, views::Widget::ClosedReason::kCancelButtonClicked);
+}
+
 void DlpClipboardNotifier::ResetUserWarnSelection() {
   approved_dsts_.clear();
+  cancelled_dsts_.clear();
 }
 
 void DlpClipboardNotifier::ShowToast(const std::string& id,

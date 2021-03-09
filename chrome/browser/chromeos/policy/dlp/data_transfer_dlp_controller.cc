@@ -149,8 +149,10 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
                          data_dst->type() == ui::EndpointType::kPluginVm ||
                          data_dst->type() == ui::EndpointType::kCrostini)) {
           WarnOnPaste(data_src, data_dst);
+        } else if (ShouldCancelOnWarn(data_dst)) {
+          is_read_allowed = false;
         } else if (!(data_dst && data_dst->IsUrlType()) &&
-                   !ShouldProceedOnWarn(data_dst)) {
+                   !ShouldPasteOnWarn(data_dst)) {
           SYSLOG(INFO) << "DLP warned on paste from clipboard";
           WarnOnPaste(data_src, data_dst);
           is_read_allowed = false;
@@ -191,8 +193,13 @@ void DataTransferDlpController::PasteIfAllowed(
 
   DCHECK_EQ(level, DlpRulesManager::Level::kWarn);
 
-  if (ShouldNotifyOnPaste(data_dst) && !ShouldProceedOnWarn(data_dst)) {
-    WarnOnBlinkPaste(data_src, data_dst, web_contents, std::move(callback));
+  if (ShouldNotifyOnPaste(data_dst)) {
+    if (ShouldPasteOnWarn(data_dst))
+      std::move(callback).Run(true);
+    else if (ShouldCancelOnWarn(data_dst))
+      std::move(callback).Run(false);
+    else
+      WarnOnBlinkPaste(data_src, data_dst, web_contents, std::move(callback));
   } else {
     std::move(callback).Run(true);
   }
@@ -240,9 +247,14 @@ void DataTransferDlpController::WarnOnBlinkPaste(
                                        std::move(paste_cb));
 }
 
-bool DataTransferDlpController::ShouldProceedOnWarn(
+bool DataTransferDlpController::ShouldPasteOnWarn(
     const ui::DataTransferEndpoint* const data_dst) {
-  return clipboard_notifier_.DidUserProceedOnWarn(data_dst);
+  return clipboard_notifier_.DidUserApproveDst(data_dst);
+}
+
+bool DataTransferDlpController::ShouldCancelOnWarn(
+    const ui::DataTransferEndpoint* const data_dst) {
+  return clipboard_notifier_.DidUserCancelDst(data_dst);
 }
 
 void DataTransferDlpController::NotifyBlockedDrop(

@@ -52,14 +52,16 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
 class MockDlpClipboardNotifier : public DlpClipboardNotifier {
  public:
   MOCK_METHOD1(ShowBlockBubble, void(const base::string16& text));
-  MOCK_METHOD2(ShowWarningBubble,
+  MOCK_METHOD3(ShowWarningBubble,
                void(const base::string16& text,
-                    base::RepeatingCallback<void(views::Widget*)> proceed_cb));
+                    base::RepeatingCallback<void(views::Widget*)> proceed_cb,
+                    base::RepeatingCallback<void(views::Widget*)> cancel_cb));
   MOCK_CONST_METHOD2(ShowToast,
                      void(const std::string& id, const base::string16& text));
 
-  using DlpClipboardNotifier::ProceedOnBlinkWarn;
-  using DlpClipboardNotifier::ProceedOnWarn;
+  using DlpClipboardNotifier::BlinkProceedPressed;
+  using DlpClipboardNotifier::CancelWarningPressed;
+  using DlpClipboardNotifier::ProceedPressed;
   using DlpClipboardNotifier::ResetUserWarnSelection;
 };
 
@@ -105,7 +107,7 @@ TEST_P(DlpClipboardBubbleTest, WarnBubble) {
   notifier.WarnOnPaste(&data_src, dst_ptr);
 }
 
-TEST_P(DlpClipboardBubbleTest, ProceedOnWarn) {
+TEST_P(DlpClipboardBubbleTest, ProceedPressed) {
   ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
   base::Optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
@@ -119,8 +121,8 @@ TEST_P(DlpClipboardBubbleTest, ProceedOnWarn) {
     data_dst.emplace(param.value());
 
   const ui::DataTransferEndpoint* dst_ptr = base::OptionalOrNullptr(data_dst);
-  notifier.ProceedOnWarn(*dst_ptr, nullptr);
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(dst_ptr));
+  notifier.ProceedPressed(*dst_ptr, nullptr);
+  EXPECT_TRUE(notifier.DidUserApproveDst(dst_ptr));
 }
 
 INSTANTIATE_TEST_SUITE_P(DlpClipboard,
@@ -148,9 +150,9 @@ TEST_F(DlpClipboardBubbleTest, BlinkWarn) {
                             callback.Get());
 
   EXPECT_CALL(callback, Run(true));
-  notifier.ProceedOnBlinkWarn(data_dst, nullptr);
+  notifier.BlinkProceedPressed(data_dst, nullptr);
 
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&data_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&data_dst));
 }
 
 TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
@@ -160,22 +162,47 @@ TEST_F(DlpClipboardBubbleTest, ProceedSavedHistory) {
   const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
   const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
 
-  notifier.ProceedOnWarn(url_dst, nullptr);
-  notifier.ProceedOnWarn(default_dst, nullptr);
-  notifier.ProceedOnWarn(arc_dst, nullptr);
-  notifier.ProceedOnWarn(crostini_dst, nullptr);
+  notifier.ProceedPressed(url_dst, nullptr);
+  notifier.ProceedPressed(default_dst, nullptr);
+  notifier.ProceedPressed(arc_dst, nullptr);
+  notifier.ProceedPressed(crostini_dst, nullptr);
 
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&url_dst));
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&default_dst));
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&arc_dst));
-  EXPECT_TRUE(notifier.DidUserProceedOnWarn(&crostini_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&url_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&default_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&arc_dst));
+  EXPECT_TRUE(notifier.DidUserApproveDst(&crostini_dst));
 
   notifier.ResetUserWarnSelection();
 
-  EXPECT_FALSE(notifier.DidUserProceedOnWarn(&url_dst));
-  EXPECT_FALSE(notifier.DidUserProceedOnWarn(&default_dst));
-  EXPECT_FALSE(notifier.DidUserProceedOnWarn(&arc_dst));
-  EXPECT_FALSE(notifier.DidUserProceedOnWarn(&crostini_dst));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&url_dst));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&default_dst));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&arc_dst));
+  EXPECT_FALSE(notifier.DidUserApproveDst(&crostini_dst));
+}
+
+TEST_F(DlpClipboardBubbleTest, CancelSavedHistory) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  const ui::DataTransferEndpoint url_dst(url::Origin::Create(GURL(kUrl)));
+  const ui::DataTransferEndpoint default_dst(ui::EndpointType::kDefault);
+  const ui::DataTransferEndpoint arc_dst(ui::EndpointType::kArc);
+  const ui::DataTransferEndpoint crostini_dst(ui::EndpointType::kCrostini);
+
+  notifier.CancelWarningPressed(url_dst, nullptr);
+  notifier.CancelWarningPressed(default_dst, nullptr);
+  notifier.CancelWarningPressed(arc_dst, nullptr);
+  notifier.CancelWarningPressed(crostini_dst, nullptr);
+
+  EXPECT_TRUE(notifier.DidUserCancelDst(&url_dst));
+  EXPECT_TRUE(notifier.DidUserCancelDst(&default_dst));
+  EXPECT_TRUE(notifier.DidUserCancelDst(&arc_dst));
+  EXPECT_TRUE(notifier.DidUserCancelDst(&crostini_dst));
+
+  notifier.ResetUserWarnSelection();
+
+  EXPECT_FALSE(notifier.DidUserCancelDst(&url_dst));
+  EXPECT_FALSE(notifier.DidUserCancelDst(&default_dst));
+  EXPECT_FALSE(notifier.DidUserCancelDst(&arc_dst));
+  EXPECT_FALSE(notifier.DidUserCancelDst(&crostini_dst));
 }
 
 class DlpClipboardToastTest : public ::testing::TestWithParam<ToastTest> {};

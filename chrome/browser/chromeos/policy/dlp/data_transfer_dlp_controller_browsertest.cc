@@ -54,8 +54,8 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return GetWidgetForTesting(); }
 
-  void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst) {
-    DlpClipboardNotifier::ProceedOnWarn(data_dst, GetWidget());
+  void ProceedPressed(const ui::DataTransferEndpoint& data_dst) {
+    DlpClipboardNotifier::ProceedPressed(data_dst, GetWidget());
   }
 };
 
@@ -86,9 +86,9 @@ class FakeDlpController : public DataTransferDlpController,
     helper_->WarnOnPaste(data_src, data_dst);
   }
 
-  bool ShouldProceedOnWarn(
+  bool ShouldPasteOnWarn(
       const ui::DataTransferEndpoint* const data_dst) override {
-    return helper_->DidUserProceedOnWarn(data_dst);
+    return helper_->DidUserApproveDst(data_dst);
   }
 
   bool ObserveWidget() {
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   // Accept warning.
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
   ui::DataTransferEndpoint default_endpoint(ui::EndpointType::kDefault);
-  helper->ProceedOnWarn(default_endpoint);
+  helper->ProceedPressed(default_endpoint);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 
   EXPECT_EQ(kClipboardText1, base::UTF16ToUTF8(textfield_->GetText()));

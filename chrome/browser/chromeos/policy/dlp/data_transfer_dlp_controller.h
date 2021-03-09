@@ -63,7 +63,10 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                                 content::WebContents* web_contents,
                                 base::OnceCallback<void(bool)> paste_cb);
 
-  virtual bool ShouldProceedOnWarn(
+  virtual bool ShouldPasteOnWarn(
+      const ui::DataTransferEndpoint* const data_dst);
+
+  virtual bool ShouldCancelOnWarn(
       const ui::DataTransferEndpoint* const data_dst);
 
   virtual void NotifyBlockedDrop(

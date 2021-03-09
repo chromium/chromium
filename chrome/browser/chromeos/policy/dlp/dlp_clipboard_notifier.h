@@ -46,15 +46,22 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
                         base::OnceCallback<void(bool)> paste_cb);
 
   // Returns true if the user approved to paste the clipboard data to this
-  // |data_dst| before.
-  bool DidUserProceedOnWarn(const ui::DataTransferEndpoint* const data_dst);
+  // `data_dst` before.
+  bool DidUserApproveDst(const ui::DataTransferEndpoint* const data_dst);
+
+  // Returns true if the user cancelled pasting the clipboard data to this
+  // `data_dst` before.
+  bool DidUserCancelDst(const ui::DataTransferEndpoint* const data_dst);
 
  protected:
-  void ProceedOnWarn(const ui::DataTransferEndpoint& data_dst,
-                     views::Widget* widget);
+  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+                      views::Widget* widget);
 
-  void ProceedOnBlinkWarn(const ui::DataTransferEndpoint& data_dst,
-                          views::Widget* widget);
+  void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst,
+                           views::Widget* widget);
+
+  void CancelWarningPressed(const ui::DataTransferEndpoint& data_dst,
+                            views::Widget* widget);
 
   void ResetUserWarnSelection();
 
@@ -70,12 +77,15 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   // content::WebContentsObserver:
-  // Should I override other functions??
   void WebContentsDestroyed() override;
 
   // Vector of destinations approved by the user on warning for copy/paste. It
   // gets reset when the clipboard data changes.
   std::vector<ui::DataTransferEndpoint> approved_dsts_;
+
+  // Vector of destinations rejected by the user on warning for copy/paste. It
+  // gets reset when the clipboard data changes.
+  std::vector<ui::DataTransferEndpoint> cancelled_dsts_;
 
   // Blink paste callback.
   base::OnceCallback<void(bool)> blink_paste_cb_;

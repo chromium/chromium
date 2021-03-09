@@ -72,7 +72,10 @@ class MockDlpController : public DataTransferDlpController {
                     content::WebContents* web_contents,
                     base::OnceCallback<void(bool)> paste_cb));
 
-  MOCK_METHOD1(ShouldProceedOnWarn,
+  MOCK_METHOD1(ShouldPasteOnWarn,
+               bool(const ui::DataTransferEndpoint* const data_dst));
+
+  MOCK_METHOD1(ShouldCancelOnWarn,
                bool(const ui::DataTransferEndpoint* const data_dst));
 };
 
@@ -169,10 +172,12 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
 
   ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
 
-  // ShouldProceedOnWarn returns false.
+  // ShouldPasteOnWarn returns false.
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-  EXPECT_CALL(dlp_controller_, ShouldProceedOnWarn)
+  EXPECT_CALL(dlp_controller_, ShouldPasteOnWarn)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(dlp_controller_, WarnOnBlinkPaste);
 
@@ -190,13 +195,38 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
 
   ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
 
-  // ShouldProceedOnWarn returns true.
+  // ShouldPasteOnWarn returns true.
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-  EXPECT_CALL(dlp_controller_, ShouldProceedOnWarn)
+  EXPECT_CALL(dlp_controller_, ShouldPasteOnWarn)
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
+      .WillRepeatedly(testing::Return(false));
 
   EXPECT_CALL(callback, Run(true));
+  dlp_controller_.PasteIfAllowed(&data_src, &data_dst, web_contents.get(),
+                                 callback.Get());
+}
+
+TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  ui::DataTransferEndpoint data_dst(url::Origin::Create(GURL(kExample2Url)));
+
+  std::unique_ptr<TestingProfile> testing_profile =
+      TestingProfile::Builder().Build();
+  auto web_contents = CreateTestWebContents(testing_profile.get());
+
+  ::testing::StrictMock<base::MockOnceCallback<void(bool)>> callback;
+
+  // ShouldCancelOnWarn returns true.
+  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+  EXPECT_CALL(dlp_controller_, ShouldPasteOnWarn)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_CALL(callback, Run(false));
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, web_contents.get(),
                                  callback.Get());
 }
@@ -277,10 +307,12 @@ TEST_P(DlpControllerTest, Warn) {
       CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
   auto* dst_ptr = base::OptionalOrNullptr(data_dst);
 
-  // ShouldProceedOnWarn returns false.
+  // ShouldPasteOnWarn returns false.
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-  EXPECT_CALL(dlp_controller_, ShouldProceedOnWarn)
+  EXPECT_CALL(dlp_controller_, ShouldPasteOnWarn)
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(false));
   bool show_warning = dst_ptr ? (do_notify && !dst_ptr->IsUrlType()) : true;
   if (show_warning)
@@ -290,12 +322,35 @@ TEST_P(DlpControllerTest, Warn) {
             dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
-  // ShouldProceedOnWarn returns true.
+  // ShouldPasteOnWarn returns true.
   EXPECT_CALL(rules_manager_, IsRestrictedDestination)
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
-  EXPECT_CALL(dlp_controller_, ShouldProceedOnWarn)
+  EXPECT_CALL(dlp_controller_, ShouldPasteOnWarn)
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
+      .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
+  testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+}
+
+TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
+  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
+  base::Optional<ui::EndpointType> endpoint_type;
+  bool do_notify;
+  std::tie(endpoint_type, do_notify) = GetParam();
+  base::Optional<ui::DataTransferEndpoint> data_dst =
+      CreateEndpoint(base::OptionalOrNullptr(endpoint_type), do_notify);
+  auto* dst_ptr = base::OptionalOrNullptr(data_dst);
+
+  // ShouldCancelOnWarn returns true.
+  EXPECT_CALL(rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
+  EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
+      .WillRepeatedly(testing::Return(true));
+
+  bool expected_is_read = data_dst.has_value() ? !do_notify : false;
+  EXPECT_EQ(expected_is_read,
+            dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
 

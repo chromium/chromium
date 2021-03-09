@@ -117,15 +117,15 @@ void DlpDataTransferNotifier::ShowBlockBubble(const base::string16& text) {
 
 void DlpDataTransferNotifier::ShowWarningBubble(
     const base::string16& text,
-    base::RepeatingCallback<void(views::Widget*)> proceed_cb) {
+    base::RepeatingCallback<void(views::Widget*)> proceed_cb,
+    base::RepeatingCallback<void(views::Widget*)> cancel_cb) {
   InitWidget();
   ClipboardWarnBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
   bubble->SetProceedCallback(
       base::BindRepeating(std::move(proceed_cb), widget_.get()));
-  bubble->SetDismissCallback(base::BindRepeating(
-      &DlpDataTransferNotifier::CloseWidget, base::Unretained(this),
-      widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
+  bubble->SetDismissCallback(
+      base::BindRepeating(std::move(cancel_cb), widget_.get()));
   ResizeAndShowWidget(bubble->GetBubbleSize(), kClipboardDlpWarnDurationMs);
 }
 
