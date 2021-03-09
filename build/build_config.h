@@ -22,13 +22,14 @@
 //  Processor:
 //    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_MIPS / ARCH_CPU_MIPS64 /
 //    ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL / ARCH_CPU_PPC64 / ARCH_CPU_S390 /
-//    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64
+//    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64 / ARCH_CPU_RISCV64
 //  Processor family:
 //    ARCH_CPU_ARM_FAMILY: ARMEL or ARM64
 //    ARCH_CPU_MIPS_FAMILY: MIPS64EL or MIPSEL or MIPS64 or MIPS
 //    ARCH_CPU_PPC64_FAMILY: PPC64
 //    ARCH_CPU_S390_FAMILY: S390 or S390X
 //    ARCH_CPU_X86_FAMILY: X86 or X86_64
+//    ARCH_CPU_X86_FAMILY: Riscv64
 //  Processor features:
 //    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
 //    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
@@ -197,6 +198,11 @@
 #define ARCH_CPU_32_BITS 1
 #define ARCH_CPU_BIG_ENDIAN 1
 #endif
+#elif defined(__riscv) && (__riscv_xlen == 64)
+#define ARCH_CPU_RISCV_FAMILY 1
+#define ARCH_CPU_RISCV64 1
+#define ARCH_CPU_64_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
 #else
 #error Please add support for your architecture in build/build_config.h
 #endif
