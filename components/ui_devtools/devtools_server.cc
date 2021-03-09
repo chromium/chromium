@@ -178,6 +178,10 @@ void UiDevToolsServer::SendOverWebSocket(int connection_id,
   server_->SendOverWebSocket(connection_id, message, tag_);
 }
 
+void UiDevToolsServer::SetOnSessionEnded(base::OnceClosure callback) const {
+  on_session_ended_ = std::move(callback);
+}
+
 void UiDevToolsServer::MakeServer(
     mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int result,
@@ -235,6 +239,9 @@ void UiDevToolsServer::OnClose(int connection_id) {
   UiDevToolsClient* client = it->second;
   client->Disconnect();
   connections_.erase(it);
+
+  if (connections_.empty() && on_session_ended_)
+    std::move(on_session_ended_).Run();
 }
 
 }  // namespace ui_devtools

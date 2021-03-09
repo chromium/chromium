@@ -316,6 +316,10 @@ img {
   width: 35ex;
 }
 
+.settings-bar button {
+  margin: 7px 0;
+}
+
 .node-frontend-action {
   margin: 6px 4px;
 }

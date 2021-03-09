@@ -4,23 +4,29 @@
 
 #include "chrome/browser/ui/webui/inspect_ui.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/values.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/ui_devtools/devtools_server.h"
+#include "components/ui_devtools/switches.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,6 +35,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/base/ui_base_features.h"
 
 using content::DevToolsAgentHost;
 using content::WebContents;
@@ -39,7 +46,6 @@ namespace {
 const char kInspectUiInitUICommand[] = "init-ui";
 const char kInspectUiInspectCommand[] = "inspect";
 const char kInspectUiInspectFallbackCommand[] = "inspect-fallback";
-const char kInspectUiInspectAdditionalCommand[] = "inspect-additional";
 const char kInspectUiActivateCommand[] = "activate";
 const char kInspectUiCloseCommand[] = "close";
 const char kInspectUiReloadCommand[] = "reload";
@@ -58,13 +64,14 @@ const char kInspectUiDiscoverTCPTargetsEnabledCommand[] =
     "set-discover-tcp-targets-enabled";
 const char kInspectUiTCPDiscoveryConfigCommand[] = "set-tcp-discovery-config";
 const char kInspectUiOpenNodeFrontendCommand[] = "open-node-frontend";
+const char kInspectUiLaunchUIDevToolsCommand[] = "launch-ui-devtools";
 
 const char kInspectUiPortForwardingDefaultPort[] = "8080";
 const char kInspectUiPortForwardingDefaultLocation[] = "localhost:8080";
 
 const char kInspectUiNameField[] = "name";
 const char kInspectUiUrlField[] = "url";
-const char kInspectUiIsAdditionalField[] = "isAdditional";
+const char kInspectUiIsNativeField[] = "isNative";
 
 base::Value GetUiDevToolsTargets() {
   base::Value targets(base::Value::Type::LIST);
@@ -73,10 +80,84 @@ base::Value GetUiDevToolsTargets() {
     base::Value target_data(base::Value::Type::DICTIONARY);
     target_data.SetStringKey(kInspectUiNameField, client_pair.first);
     target_data.SetStringKey(kInspectUiUrlField, client_pair.second);
-    target_data.SetBoolKey(kInspectUiIsAdditionalField, true);
+    target_data.SetBoolKey(kInspectUiIsNativeField, true);
     targets.Append(std::move(target_data));
   }
   return targets;
+}
+
+// DevToolsFrontEndObserver ----------------------------------------
+
+class DevToolsFrontEndObserver : public content::WebContentsObserver {
+ public:
+  DevToolsFrontEndObserver(WebContents* web_contents, const GURL& url);
+  DevToolsFrontEndObserver(const DevToolsFrontEndObserver&) = delete;
+  DevToolsFrontEndObserver& operator=(const DevToolsFrontEndObserver&) = delete;
+  ~DevToolsFrontEndObserver() override = default;
+
+  void SetOnFrontEndFinished(base::OnceClosure callback);
+
+ protected:
+  // contents::WebContentsObserver
+  void WebContentsDestroyed() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  GURL url_;
+  // Callback function executed when the front end is finished.
+  base::OnceClosure on_front_end_finished_;
+};
+
+DevToolsFrontEndObserver::DevToolsFrontEndObserver(WebContents* web_contents,
+                                                   const GURL& url)
+    : WebContentsObserver(web_contents), url_(url) {}
+
+void DevToolsFrontEndObserver::SetOnFrontEndFinished(
+    base::OnceClosure callback) {
+  on_front_end_finished_ = std::move(callback);
+}
+
+void DevToolsFrontEndObserver::WebContentsDestroyed() {
+  if (on_front_end_finished_)
+    std::move(on_front_end_finished_).Run();
+  delete this;
+}
+
+void DevToolsFrontEndObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
+    return;
+
+  if (url_ != navigation_handle->GetURL()) {
+    if (on_front_end_finished_)
+      std::move(on_front_end_finished_).Run();
+    delete this;
+  }
+}
+
+// DevToolsUIBindingsEnabler ----------------------------------------
+
+class DevToolsUIBindingsEnabler : public DevToolsFrontEndObserver {
+ public:
+  DevToolsUIBindingsEnabler(WebContents* web_contents, const GURL& url);
+  DevToolsUIBindingsEnabler(const DevToolsUIBindingsEnabler&) = delete;
+  DevToolsUIBindingsEnabler& operator=(const DevToolsUIBindingsEnabler&) =
+      delete;
+  ~DevToolsUIBindingsEnabler() override = default;
+
+  DevToolsUIBindings* GetBindings();
+
+ private:
+  DevToolsUIBindings bindings_;
+};
+
+DevToolsUIBindingsEnabler::DevToolsUIBindingsEnabler(WebContents* web_contents,
+                                                     const GURL& url)
+    : DevToolsFrontEndObserver(web_contents, url), bindings_(web_contents) {}
+
+DevToolsUIBindings* DevToolsUIBindingsEnabler::GetBindings() {
+  return &bindings_;
 }
 
 // InspectMessageHandler --------------------------------------------
@@ -85,7 +166,9 @@ class InspectMessageHandler : public WebUIMessageHandler {
  public:
   explicit InspectMessageHandler(InspectUI* inspect_ui)
       : inspect_ui_(inspect_ui) {}
-  ~InspectMessageHandler() override {}
+  InspectMessageHandler(const InspectMessageHandler&) = delete;
+  InspectMessageHandler& operator=(const InspectMessageHandler&) = delete;
+  ~InspectMessageHandler() override = default;
 
  private:
   // WebUIMessageHandler implementation.
@@ -94,7 +177,6 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void HandleInitUICommand(const base::ListValue* args);
   void HandleInspectCommand(const base::ListValue* args);
   void HandleInspectFallbackCommand(const base::ListValue* args);
-  void HandleInspectAdditionalCommand(const base::ListValue* args);
   void HandleActivateCommand(const base::ListValue* args);
   void HandleCloseCommand(const base::ListValue* args);
   void HandleReloadCommand(const base::ListValue* args);
@@ -106,10 +188,14 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void HandlePortForwardingConfigCommand(const base::ListValue* args);
   void HandleTCPDiscoveryConfigCommand(const base::ListValue* args);
   void HandleOpenNodeFrontendCommand(const base::ListValue* args);
+  void HandleLaunchUIDevToolsCommand(const base::ListValue* args);
+
+  void CreateNativeUIInspectionSession(const std::string& url);
+  void OnFrontEndFinished();
 
   InspectUI* const inspect_ui_;
 
-  DISALLOW_COPY_AND_ASSIGN(InspectMessageHandler);
+  base::WeakPtrFactory<InspectMessageHandler> weak_factory_{this};
 };
 
 void InspectMessageHandler::RegisterMessages() {
@@ -125,11 +211,6 @@ void InspectMessageHandler::RegisterMessages() {
       kInspectUiInspectFallbackCommand,
       base::BindRepeating(&InspectMessageHandler::HandleInspectFallbackCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      kInspectUiInspectAdditionalCommand,
-      base::BindRepeating(
-          &InspectMessageHandler::HandleInspectAdditionalCommand,
-          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       kInspectUiActivateCommand,
       base::BindRepeating(&InspectMessageHandler::HandleActivateCommand,
@@ -162,6 +243,10 @@ void InspectMessageHandler::RegisterMessages() {
       base::BindRepeating(&InspectMessageHandler::HandleBooleanPrefChanged,
                           base::Unretained(this),
                           &prefs::kDevToolsDiscoverTCPTargetsEnabled[0]));
+  web_ui()->RegisterMessageCallback(
+      kInspectUiLaunchUIDevToolsCommand,
+      base::BindRepeating(&InspectMessageHandler::HandleLaunchUIDevToolsCommand,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       kInspectUiTCPDiscoveryConfigCommand,
       base::BindRepeating(
@@ -212,19 +297,6 @@ void InspectMessageHandler::HandleInspectFallbackCommand(
   std::string id;
   if (ParseStringArgs(args, &source, &id))
     inspect_ui_->InspectFallback(source, id);
-}
-
-void InspectMessageHandler::HandleInspectAdditionalCommand(
-    const base::ListValue* args) {
-  std::string url;
-  if (ParseStringArgs(args, &url, nullptr)) {
-    WebContents* inspect_ui = web_ui()->GetWebContents();
-    web_ui()->GetWebContents()->GetDelegate()->OpenURLFromTab(
-        inspect_ui,
-        content::OpenURLParams(GURL(url), content::Referrer(),
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
-  }
 }
 
 void InspectMessageHandler::HandleActivateCommand(const base::ListValue* args) {
@@ -316,51 +388,53 @@ void InspectMessageHandler::HandleOpenNodeFrontendCommand(
   DevToolsWindow::OpenNodeFrontendWindow(profile);
 }
 
-// DevToolsUIBindingsEnabler ----------------------------------------
+void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
+    const base::ListValue* args) {
+  // Start the UI DevTools server if needed and launch the front-end.
+  if (!ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance()) {
+    ChromeBrowserMainExtraPartsViews::Get()->CreateUiDevTools();
 
-class DevToolsUIBindingsEnabler
-    : public content::WebContentsObserver {
- public:
-  DevToolsUIBindingsEnabler(WebContents* web_contents,
-                            const GURL& url);
-  ~DevToolsUIBindingsEnabler() override {}
+    // Make the server only lasts for a session.
+    const ui_devtools::UiDevToolsServer* server =
+        ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance();
+    server->SetOnSessionEnded(base::BindOnce([]() {
+      if (ChromeBrowserMainExtraPartsViews::Get()
+              ->GetUiDevToolsServerInstance())
+        ChromeBrowserMainExtraPartsViews::Get()->DestroyUiDevTools();
+    }));
+  }
+  inspect_ui_->PopulateNativeUITargets(GetUiDevToolsTargets());
 
-  DevToolsUIBindings* GetBindings();
-
- private:
-  // contents::WebContentsObserver overrides.
-  void WebContentsDestroyed() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
-  DevToolsUIBindings bindings_;
-  GURL url_;
-  DISALLOW_COPY_AND_ASSIGN(DevToolsUIBindingsEnabler);
-};
-
-DevToolsUIBindingsEnabler::DevToolsUIBindingsEnabler(
-    WebContents* web_contents,
-    const GURL& url)
-    : WebContentsObserver(web_contents),
-      bindings_(web_contents),
-      url_(url) {
+  std::vector<ui_devtools::UiDevToolsServer::NameUrlPair> pairs =
+      ui_devtools::UiDevToolsServer::GetClientNamesAndUrls();
+  if (!pairs.empty())
+    CreateNativeUIInspectionSession(pairs[0].second);
 }
 
-DevToolsUIBindings* DevToolsUIBindingsEnabler::GetBindings() {
-  return &bindings_;
+void InspectMessageHandler::CreateNativeUIInspectionSession(
+    const std::string& url) {
+  WebContents* inspect_ui = web_ui()->GetWebContents();
+  const GURL gurl(url);
+  content::WebContents* front_end = inspect_ui->GetDelegate()->OpenURLFromTab(
+      inspect_ui,
+      content::OpenURLParams(gurl, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+  // When the front-end is started, disable the launch button.
+  inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ false);
+
+  // The observer will delete itself when the front-end finishes.
+  DevToolsFrontEndObserver* front_end_observer =
+      new DevToolsFrontEndObserver(front_end, gurl);
+  front_end_observer->SetOnFrontEndFinished(base::BindOnce(
+      &InspectMessageHandler::OnFrontEndFinished, weak_factory_.GetWeakPtr()));
 }
 
-void DevToolsUIBindingsEnabler::WebContentsDestroyed() {
-  delete this;
-}
-
-void DevToolsUIBindingsEnabler::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
-    return;
-
-  if (url_ != navigation_handle->GetURL())
-    delete this;
+void InspectMessageHandler::OnFrontEndFinished() {
+  // Clear the client list and re-enable the launch button when the front-end is
+  // gone.
+  inspect_ui_->PopulateNativeUITargets(base::ListValue());
+  inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ true);
 }
 
 }  // namespace
@@ -507,7 +581,12 @@ void InspectUI::StartListeningNotifications() {
   DevToolsTargetsUIHandler::Callback callback =
       base::BindRepeating(&InspectUI::PopulateTargets, base::Unretained(this));
 
-  PopulateAdditionalTargets(GetUiDevToolsTargets());
+  // Show native UI launch button according to the command line or feature flag.
+  if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
+          ui_devtools::switches::kEnableUiDevTools) ||
+      base::FeatureList::IsEnabled(features::kUIDebugTools)) {
+    ShowNativeUILaunchButton(/* enabled = */ true);
+  }
 
   AddTargetUIHandler(
       DevToolsTargetsUIHandler::CreateForLocal(callback, profile));
@@ -659,8 +738,8 @@ void InspectUI::PopulateTargets(const std::string& source,
                                          targets);
 }
 
-void InspectUI::PopulateAdditionalTargets(const base::Value& targets) {
-  web_ui()->CallJavascriptFunctionUnsafe("populateAdditionalTargets", targets);
+void InspectUI::PopulateNativeUITargets(const base::Value& targets) {
+  web_ui()->CallJavascriptFunctionUnsafe("populateNativeUITargets", targets);
 }
 
 void InspectUI::PopulatePortStatus(base::Value status) {
@@ -670,4 +749,9 @@ void InspectUI::PopulatePortStatus(base::Value status) {
 
 void InspectUI::ShowIncognitoWarning() {
   web_ui()->CallJavascriptFunctionUnsafe("showIncognitoWarning");
+}
+
+void InspectUI::ShowNativeUILaunchButton(bool enabled) {
+  web_ui()->CallJavascriptFunctionUnsafe("showNativeUILaunchButton",
+                                         base::Value(enabled));
 }
