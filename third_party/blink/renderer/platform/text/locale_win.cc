@@ -35,6 +35,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
@@ -71,7 +72,7 @@ static LCID LCIDFromLocaleInternal(LCID user_default_lcid,
   else
     StringImpl::CopyChars(buffer, locale.Characters16(), locale.length());
   buffer[locale.length()] = '\0';
-  return ::LocaleNameToLCID(buffer, 0);
+  return ::LocaleNameToLCID(base::as_writable_wcstr(buffer), 0);
 }
 
 static LCID LCIDFromLocale(const String& locale, bool defaults_for_locale) {
@@ -82,7 +83,8 @@ static LCID LCIDFromLocale(const String& locale, bool defaults_for_locale) {
                   LOCALE_SISO639LANGNAME |
                       (defaults_for_locale ? LOCALE_NOUSEROVERRIDE : 0),
                   lowercase_language_code, kLanguageCodeBufferSize);
-  String user_default_language_code = String(lowercase_language_code);
+  String user_default_language_code =
+      String(base::as_u16cstr(lowercase_language_code));
 
   LCID lcid = LCIDFromLocaleInternal(LOCALE_USER_DEFAULT,
                                      user_default_language_code, locale);
@@ -126,9 +128,9 @@ String LocaleWin::GetLocaleInfoString(LCTYPE type) {
   if (buffer_size_with_nul <= 0)
     return String();
   StringBuffer<UChar> buffer(buffer_size_with_nul);
-  ::GetLocaleInfo(lcid_,
-                  type | (defaults_for_locale_ ? LOCALE_NOUSEROVERRIDE : 0),
-                  buffer.Characters(), buffer_size_with_nul);
+  ::GetLocaleInfo(
+      lcid_, type | (defaults_for_locale_ ? LOCALE_NOUSEROVERRIDE : 0),
+      base::as_writable_wcstr(buffer.Characters()), buffer_size_with_nul);
   buffer.Shrink(buffer_size_with_nul - 1);
   return String::Adopt(buffer);
 }
