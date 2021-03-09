@@ -2529,6 +2529,18 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
         mock_input_api, MockOutputApi())
     self.assertEqual(0, len(results))
 
+  def testAllowedFiles(self):
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockFile('path/foo_unittest.cc', ['foo_for_testing();']),
+      MockFile('path/bar_unittest_mac.cc', ['foo_for_testing();']),
+      MockFile('path/baz_unittests.cc', ['foo_for_testing();']),
+    ]
+
+    results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctions(
+        mock_input_api, MockOutputApi())
+    self.assertEqual(0, len(results))
+
 
 class NoProductionJavaCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
   def testTruePositives(self):

@@ -51,7 +51,11 @@ _HEADER_EXTENSIONS = r'\.(h|hpp|hxx)$'
 _TEST_CODE_EXCLUDED_PATHS = (
     r'.*[\\/](fake_|test_|mock_).+%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.+_test_(base|support|util)%s' % _IMPLEMENTATION_EXTENSIONS,
-    r'.+_(api|browser|eg|int|perf|pixel|unit|ui)?test(_[a-z]+)?%s' %
+    # Test suite files, like:
+    # foo_browsertest.cc
+    # bar_unittest_mac.cc (suffix)
+    # baz_unittests.cc (plural)
+    r'.+_(api|browser|eg|int|perf|pixel|unit|ui)?test(s)?(_[a-z]+)?%s' %
         _IMPLEMENTATION_EXTENSIONS,
     r'.+_(fuzz|fuzzer)(_[a-z]+)?%s' % _IMPLEMENTATION_EXTENSIONS,
     r'.+profile_sync_service_harness%s' % _IMPLEMENTATION_EXTENSIONS,
