@@ -22,8 +22,10 @@ Polymer({
         .addEventListener(
             'click',
             () => this.dispatchEvent(new CustomEvent('opened-new-window')));
-    this.$$('#incognitoLink')
-        .addEventListener('click', () => this.openIncognitoLink_());
+    const incognitoLink = this.$$('#incognitoLink');
+    if (incognitoLink) {
+      incognitoLink.addEventListener('click', () => this.openIncognitoLink_());
+    }
   },
 
   /** @return {boolean} */

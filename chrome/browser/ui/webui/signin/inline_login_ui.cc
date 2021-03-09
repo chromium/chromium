@@ -38,6 +38,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/chromeos/edu_account_login_handler_chromeos.h"
@@ -207,10 +208,17 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
+  bool is_incognito_enabled =
+      (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+       IncognitoModePrefs::DISABLED);
+  int message_id =
+      is_incognito_enabled
+          ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
+          : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
   source->AddString(
       "accountManagerDialogWelcomeBody",
       l10n_util::GetStringFUTF16(
-          IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY,
+          message_id,
           base::UTF8ToUTF16(
               chrome::GetOSSettingsUrl(
                   chromeos::settings::mojom::kMyAccountsSubpagePath)
