@@ -25,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -137,13 +136,6 @@ public class WebappLauncherActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Close the notification tray.
-        if (!BuildInfo.isAtLeastS()) {
-            // https://crbug.com/1166691
-            ContextUtils.getApplicationContext().sendBroadcast(
-                    new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
-        }
 
         long createTimestamp = SystemClock.elapsedRealtime();
         Intent intent = getIntent();
