@@ -18,6 +18,7 @@ class WebContents;
 
 namespace performance_manager {
 
+class Graph;
 class PageNode;
 
 namespace freezing {
@@ -48,16 +49,22 @@ class FreezingVoteToken {
 
 // Allows emiting a freezing vote for a WebContents. The vote's lifetime will
 // follow the lifetime of this object, as soon as it's released the vote will be
-// invalidated.
+// invalidated. This can only be called from the UI thread.
 //
 // NOTE: |vote_reason| *must* be a static string.
 std::unique_ptr<FreezingVoteToken> EmitFreezingVoteForWebContents(
-    content::WebContents* content,
+    content::WebContents* contents,
     FreezingVoteValue vote_value,
     const char* vote_reason);
 
 // Converts a FreezingVoteValue to a textual representation.
 const char* FreezingVoteValueToString(FreezingVoteValue freezing_vote_value);
+
+// Used to retrieve the number of freezing votes associated with |page_node|.
+size_t FreezingVoteCountForPageOnPMForTesting(PageNode* page_node);
+
+// Get the total number of freezing votes.
+size_t TotalFreezingVoteCountOnPMForTesting(Graph* graph);
 
 }  // namespace freezing
 }  // namespace performance_manager
