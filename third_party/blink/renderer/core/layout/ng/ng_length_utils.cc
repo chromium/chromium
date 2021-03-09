@@ -778,6 +778,7 @@ void ComputeReplacedSize(const NGBlockNode& node,
     replaced_inline =
         ResolveMainInlineLength(space, style, border_padding,
                                 child_min_max_sizes, inline_length_to_resolve);
+    DCHECK(replaced_inline != kIndefiniteSize);
     replaced_inline =
         ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
   }
@@ -795,7 +796,10 @@ void ComputeReplacedSize(const NGBlockNode& node,
     replaced_block = ResolveMainBlockLength(space, style, border_padding,
                                             block_length_to_resolve,
                                             space.AvailableSize().block_size);
-    replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
+    if (*replaced_block == kIndefiniteSize)
+      replaced_block.reset();
+    else
+      replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
   }
   if (replaced_inline && replaced_block) {
     out_replaced_size->emplace(*replaced_inline, *replaced_block);
@@ -932,6 +936,9 @@ void ComputeReplacedSize(const NGBlockNode& node,
       }
     }
   }
+  *replaced_inline =
+      ConstrainByMinMax(*replaced_inline, inline_min, inline_max);
+  *replaced_block = ConstrainByMinMax(*replaced_block, block_min, block_max);
   out_replaced_size->emplace(*replaced_inline, *replaced_block);
 }
 
