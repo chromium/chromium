@@ -676,7 +676,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       if (name == CSSAnimationData::InitialName())
         continue;
 
-      // Find n where this is the nth occurence of this animation name.
+      // Find n where this is the nth occurrence of this animation name.
       wtf_size_t name_index = 0;
       for (wtf_size_t j = 0; j < i; j++) {
         if (name_list[j] == name)
@@ -722,7 +722,6 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
 
       if (existing_animation) {
         cancel_running_animation_flags[existing_animation_index] = false;
-
         CSSAnimation* animation =
             DynamicTo<CSSAnimation>(existing_animation->animation.Get());
         animation->SetAnimationIndex(i);
