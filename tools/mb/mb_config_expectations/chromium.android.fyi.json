@@ -89,6 +89,7 @@
   "android-weblayer-with-aosp-webview-x86-fyi-rel": {
     "gn_args": {
       "disable_android_lint": true,
+      "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -98,7 +99,8 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_goma": true
+      "use_goma": true,
+      "use_static_angle": true
     }
   }
 }

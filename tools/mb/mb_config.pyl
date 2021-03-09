@@ -137,7 +137,7 @@
       'android-11-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
-      'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild',
+      'android-weblayer-with-aosp-webview-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_static_angle',
     },
 
     'chromium.angle': {
@@ -1382,11 +1382,6 @@
       'strip_debug_info', 'android_fastbuild', 'webview_google',
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild': [
-      'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
-      'android_fastbuild', 'x86',
-    ],
-
     'android_release_bot_minimal_symbols_arm64_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'arm64',
       'strip_debug_info', 'webview_google',
@@ -1395,6 +1390,11 @@
     'android_release_bot_minimal_symbols_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
       'webview_google',
+    ],
+
+    'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_static_angle': [
+      'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
+      'android_fastbuild', 'x86', 'resource_allowlisting', 'static_angle'
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google': [
