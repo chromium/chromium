@@ -841,7 +841,8 @@ void AwContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
         url::kFileScheme,
         content::CreateFileURLLoaderFactory(
             aw_browser_context->GetPath(),
-            aw_browser_context->GetSharedCorsOriginAccessList()));
+            content::BrowserContext::GetSharedCorsOriginAccessList(
+                aw_browser_context)));
   }
 }
 

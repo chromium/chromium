@@ -10,7 +10,6 @@
 #include "base/task/post_task.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/shell/browser/shell_special_storage_policy.h"
-#include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 
 namespace extensions {
 
@@ -31,17 +30,6 @@ content::BrowserPluginGuestManager* ShellBrowserContext::GetGuestManager() {
 
 storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
   return storage_policy_.get();
-}
-
-void ShellBrowserContext::SetCorsOriginAccessListForOrigin(
-    TargetBrowserContexts target_mode,
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  // This method is called for Extension supports, but tests do not need to
-  // support exceptional CORS handling.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(closure));
 }
 
 }  // namespace extensions

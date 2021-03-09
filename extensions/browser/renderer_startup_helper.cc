@@ -132,7 +132,7 @@ void RendererStartupHelper::InitializeProcess(
   // Scripting allowlist. This is modified by tests and must be communicated
   // to renderers.
   renderer->SetScriptingAllowlist(
-      extensions::ExtensionsClient::Get()->GetScriptingAllowlist());
+      ExtensionsClient::Get()->GetScriptingAllowlist());
 
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.
@@ -248,10 +248,8 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 
   // Registers the initial origin access lists to the BrowserContext
   // (and all related incognito contexts) asynchronously.
-  util::SetCorsOriginAccessListForExtension(
-      browser_context_, extension,
-      content::BrowserContext::TargetBrowserContexts::kSingleContext,
-      base::DoNothing::Once());
+  util::SetCorsOriginAccessListForExtension({browser_context_}, extension,
+                                            base::DoNothing::Once());
 
   // We don't need to include tab permisisons here, since the extension
   // was just loaded.
@@ -286,10 +284,7 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
   }
 
   // Resets registered origin access lists in the BrowserContext asynchronously.
-  util::ResetCorsOriginAccessListForExtension(
-      browser_context_, extension,
-
-      content::BrowserContext::TargetBrowserContexts::kSingleContext);
+  util::ResetCorsOriginAccessListForExtension(browser_context_, extension);
 
   for (auto& process_extensions_pair : pending_active_extensions_)
     process_extensions_pair.second.erase(extension.id());

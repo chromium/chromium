@@ -25,7 +25,6 @@
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
-#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -169,9 +168,7 @@ std::string Profile::OTRProfileID::Serialize() const {
 }
 #endif
 
-Profile::Profile()
-    : shared_cors_origin_access_list_(
-          content::SharedCorsOriginAccessList::Create()) {
+Profile::Profile() {
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
@@ -501,66 +498,4 @@ variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)
     chrome_variations_client_ = std::make_unique<ChromeVariationsClient>(this);
   return chrome_variations_client_.get();
-}
-
-content::SharedCorsOriginAccessList* Profile::GetSharedCorsOriginAccessList() {
-  return shared_cors_origin_access_list_.get();
-}
-
-void Profile::SetCorsOriginAccessListForOrigin(
-    TargetBrowserContexts target_mode,
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  using content::CorsOriginPatternSetter;
-  switch (target_mode) {
-    case content::BrowserContext::TargetBrowserContexts::kSingleContext: {
-      SetCorsOriginAccessListForThisContextOnly(
-          source_origin, std::move(allow_patterns), std::move(block_patterns),
-          std::move(closure));
-      break;
-    }
-
-    case content::BrowserContext::TargetBrowserContexts::kAllRelatedContexts: {
-      Profile* regular_profile = GetOriginalProfile();
-      std::vector<Profile*> otr_profiles = GetAllOffTheRecordProfiles();
-      // We need one callback for modifying the `regular_profile`, and one for
-      // each off-the-record profile.
-      auto barrier_closure =
-          BarrierClosure(1 + otr_profiles.size(), std::move(closure));
-      regular_profile->SetCorsOriginAccessListForThisContextOnly(
-          source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-          CorsOriginPatternSetter::ClonePatterns(block_patterns),
-          barrier_closure);
-      for (Profile* otr : otr_profiles) {
-        otr->SetCorsOriginAccessListForThisContextOnly(
-            source_origin,
-            CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-            CorsOriginPatternSetter::ClonePatterns(block_patterns),
-            barrier_closure);
-      }
-      break;
-    }
-  }
-}
-
-void Profile::SetCorsOriginAccessListForThisContextOnly(
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  using content::CorsOriginPatternSetter;
-  auto barrier_closure = BarrierClosure(2, std::move(closure));
-  base::MakeRefCounted<CorsOriginPatternSetter>(
-      source_origin, CorsOriginPatternSetter::ClonePatterns(allow_patterns),
-      CorsOriginPatternSetter::ClonePatterns(block_patterns), barrier_closure)
-      ->ApplyToEachStoragePartition(this);
-
-  // Keep the per-profile access list up to date so that we can use this to
-  // restore NetworkContext settings at anytime, e.g. on restarting the
-  // network service.
-  shared_cors_origin_access_list_->SetForOrigin(
-      source_origin, std::move(allow_patterns), std::move(block_patterns),
-      barrier_closure);
 }

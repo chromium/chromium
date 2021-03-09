@@ -6582,7 +6582,7 @@ void RenderFrameHostImpl::CommitNavigation(
           url::kFileScheme,
           FileURLLoaderFactory::Create(
               browser_context->GetPath(),
-              browser_context->GetSharedCorsOriginAccessList(),
+              BrowserContext::GetSharedCorsOriginAccessList(browser_context),
               file_factory_priority));
     }
 

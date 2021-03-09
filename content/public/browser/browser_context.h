@@ -21,7 +21,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/cors_origin_pattern.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
@@ -43,10 +42,6 @@ class InProgressDownloadManager;
 
 namespace storage {
 class ExternalMountPoints;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace media {
@@ -219,11 +214,19 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   static void SetDownloadManagerForTesting(
       BrowserContext* browser_context,
-      std::unique_ptr<content::DownloadManager> download_manager);
+      std::unique_ptr<DownloadManager> download_manager);
 
   static void SetPermissionControllerForTesting(
       BrowserContext* browser_context,
       std::unique_ptr<PermissionController> permission_controller);
+
+  // The list of CORS exemptions.  This list needs to be 1) replicated when
+  // creating or re-creating new network::mojom::NetworkContexts (see
+  // network::mojom::NetworkContextParams::cors_origin_access_list) and 2)
+  // consulted by CORS-aware factories (e.g. passed when constructing
+  // FileURLLoaderFactory).
+  static SharedCorsOriginAccessList* GetSharedCorsOriginAccessList(
+      BrowserContext* context);
 
   BrowserContext();
 
@@ -310,25 +313,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the BrowsingDataRemoverDelegate for this context. This will be
   // called once per context. It's valid to return nullptr.
   virtual BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() = 0;
-
-  // Sets CORS origin access lists.
-  enum class TargetBrowserContexts {
-    // Only modify |this| BrowserContext.
-    kSingleContext,
-
-    // Modify |this| BrowserContext and all related regular/OffTheRecord
-    // BrowserContexts.
-    kAllRelatedContexts,
-  };
-  virtual void SetCorsOriginAccessListForOrigin(
-      TargetBrowserContexts target_mode,
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure);
-
-  // Returns a SharedCorsOriginAccessList instance.
-  virtual SharedCorsOriginAccessList* GetSharedCorsOriginAccessList();
 
   // Returns a unique string associated with this browser context.
   virtual const std::string& UniqueId();

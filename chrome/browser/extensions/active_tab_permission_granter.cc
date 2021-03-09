@@ -27,6 +27,7 @@
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -112,6 +113,21 @@ bool ShouldGrantActiveTabOrPrompt(const Extension* extension,
              extension, web_contents);
 }
 
+void SetCorsOriginAccessList(content::BrowserContext* browser_context,
+                             const Extension& extension,
+                             base::OnceClosure closure) {
+  std::vector<content::BrowserContext*> target_contexts;
+  if (IncognitoInfo::IsSplitMode(&extension)) {
+    target_contexts = {browser_context};
+  } else {
+    target_contexts = util::GetAllRelatedProfiles(
+        Profile::FromBrowserContext(browser_context));
+  }
+
+  util::SetCorsOriginAccessListForExtension(target_contexts, extension,
+                                            std::move(closure));
+}
+
 }  // namespace
 
 ActiveTabPermissionGranter::ActiveTabPermissionGranter(
@@ -179,10 +195,8 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     PermissionSet new_permissions(std::move(new_apis), ManifestPermissionSet(),
                                   new_hosts.Clone(), new_hosts.Clone());
     permissions_data->UpdateTabSpecificPermissions(tab_id_, new_permissions);
-    util::SetCorsOriginAccessListForExtension(
-        browser_context, *extension,
-        base::nullopt,  // compute the `target_mode` based on the `extension`
-        base::DoNothing::Once());
+    SetCorsOriginAccessList(browser_context, *extension,
+                            base::DoNothing::Once());
 
     if (web_contents()->GetController().GetVisibleEntry()) {
       // We update all extension render views with the new tab permissions, and
@@ -257,10 +271,8 @@ void ActiveTabPermissionGranter::ClearActiveExtensionsAndNotify() {
   ProcessManager* process_manager = ProcessManager::Get(browser_context);
   for (const scoped_refptr<const Extension>& extension : granted_extensions_) {
     extension->permissions_data()->ClearTabSpecificPermissions(tab_id_);
-    util::SetCorsOriginAccessListForExtension(
-        browser_context, *extension,
-        base::nullopt,  // compute the `target_mode` based on the `extension`
-        base::DoNothing::Once());
+    SetCorsOriginAccessList(browser_context, *extension,
+                            base::DoNothing::Once());
 
     extension_ids.push_back(extension->id());
     std::set<content::RenderFrameHost*> extension_frame_hosts =

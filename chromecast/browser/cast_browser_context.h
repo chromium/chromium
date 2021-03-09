@@ -46,13 +46,6 @@ class CastBrowserContext final : public content::BrowserContext {
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
-  void SetCorsOriginAccessListForOrigin(
-      TargetBrowserContexts target_mode,
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
-  content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
 
  private:
   class CastResourceContext;
@@ -65,8 +58,6 @@ class CastBrowserContext final : public content::BrowserContext {
   std::unique_ptr<CastResourceContext> resource_context_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
-  scoped_refptr<content::SharedCorsOriginAccessList>
-      shared_cors_origin_access_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CastBrowserContext);
 };

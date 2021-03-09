@@ -107,6 +107,10 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     Profile* profile,
     bool include_optional_permissions);
 
+// Returns all profiles affected by permissions of an extension running in
+// "spanning" (rather than "split) mode.
+std::vector<content::BrowserContext*> GetAllRelatedProfiles(Profile* profile);
+
 }  // namespace util
 }  // namespace extensions
 

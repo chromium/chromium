@@ -338,21 +338,22 @@ void PermissionsRequestFunction::OnInstallPromptDone(
     return;
   }
   PermissionsUpdater permissions_updater(browser_context());
-  if (!requested_withheld_->IsEmpty()) {
-    requesting_withheld_permissions_ = true;
+  requesting_withheld_permissions_ = !requested_withheld_->IsEmpty();
+  requesting_optional_permissions_ = !requested_optional_->IsEmpty();
+  if (requesting_withheld_permissions_) {
     permissions_updater.GrantRuntimePermissions(
         *extension(), *requested_withheld_,
         base::BindOnce(&PermissionsRequestFunction::OnRuntimePermissionsGranted,
                        base::RetainedRef(this)));
   }
-  if (!requested_optional_->IsEmpty()) {
-    requesting_optional_permissions_ = true;
+  if (requesting_optional_permissions_) {
     permissions_updater.GrantOptionalPermissions(
         *extension(), *requested_optional_,
         base::BindOnce(
             &PermissionsRequestFunction::OnOptionalPermissionsGranted,
             base::RetainedRef(this)));
   }
+
   // Grant{Runtime|Optional}Permissions calls above can finish synchronously.
   if (!did_respond())
     RespondIfRequestsFinished();

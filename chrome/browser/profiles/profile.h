@@ -221,7 +221,6 @@ class Profile : public content::BrowserContext {
   virtual const OTRProfileID& GetOTRProfileID() const = 0;
 
   variations::VariationsClient* GetVariationsClient() override;
-  content::SharedCorsOriginAccessList* GetSharedCorsOriginAccessList() override;
 
   // Returns the creation time of this profile. This will either be the creation
   // time of the profile directory or, for ephemeral off-the-record profiles,
@@ -516,13 +515,6 @@ class Profile : public content::BrowserContext {
 
   virtual void RecordMainFrameNavigation() = 0;
 
-  void SetCorsOriginAccessListForOrigin(
-      TargetBrowserContexts target_mode,
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
-
  protected:
   void set_is_guest_profile(bool is_guest_profile) {
     is_guest_profile_ = is_guest_profile;
@@ -547,13 +539,6 @@ class Profile : public content::BrowserContext {
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
 
-  // TODO(lukasza): Move this method to the //content layer.
-  void SetCorsOriginAccessListForThisContextOnly(
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure);
-
  private:
   bool restored_last_session_ = false;
 
@@ -576,10 +561,6 @@ class Profile : public content::BrowserContext {
 
   class ChromeVariationsClient;
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
-
-  // TODO(lukasza): Move this field to the //content layer.
-  scoped_refptr<content::SharedCorsOriginAccessList>
-      shared_cors_origin_access_list_;
 };
 
 // The comparator for profile pointers as key in a map.

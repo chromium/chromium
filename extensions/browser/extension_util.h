@@ -6,10 +6,10 @@
 #define EXTENSIONS_BROWSER_EXTENSION_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "content/public/browser/browser_context.h"
 #include "extensions/common/manifest.h"
 #include "url/gurl.h"
 
@@ -83,25 +83,17 @@ bool CanWithholdPermissionsFromExtension(const std::string& extension_id,
 int GetBrowserContextId(content::BrowserContext* context);
 
 // Calculates the allowlist and blocklist for |extension| and forwards the
-// request to |browser_context| (and possibly also for related incognito
-// contexts depending on |target_mode|).
-//
-// If the optional |target_mode| is not specified, then |target_mode| is
-// calculated based on whether |extension| operates in "split" or "spanning"
-// incognito mode.
+// request to |browser_contexts|.
 void SetCorsOriginAccessListForExtension(
-    content::BrowserContext* browser_context,
+    const std::vector<content::BrowserContext*>& browser_contexts,
     const Extension& extension,
-    base::Optional<content::BrowserContext::TargetBrowserContexts> target_mode,
     base::OnceClosure closure);
 
 // Resets the allowlist and blocklist for |extension| to empty lists for
-// |browser_context| (and possibly also for related incognito contexts depending
-// on |target_mode|).
+// |browser_context| and for all related regular+incognito contexts.
 void ResetCorsOriginAccessListForExtension(
     content::BrowserContext* browser_context,
-    const Extension& extension,
-    content::BrowserContext::TargetBrowserContexts target_mode);
+    const Extension& extension);
 
 }  // namespace util
 }  // namespace extensions

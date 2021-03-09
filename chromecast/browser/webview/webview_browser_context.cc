@@ -100,11 +100,6 @@ WebviewBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
-content::SharedCorsOriginAccessList*
-WebviewBrowserContext::GetSharedCorsOriginAccessList() {
-  return main_browser_context_->GetSharedCorsOriginAccessList();
-}
-
 std::unique_ptr<content::ZoomLevelDelegate>
 WebviewBrowserContext::CreateZoomLevelDelegate(const base::FilePath&) {
   return nullptr;

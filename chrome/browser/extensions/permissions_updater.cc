@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/permissions.h"
@@ -123,6 +124,15 @@ class PermissionsUpdaterShutdownNotifierFactory
   DISALLOW_COPY_AND_ASSIGN(PermissionsUpdaterShutdownNotifierFactory);
 };
 
+void SetCorsOriginAccessListForAllRelatedProfiles(
+    content::BrowserContext* browser_context,
+    const Extension& extension,
+    base::OnceClosure closure) {
+  util::SetCorsOriginAccessListForExtension(
+      util::GetAllRelatedProfiles(Profile::FromBrowserContext(browser_context)),
+      extension, std::move(closure));
+}
+
 }  // namespace
 
 // A helper class to asynchronously dispatch the event to notify policy host
@@ -186,9 +196,8 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
 
   // After an asynchronous call below, the helper will call
   // NotifyPermissionsUpdated if the profile is still valid.
-  util::SetCorsOriginAccessListForExtension(
+  SetCorsOriginAccessListForAllRelatedProfiles(
       browser_context, *extension,
-      content::BrowserContext::TargetBrowserContexts::kAllRelatedContexts,
       base::BindOnce(&NetworkPermissionsUpdateHelper::OnOriginAccessUpdated,
                      helper->weak_factory_.GetWeakPtr()));
 }
@@ -214,10 +223,8 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
                      helper->weak_factory_.GetWeakPtr()));
 
   for (const auto& extension : extensions) {
-    util::SetCorsOriginAccessListForExtension(
-        browser_context, *extension,
-        content::BrowserContext::TargetBrowserContexts::kAllRelatedContexts,
-        barrier_closure);
+    SetCorsOriginAccessListForAllRelatedProfiles(browser_context, *extension,
+                                                 barrier_closure);
   }
 }
 
@@ -621,7 +628,7 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
   UpdatedExtensionPermissionsInfo info =
       UpdatedExtensionPermissionsInfo(extension.get(), *changed, reason);
   content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
+      NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
       content::Source<Profile>(profile),
       content::Details<UpdatedExtensionPermissionsInfo>(&info));
 

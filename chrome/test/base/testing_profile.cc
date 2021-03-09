@@ -956,17 +956,6 @@ TestingProfile::GetBrowsingDataRemoverDelegate() {
   return ChromeBrowsingDataRemoverDelegateFactory::GetForProfile(this);
 }
 
-void TestingProfile::SetCorsOriginAccessListForOrigin(
-    TargetBrowserContexts target_mode,
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  // Extensions need to set the list, but just can be ignored unless they need
-  // to make actual network requests beyond the CORS policy.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(closure));
-}
-
 bool TestingProfile::WasCreatedByVersionOrLater(const std::string& version) {
   return true;
 }

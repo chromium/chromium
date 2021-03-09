@@ -22,12 +22,6 @@ class ShellBrowserContext final : public content::ShellBrowserContext {
   // content::BrowserContext implementation.
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
-  void SetCorsOriginAccessListForOrigin(
-      TargetBrowserContexts target_mode,
-      const url::Origin& source_origin,
-      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-      base::OnceClosure closure) override;
 
  private:
   scoped_refptr<storage::SpecialStoragePolicy> storage_policy_;

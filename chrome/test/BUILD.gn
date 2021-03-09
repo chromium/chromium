@@ -1095,7 +1095,6 @@ if (!is_android) {
       "../browser/lifetime/browser_close_manager_browsertest.cc",
       "../browser/lifetime/browser_shutdown_browsertest.cc",
       "../browser/lite_video/lite_video_keyed_service_browsertest.cc",
-      "../browser/loader/cors_origin_access_list_browsertest.cc",
       "../browser/loader/signed_exchange_policy_browsertest.cc",
       "../browser/loadtimes_extension_bindings_browsertest.cc",
       "../browser/locale_tests_browsertest.cc",

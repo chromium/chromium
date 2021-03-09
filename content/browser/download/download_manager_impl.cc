@@ -1290,7 +1290,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             FileURLLoaderFactory::Create(
                 browser_context_->GetPath(),
-                browser_context_->GetSharedCorsOriginAccessList(),
+                BrowserContext::GetSharedCorsOriginAccessList(browser_context_),
                 // USER_VISIBLE because download should progress
                 // even when there is high priority work to do.
                 base::TaskPriority::USER_VISIBLE));

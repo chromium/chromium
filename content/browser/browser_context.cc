@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
@@ -113,9 +114,8 @@ void ShutdownSharedWorkerContext(StoragePartition* partition) {
   partition->GetSharedWorkerService()->Shutdown();
 }
 
-void SetDownloadManager(
-    BrowserContext* context,
-    std::unique_ptr<content::DownloadManager> download_manager) {
+void SetDownloadManager(BrowserContext* context,
+                        std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(download_manager);
   context->SetUserData(kDownloadManagerKeyName, std::move(download_manager));
@@ -186,7 +186,7 @@ storage::ExternalMountPoints* BrowserContext::GetMountPoints(
 }
 
 // static
-content::BrowsingDataRemover* content::BrowserContext::GetBrowsingDataRemover(
+BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover(
     BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -202,7 +202,7 @@ content::BrowsingDataRemover* content::BrowserContext::GetBrowsingDataRemover(
 }
 
 // static
-content::PermissionController* content::BrowserContext::GetPermissionController(
+PermissionController* BrowserContext::GetPermissionController(
     BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -431,7 +431,7 @@ void BrowserContext::SaveSessionState(BrowserContext* browser_context) {
 // static
 void BrowserContext::SetDownloadManagerForTesting(
     BrowserContext* browser_context,
-    std::unique_ptr<content::DownloadManager> download_manager) {
+    std::unique_ptr<DownloadManager> download_manager) {
   SetDownloadManager(browser_context, std::move(download_manager));
 }
 
@@ -443,6 +443,27 @@ void BrowserContext::SetPermissionControllerForTesting(
   DCHECK(permission_controller);
   browser_context->SetUserData(kPermissionControllerKey,
                                std::move(permission_controller));
+}
+
+// static
+SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
+    BrowserContext* context) {
+  const char kSharedCorsOriginAccessListKeyName[] =
+      "BrowserContext -> SharedCorsOriginAccessList";
+  using UserDataAdapter = base::UserDataAdapter<SharedCorsOriginAccessList>;
+
+  // Return the existing UserData if possible.
+  if (SharedCorsOriginAccessList* result =
+          UserDataAdapter::Get(context, kSharedCorsOriginAccessListKeyName)) {
+    return result;
+  }
+
+  // Otherwise create and attach new UserData.
+  scoped_refptr<SharedCorsOriginAccessList> result =
+      SharedCorsOriginAccessList::Create();
+  context->SetUserData(kSharedCorsOriginAccessListKeyName,
+                       std::make_unique<UserDataAdapter>(result.get()));
+  return result.get();
 }
 
 BrowserContext::BrowserContext()
@@ -607,23 +628,6 @@ media::learning::LearningSession* BrowserContext::GetLearningSession() {
 download::InProgressDownloadManager*
 BrowserContext::RetriveInProgressDownloadManager() {
   return nullptr;
-}
-
-void BrowserContext::SetCorsOriginAccessListForOrigin(
-    TargetBrowserContexts target_mode,
-    const url::Origin& source_origin,
-    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
-    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
-    base::OnceClosure closure) {
-  NOTREACHED() << "Sub-classes should implement this method to communicate "
-                  "with NetworkService to bypass CORS checks.";
-}
-
-SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList() {
-  // Need to return a valid instance regardless of CORS bypass supports.
-  static const base::NoDestructor<scoped_refptr<SharedCorsOriginAccessList>>
-      empty_list(SharedCorsOriginAccessList::Create());
-  return empty_list->get();
 }
 
 FileSystemAccessPermissionContext*

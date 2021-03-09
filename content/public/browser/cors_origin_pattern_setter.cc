@@ -3,13 +3,21 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/cors_origin_pattern_setter.h"
+
+#include <memory>
+
+#include "base/barrier_closure.h"
+#include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/storage_partition.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
 
 CorsOriginPatternSetter::CorsOriginPatternSetter(
+    base::PassKey<CorsOriginPatternSetter> pass_key,
     const url::Origin& source_origin,
     std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
     std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
@@ -23,30 +31,39 @@ CorsOriginPatternSetter::~CorsOriginPatternSetter() {
   std::move(closure_).Run();
 }
 
-void CorsOriginPatternSetter::ApplyToEachStoragePartition(
-    BrowserContext* browser_context) {
-  BrowserContext::ForEachStoragePartition(
-      browser_context, base::BindRepeating(&CorsOriginPatternSetter::SetLists,
-                                           base::RetainedRef(this)));
-}
-
-void CorsOriginPatternSetter::SetLists(StoragePartition* partition) {
+void CorsOriginPatternSetter::SetForStoragePartition(
+    content::StoragePartition* partition) {
   partition->GetNetworkContext()->SetCorsOriginAccessListsForOrigin(
-      source_origin_, ClonePatterns(allow_patterns_),
-      ClonePatterns(block_patterns_),
+      source_origin_, mojo::Clone(allow_patterns_),
+      mojo::Clone(block_patterns_),
       base::BindOnce([](scoped_refptr<CorsOriginPatternSetter> setter) {},
                      base::RetainedRef(this)));
 }
 
 // static
-std::vector<network::mojom::CorsOriginPatternPtr>
-CorsOriginPatternSetter::ClonePatterns(
-    const std::vector<network::mojom::CorsOriginPatternPtr>& patterns) {
-  std::vector<network::mojom::CorsOriginPatternPtr> cloned_patterns;
-  cloned_patterns.reserve(patterns.size());
-  for (const auto& item : patterns)
-    cloned_patterns.push_back(item.Clone());
-  return cloned_patterns;
+void CorsOriginPatternSetter::Set(
+    content::BrowserContext* browser_context,
+    const url::Origin& source_origin,
+    std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+    std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+    base::OnceClosure closure) {
+  auto barrier_closure = BarrierClosure(2, std::move(closure));
+
+  scoped_refptr<CorsOriginPatternSetter> setter =
+      base::MakeRefCounted<CorsOriginPatternSetter>(
+          PassKey(), source_origin, mojo::Clone(allow_patterns),
+          mojo::Clone(block_patterns), barrier_closure);
+  content::BrowserContext::ForEachStoragePartition(
+      browser_context,
+      base::BindRepeating(&CorsOriginPatternSetter::SetForStoragePartition,
+                          base::RetainedRef(setter)));
+
+  // Keep the per-profile access list up to date so that we can use this to
+  // restore NetworkContext settings at anytime, e.g. on restarting the
+  // network service.
+  content::BrowserContext::GetSharedCorsOriginAccessList(browser_context)
+      ->SetForOrigin(source_origin, std::move(allow_patterns),
+                     std::move(block_patterns), barrier_closure);
 }
 
 }  // namespace content
