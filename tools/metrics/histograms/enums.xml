@@ -38966,6 +38966,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="12" label="Load image metadata"/>
 </enum>
 
+<enum name="ImageSelectionOutcome">
+  <int value="0" label="Image node was the topmost node."/>
+  <int value="1" label="Image node was below topmost node"/>
+  <int value="2" label="Blocking opaque node was found"/>
+  <int value="3" label="Context menu listener was found"/>
+  <int value="4" label="Blocking cross frame node was found"/>
+</enum>
+
 <enum name="ImageSmoothingQuality">
   <int value="0" label="Image smoothing quality sets to None"/>
   <int value="1" label="Image smoothing quality sets to Low"/>

@@ -45,7 +45,7 @@ class MouseEvent;
 class Page;
 struct ContextMenuData;
 
-class CORE_EXPORT ContextMenuController
+class CORE_EXPORT ContextMenuController final
     : public GarbageCollected<ContextMenuController>,
       public mojom::blink::ContextMenuClient {
  public:
@@ -65,21 +65,52 @@ class CORE_EXPORT ContextMenuController
 
   void CustomContextMenuItemSelected(unsigned action);
 
+  Node* ContextMenuImageNodeForFrame(LocalFrame*);
   Node* ContextMenuNodeForFrame(LocalFrame*);
 
   // mojom::blink::ContextMenuClient methods.
   void CustomContextMenuAction(uint32_t action) override;
   void ContextMenuClosed(const KURL& link_followed) override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.  Keep in sync with enum in
+  // tools/metrics/histograms/enums.xml
+  enum ImageSelectionOutcome : uint32_t {
+    // An image node was found to be the topmost node.
+    kImageFoundStandard = 0,
+
+    // An image node was found below the topmost node.
+    kImageFoundPenetrating = 1,
+
+    // An opaque node was found when penetrating to attempt to find an image
+    // nnode.
+    kBlockedByOpaqueNode = 2,
+
+    // A context menu listener was found to be on one of the penetrated nodes
+    // or on one of those nodes' ancestors.
+    kFoundContextMenuListener = 3,
+
+    // A cross frame node was found while penetrating, which is not yet
+    // supported.
+    kBlockedByCrossFrameNode = 4,
+
+    kMaxValue = kBlockedByCrossFrameNode,
+  };
+
  private:
   friend class ContextMenuControllerTest;
+
+  uint32_t EnumToBitmask(ImageSelectionOutcome outcome) { return 1 << outcome; }
 
   // Returns whether a Context Menu was actually shown.
   bool ShowContextMenu(LocalFrame*,
                        const PhysicalOffset&,
                        WebMenuSourceType,
                        const MouseEvent* mouse_event = nullptr);
+
   bool ShouldShowContextMenuFromTouch(const ContextMenuData&);
+
+  Node* GetContextMenuNodeWithImageContents(const bool report_histograms);
 
   void UpdateTextFragmentSelectorGenerator(LocalFrame*);
 
@@ -91,6 +122,7 @@ class CORE_EXPORT ContextMenuController
   Member<Page> page_;
   Member<ContextMenuProvider> menu_provider_;
   HitTestResult hit_test_result_;
+
   DISALLOW_COPY_AND_ASSIGN(ContextMenuController);
 };
 

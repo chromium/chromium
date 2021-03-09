@@ -2449,6 +2449,10 @@ WebNode WebLocalFrameImpl::ContextMenuNode() const {
   return ContextMenuNodeInner();
 }
 
+WebNode WebLocalFrameImpl::ContextMenuImageNode() const {
+  return ContextMenuImageNodeInner();
+}
+
 void WebLocalFrameImpl::WillBeDetached() {
   if (frame_->IsMainFrame())
     ViewImpl()->DidDetachLocalMainFrame();
@@ -2772,6 +2776,15 @@ Node* WebLocalFrameImpl::ContextMenuNodeInner() const {
       ->GetPage()
       ->GetContextMenuController()
       .ContextMenuNodeForFrame(GetFrame());
+}
+
+Node* WebLocalFrameImpl::ContextMenuImageNodeInner() const {
+  if (!ViewImpl() || !ViewImpl()->GetPage())
+    return nullptr;
+  return ViewImpl()
+      ->GetPage()
+      ->GetContextMenuController()
+      .ContextMenuImageNodeForFrame(GetFrame());
 }
 
 void WebLocalFrameImpl::WaitForDebuggerWhenShown() {

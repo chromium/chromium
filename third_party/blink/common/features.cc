@@ -868,5 +868,10 @@ const base::Feature kDisableDocumentDomainByDefault{
 const base::Feature kScopeMemoryCachePerContext{
     "ScopeMemoryCachePerContext", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow image context menu selections to penetrate through transparent
+// elements.
+const base::Feature kEnablePenetratingImageSelection{
+    "EnablePenetratingImageSelection", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

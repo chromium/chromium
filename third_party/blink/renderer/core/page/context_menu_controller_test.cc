@@ -5,13 +5,18 @@
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
 
 #include "base/optional.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -28,6 +33,9 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/weburl_loader_mock.h"
+#include "third_party/blink/renderer/platform/testing/weburl_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 using testing::Return;
@@ -35,6 +43,9 @@ using testing::Return;
 namespace blink {
 
 namespace {
+
+constexpr char kTestResourceFilename[] = "white-1x1.png";
+constexpr char kTestResourceMimeType[] = "image/png";
 
 class MockWebMediaPlayerForContextMenu : public EmptyWebMediaPlayer {
  public:
@@ -74,10 +85,24 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
   ContextMenuData context_menu_data_;
 };
 
+void RegisterMockedImageURLLoad(const String& url) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL(url.Utf8().c_str()),
+      test::CoreTestDataPath(kTestResourceFilename), kTestResourceMimeType);
+}
+
 }  // anonymous namespace
 
-class ContextMenuControllerTest : public testing::Test {
+class ContextMenuControllerTest : public testing::Test,
+                                  public ::testing::WithParamInterface<bool> {
  public:
+  explicit ContextMenuControllerTest(
+      bool penetrating_image_selection_enabled = GetParam()) {
+    feature_list_.InitWithFeatureState(
+        features::kEnablePenetratingImageSelection,
+        penetrating_image_selection_enabled);
+  }
+
   void SetUp() override {
     web_view_helper_.Initialize(&web_frame_client_);
 
@@ -86,6 +111,10 @@ class ContextMenuControllerTest : public testing::Test {
         gfx::Size(640, 480));
     local_main_frame->ViewImpl()->MainFrameWidget()->UpdateAllLifecyclePhases(
         DocumentUpdateReason::kTest);
+  }
+
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   bool ShowContextMenu(const PhysicalOffset& location,
@@ -130,12 +159,15 @@ class ContextMenuControllerTest : public testing::Test {
     video->SetReadyState(state);
   }
 
- private:
+ protected:
+  base::test::ScopedFeatureList feature_list_;
   TestWebFrameClientImpl web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
-TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
+INSTANTIATE_TEST_SUITE_P(, ContextMenuControllerTest, ::testing::Bool());
+
+TEST_P(ContextMenuControllerTest, VideoNotLoaded) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
   const char video_url[] = "https://example.com/foo.webm";
@@ -192,7 +224,7 @@ TEST_F(ContextMenuControllerTest, VideoNotLoaded) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
+TEST_P(ContextMenuControllerTest, VideoWithAudioOnly) {
   ContextMenuAllowedScope context_menu_allowed_scope;
   HitTestResult hit_test_result;
   const char video_url[] = "https://example.com/foo.webm";
@@ -253,7 +285,7 @@ TEST_F(ContextMenuControllerTest, VideoWithAudioOnly) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
+TEST_P(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -310,7 +342,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureEnabledVideoLoaded) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
+TEST_P(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
   // Make sure Picture-in-Picture is disabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(false);
 
@@ -367,7 +399,7 @@ TEST_F(ContextMenuControllerTest, PictureInPictureDisabledVideoLoaded) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, MediaStreamVideoLoaded) {
+TEST_P(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -425,7 +457,7 @@ TEST_F(ContextMenuControllerTest, MediaStreamVideoLoaded) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
+TEST_P(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
   // Make sure Picture-in-Picture is enabled.
   GetDocument()->GetSettings()->SetPictureInPictureEnabled(true);
 
@@ -488,7 +520,7 @@ TEST_F(ContextMenuControllerTest, InfiniteDurationVideoLoaded) {
   }
 }
 
-TEST_F(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
+TEST_P(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
   frame_test_helpers::LoadFrame(LocalMainFrame(), R"SVG(data:image/svg+xml,
     <svg xmlns='http://www.w3.org/2000/svg'
          xmlns:h='http://www.w3.org/1999/xhtml'
@@ -537,7 +569,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInSVGDocument) {
                 ContextMenuDataEditFlags::kCanEditRichly);
 }
 
-TEST_F(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
+TEST_P(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
   frame_test_helpers::LoadFrame(LocalMainFrame(), R"XML(data:text/xml,
     <root>
       <style xmlns="http://www.w3.org/1999/xhtml">
@@ -565,7 +597,7 @@ TEST_F(ContextMenuControllerTest, EditingActionsEnabledInXMLDocument) {
   EXPECT_EQ(context_menu_data.selected_text, "Blue text");
 }
 
-TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
+TEST_P(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   GetDocument()->documentElement()->setInnerHTML(
       "<input id='sample' type='text' size='5' value='Sample Input Text'>");
 
@@ -612,7 +644,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
 
 #if !defined(OS_MAC)
 // Mac has no way to open a context menu based on a keyboard event.
-TEST_F(ContextMenuControllerTest,
+TEST_P(ContextMenuControllerTest,
        ValidateNonLocatedContextMenuOnLargeImageElement) {
   GetDocument()->documentElement()->setInnerHTML(
       "<img src=\"http://example.test/cat.jpg\" id=\"sample_image\" "
@@ -642,7 +674,7 @@ TEST_F(ContextMenuControllerTest,
 }
 #endif
 
-TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
+TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   GetDocument()->documentElement()->setInnerHTML(
       "<textarea id='text-area' cols=6 rows=2>Sample editable text</textarea>");
 
@@ -694,5 +726,662 @@ TEST_F(ContextMenuControllerTest, SelectionRectClipped) {
   selection_rect = gfx::Rect(left, top, right - left, bottom - top);
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 }
+
+class MockEventListener final : public NativeEventListener {
+ public:
+  MOCK_METHOD2(Invoke, void(ExecutionContext*, Event*));
+};
+
+// Test that a basic image hit test works without penetration enabled.
+TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardImageControl) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
+  // EXPECT_TRUE(context_menu_data.has_image_contents);
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
+            context_menu_data.media_type);
+
+  // No histograms should be sent in the control group.
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that a basic image hit test works and is no† impacted by
+// penetrating image selection logic.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestStandardImageSelectionExperiment) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+
+  String url = "http://test.png";
+  LOG(ERROR) << "URL IS: " << url.Utf8().c_str();
+  RegisterMockedImageURLLoad(url);
+
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+      </style>
+      <img id=target src="http://test.png">
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that image selection can penetrate through a fully transparent div
+// above the target image.
+TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestSucceededPenetrating) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <div id=occluder></div>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ("http://test.png/", context_menu_data.src_url.spec());
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that a basic image hit test works and is no† impacted by
+// penetrating image selection logic.
+TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestStandardCanvas) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+      </style>
+      <canvas id=target>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kCanvas,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that  an image node will not be selected through an opaque div
+// above the target image.
+TEST_P(ContextMenuControllerTest, ContextMenuImageHitTestOpaqueNodeBlocking) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #opaque {
+          background: blue;
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 3;
+        }
+      </style>
+
+      <img id=target src='http://test.png'>
+      <div id=opaque></div>
+      <div id=occluder></div>
+    </body>
+  )HTML");
+
+  base::HistogramTester histograms;
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that an image node will not be selected if a node with a context menu
+// listener is above the image node, but that we will still log the presence of
+// the image.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestContextMenuListenerAboveImageBlocking) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #nodewithlistener {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 3;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <div id=nodewithlistener></div>
+      <div id=occluder></div>
+    </body>
+)HTML");
+
+  Persistent<MockEventListener> event_listener =
+      MakeGarbageCollected<MockEventListener>();
+  base::HistogramTester histograms;
+
+  Element* target_image = GetDocument()->getElementById("target");
+  target_image->addEventListener(event_type_names::kContextmenu,
+                                 event_listener);
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that an image node will not be selected if the image node itself has a
+// context menu listener on it (and the image node is not the topmost element)
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestContextMenuListenerOnImageBlocking) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <div id=occluder></div>
+    </body>
+  )HTML");
+
+  // Attaching a listener for the finished event indicates pending activity.
+  Persistent<MockEventListener> event_listener =
+      MakeGarbageCollected<MockEventListener>();
+  base::HistogramTester histograms;
+
+  Element* target_image = GetDocument()->getElementById("target");
+  target_image->addEventListener(event_type_names::kContextmenu,
+                                 event_listener);
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that an image node will be selected if the image node itself has an
+// unrelated event listener on it.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestNonBlockingNonContextMenuListenerOnImage) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <div id=occluder></div>
+    </body>
+  )HTML");
+
+  Persistent<MockEventListener> event_listener =
+      MakeGarbageCollected<MockEventListener>();
+  base::HistogramTester histograms;
+
+  Element* target_image = GetDocument()->getElementById("target");
+  target_image->addEventListener(event_type_names::kClick, event_listener);
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kImage,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that an image node will still be selected if it is the topmost node
+// despite an ancestor having a context menu listener attached to it.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestStandardContextMenuListenerAncestorNonBlocking) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #hiddenancestor {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          z-index: 1;
+        }
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 2;
+        }
+      </style>
+      <div id=hiddenancestor>
+        <img id=target src='http://test.png'>
+      </div>
+    </body>
+  )HTML");
+
+  Persistent<MockEventListener> event_listener =
+      MakeGarbageCollected<MockEventListener>();
+  base::HistogramTester histograms;
+
+  Element* hidden_ancestor = GetDocument()->getElementById("hiddenancestor");
+  hidden_ancestor->addEventListener(event_type_names::kContextmenu,
+                                    event_listener);
+
+  // This hit test would miss the node with the listener if it was not an
+  // ancestor.
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  // EXPECT_TRUE(context_menu_data.has_image_contents);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// Test that an image node will not be selected if a non image node with a
+// context listener ancestor is above it and verify that topmost context menu
+// listener special logic only applies if the topmost node is an image.
+TEST_P(ContextMenuControllerTest,
+       ContextMenuImageHitTestContextMenuListenerAncestorBlocking) {
+  if (!base::FeatureList::IsEnabled(
+          features::kEnablePenetratingImageSelection)) {
+    return;
+  }
+  RegisterMockedImageURLLoad("http://test.png");
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  GetDocument()->documentElement()->setInnerHTML(R"HTML(
+    <body>
+      <style>
+        #target {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 1;
+        }
+        #hiddenancestor {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          z-index: 2;
+        }
+        #occluder {
+          top: 0;
+          left: 0;
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          z-index: 3;
+        }
+      </style>
+      <img id=target src='http://test.png'>
+      <div id=hiddenancestor>
+        <div id=occluder></div>
+      </div>
+    </body>
+  )HTML");
+
+  Persistent<MockEventListener> event_listener =
+      MakeGarbageCollected<MockEventListener>();
+  base::HistogramTester histograms;
+
+  Element* hidden_ancestor = GetDocument()->getElementById("hiddenancestor");
+  hidden_ancestor->addEventListener(event_type_names::kContextmenu,
+                                    event_listener);
+
+  PhysicalOffset location(LayoutUnit(5), LayoutUnit(5));
+  EXPECT_TRUE(ShowContextMenu(location, kMenuSourceLongPress));
+
+  // Context menu info are sent to the WebLocalFrameClient.
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_EQ(mojom::blink::ContextMenuDataMediaType::kNone,
+            context_menu_data.media_type);
+
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundStandard, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kImageFoundPenetrating,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByOpaqueNode, 0);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kFoundContextMenuListener,
+                               1);
+  histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
+                               ContextMenuController::kBlockedByCrossFrameNode,
+                               0);
+}
+
+// TODO(crbug.com/1184996): Add additional unit test for blocking frame logging.
 
 }  // namespace blink

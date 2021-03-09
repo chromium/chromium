@@ -1929,6 +1929,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.ContextMenu.ImageSelection">
+  <owner>benwgold@google.com</owner>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    Sent when a user long presses or right clicks a document (and that an image
+    is found). Requires that the `EnablePenetratingImageSelection` feature is
+    enabled together with a `logUkm` specific finch param.
+  </summary>
+  <metric name="Outcome" enum="ImageSelectionOutcome">
+    <summary>
+      Emits an integer id for a selection corresponding to the
+      ImageSelectionOutcome enum defined in Blink's context_menu_controller.h.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.FindInPage" singular="True">
   <owner>vmpstr@chromium.org</owner>
   <owner>chrishtr@chromium.org</owner>

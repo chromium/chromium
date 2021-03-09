@@ -358,6 +358,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kDisableDocumentDomainByDefault;
 
 BLINK_COMMON_EXPORT extern const base::Feature kScopeMemoryCachePerContext;
 
+BLINK_COMMON_EXPORT extern const base::Feature kEnablePenetratingImageSelection;
+
 }  // namespace features
 }  // namespace blink
 
