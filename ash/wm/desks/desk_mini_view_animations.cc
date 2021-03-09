@@ -300,7 +300,8 @@ void PerformReorderDeskMiniViewAnimation(
 
   // Since |old_index| and |new_index| are unequal valid indices, there
   // must be at least two desks.
-  int shift_x = mini_views[0]->bounds().x() - mini_views[1]->bounds().x();
+  int shift_x = mini_views[0]->GetMirroredBounds().x() -
+                mini_views[1]->GetMirroredBounds().x();
   shift_x = move_right ? -shift_x : shift_x;
   gfx::Transform desks_transform;
   desks_transform.Translate(shift_x, 0);
@@ -319,7 +320,9 @@ void PerformReorderDeskMiniViewAnimation(
   // Back to old position.
   gfx::Transform reorder_desk_transform;
   reorder_desk_transform.Translate(
-      mini_views[old_index]->bounds().x() - reorder_view->bounds().x(), 0);
+      mini_views[old_index]->GetMirroredBounds().x() -
+          reorder_view->GetMirroredBounds().x(),
+      0);
   layer->SetTransform(reorder_desk_transform);
 
   // Animate movement.

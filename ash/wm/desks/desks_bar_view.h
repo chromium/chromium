@@ -198,6 +198,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   friend class BentoDesksBarLayout;
   friend class BentoDesksBarScrollViewLayout;
 
+  // Determine the new index of the dragged desk at the position of
+  // |location_in_screen|.
+  int DetermineMoveIndex(int location_in_screen) const;
+
   // Returns the mini_view associated with |desk| or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
