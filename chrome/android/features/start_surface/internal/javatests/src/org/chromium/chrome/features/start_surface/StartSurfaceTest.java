@@ -1890,6 +1890,7 @@ public class StartSurfaceTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
             + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
+    @DisabledTest(message = "Failing/flaky on several bots, see crbug.com/1186218")
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         assumeTrue(mImmediateReturn);
