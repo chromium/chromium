@@ -19,6 +19,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
@@ -134,6 +136,12 @@ class MultiProfileSupportTest : public ChromeAshTestBase {
 
   // Set up the test environment for this many windows.
   void SetUpForThisManyWindows(int windows);
+
+  // If |windows_| is empty, set up one window each desk for a given user
+  // without activating any desk and return a list of created widgets.
+  // Otherwise, do nothing and return an empty vector.
+  std::vector<std::unique_ptr<views::Widget>> SetUpOneWindowEachDeskForUser(
+      AccountId account_id);
 
   // Switch the user and wait until the animation is finished.
   void SwitchUserAndWaitForAnimation(const AccountId& account_id) {
@@ -301,7 +309,7 @@ void MultiProfileSupportTest::SetUp() {
 }
 
 void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
-  DCHECK(windows_.empty());
+  ASSERT_TRUE(windows_.empty());
   for (int i = 0; i < windows; i++) {
     windows_.push_back(CreateTestWindowInShellWithId(i));
     windows_[i]->Show();
@@ -313,6 +321,38 @@ void MultiProfileSupportTest::SetUpForThisManyWindows(int windows) {
   wallpaper_controller_client_ =
       std::make_unique<::WallpaperControllerClient>();
   wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
+}
+
+std::vector<std::unique_ptr<views::Widget>>
+MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
+  if (!windows_.empty())
+    return std::vector<std::unique_ptr<views::Widget>>();
+  std::vector<std::unique_ptr<views::Widget>> widgets;
+  std::vector<int> container_ids = desks_util::GetDesksContainersIds();
+  TestShellDelegate* test_shell_delegate =
+      static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate());
+  // Set restore in progress to avoid activating desk activation during
+  // `window->Show()` in `CreateTestWidget()`.
+  test_shell_delegate->SetSessionRestoreInProgress(true);
+  auto* desks_helper = ash::DesksHelper::Get();
+  const int kActiveDeskIndex = 0;
+  for (int i = 0; i < desks_helper->GetNumberOfDesks(); i++) {
+    widgets.push_back(
+        CreateTestWidget(nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
+    aura::Window* win = widgets[i]->GetNativeWindow();
+    windows_.push_back(win);
+    // `TargetVisibility` is the local visibility of the window
+    // regardless of the invisibility of its inactive parent desk.
+    EXPECT_TRUE(win->TargetVisibility());
+    // `IsVisible` is the window global visibility on the current workarea.
+    // Thus, any window in non-active desk is considered invisible.
+    EXPECT_EQ(i == kActiveDeskIndex, win->IsVisible());
+    EXPECT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(win,
+                                                       /*desk_index=*/i));
+  }
+  EXPECT_EQ(kActiveDeskIndex, desks_helper->GetActiveDeskIndex());
+  test_shell_delegate->SetSessionRestoreInProgress(false);
+  return widgets;
 }
 
 void MultiProfileSupportTest::TearDown() {
@@ -639,6 +679,65 @@ TEST_F(MultiProfileSupportTest, PreserveWindowVisibilityTests) {
   EXPECT_EQ("H[a], H[a], H[b,a], H[b,a], S[]", GetStatus());
   StartUserTransitionAnimation(account_id_A);
   EXPECT_EQ("S[a], S[a], S[b,a], S[b,a], S[]", GetStatus());
+}
+
+// Tests that windows in active and inactive desks show up correctly after
+// switching profile (crbug.com/1182069). This test checks the followings:
+// 1. window local visibility (appearance in desk miniviews) regardless
+// of its ancestors' visibility like hidden parent desk container
+// (see `Window::TargetVisibility()`).
+// 2. window global visibility (appearance in the user screen) which takes
+// its ancestor views' visibility into account (see `Window::IsVisible()`).
+TEST_F(MultiProfileSupportTest, WindowVisibilityInMultipleDesksTests) {
+  const AccountId account_id_A(AccountId::FromUserEmail("a"));
+  const AccountId account_id_B(AccountId::FromUserEmail("b"));
+  ::MultiUserWindowManagerHelper::CreateInstanceForTest(account_id_A);
+  ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
+      ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
+  AddTestUser(account_id_A);
+  AddTestUser(account_id_B);
+
+  // In the user A, setup two desks with one window each.
+  SwitchActiveUser(account_id_A);
+  ash::AutotestDesksApi().CreateNewDesk();
+  std::vector<std::unique_ptr<views::Widget>> widgets =
+      SetUpOneWindowEachDeskForUser(account_id_A);
+  ASSERT_FALSE(widgets.empty());
+  multi_user_window_manager()->SetWindowOwner(window(0), account_id_A);
+  multi_user_window_manager()->SetWindowOwner(window(1), account_id_A);
+
+  // Tests that both windows are locally visible, but only the first window
+  // in the first active desk is globally visible.
+  // GetStatus checks the global visibility `window::IsVisible()`.
+  EXPECT_EQ("S[a], H[a]", GetStatus());
+  // Local visibilties are true because both windows show up in desks miniview.
+  EXPECT_TRUE(window(0)->TargetVisibility());
+  EXPECT_TRUE(window(1)->TargetVisibility());
+
+  // Tests that switching to userB globally and locally hides both userA's
+  // windows.
+  SwitchActiveUser(account_id_B);
+  EXPECT_EQ("H[a], H[a]", GetStatus());
+  EXPECT_FALSE(window(0)->TargetVisibility());
+  EXPECT_FALSE(window(1)->TargetVisibility());
+
+  // Tests that switching to userA globally shows both userA's windows, but does
+  // not change windows' local visibility.
+  SwitchActiveUser(account_id_A);
+  EXPECT_EQ("S[a], H[a]", GetStatus());
+  EXPECT_TRUE(window(0)->TargetVisibility());
+  EXPECT_TRUE(window(1)->TargetVisibility());
+
+  // Tests that activating the second desk globally shows userA's second window
+  // but does not change windows' local visibility.
+  auto* desk_2 = ash::DesksController::Get()->desks()[1].get();
+  ash::ActivateDesk(desk_2);
+  EXPECT_EQ("H[a], S[a]", GetStatus());
+  EXPECT_TRUE(window(0)->TargetVisibility());
+  EXPECT_TRUE(window(1)->TargetVisibility());
+
+  delete_window_at(0);
+  delete_window_at(1);
 }
 
 // Check that minimizing a window which is owned by another user will move it

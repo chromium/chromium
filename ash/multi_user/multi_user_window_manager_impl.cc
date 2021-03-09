@@ -161,7 +161,7 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   window_to_entry_[window] = std::move(window_entry_ptr);
 
   // Remember the initial visibility of the window.
-  window_entry->set_show(window->IsVisible());
+  window_entry->set_show(window->TargetVisibility());
 
   // Add observers to track state changes.
   window->AddObserver(this);
