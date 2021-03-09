@@ -4,8 +4,8 @@ Scroll rectangles
 {
     0 : {
         rect : {
-            height : 900
-            width : 1200
+            height : 30
+            width : 45
             x : 0
             y : 0
         }
