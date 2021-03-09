@@ -676,7 +676,7 @@ TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -710,7 +710,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -753,7 +753,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
       mojom::blink::PreferredColorScheme::kDark);
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -792,7 +792,7 @@ TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
 
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetEffectiveZoom(1.5);
@@ -915,7 +915,7 @@ TEST(ComputedStyleTest, BorderWidthZoom) {
 
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetEffectiveZoom(2);
@@ -961,7 +961,7 @@ TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
 
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
 
@@ -1000,7 +1000,7 @@ TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
 
@@ -1107,7 +1107,7 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   const ComputedStyle* initial = &ComputedStyle::InitialStyle();
   StyleResolverState state(dummy_page_holder_->GetDocument(),
                            *dummy_page_holder_->GetDocument().documentElement(),
-                           initial, initial);
+                           StyleRequest(initial));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);

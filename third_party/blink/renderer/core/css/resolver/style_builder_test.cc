@@ -38,7 +38,7 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
       style->SetWritingMode(WritingMode::kVerticalLr);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               parent_style.get(), parent_style.get());
+                               StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -70,7 +70,7 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
       style->SetTextOrientation(ETextOrientation::kUpright);
 
       StyleResolverState state(GetDocument(), *GetDocument().body(),
-                               parent_style.get(), parent_style.get());
+                               StyleRequest(parent_style.get()));
       state.SetStyle(style);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
@@ -85,7 +85,7 @@ TEST_F(StyleBuilderTest, HasExplicitInheritance) {
   auto parent_style = ComputedStyle::Create();
   auto style = ComputedStyle::Create();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
-                           parent_style.get(), parent_style.get());
+                           StyleRequest(parent_style.get()));
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
 

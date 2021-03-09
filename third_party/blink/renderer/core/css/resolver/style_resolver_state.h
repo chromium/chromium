@@ -53,17 +53,7 @@ class CORE_EXPORT StyleResolverState {
   enum class ElementType { kElement, kPseudoElement };
 
  public:
-  StyleResolverState(Document&,
-                     Element&,
-                     const ComputedStyle* parent_style = nullptr,
-                     const ComputedStyle* layout_parent_style = nullptr);
-  StyleResolverState(Document&,
-                     Element&,
-                     PseudoId,
-                     StyleRequest::RequestType,
-                     const ComputedStyle* parent_style,
-                     const ComputedStyle* layout_parent_style);
-  StyleResolverState(Document&, Element&, const StyleRequest&);
+  StyleResolverState(Document&, Element&, const StyleRequest& = StyleRequest());
   StyleResolverState(const StyleResolverState&) = delete;
   StyleResolverState& operator=(const StyleResolverState&) = delete;
   ~StyleResolverState();
@@ -182,14 +172,6 @@ class CORE_EXPORT StyleResolverState {
   void SetHadNoMatchedProperties() { had_no_matched_properties_ = true; }
 
  private:
-  StyleResolverState(Document&,
-                     Element&,
-                     PseudoElement*,
-                     StyleRequest::RequestType,
-                     ElementType,
-                     const ComputedStyle* parent_style,
-                     const ComputedStyle* layout_parent_style);
-
   CSSToLengthConversionData UnzoomedLengthConversionData(
       const ComputedStyle* font_style) const;
 
@@ -215,8 +197,8 @@ class CORE_EXPORT StyleResolverState {
 
   FontBuilder font_builder_;
 
+  PseudoElement* pseudo_element_;
   ElementStyleResources element_style_resources_;
-  Element* pseudo_element_;
   ElementType element_type_;
 
   // True if the base style can be cached to optimize style recalculations for

@@ -64,8 +64,8 @@ class MatchedPropertiesCacheTestCache {
   const CachedMatchedProperties* Find(const TestKey& key,
                                       const ComputedStyle& style,
                                       const ComputedStyle& parent_style) {
-    StyleResolverState state(document_, *document_.body(), &parent_style,
-                             &parent_style);
+    StyleResolverState state(document_, *document_.body(),
+                             StyleRequest(&parent_style));
     state.SetStyle(ComputedStyle::Clone(style));
     return cache_.Find(key.InnerKey(), state);
   }

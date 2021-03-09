@@ -988,8 +988,8 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
     double offset) {
   // TODO(alancutter): Avoid creating a StyleResolverState just to apply a
   // single value on a ComputedStyle.
-  StyleResolverState state(element.GetDocument(), element, parent_style,
-                           parent_style);
+  StyleResolverState state(element.GetDocument(), element,
+                           StyleRequest(parent_style));
   state.SetStyle(ComputedStyle::Clone(base_style));
   if (value) {
     STACK_UNINITIALIZED StyleCascade cascade(state);
@@ -1016,7 +1016,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     return initial_style;
 
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
-                           initial_style.get(), initial_style.get());
+                           StyleRequest(initial_style.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   const ComputedStyle* root_element_style =
@@ -1603,7 +1603,7 @@ void StyleResolver::ComputeFont(Element& element,
   };
 
   // TODO(timloh): This is weird, the style is being used as its own parent
-  StyleResolverState state(GetDocument(), element, style, style);
+  StyleResolverState state(GetDocument(), element, StyleRequest(style));
   state.SetStyle(style);
 
   for (const CSSProperty* property : properties) {

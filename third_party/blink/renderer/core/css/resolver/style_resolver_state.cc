@@ -34,25 +34,22 @@
 
 namespace blink {
 
-StyleResolverState::StyleResolverState(
-    Document& document,
-    Element& element,
-    PseudoElement* pseudo_element,
-    StyleRequest::RequestType pseudo_request_type,
-    ElementType element_type,
-    const ComputedStyle* parent_style,
-    const ComputedStyle* layout_parent_style)
+StyleResolverState::StyleResolverState(Document& document,
+                                       Element& element,
+                                       const StyleRequest& style_request)
     : element_context_(element),
       document_(&document),
-      parent_style_(parent_style),
-      layout_parent_style_(layout_parent_style),
-      pseudo_request_type_(pseudo_request_type),
+      parent_style_(style_request.parent_override),
+      layout_parent_style_(style_request.layout_parent_override),
+      pseudo_request_type_(style_request.type),
       font_builder_(&document),
+      pseudo_element_(element.GetPseudoElement(style_request.pseudo_id)),
       element_style_resources_(GetElement(),
                                document.DevicePixelRatio(),
-                               pseudo_element),
-      pseudo_element_(pseudo_element),
-      element_type_(element_type) {
+                               pseudo_element_),
+      element_type_(style_request.IsPseudoStyleRequest()
+                        ? ElementType::kPseudoElement
+                        : ElementType::kElement) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (!parent_style_) {
@@ -67,46 +64,6 @@ StyleResolverState::StyleResolverState(
 
   DCHECK(document.IsActive());
 }
-
-StyleResolverState::StyleResolverState(Document& document,
-                                       Element& element,
-                                       const ComputedStyle* parent_style,
-                                       const ComputedStyle* layout_parent_style)
-    : StyleResolverState(document,
-                         element,
-                         nullptr /* pseudo_element */,
-                         StyleRequest::kForRenderer,
-                         ElementType::kElement,
-                         parent_style,
-                         layout_parent_style) {}
-
-StyleResolverState::StyleResolverState(
-    Document& document,
-    Element& element,
-    PseudoId pseudo_id,
-    StyleRequest::RequestType pseudo_request_type,
-    const ComputedStyle* parent_style,
-    const ComputedStyle* layout_parent_style)
-    : StyleResolverState(document,
-                         element,
-                         element.GetPseudoElement(pseudo_id),
-                         pseudo_request_type,
-                         ElementType::kPseudoElement,
-                         parent_style,
-                         layout_parent_style) {}
-
-StyleResolverState::StyleResolverState(Document& document,
-                                       Element& element,
-                                       const StyleRequest& style_request)
-    : StyleResolverState(document,
-                         element,
-                         element.GetPseudoElement(style_request.pseudo_id),
-                         style_request.type,
-                         style_request.IsPseudoStyleRequest()
-                             ? ElementType::kPseudoElement
-                             : ElementType::kElement,
-                         style_request.parent_override,
-                         style_request.layout_parent_override) {}
 
 StyleResolverState::~StyleResolverState() {
   // For performance reasons, explicitly clear HeapVectors and

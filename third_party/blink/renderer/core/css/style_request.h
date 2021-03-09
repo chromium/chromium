@@ -52,6 +52,10 @@ class StyleRequest {
   ScrollbarPart scrollbar_part{kNoPart};
   CustomScrollbar* scrollbar{nullptr};
 
+  explicit StyleRequest(const ComputedStyle* parent_override)
+      : parent_override(parent_override),
+        layout_parent_override(parent_override) {}
+
   StyleRequest(PseudoId pseudo_id, const ComputedStyle* parent_override)
       : parent_override(parent_override),
         layout_parent_override(parent_override),
