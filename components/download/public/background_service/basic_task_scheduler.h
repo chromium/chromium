@@ -2,26 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TASK_SCHEDULER_IMPL_H_
-#define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TASK_SCHEDULER_IMPL_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BASIC_TASK_SCHEDULER_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_BASIC_TASK_SCHEDULER_H_
 
-#include <stdint.h>
 #include <map>
 
+#include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/task/task_scheduler.h"
 
-class SimpleFactoryKey;
+namespace download {
+
+class DownloadService;
 
 // A TaskScheduler implementation that doesn't do anything but posts the task
 // after the specified delay.
-// If Chrome is shut down, the implementation will not automatically restart it.
-class DownloadTaskSchedulerImpl : public download::TaskScheduler {
+class BasicTaskScheduler : public download::TaskScheduler {
  public:
-  explicit DownloadTaskSchedulerImpl(SimpleFactoryKey* key);
-  ~DownloadTaskSchedulerImpl() override;
+  explicit BasicTaskScheduler(
+      const base::RepeatingCallback<DownloadService*()>& get_download_service);
+  BasicTaskScheduler(const BasicTaskScheduler& other) = delete;
+  BasicTaskScheduler& operator=(const BasicTaskScheduler& other) = delete;
+  ~BasicTaskScheduler() override;
 
   // TaskScheduler implementation.
   void ScheduleTask(download::DownloadTaskType task_type,
@@ -36,15 +40,15 @@ class DownloadTaskSchedulerImpl : public download::TaskScheduler {
   void RunScheduledTask(download::DownloadTaskType task_type);
   void OnTaskFinished(bool reschedule);
 
-  SimpleFactoryKey* key_;
-
   // Keeps track of scheduled tasks so that they can be cancelled.
   std::map<download::DownloadTaskType, base::CancelableOnceClosure>
       scheduled_tasks_;
 
-  base::WeakPtrFactory<DownloadTaskSchedulerImpl> weak_factory_{this};
+  base::RepeatingCallback<DownloadService*()> get_download_service_;
 
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskSchedulerImpl);
+  base::WeakPtrFactory<BasicTaskScheduler> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_TASK_SCHEDULER_IMPL_H_
+}  // namespace download
+
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_TASK_TASK_SCHEDULER_H_
