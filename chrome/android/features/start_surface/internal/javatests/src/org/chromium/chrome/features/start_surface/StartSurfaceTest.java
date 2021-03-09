@@ -1908,7 +1908,7 @@ public class StartSurfaceTest {
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER));
         hideWatcher.waitForBehavior();
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 2, 0);
-        pressHomePageButton();
+        onView(withId(R.id.home_button)).perform(click());
 
         // MV tiles and carousel tab switcher should not show anymore.
         onViewWaiting(allOf(withId(R.id.start_tab_switcher_button), isDisplayed()));
