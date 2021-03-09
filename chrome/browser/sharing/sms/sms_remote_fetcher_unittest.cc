@@ -52,7 +52,8 @@ TEST(SmsRemoteFetcherTest, DisabledByDefault) {
 
   FetchRemoteSms(
       &profile, GetOriginForURL("a.com"),
-      BindLambdaForTesting([&loop](base::Optional<std::string> result) {
+      BindLambdaForTesting([&loop](base::Optional<OriginList>,
+                                   base::Optional<std::string> result) {
         ASSERT_FALSE(result);
         loop.Quit();
       }));
@@ -77,7 +78,8 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
 
   FetchRemoteSms(
       &profile, GetOriginForURL("a.com"),
-      BindLambdaForTesting([&loop](base::Optional<std::string> result) {
+      BindLambdaForTesting([&loop](base::Optional<OriginList>,
+                                   base::Optional<std::string> result) {
         ASSERT_FALSE(result);
         loop.Quit();
       }));
@@ -115,7 +117,8 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 
   FetchRemoteSms(
       &profile, GetOriginForURL("a.com"),
-      BindLambdaForTesting([&loop](base::Optional<std::string> result) {
+      BindLambdaForTesting([&loop](base::Optional<OriginList>,
+                                   base::Optional<std::string> result) {
         ASSERT_TRUE(result);
         ASSERT_EQ("ABC", result);
         loop.Quit();
@@ -152,7 +155,8 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 
   FetchRemoteSms(
       &profile, GetOriginForURL("a.com"),
-      BindLambdaForTesting([&loop](base::Optional<std::string> result) {
+      BindLambdaForTesting([&loop](base::Optional<OriginList>,
+                                   base::Optional<std::string> result) {
         ASSERT_FALSE(result);
         loop.Quit();
       }));

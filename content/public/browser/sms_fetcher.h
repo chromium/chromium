@@ -61,10 +61,13 @@ class SmsFetcher {
 
   class Subscriber : public base::CheckedObserver {
    public:
-    // Receive a |one_time_code| from subscribed origin. The |one_time_code|
-    // is parsed from |sms| as an alphanumeric value which the origin uses
-    // to verify the ownership of the phone number.
-    virtual void OnReceive(const std::string& one_time_code, UserConsent) = 0;
+    // Receive an |origin_list| and a |one_time_code| from subscribed origin.
+    // The |origin_list| is for verification purpose on remote device and the
+    // |one_time_code| is used as an alphanumeric value which the origin uses to
+    // verify the ownership of the phone number.
+    virtual void OnReceive(const OriginList& origin_list,
+                           const std::string& one_time_code,
+                           UserConsent) = 0;
     virtual void OnFailure(FailureType failure_type) = 0;
   };
 

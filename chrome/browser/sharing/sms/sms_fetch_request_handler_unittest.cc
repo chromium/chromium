@@ -76,7 +76,9 @@ TEST(SmsFetchRequestHandlerTest, Basic) {
         loop.Quit();
       }));
 
-  subscriber->OnReceive("123", SmsFetcher::UserConsent::kNotObtained);
+  subscriber->OnReceive(
+      content::OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
+      SmsFetcher::UserConsent::kNotObtained);
   loop.Run();
 }
 
@@ -113,10 +115,14 @@ TEST(SmsFetchRequestHandlerTest, OutOfOrder) {
         loop2.Quit();
       }));
 
-  request2->OnReceive("2", SmsFetcher::UserConsent::kNotObtained);
+  request2->OnReceive(
+      content::OriginList{url::Origin::Create(GURL("https://a.com"))}, "2",
+      SmsFetcher::UserConsent::kNotObtained);
   loop2.Run();
 
-  request1->OnReceive("1", SmsFetcher::UserConsent::kNotObtained);
+  request1->OnReceive(
+      content::OriginList{url::Origin::Create(GURL("https://a.com"))}, "1",
+      SmsFetcher::UserConsent::kNotObtained);
   loop1.Run();
 }
 

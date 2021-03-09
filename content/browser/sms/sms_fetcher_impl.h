@@ -53,7 +53,8 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   bool HasSubscribers() override;
 
  private:
-  void OnRemote(base::Optional<std::string> sms);
+  void OnRemote(base::Optional<OriginList>,
+                base::Optional<std::string> one_time_code);
 
   bool Notify(const OriginList& origin_list,
               const std::string& one_time_code,

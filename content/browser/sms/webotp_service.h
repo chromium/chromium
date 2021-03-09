@@ -59,7 +59,9 @@ class CONTENT_EXPORT WebOTPService
   void Abort() override;
 
   // content::SmsQueue::Subscriber
-  void OnReceive(const std::string& one_time_code, UserConsent) override;
+  void OnReceive(const OriginList&,
+                 const std::string& one_time_code,
+                 UserConsent) override;
   void OnFailure(FailureType failure_type) override;
 
   // Completes the in-flight sms otp code request. Invokes the receive callback,

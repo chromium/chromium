@@ -170,11 +170,13 @@ void WebOTPService::Receive(ReceiveCallback callback) {
   fetcher_->Subscribe(origin_list_, this, render_frame_host());
 }
 
-void WebOTPService::OnReceive(const std::string& one_time_code,
+void WebOTPService::OnReceive(const OriginList& origin_list,
+                              const std::string& one_time_code,
                               UserConsent consent_requirement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!one_time_code_);
   DCHECK(!start_time_.is_null());
+  DCHECK(!origin_list.empty());
 
   receive_time_ = base::TimeTicks::Now();
   RecordSmsReceiveTime(receive_time_ - start_time_,

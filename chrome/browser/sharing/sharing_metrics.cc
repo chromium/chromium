@@ -23,6 +23,8 @@ const char* GetEnumStringValue(SharingFeatureName feature) {
       return "ClickToCall";
     case SharingFeatureName::kSharedClipboard:
       return "SharedClipboard";
+    case SharingFeatureName::kSmsRemoteFetcher:
+      return "SmsRemoteFetcher";
   }
 }
 

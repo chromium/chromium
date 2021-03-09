@@ -649,7 +649,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void FetchRemoteSms(
       content::BrowserContext* browser_context,
       const url::Origin& origin,
-      base::OnceCallback<void(base::Optional<std::string>)> callback) override;
+      base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
+                              base::Optional<std::string>)> callback) override;
 #endif
 
   bool IsClipboardPasteAllowed(

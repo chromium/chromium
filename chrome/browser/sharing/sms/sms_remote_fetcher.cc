@@ -11,6 +11,7 @@
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -20,9 +21,10 @@ const uint32_t kDefaultTimeoutSeconds = 60;
 void FetchRemoteSms(
     content::BrowserContext* context,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<std::string>)> callback) {
+    base::OnceCallback<void(base::Optional<OriginList>,
+                            base::Optional<std::string>)> callback) {
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(base::nullopt, base::nullopt);
     return;
   }
 
@@ -34,7 +36,7 @@ void FetchRemoteSms(
 
   if (devices.empty()) {
     // No devices available to call.
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(base::nullopt, base::nullopt);
     return;
   }
 
@@ -51,20 +53,25 @@ void FetchRemoteSms(
       *device.get(), base::TimeDelta::FromSeconds(kDefaultTimeoutSeconds),
       std::move(request),
       base::BindOnce(
-          [](base::OnceCallback<void(base::Optional<std::string>)> callback,
+          [](base::OnceCallback<void(base::Optional<OriginList>,
+                                     base::Optional<std::string>)> callback,
              SharingSendMessageResult result,
              std::unique_ptr<chrome_browser_sharing::ResponseMessage>
                  response) {
             if (result != SharingSendMessageResult::kSuccessful) {
-              std::move(callback).Run(base::nullopt);
+              std::move(callback).Run(base::nullopt, base::nullopt);
               return;
             }
 
             DCHECK(response);
             DCHECK(response->has_sms_fetch_response());
+            auto origin_strings = response->sms_fetch_response().origin();
+            OriginList origin_list;
+            for (auto origin_string : origin_strings)
+              origin_list.push_back(url::Origin::Create(GURL(origin_string)));
 
             std::move(callback).Run(
-                response->sms_fetch_response().one_time_code());
+                origin_list, response->sms_fetch_response().one_time_code());
           },
           std::move(callback)));
 }

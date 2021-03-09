@@ -33,7 +33,8 @@ class MockContentBrowserClient : public ContentBrowserClient {
   MOCK_METHOD3(FetchRemoteSms,
                void(BrowserContext*,
                     const url::Origin&,
-                    base::OnceCallback<void(base::Optional<std::string>)>));
+                    base::OnceCallback<void(base::Optional<OriginList>,
+                                            base::Optional<std::string>)>));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockContentBrowserClient);
@@ -44,7 +45,10 @@ class MockSubscriber : public SmsFetcher::Subscriber {
   MockSubscriber() = default;
   ~MockSubscriber() override = default;
 
-  MOCK_METHOD2(OnReceive, void(const std::string& one_time_code, UserConsent));
+  MOCK_METHOD3(OnReceive,
+               void(const OriginList&,
+                    const std::string& one_time_code,
+                    UserConsent));
   MOCK_METHOD1(OnFailure, void(SmsFetcher::FailureType failure_type));
 
  private:
@@ -92,7 +96,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromLocalSmsProvider) {
                               UserConsent::kObtained);
   }));
 
-  EXPECT_CALL(subscriber, OnReceive("123", UserConsent::kObtained));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", UserConsent::kObtained));
 
   fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
@@ -101,16 +105,16 @@ TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
   StrictMock<MockSubscriber> subscriber;
   SmsFetcherImpl fetcher(nullptr, provider());
 
-  const std::string& sms = "@a.com #123";
-
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
           [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(sms);
+              base::OnceCallback<void(base::Optional<OriginList>,
+                                      base::Optional<std::string>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("https://a.com"))}, "123");
           }));
 
-  EXPECT_CALL(subscriber, OnReceive("123", _));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", _));
 
   fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
                     &subscriber, main_rfh());
@@ -123,11 +127,12 @@ TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
           [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(base::nullopt);
+              base::OnceCallback<void(base::Optional<OriginList>,
+                                      base::Optional<std::string>)> callback) {
+            std::move(callback).Run(base::nullopt, base::nullopt);
           }));
 
-  EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
+  EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
 
   fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
                     &subscriber, main_rfh());
@@ -140,11 +145,13 @@ TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
           [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run("@b.com #123");
+              base::OnceCallback<void(base::Optional<OriginList>,
+                                      base::Optional<std::string>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("b.com"))}, "123");
           }));
 
-  EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
+  EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
 
   fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
                     &subscriber, main_rfh());
@@ -160,8 +167,10 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
           [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(sms);
+              base::OnceCallback<void(base::Optional<OriginList>,
+                                      base::Optional<std::string>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("https://a.com"))}, "123");
           }));
 
   EXPECT_CALL(*provider(), Retrieve(_)).WillOnce(Invoke([&]() {
@@ -170,7 +179,7 @@ TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
   }));
 
   // Expects subscriber to be notified just once.
-  EXPECT_CALL(subscriber, OnReceive("123", UserConsent::kNotObtained));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", UserConsent::kObtained));
 
   fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
@@ -186,10 +195,10 @@ TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribers) {
   fetcher.Subscribe(OriginList{kOrigin}, &subscriber1, main_rfh());
   fetcher.Subscribe(OriginList{kOrigin}, &subscriber2, main_rfh());
 
-  EXPECT_CALL(subscriber1, OnReceive("123", UserConsent::kObtained));
+  EXPECT_CALL(subscriber1, OnReceive(_, "123", UserConsent::kObtained));
   provider()->NotifyReceive(OriginList{kOrigin}, "123", UserConsent::kObtained);
 
-  EXPECT_CALL(subscriber2, OnReceive("456", UserConsent::kObtained));
+  EXPECT_CALL(subscriber2, OnReceive(_, "456", UserConsent::kObtained));
   provider()->NotifyReceive(OriginList{kOrigin}, "456", UserConsent::kObtained);
 }
 
@@ -204,11 +213,11 @@ TEST_F(SmsFetcherImplTest, TwoOriginsTwoSubscribers) {
   fetcher.Subscribe(OriginList{kOrigin1}, &subscriber1, main_rfh());
   fetcher.Subscribe(OriginList{kOrigin2}, &subscriber2, main_rfh());
 
-  EXPECT_CALL(subscriber2, OnReceive("456", UserConsent::kObtained));
+  EXPECT_CALL(subscriber2, OnReceive(_, "456", UserConsent::kObtained));
   provider()->NotifyReceive(OriginList{kOrigin2}, "456",
                             UserConsent::kObtained);
 
-  EXPECT_CALL(subscriber1, OnReceive("123", UserConsent::kObtained));
+  EXPECT_CALL(subscriber1, OnReceive(_, "123", UserConsent::kObtained));
   provider()->NotifyReceive(OriginList{kOrigin1}, "123",
                             UserConsent::kObtained);
 }

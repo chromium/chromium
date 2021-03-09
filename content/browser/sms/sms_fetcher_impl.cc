@@ -38,11 +38,17 @@ SmsFetcher* SmsFetcher::Get(BrowserContext* context) {
       context->GetUserData(kSmsFetcherImplKeyName));
 }
 
-// TODO(crbug.com/1015645): Add implementation.
-void SmsFetcherImpl::Subscribe(const OriginList& origin,
+void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
                                SmsQueue::Subscriber* subscriber) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
+  DCHECK(subscriber);
+  // Should not be called multiple times for the same subscriber and origin.
+  DCHECK(!subscribers_.HasSubscriber(origin_list, subscriber));
+
+  subscribers_.Push(origin_list, subscriber);
+  // Fetches a local SMS.
+  if (provider_)
+    provider_->Retrieve(nullptr);
 }
 
 void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
@@ -86,24 +92,18 @@ bool SmsFetcherImpl::Notify(const OriginList& origin_list,
   if (!subscriber)
     return false;
 
-  subscriber->OnReceive(one_time_code, consent_requirement);
+  subscriber->OnReceive(origin_list, one_time_code, consent_requirement);
   return true;
 }
 
-void SmsFetcherImpl::OnRemote(base::Optional<std::string> sms) {
+void SmsFetcherImpl::OnRemote(base::Optional<OriginList> origin_list,
+                              base::Optional<std::string> one_time_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!sms)
+  if (!origin_list || !one_time_code)
     return;
 
-  // TODO(yigu): We should log when the sms cannot be parsed similar to local
-  // SMSes.
-  SmsParser::Result result = SmsParser::Parse(*sms);
-  if (!result.IsValid())
-    return;
-
-  Notify(result.GetOriginList(), result.one_time_code,
-         UserConsent::kNotObtained);
+  Notify(origin_list.value(), one_time_code.value(), UserConsent::kObtained);
 }
 
 bool SmsFetcherImpl::OnReceive(const OriginList& origin_list,
