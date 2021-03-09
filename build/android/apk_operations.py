@@ -620,7 +620,7 @@ class _LogcatProcessor(object):
 
   # Logcat tags for messages that are generally relevant but are not from PIDs
   # associated with the apk.
-  _WHITELISTED_TAGS = {
+  _ALLOWLISTED_TAGS = {
       'ActivityManager',  # Shows activity lifecycle messages.
       'ActivityTaskManager',  # More activity lifecycle messages.
       'AndroidRuntime',  # Java crash dumps
@@ -811,7 +811,7 @@ class _LogcatProcessor(object):
         return
 
     if owned_pid or self._verbose or (log.priority == 'F' or  # Java crash dump
-                                      log.tag in self._WHITELISTED_TAGS):
+                                      log.tag in self._ALLOWLISTED_TAGS):
       if nonce_found:
         self._native_stack_symbolizer.AddLine(log, not owned_pid)
       else:
