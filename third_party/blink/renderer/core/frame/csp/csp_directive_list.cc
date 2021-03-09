@@ -641,6 +641,21 @@ bool CheckUnsafeHashesAllowed(
   return !directive || directive->allow_unsafe_hashes;
 }
 
+bool CheckUnsafeHashesAllowed(
+    ContentSecurityPolicy::InlineType inline_type,
+    const network::mojom::blink::CSPSourceList* directive) {
+  switch (inline_type) {
+    case ContentSecurityPolicy::InlineType::kNavigation:
+    case ContentSecurityPolicy::InlineType::kScriptAttribute:
+    case ContentSecurityPolicy::InlineType::kStyleAttribute:
+      return CheckUnsafeHashesAllowed(directive);
+
+    case ContentSecurityPolicy::InlineType::kScript:
+    case ContentSecurityPolicy::InlineType::kStyle:
+      return true;
+  }
+}
+
 bool CheckDynamic(const network::mojom::blink::CSPSourceList* directive,
                   CSPDirectiveName effective_type) {
   // 'strict-dynamic' only applies to scripts
@@ -767,12 +782,14 @@ bool CheckInlineAndReportViolation(
     const String& source,
     const String& context_url,
     const WTF::OrdinalNumber& context_line,
-    bool is_script,
+    ContentSecurityPolicy::InlineType inline_type,
     const String& hash_value,
     CSPDirectiveName effective_type) {
   if (!directive.source_list ||
       CSPSourceListAllowAllInline(directive.type, *directive.source_list))
     return true;
+
+  bool is_script = ContentSecurityPolicy::IsScriptInlineType(inline_type);
 
   String suffix = String();
   if (directive.source_list->allow_inline &&
@@ -786,6 +803,14 @@ bool CheckInlineAndReportViolation(
     suffix =
         " Either the 'unsafe-inline' keyword, a hash ('" + hash_value +
         "'), or a nonce ('nonce-...') is required to enable inline execution.";
+
+    if (!CheckUnsafeHashesAllowed(inline_type, directive.source_list)) {
+      suffix = suffix +
+               " Note that hashes do not apply to event handlers, style "
+               "attributes and javascript: navigations unless the "
+               "'unsafe-hashes' keyword' is present.";
+    }
+
     if (directive.type == CSPDirectiveName::DefaultSrc) {
       suffix = suffix + " Note also that '" +
                String(is_script ? "script" : "style") +
@@ -1026,8 +1051,7 @@ bool CSPDirectiveListAllowInline(
         "Refused to " + message +
             " because it violates the following Content Security Policy "
             "directive: ",
-        element, content, context_url, context_line,
-        ContentSecurityPolicy::IsScriptInlineType(inline_type), hash_value,
+        element, content, context_url, context_line, inline_type, hash_value,
         type);
   }
 
@@ -1213,25 +1237,14 @@ bool CSPDirectiveListAllowHash(
     const ContentSecurityPolicy::InlineType inline_type) {
   CSPDirectiveName directive_type =
       GetDirectiveTypeForAllowHashFromInlineType(inline_type);
+  const network::mojom::blink::CSPSourceList* operative_directive =
+      OperativeDirective(csp, directive_type).source_list;
 
   // https://w3c.github.io/webappsec-csp/#match-element-to-source-list
   // Step 5. If type is "script" or "style", or unsafe-hashes flag is true:
   // [spec text]
-  switch (inline_type) {
-    case ContentSecurityPolicy::InlineType::kNavigation:
-    case ContentSecurityPolicy::InlineType::kScriptAttribute:
-    case ContentSecurityPolicy::InlineType::kStyleAttribute:
-      if (!CheckUnsafeHashesAllowed(
-              OperativeDirective(csp, directive_type).source_list))
-        return false;
-      break;
-
-    case ContentSecurityPolicy::InlineType::kScript:
-    case ContentSecurityPolicy::InlineType::kStyle:
-      break;
-  }
-  return CheckHash(OperativeDirective(csp, directive_type).source_list,
-                   hash_value);
+  return CheckUnsafeHashesAllowed(inline_type, operative_directive) &&
+         CheckHash(operative_directive, hash_value);
 }
 
 bool CSPDirectiveListAllowDynamic(
