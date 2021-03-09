@@ -133,17 +133,6 @@ TEST_F(DocumentTransitionTest, EffectParsing) {
 
   directive = request->ConstructDirective();
   EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kExplode);
-
-  // Test invalid effect parsing.
-  DocumentTransitionInit invalid_init;
-  invalid_init.setRootTransition("invalid effect");
-  transition->prepare(script_state, &invalid_init, exception_state);
-
-  request = transition->TakePendingRequest();
-  ASSERT_TRUE(request);
-
-  directive = request->ConstructDirective();
-  EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kNone);
 }
 
 TEST_F(DocumentTransitionTest, AdditionalPrepareAfterPreparedSucceeds) {
