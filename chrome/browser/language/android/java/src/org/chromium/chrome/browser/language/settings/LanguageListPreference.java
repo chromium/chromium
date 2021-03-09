@@ -115,8 +115,11 @@ public class LanguageListPreference extends Preference {
                     notifyDataSetChanged();
                 }
             };
-            ((LanguageRowViewHolder) holder)
-                    .setMenuButtonDelegate(() -> new BasicListMenu(mContext, menuItems, delegate));
+            ((LanguageRowViewHolder) holder).setMenuButtonDelegate(() -> {
+                LanguagesManager.recordImpression(
+                        LanguagesManager.LanguageSettingsPageType.LANGUAGE_OVERFLOW_MENU_OPENED);
+                return new BasicListMenu(mContext, menuItems, delegate);
+            });
         }
 
         @Override
