@@ -331,7 +331,7 @@ bool HandleVersionSwitches(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kVersion)) {
     printf("%s %s %s\n", version_info::GetProductName().c_str(),
            version_info::GetVersionNumber().c_str(),
-           chrome::GetChannelName().c_str());
+           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
     return true;
   }
 
