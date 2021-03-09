@@ -13,6 +13,7 @@ source_set("bottom_sheet") {
     "bottom_sheet_presentation_controller.mm",
     "bottom_sheet_slide_transition_animator.h",
     "bottom_sheet_slide_transition_animator.mm",
+    "child_bottom_sheet_view_controller.h",
   ]
   deps = [
     "//ios/chrome/browser/browser_state",

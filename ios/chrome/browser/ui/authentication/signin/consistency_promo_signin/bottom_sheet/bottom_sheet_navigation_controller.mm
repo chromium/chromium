@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/check.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/child_bottom_sheet_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,14 +38,22 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
                   animated:(BOOL)animated {
   // |viewController.view| has to be a UIScrollView.
   DCHECK([viewController.view isKindOfClass:[UIScrollView class]]);
+  DCHECK([viewController
+      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
   [super pushViewController:viewController animated:animated];
 }
 
 - (CGSize)layoutFittingSize {
   CGFloat width = self.view.frame.size.width;
-  CGFloat height = [self.presentationDelegate
-      layoutFittingHeightForViewController:self.childViewControllers.lastObject
-                                     width:width];
+  UINavigationController* navigationController =
+      self.childViewControllers.lastObject;
+  DCHECK([navigationController
+      conformsToProtocol:@protocol(ChildBottomSheetViewController)]);
+  UIViewController<ChildBottomSheetViewController>* childNavigationController =
+      static_cast<UIViewController<ChildBottomSheetViewController>*>(
+          navigationController);
+  CGFloat height =
+      [childNavigationController layoutFittingHeightForWidth:width];
   CGFloat maxViewHeight =
       self.view.window.frame.size.height * kMaxBottomSheetHeightRatioWithWindow;
   return CGSizeMake(width, std::min(height, maxViewHeight));

@@ -117,14 +117,6 @@
                    showAdvancedSettingsSignin:NO];
 }
 
-- (CGFloat)layoutFittingHeightForViewController:
-               (UIViewController*)viewController
-                                          width:(CGFloat)width {
-  // Needs implementation.
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 #pragma mark - UIViewControllerAnimatedTransitioning
 
 - (id<UIViewControllerAnimatedTransitioning>)

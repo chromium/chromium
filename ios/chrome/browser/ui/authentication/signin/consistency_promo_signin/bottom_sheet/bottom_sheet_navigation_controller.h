@@ -17,12 +17,6 @@
 - (void)bottomSheetNavigationControllerDidDisappear:
     (BottomSheetNavigationController*)viewController;
 
-// Returns the desired height for |viewController| to fit. The height needs to
-// include safe area insets.
-- (CGFloat)layoutFittingHeightForViewController:
-               (UIViewController*)viewController
-                                          width:(CGFloat)width;
-
 @end
 
 // Navigation controller presented from the bottom. The pushed view controllers
@@ -31,6 +25,8 @@
 // The view is automatically sized according to the last child view controller.
 // This class works with BottomSheetPresentationController and
 // BottomSheetSlideTransitionAnimator.
+// Child view controller are required to implement
+// ChildBottomSheetViewController protocol.
 @interface BottomSheetNavigationController : UINavigationController
 
 // Presentation delegate.
