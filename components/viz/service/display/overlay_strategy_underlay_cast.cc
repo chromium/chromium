@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
@@ -24,9 +23,6 @@
 
 namespace viz {
 namespace {
-
-base::LazyInstance<OverlayStrategyUnderlayCast::OverlayCompositedCallback>::
-    DestructorAtExit g_overlay_composited_callback = LAZY_INSTANCE_INITIALIZER;
 
 #if BUILDFLAG(IS_CHROMECAST)
 // This persistent mojo::Remote is bound then used by all the instances
@@ -119,18 +115,11 @@ bool OverlayStrategyUnderlayCast::Attempt(
         continue;
       }
 
-      // TODO(guohuideng): when migration to GPU process complete, remove
-      // the code that's for the browser process compositor.
 #if BUILDFLAG(IS_CHROMECAST)
-      if (g_overlay_composited_callback.Get().is_null()) {
-        DCHECK(GetVideoGeometrySetter());
-        GetVideoGeometrySetter()->SetVideoGeometry(
-            candidate.display_rect, candidate.transform,
-            VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
-      } else {
-        g_overlay_composited_callback.Get().Run(candidate.display_rect,
-                                                candidate.transform);
-      }
+      DCHECK(GetVideoGeometrySetter());
+      GetVideoGeometrySetter()->SetVideoGeometry(
+          candidate.display_rect, candidate.transform,
+          VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
 #endif
 
       render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
@@ -259,18 +248,11 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
         continue;
       }
 
-      // TODO(guohuideng): when migration to GPU process complete, remove
-      // the code that's for the browser process compositor.
 #if BUILDFLAG(IS_CHROMECAST)
-      if (g_overlay_composited_callback.Get().is_null()) {
-        DCHECK(GetVideoGeometrySetter());
-        GetVideoGeometrySetter()->SetVideoGeometry(
-            candidate.display_rect, candidate.transform,
-            VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
-      } else {
-        g_overlay_composited_callback.Get().Run(candidate.display_rect,
-                                                candidate.transform);
-      }
+      DCHECK(GetVideoGeometrySetter());
+      GetVideoGeometrySetter()->SetVideoGeometry(
+          candidate.display_rect, candidate.transform,
+          VideoHoleDrawQuad::MaterialCast(*it)->overlay_plane_id);
 #endif
 
       render_pass->ReplaceExistingQuadWithOpaqueTransparentSolidColor(it);
@@ -288,12 +270,6 @@ bool OverlayStrategyUnderlayCast::AttemptPrioritized(
 
 OverlayStrategy OverlayStrategyUnderlayCast::GetUMAEnum() const {
   return OverlayStrategy::kUnderlayCast;
-}
-
-// static
-void OverlayStrategyUnderlayCast::SetOverlayCompositedCallback(
-    const OverlayCompositedCallback& cb) {
-  g_overlay_composited_callback.Get() = cb;
 }
 
 #if BUILDFLAG(IS_CHROMECAST)

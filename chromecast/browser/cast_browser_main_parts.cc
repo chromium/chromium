@@ -112,7 +112,6 @@
 #include "components/ui_devtools/devtools_server.h"  // nogncheck
 #include "components/ui_devtools/switches.h"         // nogncheck
 #endif
-#include "components/viz/service/display/overlay_strategy_underlay_cast.h"  // nogncheck
 #include "ui/display/screen.h"
 #include "ui/views/views_delegate.h"  // nogncheck
 #else
@@ -580,11 +579,6 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
   video_plane_controller_.reset(new media::VideoPlaneController(
       Size(display_size.width(), display_size.height()),
       cast_content_browser_client_->GetMediaTaskRunner()));
-  // TODO(crbug.com/925450): Once compositor migrates to GPU process, We
-  // don't need to set the callback in viz::OverlayStrategyUnderlayCast.
-  viz::OverlayStrategyUnderlayCast::SetOverlayCompositedCallback(
-      base::BindRepeating(&media::VideoPlaneController::SetGeometry,
-                          base::Unretained(video_plane_controller_.get())));
   media::CastRenderer::SetOverlayCompositedCallback(BindToCurrentThread(
       base::BindRepeating(&media::VideoPlaneController::SetGeometry,
                           base::Unretained(video_plane_controller_.get()))));
