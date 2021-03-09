@@ -10,11 +10,23 @@
 
 #include "base/strings/string_util.h"
 #include "components/link_header_util/link_header_util.h"
+#include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
 
 namespace network {
 
 namespace {
+
+bool IsValidMimeType(const std::string& type_string) {
+  std::string top_level_type;
+  std::string subtype;
+  if (!net::ParseMimeTypeWithoutParameter(type_string, &top_level_type,
+                                          &subtype)) {
+    return false;
+  }
+
+  return net::IsValidTopLevelMimeType(top_level_type);
+}
 
 // Parses `rel` attribute and returns its parsed representation. Returns
 // base::nullopt when the value isn't pre-defined.
@@ -108,10 +120,9 @@ bool ParseAttributes(
       // is a reasonable behavior.
       if (parsed->mime_type.has_value())
         continue;
-      // TODO(crbug.com/1182567): Should we verify MIME type?
-      // net::MimeUtil::IsValidTopLevelMimeType() doesn't accept some mime types
-      // such as "font/woff2".
-      parsed->mime_type = attr.second;
+      if (!attr.second.has_value() || !IsValidMimeType(attr.second.value()))
+        return false;
+      parsed->mime_type = attr.second.value();
     } else {
       // The current Link header contains an attribute which isn't pre-defined.
       return false;

@@ -59,6 +59,16 @@ TEST(LinkHeaderParserTest, UndefinedAttributeValue) {
   ASSERT_EQ(parsed_headers.size(), 0UL);
 }
 
+TEST(LinkHeaderParserTest, UnknownMimeType) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+  headers->AddHeader("link", "</foo>; rel=preload; type=unknown-type");
+
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 0UL);
+}
+
 TEST(LinkHeaderParserTest, NoRelAttribute) {
   auto headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
