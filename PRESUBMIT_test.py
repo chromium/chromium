@@ -3481,49 +3481,6 @@ class DISABLETypoInTest(unittest.TestCase):
     self.assertEqual(0, len(results))
 
 
-class BuildtoolsRevisionsAreInSyncTest(unittest.TestCase):
-  # TODO(crbug.com/941824): We need to make sure the entries in
-  # //buildtools/DEPS are kept in sync with the entries in //DEPS
-  # so that users of //buildtools in other projects get the same tooling
-  # Chromium gets. If we ever fix the referenced bug and add 'includedeps'
-  # support to gclient, we can eliminate the duplication and delete
-  # these tests for the corresponding presubmit check.
-
-  def _check(self, files):
-    mock_input_api = MockInputApi()
-    mock_input_api.files = []
-    for fname, contents in files.items():
-      mock_input_api.files.append(MockFile(fname, contents.splitlines()))
-    return PRESUBMIT.CheckBuildtoolsRevisionsAreInSync(mock_input_api,
-                                                        MockOutputApi())
-
-  def testOneFileChangedButNotTheOther(self):
-    results = self._check({
-        "DEPS": "'gn_version': 'onerev'",
-    })
-    self.assertNotEqual(results, [])
-
-  def testNeitherFileChanged(self):
-    results = self._check({
-        "OWNERS": "foobar@example.com",
-    })
-    self.assertEqual(results, [])
-
-  def testBothFilesChangedAndMatch(self):
-    results = self._check({
-        "DEPS": "'gn_version': 'onerev'",
-        os.path.join("buildtools", "DEPS"): "'gn_version': 'onerev'",
-    })
-    self.assertEqual(results, [])
-
-  def testBothFilesWereChangedAndDontMatch(self):
-    results = self._check({
-        "DEPS": "'gn_version': 'rev1'",
-        os.path.join("buildtools", "DEPS"): "'gn_version': 'rev2'",
-    })
-    self.assertNotEqual(results, [])
-
-
 class CheckFuzzTargetsTest(unittest.TestCase):
 
   def _check(self, files):
