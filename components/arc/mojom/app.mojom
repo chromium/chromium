@@ -7,6 +7,7 @@
 module arc.mojom;
 
 import "components/arc/mojom/app_permissions.mojom";
+import "components/arc/mojom/compatibility_mode.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/scale_factor.mojom";
 import "ui/accessibility/mojom/ax_assistant_structure.mojom";
@@ -25,6 +26,7 @@ struct AppInfo {
   [MinVersion=2] bool sticky;  // true if the app cannot be uninstalled
   [MinVersion=7] bool notifications_enabled;
   [MinVersion=35] bool suspended;
+  [MinVersion=47] ArcResizeLockState resize_lock_state;
 };
 
 // Describes the data required to install a web app.

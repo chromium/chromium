@@ -40,6 +40,7 @@ class CertStoreHost;
 class CertStoreInstance;
 class ClipboardHost;
 class ClipboardInstance;
+class CompatibilityModeInstance;
 class CrashCollectorHost;
 class CrashCollectorInstance;
 class DarkThemeInstance;
@@ -187,6 +188,9 @@ class ArcBridgeService {
   ConnectionHolder<mojom::ClipboardInstance, mojom::ClipboardHost>*
   clipboard() {
     return &clipboard_;
+  }
+  ConnectionHolder<mojom::CompatibilityModeInstance>* compatibility_mode() {
+    return &compatibility_mode_;
   }
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>*
   crash_collector() {
@@ -336,6 +340,7 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CastReceiverInstance> cast_receiver_;
   ConnectionHolder<mojom::CertStoreInstance, mojom::CertStoreHost> cert_store_;
   ConnectionHolder<mojom::ClipboardInstance, mojom::ClipboardHost> clipboard_;
+  ConnectionHolder<mojom::CompatibilityModeInstance> compatibility_mode_;
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;
   ConnectionHolder<mojom::DarkThemeInstance> dark_theme_;

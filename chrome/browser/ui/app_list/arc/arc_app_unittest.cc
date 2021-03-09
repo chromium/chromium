@@ -74,6 +74,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -378,7 +379,8 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       app.name, app.package_name, app.activity, std::string() /* intent_uri */,
       std::string() /* icon_resource_id */, base::Time() /* last_launch_time */,
       base::Time() /* install_time */, app.sticky, app.notifications_enabled,
-      true /* ready */, false /* suspended */, launchable /* show_in_launcher*/,
+      arc::mojom::ArcResizeLockState::UNDEFINED, true /* ready */,
+      false /* suspended */, launchable /* show_in_launcher*/,
       false /* shortcut */, launchable);
 }
 

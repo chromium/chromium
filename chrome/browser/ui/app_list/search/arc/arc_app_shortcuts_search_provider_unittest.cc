@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
@@ -69,8 +70,8 @@ class ArcAppShortcutsSearchProviderTest
         app_info.name, app_info.package_name, app_info.activity,
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
         false /* sticky */, true /* notifications_enabled */,
-        true /* app_ready */, false /* suspended */, false /* shortcut */,
-        launchable);
+        arc::mojom::ArcResizeLockState::UNDEFINED, true /* app_ready */,
+        false /* suspended */, false /* shortcut */, launchable);
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));

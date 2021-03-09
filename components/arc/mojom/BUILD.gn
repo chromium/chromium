@@ -27,6 +27,7 @@ if (is_chromeos_ash) {
       "cast_receiver.mojom",
       "cert_store.mojom",
       "clipboard.mojom",
+      "compatibility_mode.mojom",
       "crash_collector.mojom",
       "dark_theme.mojom",
       "digital_goods.mojom",

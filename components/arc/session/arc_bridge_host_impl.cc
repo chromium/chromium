@@ -26,6 +26,7 @@
 #include "components/arc/mojom/cast_receiver.mojom.h"
 #include "components/arc/mojom/cert_store.mojom.h"
 #include "components/arc/mojom/clipboard.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/crash_collector.mojom.h"
 #include "components/arc/mojom/dark_theme.mojom.h"
 #include "components/arc/mojom/digital_goods.mojom.h"
@@ -165,6 +166,13 @@ void ArcBridgeHostImpl::OnClipboardInstanceReady(
     mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) {
   OnInstanceReady(arc_bridge_service_->clipboard(),
                   std::move(clipboard_remote));
+}
+
+void ArcBridgeHostImpl::OnCompatibilityModeInstanceReady(
+    mojo::PendingRemote<mojom::CompatibilityModeInstance>
+        compatibility_mode_remote) {
+  OnInstanceReady(arc_bridge_service_->compatibility_mode(),
+                  std::move(compatibility_mode_remote));
 }
 
 void ArcBridgeHostImpl::OnCrashCollectorInstanceReady(

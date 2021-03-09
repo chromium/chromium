@@ -109,6 +109,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -958,8 +959,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
         app_info.name, app_info.package_name, app_info.activity,
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
         false /* sticky */, true /* notifications_enabled */,
-        true /* app_ready */, false /* suspended */, false /* shortcut */,
-        true /* launchable */);
+        arc::mojom::ArcResizeLockState::UNDEFINED, true /* app_ready */,
+        false /* suspended */, false /* shortcut */, true /* launchable */);
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));

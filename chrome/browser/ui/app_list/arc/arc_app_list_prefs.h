@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/layout.h"
@@ -77,6 +78,7 @@ class ArcAppListPrefs : public KeyedService,
             const base::Time& install_time,
             bool sticky,
             bool notifications_enabled,
+            arc::mojom::ArcResizeLockState resize_lock_state,
             bool ready,
             bool suspended,
             bool show_in_launcher,
@@ -96,6 +98,8 @@ class ArcAppListPrefs : public KeyedService,
     bool sticky;
     // Whether notifications are enabled for the app.
     bool notifications_enabled;
+    // The resize lock state of the app.
+    arc::mojom::ArcResizeLockState resize_lock_state;
     // Whether app is ready. Disabled and removed apps are not ready.
     bool ready;
     // Whether app was suspended by policy. It may have or may not have ready
@@ -188,6 +192,10 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that task has been activated and moved to the front.
     virtual void OnTaskSetActive(int32_t task_id) {}
 
+    // Notifies that the resize lock state has changed.
+    virtual void OnResizeLockStateChanged(
+        const std::string& app_id,
+        arc::mojom::ArcResizeLockState state) {}
     virtual void OnNotificationsEnabledChanged(
         const std::string& package_name, bool enabled) {}
     // Notifies that package has been installed. This may be called in two
@@ -317,6 +325,14 @@ class ArcAppListPrefs : public KeyedService,
   // available. Once new value is set notifies an observer
   // OnNotificationsEnabledChanged.
   void SetNotificationsEnabled(const std::string& app_id, bool enabled);
+
+  // Returns the resize lock state.
+  arc::mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const;
+  // Sets the resize lock state. This is called either by the Chrome OS
+  // settings or Ash.
+  void SetResizeLockState(const std::string& app_id,
+                          arc::mojom::ArcResizeLockState state);
 
   // Returns true if app is registered.
   bool IsRegistered(const std::string& app_id) const;
@@ -463,6 +479,7 @@ class ArcAppListPrefs : public KeyedService,
                          const std::string& icon_resource_id,
                          const bool sticky,
                          const bool notifications_enabled,
+                         const arc::mojom::ArcResizeLockState resize_lock_state,
                          const bool app_ready,
                          const bool suspended,
                          const bool shortcut,
