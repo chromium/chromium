@@ -115,6 +115,30 @@ testcase.formatDialog = async () => {
 };
 
 /**
+ * Tests the format dialog is a modal dialog.
+ */
+testcase.formatDialogIsModal = async () => {
+  await sendTestMessage({name: 'mountFakeUsb'});
+  const appId = await setupFormatDialogTest();
+
+  // Open the format dialog on fake-usb.
+  await openFormatDialog(appId, 'fake-usb');
+
+  // Focus the <cr-input> inner <input> element.
+  const driveNameQuery = ['files-format-dialog', 'cr-input#label', 'input'];
+  await remoteCall.simulateUiClick(appId, driveNameQuery);
+
+  // Send a select-all keyboard event to the <input> element.
+  const ctrlA = [driveNameQuery, 'a', true, false, false];
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
+
+  // Check: the file-list should have nothing selected.
+  const selectedRows = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, ['#file-list li[selected]']);
+  chrome.test.assertEq(0, selectedRows.length);
+};
+
+/**
  * Tests the format dialog for an empty USB.
  */
 testcase.formatDialogEmpty = async () => {
