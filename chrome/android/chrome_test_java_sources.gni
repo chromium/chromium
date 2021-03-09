@@ -591,6 +591,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/toolbar/ToolbarSecurityIconTest.java",
   "javatests/src/org/chromium/chrome/browser/toolbar/ToolbarTest.java",
   "javatests/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerTest.java",
+  "javatests/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/toolbar/top/AdaptiveToolbarTest.java",
   "javatests/src/org/chromium/chrome/browser/toolbar/top/BrandColorTest.java",
   "javatests/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuRenderTest.java",

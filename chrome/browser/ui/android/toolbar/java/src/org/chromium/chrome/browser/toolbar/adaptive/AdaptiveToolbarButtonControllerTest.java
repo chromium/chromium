@@ -48,6 +48,8 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock
     private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock
+    private ButtonDataProvider mNewTabButtonController;
+    @Mock
     private Tab mTab;
 
     private ButtonDataImpl mButtonData;
@@ -79,12 +81,28 @@ public class AdaptiveToolbarButtonControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testDestroy_alwaysNewTab() {
+        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+        adaptiveToolbarButtonController.destroy();
+
+        verify(mNewTabButtonController).destroy();
+        verify(mNewTabButtonController).removeObserver(adaptiveToolbarButtonController);
+        verify(mShareButtonController).destroy();
+        verify(mVoiceToolbarButtonController).destroy();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     public void testDestroy_alwaysShare() {
         AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_SHARE);
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
         adaptiveToolbarButtonController.destroy();
 
+        verify(mNewTabButtonController).destroy();
         verify(mShareButtonController).destroy();
         verify(mShareButtonController).removeObserver(adaptiveToolbarButtonController);
         verify(mVoiceToolbarButtonController).destroy();
@@ -99,6 +117,7 @@ public class AdaptiveToolbarButtonControllerTest {
         AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
         adaptiveToolbarButtonController.destroy();
 
+        verify(mNewTabButtonController).destroy();
         verify(mShareButtonController).destroy();
         verify(mVoiceToolbarButtonController).destroy();
         verify(mVoiceToolbarButtonController).removeObserver(adaptiveToolbarButtonController);
@@ -207,6 +226,8 @@ public class AdaptiveToolbarButtonControllerTest {
     private AdaptiveToolbarButtonController buildController() {
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                 new AdaptiveToolbarButtonController();
+        adaptiveToolbarButtonController.addButtonVariant(
+                AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.SHARE, mShareButtonController);
         adaptiveToolbarButtonController.addButtonVariant(
