@@ -609,6 +609,7 @@
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6179832488876878285">您可將重要的檔案固定至此處。開啟「檔案」應用程式即可開始使用。</translation>
 <translation id="622484624075952240">向下鍵</translation>
+<translation id="6231419273573514727">周邊裝置的效能可能受到限制</translation>
 <translation id="6236290670123303279">管理設定</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">已鎖定為水平</translation>
@@ -732,6 +733,7 @@
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
+<translation id="7360036564632145207">變更周邊裝置的資料存取保護可以優化效能</translation>
 <translation id="7371404428569700291">記錄視窗</translation>
 <translation id="7377169924702866686">已啟用大寫鍵。</translation>
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
@@ -790,6 +792,7 @@
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796353162336583443">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用「Google 助理」、雷射筆或放大鏡。</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
+<translation id="7807966291075028781">為安全起見，訪客模式不支援周邊裝置</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">訊號強大</translation>
 <translation id="7837740436429729974">時間到</translation>
@@ -858,6 +861,7 @@
 <translation id="8345019317483336363">揀咗「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="8371779926711439835">往前一個字母</translation>
+<translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
 <translation id="8375916635258623388">此 <ph name="DEVICE_NAME" /> 和手機將會自動連接</translation>
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>

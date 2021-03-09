@@ -610,6 +610,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>
 <translation id="6236290670123303279">إدارة الإعدادات</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">تم القفل على الوضع الأفقي</translation>
@@ -733,6 +734,7 @@
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7348093485538360975">لوحة المفاتيح على الشاشة</translation>
 <translation id="735745346212279324">تم قطع اتصال الشبكة الافتراضية الخاصة</translation>
+<translation id="7360036564632145207">يمكن تحسين أداء الأجهزة الملحقة من خلال تغيير إعدادات الحماية من الوصول إلى البيانات.</translation>
 <translation id="7371404428569700291">تسجيل فيديو للنافذة</translation>
 <translation id="7377169924702866686">‏مفتاح Caps Lock في وضع التفعيل.</translation>
 <translation id="7378203170292176219">يُرجى السحب لتحديد منطقة لتسجيل فيديو لها.</translation>
@@ -791,6 +793,7 @@
 <translation id="7780159184141939021">تدوير الشاشة</translation>
 <translation id="7796353162336583443">‏انقر على زر قلم الشاشة على الرف لتدوين ملاحظة أو الحصول على لقطة شاشة أو استخدام مساعد Google أو مؤشر الليزر أو العدسة المكبرة.</translation>
 <translation id="7798302898096527229">‏اضغط على مفتاح البحث أو المفتاح Shift للإلغاء.</translation>
+<translation id="7807966291075028781">لأسباب تتعلق بالأمان، لا يمكن استخدام الأجهزة الملحقة في "وضع الضيف".</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> و<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">إشارة قوية</translation>
 <translation id="7837740436429729974">انتهى الوقت</translation>
@@ -859,6 +862,7 @@
 <translation id="8345019317483336363">تم اختيار النافذة <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
 <translation id="8371779926711439835">نقل للأمام بمقدار حرف واحد</translation>
+<translation id="8371991222807690464">قد يكون أداء الجهاز الملحق محدودًا في وضع الضيف.</translation>
 <translation id="8375916635258623388">سيتم الربط تلقائيًا بين جهاز <ph name="DEVICE_NAME" /> هذا وهاتفك.</translation>
 <translation id="8380784334203145311">ليلة سعيدة،</translation>
 <translation id="8388750414311082622">تتعذّر إزالة سطح المكتب الأخير.</translation>

@@ -610,6 +610,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6179832488876878285">Vous pouvez épingler vos fichiers importants ici. Ouvrez l'application Fichiers pour commencer.</translation>
 <translation id="622484624075952240">Bas</translation>
+<translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
 <translation id="6236290670123303279">Gérer les paramètres</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Verrouillée à l'horizontale</translation>
@@ -733,6 +734,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="7348093485538360975">Clavier à l'écran</translation>
 <translation id="735745346212279324">RPV déconnecté</translation>
+<translation id="7360036564632145207">Modifier les paramètres de protection d'accès aux données des périphériques peut optimiser les performances</translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée.</translation>
 <translation id="7378203170292176219">Faites glisser le curseur pour sélectionner une région à enregistrer</translation>
@@ -791,6 +793,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796353162336583443">Touchez le bouton du stylet sur l'étagère pour créer une note, pour prendre une capture d'écran ou pour utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
+<translation id="7807966291075028781">Le périphérique n'est pas compatible en mode Invité pour des raisons de sécurité</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal fort</translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
@@ -859,6 +862,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8371779926711439835">Déplacer une lettre vers l'avant</translation>
+<translation id="8371991222807690464">Les performances du périphérique peuvent être limitées en mode Invité</translation>
 <translation id="8375916635258623388">Cet appareil <ph name="DEVICE_NAME" /> et votre téléphone se connecteront automatiquement</translation>
 <translation id="8380784334203145311">Bonne nuit,</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>

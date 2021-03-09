@@ -613,6 +613,7 @@
 <translation id="16620462294541761">Beklager, passordet kan ikke verifiseres. Prøv på nytt.</translation>
 <translation id="166278006618318542">Algoritme for enhetens offentlige nøkkel</translation>
 <translation id="166439687370499867">Det er ikke tillatt å endre delte nettverkskonfigurasjoner</translation>
+<translation id="1666232093776384142">Slå av datatilgangsbeskyttelse for eksterne enheter</translation>
 <translation id="1668435968811469751">Registrer manuelt</translation>
 <translation id="1668979692599483141">Finn ut mer om forslag</translation>
 <translation id="1670399744444387456">Enkle</translation>
@@ -1796,6 +1797,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2966937470348689686">Administrer Android-innstillinger</translation>
 <translation id="2972581237482394796">Gjø&amp;r om</translation>
 <translation id="2973324205039581528">Kutt lyden for nettsted</translation>
+<translation id="2976557544729462544">For at enkelte enheter skal fungere ordentlig eller med full ytelse, må du slå av datatilgangsbeskyttelse.</translation>
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
 <translation id="2979520980928493164">Gjør Chrome friskere og gladere</translation>
 <translation id="2979639724566107830">Åpne i nytt vindu</translation>
@@ -1868,6 +1870,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3051250416341590778">Skjermstørrelse</translation>
 <translation id="3053013834507634016">Bruk av sertifikatnøkkel</translation>
 <translation id="3053273573829329829">Slå på bruker-PIN-kode</translation>
+<translation id="3054766768827382232">Hvis du slår dette av, kan det hende de eksterne enhetene dine yter bedre, men det kan også medføre at personopplysningene dine blir avdekket som følge av uautorisert bruk.</translation>
 <translation id="3055590424724986000">Med en leverandør du velger selv</translation>
 <translation id="3058498974290601450">Du kan når som helst slå på synkronisering i innstillingene</translation>
 <translation id="3060379269883947824">Slå på Tekstopplesing</translation>
@@ -2667,7 +2670,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3943494825379372497">Vil du gjenopprette apper og sider?</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
-<translation id="3944266449990965865">Hele skjermen</translation>
 <translation id="3948116654032448504">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i disse mappene</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2743,7 +2745,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4031527940632463547">Sensorene er blokkerte</translation>
 <translation id="4033471457476425443">Legg til ny mappe</translation>
 <translation id="4034824040120875894">Skriver</translation>
-<translation id="4035321506998192527">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS? Hvis ja, trykk på mellomromstasten.</translation>
 <translation id="4035758313003622889">&amp;Oppgavebehandling</translation>
 <translation id="4036778507053569103">Regelen som ble lastet ned fra tjeneren, er ugyldig.</translation>
 <translation id="4037084878352560732">Hest</translation>
@@ -2890,7 +2891,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4225397296022057997">På alle nettsteder</translation>
 <translation id="4231095370974836764">Installer apper og spill fra Google Play på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
-<translation id="4235200303672858594">Hele skjermen</translation>
 <translation id="4235965441080806197">Avbryt påloggingen</translation>
 <translation id="4242145785130247982">Flere klientsertifikater støttes ikke</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
@@ -3552,7 +3552,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4998430619171209993">På</translation>
 <translation id="5000922062037820727">Blokkert (anbefales)</translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
-<translation id="5005970596776813007">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS?</translation>
 <translation id="5006218871145547804">Android-app-ADB for Crostini</translation>
 <translation id="5007392906805964215">Se gjennom</translation>
 <translation id="5008936837313706385">Aktivitetsnavn</translation>
@@ -4053,7 +4052,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BEGIN_PARAGRAPH2" />Selv om denne funksjonen slås av, kan enheten fortsatt sende informasjonen den trenger for å motta nødvendige tjenester, som systemoppdateringer og sikkerhet.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Eieren kan kontrollere funksjonen fra Innstillinger &gt; Avansert &gt; Send diagnostikk og bruksdata til Google automatisk.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Hvis du har slått på ytterligere nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. Du kan se disse dataene, slette dem eller endre kontoinnstillingene dine på account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5585118885427931890">Kan ikke opprette bokmerkemappe.</translation>
 <translation id="558563010977877295">Åpne en bestemt side eller et sett med sider</translation>
@@ -4923,6 +4921,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6597017209724497268">Datapunkter</translation>
 <translation id="6597148444736186483">For å logge av primærkontoen på denne enheten, klikk på klokkeslettet på skjermen. I menyen som åpnes, klikker du på «Logg av».</translation>
+<translation id="6601395831301182804">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS? Hvis ja, trykk på mellomromstasten.</translation>
 <translation id="6601612474695404578">Noen nettsteder bruker informasjonskapsler fra tredjeparter til å laste inn sider. Hvis et nettsted ikke virker, kan du prøve å tillate informasjonskapsler.</translation>
 <translation id="6602937173026466876">Tilgang til skriverne dine</translation>
 <translation id="6602956230557165253">Bruk venstre og høyre piltast for å navigere.</translation>
@@ -5412,6 +5411,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
+<translation id="7156143134102343902">Det kan hende at skjermene og de eksterne enhetene dine blir tilbakestilt. Dette kan ta noen sekunder.</translation>
 <translation id="7163202347044721291">Bekrefter aktiveringskoden …</translation>
 <translation id="7165320105431587207">Kunne ikke konfigurere nettverket</translation>
 <translation id="716640248772308851">«<ph name="EXTENSION" />» kan lese bilder, videofiler og lydfiler i mappene som står oppført.</translation>
@@ -5550,6 +5550,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7324297612904500502">Forumet for betaversjoner</translation>
 <translation id="7325209047678309347">Papiret sitter fast</translation>
 <translation id="7326004502692201767">Konfigurer <ph name="DEVICE_TYPE" /> for et barn</translation>
+<translation id="7326025035243649350">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> har slått av ADB-feilsøking. Når du starter <ph name="DEVICE_TYPE" /> på nytt, kan du ikke sideinnlaste apper lenger.</translation>
 <translation id="7328867076235380839">Ugyldig kombinasjon</translation>
 <translation id="7329154610228416156">Påloggingen mislyktes fordi den var konfigurert til å bruke en usikret nettadresse (<ph name="BLOCKED_URL" />). Kontakt administratoren din.</translation>
@@ -7036,6 +7037,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8986494364107987395">Send bruksstatistikk og programstopprapporter automatisk til Google</translation>
 <translation id="8987927404178983737">Måned</translation>
+<translation id="8988879467270412492">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
 <translation id="8989823300731803443">Fortsett der du slapp.</translation>
 <translation id="8990209962746788689">Kan ikke opprette QR-kode</translation>
 <translation id="8991520179165052608">Nettstedet kan bruke mikrofonen din</translation>

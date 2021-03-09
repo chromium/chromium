@@ -610,6 +610,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6179832488876878285">Voit kiinnittää tärkeitä tiedostoja tähän. Aloita avaamalla Files-sovellus.</translation>
 <translation id="622484624075952240">Alas</translation>
+<translation id="6231419273573514727">Lisälaitteen toiminta voi olla rajoitettua</translation>
 <translation id="6236290670123303279">Määritä asetuksia</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Lukittu vaakasuuntaiseksi</translation>
@@ -733,6 +734,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7346909386216857016">Selvä</translation>
 <translation id="7348093485538360975">Näyttönäppäimistö</translation>
 <translation id="735745346212279324">VPN-yhteys katkaistu</translation>
+<translation id="7360036564632145207">Datan käyttösuoja-asetuksen muuttaminen voi optimoida lisälaitteiden toimintaa</translation>
 <translation id="7371404428569700291">Tallenna ikkuna</translation>
 <translation id="7377169924702866686">Caps Lock on päällä.</translation>
 <translation id="7378203170292176219">Valitse tallennettava alue vetämällä</translation>
@@ -791,6 +793,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7796353162336583443">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää Google Assistantia, laserosoitinta tai suurennuslasia.</translation>
 <translation id="7798302898096527229">Peruuta painamalla haku- tai vaihtonäppäintä.</translation>
+<translation id="7807966291075028781">Lisälaitetta ei tueta vierastilassa tietoturvasyistä</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Vahva signaali</translation>
 <translation id="7837740436429729974">Aika loppui</translation>
@@ -859,6 +862,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ‑ikkuna valittu</translation>
 <translation id="8351131234907093545">Luo muistiinpano</translation>
 <translation id="8371779926711439835">Yksi kirjain eteenpäin</translation>
+<translation id="8371991222807690464">Vierastila voi rajoittaa lisälaitteen toimintaa</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> muodostaa yhteyden puhelimeesi automaattisesti</translation>
 <translation id="8380784334203145311">Hyvää yötä</translation>
 <translation id="8388750414311082622">Viimeistä työpöytää ei voi poistaa.</translation>

@@ -618,6 +618,7 @@
 <translation id="16620462294541761">Ձեր գաղտնաբառը չհաստատվեց: Կրկին փորձեք:</translation>
 <translation id="166278006618318542">Առարկայի հանրային բանալու ալգորիթմ</translation>
 <translation id="166439687370499867">Դուք չեք կարող փոխել ընդհանուր ցանցի կարգավորումները</translation>
+<translation id="1666232093776384142">Անջատել տվյալների հասանելիության պաշտպանությունը արտաքին սարքերի համար</translation>
 <translation id="1668435968811469751">Գրանցել ձեռքով</translation>
 <translation id="1668979692599483141">Առաջարկների մասին</translation>
 <translation id="1670399744444387456">Հիմնական</translation>
@@ -1801,6 +1802,7 @@
 <translation id="2966937470348689686">Android-ի կարգավորումների կառավարում</translation>
 <translation id="2972581237482394796">&amp;Վերարկել</translation>
 <translation id="2973324205039581528">Անջատել կայքի ձայնը</translation>
+<translation id="2976557544729462544">Որոշ սարքերի պատշաճ աշխատանքի համար անհրաժեշտ է, որ անջատեք տվյալների հասանելիության պաշտպանությունը։</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
 <translation id="2979520980928493164">Ավելի անվտանգ և արդյունավետ Chrome</translation>
 <translation id="2979639724566107830">Բացել նոր պատուհանում</translation>
@@ -1873,6 +1875,7 @@
 <translation id="3051250416341590778">Ցուցադրման չափը</translation>
 <translation id="3053013834507634016">Վկայագրի բանալու օգտագործումը</translation>
 <translation id="3053273573829329829">Միացնել օգտատիրոջ PIN կոդը</translation>
+<translation id="3054766768827382232">Եթե այն անջատեք, արտաքին սարքերը կարող են ավելի արդյունավետ աշխատել, սակայն ձեր անձնական տվյալների պաշտպանությունը կվտանգվի։</translation>
 <translation id="3055590424724986000">Իմ ընտրած մատակարարի միջոցով</translation>
 <translation id="3058498974290601450">Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում:</translation>
 <translation id="3060379269883947824">Միացնել «Ընտրեք և լսեք» գործառույթը</translation>
@@ -2674,7 +2677,6 @@
 <translation id="3943494825379372497">Վերականգնե՞լ հավելվածներն ու էջերը</translation>
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
-<translation id="3944266449990965865">Լիաէկրան</translation>
 <translation id="3948116654032448504">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> կայքը կարող է փոփոխել ֆայլեր հետևյալ պանակներում</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2750,7 +2752,6 @@
 <translation id="4031527940632463547">տվիչների օգտագործումն արգելված է</translation>
 <translation id="4033471457476425443">Նոր պանակ ավելացնել</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
-<translation id="4035321506998192527">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։ Եթե այո, ապա սեղմեք բացատի ստեղնը։</translation>
 <translation id="4035758313003622889">&amp;Խնդիրների կառավարիչ</translation>
 <translation id="4036778507053569103">Սերվերից ներբեռնված քաղաքականությունն անվավեր է:</translation>
 <translation id="4037084878352560732">Ձի</translation>
@@ -2897,7 +2898,6 @@
 <translation id="4225397296022057997">Բոլոր կայքերում</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ի կարգավորում</translation>
-<translation id="4235200303672858594">Ողջ էկրանը</translation>
 <translation id="4235965441080806197">Չեղարկել մուտքը</translation>
 <translation id="4242145785130247982">Սպասառուների բազմակի վկայագրեր չեն աջակցվում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -3560,7 +3560,6 @@
 <translation id="4998430619171209993">Միացված է</translation>
 <translation id="5000922062037820727">Արգելափակված է (հանձնարարելի)</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
-<translation id="5005970596776813007">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։</translation>
 <translation id="5006218871145547804">Android-ի համար հավելվածների ADB գործիք Crostini-ում</translation>
 <translation id="5007392906805964215">Դիտել</translation>
 <translation id="5008936837313706385">Գործողության անունը</translation>
@@ -4063,7 +4062,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը):<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Սարքի օգտատերը կարող է կառավարել այս գործառույթը՝ անցնելով Կարգավորումներ &gt; Լրացուցիչ &gt; Ավտոմատ ուղարկել ախտորոշման և օգտագործման տվյալները Google-ին:<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Եթե միացնեք Վեբ որոնման և հավելվածների պատմությունը, այս տվյալները կպահվեն ձեր Google հաշվում։ Դուք կարող եք դիտել և ջնջել ձեր տվյալները, ինչպես նաև փոխել հաշվի կարգավորումները account.google.com էջում:<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։ Եթե այո, ապա սեղմեք և հինգ վայրկյան պահեք ձայնի կարգավորման երկու կոճակները։</translation>
 <translation id="5585019845078534178">Քարտեր</translation>
 <translation id="5585118885427931890">Չհաջողվեց ստեղծել էջանիշների պանակը:</translation>
 <translation id="558563010977877295">Բացել հետևյալ էջերը՝</translation>
@@ -4933,6 +4931,7 @@
 <translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6597017209724497268">Նմուշներ</translation>
 <translation id="6597148444736186483">Այս սարքում հիմնական հաշվից դուրս գրվելու համար սեղմեք ժամի վրա ձեր էկրանին։ Բացվող ընտրացանկում սեղմեք «Դուրս գալ»։</translation>
+<translation id="6601395831301182804">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։ Եթե այո, ապա սեղմեք բացատի ստեղնը։</translation>
 <translation id="6601612474695404578">Որոշ կայքեր իրենց էջերը բեռնելու համար օգտագործում են երրորդ կողմի քուքիներ։ Եթե կայքը չի աշխատում, փորձեք թույլատրել քուքիները։</translation>
 <translation id="6602937173026466876">Հասանելիություն տպիչներին</translation>
 <translation id="6602956230557165253">Նավարկման համար օգտագործեք ձախ և աջ սլաքաստեղները:</translation>
@@ -5422,6 +5421,7 @@
 <translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>
 <translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
+<translation id="7156143134102343902">Ձեր էկրաններն ու արտաքին սարքերը շուտով կվերակայվեն։ Սա կարող է մի քանի վայրկյան տևել։</translation>
 <translation id="7163202347044721291">Ակտիվացման կոդը ստուգվում է…</translation>
 <translation id="7165320105431587207">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="716640248772308851">«<ph name="EXTENSION" />» ընդլայնումը կարող է նշված պանակներում կարդալ պատկերները, տեսանյութերը և ձայնային ֆայլերը:</translation>
@@ -5560,6 +5560,7 @@
 <translation id="7324297612904500502">Բետա ֆորում</translation>
 <translation id="7325209047678309347">Թուղթը խցանվել է</translation>
 <translation id="7326004502692201767">Կարգավորեք <ph name="DEVICE_TYPE" /> սարքը երեխայի համար</translation>
+<translation id="7326025035243649350">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ Ձեր <ph name="DEVICE_TYPE" /> սարքը վերագործարկելուց հետո դուք չեք կարողանա բեռնել հավելվածներ անհայտ աղբյուրներից։</translation>
 <translation id="7328867076235380839">Սխալ համադրություն</translation>
 <translation id="7329154610228416156">Մուտքը չհաջողվեց, քանի որ դրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
@@ -7045,6 +7046,7 @@
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8986494364107987395">Ավտոմատ Google-ին ուղարկել օգտագործման վիճակագրությունները և խափանումների մասին հաշվետվությունները</translation>
 <translation id="8987927404178983737">Ամիս</translation>
+<translation id="8988879467270412492">Ակտիվացնե՞լ ChromeVox-ը՝ էկրանի ներկառուցված ընթերցիչը Chrome OS-ի համար։ Եթե այո, ապա սեղմեք և հինգ վայրկյան պահեք ձայնի կարգավորման երկու կոճակները։</translation>
 <translation id="8989823300731803443">Շարունակեք աշխատանքը նույն տեղից։</translation>
 <translation id="8990209962746788689">Չհաջողվեց ստեղծել QR կոդը</translation>
 <translation id="8991520179165052608">Կայքը կարող է օգտագործել ձեր խոսափողը</translation>

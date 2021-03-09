@@ -620,6 +620,7 @@
 <translation id="16620462294541761">عذرًا، ولكن تعذر التحقق من كلمة المرور. يُرجى المحاولة مرة أخرى.</translation>
 <translation id="166278006618318542">خوارزمية المفتاح العام لصاحب الشهادة</translation>
 <translation id="166439687370499867">لا يُسمح بتغيير عمليات ضبط الشبكة المشتركة.</translation>
+<translation id="1666232093776384142">الحماية من الوصول إلى البيانات في الأجهزة الملحقة</translation>
 <translation id="1668435968811469751">تسجيل يدوي</translation>
 <translation id="1668979692599483141">معرفة المزيد حول الاقتراحات</translation>
 <translation id="1670399744444387456">الإعدادات الأساسية</translation>
@@ -1804,6 +1805,7 @@
 <translation id="2966937470348689686">‏إدارة إعدادات Android المفضّلة</translation>
 <translation id="2972581237482394796">إعا&amp;دة</translation>
 <translation id="2973324205039581528">تجاهل الموقع</translation>
+<translation id="2976557544729462544">تتطلّب بعض الأجهزة الملحقة إيقاف ميزة الحماية من الوصول إلى البيانات لكي تعمل بشكل صحيح أو تمنحك الأداء الأمثل.</translation>
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
 <translation id="2979520980928493164">‏تحسين أداء Chrome</translation>
 <translation id="2979639724566107830">فتح الإشارة في نافذة جديدة</translation>
@@ -1876,6 +1878,7 @@
 <translation id="3051250416341590778">حجم العرض</translation>
 <translation id="3053013834507634016">استخدام مفتاح الشهادة</translation>
 <translation id="3053273573829329829">تفعيل رقم التعريف الشخصي للمستخدم</translation>
+<translation id="3054766768827382232">إنّ إيقاف هذه الميزة يمكن أن يساعد على تحسين مستوى أداء الأجهزة الملحقة، ولكنّه قد يتسبب في الوصول إليها بشكل غير مصرّح به٬ ما قد يؤدي إلى الكشف عن بياناتك الشخصية.</translation>
 <translation id="3055590424724986000">من خلال مقدِّم خدمة من اختيارك</translation>
 <translation id="3058498974290601450">يمكنك تفعيل المزامنة في أي وقت في الإعدادات.</translation>
 <translation id="3060379269883947824">تفعيل الاختيار والاستماع</translation>
@@ -2675,7 +2678,6 @@
 <translation id="3943494825379372497">هل تريد استعادة التطبيقات والصفحات؟</translation>
 <translation id="3943582379552582368">&amp;إلى الوراء</translation>
 <translation id="3943857333388298514">لصق</translation>
-<translation id="3944266449990965865">الشاشة بالكامل</translation>
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2751,7 +2753,6 @@
 <translation id="4031527940632463547">تم حظر أجهزة الاستشعار</translation>
 <translation id="4033471457476425443">إضافة مجلد جديد</translation>
 <translation id="4034824040120875894">الطابعة</translation>
-<translation id="4035321506998192527">‏هل تريد تفعيل ChromeVox، قارئ الشاشة المضمّن لـ "نظام التشغيل Chrome"؟ إذا كنت تريد ذلك، يُرجى الضغط على شريط المسافة.</translation>
 <translation id="4035758313003622889">مدير الم&amp;هام</translation>
 <translation id="4036778507053569103">السياسة المُنزَّلة من الخادم غير صالحة.</translation>
 <translation id="4037084878352560732">حصان</translation>
@@ -2898,7 +2899,6 @@
 <translation id="4225397296022057997">على جميع المواقع</translation>
 <translation id="4231095370974836764">‏يمكنك تثبيت التطبيقات والألعاب من Google Play على جهاز <ph name="DEVICE_TYPE" /> الخاص بك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
-<translation id="4235200303672858594">الشاشة بالكامل</translation>
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
 <translation id="4242145785130247982">شهادات العميل المتعددة غير متاحة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -3560,7 +3560,6 @@
 <translation id="4998430619171209993">مفعّل</translation>
 <translation id="5000922062037820727">محظور  (موصى به)</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
-<translation id="5005970596776813007">‏هل تريد تفعيل ChromeVox، قارئ الشاشة المضمّن لـ "نظام التشغيل Chrome"؟</translation>
 <translation id="5006218871145547804">‏أداة ADB في تطبيق متوافق مع Android لنظام التشغيل Crostini</translation>
 <translation id="5007392906805964215">مراجعة</translation>
 <translation id="5008936837313706385">اسم النشاط</translation>
@@ -4061,7 +4060,6 @@
     <ph name="BEGIN_PARAGRAPH2" />لن يؤثر إيقاف هذه الميزة في قدرة جهازك على إرسال المعلومات المطلوبة للحصول على خدمات أساسية، مثل تحديثات النظام والأمان.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />يمكن للمالك التحكُّم في هذه الميزة من "الإعدادات" &gt; "إعدادات متقدمة" &gt; إرسال بيانات التشخيص والاستخدام إلى Google تلقائيًا.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />في حال تفعيل إعداد "النشاط على الويب وفي التطبيقات" الإضافي، قد يتم حفظ هذه البيانات في حسابك على Google. ويمكنك الاطّلاع على بياناتك وحذفها وتغيير إعدادات حسابك على account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">‏هل تريد تفعيل ChromeVox، قارئ الشاشة المضمّن لـ "نظام التشغيل Chrome"؟ إذا كنت تريد ذلك، يُرجى الضغط مع الاستمرار على مفتاحَي مستوى الصوت لمدة 5 ثوانٍ.</translation>
 <translation id="5585019845078534178">بطاقات</translation>
 <translation id="5585118885427931890">تعذر إنشاء مجلد إشارة.</translation>
 <translation id="558563010977877295">فتح صفحة محددة أو مجموعة صفحات</translation>
@@ -4672,7 +4670,7 @@
 <translation id="6291741848715722067">رمز تأكيد البيانات</translation>
 <translation id="6291949900244949761">‏طلب الإذن في حال محاولة أحد المواقع الوصول إلى أجهزة USB (مُوصى به)</translation>
 <translation id="6291953229176937411">إ&amp;ظهار في الباحث</translation>
-<translation id="6295158916970320988">جميع المواقع</translation>
+<translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6295855836753816081">جارٍ الحفظ...</translation>
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
 <translation id="6300177430812514606">المواقع الإلكترونية التي لا يُسمح لها بإنهاء إرسال البيانات أو استلامها</translation>
@@ -4931,6 +4929,7 @@
 <translation id="6596816719288285829">‏عنوان IP</translation>
 <translation id="6597017209724497268">نماذج</translation>
 <translation id="6597148444736186483">لتسجيل الخروج من الحساب الأساسي في هذا الجهاز، يُرجى النقر على الوقت الظاهر على الشاشة. في القائمة التي تظهر، يُرجى النقر على "تسجيل الخروج".</translation>
+<translation id="6601395831301182804">‏إذا كنت تريد تفعيل قارئ الشاشة ChromeVox المضمّن لـ "نظام التشغيل Chrome"، يُرجى الضغط على شريط المسافة.</translation>
 <translation id="6601612474695404578">تستخدم بعض المواقع الإلكترونية ملفات تعريف الارتباط التابعة للجهات الخارجية لتحميل الصفحات. في حال لم يعمل الموقع الإلكتروني، يمكنك محاولة السماح لملفات تعريف الارتباط.</translation>
 <translation id="6602937173026466876">الوصول إلى الطابعات</translation>
 <translation id="6602956230557165253">استخدام مفتاحي السهمين لليمين واليسار للتنقل.</translation>
@@ -5420,6 +5419,7 @@
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">صورة حالية من الكاميرا أو الملف</translation>
+<translation id="7156143134102343902">قد يؤدّي هذا الإجراء إلى إعادة ضبط الشاشات والأجهزة الملحقة. وقد تستغرق هذه العملية بضع ثوانٍ.</translation>
 <translation id="7163202347044721291">جارٍ التحقّق من رمز التفعيل...</translation>
 <translation id="7165320105431587207">تعذّر إعداد الشبكة</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" يمكنها قراءة ملفات الصور والفيديو والصوت في المواقع المحددة.</translation>
@@ -5558,6 +5558,7 @@
 <translation id="7324297612904500502">منتدى الإصدار التجريبي</translation>
 <translation id="7325209047678309347">الورقة عالقة</translation>
 <translation id="7326004502692201767">إعداد جهاز <ph name="DEVICE_TYPE" /> هذا لطفل</translation>
+<translation id="7326025035243649350">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن لـ "نظام التشغيل Chrome"؟</translation>
 <translation id="7327989755579928735">‏أوقَف <ph name="MANAGER" /> إعداد "تصحيح الأخطاء عبر ADB". بعد إعادة تشغيل الجهاز <ph name="DEVICE_TYPE" />، لن تتمكّن من تثبيت تطبيقات من مصادر غير معروفة.</translation>
 <translation id="7328867076235380839">مجموعة غير صالحة</translation>
 <translation id="7329154610228416156">‏فشل تسجيل الدخول نظرًا لأنه قد تم ضبطه على استخدام عنوان URL غير آمن <ph name="BLOCKED_URL" />. يُرجى الاتصال بالمسؤول.</translation>
@@ -7048,6 +7049,7 @@
 <translation id="8986362086234534611">حذف</translation>
 <translation id="8986494364107987395">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="8987927404178983737">شهر</translation>
+<translation id="8988879467270412492">‏إذا كنت تريد تفعيل قارئ الشاشة ChromeVox المضمّن لـ "نظام التشغيل Chrome"٬ يُرجى الضغط مع الاستمرار على مفتاحَي مستوى الصوت لمدة 5 ثوانٍ.</translation>
 <translation id="8989823300731803443">المتابعة من حيث توقفت</translation>
 <translation id="8990209962746788689">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="8991520179165052608">يمكن للموقع الإلكتروني استخدام الميكروفون.</translation>

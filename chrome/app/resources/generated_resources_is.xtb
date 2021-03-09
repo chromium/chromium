@@ -617,6 +617,7 @@
 <translation id="16620462294541761">Því miður var ekki hægt að staðfesta aðgangsorðið þitt. Reyndu aftur.</translation>
 <translation id="166278006618318542">Reiknirit opinbers lykils viðfangs</translation>
 <translation id="166439687370499867">Ekki er leyfilegt að breyta stillingum fyrir sameiginlegt netkerfi</translation>
+<translation id="1666232093776384142">Slökkva á gagnaaðgangsvörn fyrir jaðartæki</translation>
 <translation id="1668435968811469751">Skrá handvirkt</translation>
 <translation id="1668979692599483141">Kynntu þér tillögur</translation>
 <translation id="1670399744444387456">Grunnatriði</translation>
@@ -1800,6 +1801,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2966937470348689686">Hafa umsjón með stillingum Android</translation>
 <translation id="2972581237482394796">Endurge&amp;ra</translation>
 <translation id="2973324205039581528">Slökkva á hljóði svæðis</translation>
+<translation id="2976557544729462544">Í tilteknum tækjum verður að slökkva á gagnaaðgangsvörn til að þau virki sem skyldi eða skili fullum afköstum.</translation>
 <translation id="2977480621796371840">Fjarlægja úr hópi</translation>
 <translation id="2979520980928493164">Heilbrigðara og hraustara Chrome</translation>
 <translation id="2979639724566107830">Opna í nýjum glugga</translation>
@@ -1872,6 +1874,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3051250416341590778">Skjástærð</translation>
 <translation id="3053013834507634016">Notkun vottorðslykils</translation>
 <translation id="3053273573829329829">Virkja PIN notanda</translation>
+<translation id="3054766768827382232">Með því að slökkva er hægt að bæta afköst jaðartækja en þá eykst hætta á óheimilli notkun persónuupplýsinga þinna.</translation>
 <translation id="3055590424724986000">Með veitu sem þú velur</translation>
 <translation id="3058498974290601450">Hægt er að kveikja á samstillingu hvenær sem er í stillingunum</translation>
 <translation id="3060379269883947824">Virkja textaupplestur</translation>
@@ -2673,7 +2676,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3943494825379372497">Endurheimta forrit og síður?</translation>
 <translation id="3943582379552582368">Til &amp;baka</translation>
 <translation id="3943857333388298514">Líma</translation>
-<translation id="3944266449990965865">Allur skjárinn</translation>
 <translation id="3948116654032448504">&amp;Leita að mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> getur breytt skrám í eftirfarandi möppum</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2749,7 +2751,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4031527940632463547">Skynjarar læstir</translation>
 <translation id="4033471457476425443">Bæta nýrri möppu við</translation>
 <translation id="4034824040120875894">Prentari</translation>
-<translation id="4035321506998192527">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS? Ýttu á bilslána ef þú vilt það.</translation>
 <translation id="4035758313003622889">Verks&amp;tjórn</translation>
 <translation id="4036778507053569103">Reglan sem sótt var frá þjóninum er ógild.</translation>
 <translation id="4037084878352560732">Hestur</translation>
@@ -2896,7 +2897,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4225397296022057997">Á öllum vefsvæðum</translation>
 <translation id="4231095370974836764">Settu upp forrit og leiki af Google Play í <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Stilla Kerberos</translation>
-<translation id="4235200303672858594">Allur skjárinn</translation>
 <translation id="4235965441080806197">Hætta við innskráningu</translation>
 <translation id="4242145785130247982">Ekki er leyfilegt að nota mörg biðlaravottorð</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -3558,7 +3558,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4998430619171209993">Kveikt</translation>
 <translation id="5000922062037820727">Útilokað (ráðlagt)</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
-<translation id="5005970596776813007">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS?</translation>
 <translation id="5006218871145547804">ADB Android forrita í Crostini</translation>
 <translation id="5007392906805964215">Yfirfara</translation>
 <translation id="5008936837313706385">Heiti aðgerðar</translation>
@@ -4059,7 +4058,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BEGIN_PARAGRAPH2" />Ef slökkt er á þessum eiginleika hefur það ekki áhrif á getu tækisins til að senda þær upplýsingar sem þarf fyrir nauðsynlega þjónustu á borð við uppfærslur á stýrikerfi og öryggisráðstafanir.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Eigandinn getur stjórnað þessum eiginleika með því að fara í Stillingar &gt; Ítarlegt &gt; Senda greiningar- og notkunargögn sjálfkrafa til Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á viðbótarvef- og forritavirkni verða þessar upplýsingar hugsanlega geymdar á Google reikningnum þínum. Á account.google.com geturðu skoðað gögnin þín, eytt þeim og breytt stillingum reikningsins.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS? Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur ef þú vilt það.</translation>
 <translation id="5585019845078534178">Kort</translation>
 <translation id="5585118885427931890">Ekki tókst að búa til bókamerkjamöppu.</translation>
 <translation id="558563010977877295">Opna tiltekna síðu eða safn síðna</translation>
@@ -4929,6 +4927,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6596816719288285829">IP-tala</translation>
 <translation id="6597017209724497268">Dæmi</translation>
 <translation id="6597148444736186483">Smelltu á tímann á skjánum til að skrá þig út af aðalreikningi þessa tækis. Á valmyndinni sem birtist smellirðu á „Skrá út“.</translation>
+<translation id="6601395831301182804">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS? Ýttu á bilslána ef þú vilt það.</translation>
 <translation id="6601612474695404578">Sum vefsvæði nota fótspor þriðju aðila til að hlaða síður. Ef vefsvæði virkar ekki geturðu prófað að leyfa fótspor.</translation>
 <translation id="6602937173026466876">Aðgangur að prenturunum þínum</translation>
 <translation id="6602956230557165253">Notaðu vinstri og hægri örvatakkana til að fletta.</translation>
@@ -5418,6 +5417,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7152478047064750137">Þessi viðbót þarf engar sérstakar heimildir</translation>
 <translation id="7154130902455071009">Breyta upphafssíðunni í: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Fyrirliggjandi mynd úr myndavél eða skrá</translation>
+<translation id="7156143134102343902">Skjáir og jaðartæki verða hugsanlega endurstillt í stutta stund. Þetta gæti tekið nokkrar sekúndur að virka.</translation>
 <translation id="7163202347044721291">Staðfestir virkjunarkóða...</translation>
 <translation id="7165320105431587207">Ekki tókst að stilla netið</translation>
 <translation id="716640248772308851">„<ph name="EXTENSION" />“ getur lesið myndir, myndskeið og hljóðskrár á merktu stöðunum.</translation>
@@ -5556,6 +5556,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7324297612904500502">Beta-umræðusvæði</translation>
 <translation id="7325209047678309347">Pappír er fastur</translation>
 <translation id="7326004502692201767">Setja upp <ph name="DEVICE_TYPE" /> fyrir barn</translation>
+<translation id="7326025035243649350">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> slökkti á ADB-villuleit. Þegar þú endurræsir <ph name="DEVICE_TYPE" /> geturðu ekki hlaðið forritum á milli tækja.</translation>
 <translation id="7328867076235380839">Ógild samsetning</translation>
 <translation id="7329154610228416156">Innskráning mistókst vegna þess að hún var stillt á að nota óörugga vefslóð (<ph name="BLOCKED_URL" />). Hafðu samband við kerfisstjóra.</translation>
@@ -7042,6 +7043,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8986362086234534611">Gleyma</translation>
 <translation id="8986494364107987395">Senda sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google</translation>
 <translation id="8987927404178983737">Mánuður</translation>
+<translation id="8988879467270412492">Viltu kveikja á ChromeVox sem er innbyggður skjálesari fyrir Chrome OS? Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur ef þú vilt það.</translation>
 <translation id="8989823300731803443">Halda áfram þaðan sem frá var horfið.</translation>
 <translation id="8990209962746788689">Ekki hægt að búa til QR-kóða</translation>
 <translation id="8991520179165052608">Vefsvæði getur notað hljóðnemann þinn</translation>

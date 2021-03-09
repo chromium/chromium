@@ -610,6 +610,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6231419273573514727">Peripheral performance may be limited</translation>
 <translation id="6236290670123303279">Manage settings</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Locked to horizontal</translation>
@@ -733,6 +734,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
+<translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
@@ -791,6 +793,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
+<translation id="7807966291075028781">Peripheral not supported in Guest mode for security reasons</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7837740436429729974">Time's up</translation>
@@ -859,6 +862,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> window selected</translation>
 <translation id="8351131234907093545">Create note</translation>
 <translation id="8371779926711439835">Forward by letter</translation>
+<translation id="8371991222807690464">Peripheral performance may be limited in Guest mode</translation>
 <translation id="8375916635258623388">This <ph name="DEVICE_NAME" /> and your phone will connect automatically</translation>
 <translation id="8380784334203145311">Good night,</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>

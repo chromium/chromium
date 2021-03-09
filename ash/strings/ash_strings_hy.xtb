@@ -610,6 +610,7 @@
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
 <translation id="622484624075952240">Վար</translation>
+<translation id="6231419273573514727">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել</translation>
 <translation id="6236290670123303279">Կառավարել կարգավորումները</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Միայն հորիզոնական</translation>
@@ -733,6 +734,7 @@
 <translation id="7346909386216857016">Եղավ</translation>
 <translation id="7348093485538360975">Էկրանի ստեղնաշար</translation>
 <translation id="735745346212279324">VPN-ն ապակապակցված է</translation>
+<translation id="7360036564632145207">Եթե արտաքին սարքերի կարգավորումներում փոխեք տվյալների հասանելիության պաշտպանության պարամետրերը, աշխատանքի արդյունավետությունը կարող է բարձրանալ</translation>
 <translation id="7371404428569700291">Տեսագրել պատուհանը</translation>
 <translation id="7377169924702866686">Caps Lock-ը միացված է:</translation>
 <translation id="7378203170292176219">Քաշեք՝ տեսագրման հատվածն ընտրելու համար</translation>
@@ -791,6 +793,7 @@
 <translation id="7780159184141939021">Էկրանի պտտում</translation>
 <translation id="7796353162336583443">Հպեք դարակի վրայի ստիլուսի կոճակը՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու, ինչպես նաև Օգնականը, լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
+<translation id="7807966291075028781">Անվտանգության նկատառումներով՝ արտաքին սարքերը չեն աջակցվում հյուրի ռեժիմում</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ուժեղ ազդանշան</translation>
 <translation id="7837740436429729974">Ժամանակը սպառվել է</translation>
@@ -859,6 +862,7 @@
 <translation id="8345019317483336363">Ընտրված է «<ph name="WINDOW_TITLE" />» պատուհանը</translation>
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>
 <translation id="8371779926711439835">Մեկ տառով առաջ</translation>
+<translation id="8371991222807690464">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել հյուրի ռեժիմում</translation>
 <translation id="8375916635258623388">Այս <ph name="DEVICE_NAME" /> սարքը և ձեր հեռախոսը ավտոմատ կկապվեն</translation>
 <translation id="8380784334203145311">Բարի գիշեր,</translation>
 <translation id="8388750414311082622">Վերջին աշխատասեղանը չի կարող հեռացվել:</translation>

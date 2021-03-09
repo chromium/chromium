@@ -611,6 +611,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6179832488876878285">Önemli dosyalarınızı buraya sabitleyebilirsiniz. Başlamak için Dosyalar uygulamasını açın.</translation>
 <translation id="622484624075952240">Aşağı</translation>
+<translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
 <translation id="6236290670123303279">Ayarları Yönet</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Yatay olarak kilitlendi</translation>
@@ -734,6 +735,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7346909386216857016">Tamam, anladım</translation>
 <translation id="7348093485538360975">Ekran klavyesi</translation>
 <translation id="735745346212279324">VPN bağlantısı kesildi</translation>
+<translation id="7360036564632145207">Çevre birimleri için veri erişimi koruma ayarınızı değiştirmek performansı optimize edebilir</translation>
 <translation id="7371404428569700291">Pencereyi kaydet</translation>
 <translation id="7377169924702866686">Caps Lock açık.</translation>
 <translation id="7378203170292176219">Kaydedilecek alanı seçmek için sürükleyin</translation>
@@ -792,6 +794,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7796353162336583443">Not veya ekran görüntüsü almak, Google Asistan, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
+<translation id="7807966291075028781">Güvenlik nedeniyle Misafir modunda çevre birimleri desteklenmiyor</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7837740436429729974">Süre doldu</translation>
@@ -860,6 +863,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> penceresi seçildi</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
+<translation id="8371991222807690464">Çevre biriminin performansı, Misafir modunda sınırlı olabilir</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> ve telefonunuz otomatik olarak bağlanacaktır</translation>
 <translation id="8380784334203145311">İyi geceler,</translation>
 <translation id="8388750414311082622">Son masa kaldırılamaz.</translation>

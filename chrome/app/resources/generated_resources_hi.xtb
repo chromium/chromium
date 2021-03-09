@@ -617,6 +617,7 @@
 <translation id="16620462294541761">क्षमा करें, आपका पासवर्ड सत्‍यापित नहीं हो सका. कृपया फिर से प्रयास करें.</translation>
 <translation id="166278006618318542">विषय सार्वजनिक की एल्गोरिद्म</translation>
 <translation id="166439687370499867">शेयर किए गए नेटवर्क कॉन्फ़िगरेशन बदलने की अनुमति नहीं है</translation>
+<translation id="1666232093776384142">सहायक डिवाइसों के लिए, डेटा ऐक्सेस का सुरक्षा सिस्टम बंद करें</translation>
 <translation id="1668435968811469751">मैन्युअल तरीके से नाम दर्ज करें</translation>
 <translation id="1668979692599483141">सुझावों के बारे में जानें</translation>
 <translation id="1670399744444387456">मूलभूत</translation>
@@ -1411,6 +1412,7 @@
 <translation id="2541706104884128042">सोने का नया समय सेट किया गया</translation>
 <translation id="2542050502251273923">ff_debug का इस्तेमाल करके, इंटरनेट कनेक्शन मैनेजर और दूसरी सेवाओं के डीबग करने के लेवल को सेट करता है.</translation>
 <translation id="2544292303401268586">ऐप्लिकेशन अपडेट करने के लिए, एडमिन ने आपके डिवाइस को रीस्टार्ट करने का अनुरोध किया है. इस प्रोसेस को पूरा होने में कुछ समय लग सकता है.</translation>
+<translation id="2544352060595557290">यह टैब</translation>
 <translation id="2544853746127077729">नेटवर्क द्वारा प्रमाणीकरण प्रमाणपत्र अस्वीकार किया गया</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> इस्तेमाल करने की अनुमति दी गई है</translation>
@@ -1577,6 +1579,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> की साइटों को भी रीसेट किया जाएगा.</translation>
 <translation id="2735712963799620190">शेड्यूल</translation>
 <translation id="2737363922397526254">छोटा करें...</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट को <ph name="TARGET_NAME" /> के साथ शेयर करना चाहता है.</translation>
 <translation id="2738771556149464852">बाद में नहीं</translation>
 <translation id="2739191690716947896">डीबग</translation>
 <translation id="2739240477418971307">अपनी सुलभता सेटिंग बदलें</translation>
@@ -1798,6 +1801,7 @@
 <translation id="2966937470348689686">Android प्राथमिकताएं प्रबंधित करें</translation>
 <translation id="2972581237482394796">&amp;फिर से करें</translation>
 <translation id="2973324205039581528">साइट म्यूट करें</translation>
+<translation id="2976557544729462544">कुछ सहायक डिवाइसों के लिए, डेटा ऐक्सेस का सुरक्षा सिस्टम बंद करना ज़रूरी होता है, ताकि वे बेहतर तरीके से और पूरी तरह काम कर पाएं.</translation>
 <translation id="2977480621796371840">समूह से हटाएं</translation>
 <translation id="2979520980928493164">अच्छा और बेहतर Chrome</translation>
 <translation id="2979639724566107830">नई विंडो में खोलें</translation>
@@ -1870,6 +1874,7 @@
 <translation id="3051250416341590778">डिसप्ले का साइज़</translation>
 <translation id="3053013834507634016">प्रमाणपत्र कुंजी उपयोग</translation>
 <translation id="3053273573829329829">इस्तेमाल करने वाले का पिन चालू करें</translation>
+<translation id="3054766768827382232">यह सिस्टम बंद करने पर आपके सहायक डिवाइस बेहतर परफ़ॉर्म कर सकते हैं, लेकिन इससे आपका निजी डेटा बिना अनुमति के सार्वजनिक हो सकता है और उसका गलत इस्तेमाल किया जा सकता है.</translation>
 <translation id="3055590424724986000">सेवा देने वाली आपकी पसंद की कंपनी से</translation>
 <translation id="3058498974290601450">आप सेटिंग में किसी भी समय सिंक चालू कर सकते हैं</translation>
 <translation id="3060379269883947824">'चुनें और सुनें' सुविधा चालू करें</translation>
@@ -2670,7 +2675,6 @@
 <translation id="3943494825379372497">क्या आप ऐप्लिकेशन और पेजों को वापस लाना चाहते हैं?</translation>
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
-<translation id="3944266449990965865">संपूर्ण स्क्रीन</translation>
 <translation id="3948116654032448504">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2746,7 +2750,6 @@
 <translation id="4031527940632463547">सेंसर ब्लॉक हैं</translation>
 <translation id="4033471457476425443">नया फ़ोल्डर जोड़ें</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
-<translation id="4035321506998192527">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना चाहते हैं? अगर हां, तो स्पेस बार दबाएं.</translation>
 <translation id="4035758313003622889">&amp;कार्य मैनेजर</translation>
 <translation id="4036778507053569103">सर्वर से डाउनलोड की गई नीति गलत है.</translation>
 <translation id="4037084878352560732">घोड़ा</translation>
@@ -2893,7 +2896,6 @@
 <translation id="4225397296022057997">सभी साइट पर</translation>
 <translation id="4231095370974836764">Google Play से अपने <ph name="DEVICE_TYPE" /> पर ऐप्लिकेशन और गेम इंस्टॉल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉन्फ़िगर करें</translation>
-<translation id="4235200303672858594">संपूर्ण स्क्रीन</translation>
 <translation id="4235965441080806197">साइन इन रद्द करें</translation>
 <translation id="4242145785130247982">एक से ज़्यादा क्लाइंट प्रमाणपत्र काम नहीं करते</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -3555,7 +3557,6 @@
 <translation id="4998430619171209993">चालू है</translation>
 <translation id="5000922062037820727">अवरोधित (सुझाया गया)</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
-<translation id="5005970596776813007">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना चाहते हैं?</translation>
 <translation id="5006218871145547804">Crostini में Android ऐप्लिकेशन ADB की सेटिंग</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
 <translation id="5008936837313706385">गतिविधि का नाम</translation>
@@ -3593,6 +3594,7 @@
 <translation id="5057110919553308744">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
 <translation id="5057403786441168405">अपने साइन इन किए गए खातों को प्रबंधित करें. वेबसाइट, ऐप्लिकेशन, और Chrome या Google Play के एक्सटेंशन, इन खातों का इस्तेमाल आपके अनुभव को आपकी पसंद के मुताबिक बनाने के लिए कर सकते हैं. ये आपकी अनुमतियों के आधार पर ऐसा करते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">साइन-इन करने पर पाबंदी लगाएं</translation>
+<translation id="5059526285558225588">चुनें कि क्या शेयर करना है</translation>
 <translation id="5060332552815861872">सेव करने के लिए एक प्रिंटर उपलब्ध है.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{इस फ़ोल्डर में एक बुकमार्क है. क्या आप वाकई इसे मिटाना चाहते हैं?}one{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}other{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}}</translation>
 <translation id="5062930723426326933">साइन इन नहीं हो पाया, कृपया इंटरनेट से कनेक्ट करें और फिर से कोशिश करें.</translation>
@@ -4055,7 +4057,6 @@
     <ph name="BEGIN_PARAGRAPH2" />इस सुविधा को बंद करने के बाद भी आपका डिवाइस, सिस्टम अपडेट और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />सेटिंग &gt; बेहतर &gt; Google को निदान और इस्तेमाल का डेटा अपने आप भेजें पर जाकर मालिक इस सुविधा को नियंत्रित कर सकता है.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />अगर आपकी वेब और ऐप्लिकेशन की और भी गतिविधि सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव हो सकता है. आप account.google.com पर अपना डेटा देख सकते हैं, उसे मिटा सकते हैं और अपने खाते की सेटिंग बदल सकते हैं.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीनरीडर को चालू करना चाहते हैं? अगर हां, तो दोनों आवाज़ बटन को पांच सेकंड तक दबाकर रखें.</translation>
 <translation id="5585019845078534178">कार्ड</translation>
 <translation id="5585118885427931890">बुकमार्क फ़ोल्‍डर नहीं बना सका.</translation>
 <translation id="558563010977877295">कोई खास पेज या पेजों का समूह खोलें</translation>
@@ -4925,6 +4926,7 @@
 <translation id="6596816719288285829">आईपी पता</translation>
 <translation id="6597017209724497268">नमूने</translation>
 <translation id="6597148444736186483">इस डिवाइस के प्राथमिक खाते से साइन आउट करने के लिए अपनी स्क्रीन पर दिखाए गए समय पर क्लिक करें. दिखाई देने वाले मेन्यू में, "साइन आउट" पर क्लिक करें.</translation>
+<translation id="6601395831301182804">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीन रीडर को चालू करना चाहते हैं? अगर हां, तो स्पेस बार दबाएं.</translation>
 <translation id="6601612474695404578">कुछ साइटें अपने पेज लोड करने के लिए, तीसरे पक्ष की कुकी का इस्तेमाल करती हैं. अगर कोई साइट काम नहीं कर रही है, तो आप कुकी की अनुमति दे सकते हैं.</translation>
 <translation id="6602937173026466876">अपने प्रिंटर ऐक्सेस करें</translation>
 <translation id="6602956230557165253">नेविगेट करने के लिए बाईं और दाईं 'तीर का निशान' वाली कुंजियों का इस्तेमाल करें.</translation>
@@ -5078,6 +5080,7 @@
 <translation id="6782468519961184511">आपका एडमिन अतिरिक्त Google खाते जोड़ने की अनुमति नहीं देता है</translation>
 <translation id="6785518634832172390">पासवर्ड 12 या उससे कम अंक का होना चाहिए</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
+<translation id="6787097042755590313">अन्य टैब</translation>
 <translation id="6787839852456839824">कीबोर्ड शॉर्टकट</translation>
 <translation id="6788210894632713004">पैक नहीं किया गया एक्सटेंशन</translation>
 <translation id="6789592661892473991">हाॅरिज़ॉन्टल (बाईं से दाईं ओर) रूप से छोटे-छोटे हिस्सों में बांटें यानी स्प्लिट करें</translation>
@@ -5413,6 +5416,7 @@
 <translation id="7152478047064750137">इस एक्‍सटेंशन को कोई खास अनुमति नहीं चाहिए</translation>
 <translation id="7154130902455071009">अपना आरंभ पेज इसमें बदलें: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">कैमरा या फ़ाइल से मौजूदा फ़ोटो</translation>
+<translation id="7156143134102343902">आपके डिसप्ले और सहायक डिवाइस कुछ देर में रीसेट हो सकते हैं. रीसेट की प्रोसेस पूरी होने में कुछ सेकंड लग सकते हैं.</translation>
 <translation id="7163202347044721291">ऐक्टिवेशन कोड की पुष्टि की जा रही है...</translation>
 <translation id="7165320105431587207">नेटवर्क कॉन्फ़िगर करने में विफल</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" चेक किए गए स्‍थानों में चित्रों, वीडियो, और ध्‍वनि फ़ाइलों को पढ़ सकता है.</translation>
@@ -5551,6 +5555,7 @@
 <translation id="7324297612904500502">बीटा फ़ोरम</translation>
 <translation id="7325209047678309347">कागज़ फंस गया है</translation>
 <translation id="7326004502692201767">अपने बच्चे के लिए <ph name="DEVICE_TYPE" /> को सेट अप करें</translation>
+<translation id="7326025035243649350">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीन रीडर को चालू करना चाहते हैं?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ने ADB को डीबग करने की सुविधा बंद कर दी है. <ph name="DEVICE_TYPE" /> को रीस्टार्ट करने पर, आप ऐप्लिकेशन को अलग से लोड नहीं कर पाएंगे.</translation>
 <translation id="7328867076235380839">गलत संयोजन</translation>
 <translation id="7329154610228416156">साइन इन नहीं हो पाया क्‍योंकि उसे गैर-सुरक्षित URL (<ph name="BLOCKED_URL" />) का इस्तेमाल करने के लिए कॉन्‍फ़िगर किया गया था. कृपया अपने एडमिन से संपर्क करें.</translation>
@@ -6339,6 +6344,7 @@
 <translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="8191230140820435481">अपने ऐप्स , एक्सटेंशन, और थीम प्रबंधित करें</translation>
+<translation id="8192944472786724289"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट शेयर करना चाहता है.</translation>
 <translation id="8195027750202970175">डिस्क पर आकार</translation>
 <translation id="8198323535106903877">हम आपके लिए वे <ph name="NUMBER_OF_APPS" /> ऐप्लिकेशन इंस्टॉल करेंगे</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) और डिवाइस प्रॉपर्टी</translation>
@@ -7036,6 +7042,7 @@
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8986494364107987395">इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप Google को भेजें</translation>
 <translation id="8987927404178983737">माह</translation>
+<translation id="8988879467270412492">क्या आप Chrome OS में पहले से मौजूद ChromeVox स्क्रीन रीडर को चालू करना चाहते हैं? अगर हां, तो दोनों आवाज़ बटन पांच सेकंड तक दबाकर रखें.</translation>
 <translation id="8989823300731803443">वहीं से जारी रखें जहां आपने छोड़ा था.</translation>
 <translation id="8990209962746788689">क्यूआर कोड नहीं बन पा रहा है</translation>
 <translation id="8991520179165052608">साइट आपके माइक्रोफ़ोन का इस्तेमाल कर सकती है</translation>

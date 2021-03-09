@@ -611,6 +611,7 @@
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6179832488876878285">Може да ги закачите вашите важни датотеки тука. Отворете ја апликацијата Files за да започнете.</translation>
 <translation id="622484624075952240">Долу</translation>
+<translation id="6231419273573514727">Перформансите на периферните уреди може да бидат ограничени</translation>
 <translation id="6236290670123303279">Управувајте со поставките</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Заклучен хоризонтално</translation>
@@ -734,6 +735,7 @@
 <translation id="7346909386216857016">Добро, сфатив</translation>
 <translation id="7348093485538360975">Тастатура на екран</translation>
 <translation id="735745346212279324">VPN е исклучен</translation>
+<translation id="7360036564632145207">Ако ја промените поставката за заштита на пристапот до податоци за перфиферните уреди, перформансите може да се оптимизираат</translation>
 <translation id="7371404428569700291">Снимање прозорец</translation>
 <translation id="7377169924702866686">Вклучено е Caps Lock.</translation>
 <translation id="7378203170292176219">Повлечете за да изберете област за снимање</translation>
@@ -792,6 +794,7 @@
 <translation id="7780159184141939021">Ротација на екранот</translation>
 <translation id="7796353162336583443">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот или пак, да го користите „Помошникотна Google“, ласерскиот покажувач или лупата.</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
+<translation id="7807966291075028781">Периферниот уред не е поддржан во режим на гостин поради безбедносни причини</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7837740436429729974">Времето истече</translation>
@@ -860,6 +863,7 @@
 <translation id="8345019317483336363">Избран е прозорецот <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Создајте белешка</translation>
 <translation id="8371779926711439835">Напред за една буква</translation>
+<translation id="8371991222807690464">Периферните перформанси може да бидат ограничени во режим на гостин</translation>
 <translation id="8375916635258623388">Овој <ph name="DEVICE_NAME" /> и вашиот телефон ќе се поврзат автоматски</translation>
 <translation id="8380784334203145311">Добра ноќ,</translation>
 <translation id="8388750414311082622">Последниот работен простор не може да се отстрани.</translation>

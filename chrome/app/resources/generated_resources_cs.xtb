@@ -618,6 +618,7 @@
 <translation id="16620462294541761">Litujeme, heslo nelze ověřit. Zkuste to prosím znovu.</translation>
 <translation id="166278006618318542">Algoritmus veřejného klíče subjektu</translation>
 <translation id="166439687370499867">Změna konfigurace sdílené sítě není povolena</translation>
+<translation id="1666232093776384142">Deaktivace ochrany přístupu k datům pro periferní zařízení</translation>
 <translation id="1668435968811469751">Zaregistrovat ručně</translation>
 <translation id="1668979692599483141">Další informace o návrzích</translation>
 <translation id="1670399744444387456">Základní</translation>
@@ -1800,6 +1801,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2966937470348689686">Spravovat nastavení aplikací Android</translation>
 <translation id="2972581237482394796">&amp;Opakovat</translation>
 <translation id="2973324205039581528">Ztlumit web</translation>
+<translation id="2976557544729462544">Některá zařízení vyžadují deaktivaci ochrany přístupu k datům, aby mohla fungovat správně nebo s plným výkonem.</translation>
 <translation id="2977480621796371840">Odebrat ze skupiny</translation>
 <translation id="2979520980928493164">Zdravější a šťastnější Chrome</translation>
 <translation id="2979639724566107830">Otevřít v novém okně</translation>
@@ -1872,6 +1874,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3051250416341590778">Zobrazovaná velikost</translation>
 <translation id="3053013834507634016">Použití klíče certifikátu</translation>
 <translation id="3053273573829329829">Zapnout uživatelský PIN</translation>
+<translation id="3054766768827382232">Po deaktivaci mohou mít periferní zařízení lepší výkon, ale vaše osobní údaje mohou být vyzrazeny v rámci neoprávněného použití.</translation>
 <translation id="3055590424724986000">S poskytovatelem dle vašeho výběru</translation>
 <translation id="3058498974290601450">Synchronizaci můžete kdykoliv zapnout v nastavení</translation>
 <translation id="3060379269883947824">Zapnout poslech vybraného textu</translation>
@@ -2672,7 +2675,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Obnovit aplikace a stránky?</translation>
 <translation id="3943582379552582368">&amp;Zpět</translation>
 <translation id="3943857333388298514">Vložit</translation>
-<translation id="3944266449990965865">Celá obrazovka</translation>
 <translation id="3948116654032448504">&amp;Vyhledat obrázek pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2748,7 +2750,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4031527940632463547">Použití senzorů je blokováno</translation>
 <translation id="4033471457476425443">Přidat novou složku</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
-<translation id="4035321506998192527">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS? Pokud ano, stiskněte mezerník.</translation>
 <translation id="4035758313003622889">Správce úloh</translation>
 <translation id="4036778507053569103">Zásada stažená ze serveru není platná.</translation>
 <translation id="4037084878352560732">Kůň</translation>
@@ -2895,7 +2896,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4225397296022057997">Na všech webech</translation>
 <translation id="4231095370974836764">Instalujte do svého zařízení <ph name="DEVICE_TYPE" /> aplikace a hry z Google Play. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Nakonfigurovat Kerberos</translation>
-<translation id="4235200303672858594">Celá obrazovka</translation>
 <translation id="4235965441080806197">Zrušit přihlášení</translation>
 <translation id="4242145785130247982">Více certifikátů klientů není podporováno</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
@@ -3557,7 +3557,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4998430619171209993">Zapnuto</translation>
 <translation id="5000922062037820727">Blokováno (doporučeno)</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
-<translation id="5005970596776813007">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS?</translation>
 <translation id="5006218871145547804">ADB aplikací Android pro Crostini</translation>
 <translation id="5007392906805964215">Zkontrolovat</translation>
 <translation id="5008936837313706385">Název aktivity</translation>
@@ -4058,7 +4057,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
     <ph name="BEGIN_PARAGRAPH2" />Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které jsou potřeba pro základní služby, jako jsou aktualizace systému a zabezpečení.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vlastník tuto funkci může ovládat pomocí možnosti Nastavení &gt; Rozšířená nastavení &gt; Automaticky do Googlu odesílat diagnostické údaje a údaje o využití.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google. Svá data můžete zobrazit a smazat na stránce account.google.com, kde také můžete změnit nastavení svého účtu.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS? Pokud ano, na pět sekund podržte obě tlačítka hlasitosti.</translation>
 <translation id="5585019845078534178">Karty</translation>
 <translation id="5585118885427931890">Složku záložek nelze vytvořit.</translation>
 <translation id="558563010977877295">Otevřít konkrétní stránku nebo skupinu stránek</translation>
@@ -4928,6 +4926,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6597017209724497268">Vzory</translation>
 <translation id="6597148444736186483">Chcete-li se v tomto zařízení odhlásit od primárního účtu, klikněte na čas na obrazovce. V nabídce, která se zobrazí, klikněte na Odhlásit se.</translation>
+<translation id="6601395831301182804">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS? Pokud ano, stiskněte mezerník.</translation>
 <translation id="6601612474695404578">Některé weby k načítání svých stránek používají soubory cookie třetích stran. Pokud web nefunguje, můžete zkusit povolit soubory cookie.</translation>
 <translation id="6602937173026466876">Přístup k vašim tiskárnám</translation>
 <translation id="6602956230557165253">K navigaci použijte šipky vlevo a vpravo.</translation>
@@ -5417,6 +5416,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7152478047064750137">Toto rozšíření nevyžaduje žádná speciální oprávnění.</translation>
 <translation id="7154130902455071009">Změnit úvodní stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Stávající fotka z fotoaparátu nebo souboru</translation>
+<translation id="7156143134102343902">Displeje a periferní zařízení se mohou nakrátko resetovat. Změna se projeví za několik sekund.</translation>
 <translation id="7163202347044721291">Ověřování aktivačního kódu…</translation>
 <translation id="7165320105431587207">Konfigurace sítě se nezdařila</translation>
 <translation id="716640248772308851">Rozšíření <ph name="EXTENSION" /> může číst obrázky, video a zvukové soubory v povolených umístěních.</translation>
@@ -5555,6 +5555,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7324297612904500502">Fórum beta</translation>
 <translation id="7325209047678309347">Papír je zaseklý</translation>
 <translation id="7326004502692201767">Nastavení tohoto zařízení <ph name="DEVICE_TYPE" /> pro dítě</translation>
+<translation id="7326025035243649350">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS?</translation>
 <translation id="7327989755579928735">Web <ph name="MANAGER" /> deaktivoval ladění ADB. Až zařízení <ph name="DEVICE_TYPE" /> restartujete, nebudete moci instalovat aplikace z neznámého zdroje.</translation>
 <translation id="7328867076235380839">Neplatná kombinace</translation>
 <translation id="7329154610228416156">Přihlášení se nezdařilo, protože bylo nakonfigurováno k použití nezabezpečené adresy URL (<ph name="BLOCKED_URL" />). Obraťte se na svého administrátora.</translation>
@@ -7042,6 +7043,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="8986494364107987395">Automaticky posílat společnosti Google statistiky používání a zprávy o selhání</translation>
 <translation id="8987927404178983737">Měsíc</translation>
+<translation id="8988879467270412492">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro Chrome OS? Pokud ano, na pět sekund podržte obě tlačítka hlasitosti.</translation>
 <translation id="8989823300731803443">Pokračujte z místa, kde jste skončili.</translation>
 <translation id="8990209962746788689">QR kód nelze vytvořit</translation>
 <translation id="8991520179165052608">Web může použít mikrofon</translation>

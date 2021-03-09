@@ -610,6 +610,7 @@
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
 <translation id="622484624075952240">கீழ்</translation>
+<translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="6236290670123303279">அமைப்புகளை நிர்வகி</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">கிடைமட்ட நிலையில் பூட்டப்பட்டது</translation>
@@ -733,6 +734,7 @@
 <translation id="7346909386216857016">சரி, புரிந்தது</translation>
 <translation id="7348093485538360975">ஸ்கிரீன் கீபோர்டு</translation>
 <translation id="735745346212279324">VPN துண்டிக்கப்பட்டது</translation>
+<translation id="7360036564632145207">சாதனங்களில் தரவு அணுகல் பாதுகாப்பு அமைப்பை மாற்றினால் செயல்திறன் மேம்படலாம்</translation>
 <translation id="7371404428569700291">சாளரத்தை ரெக்கார்டு செய்யும்</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
 <translation id="7378203170292176219">ரெக்கார்டு செய்வதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
@@ -791,6 +793,7 @@
 <translation id="7780159184141939021">திரைச் சுழற்சி</translation>
 <translation id="7796353162336583443">குறிப்பெடுக்க, ஸ்கிரீன்ஷாட்டை எடுக்க, Google அசிஸ்டண்ட், லேசர் பாயிண்டர் அல்லது உருப்பெருக்கியைப் பயன்படுத்த, ஷெல்ஃபில் உள்ள ஸ்டைலஸ் பொத்தானைத் தட்டவும்.</translation>
 <translation id="7798302898096527229">ரத்துசெய்ய, தேடல் அல்லது Shift விசையை அழுத்தவும்.</translation>
+<translation id="7807966291075028781">பாதுகாப்புக் காரணங்களுக்காக, கெஸ்ட் பயன்முறையில் சாதனம் செயல்படாது</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> மற்றும் <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">வலுவான சிக்னல்</translation>
 <translation id="7837740436429729974">நேரம் முடிந்தது</translation>
@@ -859,6 +862,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
+<translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="8375916635258623388">இந்த <ph name="DEVICE_NAME" /> உம் உங்கள் ஃபோனும் தானாக இணைக்கப்படும்</translation>
 <translation id="8380784334203145311">இரவு வணக்கம்,</translation>
 <translation id="8388750414311082622">இறுதி டெஸ்க்கை அகற்ற இயலாது.</translation>

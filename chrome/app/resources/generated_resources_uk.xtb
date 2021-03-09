@@ -619,6 +619,7 @@
 <translation id="16620462294541761">На жаль, не вдалося підтвердити ваш пароль. Повторіть спробу.</translation>
 <translation id="166278006618318542">Алгоритм відкритого ключа суб'єкта</translation>
 <translation id="166439687370499867">Заборонено змінювати налаштування спільної мережі</translation>
+<translation id="1666232093776384142">Вимкнути обмеження доступу до даних для периферійних пристроїв</translation>
 <translation id="1668435968811469751">Зареєструвати вручну</translation>
 <translation id="1668979692599483141">Докладніше про підказки</translation>
 <translation id="1670399744444387456">Основні параметри</translation>
@@ -1802,6 +1803,7 @@
 <translation id="2966937470348689686">Змінити налаштування Android</translation>
 <translation id="2972581237482394796">&amp;Повторити</translation>
 <translation id="2973324205039581528">Вимкнути звук на сайті</translation>
+<translation id="2976557544729462544">Для повноцінної роботи деяких пристроїв потрібно вимкнути обмеження доступу до даних.</translation>
 <translation id="2977480621796371840">Вилучити з групи</translation>
 <translation id="2979520980928493164">Ще безпечніший і продуктивніший Chrome</translation>
 <translation id="2979639724566107830">Відкрити в новому вікні</translation>
@@ -1874,6 +1876,7 @@
 <translation id="3051250416341590778">Розмір дисплея</translation>
 <translation id="3053013834507634016">Використання ключа сертифіката</translation>
 <translation id="3053273573829329829">Увімкнути PIN-код користувача</translation>
+<translation id="3054766768827382232">Це може покращити роботу периферійних пристроїв, але водночас підвищити ризик несанкціонованого використання ваших персональних даних.</translation>
 <translation id="3055590424724986000">Через вибраного вами постачальника</translation>
 <translation id="3058498974290601450">Ви можете будь-коли ввімкнути синхронізацію в налаштуваннях</translation>
 <translation id="3060379269883947824">Увімкнути службу Читання з екрана</translation>
@@ -2675,7 +2678,6 @@
 <translation id="3943494825379372497">Відновити додатки та сторінки?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
-<translation id="3944266449990965865">Повний екран</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2751,7 +2753,6 @@
 <translation id="4031527940632463547">Датчики заблоковано</translation>
 <translation id="4033471457476425443">Додати нову папку</translation>
 <translation id="4034824040120875894">Принтер</translation>
-<translation id="4035321506998192527">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="4035758313003622889">&amp;Диспетчер завдань</translation>
 <translation id="4036778507053569103">Завантажене із сервера правило недійсне.</translation>
 <translation id="4037084878352560732">Кінь</translation>
@@ -2898,7 +2899,6 @@
 <translation id="4225397296022057997">На всіх сайтах</translation>
 <translation id="4231095370974836764">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
-<translation id="4235200303672858594">Увесь екран</translation>
 <translation id="4235965441080806197">Скасувати вхід</translation>
 <translation id="4242145785130247982">Кілька сертифікатів клієнтів не підтримуються</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -3560,7 +3560,6 @@
 <translation id="4998430619171209993">Увімкнено</translation>
 <translation id="5000922062037820727">Заблоковано (рекомендується)</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
-<translation id="5005970596776813007">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
 <translation id="5007392906805964215">Переглянути</translation>
 <translation id="5008936837313706385">Назва дії</translation>
@@ -4061,7 +4060,6 @@
     <ph name="BEGIN_PARAGRAPH2" />Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати дані, потрібні для отримання важливих послуг, зокрема оновлень системи та засобів безпеки.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Власник може керувати цією функцією в меню "Налаштування" &gt; "Розширені" &gt; "Автоматично надсилати в Google дані про діагностику та використання".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Якщо ввімкнено Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google. Ви можете переглядати й видаляти їх, а також змінювати налаштування на сторінці account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, утримуйте обидві клавіші гучності впродовж п'яти секунд.</translation>
 <translation id="5585019845078534178">Картки</translation>
 <translation id="5585118885427931890">Не вдалося створити папку закладок.</translation>
 <translation id="558563010977877295">Відкривати певну сторінку чи набір сторінок</translation>
@@ -4931,6 +4929,7 @@
 <translation id="6596816719288285829">ІР-адреса</translation>
 <translation id="6597017209724497268">Зразки</translation>
 <translation id="6597148444736186483">Щоб вийти з основного облікового запису на цьому пристрої, натисніть час на екрані. У меню, що з'явиться, натисніть "Вийти".</translation>
+<translation id="6601395831301182804">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, натисніть пробіл.</translation>
 <translation id="6601612474695404578">Деякі сайти використовують файли cookie третіх сторін для завантаження сторінок. Якщо сайт не працює, дозвольте файли cookie.</translation>
 <translation id="6602937173026466876">Доступ до принтерів</translation>
 <translation id="6602956230557165253">Використовуйте ліву та праву клавіші зі стрілками для навігації.</translation>
@@ -5420,6 +5419,7 @@
 <translation id="7152478047064750137">Для цього розширення не потрібні спеціальні дозволи</translation>
 <translation id="7154130902455071009">Зробити <ph name="START_PAGE" /> домашньою сторінкою</translation>
 <translation id="7155171745945906037">Наявні фотографії з камери або файлу</translation>
+<translation id="7156143134102343902">Дисплеї та периферійні пристрої можуть перезавантажитися. Зміни буде застосовано за кілька секунд.</translation>
 <translation id="7163202347044721291">Перевірка коду активації…</translation>
 <translation id="7165320105431587207">Помилка налаштування мережі</translation>
 <translation id="716640248772308851">Розширення "<ph name="EXTENSION" />" має доступ до читання зображень, відео та звукових файлів у вибраних розташуваннях.</translation>
@@ -5558,6 +5558,7 @@
 <translation id="7324297612904500502">Форум бета-версії</translation>
 <translation id="7325209047678309347">Застряг папір</translation>
 <translation id="7326004502692201767">Налаштуйте цей пристрій <ph name="DEVICE_TYPE" /> для дитини</translation>
+<translation id="7326025035243649350">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome?</translation>
 <translation id="7327989755579928735">Адміністратор домену <ph name="MANAGER" /> вимкнув налагодження ADB. Коли ви перезапустите пристрій <ph name="DEVICE_TYPE" />, то більше не зможете завантажувати додатки з невідомих джерел.</translation>
 <translation id="7328867076235380839">Недійсна комбінація</translation>
 <translation id="7329154610228416156">Не вдалося ввійти, оскільки вас було переспрямовано на незахищену URL-адресу (<ph name="BLOCKED_URL" />). Зв’яжіться з адміністратором.</translation>
@@ -7047,6 +7048,7 @@
 <translation id="8986362086234534611">Видалити</translation>
 <translation id="8986494364107987395">Автоматично надсилати статистику використання та звіти про аварійне завершення роботи в Google</translation>
 <translation id="8987927404178983737">Місяць</translation>
+<translation id="8988879467270412492">Активувати ChromeVox, вбудовану програму зчитування з екрана для ОС Chrome? Щоб зробити це, утримуйте обидві клавіші гучності впродовж п'яти секунд.</translation>
 <translation id="8989823300731803443">Ви зможете продовжити з місця, де зупинилися.</translation>
 <translation id="8990209962746788689">Не вдається створити QR-код</translation>
 <translation id="8991520179165052608">Сайт може використовувати мікрофон</translation>

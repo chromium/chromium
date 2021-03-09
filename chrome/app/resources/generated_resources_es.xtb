@@ -616,6 +616,7 @@
 <translation id="16620462294541761">La contraseña no se ha podido verificar. Vuelve a intentarlo.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública de la entidad receptora</translation>
 <translation id="166439687370499867">No se permite cambiar la configuración de las redes compartidas</translation>
+<translation id="1666232093776384142">Inhabilitar protección de acceso a datos desde periféricos</translation>
 <translation id="1668435968811469751">Registrar manualmente</translation>
 <translation id="1668979692599483141">Información sobre sugerencias</translation>
 <translation id="1670399744444387456">Básico</translation>
@@ -1799,6 +1800,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2966937470348689686">Gestionar las preferencias de Android</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
 <translation id="2973324205039581528">Silenciar sitio web</translation>
+<translation id="2976557544729462544">Algunos dispositivos necesitan que inhabilites la protección de acceso a datos para funcionar adecuadamente o al máximo rendimiento.</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="2979520980928493164">Tu Chrome, más sano y ágil</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -1871,6 +1873,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3051250416341590778">Tamaño de la pantalla</translation>
 <translation id="3053013834507634016">Uso de claves de certificado</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
+<translation id="3054766768827382232">Al inhabilitarla, tus periféricos funcionan mejor, pero puede que expongan tus datos personales mediante un uso no autorizado.</translation>
 <translation id="3055590424724986000">Con el proveedor que elijas</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en cualquier momento desde la configuración</translation>
 <translation id="3060379269883947824">Habilitar Enunciar Selección</translation>
@@ -2671,7 +2674,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943494825379372497">¿Restaurar aplicaciones y páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
-<translation id="3944266449990965865">Toda la pantalla</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2747,7 +2749,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Añadir nueva carpeta</translation>
 <translation id="4034824040120875894">Impresora</translation>
-<translation id="4035321506998192527">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS? Si es así, pulsa la barra espaciadora.</translation>
 <translation id="4035758313003622889">Adminis&amp;trador de tareas</translation>
 <translation id="4036778507053569103">La política que has descargado del servidor no es válida.</translation>
 <translation id="4037084878352560732">Caballo</translation>
@@ -2894,7 +2895,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
-<translation id="4235200303672858594">Toda la pantalla</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
 <translation id="4242145785130247982">No se admite el uso de varios certificados de cliente.</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -3556,7 +3556,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4998430619171209993">Activado</translation>
 <translation id="5000922062037820727">Bloqueado (recomendado)</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
-<translation id="5005970596776813007">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS?</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
 <translation id="5007392906805964215">Ver</translation>
 <translation id="5008936837313706385">Nombre de la actividad</translation>
@@ -4057,7 +4056,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     <ph name="BEGIN_PARAGRAPH2" />Si la opción se desactiva, esto no afectará a la capacidad del dispositivo de enviar la información necesaria para recibir servicios esenciales, como actualizaciones del sistema y funciones de seguridad.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función en Ajustes &gt; Configuración avanzada &gt; Enviar automáticamente los datos de uso y diagnóstico a Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si has activado la opción Actividad en la Web y en Aplicaciones, es posible que estos datos se guarden en tu cuenta de Google. Puedes consultar tus datos, eliminarlos y cambiar la configuración de tu cuenta en la página account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS? Si es así, mantén pulsadas las dos teclas de volumen durante cinco segundos.</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5585118885427931890">No se ha podido crear una carpeta de marcadores.</translation>
 <translation id="558563010977877295">Abrir una página específica o un conjunto de páginas</translation>
@@ -4927,6 +4925,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6597017209724497268">Ejemplos</translation>
 <translation id="6597148444736186483">Para cerrar la sesión en la cuenta principal de este dispositivo, haz clic en la hora que aparece en la pantalla. En el menú que aparecerá, haz clic en Cerrar sesión.</translation>
+<translation id="6601395831301182804">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS? Si es así, pulsa la barra espaciadora.</translation>
 <translation id="6601612474695404578">Algunos sitios utilizan cookies de terceros para cargar sus páginas. Si un sitio web no funciona, permite las cookies y prueba de nuevo.</translation>
 <translation id="6602937173026466876">Acceder a tus impresoras</translation>
 <translation id="6602956230557165253">Utiliza las teclas de flecha hacia la izquierda y hacia la derecha para desplazarte.</translation>
@@ -5416,6 +5415,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar página de inicio por: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto de la cámara o archivo</translation>
+<translation id="7156143134102343902">Puede que las pantallas y los periféricos se restablezcan brevemente. Este proceso puede tardar unos segundos en hacerse efectivo.</translation>
 <translation id="7163202347044721291">Verificando código de activación...</translation>
 <translation id="7165320105431587207">Error al configurar la red</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" puede leer archivos de sonido, vídeo e imágenes en las ubicaciones seleccionadas.</translation>
@@ -5554,6 +5554,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7324297612904500502">Foro beta</translation>
 <translation id="7325209047678309347">El papel está atascado</translation>
 <translation id="7326004502692201767">Configura este <ph name="DEVICE_TYPE" /> para un niño/a</translation>
+<translation id="7326025035243649350">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás instalar aplicaciones de fuentes desconocidas.</translation>
 <translation id="7328867076235380839">Combinación no válida</translation>
 <translation id="7329154610228416156">No ha sido posible iniciar la sesión porque se ha establecido una URL de inicio de sesión no segura (<ph name="BLOCKED_URL" />). Ponte en contacto con el administrador.</translation>
@@ -7040,6 +7041,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8986362086234534611">Dejar de recordar</translation>
 <translation id="8986494364107987395">Enviar automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8988879467270412492">¿Quieres activar ChromeVox, el lector de pantalla integrado de Chrome OS? Si es así, mantén pulsadas las dos teclas de volumen durante cinco segundos.</translation>
 <translation id="8989823300731803443">Se abrirá todo como estaba antes de cerrar.</translation>
 <translation id="8990209962746788689">No se puede crear el código QR</translation>
 <translation id="8991520179165052608">El sitio web puede usar tu micrófono</translation>

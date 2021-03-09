@@ -198,7 +198,7 @@
 <translation id="1213254615020057352">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la Actividad de web y de aplicaciones adicional en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta.</translation>
 <translation id="121384500095351701">No se puede descargar este archivo de forma segura</translation>
 <translation id="1215411991991485844">Nueva aplicación en segundo plano agregada</translation>
-<translation id="1216542092748365687">Quitar huella digital</translation>
+<translation id="1216542092748365687">Quitar huella dactilar</translation>
 <translation id="1217483152325416304">Pronto se borrarán tus datos locales</translation>
 <translation id="1217668622537098248">Volver al clic con el botón izquierdo después de la acción</translation>
 <translation id="121783623783282548">Las contraseñas no coinciden.</translation>
@@ -305,7 +305,7 @@
 <translation id="1334384124770871673">Por lo general, los sitios utilizan los sensores de movimiento del dispositivo para habilitar funciones, como la realidad virtual o el conteo de pasos.</translation>
 <translation id="133535873114485416">Método de entrada preferido</translation>
 <translation id="1335929031622236846">Inscribe tu dispositivo</translation>
-<translation id="1336902454946927954">Se bloqueó la llave de seguridad porque no se reconoció tu huella digital. Para desbloquearla, ingresa el PIN.</translation>
+<translation id="1336902454946927954">Se bloqueó la llave de seguridad porque no se reconoció tu huella dactilar. Para desbloquearla, ingresa el PIN.</translation>
 <translation id="1337692097987160377">Compartir esta pestaña</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> quiere abrir esta app.</translation>
 <translation id="1338950911836659113">Eliminando…</translation>
@@ -458,7 +458,7 @@
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1507170440449692343">Esta página no tiene permiso para acceder a la cámara.</translation>
 <translation id="1507246803636407672">&amp;Descartar</translation>
-<translation id="1508491105858779599">Coloca tu dedo en el sensor de huella digital para desbloquear el dispositivo.</translation>
+<translation id="1508491105858779599">Coloca tu dedo en el sensor de huella dactilar para desbloquear el dispositivo.</translation>
 <translation id="1508575541972276599">La versión actual es Debian 9 (Stretch)</translation>
 <translation id="1509281256533087115">Accede a cualquier <ph name="DEVICE_NAME_AND_VENDOR" /> a través de USB</translation>
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
@@ -613,6 +613,7 @@
 <translation id="16620462294541761">No es posible verificar tu contraseña. Inténtalo nuevamente.</translation>
 <translation id="166278006618318542">Algoritmo de clave pública del sujeto</translation>
 <translation id="166439687370499867">No se permite cambiar las opciones de configuración de la red compartida</translation>
+<translation id="1666232093776384142">Inhabilita la protección del acceso a los datos para dispositivos periféricos</translation>
 <translation id="1668435968811469751">Inscribirse manualmente</translation>
 <translation id="1668979692599483141">Más información sobre las sugerencias</translation>
 <translation id="1670399744444387456">Básicas</translation>
@@ -656,7 +657,7 @@
 <translation id="1714644264617423774">Permite habilitar las funciones de accesibilidad para que tu dispositivo sea más fácil de usar. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1718835860248848330">Última hora</translation>
-<translation id="1719312230114180055">Nota: La huella digital puede ser menos segura que un PIN o una contraseña eficaz.</translation>
+<translation id="1719312230114180055">Nota: La huella dactilar puede ser menos segura que un PIN o una contraseña eficaz.</translation>
 <translation id="1720318856472900922">Autenticación de servidor TLS WWW</translation>
 <translation id="1721312023322545264">Necesitas permiso de <ph name="NAME" /> para visitar este sitio</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> administra tu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
@@ -698,7 +699,7 @@
 <translation id="175772926354468439">Habilitar tema</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
-<translation id="176193854664720708">El sensor de huellas digitales es el botón de encendido. Tócalo suavemente con cualquier dedo.</translation>
+<translation id="176193854664720708">El sensor de huellas dactilares es el botón de encendido. Tócalo suavemente con cualquier dedo.</translation>
 <translation id="176272781006230109">sugerencias de compras</translation>
 <translation id="1763046204212875858">Crear accesos directos a aplicaciones</translation>
 <translation id="1763808908432309942">Se abre en una pestaña nueva</translation>
@@ -1376,7 +1377,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Olvidar el dispositivo Bluetooth</translation>
 <translation id="2513396635448525189">Imagen de acceso</translation>
-<translation id="2514326558286966059">Desbloquea más rápido con tu huella digital</translation>
+<translation id="2514326558286966059">Desbloquea más rápido con tu huella dactilar</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Buscar</translation>
 <translation id="2518024842978892609">Usar los certificados de cliente</translation>
@@ -1796,6 +1797,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2966937470348689686">Administrar las preferencias de Android</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
 <translation id="2973324205039581528">Silenciar el sitio</translation>
+<translation id="2976557544729462544">En algunos dispositivos, debes inhabilitar la protección de acceso a los datos para que funcionen correctamente o con el máximo rendimiento.</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="2979520980928493164">Una versión de Chrome más segura y potente</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -1868,6 +1870,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3051250416341590778">Tamaño de la pantalla</translation>
 <translation id="3053013834507634016">Uso de la clave del certificado</translation>
 <translation id="3053273573829329829">Habilitar el PIN de usuario</translation>
+<translation id="3054766768827382232">Si la inhabilitas, mejorará el rendimiento de los dispositivos periféricos, pero tus datos personales pueden quedar expuestos por un uso no autorizado.</translation>
 <translation id="3055590424724986000">Con el proveedor que elijas</translation>
 <translation id="3058498974290601450">Puedes activar la sincronización en la configuración en cualquier momento</translation>
 <translation id="3060379269883947824">Habilitar Seleccionar para pronunciar</translation>
@@ -2220,7 +2223,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas pueden tener un máximo de 99 letras.</translation>
-<translation id="3475843873335999118">No se puede reconocer tu huella digital. Ingresa tu contraseña.</translation>
+<translation id="3475843873335999118">No se puede reconocer tu huella dactilar. Ingresa tu contraseña.</translation>
 <translation id="3476303763173086583">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />. Es posible que el propietario decida enviar a Google datos de uso y diagnóstico de este dispositivo. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">El sistema no pudo recuperar la política para tu dispositivo.</translation>
 <translation id="347785443197175480">Continuar permitiendo que <ph name="HOST" /> acceda a la cámara y al micrófono</translation>
@@ -2343,7 +2346,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3613134908380545408">Mostrar <ph name="FOLDER_NAME" /></translation>
 <translation id="3613422051106148727">&amp;Abrir en una pestaña nueva</translation>
 <translation id="3614974189435417452">Se completó la copia de seguridad</translation>
-<translation id="3615073365085224194">Toca el sensor de huellas digitales con el dedo</translation>
+<translation id="3615073365085224194">Toca el sensor de huellas dactilares con el dedo</translation>
 <translation id="3615579745882581859">Se está analizando <ph name="FILE_NAME" />.</translation>
 <translation id="3616741288025931835">Eliminar datos de navega&amp;ción...</translation>
 <translation id="3617891479562106823">Los fondos no están disponibles. Vuelve a intentarlo más tarde.</translation>
@@ -2371,7 +2374,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3640214691812501263">¿Quieres agregar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Enséñale al Asistente a reconocer tu voz</translation>
 <translation id="3643637292669952403">No permitir que los sitios vean tu ubicación</translation>
-<translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella digital.</translation>
+<translation id="3645372836428131288">Mueve el dedo ligeramente para capturar otra parte de la huella dactilar.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recibido de <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recibidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Se detectó <ph name="USB_DEVICE_NAME" /></translation>
 <translation id="3649138363871392317">Se capturó la foto.</translation>
@@ -2669,7 +2672,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3943494825379372497">¿Deseas restablecer las apps y las páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
-<translation id="3944266449990965865">Pantalla completa</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2745,7 +2747,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
 <translation id="4034824040120875894">Impresora</translation>
-<translation id="4035321506998192527">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="4035758313003622889">Adminis&amp;trador de &amp;tareas</translation>
 <translation id="4036778507053569103">La política descargada del servidor no es válida.</translation>
 <translation id="4037084878352560732">Caballo</translation>
@@ -2892,7 +2893,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
-<translation id="4235200303672858594">Toda la pantalla</translation>
 <translation id="4235965441080806197">Cancelar acceso</translation>
 <translation id="4242145785130247982">No se admiten Certificados de cliente múltiples.</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
@@ -3152,7 +3152,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4533985347672295764">Tiempo de CPU</translation>
 <translation id="4534661889221639075">Vuelve a intentarlo.</translation>
 <translation id="4535127706710932914">Perfil predeterminado</translation>
-<translation id="4535767533210902251">El sensor de huellas digitales es la opción de la parte superior derecha del teclado. Tócalo suavemente con un dedo.</translation>
+<translation id="4535767533210902251">El sensor de huellas dactilares es la opción de la parte superior derecha del teclado. Tócalo suavemente con un dedo.</translation>
 <translation id="4536140153723794651">Sitios que siempre pueden usar cookies</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
@@ -3180,7 +3180,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio puede acceder a los sensores de movimiento o luz.</translation>
 <translation id="4561893854334016293">No se cambió ningún permiso recientemente</translation>
-<translation id="4562155214028662640">Agregar huella digital</translation>
+<translation id="4562155214028662640">Agregar huella dactilar</translation>
 <translation id="4563210852471260509">El idioma inicial de entrada es chino</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
@@ -3554,7 +3554,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4998430619171209993">Sí</translation>
 <translation id="5000922062037820727">Bloqueado (recomendado)</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
-<translation id="5005970596776813007">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS?</translation>
 <translation id="5006218871145547804">ADB de apps para Android en Crostini</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5008936837313706385">Nombre de la actividad</translation>
@@ -4055,7 +4054,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="BEGIN_PARAGRAPH2" />Si desactivas esta función, no se verá afectada la capacidad del dispositivo de enviar la información que necesita para recibir servicios esenciales, como actualizaciones del sistema y seguridad.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función desde Configuración &gt; Avanzada &gt; Envía a Google datos de uso y diagnóstico automáticamente.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Si también habilitaste la Actividad web y de aplicaciones, es posible que se almacenen estos datos en tu Cuenta de Google. En account.google.com podrás consultar estos datos, borrarlos, y cambiar la configuración de la cuenta.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS? En ese caso, mantén presionadas ambas teclas de volumen durante cinco segundos.</translation>
 <translation id="5585019845078534178">Tarjetas</translation>
 <translation id="5585118885427931890">No se pudo crear la carpeta de favoritos.</translation>
 <translation id="558563010977877295">Abrir una página específica o un conjunto de páginas</translation>
@@ -4146,7 +4144,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="56907980372820799">Vincular datos</translation>
 <translation id="5691581861107245578">Obtén sugerencias de emojis basadas en lo que estás escribiendo</translation>
-<translation id="5691772641933328258">No se reconoció la huella digital</translation>
+<translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5692183275898619210">Se completó la impresión</translation>
 <translation id="5695184138696833495">ADB de apps para Android en Linux</translation>
 <translation id="5696143504434933566">Informar abuso de "<ph name="EXTENSION_NAME" />"</translation>
@@ -4412,7 +4410,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6007240208646052708">La búsqueda por voz no está disponible en tu idioma.</translation>
 <translation id="6011074160056912900">Red de Ethernet</translation>
-<translation id="6011193465932186973">Huella digital</translation>
+<translation id="6011193465932186973">Huella dactilar</translation>
 <translation id="6011449291337289699">Borrar los datos del sitio</translation>
 <translation id="6013027779243312217">Obtener subtítulos para el audio y el video</translation>
 <translation id="6015796118275082299">Año</translation>
@@ -4426,7 +4424,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="6025215716629925253">Seguimiento de la pila</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: Se conectó el dispositivo USB</translation>
-<translation id="6028117231645531007">Agregar huella digital</translation>
+<translation id="6028117231645531007">Agregar huella dactilar</translation>
 <translation id="6031600495088157824">Opciones de entrada de la barra de herramientas</translation>
 <translation id="6032715498678347852">Haz clic en una extensión para otorgarle acceso a este sitio.</translation>
 <translation id="6032912588568283682">Sistema de archivos</translation>
@@ -4925,6 +4923,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6597017209724497268">Muestras</translation>
 <translation id="6597148444736186483">Para salir de la cuenta principal en este dispositivo, haz clic en la hora que se encuentra en la pantalla. En el menú que aparece, haz clic en "Salir".</translation>
+<translation id="6601395831301182804">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS? En ese caso, presiona la barra espaciadora.</translation>
 <translation id="6601612474695404578">Algunos sitios usan cookies de terceros para cargar las páginas. Si un sitio no funciona, intenta activar las cookies.</translation>
 <translation id="6602937173026466876">Acceder a tus impresoras</translation>
 <translation id="6602956230557165253">Utiliza las teclas de flecha hacia la izquierda y derecha para navegar.</translation>
@@ -5414,6 +5413,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar la página de inicio por <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente de la cámara o archivo</translation>
+<translation id="7156143134102343902">Es posible que tus pantallas y dispositivos periféricos se reinicien en breve, lo cual puede tomar unos segundos en aplicarse.</translation>
 <translation id="7163202347044721291">Verificando el código de activación…</translation>
 <translation id="7165320105431587207">Error al configurar la red</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" puede leer archivos de video, sonido e imágenes en las ubicaciones seleccionadas.</translation>
@@ -5438,7 +5438,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7187855807420906517">Después de que sales de los sitios y vuelves a conectarte, por lo general los sitios se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
 <translation id="7189234443051076392">Asegúrate de que haya espacio suficiente en tu dispositivo</translation>
 <translation id="7189451821249468368">No tienes suficientes actualizaciones para inscribir este dispositivo; comunícate con el vendedor para adquirir más. Si crees que recibiste este mensaje por error, comunícate con el servicio de asistencia.</translation>
-<translation id="7189965711416741966">Se agregó una huella digital.</translation>
+<translation id="7189965711416741966">Se agregó una huella dactilar.</translation>
 <translation id="7191159667348037">Impresora desconocida (USB)</translation>
 <translation id="7193051357671784796">Tu organización agregó esta app. Para finalizar la instalación, restablece la app.</translation>
 <translation id="7193374945610105795">No se guardó ninguna contraseña para <ph name="ORIGIN" /></translation>
@@ -5510,7 +5510,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7258697411818564379">Se agregó tu PIN</translation>
 <translation id="7262004276116528033">El servicio de acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
 <translation id="7267044199012331848">No se pudo instalar la máquina virtual. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
-<translation id="7267875682732693301">Sigue levantando el dedo para agregar diferentes partes de la huella digital.</translation>
+<translation id="7267875682732693301">Sigue levantando el dedo para agregar diferentes partes de la huella dactilar.</translation>
 <translation id="7268127947535186412">Esta configuración la administra el propietario del dispositivo.</translation>
 <translation id="7269736181983384521">Uso de datos de Compartir con Nearby</translation>
 <translation id="7270858098575133036">Preguntarme cuando un sitio quiera usar los mensajes exclusivos del sistema para acceder a dispositivos MIDI</translation>
@@ -5552,6 +5552,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7324297612904500502">Foro de la versión Beta</translation>
 <translation id="7325209047678309347">El papel está atorado</translation>
 <translation id="7326004502692201767">Configura este dispositivo <ph name="DEVICE_TYPE" /> para un niño</translation>
+<translation id="7326025035243649350">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> inhabilitó la depuración de ADB. Cuando reinicies tu <ph name="DEVICE_TYPE" />, no podrás transferir apps.</translation>
 <translation id="7328867076235380839">La combinación no es válida</translation>
 <translation id="7329154610228416156">Se produjo un error de acceso porque está configurado para usar una URL no segura (<ph name="BLOCKED_URL" />). Comunícate con el administrador.</translation>
@@ -5578,7 +5579,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7353261921908507769">Tus contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>
 <translation id="735361434055555355">Instalando Linux…</translation>
-<translation id="7354341762311560488">El sensor de huellas digitales se encuentra en la esquina inferior izquierda del teclado. Tócalo suavemente con un dedo.</translation>
+<translation id="7354341762311560488">El sensor de huellas dactilares se encuentra en la esquina inferior izquierda del teclado. Tócalo suavemente con un dedo.</translation>
 <translation id="7356908624372060336">Registros de red</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360233684753165754"><ph name="PAGE_NUMBER" /> páginas a <ph name="PRINTER_NAME" /></translation>
@@ -5770,7 +5771,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7574650250151586813">Para ingresar texto, actualiza la app de Teclado Daydream</translation>
 <translation id="7576690715254076113">Intercalar</translation>
 <translation id="7576976045740938453">Hubo un problema con la cuenta en el modo de demostración.</translation>
-<translation id="7578137152457315135">Configuración de la huella digital</translation>
+<translation id="7578137152457315135">Configuración de la huella dactilar</translation>
 <translation id="7578692661782707876">Ingresa tu código de confirmación.</translation>
 <translation id="7580671184200851182">Reproducir el mismo audio en todos los altavoces (sonido mono)</translation>
 <translation id="7581462281756524039">Una herramienta de limpieza</translation>
@@ -6582,7 +6583,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8487678622945914333">Acercar</translation>
 <translation id="8489156414266187072">Las sugerencias personales solo se muestran en tu cuenta</translation>
 <translation id="8490896350101740396">Se actualizaron las siguientes aplicaciones de kiosco "<ph name="UPDATED_APPS" />". Reinicia el dispositivo para completar el proceso de actualización.</translation>
-<translation id="8492685019009920170">Toca el sensor de huellas digitales con el dedo. Tus datos se almacenan de forma segura y no salen de tu <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8492685019009920170">Toca el sensor de huellas dactilares con el dedo. Tus datos se almacenan de forma segura y no salen de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Permitir que los sitios abran ventanas emergentes y usen redireccionamientos</translation>
 <translation id="8492972329130824181">La red doméstica no está disponible. Debes habilitar el roaming de datos móviles para tener conexión.</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
@@ -6778,8 +6779,8 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8720200012906404956">Buscando una red móvil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Se agotó el tiempo de la inicialización de los atributos de tiempo de instalación.</translation>
 <translation id="8722912030556880711">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la "Actividad de web y de aplicaciones adicional", es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
-<translation id="8724405322205516354">Cuando veas este ícono, usa tu huella digital para identificarte o aprobar compras.</translation>
-<translation id="8724409975248965964">Se agregó la huella digital</translation>
+<translation id="8724405322205516354">Cuando veas este ícono, usa tu huella dactilar para identificarte o aprobar compras.</translation>
+<translation id="8724409975248965964">Se agregó la huella dactilar</translation>
 <translation id="8724859055372736596">Mo&amp;strar en carpeta</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8725178340343806893">Favoritos/Favoritos</translation>
@@ -7038,6 +7039,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8986494364107987395">Enviar automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
 <translation id="8987927404178983737">Mes</translation>
+<translation id="8988879467270412492">¿Deseas activar ChromeVox, el lector de pantalla integrado de Chrome OS? En ese caso, mantén presionadas ambas teclas de volumen durante cinco segundos.</translation>
 <translation id="8989823300731803443">Continúa desde donde abandonaste.</translation>
 <translation id="8990209962746788689">No se puede crear el código QR</translation>
 <translation id="8991520179165052608">El sitio puede usar el micrófono</translation>
@@ -7046,7 +7048,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8995603266996330174">Administrado por <ph name="DOMAIN" /></translation>
 <translation id="8996526648899750015">Agregar cuenta…</translation>
 <translation id="899657321862108550">Tu navegador Chrome, en todos lados</translation>
-<translation id="899676909165543803">El sensor de huellas digitales se encuentra en la esquina inferior derecha del teclado. Tócalo suavemente con un dedo.</translation>
+<translation id="899676909165543803">El sensor de huellas dactilares se encuentra en la esquina inferior derecha del teclado. Tócalo suavemente con un dedo.</translation>
 <translation id="8999560016882908256">Error de sintaxis seccional: <ph name="ERROR_LINE" /></translation>
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>

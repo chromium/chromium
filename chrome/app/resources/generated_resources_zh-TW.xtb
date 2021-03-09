@@ -616,6 +616,7 @@
 <translation id="16620462294541761">很抱歉，系統無法驗證你的密碼，請再試一次。</translation>
 <translation id="166278006618318542">主體公開金鑰演算法</translation>
 <translation id="166439687370499867">不允許變更共用網路設定</translation>
+<translation id="1666232093776384142">停用周邊裝置的資料存取權防護功能</translation>
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
 <translation id="1670399744444387456">基本</translation>
@@ -1409,6 +1410,7 @@
 <translation id="2541706104884128042">已設定新的就寢時間</translation>
 <translation id="2542050502251273923">使用 ff_debug 設定網路連線管理員和其他服務的偵錯等級。</translation>
 <translation id="2544292303401268586">管理員已要求重新啟動裝置並更新應用程式。這項作業可能需要幾分鐘才能完成。</translation>
+<translation id="2544352060595557290">這個分頁</translation>
 <translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
 <translation id="2548347166720081527">已允許使用<ph name="PERMISSION" /></translation>
@@ -1575,6 +1577,7 @@
 <translation id="2734760316755174687"><ph name="SITE_GROUP_NAME" /> 之下的網站也會進行重設。</translation>
 <translation id="2735712963799620190">設定時間</translation>
 <translation id="2737363922397526254">收合...</translation>
+<translation id="2737916598897808047">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
 <translation id="2738771556149464852">此日期之前：</translation>
 <translation id="2739191690716947896">偵錯</translation>
 <translation id="2739240477418971307">變更你的無障礙設定</translation>
@@ -1796,6 +1799,7 @@
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">關閉網站音訊</translation>
+<translation id="2976557544729462544">有些裝置需要停用資料存取權防護功能才能正常運作或發揮最佳效能。</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
 <translation id="2979520980928493164">更流暢、更容易使用的 Chrome</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
@@ -1868,6 +1872,7 @@
 <translation id="3051250416341590778">顯示大小</translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
 <translation id="3053273573829329829">啟用使用者 PIN 碼</translation>
+<translation id="3054766768827382232">停用這項功能可以提高周邊裝置的效能，但也可能讓有心人士能夠在未經授權的情況下使用你的個人資料。</translation>
 <translation id="3055590424724986000">使用你選取的供應商</translation>
 <translation id="3058498974290601450">你隨時可以在設定中開啟同步功能</translation>
 <translation id="3060379269883947824">啟用隨選朗讀功能</translation>
@@ -2668,7 +2673,6 @@
 <translation id="3943494825379372497">要還原應用程式和網頁嗎？</translation>
 <translation id="3943582379552582368">上一頁(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
-<translation id="3944266449990965865">整個畫面</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可以編輯下列資料夾中的檔案</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2744,7 +2748,6 @@
 <translation id="4031527940632463547">禁止使用感應器</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
 <translation id="4034824040120875894">印表機</translation>
-<translation id="4035321506998192527">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
 <translation id="4035758313003622889">工作管理員(&amp;T)</translation>
 <translation id="4036778507053569103">從伺服器下載的政策無效。</translation>
 <translation id="4037084878352560732">馬</translation>
@@ -2891,7 +2894,6 @@
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4231095370974836764">在你的 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
-<translation id="4235200303672858594">整個畫面</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -3553,7 +3555,6 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="5000922062037820727">已封鎖 (建議)</translation>
 <translation id="5005498671520578047">複製密碼</translation>
-<translation id="5005970596776813007">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5008936837313706385">活動名稱</translation>
@@ -3591,6 +3592,7 @@
 <translation id="5057110919553308744">當你點選擴充功能時</translation>
 <translation id="5057403786441168405">管理已登入的帳戶。Chrome 和 Google Play 的網站、應用程式和擴充功能可能會使用這些帳戶為你提供個人化的使用體驗 (依權限而定)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登入</translation>
+<translation id="5059526285558225588">選擇要分享的內容</translation>
 <translation id="5060332552815861872">有 1 台可供儲存的印表機。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{這個資料夾內含 1 個書籤。確定要刪除該書籤嗎？}other{這個資料夾內含 # 個書籤。確定要刪除這些書籤嗎？}}</translation>
 <translation id="5062930723426326933">無法登入，請重新連線至網際網路並再試一次。</translation>
@@ -4053,7 +4055,6 @@
     <ph name="BEGIN_PARAGRAPH2" />即使關閉這項功能，你的裝置仍然可以傳送基本服務 (例如系統更新與安全服務) 所需的資訊。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />裝置擁有者如要管理這項功能，可依序前往 [設定] &gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google]。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />如果你另外開啟了「網路和應用程式活動」設定，這項資料可能會儲存在你的 Google 帳戶中。如要查看/刪除你的資料，或是變更帳戶設定，請前往 account.google.com。<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？如要啟動，請同時按住音量調高和調低鍵五秒。</translation>
 <translation id="5585019845078534178">卡片</translation>
 <translation id="5585118885427931890">無法建立書籤資料夾。</translation>
 <translation id="558563010977877295">開啟某個特定網頁或一組網頁</translation>
@@ -4923,6 +4924,7 @@
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6597017209724497268">個樣本</translation>
 <translation id="6597148444736186483">如要登出這部裝置的主要帳戶，請按一下畫面上的時間。在畫面上顯示的選單中，按一下 [登出]。</translation>
+<translation id="6601395831301182804">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？如要啟動，請按下空格鍵。</translation>
 <translation id="6601612474695404578">有些網站會使用第三方 Cookie 來載入頁面。如果某個網站無法正常運作，你可以嘗試允許這類網站使用 Cookie。</translation>
 <translation id="6602937173026466876">存取印表機</translation>
 <translation id="6602956230557165253">使用向左鍵和向右鍵瀏覽。</translation>
@@ -5076,6 +5078,7 @@
 <translation id="6782468519961184511">管理員已禁止新增其他 Google 帳戶</translation>
 <translation id="6785518634832172390">PIN 碼不能超過 12 個數字</translation>
 <translation id="6786747875388722282">擴充功能</translation>
+<translation id="6787097042755590313">其他分頁</translation>
 <translation id="6787839852456839824">鍵盤快速鍵</translation>
 <translation id="6788210894632713004">未封裝擴充功能</translation>
 <translation id="6789592661892473991">水平分割</translation>
@@ -5411,6 +5414,7 @@
 <translation id="7152478047064750137">這個擴充功能不需要特殊權限</translation>
 <translation id="7154130902455071009">將你的起始網頁變更為：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">現有的相機相片或圖庫相片</translation>
+<translation id="7156143134102343902">螢幕和周邊裝置可能會快速重設，這項作業需要幾秒鐘才會生效。</translation>
 <translation id="7163202347044721291">正在驗證啟用代碼…</translation>
 <translation id="7165320105431587207">無法設定網路</translation>
 <translation id="716640248772308851">「<ph name="EXTENSION" />」對於勾選位置中的圖片、影片和聲音檔具有讀取權限。</translation>
@@ -5549,6 +5553,7 @@
 <translation id="7324297612904500502">測試版論壇</translation>
 <translation id="7325209047678309347">印表機發生卡紙</translation>
 <translation id="7326004502692201767">為孩子設定這部 <ph name="DEVICE_TYPE" /></translation>
+<translation id="7326025035243649350">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，你將無法側載應用程式。</translation>
 <translation id="7328867076235380839">按鍵組合無效</translation>
 <translation id="7329154610228416156">由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致登入失敗。請與您的管理員聯絡。</translation>
@@ -6337,6 +6342,7 @@
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">正在連線至 <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">管理你的應用程式、擴充功能和主題</translation>
+<translation id="8192944472786724289">「<ph name="APP_NAME" />」要求分享螢幕內容。</translation>
 <translation id="8195027750202970175">佔磁碟容量</translation>
 <translation id="8198323535106903877">系統將為你安裝這 <ph name="NUMBER_OF_APPS" /> 個應用程式</translation>
 <translation id="8199300056570174101">網路 (服務) 與裝置屬性</translation>
@@ -7033,6 +7039,7 @@
 <translation id="8986362086234534611">清除</translation>
 <translation id="8986494364107987395">自動傳送使用統計資料及當機報告給 Google</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8988879467270412492">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？如要啟動，請同時按住音量調高和調低鍵五秒。</translation>
 <translation id="8989823300731803443">繼續使用上次開啟的內容。</translation>
 <translation id="8990209962746788689">無法建立 QR 圖碼</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>

@@ -147,7 +147,7 @@
 <translation id="1462951478840426066">अपने कंप्यूटर पर मौजूद फ़ॉन्ट इस्तेमाल करें, ताकि आप हाई फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">बाएं</translation>
-<translation id="1468653229182955856">यह <ph name="ONE_TIME_CODE" /> कोड <ph name="EMBEDDED_ORIGIN" /> के लिए है, ताकि आप <ph name="TOP_ORIGIN" /> पर जारी रख सकें</translation>
+<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> पर जारी रखने के लिए, <ph name="EMBEDDED_ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है.</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2ए0</translation>

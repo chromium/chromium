@@ -610,6 +610,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6179832488876878285">Tutaj możesz przypiąć ważne pliki. Aby rozpocząć, otwórz aplikację Pliki.</translation>
 <translation id="622484624075952240">W dół</translation>
+<translation id="6231419273573514727">Wydajność urządzeń peryferyjnych może być ograniczona</translation>
 <translation id="6236290670123303279">Zarządzaj ustawieniami</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Zablokowano w orientacji poziomej</translation>
@@ -733,6 +734,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
+<translation id="7360036564632145207">Wydajność może się poprawić, jeśli zmienisz ustawienie Zabezpieczenie przed dostępem do danych przez urządzenia peryferyjne</translation>
 <translation id="7371404428569700291">Nagraj okno</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
@@ -791,6 +793,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
+<translation id="7807966291075028781">Ze względów bezpieczeństwa w trybie gościa urządzenie peryferyjne nie jest obsługiwane</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7837740436429729974">Czas minął</translation>
@@ -859,6 +862,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
+<translation id="8371991222807690464">W trybie gościa urządzenia peryferyjne mogą działać mniej wydajnie.</translation>
 <translation id="8375916635258623388">To urządzenie <ph name="DEVICE_NAME" /> i Twój telefon będą się łączyć automatycznie</translation>
 <translation id="8380784334203145311">Dobranoc,</translation>
 <translation id="8388750414311082622">Ostatniego biurka nie można usunąć.</translation>

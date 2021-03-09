@@ -610,6 +610,7 @@
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6179832488876878285">Вы можете закрепить здесь важные документы. Чтобы начать, откройте приложение "Файлы".</translation>
 <translation id="622484624075952240">Вниз</translation>
+<translation id="6231419273573514727">Производительность периферийных устройств может быть ограничена</translation>
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Заблокировано в горизонтальном положении</translation>
@@ -733,6 +734,7 @@
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
+<translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
 <translation id="7378203170292176219">Выделите область для записи с помощью перетаскивания</translation>
@@ -791,6 +793,7 @@
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796353162336583443">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, запустить Ассистента либо использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="7798302898096527229">Для отмены нажмите SEARCH или SHIFT.</translation>
+<translation id="7807966291075028781">В целях безопасности периферийное устройство не поддерживается в гостевом режиме.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7837740436429729974">Время истекло</translation>
@@ -859,6 +862,7 @@
 <translation id="8345019317483336363">Выбрано окно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>
+<translation id="8371991222807690464">Производительность периферийных устройств в гостевом режиме может быть ограничена.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> и телефон будут подключены друг к другу автоматически</translation>
 <translation id="8380784334203145311">Доброй ночи!</translation>
 <translation id="8388750414311082622">Удалить единственный рабочий стол нельзя.</translation>

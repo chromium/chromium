@@ -611,6 +611,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6179832488876878285">Saate oma olulised failid siia kinnitada. Alustamiseks avage rakendus Failid.</translation>
 <translation id="622484624075952240">Alla</translation>
+<translation id="6231419273573514727">Välisseadme toimivus võib olla piiratud</translation>
 <translation id="6236290670123303279">Halda seadeid</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Lukustatud horisontaalasendisse</translation>
@@ -734,6 +735,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7346909386216857016">Selge, sain aru</translation>
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="735745346212279324">VPN-i ühendus on katkestatud</translation>
+<translation id="7360036564632145207">Välisseadmete jaoks andmetele juurdepääsu kaitse seade muutmine võib jõudlust optimeerida</translation>
 <translation id="7371404428569700291">Akna salvestamine</translation>
 <translation id="7377169924702866686">Suurtähelukk on sisse lülitatud.</translation>
 <translation id="7378203170292176219">Lohistage salvestatava piirkonna valimiseks</translation>
@@ -792,6 +794,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796353162336583443">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilti, kasutada Google'i assistenti, laserkursorit või suurendusklaasi.</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>
+<translation id="7807966291075028781">Turvalisusega seotud põhjustel ei toetata külalisrežiimis välisseadmeid</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ja <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Tugev signaal</translation>
 <translation id="7837740436429729974">Aeg on läbi</translation>
@@ -860,6 +863,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>
+<translation id="8371991222807690464">Välisseadme jõudlus võib külalisrežiimis olla piiratud</translation>
 <translation id="8375916635258623388">See <ph name="DEVICE_NAME" /> ja teie telefon ühendatakse automaatselt</translation>
 <translation id="8380784334203145311">Head ööd!</translation>
 <translation id="8388750414311082622">Viimast töölauda ei saa eemaldada.</translation>

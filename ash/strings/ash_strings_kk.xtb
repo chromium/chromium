@@ -610,6 +610,7 @@
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6179832488876878285">Бұл жерде маңызды файлдарыңызды бекіте аласыз. Бастау үшін Files қолданбасын ашыңыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
+<translation id="6231419273573514727">Перифериялық құрылғының өнімділігі шектеулі болуы мүмкін</translation>
 <translation id="6236290670123303279">Параметрлерді басқару</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Көлденең күйде құлыптаулы</translation>
@@ -733,6 +734,7 @@
 <translation id="7346909386216857016">Жарайды, түсінікті</translation>
 <translation id="7348093485538360975">Экрандық пернетақта</translation>
 <translation id="735745346212279324">VPN ажыратылды</translation>
+<translation id="7360036564632145207">Перифериялық құрылғылар үшін деректердің пайдаланылуын қорғау параметрін өзгертіп, өнімділікті арттыра аласыз.</translation>
 <translation id="7371404428569700291">Терезені жазу</translation>
 <translation id="7377169924702866686">Caps Lock қосулы.</translation>
 <translation id="7378203170292176219">Жазуға керек аймақты таңдау үшін сүйреңіз.</translation>
@@ -791,6 +793,7 @@
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7796353162336583443">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Google көмекшісін, лазер меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="7798302898096527229">Бас тарту үшін Іздеу не Shift пернесін басыңыз.</translation>
+<translation id="7807966291075028781">Қауіпсіздік мақсатында Қонақ режимінде перифериялық құрылғыға қолдау көрсетілмейді.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> және <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Күшті сигнал</translation>
 <translation id="7837740436429729974">Уақыт бітті</translation>
@@ -859,6 +862,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>
+<translation id="8371991222807690464">Қонақ режимінде перифериялық құрылғының өнімділігі шектеулі болуы мүмкін.</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> және телефоныңыз автоматты түрде жалғанады</translation>
 <translation id="8380784334203145311">Қайырлы түн!</translation>
 <translation id="8388750414311082622">Соңғы жұмыс үстелін өшіру мүмкін емес.</translation>

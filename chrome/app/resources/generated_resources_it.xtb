@@ -616,6 +616,7 @@
 <translation id="16620462294541761">Spiacenti, impossibile verificare la password. Riprova.</translation>
 <translation id="166278006618318542">Algoritmo chiave pubblica del soggetto</translation>
 <translation id="166439687370499867">La modifica delle configurazioni di rete condivise non è consentita</translation>
+<translation id="1666232093776384142">Disattiva la protezione dell'accesso ai dati per le periferiche</translation>
 <translation id="1668435968811469751">Registrazione manuale</translation>
 <translation id="1668979692599483141">Ulteriori informazioni sui suggerimenti</translation>
 <translation id="1670399744444387456">Base</translation>
@@ -1798,6 +1799,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2966937470348689686">Gestisci le preferenze Android</translation>
 <translation id="2972581237482394796">&amp;Ripeti</translation>
 <translation id="2973324205039581528">Disattiva l'audio del sito</translation>
+<translation id="2976557544729462544">Alcuni dispositivi richiedono la disattivazione della protezione dell'accesso ai dati per funzionare correttamente o con le prestazioni ottimali.</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
 <translation id="2979520980928493164">Chrome più protetto e produttivo</translation>
 <translation id="2979639724566107830">Apri in un'altra finestra</translation>
@@ -1870,6 +1872,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3051250416341590778">Dimensioni display</translation>
 <translation id="3053013834507634016">Uso della chiave del certificato</translation>
 <translation id="3053273573829329829">Attiva PIN utente</translation>
+<translation id="3054766768827382232">La disattivazione può migliorare le prestazioni delle periferiche, ma può esporre i dati personali all'utilizzo non autorizzato.</translation>
 <translation id="3055590424724986000">Con un fornitore scelto da te</translation>
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3060379269883947824">Attiva Seleziona per ascoltare</translation>
@@ -2671,7 +2674,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3943494825379372497">Vuoi ripristinare app e pagine?</translation>
 <translation id="3943582379552582368">&amp;Indietro</translation>
 <translation id="3943857333388298514">Incolla</translation>
-<translation id="3944266449990965865">Schermo intero</translation>
 <translation id="3948116654032448504">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2747,7 +2749,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4031527940632463547">Sensori bloccati</translation>
 <translation id="4033471457476425443">Aggiungi nuova cartella</translation>
 <translation id="4034824040120875894">Stampante</translation>
-<translation id="4035321506998192527">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, premi la barra spaziatrice.</translation>
 <translation id="4035758313003622889">&amp;Task Manager</translation>
 <translation id="4036778507053569103">La norma scaricata dal server non è valida.</translation>
 <translation id="4037084878352560732">Cavallo</translation>
@@ -2894,7 +2895,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4225397296022057997">Su tutti i siti</translation>
 <translation id="4231095370974836764">Installa app e giochi da Google Play su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
-<translation id="4235200303672858594">Schermo intero</translation>
 <translation id="4235965441080806197">Annulla accesso</translation>
 <translation id="4242145785130247982">Non sono supportati più certificati client</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
@@ -3556,7 +3556,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4998430619171209993">On</translation>
 <translation id="5000922062037820727">Bloccata (opzione consigliata)</translation>
 <translation id="5005498671520578047">Copia password</translation>
-<translation id="5005970596776813007">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS?</translation>
 <translation id="5006218871145547804">ADB app Android su Crostini</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5008936837313706385">Nome attività</translation>
@@ -4057,7 +4056,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH2" />La disattivazione di questa funzione non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Il proprietario può controllare questa funzione da Impostazioni &gt; Avanzate &gt; Invia automaticamente a Google dati di diagnostica e utilizzo.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se hai attivato l'impostazione aggiuntiva Attività web e app, questi dati potrebbero essere salvati nel tuo Account Google. Puoi controllare i tuoi dati, eliminarli e cambiare le impostazioni del tuo account all'indirizzo account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, tieni premuti entrambi i tasti del volume per cinque secondi.</translation>
 <translation id="5585019845078534178">Carte</translation>
 <translation id="5585118885427931890">Impossibile creare la cartella Preferiti.</translation>
 <translation id="558563010977877295">Apri una pagina o un insieme di pagine specifiche</translation>
@@ -4927,6 +4925,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6597017209724497268">Esempi</translation>
 <translation id="6597148444736186483">Per uscire dall'account principale su questo dispositivo, fai clic sull'ora sullo schermo. Fai clic su "Esci" nel menu visualizzato.</translation>
+<translation id="6601395831301182804">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, premi la barra spaziatrice.</translation>
 <translation id="6601612474695404578">Alcuni siti usano cookie di terze parti per caricare le proprie pagine. Se un sito non funziona, puoi provare a consentire i cookie.</translation>
 <translation id="6602937173026466876">Accedi alle stampanti</translation>
 <translation id="6602956230557165253">Utilizza i tasti freccia sinistra e destra per spostarti.</translation>
@@ -5416,6 +5415,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
 <translation id="7154130902455071009">Cambio della pagina iniziale con: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto esistente da fotocamera o file</translation>
+<translation id="7156143134102343902">I display e le periferiche potrebbero riavviarsi a breve. L'operazione potrebbe richiedere alcuni secondi.</translation>
 <translation id="7163202347044721291">Verifica del codice di attivazione in corso…</translation>
 <translation id="7165320105431587207">Impossibile configurare la rete</translation>
 <translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
@@ -5554,6 +5554,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7324297612904500502">Forum per la versione Beta</translation>
 <translation id="7325209047678309347">Carta inceppata</translation>
 <translation id="7326004502692201767">Configura il dispositivo <ph name="DEVICE_TYPE" /> per un bambino</translation>
+<translation id="7326025035243649350">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ha disattivato il debug ADB. Dopo il riavvio del dispositivo <ph name="DEVICE_TYPE" /> non potrai installare app tramite sideload.</translation>
 <translation id="7328867076235380839">Combinazione non valida</translation>
 <translation id="7329154610228416156">Accesso non riuscito perché è stato configurato l'utilizzo di un URL non protetto (<ph name="BLOCKED_URL" />). Contatta l'amministratore.</translation>
@@ -7039,6 +7040,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8986494364107987395">Invia automaticamente a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
 <translation id="8987927404178983737">Mese</translation>
+<translation id="8988879467270412492">Vuoi attivare ChromeVox, lo screen reader integrato per Chrome OS? In questo caso, tieni premuti entrambi i tasti del volume per 5 secondi.</translation>
 <translation id="8989823300731803443">Continua da dove hai interrotto.</translation>
 <translation id="8990209962746788689">Impossibile creare codice QR</translation>
 <translation id="8991520179165052608">Il sito può usare il microfono</translation>

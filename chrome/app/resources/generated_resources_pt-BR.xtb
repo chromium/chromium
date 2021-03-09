@@ -617,6 +617,7 @@
 <translation id="16620462294541761">Não foi possível confirmar sua senha. Tente novamente.</translation>
 <translation id="166278006618318542">Algoritmo da chave pública do requerente</translation>
 <translation id="166439687370499867">A alteração das configurações de rede compartilhada não é permitida</translation>
+<translation id="1666232093776384142">Desativar proteção de acesso a dados para periféricos</translation>
 <translation id="1668435968811469751">Inscrever-se manualmente</translation>
 <translation id="1668979692599483141">Saiba mais sobre sugestões</translation>
 <translation id="1670399744444387456">Básico</translation>
@@ -1800,6 +1801,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2966937470348689686">Gerenciar preferências do Android</translation>
 <translation id="2972581237482394796">&amp;Refazer</translation>
 <translation id="2973324205039581528">Desativar som do site</translation>
+<translation id="2976557544729462544">Talvez seja necessário desativar a proteção de acesso a dados para que alguns dispositivos funcionem corretamente ou com todo o desempenho.</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="2979520980928493164">Um Chrome mais saudável e feliz</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
@@ -1872,6 +1874,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3051250416341590778">Tamanho da tela</translation>
 <translation id="3053013834507634016">Uso da chave de certificado</translation>
 <translation id="3053273573829329829">Ativar o PIN do usuário</translation>
+<translation id="3054766768827382232">A desativação pode melhorar o desempenho dos periféricos, mas também pode expor seus dados pessoais ao uso não autorizado.</translation>
 <translation id="3055590424724986000">Com o provedor da sua escolha</translation>
 <translation id="3058498974290601450">Ative a sincronização quando quiser nas configurações</translation>
 <translation id="3060379269883947824">Ativar Selecionar para ouvir</translation>
@@ -2674,7 +2677,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3943494825379372497">Restaurar apps e páginas?</translation>
 <translation id="3943582379552582368">&amp;Voltar</translation>
 <translation id="3943857333388298514">Colar</translation>
-<translation id="3944266449990965865">Tela cheia</translation>
 <translation id="3948116654032448504">&amp;Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar arquivos nas seguintes pastas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2750,7 +2752,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
 <translation id="4034824040120875894">Impressora</translation>
-<translation id="4035321506998192527">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS? Se for o caso, pressione a barra de espaço.</translation>
 <translation id="4035758313003622889">&amp;Gerenciador de tarefas</translation>
 <translation id="4036778507053569103">A política transferida do servidor por meio de download é inválida.</translation>
 <translation id="4037084878352560732">Cavalo</translation>
@@ -2897,7 +2898,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4225397296022057997">Em todos os sites</translation>
 <translation id="4231095370974836764">Instale apps e jogos do Google Play no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar o Kerberos</translation>
-<translation id="4235200303672858594">Tela cheia</translation>
 <translation id="4235965441080806197">Cancelar login</translation>
 <translation id="4242145785130247982">Múltiplos certificados de clientes não são aceitos.</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
@@ -3559,7 +3559,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4998430619171209993">Ativado</translation>
 <translation id="5000922062037820727">Bloqueada (recomendado)</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
-<translation id="5005970596776813007">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS?</translation>
 <translation id="5006218871145547804">ADB de apps Android no Crostini</translation>
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5008936837313706385">Nome da atividade</translation>
@@ -4060,7 +4059,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     <ph name="BEGIN_PARAGRAPH2" />A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />O proprietário pode controlar esse recurso em "Configurações" &gt; "Avançado" &gt; "Enviar automaticamente dados de uso e diagnóstico ao Google".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se a configuração "Atividade na Web e de apps" adicional estiver ativada, esses dados poderão ser salvos na sua Conta do Google. Você pode ver seus dados, excluí-los e alterar as configurações da sua conta em account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS? Se for o caso, aperte as duas teclas de volume e as mantenha pressionadas por cinco segundos</translation>
 <translation id="5585019845078534178">Cartões</translation>
 <translation id="5585118885427931890">Não foi possível criar uma pasta de favoritos.</translation>
 <translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas.</translation>
@@ -4931,6 +4929,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6596816719288285829">Endereço IP</translation>
 <translation id="6597017209724497268">Exemplos</translation>
 <translation id="6597148444736186483">Para sair da conta principal deste dispositivo, clique no horário exibido na sua tela. No menu que aparece, clique em "Sair".</translation>
+<translation id="6601395831301182804">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS? Se for o caso, pressione a barra de espaço.</translation>
 <translation id="6601612474695404578">Alguns sites usam cookies de terceiros para carregar páginas. Se um site não estiver funcionando, tente permitir o uso de cookies.</translation>
 <translation id="6602937173026466876">Acessar suas impressoras</translation>
 <translation id="6602956230557165253">Use as setas para esquerda e direita para navegar.</translation>
@@ -5420,6 +5419,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7152478047064750137">Esta extensão não requer permissões especiais</translation>
 <translation id="7154130902455071009">Alterar sua página inicial para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente na câmera ou em arquivo</translation>
+<translation id="7156143134102343902">Suas telas e seus periféricos poderão ser brevemente redefinidos. Essa ação pode demorar alguns segundos.</translation>
 <translation id="7163202347044721291">Verificando código de ativação…</translation>
 <translation id="7165320105431587207">Falha ao configurar rede</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" pode ler imagens, vídeos e arquivos de som nos locais marcados.</translation>
@@ -5558,6 +5558,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7324297612904500502">Fórum do Beta</translation>
 <translation id="7325209047678309347">Atolamento de papel</translation>
 <translation id="7326004502692201767">Configurar este <ph name="DEVICE_TYPE" /> para uma criança</translation>
+<translation id="7326025035243649350">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> desativou a depuração do adb. Não será possível transferir apps por sideload depois de reiniciar o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7328867076235380839">Combinação inválida</translation>
 <translation id="7329154610228416156">O login falhou porque foi configurado para usar um URL não seguro (<ph name="BLOCKED_URL" />). Entre em contato com o administrador.</translation>
@@ -7045,6 +7046,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
 <translation id="8987927404178983737">Mês</translation>
+<translation id="8988879467270412492">Você quer ativar o ChromeVox, o leitor de tela integrado do Chrome OS? Se for o caso, aperte as duas teclas de volume e as mantenha pressionadas por cinco segundos.</translation>
 <translation id="8989823300731803443">Continuar de onde parou.</translation>
 <translation id="8990209962746788689">Não é possível criar o código QR</translation>
 <translation id="8991520179165052608">O site pode usar seu microfone</translation>

@@ -610,6 +610,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
 <translation id="622484624075952240">Down</translation>
+<translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>
 <translation id="6236290670123303279">Pamahalaan ang Mga Setting</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Naka-lock sa horizontal</translation>
@@ -733,6 +734,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7346909386216857016">Ok, nakuha ko</translation>
 <translation id="7348093485538360975">Nasa screen na keyboard</translation>
 <translation id="735745346212279324">Nakadiskonekta ang VPN</translation>
+<translation id="7360036564632145207">Kapag binago mo ang iyong setting ng proteksyon sa pag-access ng data para sa mga peripheral, mao-optimize ang performance</translation>
 <translation id="7371404428569700291">I-record ang window</translation>
 <translation id="7377169924702866686">Naka-on ang Caps Lock.</translation>
 <translation id="7378203170292176219">Mag-drag para pumili ng bahaging ire-record</translation>
@@ -791,6 +793,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7780159184141939021">I-rotate ang Screen</translation>
 <translation id="7796353162336583443">I-tap ang button ng stylus sa shelf upang magsulat ng tala, mag-screenshot, gamitin ang Google Assistant, laser pointer, o magnifying glass.</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
+<translation id="7807966291075028781">Hindi sinusuportahan ang peripheral sa Guest mode para sa mga panseguridad na dahilan</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7837740436429729974">Oras na</translation>
@@ -859,6 +862,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8345019317483336363">Napili ang window ng <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>
+<translation id="8371991222807690464">Posibleng maging limitado ang performance ng peripheral sa Guest mode</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
 <translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>

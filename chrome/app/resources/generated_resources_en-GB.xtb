@@ -616,6 +616,7 @@
 <translation id="16620462294541761">Sorry, your password could not be verified. Please try again.</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="166439687370499867">Changing shared network configurations is not allowed</translation>
+<translation id="1666232093776384142">Disable data access protection for peripherals</translation>
 <translation id="1668435968811469751">Enrol manually</translation>
 <translation id="1668979692599483141">Learn about suggestions</translation>
 <translation id="1670399744444387456">Basic</translation>
@@ -1799,6 +1800,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2966937470348689686">Manage Android preferences</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2973324205039581528">Mute site</translation>
+<translation id="2976557544729462544">Some devices require you to disable data access protection to work properly or at full performance.</translation>
 <translation id="2977480621796371840">Remove from group</translation>
 <translation id="2979520980928493164">A healthier, happier Chrome</translation>
 <translation id="2979639724566107830">Open in new window</translation>
@@ -1871,6 +1873,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3051250416341590778">Display size</translation>
 <translation id="3053013834507634016">Certificate Key Usage</translation>
 <translation id="3053273573829329829">Enable user pin</translation>
+<translation id="3054766768827382232">Disabling can make your peripherals perform better, but may expose your personal data by unauthorised usage.</translation>
 <translation id="3055590424724986000">With a provider of your choice</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3060379269883947824">Enable Select to Speak</translation>
@@ -2672,7 +2675,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3943494825379372497">Restore apps and pages?</translation>
 <translation id="3943582379552582368">&amp;Back</translation>
 <translation id="3943857333388298514">Paste</translation>
-<translation id="3944266449990965865">Entire Screen</translation>
 <translation id="3948116654032448504">&amp;Search <ph name="SEARCH_ENGINE" /> for Image</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> can edit files in the following folders</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2748,7 +2750,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4031527940632463547">Sensors blocked</translation>
 <translation id="4033471457476425443">Add new folder</translation>
 <translation id="4034824040120875894">Printer</translation>
-<translation id="4035321506998192527">Do you want to activate ChromeVox, the built-in screenreader for Chrome OS? If so, press the space bar.</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4036778507053569103">The policy downloaded from the server is invalid.</translation>
 <translation id="4037084878352560732">Horse</translation>
@@ -2895,7 +2896,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4225397296022057997">On all sites</translation>
 <translation id="4231095370974836764">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configure Kerberos</translation>
-<translation id="4235200303672858594">Entire screen</translation>
 <translation id="4235965441080806197">Cancel sign in</translation>
 <translation id="4242145785130247982">Multiple client certificates are not supported</translation>
 <translation id="4242533952199664413">Open settings</translation>
@@ -3557,7 +3557,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4998430619171209993">On</translation>
 <translation id="5000922062037820727">Blocked (recommended)</translation>
 <translation id="5005498671520578047">Copy password</translation>
-<translation id="5005970596776813007">Do you want to activate ChromeVox, the built-in screenreader for Chrome OS?</translation>
 <translation id="5006218871145547804">Crostini Android app ADB</translation>
 <translation id="5007392906805964215">Review</translation>
 <translation id="5008936837313706385">Activity Name</translation>
@@ -4058,7 +4057,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BEGIN_PARAGRAPH2" />Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />If your additional Web &amp; app activity setting is turned on, this data may be saved to your Google Account. You can see your data, delete it and change your account settings at account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">Do you want to activate ChromeVox, the built-in screenreader for Chrome OS? If so, press and hold both volume keys for five seconds.</translation>
 <translation id="5585019845078534178">Cards</translation>
 <translation id="5585118885427931890">Could not create bookmark folder.</translation>
 <translation id="558563010977877295">Open a specific page or set of pages</translation>
@@ -4928,6 +4926,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6597017209724497268">Samples</translation>
 <translation id="6597148444736186483">To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click 'Sign out'.</translation>
+<translation id="6601395831301182804">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press the space bar.</translation>
 <translation id="6601612474695404578">Some sites use third-party cookies to load their pages. If a site isn't working, you can try allowing cookies.</translation>
 <translation id="6602937173026466876">Access your printers</translation>
 <translation id="6602956230557165253">Use left and right arrow keys to navigate.</translation>
@@ -5417,6 +5416,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
+<translation id="7156143134102343902">Your displays and peripherals may reset briefly. This may take a few seconds to take effect.</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
 <translation id="7165320105431587207">Failed to configure network</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" can read images, video and sound files in the ticked locations.</translation>
@@ -5555,6 +5555,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7324297612904500502">Beta forum</translation>
 <translation id="7325209047678309347">Paper is jammed</translation>
 <translation id="7326004502692201767">Set up this <ph name="DEVICE_TYPE" /> for a child</translation>
+<translation id="7326025035243649350">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> has disabled ADB debugging. Once you restart your <ph name="DEVICE_TYPE" />, you won't be able to sideload apps.</translation>
 <translation id="7328867076235380839">Invalid combination</translation>
 <translation id="7329154610228416156">Sign-in failed because it was configured to use a non-secure URL (<ph name="BLOCKED_URL" />). Please contact your administrator.</translation>
@@ -7041,6 +7042,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8986494364107987395">Automatically send usage statistics and crash reports to Google</translation>
 <translation id="8987927404178983737">Month</translation>
+<translation id="8988879467270412492">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS? If so, press and hold both volume keys for five seconds.</translation>
 <translation id="8989823300731803443">Continue where you left off.</translation>
 <translation id="8990209962746788689">Can't create QR code</translation>
 <translation id="8991520179165052608">Site can use your microphone</translation>

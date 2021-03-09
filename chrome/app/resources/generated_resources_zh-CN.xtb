@@ -613,6 +613,7 @@
 <translation id="16620462294541761">抱歉，无法验证您的密码，请重试。</translation>
 <translation id="166278006618318542">证书持有者公共密钥算法</translation>
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
+<translation id="1666232093776384142">停用“外围设备数据访问保护”设置</translation>
 <translation id="1668435968811469751">手动注册</translation>
 <translation id="1668979692599483141">了解建议</translation>
 <translation id="1670399744444387456">基本</translation>
@@ -1793,6 +1794,7 @@
 <translation id="2966937470348689686">管理 Android 偏好设置</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2973324205039581528">将单个网站静音</translation>
+<translation id="2976557544729462544">某些设备需要停用数据访问保护设置才能正常运行或马力全开。</translation>
 <translation id="2977480621796371840">从组中移除</translation>
 <translation id="2979520980928493164">打造更安全、更愉悦的 Chrome 体验</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
@@ -1865,6 +1867,7 @@
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
 <translation id="3053013834507634016">证书密钥用法</translation>
 <translation id="3053273573829329829">启用用户 PIN 码</translation>
+<translation id="3054766768827382232">停用此设置可使您的外围设备更好地发挥其性能，但可能会导致您的个人数据因被擅自使用而泄露。</translation>
 <translation id="3055590424724986000">使用您选择的提供商</translation>
 <translation id="3058498974290601450">您随时可在“设置”中开启同步功能</translation>
 <translation id="3060379269883947824">启用“随选朗读”</translation>
@@ -2665,7 +2668,6 @@
 <translation id="3943494825379372497">恢复应用和网页？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
-<translation id="3944266449990965865">全屏</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2741,7 +2743,6 @@
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
 <translation id="4034824040120875894">打印机</translation>
-<translation id="4035321506998192527">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如果是，请按空格键。</translation>
 <translation id="4035758313003622889">任务管理器(&amp;T)</translation>
 <translation id="4036778507053569103">从服务器下载的政策无效。</translation>
 <translation id="4037084878352560732">马</translation>
@@ -2888,7 +2889,6 @@
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
-<translation id="4235200303672858594">整个屏幕</translation>
 <translation id="4235965441080806197">取消登录</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -3550,7 +3550,6 @@
 <translation id="4998430619171209993">已开启</translation>
 <translation id="5000922062037820727">已阻止（推荐）</translation>
 <translation id="5005498671520578047">复制密码</translation>
-<translation id="5005970596776813007">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5008936837313706385">活动名称</translation>
@@ -4050,7 +4049,6 @@
     <ph name="BEGIN_PARAGRAPH2" />关闭这项功能并不会影响您的设备发送基本服务（例如系统更新和安全防护）所需的信息。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />如果您已开启了“其他网络与应用活动记录”设置，这些数据可能会保存在您的 Google 帐号中。您可以前往 account.google.com 查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5584936575630273819">您想为 Chrome 操作系统启用 ChromeVox（内置屏幕阅读器）吗？如果是，请同时按住两个音量键 5 秒钟。</translation>
 <translation id="5585019845078534178">卡片</translation>
 <translation id="5585118885427931890">无法创建书签文件夹。</translation>
 <translation id="558563010977877295">打开特定网页或一组网页</translation>
@@ -4920,6 +4918,7 @@
 <translation id="6596816719288285829">IP 地址</translation>
 <translation id="6597017209724497268">个样本的平均值</translation>
 <translation id="6597148444736186483">要在此设备上退出主要帐号，请点击屏幕上的时间。在随即显示的菜单中，点击“退出”。</translation>
+<translation id="6601395831301182804">您是想启用 ChromeVox（Chrome 操作系统的内置屏幕阅读器）吗？如果是，请按空格键。</translation>
 <translation id="6601612474695404578">某些网站会使用第三方 Cookie 加载网页。如果某个网站无法正常运行，您可以尝试允许使用 Cookie。</translation>
 <translation id="6602937173026466876">访问您的打印机</translation>
 <translation id="6602956230557165253">使用左右箭头键进行导航。</translation>
@@ -5408,6 +5407,7 @@
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">相机或文件中的现有照片</translation>
+<translation id="7156143134102343902">您的显示屏和外围设备可能很快就会重置。整个重置流程可能需要几秒钟的时间才能完成。</translation>
 <translation id="7163202347044721291">正在验证激活码…</translation>
 <translation id="7165320105431587207">无法配置网络</translation>
 <translation id="716640248772308851">“<ph name="EXTENSION" />”对于选中位置中的图片、视频及声音文件具有读取权限。</translation>
@@ -5546,6 +5546,7 @@
 <translation id="7324297612904500502">Chrome（测试版）论坛</translation>
 <translation id="7325209047678309347">纸张卡住了</translation>
 <translation id="7326004502692201767">为孩子设置此 <ph name="DEVICE_TYPE" /></translation>
+<translation id="7326025035243649350">您是想启用 ChromeVox（Chrome 操作系统的内置屏幕阅读器）吗？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 调试。重启 <ph name="DEVICE_TYPE" /> 后，您将无法旁加载应用。</translation>
 <translation id="7328867076235380839">无效的组合</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
@@ -7030,6 +7031,7 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8986494364107987395">将使用情况统计信息和崩溃报告自动发送给 Google</translation>
 <translation id="8987927404178983737">月</translation>
+<translation id="8988879467270412492">您是想启用 ChromeVox（Chrome 操作系统的内置屏幕阅读器）吗？如果是，请同时按住两个音量键 5 秒钟。</translation>
 <translation id="8989823300731803443">从上次停下的地方继续。</translation>
 <translation id="8990209962746788689">无法创建二维码</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>

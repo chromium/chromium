@@ -610,6 +610,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6179832488876878285">Poți să fixezi fișierele importante aici. Deschide aplicația Fișiere pentru a începe.</translation>
 <translation id="622484624075952240">Jos</translation>
+<translation id="6231419273573514727">Performanța dispozitivelor periferice poate fi limitată</translation>
 <translation id="6236290670123303279">Gestionează setările</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Blocată pe orizontală</translation>
@@ -733,6 +734,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7346909386216857016">OK, am înțeles</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
+<translation id="7360036564632145207">Modificarea setării pentru protecția accesului la date pentru dispozitive periferice poate optimiza performanța</translation>
 <translation id="7371404428569700291">Înregistrează fereastra</translation>
 <translation id="7377169924702866686">Tasta Caps Lock este activată.</translation>
 <translation id="7378203170292176219">Trage pentru a selecta o zonă de înregistrat</translation>
@@ -791,6 +793,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7796353162336583443">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești Asistentul Google, indicatorul laser sau lupa.</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
+<translation id="7807966291075028781">Dispozitivul periferic nu este acceptat în modul pentru invitați din motive de securitate</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Semnal puternic</translation>
 <translation id="7837740436429729974">Timpul a expirat!</translation>
@@ -859,6 +862,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> fereastră selectată</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8371779926711439835">Înainte cu o literă</translation>
+<translation id="8371991222807690464">Performanța dispozitivelor periferice poate fi limitată în modul pentru invitați</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> și telefonul se vor conecta automat</translation>
 <translation id="8380784334203145311">Bună seara!</translation>
 <translation id="8388750414311082622">Ultimul desktop nu poate fi eliminat.</translation>
