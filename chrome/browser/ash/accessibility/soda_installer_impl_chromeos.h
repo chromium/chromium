@@ -35,6 +35,12 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaInstalled() const override;
+  // Here "uninstall" is used in the DLC sense of the term: Uninstallation will
+  // disable a DLC but not immediately remove it from disk.
+  // Once a refcount to the DLC reaches 0 (meaning all profiles which had it
+  // installed have called to uninstall it), the DLC will remain in cache; if it
+  // is then not installed within a (DLC-service-defined) window of time, the
+  // DLC is automatically purged from disk.
   void UninstallSoda(PrefService* global_prefs) override;
 
  private:
