@@ -1639,11 +1639,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
       // do not agree, the check might be slightly weaker (as the least common
       // denominator), but the differences must never violate the ProcessLock.
       if (security_state->browsing_instance_ids().empty()) {
-        // TODO(https://crbug.com/1135539): We should return false if no
-        // BrowsingInstances are registered in the process. Allow this for now,
-        // to maintain legacy behavior, until we rule out all the ways it can
-        // happen.
-        return true;
+        failure_reason = "No BrowsingInstanceIDs.";
+        // This will fall through to the call to
+        // LogCanAccessDataForOriginCrashKeys below, then return false.
       }
       for (auto browsing_instance_id :
            security_state->browsing_instance_ids()) {
