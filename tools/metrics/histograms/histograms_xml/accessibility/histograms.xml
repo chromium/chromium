@@ -695,7 +695,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubbleVisible"
-    units="ms" expires_after="2021-07-04">
+    units="ms" expires_after="2021-09-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

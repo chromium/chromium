@@ -522,7 +522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -564,7 +564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingInputs.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1002,7 +1002,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -1213,7 +1213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -2627,7 +2627,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
-    units="microseconds" expires_after="2021-07-04">
+    units="microseconds" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->

@@ -634,7 +634,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeMemoryKB" units="KB"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -883,7 +883,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessageLatency" units="ms"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>mastiz@chromium.org</owner>
   <summary>
     Time taken for a client-initiated request to be sent over the network and
@@ -918,7 +918,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.PostedGetUpdatesOrigin" enum="SyncGetUpdatesOrigin"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -1201,7 +1201,7 @@ can be compared for the same population). -->
 </histogram>
 
 <histogram name="Sync.URLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-07-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-09-05">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

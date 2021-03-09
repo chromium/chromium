@@ -1393,7 +1393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded" enum="Boolean"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>

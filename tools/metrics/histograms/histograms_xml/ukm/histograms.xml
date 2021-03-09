@@ -92,7 +92,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Entries.Recorded.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>yrsun@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>

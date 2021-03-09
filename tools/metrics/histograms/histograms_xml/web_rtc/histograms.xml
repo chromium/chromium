@@ -721,7 +721,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Encoder.CodecType" enum="WebRtcAudioCodecs"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>aleloi@chromium.org</owner>
   <summary>
     Histogram of audio codec usage. Every sample corresponds to 5 seconds of
@@ -799,7 +799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.TargetBitrateInKbps" units="kbps"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The target bitrate in kbps that the audio codec should try to produce on
@@ -855,7 +855,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialBandwidthEstimate" units="kbps"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>holmer@chromium.org</owner>
   <summary>The bandwidth estimate 2 seconds into a WebRTC call.</summary>
 </histogram>
@@ -1658,7 +1658,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.SentVideoTrackDuration" units="ms"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of video tracks sent over a PeerConnection. The stopwatch starts

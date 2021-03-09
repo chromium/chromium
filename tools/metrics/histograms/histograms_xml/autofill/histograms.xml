@@ -580,7 +580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.ByFieldType"
     enum="AutofilledFieldUserEditingStatusByFieldType"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -1025,7 +1025,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FillingCorrectness"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2021-07-01">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2021-09-05">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1036,7 +1036,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Autofill.KeyMetrics.FillingReadiness"
-    enum="BooleanAutofillFillingReadiness" expires_after="2021-07-01">
+    enum="BooleanAutofillFillingReadiness" expires_after="2021-09-05">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>

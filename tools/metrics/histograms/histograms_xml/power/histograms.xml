@@ -460,7 +460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds" units="uAh"
-    expires_after="2021-07-03">
+    expires_after="2021-09-05">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>

@@ -284,7 +284,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Cryptohome.LECredential"
-    enum="CryptohomeLECredError" expires_after="2021-07-04">
+    enum="CryptohomeLECredError" expires_after="2021-09-05">
 <!-- Name completed by histogram_suffixes name="LECredentialOps" -->
 
   <owner>pmalani@chromium.org</owner>

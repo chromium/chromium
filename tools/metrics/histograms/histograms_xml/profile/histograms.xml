@@ -435,7 +435,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NumberOfProfilesAtProfileSwitch" units="profiles"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

@@ -147,7 +147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Capture.FramesProvided" units="frames"
-    expires_after="2021-07-04">
+    expires_after="2021-09-05">
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <summary>
@@ -399,7 +399,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
-    expires_after="2021-07-01">
+    expires_after="2021-09-05">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
@@ -3921,7 +3921,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.VideoCapture.FrameDrop"
-    enum="VideoCaptureFrameDropReason" expires_after="2021-07-04">
+    enum="VideoCaptureFrameDropReason" expires_after="2021-09-05">
   <owner>mcasas@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
