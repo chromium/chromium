@@ -12,7 +12,7 @@ D-Bus Mojo Connection Service lives in [//chrome/browser/chromeos/dbus/mojo_conn
 Follow the example of CrOS Sensors' [changelist](https://chromium-review.googlesource.com/c/chromium/src/+/2352298).
 
 ### Steps to Add a usage for a CrOS process with a new D-Bus method:
-1. Add a method name & a well-known token in both CrOS platform and Chrome.
+1. Add a method name in both CrOS platform and Chrome.
    (Recommend: `platform2/system_api`)
 2. Add the busconfig policy in [MojoConnectionService.conf].
 3. Upon a D-Bus request coming from the CrOS service, pass one endpoint of the
@@ -28,8 +28,8 @@ to generate the pipe.
 ### Steps to Add a usage for a CrOS process with an existing D-Bus method:
 1. Add the busconfig policy in [MojoConnectionService.conf].
 
-And that’s it. The method name, token and the logic in the service provider can
-be reused.
+And that’s it. The method name and the logic in the service provider can be
+reused.
 
 ## Security
 
