@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Tests that creating a Video MediaStreamTrackProcessor works as expected
-PASS Tests that construction of a MediaStreamTrackProcessor with an invalid track throws.
-FAIL Tests that only the maxBufferSize most recent frames are stored assert_greater_than_equal: Received buffered frame which should have been dropped expected a number greater than or equal to 7 but got 0
-Harness: the test ran to completion.
-
