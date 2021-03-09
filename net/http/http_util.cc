@@ -523,6 +523,10 @@ bool HttpUtil::IsToken(base::StringPiece string) {
   return true;
 }
 
+bool HttpUtil::IsControlChar(char c) {
+  return (c >= 0x00 && c <= 0x1F) || c == 0x7F;
+}
+
 // See RFC 5987 Sec 3.2.1 for the definition of |parmname|.
 bool HttpUtil::IsParmName(base::StringPiece str) {
   if (str.empty())

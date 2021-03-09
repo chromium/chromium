@@ -122,12 +122,6 @@ bool IsValidCookieValue(const std::string& value) {
   return true;
 }
 
-// RFC 5234 states that control characters are considered to be:
-//         CTL            =  %x00-1F / %x7F
-bool IsControlCharacter(unsigned char c) {
-  return c <= 0x1F || c == 0x7F;
-}
-
 }  // namespace
 
 namespace net {
@@ -352,7 +346,7 @@ bool ParsedCookie::IsValidCookieAttributeValue(const std::string& value) {
   // The greatest common denominator of cookie attribute values is
   // <any CHAR except CTLs or ";"> according to RFC 6265.
   for (std::string::const_iterator i = value.begin(); i != value.end(); ++i) {
-    if (IsControlCharacter(*i) || *i == ';')
+    if (HttpUtil::IsControlChar(*i) || *i == ';')
       return false;
   }
   return true;

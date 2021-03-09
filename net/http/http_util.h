@@ -128,6 +128,10 @@ class NET_EXPORT HttpUtil {
   // Whether the string is a valid |token| as defined in RFC 7230 Sec 3.2.6.
   static bool IsToken(base::StringPiece str);
 
+  // Whether the character is a control character (CTL) as defined in RFC 5234
+  // Appendix B.1.
+  static bool IsControlChar(char c);
+
   // Whether the string is a valid |parmname| as defined in RFC 5987 Sec 3.2.1.
   static bool IsParmName(base::StringPiece str);
 

@@ -2681,6 +2681,7 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
   const Time now1(Time::Now());
   const Time now2(Time::Now() + TimeDelta::FromSeconds(1));
   const Time now3(Time::Now() + TimeDelta::FromSeconds(2));
+  const Time now4(Time::Now() + TimeDelta::FromSeconds(3));
   const Time later(now1 + TimeDelta::FromDays(1));
   const GURL url("http://host/path");
   const std::string domain("host");
@@ -2692,18 +2693,29 @@ TEST_F(CookieMonsterTest, ControlCharacterPurge) {
 
   AddCookieToList(url, "foo=bar; path=" + path, now1, &initial_cookies);
 
-  // We have to manually build this cookie because it contains a control
-  // character, and our cookie line parser rejects control characters.
+  // We have to manually build these cookies because they contain control
+  // characters, and our cookie line parser rejects control characters.
   std::unique_ptr<CanonicalCookie> cc =
       CanonicalCookie::CreateUnsafeCookieForTesting(
           "baz",
           "\x05"
           "boo",
-          "." + domain, path, now2, later, base::Time(), false, false,
-          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, false);
+          "." + domain, path, now2, later, base::Time(), true /* secure */,
+          false /* httponly */, CookieSameSite::NO_RESTRICTION,
+          COOKIE_PRIORITY_DEFAULT, false /* sameparty */);
   initial_cookies.push_back(std::move(cc));
 
-  AddCookieToList(url, "hello=world; path=" + path, now3, &initial_cookies);
+  std::unique_ptr<CanonicalCookie> cc2 =
+      CanonicalCookie::CreateUnsafeCookieForTesting(
+          "baz",
+          "\x7F"
+          "boo",
+          "." + domain, path, now3, later, base::Time(), true /* secure */,
+          false /* httponly */, CookieSameSite::NO_RESTRICTION,
+          COOKIE_PRIORITY_DEFAULT, false /* sameparty */);
+  initial_cookies.push_back(std::move(cc2));
+
+  AddCookieToList(url, "hello=world; path=" + path, now4, &initial_cookies);
 
   // Inject our initial cookies into the mock PersistentCookieStore.
   store->SetLoadExpectation(true, std::move(initial_cookies));

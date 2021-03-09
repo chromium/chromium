@@ -75,6 +75,7 @@
 #include "net/cookies/cookie_monster_netlog_params.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_values.h"
 #include "url/origin.h"
@@ -164,7 +165,7 @@ const int CookieMonster::kSafeFromGlobalPurgeDays = 30;
 namespace {
 
 bool ContainsControlCharacter(const std::string& s) {
-  return base::ranges::any_of(s, [](char c) { return c >= 0 && c <= 31; });
+  return base::ranges::any_of(s, &HttpUtil::IsControlChar);
 }
 
 typedef std::vector<CanonicalCookie*> CanonicalCookieVector;
