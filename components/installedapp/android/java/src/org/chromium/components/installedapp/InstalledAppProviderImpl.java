@@ -62,6 +62,9 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     @VisibleForTesting
     public static final String INSTANT_APP_HOLDBACK_ID_STRING = "instantapp:holdback";
 
+    // The delay, in ms, of the most recent invocation of FilterInstalledAppsResponse.
+    int mLastDelayForTesting;
+
     // The maximum number of related apps declared in the Web Manifest taken into account when
     // determining whether the related app is installed and mutually related.
     @VisibleForTesting
@@ -91,6 +94,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     private final RenderFrameHost mRenderFrameHost;
     // May be overridden in tests.
     private PackageManagerDelegate mPackageManagerDelegate;
+    private boolean mIsInTest;
     @Nullable
     private final InstantAppProvider mInstantAppProvider;
 
@@ -103,6 +107,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     }
 
     void setPackageManagerDelegateForTest(PackageManagerDelegate packageManagerDelegate) {
+        mIsInTest = true;
         mPackageManagerDelegate = packageManagerDelegate;
     }
 
@@ -198,8 +203,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
      * @param callback The mojo callback for sending the installed apps.
      */
     @UiThread
-    private void onFilteredInstalledApps(ArrayList<RelatedApplication> installedApps,
-            Integer delayMs, FilterInstalledAppsResponse callback) {
+    private void onFilteredInstalledApps(ArrayList<RelatedApplication> installedApps, int delayMs,
+            FilterInstalledAppsResponse callback) {
         RelatedApplication[] installedAppsArray;
 
         if (mRenderFrameHost.isIncognito()) {
@@ -212,7 +217,9 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             installedApps.toArray(installedAppsArray);
         }
 
-        delayThenRun(() -> callback.call(installedAppsArray), delayMs);
+        mLastDelayForTesting = delayMs;
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                () -> callback.call(installedAppsArray), mIsInTest ? 0 : delayMs);
     }
 
     @WorkerThread
@@ -224,12 +231,12 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                 && !mInstantAppProvider.isInstantAppAvailable(frameUrl.getSpec(),
                         INSTANT_APP_HOLDBACK_ID_STRING.equals(app.id),
                         true /* includeUserPrefersBrowser */)) {
-            delayThenRun(() -> resultHolder.onResult(null, taskIdx, delayMs), 0);
+            postResultOnUiThread(resultHolder, null, taskIdx, delayMs);
             return;
         }
 
         setVersionInfo(app);
-        delayThenRun(() -> resultHolder.onResult(app, taskIdx, delayMs), 0);
+        postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
     }
 
     @WorkerThread
@@ -238,12 +245,12 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         int delayMs = calculateDelayForPackageMs(app.id);
 
         if (!isAppInstalledAndAssociatedWithOrigin(app.id, frameUrl, mPackageManagerDelegate)) {
-            delayThenRun(() -> resultHolder.onResult(null, taskIdx, delayMs), 0);
+            postResultOnUiThread(resultHolder, null, taskIdx, delayMs);
             return;
         }
 
         setVersionInfo(app);
-        delayThenRun(() -> resultHolder.onResult(app, taskIdx, delayMs), 0);
+        postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
     }
 
     @WorkerThread
@@ -252,13 +259,13 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         int delayMs = calculateDelayForPackageMs(app.url);
 
         if (!isWebApkInstalled(app.url)) {
-            delayThenRun(() -> resultHolder.onResult(null, taskIdx, delayMs), 0);
+            postResultOnUiThread(resultHolder, null, taskIdx, delayMs);
             return;
         }
 
         // TODO(crbug.com/1043970): Should we expose the package name and the
         // version?
-        delayThenRun(() -> resultHolder.onResult(app, taskIdx, delayMs), 0);
+        postResultOnUiThread(resultHolder, app, taskIdx, delayMs);
     }
 
     @UiThread
@@ -435,9 +442,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         } catch (Resources.NotFoundException e) {
             // This should never happen, but it could if there was a broken APK, so handle it
             // gracefully without crashing.
-            Log.w(TAG,
-                    "Android package " + packageName + " missing asset statements resource (0x"
-                            + Integer.toHexString(identifier) + ").");
+            Log.w(TAG, "Android package %s missing asset statements resource (0x%s).", packageName,
+                    Integer.toHexString(identifier));
             return new JSONArray();
         }
 
@@ -446,9 +452,8 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         } catch (JSONException e) {
             // If the JSON is invalid or not an array, assume it is empty.
             Log.w(TAG,
-                    "Android package " + packageName
-                            + " has JSON syntax error in asset statements resource (0x"
-                            + Integer.toHexString(identifier) + ").");
+                    "Android package %s has JSON syntax error in asset statements resource (0x%s).",
+                    packageName, Integer.toHexString(identifier));
             return new JSONArray();
         }
     }
@@ -507,17 +512,10 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                 && assetUrl.getPort().equals(frameUrl.getPort());
     }
 
-    /**
-     * Runs a Runnable task after a given delay.
-     *
-     * Protected and non-static for testing.
-     *
-     * @param r The Runnable that will be executed.
-     * @param delayMillis The delay (in ms) until the Runnable will be executed.
-     * @return True if the Runnable was successfully placed into the message queue.
-     */
-    protected void delayThenRun(Runnable r, long delayMillis) {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, r, delayMillis);
+    private static void postResultOnUiThread(
+            ResultHolder resultHolder, RelatedApplication app, int taskIdx, int delayMs) {
+        PostTask.postTask(
+                UiThreadTaskTraits.DEFAULT, () -> resultHolder.onResult(app, taskIdx, delayMs));
     }
 
     @NativeMethods

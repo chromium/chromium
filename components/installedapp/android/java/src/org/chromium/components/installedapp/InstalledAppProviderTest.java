@@ -138,8 +138,6 @@ public class InstalledAppProviderTest {
     }
 
     private class InstalledAppProviderTestImpl extends InstalledAppProviderImpl {
-        private long mLastDelayMillis;
-
         public InstalledAppProviderTestImpl(
                 RenderFrameHost renderFrameHost, FakeInstantAppsHandler instantAppsHandler) {
             super(new BrowserContextHandle() {
@@ -148,16 +146,6 @@ public class InstalledAppProviderTest {
                     return 1;
                 }
             }, renderFrameHost, instantAppsHandler::isInstantAppAvailable);
-        }
-
-        public long getLastDelayMillis() {
-            return mLastDelayMillis;
-        }
-
-        @Override
-        protected void delayThenRun(Runnable r, long delayMillis) {
-            mLastDelayMillis = delayMillis;
-            super.delayThenRun(r, 0);
         }
 
         @Override
@@ -902,7 +890,7 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
         // This expectation is based on HMAC_SHA256(salt, packageName encoded in UTF-8), taking the
         // low 10 bits of the first two bytes of the result / 100.
-        Assert.assertEquals(2, mInstalledAppProvider.getLastDelayMillis());
+        Assert.assertEquals(2, mInstalledAppProvider.mLastDelayForTesting);
 
         // Non-installed app.
         manifestRelatedApps = new RelatedApplication[] {
@@ -911,7 +899,7 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
         // This expectation is based on HMAC_SHA256(salt, packageName encoded in UTF-8), taking the
         // low 10 bits of the first two bytes of the result / 100.
-        Assert.assertEquals(5, mInstalledAppProvider.getLastDelayMillis());
+        Assert.assertEquals(5, mInstalledAppProvider.mLastDelayForTesting);
 
         // Own WebAPK.
         manifestRelatedApps = new RelatedApplication[] {
@@ -920,7 +908,7 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
         // This expectation is based on HMAC_SHA256(salt, manifestUrl encoded in UTF-8), taking the
         // low 10 bits of the first two bytes of the result / 100.
-        Assert.assertEquals(3, mInstalledAppProvider.getLastDelayMillis());
+        Assert.assertEquals(3, mInstalledAppProvider.mLastDelayForTesting);
 
         // Another WebAPK.
         manifestRelatedApps = new RelatedApplication[] {
@@ -929,7 +917,7 @@ public class InstalledAppProviderTest {
         verifyInstalledApps(manifestRelatedApps, expectedInstalledRelatedApps);
         // This expectation is based on HMAC_SHA256(salt, manifestUrl encoded in UTF-8), taking the
         // low 10 bits of the first two bytes of the result / 100.
-        Assert.assertEquals(8, mInstalledAppProvider.getLastDelayMillis());
+        Assert.assertEquals(8, mInstalledAppProvider.mLastDelayForTesting);
     }
 
     @Test
