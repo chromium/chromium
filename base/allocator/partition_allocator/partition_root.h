@@ -902,10 +902,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
     if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
-      // If we are holding the last reference to the allocation, it can be freed
+      // If there are no more references to the allocation, it can be freed
       // immediately. Otherwise, defer the operation and zap the memory to turn
       // potential use-after-free issues into unexploitable crashes.
-      if (UNLIKELY(!ref_count->HasOneRef()))
+      if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
         memset(ptr, kQuarantinedByte, usable_size);
 
       if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))

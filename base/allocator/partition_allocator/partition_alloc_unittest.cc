@@ -2891,15 +2891,15 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   auto* ref_count =
       PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
-  EXPECT_TRUE(ref_count->HasOneRef());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   ref_count->Acquire();
   EXPECT_FALSE(ref_count->Release());
-  EXPECT_TRUE(ref_count->HasOneRef());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
   EXPECT_EQ(*ptr1, kCookie);
 
   ref_count->Acquire();
-  EXPECT_FALSE(ref_count->HasOneRef());
+  EXPECT_FALSE(ref_count->IsAliveWithNoKnownRefs());
 
   allocator.root()->Free(ptr1);
   // The allocation shouldn't be reclaimed, and its contents should be zapped.
@@ -2930,31 +2930,32 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
 
   auto* ref_count1 =
       PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
-  EXPECT_TRUE(ref_count1->HasOneRef());
+  EXPECT_TRUE(ref_count1->IsAliveWithNoKnownRefs());
 
   ref_count1->Acquire();
-  EXPECT_FALSE(ref_count1->HasOneRef());
+  EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
 
   void* ptr2 = allocator.root()->Realloc(ptr1, new_size, type_name);
   EXPECT_TRUE(ptr2);
 
-  // Re-query ref-count. It may have moved within the slot, or if Realloc
-  // changed the slot.
+  // Re-query ref-count. It may have moved if Realloc changed the slot.
   auto* ref_count2 =
       PartitionRefCountPointer(reinterpret_cast<char*>(ptr2) - kPointerOffset);
 
   if (ptr1 == ptr2) {
-    // If the slot didn't change, ref-count may have moved within it, in which
-    // case the old location may have been trashed, but the new one should have
-    // the same value.
-    EXPECT_FALSE(ref_count2->HasOneRef());
+    // If the slot didn't change, ref-count should stay the same.
+    EXPECT_EQ(ref_count1, ref_count2);
+    EXPECT_FALSE(ref_count2->IsAliveWithNoKnownRefs());
 
     EXPECT_FALSE(ref_count2->Release());
   } else {
     // If the allocation was moved to another slot, the old ref-count stayed
-    // and still has a reference. The new ref-count has no references.
-    EXPECT_FALSE(ref_count1->HasOneRef());
-    EXPECT_TRUE(ref_count2->HasOneRef());
+    // in the same location in memory, is no longer alive, but still has a
+    // reference. The new ref-count is alive, but has no references.
+    EXPECT_NE(ref_count1, ref_count2);
+    EXPECT_FALSE(ref_count1->IsAlive());
+    EXPECT_FALSE(ref_count1->IsAliveWithNoKnownRefs());
+    EXPECT_TRUE(ref_count2->IsAliveWithNoKnownRefs());
 
     EXPECT_TRUE(ref_count1->Release());
   }
