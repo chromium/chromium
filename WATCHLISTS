@@ -844,6 +844,9 @@
     'content_renderer': {
       'filepath': 'content/renderer/',
     },
+    'content_security_policy': {
+      'filepath': 'content_security_policy|csp',
+    },
     'content_shell': {
       'filepath': 'content/shell/',
     },
@@ -2439,6 +2442,9 @@
     'content_index': ['rayankans+watch@chromium.org'],
     'content_loader': ['loading-reviews@chromium.org'],
     'content_renderer': ['mlamouri+watch-content@chromium.org'],
+    'content_security_policy':['antoniosartori+watch-csp@chromium.org',
+                               'arthursonzogni+watch-csp@chromium.org',
+                               'mkwst+watch-csp@chromium.org'],
     'content_shell': ['mlamouri+watch-content@chromium.org',
                       'peter@chromium.org'],
     'content_worker': ['blink-worker-reviews@chromium.org',
