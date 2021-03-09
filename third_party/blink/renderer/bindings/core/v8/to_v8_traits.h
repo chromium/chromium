@@ -177,7 +177,9 @@ struct ToV8Traits<IDLObject> {
       WARN_UNUSED_RESULT {
     DCHECK(!script_value.IsEmpty());
     v8::Local<v8::Value> v8_value = script_value.V8Value();
-    DCHECK(v8_value->IsObject());
+    // TODO(crbug.com/1185033): Change this if-branch to DCHECK.
+    if (!v8_value->IsObject())
+      return v8::Undefined(script_state->GetIsolate());
     return v8_value;
   }
 };
@@ -285,7 +287,9 @@ struct ToV8Traits<
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         const T* dictionary)
       WARN_UNUSED_RESULT {
-    DCHECK(dictionary);
+    // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
+    if (!dictionary)
+      return v8::Null(script_state->GetIsolate());
     return dictionary->ToV8Impl(script_state->GetContext()->Global(),
                                 script_state->GetIsolate());
   }
@@ -365,7 +369,9 @@ struct ToV8Traits<NotShared<T>> {
   // or MaybeShared.
   static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                         T* value) WARN_UNUSED_RESULT {
-    DCHECK(value);
+    // TODO(canonmukai): Remove this if-branch and add DCHECK(value) instead.
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
   }
 
@@ -549,13 +555,13 @@ template <typename K, typename V>
 struct ToV8Traits<IDLRecord<K, V>> {
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType& value) {
+      const typename IDLRecord<K, V>::ImplType& value) WARN_UNUSED_RESULT {
     return bindings::ToV8HelperRecord<V>(script_state, value);
   }
 
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType* value) {
+      const typename IDLRecord<K, V>::ImplType* value) WARN_UNUSED_RESULT {
     DCHECK(value);
     return bindings::ToV8HelperRecord<V>(script_state, *value);
   }
@@ -812,7 +818,8 @@ template <typename K, typename V>
 struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const base::Optional<typename IDLRecord<K, V>::ImplType>& value) {
+      const base::Optional<typename IDLRecord<K, V>::ImplType>& value)
+      WARN_UNUSED_RESULT {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, *value);
@@ -820,7 +827,7 @@ struct ToV8Traits<IDLNullable<IDLRecord<K, V>>> {
 
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const typename IDLRecord<K, V>::ImplType* value) {
+      const typename IDLRecord<K, V>::ImplType* value) WARN_UNUSED_RESULT {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<IDLRecord<K, V>>::ToV8(script_state, value);
