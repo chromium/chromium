@@ -31751,6 +31751,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3847" label="V8ScreenAdvanced_Id_AttributeGetter"/>
   <int value="3848" label="V8ScreenAdvanced_PointerTypes_AttributeGetter"/>
   <int value="3849" label="V8ScreenAdvanced_Label_AttributeGetter"/>
+  <int value="3850" label="PermissionsPolicyHeader"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

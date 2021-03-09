@@ -3157,6 +3157,7 @@ enum WebFeature {
   kV8ScreenAdvanced_Id_AttributeGetter = 3847,
   kV8ScreenAdvanced_PointerTypes_AttributeGetter = 3848,
   kV8ScreenAdvanced_Label_AttributeGetter = 3849,
+  kPermissionsPolicyHeader = 3850,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

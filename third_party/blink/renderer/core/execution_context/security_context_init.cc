@@ -142,6 +142,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
       RuntimeEnabledFeatures::PermissionsPolicyHeaderEnabled()
           ? response.HttpHeaderField(http_names::kPermissionsPolicyReportOnly)
           : g_empty_string;
+  if (!permissions_policy_header.IsEmpty())
+    UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyHeader);
 
   PolicyParserMessageBuffer feature_policy_logger(
       "Error with Feature-Policy header: ");
