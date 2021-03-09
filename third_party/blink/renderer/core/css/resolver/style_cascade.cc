@@ -639,8 +639,11 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
 
   state_.Style()->SetHasVariableDeclaration();
 
-  if (!data || resolver.InCycle())
+  if (!data || resolver.InCycle()) {
+    if (!To<CustomProperty>(property).SupportsGuaranteedInvalid())
+      return cssvalue::CSSUnsetValue::Create();
     return CSSInvalidVariableValue::Create();
+  }
 
   if (data == decl.Value())
     return &decl;

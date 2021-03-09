@@ -32,13 +32,6 @@ class Longhand : public CSSProperty {
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
 
-  void ApplyUnset(StyleResolverState& state) const {
-    if (IsInherited())
-      ApplyInherit(state);
-    else
-      ApplyInitial(state);
-  }
-
   // Properties which take tree-scoped references should override this method to
   // handle the TreeScope during application.
   virtual void ApplyValue(StyleResolverState& state,

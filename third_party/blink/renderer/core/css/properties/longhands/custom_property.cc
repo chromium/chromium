@@ -81,11 +81,7 @@ void CustomProperty::ApplyInherit(StyleResolverState& state) const {
 void CustomProperty::ApplyValue(StyleResolverState& state,
                                 const CSSValue& value) const {
   if (value.IsInvalidVariableValue()) {
-    if (!SupportsGuaranteedInvalid()) {
-      ApplyUnset(state);
-      return;
-    }
-
+    DCHECK(SupportsGuaranteedInvalid());
     state.Style()->SetVariableData(name_, nullptr, IsInherited());
     if (registration_)
       state.Style()->SetVariableValue(name_, nullptr, IsInherited());
