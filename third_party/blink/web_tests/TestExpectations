@@ -5738,9 +5738,6 @@ crbug.com/v8/11429 http/tests/devtools/profiler/cpu-profiler-profiling.js [ Pass
 crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.html [ Pass Failure ]
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-tableValues-prop.html [ Pass Failure ]
 
-# DevTools roll
-crbug.com/1163046 http/tests/devtools/network/async-xhr-json-mime-type.js [ Skip ]
-
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Pass Failure ]
 crbug.com/1092462 [ Linux ] virtual/synchronous_html_parser/media/video-seek-past-end-paused.html [ Pass Failure ]

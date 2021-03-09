@@ -33,8 +33,7 @@
 
     function step3({ content, error, isEncoded }) {
       TestRunner.addResult('request.content: ' + content);
-      ConsoleTestRunner.addConsoleSniffer(step4);
-      TestRunner.addIframe('resources/json.php?type=' + encodedContentType);
+      TestRunner.addIframe('resources/json.php?type=' + encodedContentType).then(step4);
     }
 
     function step4() {
