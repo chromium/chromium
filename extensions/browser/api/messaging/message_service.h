@@ -117,6 +117,9 @@ class MessageService : public BrowserContextKeyedAPI,
                  const PortContext& port_context,
                  bool force_close);
 
+  // Returns the number of open channels for test.
+  size_t GetChannelCountForTest() { return channels_.size(); }
+
   base::WeakPtr<MessagePort::ChannelDelegate> GetChannelDelegate() {
     return weak_factory_.GetWeakPtr();
   }

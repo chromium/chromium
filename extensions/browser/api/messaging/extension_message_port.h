@@ -93,6 +93,7 @@ class ExtensionMessagePort : public MessagePort {
 
   ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                        const PortId& port_id,
+                       const ExtensionId& extension_id,
                        content::BrowserContext* browser_context);
 
   // Registers a frame as a receiver / sender.
