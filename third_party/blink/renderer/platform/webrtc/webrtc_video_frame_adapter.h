@@ -46,24 +46,26 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         media::GpuVideoAcceleratorFactories* gpu_factories);
 
     // Create frames for requested output format and resolution.
-    scoped_refptr<media::VideoFrame> CreateFrame(media::VideoPixelFormat format,
-                                                 const gfx::Size& coded_size,
-                                                 const gfx::Rect& visible_rect,
-                                                 const gfx::Size& natural_size,
-                                                 base::TimeDelta timestamp);
-
-    // Temporary frames may have a different format or size than scaled frames.
-    // However, VideoFramePool doesn't work nicely if the requested frame size
-    // or format changes on the fly. Therefore a separate pool is used for
-    // temporary frames.
-    scoped_refptr<media::VideoFrame> CreateTemporaryFrame(
+    virtual scoped_refptr<media::VideoFrame> CreateFrame(
         media::VideoPixelFormat format,
         const gfx::Size& coded_size,
         const gfx::Rect& visible_rect,
         const gfx::Size& natural_size,
         base::TimeDelta timestamp);
 
-    scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider();
+    // Temporary frames may have a different format or size than scaled frames.
+    // However, VideoFramePool doesn't work nicely if the requested frame size
+    // or format changes on the fly. Therefore a separate pool is used for
+    // temporary frames.
+    virtual scoped_refptr<media::VideoFrame> CreateTemporaryFrame(
+        media::VideoPixelFormat format,
+        const gfx::Size& coded_size,
+        const gfx::Rect& visible_rect,
+        const gfx::Size& natural_size,
+        base::TimeDelta timestamp);
+
+    virtual scoped_refptr<viz::RasterContextProvider>
+    GetRasterContextProvider();
 
     // Constructs a VideoFrame from a texture by invoking RasterInterface,
     // which would perform a blocking call to a GPU process.

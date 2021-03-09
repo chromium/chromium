@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
+#include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -19,42 +20,6 @@ using ::testing::_;
 using ::testing::Return;
 
 namespace blink {
-
-class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
- public:
-  MockSharedResources() : WebRtcVideoFrameAdapter::SharedResources(nullptr) {}
-
-  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
-              CreateFrame,
-              (media::VideoPixelFormat format,
-               const gfx::Size& coded_size,
-               const gfx::Rect& visible_rect,
-               const gfx::Size& natural_size,
-               base::TimeDelta timestamp));
-
-  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
-              CreateTemporaryFrame,
-              (media::VideoPixelFormat format,
-               const gfx::Size& coded_size,
-               const gfx::Rect& visible_rect,
-               const gfx::Size& natural_size,
-               base::TimeDelta timestamp));
-
-  MOCK_METHOD(scoped_refptr<viz::RasterContextProvider>,
-              GetRasterContextProvider,
-              ());
-
-  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
-              ConstructVideoFrameFromTexture,
-              (scoped_refptr<media::VideoFrame> source_frame));
-
-  MOCK_METHOD(scoped_refptr<media::VideoFrame>,
-              ConstructVideoFrameFromGpu,
-              (scoped_refptr<media::VideoFrame> source_frame));
-
- private:
-  friend class base::RefCountedThreadSafe<MockSharedResources>;
-};
 
 class WebRtcVideoFrameAdapterParamTest
     : public ::testing::TestWithParam<
@@ -383,6 +348,8 @@ TEST(WebRtcVideoFrameAdapterTest, ConvertsTextureFrameWithSharedResources) {
          kCodedSize.GetArea() * 4);
 
   // Should call texture conversion.
+  resources->ExpectCreateFrameWithRealImplementation();
+  resources->ExpectCreateTemporaryFrameWithRealImplementation();
   EXPECT_CALL(*resources, ConstructVideoFrameFromTexture(_))
       .WillOnce(Return(memory_frame));
 
