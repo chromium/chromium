@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "chrome/services/sharing/nearby/platform/mutex.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,7 +74,16 @@ class ConditionVariableTest : public testing::Test {
   base::flat_set<base::UnguessableToken> successful_run_attempts_;
 };
 
-TEST_F(ConditionVariableTest, SingleSequence_BlocksOnWaitAndUnblocksOnNotify) {
+// Speculatively disabled on ChromeOS MSAN bots due to https://crbug.com/1186166
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_SingleSequence_BlocksOnWaitAndUnblocksOnNotify \
+  DISABLED_SingleSequence_BlocksOnWaitAndUnblocksOnNotify
+#else
+#define MAYBE_SingleSequence_BlocksOnWaitAndUnblocksOnNotify \
+  SingleSequence_BlocksOnWaitAndUnblocksOnNotify
+#endif
+TEST_F(ConditionVariableTest,
+       MAYBE_SingleSequence_BlocksOnWaitAndUnblocksOnNotify) {
   base::RunLoop run_loop;
   base::UnguessableToken attempt_id = base::UnguessableToken::Create();
   WaitOnConditionVariableFromParallelSequence(run_loop, attempt_id);
