@@ -612,7 +612,8 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
 }
 
 bool AudioParamTimeline::HasValues(size_t current_frame,
-                                   double sample_rate) const {
+                                   double sample_rate,
+                                   unsigned render_quantum_frames) const {
   MutexTryLocker try_locker(events_lock_);
 
   if (try_locker.Locked()) {
@@ -626,7 +627,7 @@ bool AudioParamTimeline::HasValues(size_t current_frame,
     // future.  Then, no sample-accurate processing is needed because the event
     // hasn't started.
     if (events_[0]->Time() >
-        (current_frame + audio_utilities::kRenderQuantumFrames) / sample_rate) {
+        (current_frame + render_quantum_frames) / sample_rate) {
       switch (events_[0]->GetType()) {
         case ParamEvent::kSetTarget:
         case ParamEvent::kSetValue:
@@ -655,8 +656,7 @@ bool AudioParamTimeline::HasValues(size_t current_frame,
         // Need automation if the event starts somewhere before the
         // end of the current render quantum.
         return events_[0]->Time() <=
-               (current_frame + audio_utilities::kRenderQuantumFrames) /
-                   sample_rate;
+               (current_frame + render_quantum_frames) / sample_rate;
       case ParamEvent::kSetValue:
       case ParamEvent::kLinearRampToValue:
       case ParamEvent::kExponentialRampToValue:
@@ -853,7 +853,8 @@ std::tuple<bool, float> AudioParamTimeline::ValueForContextTime(
     AudioDestinationHandler& audio_destination,
     float default_value,
     float min_value,
-    float max_value) {
+    float max_value,
+    unsigned render_quantum_frames) {
   {
     MutexTryLocker try_locker(events_lock_);
     if (!try_locker.Locked() || !events_.size() ||
@@ -867,10 +868,10 @@ std::tuple<bool, float> AudioParamTimeline::ValueForContextTime(
   double sample_rate = audio_destination.SampleRate();
   size_t start_frame = audio_destination.CurrentSampleFrame();
   // One parameter change per render quantum.
-  double control_rate = sample_rate / audio_utilities::kRenderQuantumFrames;
-  value =
-      ValuesForFrameRange(start_frame, start_frame + 1, default_value, &value,
-                          1, sample_rate, control_rate, min_value, max_value);
+  double control_rate = sample_rate / render_quantum_frames;
+  value = ValuesForFrameRange(start_frame, start_frame + 1, default_value,
+                              &value, 1, sample_rate, control_rate, min_value,
+                              max_value, render_quantum_frames);
 
   return std::make_tuple(true, value);
 }
@@ -883,7 +884,8 @@ float AudioParamTimeline::ValuesForFrameRange(size_t start_frame,
                                               double sample_rate,
                                               double control_rate,
                                               float min_value,
-                                              float max_value) {
+                                              float max_value,
+                                              unsigned render_quantum_frames) {
   // We can't contend the lock in the realtime audio thread.
   MutexTryLocker try_locker(events_lock_);
   if (!try_locker.Locked()) {
@@ -894,9 +896,9 @@ float AudioParamTimeline::ValuesForFrameRange(size_t start_frame,
     return default_value;
   }
 
-  float last_value =
-      ValuesForFrameRangeImpl(start_frame, end_frame, default_value, values,
-                              number_of_values, sample_rate, control_rate);
+  float last_value = ValuesForFrameRangeImpl(
+      start_frame, end_frame, default_value, values, number_of_values,
+      sample_rate, control_rate, render_quantum_frames);
 
   // Clamp the values now to the nominal range
   vector_math::Vclip(values, 1, &min_value, &max_value, values, 1,
@@ -905,13 +907,15 @@ float AudioParamTimeline::ValuesForFrameRange(size_t start_frame,
   return last_value;
 }
 
-float AudioParamTimeline::ValuesForFrameRangeImpl(size_t start_frame,
-                                                  size_t end_frame,
-                                                  float default_value,
-                                                  float* values,
-                                                  unsigned number_of_values,
-                                                  double sample_rate,
-                                                  double control_rate) {
+float AudioParamTimeline::ValuesForFrameRangeImpl(
+    size_t start_frame,
+    size_t end_frame,
+    float default_value,
+    float* values,
+    unsigned number_of_values,
+    double sample_rate,
+    double control_rate,
+    unsigned render_quantum_frames) {
   DCHECK(values);
   DCHECK_GE(number_of_values, 1u);
 
@@ -940,7 +944,8 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(size_t start_frame,
     double current_time = start_frame / sample_rate;
 
     if (HandleAllEventsInThePast(current_time, sample_rate, default_value,
-                                 number_of_values, values))
+                                 number_of_values, values,
+                                 render_quantum_frames))
       return default_value;
   }
 
@@ -1233,11 +1238,13 @@ static bool HasSetTargetConverged(float value,
   return false;
 }
 
-bool AudioParamTimeline::HandleAllEventsInThePast(double current_time,
-                                                  double sample_rate,
-                                                  float& default_value,
-                                                  unsigned number_of_values,
-                                                  float* values) {
+bool AudioParamTimeline::HandleAllEventsInThePast(
+    double current_time,
+    double sample_rate,
+    float& default_value,
+    unsigned number_of_values,
+    float* values,
+    unsigned render_quantum_frames) {
   // Optimize the case where the last event is in the past.
   ParamEvent* last_event = events_[events_.size() - 1].get();
   ParamEvent::Type last_event_type = last_event->GetType();
@@ -1248,8 +1255,7 @@ bool AudioParamTimeline::HandleAllEventsInThePast(double current_time,
   // "forever".  SetValueCurve also has an explicit SetValue at the end of
   // the curve, so we don't need to worry that SetValueCurve time is a
   // start time, not an end time.
-  if (last_event_time +
-          1.5 * audio_utilities::kRenderQuantumFrames / sample_rate <
+  if (last_event_time + 1.5 * render_quantum_frames / sample_rate <
       current_time) {
     // If the last event is SetTarget, make sure we've converged and, that
     // we're at least 5 time constants past the start of the event.  If not, we
