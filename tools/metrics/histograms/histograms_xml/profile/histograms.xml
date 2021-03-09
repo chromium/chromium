@@ -451,6 +451,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.NumberOfProfilesWithAuthErrors" units="profiles"
     expires_after="2021-03-12">
+  <obsolete>
+    Removed on 2021-03.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -475,6 +478,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.NumberOfSignedInProfilesWithGAIAIcons"
     units="profiles" expires_after="2021-03-12">
+  <obsolete>
+    Removed on 2021-03.
+  </obsolete>
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

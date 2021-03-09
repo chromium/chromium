@@ -160,7 +160,5 @@ TEST_F(SigninGlobalErrorTest, AuthStatusEnumerateAllErrors) {
       histogram_tester.ExpectBucketCount("Signin.AuthError", entry.error_state,
                                          1);
     }
-    histogram_tester.ExpectBucketCount("Profile.NumberOfProfilesWithAuthErrors",
-                                       entry.is_error, 1);
   }
 }

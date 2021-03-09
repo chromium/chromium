@@ -25,8 +25,6 @@ struct Counts {
   base::HistogramBase::Sample supervised = 0;
   base::HistogramBase::Sample active = 0;
   base::HistogramBase::Sample unused = 0;
-  base::HistogramBase::Sample gaia_icon = 0;
-  base::HistogramBase::Sample auth_errors = 0;
   ProfileColorsUniqueness colors_uniqueness =
       ProfileColorsUniqueness::kRepeated;
 };

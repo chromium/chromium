@@ -21,10 +21,6 @@ void LogProfileMetricsCounts(const Counts& counts) {
                              counts.signedin);
     UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfActiveProfiles", counts.active);
     UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfUnusedProfiles", counts.unused);
-    UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfSignedInProfilesWithGAIAIcons",
-                             counts.gaia_icon);
-    UMA_HISTOGRAM_COUNTS_100("Profile.NumberOfProfilesWithAuthErrors",
-                             counts.auth_errors);
     UMA_HISTOGRAM_ENUMERATION("Profile.ColorsUniqueness",
                               counts.colors_uniqueness);
   }

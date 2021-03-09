@@ -23,11 +23,8 @@ bool CountBrowserStateInformation(ios::ChromeBrowserStateManager* manager,
     return false;
 
   for (size_t i = 0; i < number_of_browser_states; ++i) {
-    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
+    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i))
       counts->signedin++;
-      if (info_cache->BrowserStateIsAuthErrorAtIndex(i))
-        counts->auth_errors++;
-    }
   }
   return true;
 }
