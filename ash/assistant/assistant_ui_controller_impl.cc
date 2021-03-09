@@ -209,11 +209,6 @@ void AssistantUiControllerImpl::OnUiVisibilityChanged(
   if (new_visibility == AssistantVisibility::kVisible) {
     // Only record the entry point when Assistant UI becomes visible.
     assistant::util::RecordAssistantEntryPoint(entry_point.value());
-
-    // Notify Assistant service of the most recent entry point.
-    assistant_->NotifyEntryIntoAssistantUi(
-        entry_point.value_or(AssistantEntryPoint::kUnspecified));
-    return;
   }
 
   if (old_visibility == AssistantVisibility::kVisible) {

@@ -107,9 +107,6 @@ void FakeAssistantManagerServiceImpl::OnAccessibilityStatusChanged(
 void FakeAssistantManagerServiceImpl::SendAssistantFeedback(
     const AssistantFeedback& feedback) {}
 
-void FakeAssistantManagerServiceImpl::NotifyEntryIntoAssistantUi(
-    AssistantEntryPoint entry_point) {}
-
 void FakeAssistantManagerServiceImpl::AddTimeToTimer(const std::string& id,
                                                      base::TimeDelta duration) {
 }

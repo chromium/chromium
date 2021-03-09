@@ -128,9 +128,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
   // Send Assistant feedback to Assistant server.
   virtual void SendAssistantFeedback(const AssistantFeedback& feedback) = 0;
 
-  // Invoked on entry to Assistant UI.
-  virtual void NotifyEntryIntoAssistantUi(AssistantEntryPoint entry_point) = 0;
-
   // Alarm/Timer methods -------------------------------------------------------
 
   // Adds the specified |duration| to the timer identified by |id|.  Note that

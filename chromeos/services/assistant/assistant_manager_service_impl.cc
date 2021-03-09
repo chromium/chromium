@@ -789,11 +789,6 @@ void AssistantManagerServiceImpl::AddRemoteConversationObserver(
       observer->BindNewPipeAndPassRemote());
 }
 
-void AssistantManagerServiceImpl::NotifyEntryIntoAssistantUi(
-    AssistantEntryPoint entry_point) {
-  // TODO(jeroendh) remove.
-}
-
 void AssistantManagerServiceImpl::SendVoicelessInteraction(
     const std::string& interaction,
     const std::string& description,
