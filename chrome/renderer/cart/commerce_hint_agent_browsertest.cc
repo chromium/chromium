@@ -75,10 +75,11 @@ const cart_db::ChromeCartContentProto kMockExampleProtoLinkCart =
 const cart_db::ChromeCartContentProto kMockExampleProto =
     BuildProto(kMockExample, kMockExampleURL);
 const cart_db::ChromeCartContentProto kMockExampleProtoWithProducts =
-    BuildProtoWithProducts(kMockExample,
-                           kMockExampleURL,
-                           // TODO(crbug/1179698): use the real answer.
-                           {"https://example.com/image.jpg"});
+    BuildProtoWithProducts(
+        kMockExample,
+        kMockExampleURL,
+        {"https://static.walmart.com/product-image/123.png",
+         "https://static.walmart.com/product-image/456.png"});
 
 const char kMockAmazon[] = "amazon.com";
 const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
