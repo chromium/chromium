@@ -23,13 +23,9 @@ public class StandardNotificationBuilder extends NotificationBuilderBase {
 
     @Override
     public NotificationWrapper build(NotificationMetadata metadata) {
-        // Note: this is not a NotificationCompat builder so be mindful of the
-        // API level of methods you call on the builder.
-        // TODO(crbug.com/697104) We should probably use a Compat builder.
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        false /* preferCompat */, mChannelId, mRemotePackageForBuilderContext,
-                        metadata);
+                        shouldUseCompat(), mChannelId, mRemotePackageForBuilderContext, metadata);
 
         builder.setContentTitle(mTitle);
         builder.setContentText(mBody);

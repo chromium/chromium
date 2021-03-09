@@ -129,13 +129,9 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
         addActionButtons(bigView);
         configureSettingsButton(bigView);
 
-        // Note: under the hood this is not a NotificationCompat builder so be mindful of the
-        // API level of methods you call on the builder.
-        // TODO(crbug.com/697104) We should probably use a Compat builder.
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        false /* preferCompat */, mChannelId, mRemotePackageForBuilderContext,
-                        metadata);
+                        shouldUseCompat(), mChannelId, mRemotePackageForBuilderContext, metadata);
         builder.setTicker(mTickerText);
         builder.setContentIntent(mContentIntent);
         builder.setDeleteIntent(mDeleteIntent);

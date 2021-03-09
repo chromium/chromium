@@ -248,8 +248,16 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(
                 NotificationTestUtil.getLargeIconFromNotification(context, notification));
 
-        // Validate the notification's behavior.
-        Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
+        // Validate the notification's behavior. On Android O+ the defaults are ignored as vibrate
+        // and silent moved to the notification channel. The silent flag is achieved by using a
+        // group alert summary.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && NotificationBuilderBase.shouldUseCompat()) {
+            Assert.assertEquals(0, notification.defaults);
+            Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
+        } else {
+            Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
+        }
         Assert.assertEquals(Notification.PRIORITY_DEFAULT, notification.priority);
     }
 
@@ -436,6 +444,14 @@ public class NotificationPlatformBridgeTest {
 
         // Zero indicates that no defaults should be inherited from the system.
         Assert.assertEquals(0, notification.defaults);
+
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel. The silent flag is achieved by using a group alert summary.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && NotificationBuilderBase.shouldUseCompat()) {
+            Assert.assertEquals(
+                    Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
+        }
     }
 
     private void verifyVibrationNotRequestedWhenDisabledInPrefs(String notificationOptions)
@@ -451,13 +467,20 @@ public class NotificationPlatformBridgeTest {
 
         Notification notification = showAndGetNotification("MyNotification", notificationOptions);
 
-        // Vibration should not be in the defaults.
-        Assert.assertEquals(
-                Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE, notification.defaults);
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && NotificationBuilderBase.shouldUseCompat()) {
+            Assert.assertEquals(0, notification.defaults);
+        } else {
+            // Vibration should not be in the defaults.
+            Assert.assertEquals(Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
+                    notification.defaults);
 
-        // There should be a custom no-op vibration pattern.
-        Assert.assertEquals(1, notification.vibrate.length);
-        Assert.assertEquals(0L, notification.vibrate[0]);
+            // There should be a custom no-op vibration pattern.
+            Assert.assertEquals(1, notification.vibrate.length);
+            Assert.assertEquals(0L, notification.vibrate[0]);
+        }
     }
 
     /**
@@ -501,14 +524,21 @@ public class NotificationPlatformBridgeTest {
 
         Notification notification = showAndGetNotification("MyNotification", "{ vibrate: 42 }");
 
-        // Vibration should not be in the defaults, a custom pattern was provided.
-        Assert.assertEquals(
-                Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE, notification.defaults);
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && NotificationBuilderBase.shouldUseCompat()) {
+            Assert.assertEquals(0, notification.defaults);
+        } else {
+            // Vibration should not be in the defaults, a custom pattern was provided.
+            Assert.assertEquals(Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
+                    notification.defaults);
 
-        // The custom pattern should have been passed along.
-        Assert.assertEquals(2, notification.vibrate.length);
-        Assert.assertEquals(0L, notification.vibrate[0]);
-        Assert.assertEquals(42L, notification.vibrate[1]);
+            // The custom pattern should have been passed along.
+            Assert.assertEquals(2, notification.vibrate.length);
+            Assert.assertEquals(0L, notification.vibrate[0]);
+            Assert.assertEquals(42L, notification.vibrate[1]);
+        }
     }
 
     /**
