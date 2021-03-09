@@ -16,6 +16,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
+#include "ui/color/mac/system_color_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -101,17 +102,6 @@ struct EnumArray {
   VALUE array[static_cast<size_t>(KEY::COUNT)];
 };
 
-// Converts an SkColor to grayscale by using luminance for all three components.
-// Experimentally, this seems to produce a better result than a flat average or
-// a min/max average for UI controls.
-SkColor ColorToGrayscale(SkColor color) {
-  SkScalar luminance = SkColorGetR(color) * 0.21 +
-                       SkColorGetG(color) * 0.72 +
-                       SkColorGetB(color) * 0.07;
-  uint8_t component = SkScalarRoundToInt(luminance);
-  return SkColorSetARGB(SkColorGetA(color), component, component, component);
-}
-
 }  // namespace
 
 namespace ui {
@@ -149,9 +139,7 @@ NativeThemeMac* NativeThemeMac::instance() {
 
 // static
 SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
-  if ([NSColor currentControlTint] == NSGraphiteControlTint)
-    return ColorToGrayscale(color);
-  return color;
+  return ui::IsSystemGraphiteTinted() ? ui::ColorToGrayscale(color) : color;
 }
 
 SkColor NativeThemeMac::GetSystemColorImpl(ColorId color_id,

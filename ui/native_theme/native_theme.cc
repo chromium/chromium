@@ -245,6 +245,11 @@ NativeTheme::NativeTheme(bool should_use_dark_colors)
           ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
           ui::AddUiColorMixer(provider);
           ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
+#if defined(OS_MAC)
+          // Always keep this mixer at the last so the system tint will be
+          // applied after getting the proper color.
+          ui::AddSystemTintMixer(provider);
+#endif
         }));
   });
   if (!color_provider_manager_init.is_null())

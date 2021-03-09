@@ -9,12 +9,16 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/native_theme/native_theme_color_id.h"
 
-namespace ui {
+#if defined(OS_MAC)
+#include "ui/color/mac/system_color_utils.h"
+#endif
 
+namespace ui {
 namespace {
 
 constexpr const char* kColorIdStringName[] = {
@@ -81,15 +85,10 @@ class NativeThemeRedirectedEquivalenceTest
   }
 };
 
-}  // namespace
-
-TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColor) {
-  // Verifies that colors with and without the Color Provider are the same.
+std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
+    NativeTheme::ColorId color_id,
+    NativeTheme::ColorScheme color_scheme) {
   NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
-  auto param_tuple = GetParam();
-  auto color_scheme = std::get<0>(param_tuple);
-  auto color_id = std::get<1>(param_tuple);
-
   PrintableSkColor original{
       native_theme->GetSystemColor(color_id, color_scheme)};
 
@@ -98,8 +97,37 @@ TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColor) {
   PrintableSkColor redirected{
       native_theme->GetSystemColor(color_id, color_scheme)};
 
+  return std::make_pair(original, redirected);
+}
+
+}  // namespace
+
+TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColor) {
+  auto param_tuple = GetParam();
+  auto color_scheme = std::get<NativeTheme::ColorScheme>(param_tuple);
+  auto color_id = std::get<NativeTheme::ColorId>(param_tuple);
+
+  // Verifies that colors with and without the Color Provider are the same.
+  auto pair = GetOriginalAndRedirected(color_id, color_scheme);
+  auto original = pair.first;
+  auto redirected = pair.second;
   EXPECT_EQ(original, redirected);
 }
+
+#if defined(OS_MAC)
+TEST_P(NativeThemeRedirectedEquivalenceTest, NativeUiGetSystemColorWithTint) {
+  auto param_tuple = GetParam();
+  auto color_scheme = std::get<NativeTheme::ColorScheme>(param_tuple);
+  auto color_id = std::get<NativeTheme::ColorId>(param_tuple);
+
+  ScopedEnableGraphiteTint enable_graphite_tint;
+  // Verifies that colors with and without the Color Provider are the same.
+  auto pair = GetOriginalAndRedirected(color_id, color_scheme);
+  auto original = pair.first;
+  auto redirected = pair.second;
+  EXPECT_EQ(original, redirected);
+}
+#endif
 
 #define OP(enum_name) NativeTheme::ColorId::enum_name
 INSTANTIATE_TEST_SUITE_P(

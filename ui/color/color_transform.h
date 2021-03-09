@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -115,6 +116,11 @@ ColorTransform SelectBasedOnDarkInput(
 // A transform which sets the result of |transform| to have alpha |alpha|.
 COMPONENT_EXPORT(COLOR)
 ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha);
+
+#if defined(OS_MAC)
+COMPONENT_EXPORT(COLOR)
+ColorTransform ApplySystemControlTintIfNeeded();
+#endif
 
 }  // namespace ui
 

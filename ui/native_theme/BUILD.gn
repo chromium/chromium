@@ -35,6 +35,11 @@ component("native_theme") {
   }
 
   if (is_mac) {
+    frameworks = [
+      "CoreGraphics.framework",
+      "AppKit.framework",
+      "MediaAccessibility.framework",
+    ]
     sources += [
       "caption_style_mac.mm",
       "native_theme_mac.h",
@@ -73,14 +78,6 @@ component("native_theme") {
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
-
-  if (is_mac) {
-    frameworks = [
-      "CoreGraphics.framework",
-      "AppKit.framework",
-      "MediaAccessibility.framework",
-    ]
-  }
 }
 
 if (is_win) {
@@ -135,10 +132,6 @@ test("native_theme_unittests") {
     sources += [ "native_theme_aura_unittest.cc" ]
   }
 
-  if (is_mac) {
-    sources += [ "native_theme_mac_unittest.mm" ]
-  }
-
   if (is_win) {
     sources += [
       "caption_style_win_unittest.cc",
@@ -156,4 +149,9 @@ test("native_theme_unittests") {
     "//ui/base",
     "//ui/gfx/geometry:geometry",
   ]
+
+  if (is_mac) {
+    sources += [ "native_theme_mac_unittest.mm" ]
+    deps += [ "//ui/color" ]
+  }
 }

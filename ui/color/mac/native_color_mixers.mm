@@ -5,13 +5,32 @@
 #include "ui/color/color_mixers.h"
 
 #import <Cocoa/Cocoa.h>
+
+#include "base/containers/fixed_flat_set.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_set.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
 #include "ui/gfx/color_palette.h"
+
+namespace {
+// All the native OS colors which are retrieved from the system directly.
+// clang-format off
+constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
+    ui::kColorFocusableBorderFocused,
+    ui::kColorLabelSelectionBackground,
+    ui::kColorMenuBorder,
+    ui::kColorMenuItemForegroundDisabled,
+    ui::kColorMenuItemForeground,
+    ui::kColorMenuSeparator,
+    ui::kColorTextSelectionBackground,
+    ui::kColorTextfieldSelectionBackground,
+    ui::kColorTableBackgroundAlternate});
+// clang-format on
+}
 
 namespace ui {
 
@@ -65,6 +84,16 @@ void AddNativeUiColorMixer(ColorProvider* provider,
                                      ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
                                      : SkColorSetA(SK_ColorBLACK, 0x26);
   mixer[kColorMenuSeparator] = {menu_separator_color};
+}
+
+void AddSystemTintMixer(ColorProvider* provider) {
+  ColorMixer& mixer = provider->AddMixer();
+
+  for (ui::ColorId id = ui::kUiColorsStart; id < kUiColorsLast; ++id) {
+    // Apply system tint to non-OS colors.
+    if (!kNativeOSColorIds.contains(id))
+      mixer[id] += ApplySystemControlTintIfNeeded();
+  }
 }
 
 }  // namespace ui

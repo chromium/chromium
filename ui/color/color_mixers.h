@@ -6,6 +6,7 @@
 #define UI_COLOR_COLOR_MIXERS_H_
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 
 namespace ui {
 
@@ -41,6 +42,11 @@ COMPONENT_EXPORT(COLOR)
 void AddNativeUiColorMixer(ColorProvider* provider,
                            bool dark_window,
                            bool high_contrast);
+
+#if defined(OS_MAC)
+COMPONENT_EXPORT(COLOR)
+void AddSystemTintMixer(ColorProvider* provider);
+#endif
 
 }  // namespace ui
 

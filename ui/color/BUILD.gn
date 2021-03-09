@@ -47,6 +47,15 @@ component("color") {
     "//skia:skia",
     "//ui/gfx:color_utils",
   ]
+
+  if (is_mac) {
+    frameworks = [ "AppKit.framework" ]
+    sources += [
+      "mac/native_color_transform.mm",
+      "mac/system_color_utils.h",
+      "mac/system_color_utils.mm",
+    ]
+  }
 }
 
 test("color_unittests") {
