@@ -471,16 +471,14 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             }
         });
 
-        /**
-         * Calls the {@link triggerUrlFocusAnimation()} here if it is skipped in {@link
-         * handleOmniboxInOverviewMode()}. See https://crbug.com/1152306. Keyboard shouldn't be
-         * shown here.
-         */
+        // Calls the {@link triggerUrlFocusAnimation()} here if it is skipped in {@link
+        // handleOmniboxInOverviewMode()}. In the overview mode focusing omnibox should also show
+        // keyboard.
         if (mPendingTriggerUrlFocusRequest) {
             mPendingTriggerUrlFocusRequest = false;
-            triggerUrlFocusAnimation(
-                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus(),
-                    /* shouldShowKeyboard= */ false);
+            boolean hasFocus =
+                    getToolbarDataProvider().isInOverviewAndShowingOmnibox() && !urlHasFocus();
+            triggerUrlFocusAnimation(hasFocus, /* shouldShowKeyboard= */ hasFocus);
         }
 
         updateVisualsForLocationBarState();
