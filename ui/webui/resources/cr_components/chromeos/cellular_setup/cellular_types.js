@@ -24,7 +24,6 @@ cr.define('cellularSetup', function() {
     BACKWARD: 1,
     CANCEL: 2,
     FORWARD: 3,
-    TRY_AGAIN: 4,
   };
 
   /**
@@ -32,7 +31,6 @@ cr.define('cellularSetup', function() {
    *   backward: (!cellularSetup.ButtonState|undefined),
    *   cancel: (!cellularSetup.ButtonState|undefined),
    *   forward: (!cellularSetup.ButtonState|undefined),
-   *   tryAgain: (!cellularSetup.ButtonState|undefined),
    * }}
    */
   /* #export */ let ButtonBarState;

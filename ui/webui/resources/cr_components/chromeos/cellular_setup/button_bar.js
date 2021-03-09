@@ -76,11 +76,6 @@ Polymer({
   },
 
   /** @private */
-  onTryAgainButtonClicked_() {
-    this.fire('retry-requested');
-  },
-
-  /** @private */
   onForwardButtonClicked_() {
     this.fire('forward-nav-requested');
   },
@@ -99,8 +94,6 @@ Polymer({
         return this.buttonState.cancel;
       case cellularSetup.Button.FORWARD:
         return this.buttonState.forward;
-      case cellularSetup.Button.TRY_AGAIN:
-        return this.buttonState.tryAgain;
       default:
         assertNotReached();
         return cellularSetup.ButtonState.ENABLED;
