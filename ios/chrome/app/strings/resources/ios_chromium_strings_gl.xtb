@@ -46,7 +46,6 @@
 <translation id="602807004951640891">Ao usar Chromium, aceptas as <ph name="BEGIN_LINK_TOS" />Condicións de servizo<ph name="END_LINK_TOS" />.</translation>
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
-<translation id="6604711459180487467">Obtén unha mellor experiencia en Chromium baseada na túa localización.</translation>
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="7018284295775193585">Chromium non se pode actualizar</translation>
 <translation id="7099326575020694068">Chromium non pode usar a cámara no modo Vista dividida</translation>
@@ -62,13 +61,14 @@
 <translation id="7746854981345936341">Consello sobre Chromium: Agora algúns botóns, como Atrás, Adiante e Buscar, están na parte inferior da pantalla.</translation>
 <translation id="786327964234957808">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chromium actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Comeza a utilizar o escáner de Chromium</translation>
+<translation id="7980860476903281594">Chromium comparte a localización cos sitios que queiras.</translation>
 <translation id="8013573822802650211">Para ver as túas pestanas desde calquera dispositivo no que utilices Chromium, inicia sesión en todos eles</translation>
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Para facer que Chromium sexa o teu navegador predeterminado, abre Settings (Configuración), toca Default Browser App (Aplicación de navegador predeterminada) e selecciona Chromium.</translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="8252885722420466166">Obtén unha mellor experiencia de Google en Chromium baseada na túa localización.</translation>
-<translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Reservados todos os dereitos.</translation>
+<translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>

@@ -69,7 +69,7 @@
 <translation id="164729547906544836">тамилска тастатура (itrans)</translation>
 <translation id="164969095109328410">Уред со Chrome</translation>
 <translation id="1665611772925418501">Оваа датотека не може да се менува.</translation>
-<translation id="1673103856845176271">Не можеше да се пристапи до датотеката поради безбедносни причини.</translation>
+<translation id="1673103856845176271">Не може да се пристапи до датотеката поради безбедносни причини.</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> ставки се копирани.</translation>
@@ -149,7 +149,7 @@
 <translation id="2563185590376525700">Жаба</translation>
 <translation id="2614589611416690597">Видео: <ph name="VIDEO_TYPE" /></translation>
 <translation id="2620090360073999360">Не може да се достапи до Google Диск во моментов.</translation>
-<translation id="2638942478653899953">Не можеше да се добие Google Диск. <ph name="BEGIN_LINK" />Одјавете се<ph name="END_LINK" /> и повторно најавете се.</translation>
+<translation id="2638942478653899953">Не може да се добие Google Диск. <ph name="BEGIN_LINK" />Одјавете се<ph name="END_LINK" /> и повторно најавете се.</translation>
 <translation id="2649120831653069427">Риба виножито</translation>
 <translation id="2661146741306740526">16 x 9</translation>
 <translation id="2664412712123763093">Локација на датотеката</translation>
@@ -182,7 +182,7 @@
 <translation id="2963783323012015985">турска тастатура</translation>
 <translation id="2966459079597787514">шведска тастатура</translation>
 <translation id="2984337792991268709">Денес <ph name="TODAY_DAYTIME" /></translation>
-<translation id="2994669386200004489">Не можеше да се направи бекап на <ph name="FILE_NAME" /></translation>
+<translation id="2994669386200004489">Не може да се направи бекап на <ph name="FILE_NAME" /></translation>
 <translation id="3003633581067744647">Префрли се на режим за преглед со сликички</translation>
 <translation id="3007214526293698309">Поправи го соодносот</translation>
 <translation id="303198083543495566">Географија</translation>
@@ -616,7 +616,7 @@
 <translation id="7654209398114106148">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7693909743393669729">Форматирањето на дискот ќе ги избрише сите податоци што се зачувани на него и ќе ги отстрани сите постојни партиции, вклучително и партициите што можеби не се видливи. Дејството не може да се врати.</translation>
-<translation id="7695430100978772476">Не можеше да се форматира <ph name="DRIVE_NAME" /></translation>
+<translation id="7695430100978772476">Не може да се форматира <ph name="DRIVE_NAME" /></translation>
 <translation id="770015031906360009">Грчки</translation>
 <translation id="7705251383879779343">Копирано: <ph name="FILE_NAME" />.</translation>
 <translation id="7706319470528945664">португалска тастатура</translation>
@@ -708,7 +708,7 @@
 <translation id="8456681095658380701">Неважечко име</translation>
 <translation id="8466234950814670489">Архива Tar</translation>
 <translation id="8467473010914675605">Корејски влезен метод</translation>
-<translation id="8475647382427415476">Google Drive не можеше да ја синхронизира „<ph name="FILENAME" />" во моментов. Ќе се обиде повторно подоцна.</translation>
+<translation id="8475647382427415476">Google Drive не може да ја синхронизира „<ph name="FILENAME" />" во моментов. Ќе се обиде повторно подоцна.</translation>
 <translation id="8477649328507734757">Концентрични кругови</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="8490342535582768689">Дајте ѝ дозвола на Parallels Desktop да ги менува датотеките во вашиот Google Drive. Промените ќе се синхронизираат со другите ваши уреди.</translation>

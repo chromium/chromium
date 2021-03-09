@@ -48,7 +48,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2530339807289914946">Posunutie nadol na webovej stránke</translation>
 <translation id="2530896289327917474">Vypnutie alebo zapnutie prehliadania Caret</translation>
-<translation id="2574014812750545982">Obnovenie úrovne priblíženia/oddialenia na stránke</translation>
+<translation id="2574014812750545982">Resetovať na stránke úroveň lupy</translation>
 <translation id="2596078834055697711">Vytvorenie snímky obrazovky okna</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, potom <ph name="TAB" /> alebo <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Obnovenie aktuálnej stránky</translation>
@@ -86,7 +86,7 @@
 <translation id="3837047332182291558">Zvýšenie jasu klávesnice (iba v prípade podsvietených klávesníc)</translation>
 <translation id="3949671998904569433">čiarka</translation>
 <translation id="3976863468609830880">Kliknutie na poslednú ikonu na poličke</translation>
-<translation id="3994783594793697310">Obnovenie úrovne priblíženia/oddialenia zobrazenia</translation>
+<translation id="3994783594793697310">Resetovať na obrazovke úroveň lupy</translation>
 <translation id="4026843240379844265">Presun aktívneho okna medzi obrazovkami</translation>
 <translation id="4035482366624727273">Výber celého obsahu stránky</translation>
 <translation id="4060703249685950734">Opätovné otvorenie poslednej zatvorenej karty alebo okna</translation>

@@ -65,7 +65,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4145029455188493639">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Alguns componentes obrigatórios não foram encontrados. Certifique-se de que você esteja executando a última versão do software e tente novamente.</translation>
 <translation id="4176825807642096119">Código de acesso</translation>
-<translation id="4227991223508142681">Utilitário de aprovisionamento de host</translation>
+<translation id="4227991223508142681">Utilitário de provisionamento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host do Chromoting</translation>
 <translation id="4277736576214464567">Código de acesso inválido. Tente novamente.</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>

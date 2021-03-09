@@ -307,13 +307,13 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2154484045852737596">Úprava karty</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2164510882479075877">Skontrolujte, či nie je v názve <ph name="HOST_NAME" /> preklep.</translation>
-<translation id="2166049586286450108">Úplný prístup správcu</translation>
+<translation id="2166049586286450108">Úplný správcovský prístup</translation>
 <translation id="2166378884831602661">Tento web nedokáže poskytnúť zabezpečené pripojenie</translation>
 <translation id="2169984857010174799">Kaku2 (obálka)</translation>
 <translation id="2181821976797666341">Pravidlá</translation>
 <translation id="2183608646556468874">Telefónne číslo</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresa}few{# adresy}many{# adresy}other{# adries}}</translation>
-<translation id="2187243482123994665">Prítomnosť používateľa</translation>
+<translation id="2187243482123994665">Aktivita používateľa</translation>
 <translation id="2187317261103489799">Rozpoznávať (predvolené)</translation>
 <translation id="2188375229972301266">Viacero dierok dole</translation>
 <translation id="2202020181578195191">Zadajte platný rok vypršania platnosti</translation>
@@ -999,7 +999,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5056549851600133418">Články pre vás</translation>
 <translation id="5061227663725596739">Mysleli ste <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5068524481479508725">A10</translation>
-<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(Používa sa 1)}few{(Používajú sa #)}many{(# in use)}other{(Používa sa #)}}</translation>
+<translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(používa sa 1)}few{(používajú sa #)}many{(# in use)}other{(používa sa #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Skontrolovať adresu proxy servera<ph name="END_LINK" /></translation>
 <translation id="507130231501693183">Poštová schránka č. 4</translation>
 <translation id="5087286274860437796">Certifikát servera je momentálne neplatný</translation>
@@ -1465,7 +1465,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7004583254764674281">Potvrdzujte karty rýchlejšie pomocou služby Windows Hello</translation>
 <translation id="7006930604109697472">Aj tak odoslať</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
-<translation id="7014741021609395734">Úroveň priblíženia alebo oddialenia</translation>
+<translation id="7014741021609395734">Úroveň lupy</translation>
 <translation id="7016992613359344582">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné.</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>
@@ -1894,7 +1894,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresa DNS&lt;/abbr&gt; webu <ph name="HOST_NAME" /> sa nenašla. Problém sa diagnostikuje.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je kód pre <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Pridať kartu medzi záložky</translation>
-<translation id="8751426954251315517">Skúste to znova neskôr</translation>
+<translation id="8751426954251315517">Skúste to neskôr</translation>
 <translation id="8759274551635299824">Platnosť tejto karty vypršala</translation>
 <translation id="87601671197631245">Tento web používa zastaranú konfiguráciu zabezpečenia, ktorá môže odhaliť vaše informácie (napríklad heslá, správy alebo kreditné karty), keď ich naň odošlete.</translation>
 <translation id="8761567432415473239">Bezpečné prehliadanie Google nedávno <ph name="BEGIN_LINK" />zistilo škodlivé programy<ph name="END_LINK" /> na webe <ph name="SITE" />.</translation>

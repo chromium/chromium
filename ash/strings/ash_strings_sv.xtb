@@ -53,7 +53,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">En skärmdump har tagits och sparats i Urklipp</translation>
+<translation id="1420527829902822813">En skärmbild har tagits och sparats i Urklipp</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
@@ -116,7 +116,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
-<translation id="2074759828767813253">Senaste skärmdumpar och nedladdningar</translation>
+<translation id="2074759828767813253">Senaste skärmbilder och nedladdningar</translation>
 <translation id="2083190527011054446">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Ingen nätverksanslutning</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
@@ -138,7 +138,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
-<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda laserpekaren eller förstoringsglaset.</translation>
+<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
@@ -242,7 +242,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332587331255250389">Byt batteri</translation>
-<translation id="334252345105450327">Ta en skärmdump</translation>
+<translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
 <translation id="3368922792935385530">Ansluten</translation>
@@ -416,7 +416,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> har anslutits till en ny mobil</translation>
 <translation id="5035389544768382859">Bekräfta skärminställningarna</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
-<translation id="5114495209940374989">Skärmdumpar</translation>
+<translation id="5114495209940374989">Skärmbilder</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
@@ -658,7 +658,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
-<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
+<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
 <translation id="781126011916719498">Kom snabbt åt dina viktiga filer. Fäst en fil genom att högerklicka eller trycka länge på den.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>

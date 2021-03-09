@@ -54,7 +54,7 @@
 <translation id="1175364870820465910">&amp;ମୁଦ୍ରଣ...</translation>
 <translation id="1175875016430184367">ଡାହାଣ ପଟରେ ତିନୋଟି ଷ୍ଟାପଲ୍</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
-<translation id="1181037720776840403">ଅପସାରଣ</translation>
+<translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1186201132766001848">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1195558154361252544">ଆପଣ ଅନୁମତି ଦେଇଥିବା ସାଇଟ୍‍ଗୁଡ଼ିକ ବ୍ୟତୀତ ସମସ୍ତ ସାଇଟ୍‌ରେ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="1197088940767939838">କମଳା</translation>
@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">ଏଣ୍ଟ୍ରି କରାଯାଉଥିବା ଇତିହାସର ତାଲିକା</translation>
 <translation id="1517433312004943670">ଫୋନ୍ ନମ୍ବର ଆବଶ୍ୟକ ଅଟେ</translation>
 <translation id="1519264250979466059">ବିଲ୍ଡ ତାରିଖ</translation>
-<translation id="1521655867290435174">Google ସିଟ୍‌ସ</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">ସଂଯୋଗ ପାଇଁ ଅପେକ୍ଷାରତ…</translation>
 <translation id="1529521330346880926">10x15 (ଏନଭଲପ୍)</translation>
 <translation id="1529789484829130889">ଟ୍ରେ 8</translation>
@@ -903,7 +903,7 @@
 <translation id="4670064810192446073">ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ</translation>
 <translation id="467662567472608290">ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍‌ରେ ତ୍ରୁଟି ଅଛି। ଏହା ହୁଏତ, ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦେବାକୁ ଚାହୁଁଛି</translation>
-<translation id="467809019005607715">Google ସ୍ଲାଇଡ୍‍</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ଆପଣ ଏବେ ଏକ ପ୍ରତାରଣାମୂଳକ ସାଇଟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଲେଖିଛନ୍ତି। <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> <ph name="WEBSITE_3" /> ଏବଂ ଆପଣ ବର୍ତ୍ତମାନ ଏହି ପାସୱାର୍ଡ ବ୍ୟବହାର କରିଥିବା ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକ ପାଇଁ Chromium ଆପଣଙ୍କର ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
 <translation id="4690462567478992370">ଏକ ଅବୈଧ ସାର୍ଟିଫିକେଟ୍‍ ବ୍ୟବହାର କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4691835149146451662">ଆର୍କିଟେକ୍‌ଚର୍-A (ଏନଭଲପ୍)</translation>
@@ -1425,7 +1425,7 @@
 <translation id="6810899417690483278">କଷ୍ଟମାଇଜେସନ୍ ID</translation>
 <translation id="6825578344716086703">ଆପଣ <ph name="DOMAIN" />ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିବାକୁ ପ୍ରଚେଷ୍ଟା କରିଥିଲେ, କିନ୍ତୁ ସର୍ଭର୍‍ ଏକ ଦୁର୍ବଳ ଦସ୍ତଖତ ଏଲଗୋରାଦିମ୍ (ଯେପରିକି SHA-1)କୁ ବ୍ୟବହାର କରି ଏକ ଦସ୍ତଖତ ସାର୍ଟିଫିକେଟ୍ ଉପସ୍ଥାପନ କରିଥିଲା। ଏହାର ଅର୍ଥ ଏହା ଯେ, ସର୍ଭର୍ ଉପସ୍ଥାପନା କରୁଥିବା ସୁରକ୍ଷା କ୍ରେଡେନ୍‍ସିଆଲ୍ସ ନକଲି ହୋଇପାରେ, ଏବଂ ହୁଏତ ଏହି ସର୍ଭର୍‌ଟି ଆପଣଙ୍କର ପ୍ରତ୍ୟାଶିତ ସର୍ଭର୍ ହୋଇନପାରେ (ଆପଣ ହୁଏତ ଜଣେ ଆକ୍ରମଣକାରୀଙ୍କ ସହିତ ସମ୍ପର୍କ କରୁଥାଇପାରନ୍ତି)।</translation>
 <translation id="6826993739343257035">ARକୁ ଅନୁମତି ଦେବେ?</translation>
-<translation id="6831043979455480757">ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">କ୍ଷେତ୍ର</translation>
 <translation id="6846340164947227603">ଏକ ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ବ୍ୟବହାର କରନ୍ତୁ...</translation>
 <translation id="6852204201400771460">ଆପ୍‌କୁ ରିଲୋଡ୍ କରିବେ କି?</translation>
@@ -1998,14 +1998,14 @@
 <translation id="917450738466192189">ସର୍ଭର୍‍ର ସାର୍ଟିଫିକେଟ୍ ଅବୈଧ ଅଟେ।</translation>
 <translation id="9174917557437862841">ଟାବ୍ ସ୍ୱିଚ୍ କରିବାର ବଟନ୍, ଏହି ଟାବ୍‍କୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଏଣ୍ଟର୍ ଦବାନ୍ତୁ</translation>
 <translation id="9179703756951298733">Chrome ସେଟିଂସରେ ଆପଣଙ୍କର ପେମେଣ୍ଟ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ ସୂଚନା ପରିଚାଳନା କରନ୍ତୁ</translation>
-<translation id="9183302530794969518">Google ଡକସ୍</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ଗୋଟିଏ ଅସମର୍ଥିତ ପ୍ରୋଟୋକଲ୍‌ ବ୍ୟବହାର କରୁଛନ୍ତି।</translation>
 <translation id="9191834167571392248">ତଳ ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="9205078245616868884">ଆପଣଙ୍କର ଡାଟା ଆପଣଙ୍କ ପାସ୍‌ଫ୍ରେଜ୍ ମାଧ୍ୟମରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି। ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ ଏହା ଲେଖନ୍ତୁ।</translation>
 <translation id="9207861905230894330">ନିବନ୍ଧ ଯୋଗ କରିହେଲା ନାହିଁ।</translation>
 <translation id="9213433120051936369">ଏପିଏରେନ୍ସ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="9215416866750762878">ଏକ ଆପ୍ଲିକେସନ୍ Chromeକୁ ଏହି ସାଇଟ୍ ସହିତ ସୁରକ୍ଷିତ ରୂପେ ସଂଯୋଗ କରିବାକୁ ବାଧା ଦେଉଛି</translation>
-<translation id="9219103736887031265">ଛବିଗୁଡ଼ିକ</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="936474030629450166">ସୁପର୍-B</translation>

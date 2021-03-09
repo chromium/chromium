@@ -20,7 +20,7 @@
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 téléchargement en attente.}one{# téléchargement en attente.}other{# téléchargements en attente.}}</translation>
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
-<translation id="1145536944570833626">Supprimer les données existantes.</translation>
+<translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1146678959555564648">Activer la réalité virtuelle</translation>
 <translation id="1154704303112745282">Page non disponible hors connexion : <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Utilisées</translation>
@@ -43,7 +43,7 @@
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
-<translation id="1291207594882862231">Efface l'historique, vider le cache, supprimer les cookies et les données de site…</translation>
+<translation id="1291207594882862231">Effacer l'historique, vider le cache, supprimer les cookies et les données des sites…</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1298077576058087471">Économisez jusqu'à 60 % de données mobiles, découvrez les actualités du jour</translation>
 <translation id="1303339473099049190">Ce mot de passe est introuvable. Vérifiez l'orthographe, puis réessayez.</translation>
@@ -104,7 +104,7 @@
 <translation id="1795251344124198516">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
-<translation id="1821253160463689938">Utilise des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
+<translation id="1821253160463689938">Utiliser des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
@@ -213,7 +213,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> éléments supprimés</translation>
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
 <translation id="2537178555904266562">Erreur lors de la synchronisation des mots de passe</translation>
-<translation id="2546283357679194313">Cookies et données de sites</translation>
+<translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2571711316400087311">Proposer d'envoyer les pages dans d'autres langues vers Google Traduction</translation>
 <translation id="2581165646603367611">Cette action aura pour effet de vider le cache et de supprimer les cookies, ainsi que d'autres données de site que Chrome ne considère pas comme importantes.</translation>
@@ -430,7 +430,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="4307992518367153382">Options de base</translation>
+<translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4314815835985389558">Gérer la synchronisation</translation>
 <translation id="4320177379694898372">Aucune connexion Internet.</translation>
 <translation id="4321739720395210191">Impossible d'ouvrir l'appareil photo. Redémarrez votre appareil et réessayez.</translation>
@@ -932,7 +932,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="7761849928583394409">Sélectionner une date et une heure</translation>
 <translation id="7762668264895820836">Carte SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
-<translation id="7772032839648071052">Confirmer la phrase secrète</translation>
+<translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772375229873196092">Fermer <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> de plus}}</translation>
 <translation id="7778840695157240389">Revenez plus tard pour découvrir d'autres événements</translation>
@@ -1137,7 +1137,7 @@ Les données de votre session de navigation privée ne sont effacées de Chrome 
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="968900484120156207">Les pages que vous consultez sont répertoriées ici</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
-<translation id="974555521953189084">Saisissez votre phrase secrète pour lancer la synchronisation.</translation>
+<translation id="974555521953189084">Saisissez votre phrase secrète pour lancer la synchronisation</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Général</translation>

@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">ઇતિહાસના એન્ટ્રીની સૂચિ</translation>
 <translation id="1517433312004943670">ફોન નંબર આવશ્યક</translation>
 <translation id="1519264250979466059">નિર્માણ તારીખ</translation>
-<translation id="1521655867290435174">Google શીટ</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">કનેક્શનની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="1529521330346880926">10x15 (એન્વલપ)</translation>
 <translation id="1529789484829130889">ટ્રે 8</translation>
@@ -899,7 +899,7 @@
 <translation id="4552089082226364758">ફ્લેશ</translation>
 <translation id="4558551763791394412">તમારા એક્સ્ટેન્શન્સને અક્ષમ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="4559332380232738994">10x11</translation>
-<translation id="457875822857220463">વિતરણ</translation>
+<translation id="457875822857220463">ડિલિવરી</translation>
 <translation id="4579056131138995126">વ્યક્તિગત (એન્વલપ)</translation>
 <translation id="4582204425268416675">કાર્ડ કાઢી નાખો</translation>
 <translation id="4587425331216688090">Chrome માંથી સરનામું દૂર કરીએ?</translation>
@@ -917,7 +917,7 @@
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
 <translation id="467662567472608290">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેના સુરક્ષા પ્રમાણપત્રમાં ભૂલો છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ઍક્સેસિબિલિટી ઇવેન્ટનો જવાબ આપવા માગે છે</translation>
-<translation id="467809019005607715">Google સ્લાઇડ</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> અને હવે તમે આ પાસવર્ડનો જ્યાં ઉપયોગ કરતા હો તે અન્ય સાઇટ પરના તમે સાચવેલા પાસવર્ડ ચેક કરવાનો Chromium સુઝાવ આપે છે.</translation>
 <translation id="4690462567478992370">અમાન્ય પ્રમાણપત્રનો ઉપયોગ કરવાનું બંધ કરો</translation>
 <translation id="4691835149146451662">સ્થાપત્ય-A (એન્વલપ)</translation>
@@ -1440,7 +1440,7 @@
 <translation id="6810899417690483278">કસ્ટમાઇઝેશન ID</translation>
 <translation id="6825578344716086703">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કર્યો, પરંતુ સર્વરે નબળા સહી ઍલ્ગોરિધમ (જેમ કે SHA-1)નો ઉપયોગ કરીને સહીિત કરેલું પ્રમાણપત્ર પ્રસ્તુત કર્યું. આનો અર્થ એ છે કે સર્વરે પ્રસ્તુત કરેલા સુરક્ષા પ્રમાણપત્રો બનાવટી હોય શકે છે અને તે સર્વર તમારું અપેક્ષિત સર્વર (તમે કોઈ હુમલાખોર સાથે વાર્તાલાપ કરતા હોય શકે) ન પણ હોય.</translation>
 <translation id="6826993739343257035">ARને મંજૂરી આપીએ?</translation>
-<translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">ક્ષેત્ર</translation>
 <translation id="6846340164947227603">વર્ચ્યુઅલ કાર્ડ નંબરનો ઉપયોગ કરો…</translation>
 <translation id="6852204201400771460">ઍપ ફરીથી લોડ કરીએ?</translation>
@@ -2013,14 +2013,14 @@
 <translation id="917450738466192189">સર્વરનું પ્રમાણપત્ર અમાન્ય છે.</translation>
 <translation id="9174917557437862841">ટૅબ, સ્વિચ બટન, આ ટૅબ પર સ્વિચ કરવા માટે Enter દબાવો</translation>
 <translation id="9179703756951298733">Chrome સેટિંગમાં તમારી ચુકવણીઓ અને ક્રેડિટ કાર્ડની માહિતી મેનેજ કરો</translation>
-<translation id="9183302530794969518">Google દસ્તાવેજ</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />, એક અસમર્થિત પ્રોટોકોલનો ઉપયોગ કરે છે.</translation>
 <translation id="9191834167571392248">નીચે ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="9205078245616868884">તમારો ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="9207861905230894330">લેખ ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="9213433120051936369">દેખાવને કસ્ટમાઇઝ કરો</translation>
 <translation id="9215416866750762878">કોઈ ઍપ્લિકેશન Chromeને આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ થવાથી અટકાવી રહી છે</translation>
-<translation id="9219103736887031265">છબીઓ</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">ડાઇનર્સ ક્લબ</translation>
 <translation id="935608979562296692">ફોર્મ સાફ કરો</translation>
 <translation id="936474030629450166">સુપર-B</translation>

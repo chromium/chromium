@@ -341,7 +341,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2288422996159078444">Yazdığınız her şey, görüntülediğiniz her sayfa ve web'deki diğer tüm etkinlikleriniz izlenir. Sitelerdeki içerik, bilginiz dışında değiştirilebilir.</translation>
 <translation id="2289385804009217824">Kırp</translation>
 <translation id="2292556288342944218">İnternet erişiminiz engellendi</translation>
-<translation id="2293443924986248631">Etkinleştirildiğinde, siteler sizi web'de takip eden çerezler kullanamaz. Bazı sitelerdeki özellikler bozulabilir.</translation>
+<translation id="2293443924986248631">Etkinleştirildiğinde, siteler sizi web'de takip eden çerezler kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="2295290966866883927">Ziyaret ettiğiniz sayfaların URL'leri analiz amacıyla Google Cloud'a veya üçüncü taraflara gönderilir. Örneğin, güvenli olmayan web sitelerini tespit etmek için taranabilirler.</translation>
 <translation id="2297722699537546652">B5 (Zarf)</translation>
 <translation id="2300306941146563769">Yüklenmeyenler</translation>
@@ -1841,7 +1841,7 @@ Ek ayrıntılar:
 <translation id="8438786541497918448">Kamera ve mikrofon kullanılsın mı?</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8457125768502047971">Süresiz</translation>
-<translation id="8461694314515752532">Senkronize edilen verileri senkronizasyon parolanızı kullanarak şifrele</translation>
+<translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
 <translation id="8473863474539038330">Adresler ve daha fazlası</translation>
 <translation id="8474910779563686872">Geliştirici ayrıntılarını göster</translation>
@@ -1915,7 +1915,7 @@ Ek ayrıntılar:
 <translation id="8805819170075074995">Liste girişi "<ph name="LANGUAGE_ID" />": Giriş, SpellcheckLanguage politikasında da yer aldığı için yoksayıldı.</translation>
 <translation id="8807160976559152894">Her sayfadan sonra kırp</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızdan Chrome'u güncellemek için Sekme'ye, sonra Enter'a basın</translation>
-<translation id="8820817407110198400">Favoriler</translation>
+<translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="883848425547221593">Diğer Yer İşaretleri</translation>
 <translation id="884264119367021077">Gönderim adresi</translation>
 <translation id="884923133447025588">İptal mekanizması bulunamadı.</translation>

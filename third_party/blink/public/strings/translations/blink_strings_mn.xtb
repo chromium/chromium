@@ -54,7 +54,7 @@
 <translation id="245932805758469625">видео үргэлжлэх үлдсэн секундийн тоо</translation>
 <translation id="248395913932153421">Өдөр</translation>
 <translation id="2507943997699731163">Энэ талбарыг бөглөнө үү.</translation>
-<translation id="2508569020611168319">чихтэй хуудасны жагсаалт</translation>
+<translation id="2508569020611168319">табын жагсаалт</translation>
 <translation id="2530182415807757784">олныг сонгох боломжтой, алийг нь ч сонгоогүй.</translation>
 <translation id="2561842179657104141">бусад медиа хяналтыг харуулах</translation>
 <translation id="2572483411312390101">Тоглуулах</translation>
@@ -73,7 +73,7 @@
 <translation id="2908441821576996758">Цэгээр тусгаарлагдсан и-мэйл хаягуудын жагсаалтыг оруулна уу.</translation>
 <translation id="2940813599313844715">обьект</translation>
 <translation id="3040011195152428237">холбоос</translation>
-<translation id="3049748772180311791"><ph name="QUANTITY" /> Мегабайт</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Энэ талбар нь бүрэн бус эсвэл хүчин төгөлдөр бус огноотой байна. Хүчин төгөлдөр утга оруулна уу.</translation>
 <translation id="3078740164268491126">Хүснэгт</translation>
 <translation id="3086746722712840547">Тайлбар</translation>
@@ -117,7 +117,7 @@
 <translation id="4698212723196775569">код</translation>
 <translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>
 <translation id="4742539557769756338">ковер</translation>
-<translation id="4748357248530471599">дэлгэцийг таслахыг бүтэн дэлгэцээр унтраах/асаах</translation>
+<translation id="4748357248530471599">дэлгэцийг таслахыг бүтэн дэлгэцээр асаах/унтраах</translation>
 <translation id="4757246831282535685">цонхны самбар</translation>
 <translation id="4763480195061959176">видео</translation>
 <translation id="479989351350248267">хайлт</translation>
@@ -220,7 +220,7 @@
 <translation id="739024184232394898">Бусад...</translation>
 <translation id="7405738980073107433">нэмэлт тэмдэглэл</translation>
 <translation id="7410239719251593705">Насанд хүрэгчдэд зориулсан контент агуулсан бололтой. Тайлбар алга.</translation>
-<translation id="7460907917090416791"><ph name="QUANTITY" /> терабайт</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7491962110804786152">цонх</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7529102961911894712">арын холбоос</translation>

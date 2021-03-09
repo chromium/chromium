@@ -62,12 +62,12 @@
 <translation id="2914313326123580426">顯示或隱藏 Developer Tools 面板</translation>
 <translation id="292495055542441795">切換全螢幕</translation>
 <translation id="3020183492814296499">快速鍵</translation>
-<translation id="3084301071537457911">突顯檔案櫃中的下一個項目</translation>
-<translation id="309173601632226815">突顯檔案櫃中的啟動器按鈕</translation>
+<translation id="3084301071537457911">突顯捷徑列中的下一個項目</translation>
+<translation id="309173601632226815">突顯捷徑列中的啟動器按鈕</translation>
 <translation id="3105917916468784889">擷取螢幕擷圖</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">將焦點移至網址列</translation>
-<translation id="3256109297135787951">取消檔案櫃上項目的突顯狀態</translation>
+<translation id="3256109297135787951">取消捷徑列上項目的突顯狀態</translation>
 <translation id="3288816184963444640">關閉目前視窗</translation>
 <translation id="3407560819924487926">啟動工作管理員</translation>
 <translation id="3422679037938588196">前往上一個相符的搜尋結果</translation>
@@ -81,11 +81,11 @@
 <translation id="3720939646656082033">在新分頁中開啟連結，並切換至新分頁</translation>
 <translation id="3725795051337497754">關閉目前分頁</translation>
 <translation id="3751033133896282964">復原上一個操作</translation>
-<translation id="3792178297143798024">開啟檔案櫃中突顯的項目</translation>
+<translation id="3792178297143798024">開啟捷徑列中突顯的項目</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 至 8 鍵</translation>
 <translation id="3837047332182291558">調亮鍵盤 (只適用於背光鍵盤)</translation>
 <translation id="3949671998904569433">逗號</translation>
-<translation id="3976863468609830880">按一下檔案櫃中的最後一個圖示</translation>
+<translation id="3976863468609830880">按一下捷徑列中的最後一個圖示</translation>
 <translation id="3994783594793697310">重設顯示縮放比例</translation>
 <translation id="4026843240379844265">在顯示屏之間移動使用中的視窗</translation>
 <translation id="4035482366624727273">選取網頁上的所有項目</translation>
@@ -144,8 +144,8 @@
 <translation id="6340769215862220182">放大顯示</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /> 鍵</translation>
 <translation id="6395172954772765143">選取文字至本行結尾</translation>
-<translation id="6425378783626925378">按一下檔案櫃中的第 1-8 個圖示</translation>
-<translation id="6435207348963613811">突顯檔案櫃中的上一個項目</translation>
+<translation id="6425378783626925378">按一下捷徑列中的第 1-8 個圖示</translation>
+<translation id="6435207348963613811">突顯捷徑列中的上一個項目</translation>
 <translation id="6445033640292336367">讓分頁回到原位</translation>
 <translation id="6474744297082284761">縮小 (如已啟用固定或全螢幕放大鏡)</translation>
 <translation id="649811797655257835">選取檔案，然後按<ph name="SPACE" /></translation>

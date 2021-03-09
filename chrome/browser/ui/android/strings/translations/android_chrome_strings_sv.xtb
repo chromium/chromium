@@ -12,7 +12,7 @@
 <translation id="10614374240317010">Aldrig sparad</translation>
 <translation id="1067922213147265141">Andra Google-tjänster</translation>
 <translation id="107147699690128016">Om du ändrar filnamnstillägget kanske filen öppnas i ett annat program vilket kan utgöra en fara för enheten.</translation>
-<translation id="1100066534610197918">Öppna på en ny flik i gruppen</translation>
+<translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1105960400813249514">Skärmavbildning</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
@@ -425,7 +425,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="423219824432660969">Kryptera synkroniserad data med Google-lösenordet från <ph name="TIME" /></translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4248098802131000011">Skydda dina lösenord från dataintrång och andra säkerhetsproblem</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4298388696830689168">Länkade webbplatser</translation>
@@ -526,7 +526,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4913169188695071480">Sluta uppdatera</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /> under sökningen efter enheter …</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# sida}other{# sidor}}</translation>
-<translation id="4925120120285606924">Skärmdump <ph name="CURRENT_DATE_ISO" /></translation>
+<translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Dina lösenord exporteras och laddas ned som en textfil. De blir synliga för alla personer och appar som har åtkomst till målmappen.</translation>
 <translation id="4932247056774066048">Eftersom du loggar ut från ett konto som hanteras av <ph name="DOMAIN_NAME" /> raderas din Chrome-data från den här enheten. Den finns kvar på ditt Google-konto.</translation>
 <translation id="4943703118917034429">Virtuell verklighet</translation>
@@ -674,7 +674,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
 <translation id="5964805880140440652">Aktivera synkronisering i inställningarna för Chrome om du vill dela den här sidan med annan enhet</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
-<translation id="5979084224081478209">Kontrollera lösenorden</translation>
+<translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5982307838673692400">Öppna en inkognitoflik</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
@@ -1101,7 +1101,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="9028914725102941583">Aktivera synkronisering om du vill dela mellan enheter</translation>
 <translation id="9040142327097499898">Aviseringar tillåts. Plats har inaktiverats på enheten.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videor}}</translation>
-<translation id="9042893549633094279">Sekretess och säkerhet</translation>
+<translation id="9042893549633094279">Integritet och säkerhet</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9063523880881406963">Inaktivera begäran av webbplats för stationär dator</translation>
 <translation id="9065203028668620118">Redigera</translation>

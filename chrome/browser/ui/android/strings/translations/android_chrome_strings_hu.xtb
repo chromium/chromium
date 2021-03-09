@@ -254,7 +254,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2888126860611144412">A Chrome névjegye</translation>
 <translation id="2891154217021530873">Oldal betöltésének leállítása</translation>
 <translation id="2892647708214602204">Értesítést kap, amikor a fájl elkészült</translation>
-<translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Keresés és más Google-szolgáltatások személyre szabására</translation>
+<translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Kereső és más Google-szolgáltatások személyre szabására</translation>
 <translation id="2898264748040935573">Tárolt jelszó módosítása</translation>
 <translation id="2900528713135656174">Esemény létrehozása</translation>
 <translation id="2901411048554510387">Javaslatok megjelenítése a következőhöz: <ph name="WEBSITE_TITLE" /></translation>
@@ -642,7 +642,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5776970333778123608">Nem fontos adatok</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />/<ph name="SPACE_USED" /> használatban</translation>
 <translation id="5795872532621730126">Keresés és böngészés</translation>
-<translation id="5797070761912323120">A Google felhasználhatja az Ön előzményeit a Keresés, a hirdetések és más Google-szolgáltatások személyre szabására</translation>
+<translation id="5797070761912323120">A Google felhasználhatja az Ön előzményeit a Kereső, a hirdetések és más Google-szolgáltatások személyre szabására</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="5814131985548525293">Ide írhat, vagy koppintson a hangalapú keresés ikonjára az indításhoz</translation>
@@ -952,7 +952,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="789763218334337857">A Chrome használata</translation>
 <translation id="7919123827536834358">Automatikus fordítás ezekről a nyelvekről</translation>
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Fájl letöltése…}other{# fájl letöltése…}}</translation>
-<translation id="7926975587469166629">Kártya beceneve</translation>
+<translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7929962904089429003">A menü megnyitása</translation>
 <translation id="7930998711684428189">Figyelmezteti Önt, ha a jelszavak adatvédelmi incidens során nyilvánosságra kerülnek</translation>
 <translation id="7942131818088350342">A(z) <ph name="PRODUCT_NAME" /> elavult.</translation>
@@ -1049,7 +1049,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8561196567344536112">1. Nyissa meg a Beállításokat.\n2. Koppintson a „Böngészőalkalmazás” lehetőségre.\n3. Válassza ki a(z) <ph name="APP_NAME" /> alkalmazást.</translation>
 <translation id="8562452229998620586">A mentett jelszavak itt jelennek meg.</translation>
 <translation id="8569404424186215731"><ph name="DATE" /> óta</translation>
-<translation id="8571213806525832805">Az elmúlt négy hétből</translation>
+<translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
 <translation id="8572344201470131220">Kép vágólapra másolva</translation>
 <translation id="8583805026567836021">Fiókadatok törlése</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>

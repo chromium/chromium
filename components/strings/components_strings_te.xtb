@@ -129,7 +129,7 @@
 <translation id="1413809658975081374">గోప్యతా ఎర్రర్</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1428146450423315676">స్టాకర్ 7</translation>
-<translation id="1430915738399379752">ముద్రించు</translation>
+<translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1442386063175183758">కుడివైపు గేట్ ఫోల్డ్</translation>
 <translation id="1442987760062738829">రంధ్రం</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -151,7 +151,7 @@
 <translation id="1513706915089223971">చరిత్ర నమోదుల జాబితా</translation>
 <translation id="1517433312004943670">ఫోన్ నంబర్ అవసరం</translation>
 <translation id="1519264250979466059">బిల్డ్ తేదీ</translation>
-<translation id="1521655867290435174">Google షీట్‌లు</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">కనెక్షన్ కోసం వేచి ఉన్నాము...</translation>
 <translation id="1529521330346880926">10x15 (ఎన్వలప్)</translation>
 <translation id="1529789484829130889">ట్రే 8</translation>
@@ -295,7 +295,7 @@
 <translation id="2099652385553570808">ఎడమవైపు ట్రిపుల్ స్టేపుల్</translation>
 <translation id="2101225219012730419">వెర్షన్:</translation>
 <translation id="2102134110707549001">బలమైన పాస్‌వర్డ్‌ను సూచించు…</translation>
-<translation id="2102495993840063010">Android అనువర్తనాలు</translation>
+<translation id="2102495993840063010">Android యాప్‌లు</translation>
 <translation id="2107021941795971877">ప్రింట్ మద్దతులు</translation>
 <translation id="2108755909498034140">మీ కంప్యూటర్‌ను పునఃప్రారంభించండి</translation>
 <translation id="2111256659903765347">సూపర్-A</translation>
@@ -764,7 +764,7 @@
 <translation id="4098354747657067197">ముందున్న సైట్ మోసపూరితమైనది</translation>
 <translation id="4101413244023615925">టెక్స్ట్, గ్రాఫిక్స్</translation>
 <translation id="4103249731201008433">పరికరం క్రమ సంఖ్య చెల్లదు</translation>
-<translation id="4110652170750985508">మీ చెల్లింపును సమీక్షించండి</translation>
+<translation id="4110652170750985508">మీ చెల్లింపును రివ్యూ చేయండి</translation>
 <translation id="4112140312785995938">వెనుకకు జరుపు</translation>
 <translation id="4116663294526079822">ఈ సైట్‌లో ఎల్లప్పుడూ అనుమతించు</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -917,7 +917,7 @@
 <translation id="4670064810192446073">వర్చువల్ రియాలిటీ</translation>
 <translation id="467662567472608290">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రంలో లోపాలు ఉన్నాయి. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="4677585247300749148">యాక్సెసిబిలిటీ ఈవెంట్‌లకు <ph name="URL" /> ప్రతిస్పందించాలని అనుకుంటోంది</translation>
-<translation id="467809019005607715">Google స్లయిడ్‌లు</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, ఇతర సైట్‌లలో ప్రస్తుతం మీరు ఎక్కడైతే ఈ పాస్‌వర్డ్‌ను ఉపయోగిస్తారో, అక్కడ మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను తనిఖీ చేసుకోమని Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="4690462567478992370">చెల్లని ప్రమాణపత్రాన్ని ఉపయోగించడాన్ని ఆపివేయి</translation>
 <translation id="4691835149146451662">ఆర్కిటెక్చర్-A (ఎన్వలప్)</translation>
@@ -1472,7 +1472,7 @@
 <translation id="6973656660372572881">రెండు స్థిర ప్రాక్సీ సర్వర్లు మరియు ఒక .pac స్క్రిప్ట్ URL పేర్కొనబడ్డాయి.</translation>
 <translation id="6973932557599545801">క్షమించండి నేను సహాయం చేయలేకపోయాను, దయచేసి మీరే స్వంతంగా కొనసాగండి.</translation>
 <translation id="6975012522936652259">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీరు ఈ పాస్‌వర్డ్‌ను ఉపయోగించిన<ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, ఇతర సైట్‌లకు ఇప్పుడే వెళ్లి, మీ పాస్‌వర్డ్‌ను మార్చాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
-<translation id="6979158407327259162">Google డిస్క్</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">మ్యూట్ (డిఫాల్ట్)</translation>
 <translation id="6979983982287291980">మీరు డౌన్‌లోడ్ చేసిన ఫైల్స్ Google క్లౌడ్ లేదా థర్డ్ పార్టీలకు విశ్లేషణ కోసం పంపబడతాయి. ఉదాహరణకు, వాటిని సున్నితమైన వ్యక్తిగత సమాచారం లేదా మాల్‌వేర్ కోసం స్కాన్ చేయబడవచ్చు.</translation>
 <translation id="6989763994942163495">అధునాతన సెట్టింగ్‌లను చూపించు...</translation>
@@ -1982,7 +1982,7 @@
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>
 <translation id="9056953843249698117">స్టోర్</translation>
 <translation id="9062620674789239642">ఇది తరలించబడి గానీ, ఎడిట్ చేసి గానీ లేదా తొలగించబడి ఉండవచ్చు.</translation>
-<translation id="9065203028668620118">సవరించు</translation>
+<translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9065745800631924235">చరిత్ర నుండి <ph name="TEXT" /> శోధన</translation>
 <translation id="9069693763241529744">పొడిగింపు ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="9078964945751709336">మరింత సమాచారం ఆవశ్యకం</translation>
@@ -2013,14 +2013,14 @@
 <translation id="917450738466192189">సర్వర్ యొక్క ప్రమాణపత్రం చెల్లుబాటు కాదు.</translation>
 <translation id="9174917557437862841">ట్యాబ్ స్విచ్ బటన్, ఈ ట్యాబ్‌కి మారడానికి ఎంటర్‌ని నొక్కండి</translation>
 <translation id="9179703756951298733">Chrome సెట్టింగ్‌లలో మీ పేమెంట్‌లను, క్రెడిట్ కార్డ్ సమాచారాన్ని మేనేజ్ చేయండి</translation>
-<translation id="9183302530794969518">Google డాక్స్</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> మద్దతు లేని ప్రోటోకాల్‌ను ఉపయోగిస్తోంది.</translation>
 <translation id="9191834167571392248">ఎడమవైపు దిగువ భాగంలో రంధ్రం</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>
 <translation id="9215416866750762878">ఒక అప్లికేషన్ కారణంగా Chrome ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ కాలేకపోతోంది</translation>
-<translation id="9219103736887031265">చిత్రాలు</translation>
+<translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="933712198907837967">డైనర్స్ క్లబ్</translation>
 <translation id="935608979562296692">ఫారమ్‌ను తీసివేయండి</translation>
 <translation id="936474030629450166">సూపర్-B</translation>

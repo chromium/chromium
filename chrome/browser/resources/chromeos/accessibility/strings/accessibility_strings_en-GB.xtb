@@ -43,7 +43,7 @@
 <translation id="1230503547248836149">Selection start</translation>
 <translation id="1236794971743289975">Endnote</translation>
 <translation id="1237866625126425153">rdgrp</translation>
-<translation id="1243477406442346359">Cornflower Blue</translation>
+<translation id="1243477406442346359">Cornflower blue</translation>
 <translation id="1246424317317450637">Bold</translation>
 <translation id="1251750620252348585">Next level 6 heading</translation>
 <translation id="1268366246392928616">No previous maths expression</translation>
@@ -79,7 +79,7 @@
 <translation id="1502086903961450562">Previous graphic</translation>
 <translation id="1506187449813838456">Increase pitch</translation>
 <translation id="151784044608172266">Next Sentence</translation>
-<translation id="1524531499102321782">Braille next Line</translation>
+<translation id="1524531499102321782">Braille next line</translation>
 <translation id="1542513807034338907">Scroll to previous page</translation>
 <translation id="1546370775711804143">Scroll bar</translation>
 <translation id="1555130319947370107">Blue</translation>
@@ -110,7 +110,7 @@
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="174268867904053074">Next graphic</translation>
-<translation id="1756785467854861272">Dark Magenta</translation>
+<translation id="1756785467854861272">Dark magenta</translation>
 <translation id="1765245556747822181">Swipe one finger up</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1781173782405573156">Pass through key</translation>
@@ -138,12 +138,12 @@
 <translation id="1988733631391393183">Show braille commands in the ChromeVox menus</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{left bracket}other{# left brackets}}</translation>
 <translation id="2009187674653301682">Not superscript</translation>
-<translation id="2010555995361223825">ChromeVox Menus</translation>
+<translation id="2010555995361223825">ChromeVox menus</translation>
 <translation id="203030071582665758">No previous level 4 heading</translation>
 <translation id="2045055672832940894">No previous control</translation>
 <translation id="2045606329038304310">Form field control</translation>
 <translation id="2063539687800151747">Epigraph</translation>
-<translation id="2086961585857038472">Next Word</translation>
+<translation id="2086961585857038472">Next word</translation>
 <translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">en</translation>
 <translation id="2091933974477985526">Previous editable text area</translation>
@@ -177,7 +177,7 @@
 <translation id="2347456970887948350">A link</translation>
 <translation id="2381733276052567791">Toggle speech on or off</translation>
 <translation id="2390264819538553347">To advance, press enter; to go back, press backspace.</translation>
-<translation id="2398579267367951220">Type to search the page. Press enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or escape to cancel.</translation>
+<translation id="2398579267367951220">Type to search the page. Press Enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or Escape to cancel.</translation>
 <translation id="240709722712693803">Blue Violet</translation>
 <translation id="2416512023405990736">An unticked tick box</translation>
 <translation id="2417569100218200841">Content info</translation>
@@ -185,7 +185,7 @@
 <translation id="2419852971200420169">Description list</translation>
 <translation id="2421113964388408478">Deletion</translation>
 <translation id="2422937916923936891">Menu item tick box</translation>
-<translation id="2428534162001909979">Command Menus</translation>
+<translation id="2428534162001909979">Command menus</translation>
 <translation id="242998846562331953">Subtitle</translation>
 <translation id="2435422727584637732">Dodger Blue</translation>
 <translation id="2450814015951372393">Tick box</translation>
@@ -237,7 +237,7 @@
 <translation id="2841013758207633010">Time</translation>
 <translation id="2843432675592278677">No previous ARIA landmark</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
-<translation id="2843837985843789981">Previous Group</translation>
+<translation id="2843837985843789981">Previous group</translation>
 <translation id="2864481629947106776">Previous link</translation>
 <translation id="2867808975387772810">Bibliography</translation>
 <translation id="2873259058405069099">Go to beginning of table</translation>
@@ -265,7 +265,7 @@
 <translation id="3030432017085518523">Menu item radio button</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrophe}other{# apostrophes}}</translation>
 <translation id="3040901448410802366">Progress indicator</translation>
-<translation id="3046838483509668188">ChromeVox Options</translation>
+<translation id="3046838483509668188">ChromeVox options</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menu opened</translation>
 <translation id="3060880924447482063">Swipe left or right to move by item</translation>
 <translation id="3070245424257836917">Swipe three fingers up</translation>
@@ -330,14 +330,14 @@
 <translation id="3389259863310851658">Previous form field</translation>
 <translation id="3393605254399152980">Drag one finger to hear what you touch</translation>
 <translation id="3406283310380167331">Show forms list</translation>
-<translation id="3414400929511680526">Alice Blue</translation>
+<translation id="3414400929511680526">Alice blue</translation>
 <translation id="3418936350470374046">No cell below</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Partially pressed</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, switch off</translation>
 <translation id="3466530247399808663">An invalid key press</translation>
 <translation id="3468959318854349468">No title</translation>
-<translation id="3469413619751135069">Pale Green</translation>
+<translation id="3469413619751135069">Pale green</translation>
 <translation id="3490765818161916458">List grid</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{right bracket}other{# right brackets}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -351,7 +351,7 @@
 <translation id="3587482841069643663">All</translation>
 <translation id="3589661172894441357">Glossary</translation>
 <translation id="3591784666823501596">Royal Blue</translation>
-<translation id="3594207934078151302">Medium Sea Green</translation>
+<translation id="3594207934078151302">Medium sea green</translation>
 <translation id="3599054940393788245">Not inside math</translation>
 <translation id="360241989769010433">Acknowledgements</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -386,11 +386,11 @@
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Previous level 6 heading</translation>
 <translation id="3914173277599553213">Required</translation>
-<translation id="3914732343065571127">ChromeVox Command Reference</translation>
+<translation id="3914732343065571127">ChromeVox command reference</translation>
 <translation id="3930383913623796990">Spring Green</translation>
 <translation id="3930498801443296724">Pullquote</translation>
 <translation id="3935615366277838204">Cap <ph name="LETTER" /></translation>
-<translation id="3936394396199829062">Lavender Blush</translation>
+<translation id="3936394396199829062">Lavender blush</translation>
 <translation id="3943857333388298514">Paste</translation>
 <translation id="3962990492275676168">Start reading from current location</translation>
 <translation id="3970951409746498040">Sandy Brown</translation>
@@ -417,7 +417,7 @@
 <translation id="4161663686871496107">ChromeVox spoken feedback is ready</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4187322598335821254">Swipe up or down to move by line</translation>
-<translation id="4188530942454211480">Previous Sentence</translation>
+<translation id="4188530942454211480">Previous sentence</translation>
 <translation id="4191918948604314587">A button</translation>
 <translation id="419265409837491189">Go to the previous column</translation>
 <translation id="4202186506458631436">Move right</translation>
@@ -529,10 +529,10 @@
 <translation id="5020651427400641814">Enable speech logging</translation>
 <translation id="5041394372352067729">Move braille display to top of page</translation>
 <translation id="5042770794184672516">Increase speech volume</translation>
-<translation id="5042992464904238023">Web Content</translation>
+<translation id="5042992464904238023">Web content</translation>
 <translation id="5050015258024679800">Previous level 4 heading</translation>
 <translation id="5054047268577924192">Previous list item</translation>
-<translation id="5085453135206054947">Pale Violet Red</translation>
+<translation id="5085453135206054947">Pale violet red</translation>
 <translation id="5087864757604726239">back</translation>
 <translation id="5102981729317424850">Tool bar</translation>
 <translation id="5105050547967751155">rq</translation>
@@ -708,7 +708,7 @@
 <translation id="6521550811716689390">Dark Violet</translation>
 <translation id="6536157907112457272">Linen</translation>
 <translation id="6540201937398578274">In ChromeVox, the Search key is the modifier key. Most ChromeVox shortcuts start with the Search key. You’ll also use the arrow keys for navigation.</translation>
-<translation id="6544923685317771506">Sea Shell</translation>
+<translation id="6544923685317771506">Sea shell</translation>
 <translation id="6551185905438378412">Ivory</translation>
 <translation id="6561818612645211875">Go to beginning of the current row</translation>
 <translation id="6579990219486187401">Light pink</translation>
@@ -903,7 +903,7 @@
 <translation id="8083115023881784332">No current ChromeVox focus. Press Alt+Shift+L to go to the launcher.</translation>
 <translation id="8091452896542422286">Space</translation>
 <translation id="8096975275316362544">Mint Cream</translation>
-<translation id="8098587210054821856">Slate Grey</translation>
+<translation id="8098587210054821856">Slate grey</translation>
 <translation id="8121539003537428024">Enable all event filters</translation>
 <translation id="8123975449645947908">Scroll backwards</translation>
 <translation id="8126386426083591964">No previous level 5 heading</translation>
@@ -932,7 +932,7 @@
 <translation id="8313653172105209786">dir</translation>
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">Personalise Text-to-Speech settings</translation>
-<translation id="8326783648485765113">Lawn Green</translation>
+<translation id="8326783648485765113">Lawn green</translation>
 <translation id="8328063869313048659">Toggle dark screen</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pound}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Region</translation>
@@ -967,7 +967,7 @@
 <translation id="8625173877182443267">No next level 6 heading</translation>
 <translation id="8628186274519446680">Tomato</translation>
 <translation id="8638532244051952400">Announce current cell co-ordinates</translation>
-<translation id="8640369214276455272">White Smoke</translation>
+<translation id="8640369214276455272">White smoke</translation>
 <translation id="8651481478098336970">volume mute</translation>
 <translation id="8653646212587894517">Show links list</translation>
 <translation id="8656888282555543604">Enable braille logging</translation>
@@ -1025,7 +1025,7 @@
 <translation id="9192904702577636854">Marquee</translation>
 <translation id="9205282956404529648">Type to auto complete</translation>
 <translation id="9208241857935108694">Antique White</translation>
-<translation id="9220679313820249046">Orange Red</translation>
+<translation id="9220679313820249046">Orange red</translation>
 <translation id="9223032053830369045">Dark Red</translation>
 <translation id="923331726185079994">ChromeVox Updated</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>

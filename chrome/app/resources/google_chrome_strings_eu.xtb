@@ -8,12 +8,12 @@
 
 Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak ez dira aldatuko.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> Chrome erabiltzen ari da lehendik ere</translation>
-<translation id="1097330777386562916">Garbitu cookieak eta webguneen datuak Chrome-tik irteten zarenean</translation>
+<translation id="1097330777386562916">Garbitu cookieak eta webguneetako datuak Chrome-tik irteten zarenean</translation>
 <translation id="110877069173485804">Hau da zure Chrome</translation>
 <translation id="1125124144982679672">Nor erabiltzen ari da Chrome?</translation>
 <translation id="1142745911746664600">Ezin da eguneratu Chrome</translation>
 <translation id="1154147086299354128">&amp;Ireki Chrome-n</translation>
-<translation id="123620459398936149">Chrome OS sistemak ezin izan ditu zure datuak sinkronizatu. Aldatu sinkronizazio-pasaesaldia.</translation>
+<translation id="123620459398936149">Chrome OS-ek ezin izan ditu sinkronizatu zure datuak. Aldatu sinkronizazio-pasaesaldia.</translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1355000804395496115">Erabili profil ezberdinak Chrome-n laneko arakatze-datuak eta arakatze-datu pertsonalak bereizteko, edo gailua erabiltzen duen pertsona bakoitzarentzako profil bana</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -26,7 +26,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1597911401261118146">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="1619887657840448962">Chrome seguruagoa izan dadin, zuk jakin gabe gehitu den eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dagoen luzapena desgaitu dugu.</translation>
 <translation id="162448658176061655">Chrome-k nahi ez den softwarerik baden begiratzen du astean behin. Duela gutxi egiaztatu du azkenengoz.</translation>
-<translation id="162629503687514352">Chrome OS sistema eragileak ezin izan ditu sinkronizatu pasahitzak.</translation>
+<translation id="162629503687514352">Chrome OS-ek ezin izan ditu sinkronizatu pasahitzak.</translation>
 <translation id="1628000112320670027">Lortu Chrome erabiltzeko laguntza</translation>
 <translation id="1662639173275167396"><ph name="BEGIN_LINK_LINUX_OSS" />Linux (Beta)<ph name="END_LINK_LINUX_OSS" /> eta antzeko <ph name="BEGIN_LINK_CROS_OSS" />kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS.</translation>
 <translation id="1666409074978194368">Ia amaitu dugu eguneratzen! Guztiz amaitzeko, berrabiarazi Google Chrome. Ezkutuko moduko leihoak ez dira berriro irekiko.</translation>
@@ -61,7 +61,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2467438592969358367">Google Chrome-k pasahitzak esportatu nahi ditu. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2534507159460261402">Google Pay (Chrome-n kopiatu da)</translation>
-<translation id="2580411288591421699">Ezin da instalatu unean abian den Google Chrome-ren bertsio bera. Itxi Google Chrome eta saiatu berriro.</translation>
+<translation id="2580411288591421699">Ezin da instalatu une honetan abian den Google Chrome-ren bertsio bera. Itxi Google Chrome eta saiatu berriro.</translation>
 <translation id="2586406160782125153">Gailuko arakatze-datuak ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="2622559029861875898">Chrome-k ezin ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2644798301485385923">Chrome OS sistema</translation>
@@ -86,7 +86,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3080151273017101988">Mantendu atzeko planoko aplikazioak abian Google Chrome ixten denean</translation>
 <translation id="3089968997497233615">Google Chrome-ren bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="3114643501466072395">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
-<translation id="3127818369811890733">Chrome OS sistema eragileak ezin izan ditu sinkronizatu datuak.</translation>
+<translation id="3127818369811890733">Chrome OS-ek ezin izan ditu sinkronizatu datuak.</translation>
 <translation id="3149510190863420837">Chrome-ren aplikazioak</translation>
 <translation id="3360895254066713204">Chrome laguntzailea</translation>
 <translation id="3379938682270551431">{0,plural, =0{Orain berrabiaraziko da Chrome}=1{1 segundo barru berrabiaraziko da Chrome}other{# segundo barru berrabiaraziko da Chrome}}</translation>
@@ -124,7 +124,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4251615635259297716">Chrome-n dituzun datuak kontu honi lotu nahi dizkiozu?</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4293420128516039005">Hasi saioa Chrome gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
-<translation id="4325083532956419387">Chrome OS-ren bertsioa</translation>
+<translation id="4325083532956419387">Chrome OS-en bertsioa</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4335235004908507846">Datuen isilpekotasunaren urratzeen, luzapen gaiztoen eta abarren aurrean babes zaitzake Chrome-k.</translation>
@@ -133,8 +133,8 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4407807842708586359">Google Chrome OS</translation>
 <translation id="4450664632294415862">Chrome - Hasi saioa sarean - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Beste eragiketa bat ari da egiten Google Chrome. Saiatu berriro geroago.</translation>
-<translation id="4480040274068703980">Saioa hastean gertatu den errore bat dela-eta, Chrome OS sistemak ezin izan ditu sinkronizatu zure datuak.</translation>
-<translation id="4521185804071812304">Aukerakoa: lagundu Chrome OS sistemaren eginbideak eta funtzionamendua hobetzen Google-ri diagnostikoak eta erabilera-datuak automatikoki bidalita.</translation>
+<translation id="4480040274068703980">Saioa hastean gertatu den errore bat dela-eta, Chrome OS-ek ezin izan ditu sinkronizatu zure datuak.</translation>
+<translation id="4521185804071812304">Aukerakoa: lagundu Chrome OS-en eginbideak eta funtzionamendua hobetzen Google-ri diagnostikoak eta erabilera-datuak automatikoki bidalita.</translation>
 <translation id="4561051373932531560">Google Chrome-rekin, telefono-zenbakietan klik egin dezakezu Skype bidez horietara deitzeko!</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Laster-markak, historia eta bestelako ezarpenak atzi ditzakezu saioa hasita daukaten gailu guztien bidez.</translation>
 <translation id="4571503333518166079">Joan Chrome-ren jakinarazpen-ezarpenetara</translation>
@@ -158,7 +158,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5170938038195470297">Ezin da profila erabili Google Chrome-ren bertsio berriago batekoa delako.
 
 Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direktorio bat edo erabili Chrome-ren bertsio berriagoa.</translation>
-<translation id="5193136243808726294">Google Chrome OS sistemak ezin du ireki orri hau.</translation>
+<translation id="5193136243808726294">Google Chrome OS-ek ezin du ireki orri hau.</translation>
 <translation id="5251420635869119124">Gonbidatuek Chrome erabil dezakete aztarnarik utzi gabe.</translation>
 <translation id="532046782124376502">Abisua: Google Chrome-k ezin die eragotzi luzapenei zure arakatze-historia erregistratzea. Luzapena ezkutuko moduan desgaitzeko, desautatu aukera hau.</translation>
 <translation id="5386244825306882791">Chrome hastean edo Omnibox bidez bilatzean erakutsiko den orria ere kontrolatzen du.</translation>
@@ -170,13 +170,13 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5633355459292055250">Galdetu Chrome irekitzen dudanean</translation>
 <translation id="5657226924540934362">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />
-      Chrome OS-ren ezarpenetan.<ph name="LINK_END" /></translation>
+      Chrome OS-en ezarpenetan.<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko}=1{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="5686916850681061684">Pertsonalizatu eta kontrolatu Google Chrome. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{1 segundo barru berrabiaraziko da Google Chrome}other{# segundo barru berrabiaraziko da Google Chrome}}</translation>
-<translation id="573759479754913123">Chrome OS sistemari buruz</translation>
+<translation id="573759479754913123">Chrome OS-i buruz</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Ezin izan da abiarazi Chrome. Saiatu berriro.</translation>
 <translation id="5867197326698922595">Pasahitzak editatzen saiatzen ari da Google Chrome.</translation>
@@ -206,7 +206,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
 <translation id="6943584222992551122">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="6967962315388095737">Google Chrome Beta-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
-<translation id="6982337800632491844">Gailua erabili aurretik, <ph name="DOMAIN" /> domeinuak jarraian azalduko diren Zerbitzu-baldintza irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte Google Chrome OS Baldintzak hedatuko, aldatuko edo mugatuko.</translation>
+<translation id="6982337800632491844">Gailua erabili aurretik, <ph name="DOMAIN" /> domeinuak jarraian azalduko diren Zerbitzu-baldintza irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS-en Baldintzak.</translation>
 <translation id="6989339256997917931">Google Chrome eguneratu egin da, baina ez duzu 30 egunetan erabili.</translation>
 <translation id="7054640471403081847">Ordenagailuak laster Google Chrome eguneratzeak jasotzeari utziko dio bere hardwarea ez delako jada bateragarria.</translation>
 <translation id="7062128746136194023">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gehitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
@@ -222,12 +222,12 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7386132805935307836">Chrome-k nahi ez den softwarerik baden begiratzen du astean behin. Atzo egiaztatu zuen azkenengoz.</translation>
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
-<translation id="7408085963519505752">Chrome OS sistema eragilearen baldintzak</translation>
-<translation id="7419046106786626209">Chrome OS sistema eragileak ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
+<translation id="7408085963519505752">Chrome OS-en baldintzak</translation>
+<translation id="7419046106786626209">Chrome OS-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="7423733001651488593">Hori eginez gero, betiko ezabatuko dira gailuko arakatze-datuak. Haiek berreskuratzeko, hasi saioa Chrome-n kontu honekin:</translation>
 <translation id="7486227612705979895">Chrome-k zure Drive unitatea atzituko du helbide-barran iradokizunak egiteko</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
-<translation id="7573289029918943991">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />Chrome OS-ren ezarpenetara<ph name="LINK_END" /></translation>
+<translation id="7573289029918943991">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />Chrome OS-en ezarpenetara<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome-k ezin izan ditu zure datuak sinkronizatu kontuan saioa asteko datuak zaharkituta daudelako.</translation>
 <translation id="7626032353295482388">Ongi etorri Chrome-ra</translation>
 <translation id="7629695634924605473">Chrome-k abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
@@ -246,7 +246,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
 <translation id="7905891027772979035">Chrome-k ezin ditu egiaztatu luzapenak. Saiatu geroago.</translation>
 <translation id="7930071585467473040">Pasahitzak kopiatzen saiatzen ari da Google Chrome.</translation>
-<translation id="7962410387636238736">Ordenagailuak ez du jasoko beste Google Chrome eguneratzerik, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
+<translation id="7962410387636238736">Ordenagailuak ez du jasoko Google Chrome-ren beste eguneratzerik, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
 <translation id="8008534537613507642">Berrinstalatu Chrome</translation>
 <translation id="8013993649590906847">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome arakatzaileari buruz</translation>
@@ -282,7 +282,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8914504000324227558">Berrabiarazi Chrome</translation>
 <translation id="8922193594870374009">Zenbaki bat <ph name="ORIGIN" /> webgunetik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome arakatzailearen eguneratze bat dago erabilgarri}=1{Chrome arakatzailearen eguneratze bat dago erabilgarri}other{Chrome arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
-<translation id="9026991721384951619">Chrome OS sistemak ezin izan ditu zure datuak sinkronizatu kontuan saioa hasteko datuak iraungi egin direlako.</translation>
+<translation id="9026991721384951619">Chrome OS-ek ezin izan ditu sinkronizatu zure datuak kontuan saioa hasteko datuak iraungi egin direlako.</translation>
 <translation id="9067395829937117663">Windows 7 edo sistema berriagoa behar da Google Chrome erabiltzeko.</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9138603949443464873">Aldaketak aplikatzeko, berrabiarazi Chrome</translation>

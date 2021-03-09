@@ -247,7 +247,7 @@
 <translation id="1272293450992660632">لا تتطابق قيم أرقام التعريف الشخصية.</translation>
 <translation id="1272978324304772054">لا ينتمي حساب المستخدم هذا إلى النطاق المسجَّل به هذا الجهاز. إذا أردت التسجيل بنطاق مختلف، فيلزمك إجراء استرداد الجهاز أولاً.</translation>
 <translation id="1274977772557788323">‏إعدادات مساحة تخزين برنامج Adobe Flash Player</translation>
-<translation id="1274997165432133392">ملفات تعريف الارتباط وبيانات الموقع الأخرى</translation>
+<translation id="1274997165432133392">ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى</translation>
 <translation id="1275718070701477396">محدد</translation>
 <translation id="1276994519141842946">تعذّر إلغاء تثبيت <ph name="APP_NAME" />.</translation>
 <translation id="127946606521051357">هناك جهاز قريب يشارك محتوى</translation>
@@ -1667,7 +1667,7 @@
 <translation id="2910318910161511225">الاتصال بالشبكة وإعادة المحاولة</translation>
 <translation id="291056154577034373">غير مقروءة</translation>
 <translation id="2910718431259223434">حدث خطأ. يُرجى إعادة المحاولة أو التواصل مع مشرف الجهاز أو مالكه. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
-<translation id="2913331724188855103">السماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (موصى به)</translation>
+<translation id="2913331724188855103">ألسماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (يُنصح به)</translation>
 <translation id="2915102088417824677">عرض سِجلّ الأنشطة</translation>
 <translation id="2915873080513663243">المسح التلقائي</translation>
 <translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
@@ -1943,7 +1943,8 @@
 <translation id="3269612321104318480">الأزرق المخضر الفاتح والأبيض</translation>
 <translation id="326999365752735949">تنزيل الاختلافات</translation>
 <translation id="3270965368676314374">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها وحذفها</translation>
-<translation id="327147043223061465">عرض جميع ملفات تعريف الارتباط وبيانات الموقع</translation>
+<translation id="327147043223061465">عرض جميع ملفات تعريف الارتباط وبيانات الموقع الإلكتروني
+</translation>
 <translation id="3271648667212143903">يريد <ph name="ORIGIN" /> الاتصال</translation>
 <translation id="3274763671541996799">تم الانتقال إلى وضع ملء الشاشة.</translation>
 <translation id="3275778809241512831">مفتاح الأمان الداخلي غير آمن حاليًا. يُرجى إزالته من أي خدمة استخدمته معها. ولحل المشكلة، يُرجى إعادة ضبط مفتاح الأمان.</translation>
@@ -2200,7 +2201,7 @@
 <translation id="3566325075220776093">من هذا الجهاز</translation>
 <translation id="3566721612727112615">لم تتم إضافة أي مواقع</translation>
 <translation id="3569382839528428029">هل تريد من <ph name="APP_NAME" /> مشاركة شاشتك؟</translation>
-<translation id="3569407787324516067">شاشة التوقف</translation>
+<translation id="3569407787324516067">شاشة الاستراحة</translation>
 <translation id="3569682580018832495">بإمكان <ph name="ORIGIN" /> عرض الملفات والمجلدات التالية:</translation>
 <translation id="3571734092741541777">إعداد</translation>
 <translation id="3574210789297084292">تسجيل الدخول</translation>
@@ -4279,7 +4280,7 @@
 <translation id="6064217302520318294">قفل الشاشة</translation>
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
 <translation id="6069464830445383022">‏تسجيل الدخول إلى Chromebook من خلال حسابك على Google</translation>
-<translation id="6069671174561668781">تعيين خلفية</translation>
+<translation id="6069671174561668781">ضبط الخلفية</translation>
 <translation id="6071181508177083058">تأكيد كلمة المرور</translation>
 <translation id="6071576563962215370">تعذَّر على النظام إنشاء قفل سمات وقت تثبيت الجهاز.</translation>
 <translation id="6072442788591997866">لا يُسمح باستخدام <ph name="APP_NAME" /> على هذا الجهاز. يُرجى التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
@@ -4483,7 +4484,7 @@
 <translation id="6291163159361301370">‏لبدء تشغيل نظام التشغيل Linux، تتطلّب شركة <ph name="ORGANIZATION_NAME" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإعادة ضبط جهاز Chromebook هذا على الإعدادات الأصلية.</translation>
 <translation id="6291949900244949761">‏طلب الإذن في حال محاولة أحد المواقع الوصول إلى أجهزة USB (مُوصى به)</translation>
 <translation id="6291953229176937411">إ&amp;ظهار في الباحث</translation>
-<translation id="6295158916970320988">جميع المواقع</translation>
+<translation id="6295158916970320988">جميع المواقع الإلكترونية</translation>
 <translation id="6295855836753816081">جارٍ الحفظ...</translation>
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
 <translation id="630065524203833229">إن&amp;هاء</translation>
@@ -5473,7 +5474,7 @@
 <translation id="7497981768003291373">‏ليست لديك أي سجلَّات نصية WebRTC تم التقاطها مؤخرًا.</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7503191893372251637">‏نوع شهادات Netscape</translation>
-<translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع في مفتاح الأمان.</translation>
+<translation id="7503985202154027481">سيتم حفظ سجلّ زيارتك لهذا الموقع الإلكتروني في مفتاح الأمان.</translation>
 <translation id="750509436279396091">فتح مجلد "المحتوى الذي تم تنزيله"</translation>
 <translation id="7506093026325926984">سيتم حفظ كلمة المرور هذه على هذا الجهاز</translation>
 <translation id="7506130076368211615">إعداد شبكة جديدة</translation>
@@ -5736,7 +5737,7 @@
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804072833593604762">تم إغلاق علامة التبويب.</translation>
 <translation id="7805768142964895445">الحالة</translation>
-<translation id="7807067443225230855">البحث والمساعد</translation>
+<translation id="7807067443225230855">البحث والمساعدة</translation>
 <translation id="7807711621188256451">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
 <translation id="7810202088502699111">تم منع عرض النوافذ المنبثقة في هذه الصفحة.</translation>
 <translation id="781167124805380294">إرسال <ph name="FILE_NAME" /></translation>

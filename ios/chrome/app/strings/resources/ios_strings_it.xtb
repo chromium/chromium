@@ -17,7 +17,7 @@
 <translation id="110724200315609752">Passa alla finestra aperta</translation>
 <translation id="1112015203684611006">Stampa non riuscita.</translation>
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
-<translation id="1145536944570833626">Elimina dati esistenti.</translation>
+<translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1154690515305205900">Impossibile creare un link al testo evidenziato.</translation>
 <translation id="1165039591588034296">Errore</translation>
 <translation id="1172898394251786223">Campo successivo</translation>
@@ -433,7 +433,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5854790677617711513">Oltre 30 giorni fa</translation>
 <translation id="5857090052475505287">Nuova cartella</translation>
 <translation id="5857770089550859117">Per avviare la sincronizzazione è obbligatoria la passphrase.</translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1 elemento spostato</translation>
 <translation id="5897956970858271241">Visita il link copiato</translation>
@@ -447,7 +447,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5964480694698977962">Crea nuova scheda in incognito.</translation>
 <translation id="5965679971710331625">Hai eseguito l'accesso</translation>
 <translation id="5979837087407522202">Cerca password</translation>
-<translation id="5982717868370722439">Aggiungi dati esistenti a <ph name="USER_EMAIL" />.</translation>
+<translation id="5982717868370722439">Aggiungi i dati esistenti a <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Visitati di recente</translation>
 <translation id="5988851877894965432">Apri URL in Chrome</translation>
 <translation id="6012140227487808125">Crittografia…</translation>

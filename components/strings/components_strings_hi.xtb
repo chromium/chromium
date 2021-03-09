@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">इतिहास एंट्री की सूची</translation>
 <translation id="1517433312004943670">फ़ोन नंबर आवश्यक है</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
-<translation id="1521655867290435174">Google पत्रक</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">कनेक्शन का इंतज़ार हो रहा है</translation>
 <translation id="1529521330346880926">10x15 (एन्वेलप)</translation>
 <translation id="1529789484829130889">ट्रे 8</translation>
@@ -914,7 +914,7 @@
 <translation id="4670064810192446073">वर्चुअल रिएलिटी</translation>
 <translation id="467662567472608290">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसके सुरक्षा प्रमाणपत्र में त्रुटियां हैं. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> सुलभता इवेंट का जवाब देना चाहता है</translation>
-<translation id="467809019005607715">Google स्लाइड</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. क्रोमियम, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, और उन साइटों पर तुरंत जाकर, सेव किए गए पासवर्ड की जांच करने का सुझाव देता है जिन पर आपने इस पासवर्ड का इस्तेमाल किया है.</translation>
 <translation id="4690462567478992370">अमान्य प्रमाणपत्र का उपयोग करना बंद करें</translation>
 <translation id="4691835149146451662">आर्किटेक्चर-ए (एन्वेलप)</translation>
@@ -1437,7 +1437,7 @@
 <translation id="6810899417690483278">कस्टमाइज़ेशन आईडी</translation>
 <translation id="6825578344716086703">आपने <ph name="DOMAIN" /> तक पहुंचने की कोशिश की थी, लेकिन सर्वर ने कमज़ोर हस्ताक्षर एल्गोरिद्म (जैसे कि SHA-1) वाला प्रमाणपत्र प्रस्तुत किया. इसका मतलब है कि सर्वर की ओर से प्रस्तुत किए गए सुरक्षा क्रेडेंशियल नकली हो सकते हैं और हो सकता है कि सर्वर आपका अपेक्षित सर्वर न हो (हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों).</translation>
 <translation id="6826993739343257035">क्या आप एआर (ऑगमेंटेड रिएलिटी) के लिए अनुमति देना चाहते हैं?</translation>
-<translation id="6831043979455480757">अनुवाद करें</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">क्षेत्र</translation>
 <translation id="6846340164947227603">वर्चुअल कार्ड संख्या का इस्तेमाल करें...</translation>
 <translation id="6852204201400771460">ऐप्लिकेशन फिर लोड करें?</translation>
@@ -1469,7 +1469,7 @@
 <translation id="6973656660372572881">फ़िक्‍स्‍ड प्रॉक्‍सी सर्वर और .pac स्‍क्रिप्‍ट URL दोनों ही बताए गए हैं.</translation>
 <translation id="6973932557599545801">माफ़ करें, मैं आपकी मदद नहीं कर सकती. कृपया खुद करने की कोशिश करें.</translation>
 <translation id="6975012522936652259">आपने अभी-अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. क्रोमियम, <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, और उन साइटों पर जाकर पासवर्ड बदलने का सुझाव देता है जिन पर आपने इसे इस्तेमाल किया था.</translation>
-<translation id="6979158407327259162">Google डिस्क</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6979983982287291980">आप जो फ़ाइलें डाउनलोड करते हैं वे विश्लेषण के लिए 'Google क्लाउड' या तीसरे पक्षों को भेजी जाती हैं. उदाहरण के लिए, इन्हें संवेदनशील डेटा या मैलवेयर की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>
@@ -2011,14 +2011,14 @@
 <translation id="917450738466192189">सर्वर का प्रमाणपत्र अमान्य है.</translation>
 <translation id="9174917557437862841">टैब बदलने का बटन, इस टैब पर स्विच करने के लिए Enter दबाएं</translation>
 <translation id="9179703756951298733">Chrome की सेटिंग में, आप पैसे चुकाने और क्रेडिट कार्ड की जानकारी को प्रबंधित कर सकते हैं</translation>
-<translation id="9183302530794969518">Google दस्तावेज़</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> एक असमर्थित प्रोटोकॉल का उपयोग करता है.</translation>
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9205078245616868884">आपका डेटा आपके सिंक पासफ़्रेज़ से सुरक्षित किया गया है. सिंक शुरू करने के लिए इसे डालें.</translation>
 <translation id="9207861905230894330">लेख जोड़ने में विफल रहा.</translation>
 <translation id="9213433120051936369">दिखने का तरीका अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="9215416866750762878">एक ऐप्‍लिकेशन Chrome को इस साइट से सुरक्षित तरीके से कनेक्‍ट होने से रोक रहा है</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">फ़ॉर्म साफ़ करें</translation>
 <translation id="936474030629450166">सुपर-बी</translation>

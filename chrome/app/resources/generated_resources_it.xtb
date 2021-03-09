@@ -547,7 +547,7 @@
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Controllo della conformità di questi dati alle norme di sicurezza della tua organizzazione in corso…}=1{Controllo della conformità di questo file alle norme di sicurezza della tua organizzazione in corso…}other{Controllo della conformità di questi file alle norme di sicurezza della tua organizzazione in corso…}}</translation>
 <translation id="1618268899808219593">Centro assistenza</translation>
 <translation id="1620307519959413822">Password errata. Riprova o fai clic su Password dimenticata per reimpostarla.</translation>
-<translation id="1620510694547887537">Videocamera</translation>
+<translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1621729191093924223">Le funzionalità che richiedono un microfono non funzioneranno</translation>
 <translation id="1621831347985899379">I dati del <ph name="DEVICE_TYPE" /> verranno eliminati</translation>
 <translation id="1622054403950683339">Elimina rete Wi-Fi</translation>
@@ -2816,7 +2816,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276288850178085042">Impedisci ai siti di usare la videocamera</translation>
 <translation id="4278101229438943600">Il tuo assistente è pronto</translation>
-<translation id="4278390842282768270">Consentito</translation>
+<translation id="4278390842282768270">Consenti</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
 <translation id="4285418559658561636">Aggiorna password</translation>
@@ -2875,7 +2875,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4363771538994847871">Nessuna destinazione trovata per Cast. Hai bisogno di assistenza?</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> condivide una finestra.</translation>
-<translation id="4364830672918311045">Mostra notifiche</translation>
+<translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4368115171699243057">Configura questo dispositivo <ph name="DEVICE_TYPE" /> per tuo figlio</translation>
 <translation id="437004882363131692">Ricevi suggerimenti, offerte e aggiornamenti per <ph name="DEVICE_TYPE" /> e condividi il tuo feedback. Puoi annullare l'iscrizione in qualsiasi momento.</translation>
 <translation id="4370975561335139969">L'indirizzo email e la password non corrispondono</translation>
@@ -3955,7 +3955,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="567587836466137939">Questo dispositivo riceverà automaticamente aggiornamenti software e di sicurezza fino a <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">Accedi e attiva la sincronizzazione per trovare i tuoi preferiti, le password e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="5677503058916217575">Lingua della pagina:</translation>
-<translation id="5677928146339483299">Bloccato</translation>
+<translation id="5677928146339483299">Blocca</translation>
 <translation id="5678550637669481956">È stato concesso l'accesso in lettura e scrittura a <ph name="VOLUME_NAME" />.</translation>
 <translation id="5678955352098267522">Lettura dei dati su <ph name="WEBSITE_1" /></translation>
 <translation id="5684181005476681636">Dettagli Wi-Fi</translation>
@@ -4105,7 +4105,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5858490737742085133">Terminale</translation>
 <translation id="5859603669299126575">Album di Galleria d'arte</translation>
 <translation id="585979798156957858">Meta esterno</translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Attiva</translation>
 <translation id="5860494867054883682">Aggiornamento del dispositivo al canale <ph name="CHANNEL_NAME" /> in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="5862109781435984885">Mostra strumenti stilo nello shelf</translation>
@@ -4258,7 +4258,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />Il servizio di geolocalizzazione di Google utilizza fonti quali reti mobili, Wi-Fi e sensori per stabilire la posizione del tuo dispositivo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Puoi disattivare la geolocalizzazione tramite la disattivazione dell'impostazione Posizione principale del tuo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobili e di sensori per la geolocalizzazione nelle impostazioni di geolocalizzazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6041155700700864984">Chiudi schermo intero</translation>
-<translation id="604124094241169006">Automatica</translation>
+<translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> condivide una scheda Chrome con <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Impossibile analizzare la configurazione</translation>
@@ -4874,7 +4874,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6787839852456839824">Scorciatoie da tastiera</translation>
 <translation id="6788210894632713004">Estensione non pacchettizzata</translation>
 <translation id="6789592661892473991">Divisione in orizzontale</translation>
-<translation id="6790428901817661496">Play</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="6790497603648687708">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta da remoto</translation>
 <translation id="6790820461102226165">Aggiungi persona...</translation>
 <translation id="6792072150955115067"><ph name="APP_NAME" /> vuole condividere i contenuti del tuo schermo con <ph name="TARGET_NAME" />. Scegli i contenuti che desideri condividere.</translation>
@@ -5508,7 +5508,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7548856833046333824">Limonata</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
-<translation id="7551643184018910560">Fissa sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sullo shelf</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
 <translation id="7553012839257224005">Controllo del container Linux</translation>
 <translation id="7553242001898162573">Inserisci la password</translation>
@@ -6870,7 +6870,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />Informativa sulla privacy di G Suite for Education<ph name="LINK_END" /> ha lo scopo di aiutare gli utenti di G Suite for Education e i genitori a comprendere quali dati vengono raccolti dal prodotto, perché vengono raccolti e come vengono utilizzati.</translation>
 <translation id="9108808586816295166">Il sistema DNS sicuro potrebbe non essere sempre disponibile</translation>
 <translation id="9109122242323516435">Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>
-<translation id="9109283579179481106">Collegati alla rete mobile</translation>
+<translation id="9109283579179481106">Connettiti alla rete mobile</translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9112748030372401671">Modifica dello sfondo</translation>

@@ -796,7 +796,7 @@
 <translation id="1885106732301550621">Levytila</translation>
 <translation id="1886996562706621347">Anna sivustojen ehdottaa protokollien oletuskäsittelypalveluiden määrittämistä (suositus)</translation>
 <translation id="1887442540531652736">Sisäänkirjautumisvirhe</translation>
-<translation id="1887597546629269384">Sano taas Hei Google</translation>
+<translation id="1887597546629269384">Sano taas OK Google</translation>
 <translation id="1887850431809612466">Laitteistoversio</translation>
 <translation id="1890674179660343635">&lt;span&gt;Tunnus:&lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="189210018541388520">Avaa koko näytössä</translation>
@@ -2355,7 +2355,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3729506734996624908">Sallitut sivustot</translation>
 <translation id="3730076362938942381">Näyttökynä kirjoitussovellus</translation>
 <translation id="3732078975418297900">Virhe rivillä <ph name="ERROR_LINE" /></translation>
-<translation id="3732530910372558017">PIN-koodin vähimmäispituus on 63 merkkiä</translation>
+<translation id="3732530910372558017">PIN-koodissa täytyy olla ainakin 63 merkkiä</translation>
 <translation id="3732857534841813090">Google Assistantiin liittyvät tiedot</translation>
 <translation id="3733127536501031542">SSL-palvelin ja Step-up</translation>
 <translation id="3735740477244556633">Lajitteluperuste</translation>
@@ -2860,7 +2860,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4349828822184870497">Hyödyllinen</translation>
 <translation id="4350019051035968019">Tätä laitetta ei voi rekisteröidä verkkotunnukselle, johon tilisi kuuluu, koska laite on merkitty eri verkkotunnuksen hallinnoitavaksi.</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ei saa koskaan käyttää sijaintitietojasi</translation>
-<translation id="4350782034419308508">Hei Google</translation>
+<translation id="4350782034419308508">OK Google</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="4354073718307267720">Kysy aina, kun sivusto pyytää lupaa luoda 3D-kartan ympäristöstäsi tai seurata kameran asentoa</translation>
 <translation id="4354344420232759511">Käyttämäsi sivustot tulevat näkyviin tähän</translation>
@@ -3014,7 +3014,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4531924570968473143">Kenet haluat lisätä tälle laitteelle (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="4532625150642446981"><ph name="USB_DEVICE_NAME" /> on käytössä. Käytössä olevan laitteen siirtäminen voi johtaa virheisiin. Haluatko varmasti jatkaa?</translation>
 <translation id="4532646538815530781">Tämä sivusto käyttää liiketunnistimia.</translation>
-<translation id="4533846798469727141">Sano nyt Hei Google</translation>
+<translation id="4533846798469727141">Sano nyt OK Google</translation>
 <translation id="4533985347672295764">Prosessoriaika</translation>
 <translation id="4534661889221639075">Yritä uudelleen.</translation>
 <translation id="4535127706710932914">Oletusprofiili</translation>
@@ -5410,7 +5410,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7427348830195639090">Taustasivu: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Puhelu laitteesta <ph name="DEVICE_NAME" /></translation>
 <translation id="7431719494109538750">HID-laitteita ei löytynyt</translation>
-<translation id="7433957986129316853">Pidä tämä</translation>
+<translation id="7433957986129316853">Säilytä</translation>
 <translation id="7434509671034404296">Kehittäjille</translation>
 <translation id="7434635829372401939">Synkronoi asetuksesi</translation>
 <translation id="7434757724413878233">Hiiren nopeuttaminen</translation>
@@ -5851,7 +5851,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7925247922861151263">AAA-testi epäonnistui</translation>
 <translation id="7925285046818567682">Odotetaan palvelinta osoitteessa <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Luo uusi profiili.</translation>
-<translation id="7926975587469166629">Kortin lempinimi</translation>
+<translation id="7926975587469166629">Kortin lyhytnimi</translation>
 <translation id="7928175190925744466">Vaihdoitko jo tämän salasanan?</translation>
 <translation id="7928836894214140642">Ylläpitäjä: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="7930294771522048157">Tallennetut maksutavat näkyvät tässä</translation>
@@ -6690,7 +6690,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8893801527741465188">Poistaminen valmis</translation>
 <translation id="8893928184421379330">Laitetta <ph name="DEVICE_LABEL" /> ei tunnistettu.</translation>
 <translation id="8895454554629927345">Kirjanmerkkiluettelo</translation>
-<translation id="8896022254727357590">PIN-koodin vähimmäispituus on 4 merkkiä</translation>
+<translation id="8896022254727357590">PIN-koodissa täytyy olla ainakin 4 merkkiä</translation>
 <translation id="8898786835233784856">Valitse seuraava välilehti</translation>
 <translation id="8898822736010347272">Lähettää Googlelle joidenkin vierailemiesi sivujen URL-osoitteita, rajallisia järjestelmätietoja ja osia sivujen sisällöstä auttaakseen löytämään uusia uhkia ja suojaamaan kaikkia verkon käyttäjiä.</translation>
 <translation id="8898840733695078011">Signaalin vahvuus</translation>

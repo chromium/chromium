@@ -49,7 +49,7 @@
 <translation id="2530339807289914946">Rulla nedåt på webbsidan</translation>
 <translation id="2530896289327917474">Aktivera eller inaktivera textmarkörläge</translation>
 <translation id="2574014812750545982">Återställ zoomnivån på sidan</translation>
-<translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
+<translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sedan <ph name="TAB" /> eller <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Läs in den aktuella sidan igen</translation>
 <translation id="2764005613199379871">Flytta fokus till sökadressfältet</translation>
@@ -64,7 +64,7 @@
 <translation id="3020183492814296499">Genvägar</translation>
 <translation id="3084301071537457911">Markera nästa objekt på hyllan</translation>
 <translation id="309173601632226815">Markera översiktsknappen på hyllan</translation>
-<translation id="3105917916468784889">Ta en skärmdump</translation>
+<translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Fokusera på adressfältet</translation>
 <translation id="3256109297135787951">Ta bort markeringen från ett objekt på hyllan</translation>
@@ -104,7 +104,7 @@
 <translation id="4556221320735744018">Visa hjälpen för kortkommandon</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> eller <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Klicka i statusfältet där kontobilden visas</translation>
-<translation id="4642092649622328492">Ta en skärmdump av en del av skärmen</translation>
+<translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4698850295812410683">Visa verktyg för e-penna</translation>
 <translation id="4801989101741319327">Placera markören efter nästa ord</translation>
 <translation id="4866066940972151697">Aktivera skrivbordet till höger</translation>

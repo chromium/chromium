@@ -10,6 +10,7 @@
 <translation id="2009224836393115614">Não foi possível verificar suas senhas com o Chrome. Verifique sua conexão de Internet.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
 <translation id="2199719347983604670">Dados da "Sincronização do Chrome"</translation>
+<translation id="2342919707875585281">O Chrome compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Defina o Chrome como seu navegador padrão</translation>
 <translation id="2574249610672786438">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
@@ -19,7 +20,6 @@
 <translation id="2732745070297234559">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã.</translation>
 <translation id="2919738076569633423">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK_TOS" />Termos de Serviço<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
-<translation id="3148688391461398285">Tenha uma experiência melhor no Google Chrome com base no seu local.</translation>
 <translation id="3167189358072330585">Sua conta não funciona no Google Chrome. Entre em contato com o administrador do domínio ou use uma Conta do Google normal para fazer login.</translation>
 <translation id="3173834708294760622">Página do Google Chrome</translation>
 <translation id="3196546062792660320">O Chrome permite que você otimize seu tempo trazendo suas contas para a Web. É possível adicionar ou remover contas nas configurações.</translation>
@@ -50,7 +50,7 @@
 <translation id="5854621639439811139">Dica do Chrome. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
 <translation id="6036420186814142909">O Google Chrome tem recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="6573431926118603307">As guias que você abriu no Chrome nos seus outros dispositivos serão exibidas aqui.</translation>
+<translation id="6573431926118603307">Aqui ficam as guias do Chrome que você abriu em outros dispositivos.</translation>
 <translation id="6600954340915313787">Copiado no Chrome</translation>
 <translation id="6648150602980899529">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="6676840375528380067">Limpar seus dados do Chrome deste dispositivo?</translation>

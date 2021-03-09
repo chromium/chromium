@@ -241,7 +241,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1838374766361614909">Esborra la cerca</translation>
 <translation id="1839551713262164453">S'han produït errors a la validació dels valors de la política</translation>
 <translation id="1842969606798536927">Paga</translation>
-<translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL d'script .pac.</translation>
+<translation id="1871208020102129563">El servidor intermediari està configurat perquè utilitzi servidors intermediaris fixos, en lloc d'un URL de script .pac.</translation>
 <translation id="1871284979644508959">Camp obligatori</translation>
 <translation id="1875512691959384712">Formularis de Google</translation>
 <translation id="187918866476621466">Obre les pàgines d'inici</translation>
@@ -590,7 +590,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3395827396354264108">Mètode de recollida</translation>
 <translation id="3399952811970034796">Adreça d'entrega</translation>
 <translation id="3402261774528610252">La connexió utilitzada per carregar aquest lloc web ha fet servir TLS 1.0 o 1.1, estàndards que estan obsolets i es desactivaran en el futur. Un cop desactivats, els usuaris no podran carregar aquest lloc web. El servidor ha d'activar TLS 1.2 o una versió posterior.</translation>
-<translation id="3411120537985775570">El teu administrador ha bloquejat la possibilitat d'enganxar contingut de <ph name="ORIGIN_NAME" /> en aquesta ubicació</translation>
+<translation id="3411120537985775570">El teu administrador ha bloquejat l'opció d'enganxar contingut de <ph name="ORIGIN_NAME" /> en aquesta ubicació</translation>
 <translation id="3414952576877147120">Mida:</translation>
 <translation id="3417660076059365994">Els fitxers que penges o adjuntes s'envien a Google Cloud o a tercers perquè s'analitzin. Per exemple, pot ser que s'analitzin per detectar-hi dades sensibles o programari maliciós.</translation>
 <translation id="3422248202833853650">Prova de sortir d'altres programes per alliberar memòria.</translation>
@@ -742,7 +742,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3996311196211510766">El lloc web <ph name="ORIGIN" /> ha sol·licitat que s'apliqui una política d'origen a totes les sol·licituds que rebi, però en aquest moment aquesta política no es pot aplicar.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
 <translation id="4030383055268325496">&amp;Desfés l'addició</translation>
-<translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> gestiona el teu navegador</translation>
+<translation id="4032320456957708163">El navegador està gestionat per <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="4056223980640387499">Sèpia</translation>
 <translation id="4058922952496707368">Tecla "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (sobre)</translation>
@@ -750,7 +750,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4072486802667267160">S’ha produït un error en processar la comanda. Torna-ho a provar.</translation>
 <translation id="4075732493274867456">El client i el servidor no admeten cap versió de protocol SSL ni cap sistema de xifratge comuns.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
-<translation id="4079302484614802869">La configuració del servidor intermediari s'ha definit perquè utilitzi un URL d'script .pac, en lloc de servidors intermedis fixos.</translation>
+<translation id="4079302484614802869">La configuració del servidor intermediari s'ha definit perquè utilitzi un URL de script .pac, en lloc de servidors intermedis fixos.</translation>
 <translation id="4082393374666368382">Configuració - Gestió</translation>
 <translation id="4084120443451129199">Cerca el mode i prem Retorn per cercar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="4088981014127559358">Desplaçament a l'eix Y del costat 1 de la imatge</translation>
@@ -1232,8 +1232,8 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Humitat de la sala</translation>
-<translation id="598637245381783098">No es pot obrir l'aplicació per pagar</translation>
-<translation id="5989320800837274978">No s'especifiquen servidors intermediaris ni URL d'script .pac.</translation>
+<translation id="598637245381783098">No es pot obrir l'aplicació de pagaments</translation>
+<translation id="5989320800837274978">No s'especifiquen servidors intermediaris ni URL de script .pac.</translation>
 <translation id="5990559369517809815">Una extensió ha bloquejat les peticions al servidor.</translation>
 <translation id="5992691462791905444">Plegat en Z per a enginyeria</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
@@ -1458,7 +1458,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="696703987787944103">Perceptiu</translation>
 <translation id="6970216967273061347">Districte</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
-<translation id="6973656660372572881">S'especifiquen tant els servidors intermediaris fixos com un URL d'script .pac.</translation>
+<translation id="6973656660372572881">S'especifiquen tant els servidors intermediaris fixos com un URL de script .pac.</translation>
 <translation id="6973932557599545801">Em sap greu, però no et puc ajudar. Continua pel teu compte.</translation>
 <translation id="6975012522936652259">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium et recomana que vagis a <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i a altres llocs web en què utilitzis aquesta contrasenya i que la canviïs ara.</translation>
 <translation id="6979158407327259162">Google Drive</translation>

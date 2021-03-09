@@ -56,14 +56,14 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1420527829902822813">Screenshot gemaakt en opgeslagen op het klembord</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1455242230282523554">Taalinstellingen weergeven</translation>
-<translation id="1460620680449458626">Volume is gedempt.</translation>
+<translation id="1460620680449458626">Volume staat uit.</translation>
 <translation id="1467432559032391204">Links</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1503394326855300303">Dit eigenaarsaccount is het eerste account waarop moet worden ingelogd wanneer meerdere inlogsessies worden uitgevoerd.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1516740043221086139">'Niet storen' is ingeschakeld.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen weergeven. Meldingen zijn uitgeschakeld voor een app}other{Instellingen voor meldingen weergeven. Meldingen zijn uitgeschakeld voor # apps}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen tonen. Meldingen staan uit voor een app}other{Instellingen voor meldingen tonen. Meldingen staan uit voor # apps}}</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
 <translation id="15373452373711364">Grote muisaanwijzer</translation>
 <translation id="1546492247443594934">Bureau 2</translation>
@@ -133,7 +133,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2277103315734023688">Vooruit zoeken</translation>
 <translation id="2292698582925480719">Weergaveschaal</translation>
 <translation id="229397294990920565">Mobiele data uitschakelen…</translation>
-<translation id="2295777434187870477">Microfoon is ingeschakeld. Als je deze uitzet, wordt de invoer gedempt.</translation>
+<translation id="2295777434187870477">Microfoon staat aan. Als je deze uitzet, wordt geen geluid waargenomen.</translation>
 <translation id="2298170939937364391">'Vergrootglas voor volledig scherm' is ingeschakeld. Druk nog een keer op Ctrl+Zoeken+M om dit uit te schakelen.</translation>
 <translation id="2302092602801625023">Dit account wordt beheerd door Family Link</translation>
 <translation id="2303600792989757991">Overzicht venster in-/uitschakelen</translation>
@@ -231,7 +231,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="320207200541803018">Timer instellen</translation>
 <translation id="3203405173652969239">'Toegang via schakelaar' ingeschakeld</translation>
 <translation id="3207953481422525583">Gebruikersinstellingen</translation>
-<translation id="3217205077783620295">Volume staat aan. Als je het uitzet, wordt de audio gedempt.</translation>
+<translation id="3217205077783620295">Volume staat aan. Als je het uitzet, hoor je geen audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
 <translation id="3236488194889173876">Geen mobiel netwerk beschikbaar</translation>
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
@@ -333,7 +333,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4215497585250573029">VPN-instellingen</translation>
 <translation id="4217571870635786043">Dicteren</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4261870227682513959">Instellingen voor meldingen weergeven. Meldingen zijn uitgeschakeld</translation>
+<translation id="4261870227682513959">Instellingen voor meldingen tonen. Meldingen staan uit</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Losmaken</translation>
@@ -353,7 +353,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4379531060876907730">Dit zijn je stylustools</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie inschakelen?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is uitgeschakeld.</translation>
-<translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe ondersteuning.</translation>
+<translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe support.</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4444978951615977024">Check je verbinding</translation>
 <translation id="4450893287417543264">Niet meer tonen</translation>
@@ -485,7 +485,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5909862606227538307">Inactief bureau.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aan</translation>
-<translation id="5920710855273935292">Microfoon is gedempt.</translation>
+<translation id="5920710855273935292">Microfoon staat uit.</translation>
 <translation id="594179686076170922">Verbinding maken met je telefoon…</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is ingeschakeld.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
@@ -493,7 +493,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5957083217255311415">Mobiele data zijn uitgeschakeld.</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
 <translation id="5977415296283489383">Hoofdtelefoon</translation>
-<translation id="5978382165065462689">De controle over je scherm delen via externe ondersteuning.</translation>
+<translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
 <translation id="5992218262414051481">De modus voor hoog contrast is ingeschakeld. Druk nogmaals op Ctrl+Zoeken+H om deze uit te schakelen.</translation>
@@ -750,7 +750,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8647931990447795414">Voer de Family Link-toegangscode voor ouders in om iemand toe te voegen</translation>
 <translation id="8649101189709089199">Selecteer om uitgesproken te worden</translation>
 <translation id="8652175077544655965">Instellingen sluiten</translation>
-<translation id="8653151467777939995">Instellingen voor meldingen weergeven. Meldingen zijn ingeschakeld</translation>
+<translation id="8653151467777939995">Instellingen voor meldingen tonen. Meldingen staan aan</translation>
 <translation id="8660331759611631213">Vierkantswortel van 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Netwerklijst weergeven. <ph name="STATE_TEXT" /></translation>

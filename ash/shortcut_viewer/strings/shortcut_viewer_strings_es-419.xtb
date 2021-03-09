@@ -61,7 +61,7 @@
 <translation id="2872353916818027657">Intercambiar monitor principal</translation>
 <translation id="2914313326123580426">Mostrar u ocultar el panel Herramientas para programadores</translation>
 <translation id="292495055542441795">Activar o desactivar la pantalla completa</translation>
-<translation id="3020183492814296499">Combinación de teclas</translation>
+<translation id="3020183492814296499">Accesos directos</translation>
 <translation id="3084301071537457911">Destacar el elemento siguiente en la biblioteca</translation>
 <translation id="309173601632226815">Destacar el botón del Selector en la biblioteca</translation>
 <translation id="3105917916468784889">Tomar captura de pantalla</translation>
@@ -179,7 +179,7 @@
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="SPACE" /> o <ph name="ENTER" /></translation>
 <translation id="7787242579016742662">Abrir un archivo en el navegador</translation>
 <translation id="7952165122793773711">Ir a las pestañas 1 a 8</translation>
-<translation id="8026334261755873520">Eliminar datos de navegación</translation>
+<translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8130528849632411619">Ir al principio del documento</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> o <ph name="E" /></translation>
 <translation id="8232835244134740473">Alternar el foco entre el área de estado (donde se muestra la imagen de tu cuenta), el Selector, la barra de direcciones, la barra de favoritos (si está visible), la página web que se abre y la barra de descargas (si está visible)</translation>

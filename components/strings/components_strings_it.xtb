@@ -83,7 +83,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1270502636509132238">Metodo di ritiro</translation>
 <translation id="1281476433249504884">Fascicolatore 1</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
-<translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza a Internet" (solo su computer Windows)</translation>
+<translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza al Web" (solo su computer Windows)</translation>
 <translation id="1294154142200295408">Variazioni nella riga di comando</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Prova a cancellare i cookie<ph name="END_LINK" /></translation>
@@ -176,7 +176,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1592005682883173041">Accesso ai dati locali</translation>
 <translation id="1594030484168838125">Scegli</translation>
 <translation id="161042844686301425">Ciano</translation>
-<translation id="1620510694547887537">Videocamera</translation>
+<translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
 <translation id="16338877384480380">Architecture-B</translation>
 <translation id="1634828734222219955">Totale</translation>
@@ -770,7 +770,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
-<translation id="413544239732274901">Ulteriori informazioni</translation>
+<translation id="413544239732274901">Scopri di più</translation>
 <translation id="4142935452406587478">Vassoio 10</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4151403195736952345">Utilizza impostazioni predefinite globali (Rileva)</translation>
@@ -1290,7 +1290,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6151417162996330722">Il certificato del server ha un periodo di validità troppo lungo.</translation>
 <translation id="6157877588268064908">Seleziona un indirizzo per conoscere i requisiti e i metodi di spedizione</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
-<translation id="6177128806592000436">La tua connessione a questo sito non è protetta</translation>
+<translation id="6177128806592000436">La tua connessione a questo sito non è sicura</translation>
 <translation id="6180316780098470077">Intervallo tra tentativi</translation>
 <translation id="6196640612572343990">Blocca cookie di terze parti</translation>
 <translation id="6203231073485539293">Controlla la connessione a Internet</translation>
@@ -1429,7 +1429,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Lilla</translation>
 <translation id="6786747875388722282">Estensioni</translation>
-<translation id="6790428901817661496">Play</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="679355240208270552">Ignorato perché la ricerca predefinita non è attiva secondo la norma.</translation>
 <translation id="6794951432696553238">Verifica più velocemente le tue carte usando Windows Hello d'ora in poi</translation>
 <translation id="681021252041861472">Campo obbligatorio</translation>
@@ -1783,7 +1783,7 @@ Ulteriori dettagli:
 <translation id="8202097416529803614">Riepilogo dell’ordine</translation>
 <translation id="8202370299023114387">Conflitto</translation>
 <translation id="8206978196348664717">Prc4 (Envelope)</translation>
-<translation id="8211406090763984747">La connessione è protetta</translation>
+<translation id="8211406090763984747">La connessione è sicura</translation>
 <translation id="8218327578424803826">Posizione assegnata:</translation>
 <translation id="8220146938470311105">C7/C6 (Busta)</translation>
 <translation id="8221250263817408492">Hai appena inserito la tua password su un sito ingannevole. Chromium ti consiglia di visitare il sito <ph name="WEBSITE_1" /> e altri siti in cui utilizzi questa password e di cambiarla subito.</translation>

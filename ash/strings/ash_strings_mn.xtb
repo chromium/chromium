@@ -15,7 +15,7 @@
 <translation id="109942774857561566">Би уйдаж байна</translation>
 <translation id="1104084341931202936">Нэвтрэлтийн тохиргоог харуулах</translation>
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
-<translation id="1119348796022671382">Загвартай хоршсон өнгөний горим нь харагдах байдлыг бага зэрэг өнгөтэй болгохын тулд ханын зургаас гаргаж авсан өнгийг ашигладаг.</translation>
+<translation id="1119348796022671382">Загвартай хоршсон өнгөний горим нь харагдах байдлыг бага зэрэг өнгөтэй болгохын тулд дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаг.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
@@ -52,7 +52,7 @@
 <translation id="1391102559483454063">Асаалттай</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
 <translation id="1419738280318246476">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг тайлна уу</translation>
-<translation id="1420408895951708260">Шөнийн гэрлийг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
+<translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Дэлгэцийн агшны зургийг авч түр санах ойд хадгаллаа</translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
@@ -74,7 +74,7 @@
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1651447046299738444">Таны Bluetooth эсвэл Wi-Fi Chromebook-д тань унтарсан бололтой. Phone Hub-г ашиглахын тулд холболтоо шалгана уу.</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
-<translation id="1667964833127753507">Завсрын өнгөний горим нь ханын зургаас гаргаж авсан өнгийг ашигладаггүй тул завсрын цайвар эсвэл бараан өнгөөр орлуулдаг.</translation>
+<translation id="1667964833127753507">Завсрын өнгөний горим нь дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаггүй тул завсрын цайвар эсвэл бараан өнгөөр орлуулдаг.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> цаг хэмжигч · <ph name="LABEL" /></translation>
@@ -175,7 +175,7 @@
 <translation id="2658778018866295321">Товшоод чирэх</translation>
 <translation id="2700493154570097719">Гараа тохируулах</translation>
 <translation id="2704781753052663061">Бусад Wi-Fi сүлжээнд нэгдэх</translation>
-<translation id="2705001408393684014">Микрофоныг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
+<translation id="2705001408393684014">Микрофоныг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Дээш</translation>
 <translation id="2718395828230677721">Шөнийн гэрэл</translation>
 <translation id="2727175239389218057">Хариулах</translation>
@@ -199,7 +199,7 @@
 <translation id="2970920913501714344">Аппууд, өргөтгөлүүд болон загваруудыг суулгах</translation>
 <translation id="2977598380246111477">Дараагийн тоо</translation>
 <translation id="2995447421581609334">Дамжуулагч төхөөрөмжийг харуулна уу.</translation>
-<translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг унтраах/асаахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
+<translation id="2996462380875591307">Суурилуулсан томруулагчийг идэвхжүүлсэн. Үүнийг асаах/унтраахын тулд Ctrl+Search+D-г дахин дарна уу.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Гаралт</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
@@ -216,7 +216,7 @@
 <translation id="3077734595579995578">Шилжүүлэх</translation>
 <translation id="3081696990447829002">Цэсийг дэлгэх</translation>
 <translation id="3087734570205094154">Доод</translation>
-<translation id="3090989381251959936"><ph name="FEATURE_NAME" />-г унтраах/асаах. <ph name="STATE_TEXT" /></translation>
+<translation id="3090989381251959936"><ph name="FEATURE_NAME" />-г асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">Курсорыг зөөх</translation>
 <translation id="3098580329624789136">"<ph name="QUERY" />"-н <ph name="INTENT" />-г авах</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
@@ -278,7 +278,7 @@
 <translation id="3621712662352432595">Аудио тохиргоонууд</translation>
 <translation id="3626281679859535460">Цайралт</translation>
 <translation id="3631369015426612114">Дараахаас ирүүлсэн мэдэгдлүүдийг хүлээн зөвшөөрөх</translation>
-<translation id="3638400994746983214">Нууцлалын дэлгэцийг унтраах/асаах. <ph name="STATE_TEXT" />.</translation>
+<translation id="3638400994746983214">Нууцлалын дэлгэцийг асаах/унтраах. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Хяналттай хэрэглэгч</translation>
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
 <translation id="3705722231355495246">-</translation>
@@ -380,7 +380,7 @@
 <translation id="4623167406982293031">Бүртгэлийг бататгах</translation>
 <translation id="4628757576491864469">Төхөөрөмжүүд</translation>
 <translation id="4659419629803378708">ChromeVox-г идэвхжүүлсэн</translation>
-<translation id="4665114317261903604">Бүү саад бол горимыг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
+<translation id="4665114317261903604">Бүү саад бол горимыг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
 <translation id="4705716602320768426">Cанал хүсэлт илгээх</translation>
@@ -452,7 +452,7 @@
 <translation id="553675580533261935">Харилцан үйлдлээс гарч байна</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5548285847212963613">Энэ өргөтгөл нь "<ph name="EXTENSION_NAME" />" энэ сүлжээнд холбогдоход тусална.</translation>
-<translation id="554893713779400387">Диктафоныг унтраах/асаах</translation>
+<translation id="554893713779400387">Диктафоныг асаах/унтраах</translation>
 <translation id="556042886152191864">Товч</translation>
 <translation id="5571066253365925590">Bluetooth идэвхжсэн байна</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
@@ -777,7 +777,7 @@
 <translation id="8853703225951107899">Таны ПИН эсвэл нууц үгийг баталгаажуулж чадаагүй хэвээрээ байна. Тайлбар: Хэрэв та нууц үгээ саяхан сольсон бол хуучин нууц үгээ ашиглана уу. Таныг гарсны дараа, шинэ нууц үгийг ашиглах боломжтой болно.</translation>
 <translation id="885387440427703469">Дэлгэцийн зураг авах горим идэвхгүй болсон</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
-<translation id="8871580645200179206">Бараан загварыг унтраах/асаах. <ph name="STATE_TEXT" /></translation>
+<translation id="8871580645200179206">Бараан загварыг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8877788021141246043">Сануулагч тохируулах</translation>
 <translation id="8878886163241303700">Дэлгэцийг сунгаж байна</translation>
@@ -803,7 +803,7 @@
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>
 <translation id="9080206825613744995">Микрофоныг ашиглаж байна.</translation>
-<translation id="9084606467167974638">Цэсийн байршлыг унтраах/асаах</translation>
+<translation id="9084606467167974638">Цэсийн байршлыг асаах/унтраах</translation>
 <translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дэлгэцийг хассан</translation>
 <translation id="9151726767154816831">Шинэчлэхийн тулд дахин эхлүүлээд, цэвэрлэнэ үү.</translation>

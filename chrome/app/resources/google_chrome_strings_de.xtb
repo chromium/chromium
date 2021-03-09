@@ -202,7 +202,7 @@
 <translation id="7054640471403081847">Für diesen Computer werden in Kürze keine weiteren Google Chrome-Updates mehr bereitgestellt, da die Hardware des Geräts nicht mehr unterstützt wird.</translation>
 <translation id="7062128746136194023">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chrome deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="7098166902387133879">Google Chrome verwendet Ihr Mikrofon.</translation>
-<translation id="7106741999175697885">Taskmanager - Google Chrome</translation>
+<translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald Sie den Browser neu starten. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="7155997830309522122">Falls ja, ändern Sie Ihr gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7236955538461508933">{NUM_HOURS,plural, =1{Chrome prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor 1 Stunde.}other{Chrome prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor {NUM_HOURS} Stunden.}}</translation>

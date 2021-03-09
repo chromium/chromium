@@ -20,10 +20,10 @@
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2375079107209812402">Intentos restantes: <ph name="ATTEMPTS_LEFT" /></translation>
-<translation id="2517472476991765520">Buscar</translation>
+<translation id="2517472476991765520">Escanear</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
-<translation id="3008341117444806826">ACTUALIZAR</translation>
+<translation id="3008341117444806826">RENOVAR</translation>
 <translation id="3091839911843451378">No se ha podido imprimir - Se ha detenido</translation>
 <translation id="3246869037381808805">Los trabajos de impresión con más de 1 día de antigüedad se eliminarán</translation>
 <translation id="3268178239013324452">No se ha podido imprimir - Cierra la cubierta</translation>
@@ -75,7 +75,7 @@
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
-<translation id="6643016212128521049">Eliminar</translation>
+<translation id="6643016212128521049">Borrar</translation>
 <translation id="6747215703636344499">Detenido: bandeja de salida llena</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

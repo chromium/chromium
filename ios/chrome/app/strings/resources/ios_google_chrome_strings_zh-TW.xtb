@@ -10,6 +10,7 @@
 <translation id="2009224836393115614">Chrome 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
 <translation id="2147651015520127414">Chrome 已驗證這個網站的憑證是由「<ph name="ISSUER" />」所核發。</translation>
 <translation id="2199719347983604670">Chrome 同步功能資料</translation>
+<translation id="2342919707875585281">Chrome 會與你允許的網站分享位置資訊。</translation>
 <translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">將 Chrome 設為預設瀏覽器</translation>
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
@@ -19,7 +20,6 @@
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示你同意《<ph name="BEGIN_LINK_TOS" />服務條款<ph name="END_LINK_TOS" />》。</translation>
 <translation id="3030414234702425231">由於你即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 所管理的帳戶，系統將刪除你在這個裝置上的 Chrome 資料，但這些資料仍會保留在你的 Google 帳戶中。</translation>
-<translation id="3148688391461398285">讓應用程式根據您的位置資訊在 Chrome 中為您提供更優質的服務。</translation>
 <translation id="3167189358072330585">無法使用您的帳戶登入 Google Chrome，請洽詢您的網域管理員或使用一般 Google 帳戶登入。</translation>
 <translation id="3173834708294760622">Google Chrome 頁面</translation>
 <translation id="3196546062792660320">Chrome 會將你的所有帳戶同步到網路上，為你節省時間。你可以在「設定」中新增或移除帳戶。</translation>

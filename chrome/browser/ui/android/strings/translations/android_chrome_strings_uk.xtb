@@ -201,7 +201,7 @@
 <translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2494974097748878569">Google Асистент у Chrome</translation>
-<translation id="2496180316473517155">Історія переглядів</translation>
+<translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="250020030759455918">Ви зможете переглядати статус входу на сайті <ph name="SITE_NAME" />, дані веб-перегляду й сайту в Chrome</translation>
 <translation id="2512164632052122970">Мови контенту</translation>
@@ -287,7 +287,7 @@
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3157842584138209013">Перевірте обсяг збережених даних за допомогою кнопки "Більше опцій"</translation>
 <translation id="3166827708714933426">Комбінації клавіш для роботи з вкладками та вікнами</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
 <translation id="3205824638308738187">Майже готово.</translation>
 <translation id="3207960819495026254">Створено закладку</translation>
@@ -644,7 +644,7 @@
 <translation id="5795872532621730126">Пошук і перегляд</translation>
 <translation id="5797070761912323120">Google може використовувати вашу історію, щоб персоналізувати Пошук, оголошення й інші сервіси Google</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
-<translation id="5810288467834065221">Авторське право <ph name="YEAR" /> Google LLC. Усі права захищено.</translation>
+<translation id="5810288467834065221">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="5814131985548525293">Введіть текст тут або натисніть значок мікрофона, щоб почати пошук</translation>
 <translation id="5817918615728894473">Підключити</translation>
 <translation id="583281660410589416">Невідомий</translation>
@@ -825,7 +825,7 @@
 <translation id="6955535239952325894">Цей параметр вимкнено в керованих веб-переглядачах</translation>
 <translation id="6963766334940102469">Видалити закладки</translation>
 <translation id="6979737339423435258">Увесь час</translation>
-<translation id="6981982820502123353">Доступність</translation>
+<translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="6989267951144302301">Не вдалося завантажити</translation>
 <translation id="6990079615885386641">Завантажити додаток із магазину Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>

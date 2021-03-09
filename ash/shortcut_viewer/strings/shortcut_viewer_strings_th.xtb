@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1036550831858290950">บันทึกแท็บปัจจุบันเป็นบุ๊กมาร์ก</translation>
-<translation id="104962181688258143">เปิดแอปไฟล์</translation>
+<translation id="104962181688258143">เปิดแอป Files</translation>
 <translation id="1122869341872663659">กำลังแสดงผลการค้นหา <ph name="QUERY" /> <ph name="N" /> รายการ</translation>
 <translation id="1195667586424773550">ลากลิงก์ไปยังแถบที่อยู่ของแท็บ</translation>
 <translation id="1204450209689312104">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
@@ -153,7 +153,7 @@
 <translation id="6671538777808758331">ไปยังรายการถัดไปที่ตรงกับการค้นหา</translation>
 <translation id="6681606577947445973"><ph name="REFRESH" /> หรือ <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="R" /></translation>
 <translation id="6690765639083431875">จัดวางหน้าต่างทางด้านซ้าย</translation>
-<translation id="6692847073476874842">ดูตัวอย่างไฟล์ในแอปไฟล์</translation>
+<translation id="6692847073476874842">ดูตัวอย่างไฟล์ในแอป Files</translation>
 <translation id="671928215901716392">ล็อกหน้าจอ</translation>
 <translation id="6727005317916125192">แผงก่อนหน้า</translation>
 <translation id="6740781404993465795">เลือกคำหรือตัวอักษรถัดไป</translation>
@@ -193,7 +193,7 @@
 <translation id="8537650670971624753">ออกจากโหมดค้นหา</translation>
 <translation id="85690795166292698">เปิดลิงก์ในแท็บใหม่</translation>
 <translation id="8609384513243082612">เปิดแท็บใหม่</translation>
-<translation id="8644639153978066712">แสดงไฟล์ที่ซ่อนอยู่ในแอปไฟล์</translation>
+<translation id="8644639153978066712">แสดงไฟล์ที่ซ่อนอยู่ในแอป Files</translation>
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8727232706774971183">ดูการแจ้งเตือน</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>

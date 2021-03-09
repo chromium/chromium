@@ -190,7 +190,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome a simplifié cette page pour qu'elle soit plus facile à lire. La page d'origine a été récupérée au moyen d'une connexion sécurisée.</translation>
 <translation id="1656489000284462475">Enlèvement</translation>
-<translation id="1662550410081243962">Enregistrer et renseigner les modes de paiement</translation>
+<translation id="1662550410081243962">Enregistrer et saisir les modes de paiement</translation>
 <translation id="1663943134801823270">Les cartes et les adresses proviennent de Chrome. Vous pouvez les gérer dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Les pages en <ph name="SOURCE_LANGUAGE" /> seront désormais traduites en <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="1676269943528358898">Un chiffrement est normalement utilisé sur le site <ph name="SITE" /> pour protéger vos informations. Lors de la dernière tentative de connexion de Google Chrome au site <ph name="SITE" />, des identifiants inhabituels et incorrects ont été retournés. Il est possible qu'un individu malveillant tente de se faire passer pour <ph name="SITE" /> ou qu'un écran de connexion Wi-Fi ait interrompu la connexion. Vos informations restent sécurisées, car nous avons arrêté la connexion avant l'échange des données.</translation>
@@ -1292,7 +1292,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6151417162996330722">La durée de validité du certificat du serveur est trop longue.</translation>
 <translation id="6157877588268064908">Sélectionnez une adresse pour consulter les modes et conditions d'expédition disponibles</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
-<translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée.</translation>
+<translation id="6177128806592000436">Votre connexion à ce site n'est pas sécurisée</translation>
 <translation id="6180316780098470077">Intervalle entre les tentatives</translation>
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6203231073485539293">Vérifiez votre connexion Internet</translation>
@@ -1515,7 +1515,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="717330890047184534">Identifiant GAIA : </translation>
 <translation id="7174545416324379297">Valeurs fusionnées</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre}one{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autre}other{<ph name="SHIPPING_OPTION_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> autres}}</translation>
-<translation id="7179323680825933600">Enregistrer et renseigner les modes de paiement</translation>
+<translation id="7179323680825933600">Enregistrer et saisir les modes de paiement</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7181261019481237103">Ouvrir une fenêtre de navigation privée</translation>
 <translation id="7182878459783632708">Aucune règle n'est définie</translation>
@@ -1662,7 +1662,7 @@ Informations supplémentaires :
 <translation id="7673278391011283842">Boîte aux lettres 6</translation>
 <translation id="7676643023259824263">Rechercher le texte du presse-papier "<ph name="TEXT" />"</translation>
 <translation id="7682287625158474539">Adresse de livraison</translation>
-<translation id="7687186412095877299">Saisit automatiquement les informations correspondant aux modes de paiement enregistrés</translation>
+<translation id="7687186412095877299">Saisir automatiquement les informations correspondant aux modes de paiement enregistrés</translation>
 <translation id="7687305263118037187">Délai de nouvelle tentative</translation>
 <translation id="7693583928066320343">Ordre des pages reçu</translation>
 <translation id="7697066736081121494">Prc8 (enveloppe)</translation>
@@ -1993,7 +1993,7 @@ Informations supplémentaires :
 <translation id="9114524666733003316">Validation de la carte…</translation>
 <translation id="9114581008513152754">Ce navigateur n'est géré par aucune entreprise ni aucune autre organisation. Il se peut que l'activité sur cet appareil soit gérée en dehors de Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">Importation terminée</translation>
-<translation id="9128870381267983090">Se connecter au réseau</translation>
+<translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9141013498910525015">Gérer les adresses</translation>
 <translation id="9148088599418889305">Sélectionner un mode de livraison</translation>

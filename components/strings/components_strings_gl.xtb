@@ -752,7 +752,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4067263367174615723">C1 (sobre)</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
-<translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o conxunto de cifrado comúns.</translation>
+<translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">A configuración do proxy está establecida para utilizar un URL de script .pac, non servidores proxy fixos.</translation>
 <translation id="4082393374666368382">Configuración - Xestión</translation>
@@ -900,7 +900,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4579056131138995126">Personal (sobre)</translation>
 <translation id="4582204425268416675">Quitar tarxeta</translation>
 <translation id="4587425331216688090">Queres eliminar o enderezo de Chrome?</translation>
-<translation id="4592951414987517459">A túa conexión a <ph name="DOMAIN" /> está encriptada cun conxunto de cifrado moderno.</translation>
+<translation id="4592951414987517459">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe moderno.</translation>
 <translation id="4594403342090139922">&amp;Desfacer eliminación</translation>
 <translation id="4597348597567598915">Tamaño 8</translation>
 <translation id="4600854749408232102">C6/C5 (sobre)</translation>
@@ -1202,7 +1202,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5804427196348435412">Utilizar dispositivos con NFC</translation>
-<translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun conxunto de cifrado obsoleto.</translation>
+<translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refacer adición</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cando pagues, cobrarase o importe correspondente utilizando esta tarxeta, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}other{Cando pagues, cobrarase o importe correspondente utilizando a tarxeta que selecciones, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nome común (NC)</translation>
@@ -1240,7 +1240,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Humidade da cámara</translation>
-<translation id="598637245381783098">Non se pode abrir a aplicación de pago</translation>
+<translation id="598637245381783098">Non se pode abrir a aplicación para pagos</translation>
 <translation id="5989320800837274978">Non se especificaron nin servidores proxy fixos nin un URL de script .pac.</translation>
 <translation id="5990559369517809815">Unha extensión bloqueou as solicitudes ao servidor.</translation>
 <translation id="5992691462791905444">Dobrez en Z para enxeñaría</translation>
@@ -1367,7 +1367,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6451458296329894277">Confirmar reenvío do formulario</translation>
 <translation id="6457206614190510200">Costura</translation>
 <translation id="6465306955648956876">Xestiona os contrasinais…</translation>
-<translation id="6468485451923838994">Letras</translation>
+<translation id="6468485451923838994">Tipos de letra</translation>
 <translation id="647261751007945333">Políticas de dispositivo</translation>
 <translation id="6476284679642588870">Xestionar métodos de pago</translation>
 <translation id="6489534406876378309">Comezar a cargar erros</translation>
@@ -1439,7 +1439,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6826993739343257035">Queres permitir realidade aumentada?</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6839929833149231406">Área</translation>
-<translation id="6846340164947227603">Usar un número de tarxeta virtual…</translation>
+<translation id="6846340164947227603">Usar un número de conta virtual…</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6865412394715372076">Esta tarxeta non puido verificarse neste momento</translation>
 <translation id="6874604403660855544">&amp;Refacer adición</translation>

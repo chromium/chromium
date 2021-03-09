@@ -20,7 +20,7 @@
 <translation id="1129510026454351943">Dettagli: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 download in attesa.}other{# download in attesa.}}</translation>
 <translation id="1142732900304639782">Non proporre di tradurre questi siti</translation>
-<translation id="1145536944570833626">Elimina dati esistenti.</translation>
+<translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1146678959555564648">Entra nella VR</translation>
 <translation id="1154704303112745282">Pagina non disponibile offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Utilizzati</translation>
@@ -439,7 +439,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4378154925671717803">Telefono</translation>
 <translation id="4382908510000698092">Usa come lingua di Chrome</translation>
 <translation id="4384468725000734951">Sogou in uso per la ricerca</translation>
-<translation id="4404568932422911380">Nessun segnalibro</translation>
+<translation id="4404568932422911380">Nessun preferito</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
 <translation id="4411535500181276704">Modalità Lite</translation>
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
@@ -682,7 +682,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
 <translation id="6040143037577758943">Chiudi</translation>
-<translation id="604124094241169006">Automatica</translation>
+<translation id="604124094241169006">Automatico</translation>
 <translation id="6042308850641462728">Altro</translation>
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
@@ -811,7 +811,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6864459304226931083">Scarica immagine</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
-<translation id="688738109438487280">Aggiungi dati esistenti a <ph name="TO_ACCOUNT" />.</translation>
+<translation id="688738109438487280">Aggiungi i dati esistenti a <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">Sblocca per copiare la password</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>

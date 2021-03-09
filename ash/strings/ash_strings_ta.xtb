@@ -32,7 +32,7 @@
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> இலிருந்து சார்ஜ் செய்யப்படுகிறது</translation>
 <translation id="1255033239764210633">வானிலை எப்படி இருக்கிறது?</translation>
 <translation id="1267032506238418139">ஷார்ட்கட் மாற்றம்</translation>
-<translation id="1270290102613614947">ஆன்ஸ்க்ரீன் விசைப்பலகை முடக்கப்பட்டது</translation>
+<translation id="1270290102613614947">ஆன்ஸ்க்ரீன் கீபோர்டு முடக்கப்பட்டது</translation>
 <translation id="1272079795634619415">நிறுத்து</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> மூலம் சார்ஜ் ஆகிறது</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
@@ -83,7 +83,7 @@
 <translation id="1709762881904163296">நெட்வொர்க் அமைப்புகள்</translation>
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
-<translation id="1747827819627189109">ஆன்ஸ்க்ரீன் விசைப்பலகை இயக்கப்பட்டது</translation>
+<translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
 <translation id="1761222317188459878">நெட்வொர்க் இணைப்பை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>
 <translation id="1782199038061388045">மொழிபெயர்ப்பு</translation>
@@ -100,7 +100,7 @@
 <translation id="1888656773939766144"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) என்பதற்கு மாற்றப்பட்டது. மாற்றங்களை வைத்திருக்க ‘உறுதிசெய்’ என்பதைக் கிளிக் செய்யவும். இன்னும் <ph name="TIMEOUT_SECONDS" /> இல் முந்தைய அமைப்புகள் மீட்டெடுக்கப்படும்.</translation>
 <translation id="1919743966458266018">செயல் நிர்வாகியைத் திறப்பதற்கான ஷார்ட்கட் மாற்றப்பட்டது. <ph name="OLD_SHORTCUT" /> க்குப் பதிலாக <ph name="NEW_SHORTCUT" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="1923539912171292317">தன்னியக்க கிளிக்குகள்</translation>
-<translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, விசைப்பலகை இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
+<translation id="1928739107511554905">புதுப்பிப்பைப் பெற, டச்ஸ்கிரீனைப் பயன்படுத்தி, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">எனது மொழியை அமை</translation>
@@ -115,7 +115,7 @@
 <translation id="2018630726571919839">ஒரு ஜோக் சொல்லு</translation>
 <translation id="2049240716062114887">டெஸ்க் பெயர் <ph name="DESK_NAME" /> என மாற்றப்பட்டது</translation>
 <translation id="2050339315714019657">செங்குத்து நிலை</translation>
-<translation id="2067602449040652523">விசைப்பலகை ஒளிர்வு</translation>
+<translation id="2067602449040652523">கீபோர்டு ஒளிர்வு</translation>
 <translation id="2074759828767813253">சமீபத்திய ஸ்கிரீன்ஷாட்டுகளும் பதிவிறக்கங்களும்</translation>
 <translation id="2083190527011054446">இரவு வணக்கம் <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">நெட்வொர்க்குடன் இணைக்கப்படவில்லை</translation>
@@ -159,7 +159,7 @@
 <translation id="2475982808118771221">ஒரு பிழை ஏற்பட்டது</translation>
 <translation id="2479579251444854687">மேலோட்டப் பயன்முறையைத் திறக்க மேல்நோக்கியும் அதை மூட கீழ்நோக்கியும் மூன்று விரல்களால் ஸ்வைப் செய்யவும்.</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
-<translation id="2484513351006226581">விசைப்பலகைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
+<translation id="2484513351006226581">கீபோர்டைத் தளவமைப்பை மாற்ற, <ph name="KEYBOARD_SHORTCUT" /> விசையை அழுத்தவும்.</translation>
 <translation id="2501920221385095727">ஸ்டிக்கி விசைகள்</translation>
 <translation id="2509468283778169019">CAPS LOCK இயக்கத்தில்</translation>
 <translation id="2542089167727451762">உங்கள் சுயவிவரப் படத்தைத் தட்டவும்</translation>
@@ -173,7 +173,7 @@
 <translation id="2640255526076764619">முந்தைய டெஸ்க்கிற்கு மாறுவதற்கான டச்பேட் சைகை மாறியுள்ளது. முந்தைய டெஸ்க்கிற்கு மாற நான்கு விரல்களால் இடதுபுறமாக ஸ்வைப் செய்யவும்.</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2658778018866295321">கிளிக் செய்து இழுக்கும்</translation>
-<translation id="2700493154570097719">எனது விசைப்பலகையை அமை</translation>
+<translation id="2700493154570097719">எனது கீபோர்டை அமை</translation>
 <translation id="2704781753052663061">பிற வைஃபை நெட்வொர்க்குகளில் இணையுங்கள்</translation>
 <translation id="2705001408393684014">மைக்கை நிலைமாற்றும். <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Up</translation>
@@ -289,10 +289,10 @@
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">பூட்டு</translation>
 <translation id="3798670284305777884">ஸ்பீக்கர் (அகம்)</translation>
-<translation id="3799080171973636491">முழுத்திரைப் பெரிதாக்கியின் கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
+<translation id="3799080171973636491">முழுத்திரைப் பெரிதாக்கியின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="380165613292957338">வணக்கம், நான் எவ்வாறு உதவலாம்?</translation>
 <translation id="3826099427150913765">கடவுச்சொல்லிற்கு மாற்று</translation>
-<translation id="383629559565718788">கீபோர்ட் அமைப்புகளைக் காண்பிக்கும்</translation>
+<translation id="383629559565718788">கீபோர்டு அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="3846575436967432996">நெட்வொர்க் தகவல் எதுவும் இல்லை</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="385300504083504382">தொடக்கம்</translation>
@@ -342,7 +342,7 @@
 <translation id="4302592941791324970">இல்லை</translation>
 <translation id="4303223480529385476">நிலைப் பகுதியை விரிவாக்கும்</translation>
 <translation id="4321179778687042513">ctrl</translation>
-<translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
+<translation id="4321776623976362024">உயர் ஒளி மாறுபாட்டின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">உருப்பெருக்கி</translation>
 <translation id="4350065043422286972">பின் செய்யப்பட்டது</translation>
@@ -351,7 +351,7 @@
 <translation id="4371348193907997655">அலைபரப்பு அமைப்புகள்</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4379531060876907730">இவை உங்கள் ஸ்டைலஸ் கருவிகள்</translation>
-<translation id="4389184120735010762">டாக் செய்யப்பட்ட பெரிதாக்கியின் கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
+<translation id="4389184120735010762">டாக் செய்யப்பட்ட பெரிதாக்கியின் கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். அதை இயக்க விரும்புகிறீர்களா?</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> முடக்கப்பட்டுள்ளது.</translation>
 <translation id="4421231901400348175">தொலைநிலை உதவி மூலம் <ph name="HELPER_NAME" /> உடன் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
 <translation id="4430019312045809116">அளவு</translation>
@@ -395,7 +395,7 @@
 <translation id="4814539958450445987">உள்நுழைவுத் திரை</translation>
 <translation id="4831034276697007977">தானாகக் கிளிக் செய்யும் அம்சத்தை ஆஃப் செய்ய விரும்புகிறீர்களா?</translation>
 <translation id="4836108105469522644">உங்கள் Android ஃபோனில் அறிவிப்புகளை இயக்கலாம்</translation>
-<translation id="4849058404725798627">விசைப்பலகை ஃபோகஸ் மூலம் ஆப்ஜெக்ட்டைத் தனிப்படுத்து</translation>
+<translation id="4849058404725798627">கீபோர்டு ஃபோகஸ் மூலம் ஆப்ஜெக்ட்டைத் தனிப்படுத்து</translation>
 <translation id="485592688953820832">எந்தச் செயலும் இல்லை (இடைநிறுத்தும்)</translation>
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
@@ -417,7 +417,7 @@
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="5114495209940374989">ஸ்கிரீன்ஷாட்டுகள்</translation>
-<translation id="5136175204352732067">வேறொரு விசைப்பலகை இணைக்கப்பட்டது</translation>
+<translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
 <translation id="5207949376430453814">உரைச் சுட்டியைத் தனிப்படுத்து</translation>
@@ -495,7 +495,7 @@
 <translation id="5977415296283489383">ஹெட்ஃபோன்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
 <translation id="5980301590375426705">விருந்தினரிலிருந்து வெளியேறவும்</translation>
-<translation id="598882571027504733">புதுப்பிப்பைப் பெற, விசைப்பலகை இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
+<translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
 <translation id="5992218262414051481">அதிக ஒளி மாறுபாட்டுப் பயன்முறை இயக்கப்பட்டது. அதை முடக்க, Ctrl+தேடல்+Hஐ மீண்டும் அழுத்தவும்.</translation>
 <translation id="6018164090099858612">கண்ணாடிப் பயன்முறையிலிருந்து வெளியேறுகிறது</translation>
 <translation id="602001110135236999">இடப்புறம் செல்</translation>
@@ -525,7 +525,7 @@
 <translation id="6288235558961782912">பெற்றோரின் அனுமதியுடன் <ph name="USER_EMAIL_ADDRESS" /> பயனரைப் பின்னர் மறுபடியும் சேர்க்கலாம்.</translation>
 <translation id="6297287540776456956">பகுதியைத் தேர்ந்தெடுக்க, ஸ்டைஸைப் பயன்படுத்தவும்</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> ஆகச் சுழற்றப்பட்டது</translation>
-<translation id="6315170314923504164">குரல்</translation>
+<translation id="6315170314923504164">Voice</translation>
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6381109794406942707">சாதனத்தைத் திறக்க உங்கள் பின்னை உள்ளிடவும்.</translation>
 <translation id="639644700271529076">CAPS LOCK முடக்கப்பட்டுள்ளது</translation>
@@ -561,7 +561,7 @@
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6691659475504239918">தேடல்+Shift+H</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
-<translation id="6696025732084565524">உங்கள் அகற்றத்தக்க விசைப்பலகைக்கு முக்கியப் புதுப்பிப்பு வேண்டும்</translation>
+<translation id="6696025732084565524">உங்கள் அகற்றத்தக்க கீபோர்டுக்கு முக்கியப் புதுப்பிப்பு வேண்டும்</translation>
 <translation id="6700713906295497288">IME மெனு பொத்தான்</translation>
 <translation id="6713285437468012787">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />" ஆனது இணைக்கப்பட்டது மற்றும் இப்போது எல்லா பயனர்களுக்கும் கிடைக்கக்கூடியதாக உள்ளது. அமைப்புகளைப் பயன்படுத்தி இந்த இணைத்தலை நீங்கள் அகற்றலாம்.</translation>
 <translation id="6715542151869432661">மொபைல் சாதனங்கள் எதுவுமில்லை.</translation>
@@ -615,7 +615,7 @@
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7346909386216857016">சரி, புரிந்தது</translation>
-<translation id="7348093485538360975">ஸ்கிரீன் கீபோர்ட்</translation>
+<translation id="7348093485538360975">ஸ்கிரீன் கீபோர்டு</translation>
 <translation id="735745346212279324">VPN துண்டிக்கப்பட்டது</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
 <translation id="7378594059915113390">மீடியா கட்டுப்பாடுகள்</translation>
@@ -665,13 +665,13 @@
 <translation id="7829386189513694949">வலுவான சிக்னல்</translation>
 <translation id="7837740436429729974">நேரம் முடிந்தது</translation>
 <translation id="7842569679327885685">எச்சரிக்கை: பரிசோதனை அம்சம்</translation>
-<translation id="7846634333498149051">விசைப்பலகை</translation>
+<translation id="7846634333498149051">கீபோர்டு</translation>
 <translation id="7868900307798234037">கைரேகை மூலம் திறக்கிறது</translation>
 <translation id="7872786842639831132">முடக்கு</translation>
 <translation id="7886169021410746335">தனியுரிமை அமைப்புகளை மாற்றலாம்</translation>
 <translation id="7886277072580235377">வெளியேறும்போது உங்கள் இணைய அமர்வு அழிக்கப்படும். <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">மின்னஞ்சல் அனுப்பு</translation>
-<translation id="7897375687985782769">திரைச் சுழற்சிக்கான கீபோர்ட் ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். திரையைச் சுழற்ற விரும்புகிறீர்களா?</translation>
+<translation id="7897375687985782769">திரைச் சுழற்சிக்கான கீபோர்டு ஷார்ட்கட்டை அழுத்தியுள்ளீர்கள். திரையைச் சுழற்ற விரும்புகிறீர்களா?</translation>
 <translation id="7901405293566323524">மொபைல் ஹப்</translation>
 <translation id="7904094684485781019">இந்தக் கணக்கிற்கான நிர்வாகி பல உள்நுழைவுகளை அனுமதிக்கவில்லை.</translation>
 <translation id="7933084174919150729">முதன்மைச் சுயவிவரத்திற்கு மட்டுமே Google அசிஸ்டண்ட்டைப் பயன்படுத்த முடியும்.</translation>
@@ -761,7 +761,7 @@
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
-<translation id="8735953464173050365">கீபோர்ட் அமைப்புகளைக் காண்பிக்கும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
+<translation id="8735953464173050365">கீபோர்டு அமைப்புகளைக் காண்பிக்கும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="8759408218731716181">பல உள்நுழைவை அமைக்க முடியாது</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> உடன் இணைக்கும்</translation>

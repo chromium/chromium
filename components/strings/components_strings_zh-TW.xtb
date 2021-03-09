@@ -65,7 +65,7 @@
 <translation id="121201262018556460">你嘗試前往 <ph name="DOMAIN" />，但伺服器所提供的憑證含有防護力薄弱的金鑰。攻擊者可能已破壞私密金鑰，而該伺服器可能並非你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="1219129156119358924">系統安全性</translation>
 <translation id="1227224963052638717">不明政策。</translation>
-<translation id="1228893227497259893">實體識別碼錯誤</translation>
+<translation id="1228893227497259893">實體 ID 錯誤</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1236081509407217141">要允許 VR 嗎？</translation>
 <translation id="1240347957665416060">你的裝置名稱</translation>
@@ -710,7 +710,7 @@
 <translation id="3832522519263485449">多孔 (左側)</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858027520442213535">更新日期和時間</translation>
-<translation id="3884278016824448484">裝置識別碼發生衝突</translation>
+<translation id="3884278016824448484">裝置 ID 發生衝突</translation>
 <translation id="3885155851504623709">教區</translation>
 <translation id="388632593194507180">偵測到你正遭到監控</translation>
 <translation id="3886948180919384617">堆疊出紙器 3</translation>
@@ -1801,7 +1801,7 @@
 <translation id="8275952078857499577">不要詢問是否要翻譯這個網站</translation>
 <translation id="8277900682056760511">已開啟付款處理常式工作表</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
-<translation id="8282947398454257691">存取您的專屬裝置識別碼</translation>
+<translation id="8282947398454257691">存取您的專屬裝置 ID</translation>
 <translation id="8286036467436129157">登入</translation>
 <translation id="8288807391153049143">顯示憑證</translation>
 <translation id="8289355894181816810">如果你不確定這代表什麼意思，請與網路管理員聯絡。</translation>

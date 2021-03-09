@@ -55,7 +55,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="1175875016430184367">Tre häftklamrar till höger</translation>
 <translation id="1178581264944972037">Paus</translation>
 <translation id="1181037720776840403">Ta bort</translation>
-<translation id="1186201132766001848">Kontrollera lösenorden</translation>
+<translation id="1186201132766001848">Kontrollera lösenord</translation>
 <translation id="1195558154361252544">Aviseringar blockeras automatiskt på alla webbplatser utom sådana du tillåter</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Nästa</translation>
@@ -780,7 +780,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="4152318981910038897">{COUNT,plural, =1{Sida 1}other{Sida {COUNT}}}</translation>
 <translation id="4154664944169082762">Fingeravtryck</translation>
 <translation id="4159784952369912983">Lila</translation>
-<translation id="4165986682804962316">Platsinställningar</translation>
+<translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4171400957073367226">Felaktig verifieringssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Visa alltid</translation>
@@ -1240,7 +1240,7 @@ Annars blockeras detta av sekretessinställningarna. Om du tillåter detta kan i
 <translation id="5967592137238574583">Redigera kontaktuppgifter</translation>
 <translation id="5967867314010545767">Ta bort från historiken</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
-<translation id="5979084224081478209">Kontrollera lösenorden</translation>
+<translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">Luftfuktighet i kammare</translation>
 <translation id="598637245381783098">Det gick inte att öppna betalningsappen</translation>

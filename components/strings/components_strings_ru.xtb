@@ -535,7 +535,7 @@
 <translation id="3157931365184549694">Восстановить</translation>
 <translation id="3162559335345991374">Возможно, вам нужно перейти на страницу входа сети Wi-Fi.</translation>
 <translation id="3167968892399408617">Страницы, открытые в этом окне, не останутся в истории браузера или поиска. Они не оставят на компьютере следов, таких как файлы cookie, после того как вы закроете все вкладки инкогнито. Скачанные вами файлы и добавленные закладки будут сохранены.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3174168572213147020">Остров</translation>
 <translation id="3176929007561373547">Проверьте настройки прокси-сервера или попросите администратора
           задать верные параметры. В противном случае^
@@ -1083,7 +1083,7 @@
 <translation id="5332219387342487447">Способ доставки</translation>
 <translation id="5334013548165032829">Подробные системные журналы.</translation>
 <translation id="5340250774223869109">Приложение заблокировано</translation>
-<translation id="534295439873310000">Устройства с функцией NFC</translation>
+<translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344579389779391559">Если вы откроете эту страницу, с вашего счета могут быть списаны средства</translation>
 <translation id="5355557959165512791">Сертификат веб-сайта <ph name="SITE" /> отозван. Открыть сайт в настоящее время нельзя. Сбой мог быть вызван сетевой ошибкой или действиями злоумышленников. Скорее всего, сайт заработает через некоторое время.</translation>
 <translation id="536296301121032821">Не удалось сохранить настройки политики</translation>
@@ -1323,7 +1323,7 @@
 <translation id="6328784461820205019">"Подключение не защищено", "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;", "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;", "&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;" или "Ошибка сертификата SSL"</translation>
 <translation id="6328786501058569169">Это поддельный сайт</translation>
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
-<translation id="6337534724793800597">Фильтровать политики по названию</translation>
+<translation id="6337534724793800597">Фильтровать правила по названию</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6358450015545214790">Что это значит?</translation>
 <translation id="6361757823711327522">B7</translation>

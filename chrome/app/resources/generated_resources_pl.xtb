@@ -188,7 +188,7 @@
 <translation id="1211364473545090084">Korzystaj z internetu w oknie incognito, by nie zapisywać historii przeglądania</translation>
 <translation id="1211769675100312947">Ty wybierasz skróty</translation>
 <translation id="1213037489357051291">Skonfigurowane odciski palców: <ph name="NUM_FINGERPRINTS" /></translation>
-<translation id="1213254615020057352">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
+<translation id="1213254615020057352">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
 <translation id="121384500095351701">Tego pliku nie można pobrać w bezpieczny sposób</translation>
 <translation id="1215411991991485844">Nowa aplikacja działająca w tle została dodana</translation>
 <translation id="1216542092748365687">Usuwanie odcisku palca</translation>
@@ -394,7 +394,7 @@
 <translation id="1436784010935106834">Usunięto</translation>
 <translation id="1442392616396121389">Prefiks routingu</translation>
 <translation id="144283815522798837">Wybrane elementy: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
-<translation id="1442851588227551435">Ustawianie aktywnego biletu Kerberos</translation>
+<translation id="1442851588227551435">Ustawianie aktywnego zgłoszenia Kerberos</translation>
 <translation id="1444628761356461360">Tym urządzeniem zarządza właściciel urządzenia: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Nie można wczytać ścieżki „<ph name="IMAGE_PATH" />” dla motywu.</translation>
 <translation id="1451375123200651445">Strona internetowa, pojedynczy plik</translation>
@@ -547,7 +547,7 @@
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sprawdzam zgodność danych z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}=1{Sprawdzam zgodność pliku z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}few{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}many{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}other{Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…}}</translation>
 <translation id="1618268899808219593">C&amp;entrum pomocy</translation>
 <translation id="1620307519959413822">Nieprawidłowe hasło. Spróbuj ponownie lub kliknij „Nie pamiętasz hasła?”, by je zresetować.</translation>
-<translation id="1620510694547887537">Kamera</translation>
+<translation id="1620510694547887537">Aparat</translation>
 <translation id="1621729191093924223">Nie będą działać funkcje, które potrzebują mikrofonu</translation>
 <translation id="1621831347985899379">Dane na urządzeniu <ph name="DEVICE_TYPE" /> zostaną usunięte</translation>
 <translation id="1622054403950683339">Zapomnij sieć Wi-Fi</translation>
@@ -633,7 +633,7 @@
 <translation id="1708338024780164500">(Nieaktywne)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (identyfikator: <ph name="ID_PH" />)</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (natywna)</translation>
-<translation id="1709217939274742847">Wybierz bilet, który ma być używany do uwierzytelniania. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
+<translation id="1709217939274742847">Wybierz zgłoszenie, które ma być używane do uwierzytelniania. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1711935594505774770">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez grupę <ph name="SITE_GROUP_NAME" />, należące do niej strony i jej zainstalowane aplikacje</translation>
 <translation id="1714644264617423774">Włącz ułatwienia dostępu, by uprościć obsługę urządzenia. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="1717218214683051432">Czujniki ruchu</translation>
@@ -1257,7 +1257,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2451298179137331965">2x</translation>
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2454247629720664989">Słowo kluczowe</translation>
-<translation id="245650153866130664">Aby automatycznie odświeżać bilet, zaznacz opcję „Zapamiętaj hasło”. Hasło będzie przechowywane wyłącznie na Twoim urządzeniu.</translation>
+<translation id="245650153866130664">Aby automatycznie odświeżać zgłoszenie, zaznacz opcję „Zapamiętaj hasło”. Hasło będzie przechowywane wyłącznie na Twoim urządzeniu.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> chce skopiować pliki z dysku <ph name="VOLUME_NAME" />.</translation>
 <translation id="2458379781610688953">Aktualizuj konto, <ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">Token zarządzania urządzeniem jest nieprawidłowy.</translation>
@@ -1316,7 +1316,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
 <translation id="250642123108534012">Urządzenia w pobliżu, na których otwarto Udostępnianie w pobliżu</translation>
 <translation id="250704661983564564">Rozmieszczanie wyświetlaczy</translation>
-<translation id="2507253002925770350">Bilet został usunięty</translation>
+<translation id="2507253002925770350">Zgłoszenie zostało usunięte</translation>
 <translation id="2507397597949272797"><ph name="NAME" /> – wstrzymano</translation>
 <translation id="2508428939232952663">Konto w Sklepie Google Play</translation>
 <translation id="2509495747794740764">Współczynnik skalowania musi wynosić od 10 do 200.</translation>
@@ -1375,7 +1375,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2580889980133367162">Zawsze zezwalaj <ph name="HOST" /> na pobieranie wielu plików</translation>
 <translation id="258095186877893873">Długie</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
-<translation id="2584109212074498965">Nie udało się pobrać biletu Kerberos. Spróbuj jeszcze raz lub skontaktuj się z administratorem urządzeń w Twojej organizacji. Kod błędu: <ph name="ERROR_CODE" />.</translation>
+<translation id="2584109212074498965">Nie udało się pobrać zgłoszenia Kerberos. Spróbuj jeszcze raz lub skontaktuj się z administratorem urządzeń w Twojej organizacji. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2585724835339714757">Ta karta udostępnia Twój ekran.</translation>
 <translation id="2586561813241011046">Nie udało się zainstalować <ph name="APP_NAME" />. Spróbuj jeszcze raz lub skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Schowek</translation>
@@ -1478,7 +1478,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2707024448553392710">Pobieram składnik</translation>
 <translation id="270921614578699633">Średnia z</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
-<translation id="2710101514844343743">Dane o użyciu i diagnostyce</translation>
+<translation id="2710101514844343743">Dane diagnostyczne i informacje o użytkowaniu</translation>
 <translation id="271033894570825754">Nowy</translation>
 <translation id="2712173769900027643">Poproś o pozwolenie</translation>
 <translation id="2713444072780614174">Biały</translation>
@@ -1687,7 +1687,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2942279350258725020">Wiadomości na Androida</translation>
 <translation id="2942560570858569904">Czekam…</translation>
 <translation id="2942581856830209953">Dostosuj tę stronę</translation>
-<translation id="2944060181911631861">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
+<translation id="2944060181911631861">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="2946119680249604491">Dodaj połączenie</translation>
 <translation id="2946640296642327832">Włącz Bluetooth</translation>
 <translation id="2947605845283690091">Przeglądanie stron internetowych powinno przebiegać bez problemu. Poświęć chwilę na <ph name="BEGIN_LINK" />sprawdzenie swoich rozszerzeń<ph name="END_LINK" />.</translation>
@@ -2118,7 +2118,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="347394413229268704">Przeczytaj później</translation>
 <translation id="3474218480460386727">Możesz użyć maksymalnie 99 liter</translation>
 <translation id="3475843873335999118">Odcisk palca nie został rozpoznany. Podaj hasło.</translation>
-<translation id="3476303763173086583">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="3476303763173086583">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Ups. System nie mógł pobrać zasad dotyczących Twojego urządzenia.</translation>
 <translation id="347785443197175480">Nadal zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery i mikrofonu</translation>
 <translation id="3478685642445675458">Aby usunąć osobę, odblokuj swój profil.</translation>
@@ -2320,7 +2320,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3700888195348409686">Wyświetlasz prezentację (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3701167022068948696">Napraw teraz</translation>
 <translation id="3702500414347826004">Strony startowe zostały zmienione i zawierają <ph name="URL" />.</translation>
-<translation id="3703699162703116302">Bilet odświeżony</translation>
+<translation id="3703699162703116302">Zgłoszenie odświeżone</translation>
 <translation id="370415077757856453">JavaScript zablokowany</translation>
 <translation id="3704331259350077894">Zaprzestanie działania</translation>
 <translation id="3705722231355495246">-</translation>
@@ -2530,7 +2530,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3923676227229836009">Ta strona ma zezwolenie na przeglądanie plików</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924487862883651986">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
-<translation id="3925573269917483990">Kamera:</translation>
+<translation id="3925573269917483990">Aparat:</translation>
 <translation id="3926002189479431949">Telefon z funkcją Smart Lock został zmieniony</translation>
 <translation id="3927787410750478258">Ten <ph name="DEVICE_TYPE" /> będzie zarządzany przez domenę <ph name="DOMAIN" />.</translation>
 <translation id="3927932062596804919">Odmawiaj</translation>
@@ -2566,7 +2566,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz)</translation>
 <translation id="3954953195017194676">Nie ma zapisanych ostatnio logów zdarzeń WebRTC.</translation>
 <translation id="3955163004258753966">Błąd podczas rozpoczynania uaktualniania</translation>
-<translation id="3955193568934677022">Zezwalaj witrynom na odtwarzanie treści chronionej (zalecane)</translation>
+<translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="3955896417885489542">Pokaż opcje Google Play po zakończeniu konfiguracji</translation>
 <translation id="3956702100721821638">Nie udało się połączyć z Google Play</translation>
 <translation id="3957079323242030166">Dane kopii zapasowej nie zmniejszają ilości miejsca dostępnego na Dysku.</translation>
@@ -2762,7 +2762,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4209464433672152343">Dokumenty są <ph name="BEGIN_LINK_HELP" />wysyłane na serwery Google<ph name="END_LINK_HELP" />, gdzie zostaną przygotowane do druku. <ph name="BEGIN_LINK_DASHBOARD" />W panelu Google Cloud Print<ph name="END_LINK_DASHBOARD" /> możesz zarządzać danymi o swoich drukarkach i historią drukowania, możesz też wyświetlać i edytować te informacje.</translation>
 <translation id="4210048056321123003">Pobieram maszynę wirtualną</translation>
 <translation id="421182450098841253">&amp;Pokaż pasek zakładek</translation>
-<translation id="4211851069413100178">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="4211851069413100178">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Właściciel może ustawić wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="42126664696688958">Eksportuj</translation>
 <translation id="42137655013211669">Serwer zabronił dostępu do tego zasobu.</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
@@ -3006,7 +3006,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4522570452068850558">Szczegóły</translation>
 <translation id="4522600456902129422">Nadal zezwalaj tej stronie na dostęp do schowka</translation>
 <translation id="4524832533047962394">Ta wersja systemu operacyjnego nie obsługuje użytego trybu rejestrowania. Upewnij się, że używasz najnowszej wersji systemu.</translation>
-<translation id="4527186207340858212">Utworzyć nowy profil do pracy?</translation>
+<translation id="4527186207340858212">Utworzyć nowy profil służbowy?</translation>
 <translation id="452750746583162491">Przejrzyj synchronizowane dane</translation>
 <translation id="4528494169189661126">Sugestia tłumaczenia</translation>
 <translation id="4530494379350999373">Pochodzenie</translation>
@@ -3244,7 +3244,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4814378367953456825">Wpisz nazwę tego odcisku</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Usunięto 1 zakładkę}few{Usunięto {COUNT} zakładki}many{Usunięto {COUNT} zakładek}other{Usunięto {COUNT} zakładki}}</translation>
 <translation id="4819607494758673676">Powiadomienia od Asystenta Google</translation>
-<translation id="4820236583224459650">Ustaw jako bilet aktywny</translation>
+<translation id="4820236583224459650">Ustaw jako zgłoszenie aktywne</translation>
 <translation id="4821935166599369261">&amp;Profilowanie włączone</translation>
 <translation id="4823484602432206655">Odczyt i zmiana ustawień użytkownika oraz urządzenia</translation>
 <translation id="4824037980212326045">Tworzenie i przywracanie kopii zapasowej Linuksa</translation>
@@ -3412,7 +3412,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5017643436812738274">Możesz poruszać się po stronach przy użyciu kursora tekstowego. Aby wyłączyć tę opcję, naciśnij Ctrl+Search+7.</translation>
 <translation id="5017828934289857214">Przypomnij mi później</translation>
 <translation id="5018207570537526145">Otwórz stronę rozszerzeń</translation>
-<translation id="5018526990965779848">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
+<translation id="5018526990965779848">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="5019392775062123007">Widoczne dla urządzeń w pobliżu jako <ph name="DEVICE_NAME" /></translation>
 <translation id="5021750053540820849">Jeszcze nie zaktualizowano</translation>
 <translation id="5026806129670917316">Włączanie sieci Wi-Fi</translation>
@@ -3457,7 +3457,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5078638979202084724">Dodaj wszystkie karty do zakładek</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5079950360618752063">Użyj sugerowanego hasła</translation>
-<translation id="508059534790499809">Odświeżanie biletu Kerberos</translation>
+<translation id="508059534790499809">Odświeżanie zgłoszenia Kerberos</translation>
 <translation id="5084230410268011727">Zezwalaj stronom internetowym na używanie czujników ruchu i światła</translation>
 <translation id="5084328598860513926">Proces obsługi administracyjnej został przerwany. Spróbuj jeszcze raz albo skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5085162214018721575">Sprawdzanie dostępności aktualizacji</translation>
@@ -3539,7 +3539,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5178667623289523808">Znajdź poprzednie</translation>
 <translation id="5181140330217080051">Pobieranie</translation>
 <translation id="5184063094292164363">Konsola &amp;JavaScript</translation>
-<translation id="5184209580557088469">Istnieje już bilet przypisany do tej nazwy użytkownika</translation>
+<translation id="5184209580557088469">Istnieje już zgłoszenie przypisane do tej nazwy użytkownika</translation>
 <translation id="5184662919967270437">Aktualizuję urządzenie</translation>
 <translation id="5185359571430619712">Sprawdź rozszerzenia</translation>
 <translation id="5185386675596372454">Najnowsza wersja rozszerzenia „<ph name="EXTENSION_NAME" />” została wyłączona, ponieważ wymaga więcej uprawnień.</translation>
@@ -3550,7 +3550,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5192062846343383368">Otwórz aplikację Family Link, by zobaczyć ustawienia nadzoru</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>
 <translation id="5197255632782567636">Internet</translation>
-<translation id="5198430103906431024">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
+<translation id="5198430103906431024">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliknij, by wyświetlić rozszerzenie}few{Kliknij, by wyświetlić te rozszerzenia}many{Kliknij, by wyświetlić te rozszerzenia}other{Kliknij, by wyświetlić te rozszerzenia}}</translation>
 <translation id="5204673965307125349">Wykonaj Powerwash urządzenia i spróbuj jeszcze raz.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
@@ -4322,7 +4322,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
 <translation id="6111972606040028426">Włącz Asystenta Google</translation>
 <translation id="6112294629795967147">Dotknij, by zmienić rozmiar</translation>
-<translation id="6112727384379533756">Dodaj bilet</translation>
+<translation id="6112727384379533756">Dodaj zgłoszenie</translation>
 <translation id="6112931163620622315">Sprawdź swój telefon</translation>
 <translation id="6112952769866305444">Edytuj osobę <ph name="PROFILE_NAME" />, <ph name="USERNAME" /></translation>
 <translation id="6113942107547980621">Aby używać Smart Lock, przełącz telefon na profil głównego użytkownika</translation>
@@ -4607,7 +4607,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6450876761651513209">Zmiana Twoich ustawień prywatności</translation>
 <translation id="6451180435462401570">Zarządzaj urządzeniami Cloud Print</translation>
-<translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i 1 inna karta}few{<ph name="PAGE_TITLE" /> i # inne karty}many{<ph name="PAGE_TITLE" /> i # innych kart}other{<ph name="PAGE_TITLE" /> i # innej karty}}</translation>
+<translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i jeszcze 1 karta}few{<ph name="PAGE_TITLE" /> i jeszcze # karty}many{<ph name="PAGE_TITLE" /> i jeszcze # kart}other{<ph name="PAGE_TITLE" /> i jeszcze # karty}}</translation>
 <translation id="6451689256222386810">Jeśli nie pamiętasz hasła lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
 <translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
@@ -4807,7 +4807,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6704062477274546131">Rozwiązywanie nazw DNS</translation>
 <translation id="6706210727756204531">Zakres</translation>
 <translation id="6707389671160270963">Certyfikat klienta SSL</translation>
-<translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i 1 inna karta}few{<ph name="PAGE_TITLE" /> i # inne karty}many{<ph name="PAGE_TITLE" /> i # innych kart}other{<ph name="PAGE_TITLE" /> i # innej karty}}</translation>
+<translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i jeszcze 1 karta}few{<ph name="PAGE_TITLE" /> i jeszcze # karty}many{<ph name="PAGE_TITLE" /> i jeszcze # kart}other{<ph name="PAGE_TITLE" /> i jeszcze # karty}}</translation>
 <translation id="6709133671862442373">Wiadomości</translation>
 <translation id="6709357832553498500">Połącz za pomocą rozszerzenia <ph name="EXTENSIONNAME" /></translation>
 <translation id="6710213216561001401">Poprzedni</translation>
@@ -4822,7 +4822,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6725073593266469338">Usługa UI</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
-<translation id="67269783048918309">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="67269783048918309">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Połączono, bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6731877319426971768">Pobrano pliki rozpoznawania mowy</translation>
 <translation id="6732801395666424405">Certyfikaty nie zostały wczytane</translation>
@@ -4831,7 +4831,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6735304988756581115">Pokaż pliki cookie i inne dane witryn...</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
-<translation id="6737663862851963468">Usuwanie biletu Kerberos</translation>
+<translation id="6737663862851963468">Usuwanie zgłoszenia Kerberos</translation>
 <translation id="6739923123728562974">Pokaż skrót na pulpicie</translation>
 <translation id="6740234557573873150">Wstrzymano pobieranie <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Twój administrator<ph name="END_LINK" /> wyłączył Bezpieczne przeglądanie</translation>
@@ -4930,7 +4930,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6847125920277401289">Aby kontynuować, zwolnij miejsce</translation>
 <translation id="6848388270925200958">Obecnie niektórych Twoich kart można używać tylko na tym urządzeniu</translation>
 <translation id="6850286078059909152">Kolor tekstu</translation>
-<translation id="6851181413209322061">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie.</translation>
+<translation id="6851181413209322061">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie.</translation>
 <translation id="6851497530878285708">Aplikacja włączona</translation>
 <translation id="6853388645642883916">Aktualizator jest uśpiony</translation>
 <translation id="68541483639528434">Zamknij inne karty</translation>
@@ -5049,7 +5049,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="698524779381350301">Automatycznie zezwól na dostęp na tych stronach</translation>
 <translation id="6985607387932385770">Drukarki</translation>
 <translation id="6988094684494323731">Uruchamiam kontener Linuksa</translation>
-<translation id="6990778048354947307">Tryb ciemny</translation>
+<translation id="6990778048354947307">Ciemny motyw</translation>
 <translation id="6991665348624301627">Wybierz urządzenie docelowe</translation>
 <translation id="6992554835374084304">Włączanie ulepszonego sprawdzania pisowni</translation>
 <translation id="6994069045767983299">Odwrócone kolory</translation>
@@ -5225,7 +5225,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7206693748120342859">Pobieram <ph name="PLUGIN_NAME" />...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
-<translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
+<translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
 <translation id="7210499381659830293">Drukarki dostępne za pomocą rozszerzeń</translation>
 <translation id="7211890396916697230">Skonfiguruj eSIM</translation>
@@ -6388,7 +6388,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8565650234829130278">Próbowano zmienić wersję aplikacji na starszą.</translation>
 <translation id="8569682776816196752">Nie znaleziono urządzeń docelowych</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
-<translation id="8571687764447439720">Dodawanie biletu Kerberos</translation>
+<translation id="8571687764447439720">Dodawanie zgłoszenia Kerberos</translation>
 <translation id="8574990355410201600">Zawsze zezwalaj na odtwarzanie dźwięku na stronie <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Aby zakończyć, przytrzymaj klawisz <ph name="KEY_EQUIVALENT" /></translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>
@@ -6404,7 +6404,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8591783563402255548">1 s</translation>
 <translation id="8592141010104017453">Nie pokazuj żadnych powiadomień</translation>
 <translation id="859246725979739260">Tej stronie zablokowano dostęp do Twojej lokalizacji.</translation>
-<translation id="8593121833493516339">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz Dodatkową aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
+<translation id="8593121833493516339">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz Dodatkową aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK1" />Więcej informacji<ph name="END_LINK1" /></translation>
 <translation id="8593735906501637689">Usunięto moduł: <ph name="MODULE_TITLE" /></translation>
 <translation id="8594908476761052472">Nagraj film</translation>
 <translation id="8596540852772265699">Pliki niestandardowe</translation>
@@ -6413,7 +6413,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8601206103050338563">Uwierzytelnianie klienta WWW TLS</translation>
 <translation id="8602851771975208551">Inny program na Twoim komputerze dodał aplikację, która może zmienić działanie Chrome.</translation>
 <translation id="8605428685123651449">Pamięć SQLite</translation>
-<translation id="8608618451198398104">Dodawanie biletu Kerberos</translation>
+<translation id="8608618451198398104">Dodawanie zgłoszenia Kerberos</translation>
 <translation id="860909219589324847">Do przesyłania nie będzie używana mobilna transmisja danych</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8610103157987623234">Nieprawidłowy format – spróbuj ponownie</translation>
@@ -6444,7 +6444,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>
 <translation id="8639047128869322042">Szukam szkodliwego oprogramowania…</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
-<translation id="8639635302972078117">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
+<translation id="8639635302972078117">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
 <translation id="8642900771896232685">2 s</translation>
 <translation id="8642947597466641025">Powiększ tekst</translation>
 <translation id="8643443571868262066">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Ochronę zaawansowaną Google?</translation>
@@ -6515,7 +6515,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8719653885894320876">Nie udało się pobrać wtyczki <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Szukam sieci komórkowej. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Przekroczono limit czasu inicjowania atrybutów instalacyjnych.</translation>
-<translation id="8722912030556880711">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="8722912030556880711">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8724405322205516354">Gdy zobaczysz tę ikonę, możesz użyć odcisku palca, by się zalogować lub zatwierdzić zakup.</translation>
 <translation id="8724409975248965964">Odcisk palca został dodany</translation>
@@ -6716,7 +6716,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="892706138619340876">Niektóre ustawienia zostały zresetowane</translation>
 <translation id="8930351635855238750">Nowe ustawienia plików cookie zostaną zastosowane po ponownym załadowaniu strony</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>
-<translation id="8931076093143205651">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
+<translation id="8931076093143205651">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida, wysyłając automatycznie do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="8931394284949551895">Nowe urządzenia</translation>
 <translation id="8931475688782629595">Zarządzanie synchronizacją</translation>
 <translation id="8932654652795262306">Szczegóły błyskawicznego połączenia w tetheringu</translation>
@@ -6925,15 +6925,15 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="917350715406657904">Upłynął ustawiony przez rodzica limit czasu korzystania z aplikacji <ph name="APP_NAME" />. Jutro możesz z niej korzystać przez <ph name="TIME_LIMIT" />.</translation>
 <translation id="9173787391779732995">Strony mogą wyświetlać obrazy (zalecane)</translation>
 <translation id="9173995187295789444">Skanuję w poszukiwaniu urządzeń Bluetooth…</translation>
-<translation id="9174401638287877180">Wysyłaj dane diagnostyczne oraz informacje o użyciu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
+<translation id="9174401638287877180">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
 <translation id="917510707618656279">Pytaj, gdy strona chce uzyskać dostęp do urządzeń Bluetooth</translation>
-<translation id="9176476835295860688">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="9176476835295860688">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To <ph name="BEGIN_LINK1" />ustawienie<ph name="END_LINK1" /> jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem Bluetooth</translation>
 <translation id="9179524979050048593">Nazwa użytkownika na ekranie logowania</translation>
 <translation id="9179734824669616955">Skonfiguruj Linuksa (Beta) na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="9180281769944411366">Może to potrwać kilka minut. Uruchamiam kontener Linuksa.</translation>
 <translation id="9180380851667544951">Strona może udostępniać ekran</translation>
-<translation id="9188732951356337132">Wysyłaj dane diagnostyczne oraz informacje o użyciu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
+<translation id="9188732951356337132">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na tym koncie. <ph name="BEGIN_LINK2" />Więcej informacji<ph name="END_LINK2" /></translation>
 <translation id="9190063653747922532">L2TP/IPSec + klucz wstępny</translation>
 <translation id="9198090666959937775">Używaj telefonu z Androidem jako klucza bezpieczeństwa</translation>
 <translation id="920045321358709304">Szukaj w: <ph name="SEARCH_ENGINE" /></translation>

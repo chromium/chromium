@@ -275,7 +275,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3606978283550408104">Braille display connected.</translation>
 <translation id="3616883743181209306">Menu moved to the top-right corner of the screen.</translation>
 <translation id="3621202678540785336">Input</translation>
-<translation id="3621712662352432595">Audio Settings</translation>
+<translation id="3621712662352432595">Audio settings</translation>
 <translation id="3626281679859535460">Brightness</translation>
 <translation id="3631369015426612114">Allow notifications from the following</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
@@ -584,7 +584,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6910714959251846841">This update requires powerwashing of your device. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6945221475159498467">Select</translation>
-<translation id="6972754398087986839">Get Started</translation>
+<translation id="6972754398087986839">Get started</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
 <translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>

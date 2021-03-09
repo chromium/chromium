@@ -329,7 +329,7 @@
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
-<translation id="3492207499832628349">כרטיסייה חדשה לגלישה בסתר</translation>
+<translation id="3492207499832628349">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
@@ -401,7 +401,7 @@
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3988213473815854515">ניתנה הרשאת מיקום</translation>
 <translation id="3988466920954086464">בחלונית הזו אפשר לראות תוצאות חיפוש מיידי</translation>
-<translation id="4000212216660919741">דף הבית במצב לא מקוון</translation>
+<translation id="4000212216660919741">דף הבית במצב אופליין</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{שעה אחת}two{שעתיים}many{# שעות}other{# שעות}}</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4060598801229743805">האפשרויות זמינות בחלק העליון של המסך</translation>
@@ -895,7 +895,7 @@
 <translation id="7484997419527351112">‏Discover – כבוי</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">חיסכון בחבילת הגלישה</translation>
-<translation id="7498271377022651285">המתן…</translation>
+<translation id="7498271377022651285">נא להמתין…</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="751961395872307827">לא ניתן להתחבר לאתר</translation>
@@ -1085,7 +1085,7 @@
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8912362522468806198">‏חשבון Google</translation>
 <translation id="8920114477895755567">בהמתנה לפרטי ההורים.</translation>
-<translation id="8922289737868596582">כדי להשתמש בדפים במצב לא מקוון, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
+<translation id="8922289737868596582">כדי להשתמש בדפים במצב אופליין, אפשר להוריד אותם דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="8937772741022875483">‏האם להסיר את הפעילות שלך ב-Chrome מ'שימוש חכם בדיגיטל'?</translation>
 <translation id="8942627711005830162">פתיחה בחלון האחר</translation>
 <translation id="8951232171465285730">‏Chrome חסך לך ‎<ph name="MEGABYTES" /> MB</translation>
@@ -1098,7 +1098,7 @@
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
-<translation id="9028914725102941583">יש להפעיל את הסנכרון כדי לבצע שיתוף בין מכשירים</translation>
+<translation id="9028914725102941583">יש להפעיל את הסנכרון כדי להפעיל שיתוף בין מכשירים</translation>
 <translation id="9040142327097499898">יש הרשאה להצגת הודעות. המיקום כבוי בשביל המכשיר הזה.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
@@ -1117,7 +1117,7 @@
 <translation id="9104217018994036254">רשימת המכשירים שאפשר לשתף איתם כרטיסייה.</translation>
 <translation id="9108312223223904744">תמיכה בטלפון כמפתח אבטחה</translation>
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
-<translation id="9133397713400217035">הצעות לתוכן במצב לא מקוון</translation>
+<translation id="9133397713400217035">הצעות לתוכן במצב אופליין</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>

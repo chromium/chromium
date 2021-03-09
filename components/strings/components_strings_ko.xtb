@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">방문 기록 항목 목록</translation>
 <translation id="1517433312004943670">전화번호 필요</translation>
 <translation id="1519264250979466059">생성 날짜</translation>
-<translation id="1521655867290435174">Google 스프레드시트</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">연결 대기 중...</translation>
 <translation id="1529521330346880926">10x15(봉투)</translation>
 <translation id="1529789484829130889">트레이 8</translation>
@@ -243,7 +243,7 @@
 <translation id="1842969606798536927">결제</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
 <translation id="1871284979644508959">필수 입력란</translation>
-<translation id="1875512691959384712">Google 설문지</translation>
+<translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">시작 페이지 열기</translation>
 <translation id="1883255238294161206">접기 목록</translation>
 <translation id="1898423065542865115">필터링</translation>
@@ -906,7 +906,7 @@
 <translation id="4670064810192446073">가상 현실</translation>
 <translation id="467662567472608290">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서에 오류가 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4677585247300749148"><ph name="URL" />에서 접근성 이벤트에 응답하려고 합니다</translation>
-<translation id="467809019005607715">Google 프레젠테이션</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> 등 동일한 비밀번호를 사용한 사이트에 저장된 비밀번호를 확인하는 것이 좋습니다.</translation>
 <translation id="4690462567478992370">유효하지 않은 인증서 사용 중단</translation>
 <translation id="4691835149146451662">Architecture-A(봉투)</translation>
@@ -1461,7 +1461,7 @@
 <translation id="6973656660372572881">고정 프록시 서버와 .pac 스크립트 URL이 모두 지정되어 있습니다.</translation>
 <translation id="6973932557599545801">죄송합니다. 더 이상 도와드릴 수 없습니다. 직접 계속해 주세요.</translation>
 <translation id="6975012522936652259">사기성 사이트에 비밀번호를 입력했습니다. 지금 바로 <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> 등 동일한 비밀번호를 사용한 사이트로 이동하여 비밀번호를 변경하시기 바랍니다.</translation>
-<translation id="6979158407327259162">Google 드라이브</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">음소거(기본값)</translation>
 <translation id="6979983982287291980">다운로드한 파일은 분석을 위해 Google Cloud 또는 타사로 전송됩니다. 예를 들어, 민감한 정보 또는 멀웨어를 찾기 위해 파일을 스캔할 수 있습니다.</translation>
 <translation id="6989763994942163495">고급 설정 표시</translation>
@@ -2001,7 +2001,7 @@
 <translation id="917450738466192189">서버의 인증서가 유효하지 않습니다.</translation>
 <translation id="9174917557437862841">탭 전환 버튼, 이 탭으로 전환하려면 Enter를 누르세요</translation>
 <translation id="9179703756951298733">Chrome 설정에서 결제 및 신용카드 정보를 관리하세요.</translation>
-<translation id="9183302530794969518">Google 문서</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" />에서 지원되지 않는 프로토콜을 사용합니다.</translation>
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>

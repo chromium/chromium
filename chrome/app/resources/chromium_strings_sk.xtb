@@ -56,7 +56,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2910007522516064972">Informácie o prehliadači &amp;Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="2983934633046890458">Chromium sa pokúša upraviť heslá.</translation>
-<translation id="3032706164202344641">Chromium nemôže skontrolovať heslá. Skúste to znova neskôr.</translation>
+<translation id="3032706164202344641">Chromium nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="3032787606318309379">Pridáva sa do prehliadača Chromium...</translation>
 <translation id="3068515742935458733">Pomôcť zlepšiť prehliadač Chromium odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
 <translation id="3086207596048762442">Chromium kontroluje prítomnosť nechceného softvéru raz za týždeň</translation>
@@ -160,7 +160,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
 <translation id="6295779123002464101">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
 <translation id="6309712487085796862">Chromium používa vašu kameru.</translation>
-<translation id="6333502561965082103">V prehliadači Chromium práve prebieha iná operácia. Skúste to znova neskôr.</translation>
+<translation id="6333502561965082103">V prehliadači Chromium práve prebieha iná operácia. Skúste to neskôr.</translation>
 <translation id="6334986366598267305">Teraz je používanie prehliadača Chromium s účtom Google a na zdieľaných počítačoch oveľa ľahšie.</translation>
 <translation id="6373523479360886564">Naozaj chcete Chromium odinštalovať?</translation>
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
@@ -187,7 +187,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6964305034639999644">Otvoriť odkaz v okne inko&amp;gnito prehliadača Chromium</translation>
 <translation id="6978145336957848883">Slabé heslá sa dajú ľahko uhádnuť. Povoľte prehliadaču Chromium, <ph name="BEGIN_LINK" />aby vám vytváral silné heslá a pamätal si ich<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
-<translation id="701244094609242530">Chromium nemôže skontrolovať rozšírenia. Skúste to znova neskôr.</translation>
+<translation id="701244094609242530">Chromium nemôže skontrolovať rozšírenia. Skúste to neskôr.</translation>
 <translation id="705851970750939768">Aktualizovať Chromium</translation>
 <translation id="7066436765290594559">Systému OS Chromium sa nepodarilo synchronizovať vaše údaje. Aktualizujte prístupovú frázu synchronizácie.</translation>
 <translation id="7067091210845072982">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>

@@ -28,7 +28,7 @@
 <translation id="1996162290124031907">அடுத்த தாவலுக்குச் செல்லும்</translation>
 <translation id="2010818616644390445">சாளரத்தில் கடைசித் தாவலுக்குச் செல்லும்</translation>
 <translation id="2040706009561734834">தொடக்கியைத் திறக்கும்/மூடும்</translation>
-<translation id="2088054208777350526">கீபோர்ட் ஷார்ட்கட்களைத் தேடவும்</translation>
+<translation id="2088054208777350526">கீபோர்டு ஷார்ட்கட்களைத் தேடவும்</translation>
 <translation id="2125211348069077981"><ph name="ALT" /><ph name="SEPARATOR" /><ph name="E" /> அல்லது <ph name="F" /></translation>
 <translation id="2145908266289632567">உரைத் திருத்தம்</translation>
 <translation id="215292019801409139"><ph name="SEARCH" /><ph name="SEPARATOR" /> 1 முதல் = வரை</translation>
@@ -37,7 +37,7 @@
 <translation id="2194790690264064655"><ph name="CTRL" />ஐ அழுத்தி, இணைப்பைக் கிளிக் செய்யவும்</translation>
 <translation id="2246352309084894470">முழுத்திரைத் தொடக்கியைத் திறக்கும்/மூடும்</translation>
 <translation id="2354531887393764880">முற்றுப்புள்ளி</translation>
-<translation id="2382644247745281995">தற்போதைய விசைப்பலகைத் தளவமைப்புக்கு ஆதரிக்கப்படாது</translation>
+<translation id="2382644247745281995">தற்போதைய கீபோர்டைத் தளவமைப்புக்கு ஆதரிக்கப்படாது</translation>
 <translation id="2397416548179033562">Chrome மெனுவைக் காட்டு</translation>
 <translation id="2424073332829844142">கேப்ஸ்லாக்கை இயக்கும் மற்றும் முடக்கும்</translation>
 <translation id="2441202986792279177">சாளரங்களுக்கிடையே விரைவாக மாற்றும்</translation>
@@ -83,7 +83,7 @@
 <translation id="3751033133896282964">உங்கள் கடைசிச் செயலைச் செயல்தவிர்க்கவும்</translation>
 <translation id="3792178297143798024">உங்கள் ஷெல்ஃபில் தனிப்படுத்தப்பட்ட உருப்படியைத் திறக்கும்</translation>
 <translation id="379295446891231126"><ph name="CTRL" /><ph name="SEPARATOR" /> 1 முதல் 8 வரை</translation>
-<translation id="3837047332182291558">விசைப்பலகையைப் பிரகாசமாக்கும் (பின்னணி வெளிச்சம் கொண்ட விசைப்பலகைகளுக்கு மட்டும்)</translation>
+<translation id="3837047332182291558">கீபோர்டைப் பிரகாசமாக்கும் (பின்னணி வெளிச்சம் கொண்ட விசைப்பலகைகளுக்கு மட்டும்)</translation>
 <translation id="3949671998904569433">காற்புள்ளி</translation>
 <translation id="3976863468609830880">உங்கள் ஷெல்ஃபில் கடைசி ஐகானைக் கிளிக் செய்யும்</translation>
 <translation id="3994783594793697310">இயல்பான அளவிற்குக் காட்சியை மீட்டமைக்கும்</translation>
@@ -101,7 +101,7 @@
 <translation id="4458670250301149821">ஆப்ஸ் கட்டத்தில் உள்ள கோப்புறைக்கு உள்ளே/வெளியே ஆப்ஸ் ஐகானை நகர்த்தும்</translation>
 <translation id="4472417192667361414">கம்ப்யூட்டர் &amp; காட்சி அமைப்புகள்</translation>
 <translation id="449214506787633354"><ph name="CTRL" />, பிறகு <ph name="LEFT" /> அல்லது <ph name="RIGHT" /> அல்லது <ph name="UP" /> அல்லது <ph name="DOWN" /></translation>
-<translation id="4556221320735744018">கீபோர்ட் ஷார்ட்கட் உதவியைக் காட்டும்</translation>
+<translation id="4556221320735744018">கீபோர்டு ஷார்ட்கட் உதவியைக் காட்டும்</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> அல்லது <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">உங்கள் கணக்கின் படம் தோன்றக்கூடிய நிலைப் பகுதியைத் திறக்கும்</translation>
 <translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
@@ -126,7 +126,7 @@
 <translation id="5620219513321115856">செயலிலுள்ள சாளரத்தை வலதுபுறத்தில் உள்ள டெஸ்க்கிற்கு நகர்த்தும்</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> அல்லது <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">தாவலில் இணைப்பைத் திறக்கும்</translation>
-<translation id="5757474750054631686">விசைப்பலகையை மங்கலாக்கும் (பின்னணி வெளிச்சம் கொண்ட விசைப்பலகைகளுக்கு மட்டும்)</translation>
+<translation id="5757474750054631686">கீபோர்டை மங்கலாக்கும் (பின்னணி வெளிச்சம் கொண்ட விசைப்பலகைகளுக்கு மட்டும்)</translation>
 <translation id="587531134027443617">முந்தைய சொல்லை நீக்கும்</translation>
 <translation id="5899919361772749550">டெவெலப்பர் கருவிகள் கன்சோலைக் காட்டும் அல்லது மறைக்கும்</translation>
 <translation id="5919628958418675842">தனியுரிமைத் திரையை ஆன் அல்லது ஆஃப் செய்யும்</translation>

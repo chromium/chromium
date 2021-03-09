@@ -96,7 +96,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1850504506766569011">Wi-Fi desactivada</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1882897271359938046">Duplicando en <ph name="DISPLAY_NAME" /></translation>
-<translation id="1885785240814121742">Desbloquear con huella digital</translation>
+<translation id="1885785240814121742">Desbloquear con huella dactilar</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> no admite el valor de resolución <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz), por lo que se cambió a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" /> se restablecerá la configuración anterior.</translation>
 <translation id="1919743966458266018">Se modificó el acceso directo para abrir el administrador de tareas. Utiliza <ph name="NEW_SHORTCUT" /> en vez de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Clics automáticos</translation>
@@ -255,7 +255,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3428447136709161042">Desconectar de <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Para volver, desliza el dedo desde la derecha</translation>
 <translation id="343571671045587506">Editar recordatorio</translation>
-<translation id="3435967511775410570">Se reconoció la huella digital</translation>
+<translation id="3435967511775410570">Se reconoció la huella dactilar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3454224730401036106">Tu conexión se cambió a una red más segura</translation>
@@ -464,7 +464,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5679050765726761783">Se conectó un adaptador de baja potencia</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la Cuenta de usuario actual.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
-<translation id="5691772641933328258">No se reconoció la huella digital</translation>
+<translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="5740328398383587084">Compartir con Nearby</translation>
@@ -633,7 +633,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Es hora de ir a la cama</translation>
-<translation id="7551643184018910560">Fijar en la biblioteca</translation>
+<translation id="7551643184018910560">Fijar en la barra</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="7564874036684306347">Si mueves las ventanas a otro escritorio, puede producirse un comportamiento inesperado. Es posible que las próximas notificaciones, ventanas y cuadros de diálogo se dividan entre los escritorios.</translation>
 <translation id="7568294522609223312">Desactivar los clics automáticos</translation>
@@ -667,7 +667,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
 <translation id="7842569679327885685">Advertencia: Función experimental</translation>
 <translation id="7846634333498149051">Teclado</translation>
-<translation id="7868900307798234037">Desbloqueando con huella digital</translation>
+<translation id="7868900307798234037">Desbloqueando con huella dactilar</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7886169021410746335">Ajustar la configuración de privacidad</translation>
 <translation id="7886277072580235377">Cuando salgas, se borrarán los datos de tu sesión de Internet. <ph name="LEARN_MORE" /></translation>
@@ -682,7 +682,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7977927628060636163">Buscando redes móviles…</translation>
 <translation id="7980780401175799550">Prueba nuevas formas de navegar con el Sistema operativo Chrome</translation>
 <translation id="7982789257301363584">Red</translation>
-<translation id="7984197416080286869">Demasiados intentos con la huella digital</translation>
+<translation id="7984197416080286869">Demasiados intentos con la huella dactilar</translation>
 <translation id="7994370417837006925">Acceso múltiple</translation>
 <translation id="7995804128062002838">No se pudo realizar una captura de pantalla.</translation>
 <translation id="8000066093800657092">Sin red</translation>

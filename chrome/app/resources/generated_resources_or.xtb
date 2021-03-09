@@ -162,7 +162,7 @@
 <translation id="1177863135347784049">କଷ୍ଟମ୍‌</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
 <translation id="117916940443676133">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ ଏକ ପିନ୍ ଦ୍ୱାରା ସୁରକ୍ଷିତ ନୁହେଁ। ସାଇନ୍-ଇନ୍ ଡାଟା ପରିଚାଳନା କରିବାକୁ ପ୍ରଥମେ ଏକ ପିନ୍ ତିଆରି କରନ୍ତୁ।</translation>
-<translation id="1181037720776840403">ଅପସାରଣ</translation>
+<translation id="1181037720776840403">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="1183237619868651138">ସ୍ଥାନୀୟ କେଚ୍‍‍ରେ <ph name="EXTERNAL_CRX_FILE" /> ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="1185924365081634987">ଆପଣ ଏହି ନେଟ୍‍ୱର୍କ ତ୍ରୁଟିର ସମାଧାନ କରିବା ପାଇଁ <ph name="GUEST_SIGNIN_LINK_START" />ଅତିଥି ଭାବରେ ବ୍ରାଉଜ୍ କରିବା<ph name="GUEST_SIGNIN_LINK_END" />କୁ ମଧ୍ୟ ଚେଷ୍ଟା କରିପାରିବେ।</translation>
 <translation id="1186771945450942097">କ୍ଷତିକାରକ ସଫ୍ଟୱେର୍‌କୁ କାଢ଼ିଦିଅନ୍ତୁ</translation>
@@ -4911,7 +4911,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6828860976882136098">ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ପାଇଁ ସ୍ୱଚାଳିତ ଅପ୍‌ଡେଟ୍ ସେଟ୍‍ ଅପ୍ ବିଫଳ ହୋଇଛି (preflight ନିର୍ବାହରେ ତ୍ରୁଟି: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="6829250331733125857">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />.ମାଧ୍ୟମରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ।</translation>
 <translation id="682971198310367122">Google ଗୋପନୀୟତା ନୀତି</translation>
-<translation id="6831043979455480757">ଅନୁବାଦ କରନ୍ତୁ</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="683373380308365518">ଏକ ସ୍ମାର୍ଟ ଏବଂ ସୁରକ୍ଷିତ ବ୍ରାଉଜର୍‌କୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="6835762382653651563">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />କୁ ଅପ୍‌ଡେଟ୍ କରିବା ପାଇଁ ଦୟାକରି ଇର୍ଣ୍ଟନେଟ୍ ସହ ସଂଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="6838034009068684089">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଖୋଲିବା ସହ ରଖିବାକୁ ଚାହିଁଲେ, ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
@@ -5976,7 +5976,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8063535366119089408">ଫାଇଲ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="8064279191081105977">ଗୋଷ୍ଠୀ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8068253693380742035">ସାଇନ୍‌ ଇନ୍ କରିବାକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
-<translation id="8069615408251337349">Google Cloud ପ୍ରିଣ୍ଟ</translation>
+<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ଛବି ଭାବରେ ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ଆପ୍ ଡାଟା, ଏପରି କୌଣସି ଡାଟା ହୋ‍ଇପାରେ ଯାହା କୌଣସି ଆପ୍ ଦ୍ଵାରା ସେଭ୍ ହୋ‍ଇଛି (ଡେଭଲପର୍‍ ସେଟିଂସ୍‍କୁ ଆଧାର କରି), ଏଥିରେ ଯୋଗାଯୋଗ, ମେସେଜ୍ ଓ ଫଟୋ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ଆପଣଙ୍କ ପିଲାର ଡ୍ରାଇଭ୍ ଷ୍ଟୋରେଜ୍ କୋଟା ପାଇଁ ବ୍ୟାକ‍ଅପ୍ ଡାଟାକୁ ଗଣନା କରାଯିବ ନାହିଁ।<ph name="END_PARAGRAPH2" />
@@ -6948,7 +6948,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ଯୋଗ କରାଗଲା</translation>
 <translation id="9215742531438648683">Google Play Store ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="9218430445555521422">ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
-<translation id="9219103736887031265">ଛବିଗୁଡ଼ିକ</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9220525904950070496">ଆକାଉଣ୍ଟ କାଢ଼ିଦିଅନ୍ତୁ</translation>
 <translation id="9220820413868316583">ଆଙ୍ଗୁଠି ଉଠାନ୍ତୁ ଏହାପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="923467487918828349">ସବୁ ଦେଖାନ୍ତୁ</translation>

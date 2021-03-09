@@ -6,7 +6,7 @@
 <translation id="1122869341872663659"><ph name="QUERY" /> के लिए <ph name="N" /> खोज नतीजे दिखाए जा रहे हैं</translation>
 <translation id="1195667586424773550">लिंक को टैब के पता बार में खींचें और छोड़ें</translation>
 <translation id="1204450209689312104">गुप्त मोड में नई विंडो खोलें</translation>
-<translation id="1251638888133819822">फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू या बंद करें</translation>
+<translation id="1251638888133819822">फ़ुलस्क्रीन मैग्निफ़ायर चालू या बंद करें</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">अपना अभी वाला पेज प्रिंट करें</translation>
@@ -69,11 +69,11 @@
 <translation id="3140353188828248647">पता बार को फ़ोकस करें</translation>
 <translation id="3256109297135787951">अपने शेल्फ़ पर मौजूद किसी आइटम से हाइलाइट हटाएं</translation>
 <translation id="3288816184963444640">अभी वाली विंडो बंद करें</translation>
-<translation id="3407560819924487926">काम का प्रबंधक सामने लाएं</translation>
+<translation id="3407560819924487926">काम का मैनेजर सामने लाएं</translation>
 <translation id="3422679037938588196">अपनी खोज के पिछले मिलान पर जाएं</translation>
 <translation id="353037708190149633">अपनी मौजूदा विंडो में खुले सभी पेजों को नए फ़ोल्डर में बुकमार्क के रूप में सेव करें</translation>
 <translation id="355103131818127604">लिंक को बैकग्राउंड में नए टैब में खोलें</translation>
-<translation id="3622741593887335780">ज़ूम इन करें (डॉक किए जाने या फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू किए जाने पर)</translation>
+<translation id="3622741593887335780">ज़ूम इन करें (डॉक किए जाने या फ़ुलस्क्रीन मैग्निफ़ायर चालू किए जाने पर)</translation>
 <translation id="3649256019230929621">विंडो को छोटा करें</translation>
 <translation id="3655154169297074232">टैब और विंडो</translation>
 <translation id="3668361878347172356">अपनी पिछली कार्रवाई फिर से करें</translation>
@@ -146,7 +146,7 @@
 <translation id="6425378783626925378">अपनी शेल्फ़ पर 1 से 8 तक आइकॉन पर क्लिक करें</translation>
 <translation id="6435207348963613811">अपनी शेल्‍फ़ पर पिछला आइटम हाइलाइट करें</translation>
 <translation id="6445033640292336367">टैब को उसकी मूल जगह पर वापस ले जाएं</translation>
-<translation id="6474744297082284761">ज़ूम घटाएं (डॉक किए जाने या फ़ुलस्क्रीन पर सामग्री को बड़ा दिखाने की सुविधा चालू किए जाने पर)</translation>
+<translation id="6474744297082284761">ज़ूम घटाएं (डॉक किए जाने या फ़ुलस्क्रीन मैग्निफ़ायर चालू किए जाने पर)</translation>
 <translation id="649811797655257835">फ़ाइल चुनें, फिर <ph name="SPACE" /> दबाएं</translation>
 <translation id="6556040137485212400">उस विंडो को खोलें जिसका सबसे लंबे समय से इस्तेमाल नहीं किया गया है</translation>
 <translation id="666343722268997814">हाइलाइट किए गए आइटम के लिए राइट-क्लिक मेन्यू खोलें</translation>

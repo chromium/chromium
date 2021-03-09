@@ -20,7 +20,7 @@
 <translation id="1129510026454351943">Сведения об ошибке: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1141800923049248244">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
 <translation id="1142732900304639782">Не предлагать перевести эти сайты</translation>
-<translation id="1145536944570833626">Удалить сохраненные данные.</translation>
+<translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1146678959555564648">Войти в режим VR</translation>
 <translation id="1154704303112745282">Страница недоступна в офлайн-режиме: <ph name="VIOLATED_URL" />.</translation>
 <translation id="116280672541001035">Использовано</translation>
@@ -135,7 +135,7 @@
 <translation id="2002537628803770967">Кредитные карты и адреса из Google Pay</translation>
 <translation id="2010780124464321179">Не удалось создать ссылку на текст. Поделитесь ссылкой на страницу.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
-<translation id="2017836877785168846">Удаление истории и вариантов автозаполнения в адресной строке</translation>
+<translation id="2017836877785168846">Будет удалена история и варианты автозаполнения в адресной строке.</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
 <translation id="204321170514947529">Приложение "<ph name="APP_NAME" />" также хранит свои данные в Chrome</translation>
@@ -145,7 +145,7 @@
 <translation id="2067805253194386918">текст</translation>
 <translation id="2068748236079642969">Смотреть следующее видео</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах.</translation>
+<translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>
 <translation id="2100314319871056947">Перед отправкой разбейте текст на несколько частей.</translation>
 <translation id="2109711654079915747">Эта функция позволяет находить картинки, определения и другую информацию, не покидая открытой страницы. Просто выберите слово, и оно будет отправлено в Google Поиск вместе с контекстом.
@@ -155,8 +155,8 @@
 <translation id="2122601567107267586">Не удалось открыть приложение</translation>
 <translation id="2126426811489709554">Технологии Chrome</translation>
 <translation id="2131665479022868825">Сэкономлено: <ph name="DATA" /></translation>
-<translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта</translation>
-<translation id="2139186145475833000">Добавить на главный экран</translation>
+<translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта.</translation>
+<translation id="2139186145475833000">Добавить на гл. экран</translation>
 <translation id="2154484045852737596">Изменение данных карты</translation>
 <translation id="2154710561487035718">Копировать URL</translation>
 <translation id="2156074688469523661">Прочие сайты (<ph name="NUMBER_OF_SITES" />)</translation>
@@ -287,7 +287,7 @@
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3157842584138209013">Чтобы узнать, сколько трафика вы сэкономили, нажмите кнопку "Ещё"</translation>
 <translation id="3166827708714933426">Работа с вкладками и окнами</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3205824638308738187">Почти готово!</translation>
 <translation id="3207960819495026254">Добавлено в закладки.</translation>
@@ -693,7 +693,7 @@
 <translation id="6111020039983847643">использовано</translation>
 <translation id="6112702117600201073">Обновление страницы</translation>
 <translation id="6122831415929794347">Отключить Безопасный просмотр?</translation>
-<translation id="6127379762771434464">Быстрая ссылка удалена</translation>
+<translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6137022273846704445">Язык приложения <ph name="APP_NAME" /></translation>
 <translation id="6140709049082532940">Улучшенная защита:</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
@@ -806,12 +806,12 @@
 <translation id="6845325883481699275">Помочь Chrome стать ещё безопаснее</translation>
 <translation id="6846298663435243399">Загрузка…</translation>
 <translation id="6850409657436465440">Выполняется скачивание</translation>
-<translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" /></translation>
+<translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" />.</translation>
 <translation id="685850645784703949">Рекомендации от Google отключены</translation>
 <translation id="6864459304226931083">Скачать изображение</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
 <translation id="6882836635272038266">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
-<translation id="688738109438487280">Объединить сохраненные данные с данными пользователя <ph name="TO_ACCOUNT" />.</translation>
+<translation id="688738109438487280">Объединить сохраненные данные с данными пользователя <ph name="TO_ACCOUNT" /></translation>
 <translation id="6891726759199484455">Чтобы скопировать пароль, разблокируйте экран</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>

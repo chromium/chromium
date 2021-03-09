@@ -95,9 +95,9 @@
 <translation id="3586500876634962664">Camera- en microfoongebruik</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="358794129225322306">Een site toestaan automatisch meerdere bestanden te downloaden.</translation>
-<translation id="3594780231884063836">Video dempen</translation>
+<translation id="3594780231884063836">Geluid van video uitzetten</translation>
 <translation id="3596414637720633074">Cookies van derden blokkeren in incognitomodus</translation>
-<translation id="3600792891314830896">Sites dempen die geluid afspelen</translation>
+<translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="381841723434055211">Telefoonnummers</translation>
@@ -120,7 +120,7 @@
 <translation id="4433925000917964731">Lite-pagina geleverd door Google</translation>
 <translation id="4434045419905280838">Pop-ups en omleidingen</translation>
 <translation id="445467742685312942">Sites toestaan om beschermde content af te spelen</translation>
-<translation id="4468959413250150279">Geluid dempen voor een specifieke site.</translation>
+<translation id="4468959413250150279">Geluid uitzetten voor een specifieke site.</translation>
 <translation id="4479647676395637221">Eerst vragen voordat sites je camera mogen gebruiken (aanbevolen)</translation>
 <translation id="4534723447064627427">Als je <ph name="APP_NAME" /> toegang wilt geven tot je microfoon, moet je de microfoon ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Details</translation>
@@ -182,7 +182,7 @@
 <translation id="6177111841848151710">Geblokkeerd voor de huidige zoekmachine</translation>
 <translation id="6181444274883918285">Site-uitzondering toevoegen</translation>
 <translation id="6192792657125177640">Uitzonderingen</translation>
-<translation id="6196640612572343990">Indirecte cookies blokkeren</translation>
+<translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6206551242102657620">De verbinding is beveiligd. Site-informatie</translation>
 <translation id="6216432067784365534">Opties voor <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> geblokkeerd</translation>
@@ -257,7 +257,7 @@
 <translation id="8067883171444229417">Video afspelen</translation>
 <translation id="8068648041423924542">Kan certificaat niet selecteren.</translation>
 <translation id="8087000398470557479">Deze content is afkomstig van <ph name="DOMAIN_NAME" />, geleverd door Google.</translation>
-<translation id="8116925261070264013">Gedempt</translation>
+<translation id="8116925261070264013">Geluid uit</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> toegestaan</translation>
 <translation id="8200772114523450471">Doorgaan</translation>

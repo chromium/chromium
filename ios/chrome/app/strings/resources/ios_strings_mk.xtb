@@ -217,7 +217,7 @@
 <translation id="3311748811247479259">Исклучено</translation>
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
-<translation id="3329904751041170572">Не можеше да се поврзе на серверот.</translation>
+<translation id="3329904751041170572">Не може да се поврзе на серверот.</translation>
 <translation id="3335947283844343239">Повторно отвори затворена картичка</translation>
 <translation id="3371831930909698441">„Преведи“ е достапна. Достапни се опции на дното на екранот.</translation>
 <translation id="3393920035788932672">Појавни прозорци се дозволени</translation>
@@ -303,7 +303,7 @@
 <translation id="4281844954008187215">Услови за користење</translation>
 <translation id="430793432425771671">Синхронизирај сѐ</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
-<translation id="430967081421617822">Цело време</translation>
+<translation id="430967081421617822">Досега</translation>
 <translation id="4334428914252001502">1 непрочитана статија.</translation>
 <translation id="4338650699862464074">Ги испраќа URL-адресите на страниците што ги посетувате во Google.</translation>
 <translation id="4359125752503270327">Страницава ќе се отвори во друга апликација.</translation>
@@ -413,7 +413,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5592679540098330836">Вклучете ја синхронизацијата за <ph name="NAME" /></translation>
 <translation id="5614553682702429503">Дали да се зачува лозинката?</translation>
-<translation id="5626245204502895507">Датотеката не можеше да се преземе во моментов.</translation>
+<translation id="5626245204502895507">Датотеката не може да се преземе во моментов.</translation>
 <translation id="5631164295104953411">Додајте начин на плаќање</translation>
 <translation id="5653058065071344726">Управувано од вашата организација. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5659593005791499971">Е-пошта</translation>
@@ -627,7 +627,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7839985698273989086">Офлајн страница</translation>
 <translation id="7840771868269352570">Ставките ќе се отстранат.</translation>
-<translation id="7856733331829174190">Не можеше да се преземе</translation>
+<translation id="7856733331829174190">Не може да се преземе</translation>
 <translation id="7859704718976024901">Историја на прелистувањето</translation>
 <translation id="7887198238286927132">За да ја заштити вашата приватност, Chrome нема автоматски да го пополнува ова поле.</translation>
 <translation id="7918293828610777738">„Списокот за читање“ е достапен офлајн. За да додадете страница во списокот за читање, допрете <ph name="SHARE_OPENING_ICON" />, а потоа <ph name="READ_LATER_TEXT" />.</translation>

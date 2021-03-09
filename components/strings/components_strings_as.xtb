@@ -1433,7 +1433,7 @@
 <translation id="6810899417690483278">কাষ্টমাইজেশ্বন আইডি</translation>
 <translation id="6825578344716086703">আপুনি <ph name="DOMAIN" />ক পাবলৈ প্ৰয়াস কৰিছিল কিন্ত ছার্ভাৰে কোনো দুর্বল চহীৰ এলগ’ৰিয়াম(যেনে SHA-1) ব্যৱহাৰ কৰি চহী কৰা প্ৰমাণপত্ৰ উপস্থাপন কৰিছিল। তাৰমানে ছার্ভাৰে দিয়া সুৰক্ষাৰ ক্ৰেডেনশ্বিয়েলসমূহ ভুৱা হ’ব পাৰে আৰু আপুনি বিচৰা ছার্ভাৰটো এইটো নহ’বও পাৰে ( আপুনি কোনো আক্ৰমণকাৰীৰ সৈতে যোগাযোগ কৰি থাকিব পাৰে)।</translation>
 <translation id="6826993739343257035">ARৰ অনুমতি দিবনে?</translation>
-<translation id="6831043979455480757">অনুবাদ কৰক</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">ক্ষেত্ৰ</translation>
 <translation id="6846340164947227603">এটা ভাৰ্চুৱেল কাৰ্ড নম্বৰ ব্যৱহাৰ কৰক...</translation>
 <translation id="6852204201400771460">এপ্ পুনৰ ল’ড কৰিবনে?</translation>
@@ -2010,7 +2010,7 @@
 <translation id="9207861905230894330">লেখা যোগ কৰিব নোৱাৰিলে।</translation>
 <translation id="9213433120051936369">ৰূপ কাষ্টমাইজ কৰক</translation>
 <translation id="9215416866750762878">কোনো এপ্লিকেশ্বনে Chromeক এই ছাইটৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে।</translation>
-<translation id="9219103736887031265">প্ৰতিচ্ছবি</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ফৰ্মখনৰ সকলো ডেটা মচক</translation>
 <translation id="936474030629450166">ছুপাৰ-B</translation>

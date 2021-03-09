@@ -10,6 +10,7 @@
 <translation id="2009224836393115614">A Chrome nem tudta ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2147651015520127414">A Chrome ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="2199719347983604670">A Chrome-szinkronizálás adatai</translation>
+<translation id="2342919707875585281">A Chrome megosztja a tartózkodási helyét az Ön által engedélyezett webhelyekkel.</translation>
 <translation id="2347208864470321755">Ha a funkció be van kapcsolva, a Chrome felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">A Chrome beállítása alapértelmezett böngészőként</translation>
 <translation id="2574249610672786438">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chrome-ot használja.</translation>
@@ -19,7 +20,6 @@
 <translation id="2732745070297234559">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálkozzon újra holnap.</translation>
 <translation id="2919738076569633423">A Chrome használatával elfogadja az <ph name="BEGIN_LINK_TOS" />általános szerződési feltételeket<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chrome-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
-<translation id="3148688391461398285">A helyadatokkal jobb felhasználói élményben lehet része a Chrome használatakor.</translation>
 <translation id="3167189358072330585">Fiókja nem működik a Google Chrome-on. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
 <translation id="3173834708294760622">A Google Chrome oldala</translation>
 <translation id="3196546062792660320">A Chrome időt takarít meg Önnek azzal, hogy a fiókjait az internetre viszi. A beállításokban tud fiókokat hozzáadni vagy eltávolítani.</translation>

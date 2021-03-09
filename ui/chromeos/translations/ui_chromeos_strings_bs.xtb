@@ -45,7 +45,7 @@
 <translation id="1363028406613469049">Zvučni zapis</translation>
 <translation id="1378727793141957596">Dobro došli u Google Disk!</translation>
 <translation id="1383876407941801731">Traži</translation>
-<translation id="1395262318152388157">Klizač</translation>
+<translation id="1395262318152388157">Klizač za premotavanje</translation>
 <translation id="1399648040768741453">Telugu tastatura (fonetska)</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1433600251059882049">Ovaj folder se dijeli s Linuxom i Windowsom</translation>
@@ -223,7 +223,7 @@
 <translation id="3473378059788601120">Kopirano u folder <ph name="FOLDER_NAME" />.</translation>
 <translation id="3475447146579922140">Google tabela</translation>
 <translation id="3495304270784461826">Broj grešaka: <ph name="COUNT" /></translation>
-<translation id="349603508045926994">Transliteracija za perzijski</translation>
+<translation id="349603508045926994">perzijski (transliteracija)</translation>
 <translation id="3519867315646775981">transliteracija (shalom ← שלום)</translation>
 <translation id="3522708245912499433">portugalski</translation>
 <translation id="3524311639100184459">Oprez: Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -428,7 +428,7 @@
 <translation id="5449551289610225147">Pogrešna lozinka</translation>
 <translation id="5464696796438641524">Poljska tastatura</translation>
 <translation id="5465122519792752163">Nepalska tastatura (InScript)</translation>
-<translation id="5469868506864199649">Italijanska</translation>
+<translation id="5469868506864199649">italijanski</translation>
 <translation id="5484429245813572665">indonezijski</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5500122897333236901">Islandska</translation>
@@ -657,7 +657,7 @@
 <translation id="7953739707111622108">Uređaj nije moguće otvoriti jer njegov sistem fajlova nije prepoznat.</translation>
 <translation id="7969525169268594403">slovenačka</translation>
 <translation id="7982283708762922719">Visina</translation>
-<translation id="7987485481246785146">Srednjekurdska tastatura zasnovana na arapskom</translation>
+<translation id="7987485481246785146">centralnokurdski s engleskom tastaturom</translation>
 <translation id="8008366997883261463">Terijer Džek Rasel</translation>
 <translation id="8028993641010258682">Veličina</translation>
 <translation id="8031722894461705849">Slovačka tastatura</translation>
@@ -687,7 +687,7 @@
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8269755669432358899">Sužavanje ploča za povratne informacije o fajlovima</translation>
-<translation id="8279388322240498158">Engleska tastatura za kurdski jezik Sorani</translation>
+<translation id="8279388322240498158">centralnokurdski s engleskom tastaturom</translation>
 <translation id="8280151743281770066">armenska (fonetska)</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297012244086013755">Trodijelni hangul (bez tipke Shift)</translation>
@@ -696,7 +696,7 @@
 <translation id="8329978297633540474">Obični tekst</translation>
 <translation id="8335587457941836791">Otkači s police</translation>
 <translation id="8336153091935557858">Jučer, u <ph name="YESTERDAY_DAYTIME" /></translation>
-<translation id="8336524887811696057">Transliteracija za nepalski</translation>
+<translation id="8336524887811696057">nepalski (transliteracija)</translation>
 <translation id="8336579025507394412">Islandska tastatura</translation>
 <translation id="8342318071240498787">Fajl ili direktorij s istim nazivom već postoji.</translation>
 <translation id="8382450452152102026">U folder <ph name="FOLDER_NAME" /></translation>

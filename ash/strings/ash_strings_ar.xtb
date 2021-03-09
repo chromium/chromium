@@ -639,7 +639,7 @@
 <translation id="7568294522609223312">إيقاف النقرات التلقائية</translation>
 <translation id="7568637526529101738">‏يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار حتّى يعرض "مساعد Google" معلومات ذات صلة بطلب البحث الذي أجريته مثل التعريف أو تحويل الوحدات.</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
-<translation id="7579778809502851308">التقاط الشاشة</translation>
+<translation id="7579778809502851308">لقطة الشاشة</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7593891976182323525">‏مفتاح البحث أو Shift</translation>
 <translation id="7600875258240007829">الاطّلاع على جميع الإشعارات</translation>
@@ -816,7 +816,7 @@
 <translation id="9201374708878217446">حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف</translation>
 <translation id="9210037371811586452">جارٍ الخروج من وضع سطح المكتب الموحد</translation>
 <translation id="9211681782751733685">الوقت المتبقي حتى يتم شحن البطارية بالكامل<ph name="TIME_REMAINING" />.</translation>
-<translation id="9215934040295798075">تعيين خلفية</translation>
+<translation id="9215934040295798075">ضبط الخلفية</translation>
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="923686485342484400">‏للخروج اضغط على Ctrl Shift Q مرتين.</translation>

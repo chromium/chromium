@@ -443,7 +443,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="272451190272506600">Raak de sensor aan om te betalen</translation>
 <translation id="2728127805433021124">Het certificaat van de server is ondertekend met een zwak ondertekeningsalgoritme.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Verbindingsdiagnose uitvoeren<ph name="END_LINK" /></translation>
-<translation id="2734544361860335147">Als je deze functies inschakelt, kun je browsergegevens kwijtraken of je veiligheid of privacy in gevaar brengen. Ingeschakelde functies zijn van toepassing op alle gebruikers van deze browser.</translation>
+<translation id="2734544361860335147">Als je deze functies inschakelt, kun je browsegegevens kwijtraken of je veiligheid of privacy in gevaar brengen. Ingeschakelde functies zijn van toepassing op alle gebruikers van deze browser.</translation>
 <translation id="2735043616039983645">Er zijn meerdere bronnen met conflicterende waarden aanwezig voor dit beleid.</translation>
 <translation id="2738330467931008676">Ophaaladres kiezen</translation>
 <translation id="2740531572673183784">OK</translation>
@@ -510,7 +510,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3016780570757425217">Je locatie weten</translation>
 <translation id="3023071826883856138">You4 (envelop)</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
-<translation id="3037605927509011580">Helaas.</translation>
+<translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
 <translation id="3060227939791841287">C9 (envelop)</translation>
 <translation id="3061707000357573562">Patchservice</translation>
@@ -807,7 +807,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
     &lt;p&gt;Deze foutmelding wordt weergegeven wanneer je antivirussoftware gebruikt met HTTPS-bescherming of HTTPS-scannen. Deze software verhindert dat Chrome beveiliging biedt.&lt;/p&gt;
     &lt;p&gt;Schakel je antivirussoftware uit om het probleem op te lossen. Als de pagina werkt nadat je de software hebt uitgeschakeld, kun je de software uitschakelen wanneer je beveiligde sites bezoekt.&lt;/p&gt;
     &lt;p&gt;Vergeet niet je antivirussoftware weer in te schakelen zodra je klaar bent.&lt;/p&gt;
-    &lt;h4&gt;Stap 5: Vraag extra ondersteuning&lt;/h4&gt;
+    &lt;h4&gt;Stap 5: Vraag extra support&lt;/h4&gt;
     &lt;p&gt;Als de fout nog steeds wordt weergegeven, neem je contact op met de eigenaar van de website.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Voer Netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Doorgaan naar <ph name="SITE" /><ph name="END_LINK" /></translation>
@@ -1187,7 +1187,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5778550464785688721">Volledige controle voor MIDI-apparaten</translation>
 <translation id="5781136890105823427">Experiment ingeschakeld</translation>
 <translation id="578305955206182703">Geelbruin</translation>
-<translation id="57838592816432529">Dempen</translation>
+<translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5784606427469807560">Er is een probleem opgetreden bij het bevestigen van je creditcard. Controleer je internetverbinding en probeer het opnieuw.</translation>
 <translation id="5785756445106461925">Bovendien bevat deze pagina bronnen die niet beveiligd zijn. Deze bronnen kunnen tijdens verzending door anderen worden bekeken en kunnen door een aanvaller worden gewijzigd om het uiterlijk van de pagina aan te passen.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
@@ -1285,7 +1285,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
 <translation id="6180316780098470077">Interval voor nieuwe poging</translation>
-<translation id="6196640612572343990">Indirecte cookies blokkeren</translation>
+<translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6203231073485539293">Controleer je internetverbinding</translation>
 <translation id="6218753634732582820">Adres verwijderen uit Chromium?</translation>
 <translation id="622039917539443112">Parallelvouw</translation>
@@ -1462,7 +1462,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6973932557599545801">Ik kan je helaas niet helpen. Ga zelf verder.</translation>
 <translation id="6975012522936652259">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium raadt je aan naar <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> en andere sites te gaan waarop je dit wachtwoord hebt gebruikt en je wachtwoord nu te wijzigen.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
-<translation id="6979440798594660689">Dempen (standaard)</translation>
+<translation id="6979440798594660689">Geluid uitzetten (standaard)</translation>
 <translation id="6979983982287291980">Bestanden die je downloadt, worden voor analyse naar Google Cloud of naar derden gestuurd. De bestanden kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware.</translation>
 <translation id="6989763994942163495">Geavanceerde instellingen weergeven...</translation>
 <translation id="6993898126790112050">6x9 (envelop)</translation>
@@ -1521,7 +1521,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="7217745192097460130">Touch ID gebruiken om je aankoop te verifiëren en te voltooien?</translation>
 <translation id="7219179957768738017">De verbinding maakt gebruik van <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Verwerken</translation>
-<translation id="7221855153210829124">Meldingen weergeven</translation>
+<translation id="7221855153210829124">Meldingen tonen</translation>
 <translation id="7229659723041939809">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan je opgeslagen wachtwoorden voor <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> en andere sites waarop je dit wachtwoord gebruikt, nu te checken.</translation>
 <translation id="7233592378249864828">Bevestigingsblad afdrukken</translation>
 <translation id="7238585580608191973">SHA-256-vingerafdruk</translation>

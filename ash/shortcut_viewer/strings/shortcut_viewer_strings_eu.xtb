@@ -62,12 +62,12 @@
 <translation id="2914313326123580426">Erakutsi edo ezkutatu garatzaileen tresnen panela</translation>
 <translation id="292495055542441795">Aktibatu/Desaktibatu pantaila osoko modua</translation>
 <translation id="3020183492814296499">Lasterbideak</translation>
-<translation id="3084301071537457911">Nabarmendu biltegiko hurrengo elementua</translation>
-<translation id="309173601632226815">Nabarmendu biltegiko abiarazte-botoia</translation>
+<translation id="3084301071537457911">Nabarmendu apaleko hurrengo elementua</translation>
+<translation id="309173601632226815">Nabarmendu apaleko abiarazte-botoia</translation>
 <translation id="3105917916468784889">Atera pantaila-argazkia</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3140353188828248647">Fokuratu helbide-barra</translation>
-<translation id="3256109297135787951">Utzi biltegiko elementu bat nabarmentzeari</translation>
+<translation id="3256109297135787951">Utzi apaleko elementu bat nabarmentzeari</translation>
 <translation id="3288816184963444640">Itxi uneko leihoa</translation>
 <translation id="3407560819924487926">Erakutsi ataza-kudeatzailea</translation>
 <translation id="3422679037938588196">Itzuli bilaketaren aurreko emaitzara</translation>
@@ -81,11 +81,11 @@
 <translation id="3720939646656082033">Ireki esteka beste fitxa batean eta joan fitxa horretara</translation>
 <translation id="3725795051337497754">Itxi uneko fitxa</translation>
 <translation id="3751033133896282964">Desegin azken ekintza</translation>
-<translation id="3792178297143798024">Ireki biltegiko elementu nabarmendua</translation>
+<translation id="3792178297143798024">Ireki apaleko elementu nabarmendua</translation>
 <translation id="379295446891231126"><ph name="CTRL" /> <ph name="SEPARATOR" /> 1-8</translation>
 <translation id="3837047332182291558">Handitu teklatuaren distira (hondoko argia duten teklatuetan bakarrik)</translation>
 <translation id="3949671998904569433">koma</translation>
-<translation id="3976863468609830880">Egin klik biltegiko azken ikonoan</translation>
+<translation id="3976863468609830880">Egin klik apaleko azken ikonoan</translation>
 <translation id="3994783594793697310">Berrezarri bistaratzearen zoom-maila</translation>
 <translation id="4026843240379844265">Eraman leiho aktiboa pantaila batetik bestera</translation>
 <translation id="4035482366624727273">Hautatu orrian dagoen guztia</translation>
@@ -143,8 +143,8 @@
 <translation id="6340769215862220182">Bistaratzea handitzea</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Hautatu lerroaren amaierako testua</translation>
-<translation id="6425378783626925378">Egin klik biltegiko 1-8 ikonoetan</translation>
-<translation id="6435207348963613811">Nabarmendu biltegiko aurreko elementua</translation>
+<translation id="6425378783626925378">Egin klik apaleko 1-8 ikonoetan</translation>
+<translation id="6435207348963613811">Nabarmendu apaleko aurreko elementua</translation>
 <translation id="6445033640292336367">Leheneratu fitxa jatorrizko posiziora</translation>
 <translation id="6474744297082284761">Txikitu (lupa ainguratua EDO pantaila osoko lupa gaituta daudenean)</translation>
 <translation id="649811797655257835">Hautatu fitxategia eta, gero, sakatu <ph name="SPACE" /></translation>

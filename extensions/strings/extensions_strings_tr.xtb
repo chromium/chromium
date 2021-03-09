@@ -29,7 +29,7 @@
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
 <translation id="4811956658694082538">Bir yardımcı program kilitlendiği için paket yüklenemedi. Chrome'u yeniden başlatın ve tekrar deneyin.</translation>
-<translation id="4988792151665380515">Genel anahtar dışa alınamadı.</translation>
+<translation id="4988792151665380515">Ortak anahtar dışa aktarılamadı.</translation>
 <translation id="5026754133087629784">Web görünümü: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paket dizininin tam yolu bulunamadı.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>

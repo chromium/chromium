@@ -52,7 +52,7 @@
 <translation id="2289270750774289114">Сайт ойролцоох Bluetooth төхөөрөмжийг илрүүлэх хүсэлтэй үед асуух (санал болгосон)</translation>
 <translation id="2315043854645842844">Үйлчлүүлэгч талын сертификатын сонголтыг үйлдлийн системээс дэмжээгүй.</translation>
 <translation id="2359808026110333948">Цааш</translation>
-<translation id="2402980924095424747"><ph name="MEGABYTES" /> мегабайт</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}}</translation>
 <translation id="2434158240863470628">Татаж дууссан <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">Байршилд нэвтрэх</translation>
@@ -138,7 +138,7 @@
 <translation id="5048398596102334565">Сайтад хөдөлгөөн мэдрэгчид хандахыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="5063480226653192405">Ашиглалт</translation>
 <translation id="5100237604440890931">Задарсан, энд дарж өргөтгөнө үү.</translation>
-<translation id="5123685120097942451">Нууцлалтай чихтэй хуудас</translation>
+<translation id="5123685120097942451">Нууцлалтай таб</translation>
 <translation id="5197729504361054390">Таны сонгох харилцагчдыг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-тай хуваалцана.</translation>
 <translation id="528192093759286357">Бүтэн дэлгэцийн горимоос гарахын тулд дээрээс зөөгөөд, буцах товчлуурыг дарна уу.</translation>
 <translation id="5300589172476337783">Харуулах</translation>
@@ -198,7 +198,7 @@
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}}</translation>
 <translation id="6561560012278703671">Илүү чимээгүй мессежийг ашиглах (мэдэгдлийн сануулгад танд саад болохыг хориглодог)</translation>
-<translation id="6608650720463149374"><ph name="GIGABYTES" /> гигабайт</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="662080504995468778">Үлдэх</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>

@@ -62,7 +62,7 @@
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1386674309198842382">Vor <ph name="LAST_UPDATED" /> Tagen aktiv</translation>
 <translation id="1397811292916898096">Mit <ph name="PRODUCT_NAME" /> suchen</translation>
-<translation id="1406000523432664303">"Do Not Track"</translation>
+<translation id="1406000523432664303">„Do Not Track“</translation>
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1409426117486808224">Vereinfachte Ansicht für geöffnete Tabs</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> konnte nicht heruntergeladen werden, da die Datei bereits vorhanden ist.</translation>
@@ -206,7 +206,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="250020030759455918">Sie können Ihren Anmeldestatus für <ph name="SITE_NAME" />, Browserdaten und Websitedaten in Chrome einsehen</translation>
 <translation id="2512164632052122970">Content-Sprachen</translation>
 <translation id="2513403576141822879">Weitere Einstellungen in Verbindung mit Datenschutz, Sicherheit und der Erhebung von Daten finden Sie unter <ph name="BEGIN_LINK" />Synchronisierung und Google-Dienste<ph name="END_LINK" /></translation>
-<translation id="2517472476991765520">Suchen</translation>
+<translation id="2517472476991765520">Scannen</translation>
 <translation id="2518590038762162553">Im Lite-Modus werden Seiten schneller in Chrome geladen und es werden bis zu 60 % weniger Daten verbraucht. Zum Optimieren der von Ihnen besuchten Seiten sendet Chrome Ihren Datenverkehr an Google. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">URLs der von Ihnen besuchten Seiten werden an Google gesendet</translation>
 <translation id="2532336938189706096">Web-Ansicht</translation>
@@ -708,7 +708,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6218096829563201111">Ähnliche Produkte suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="6221633008163990886">Zum Exportieren Ihrer Passwörter entsperren</translation>
-<translation id="6232535412751077445">Wenn Sie das Kästchen "Do Not Track" anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
+<translation id="6232535412751077445">Wenn Sie das Kästchen „Do Not Track“ anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites Sie zuvor besucht haben. Viele Websites erfassen weiterhin Ihre Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
 <translation id="6243852395147506234">Bereit für den Offlinezugriff</translation>
@@ -811,7 +811,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6864459304226931083">Bild herunterladen</translation>
 <translation id="6865313869410766144">Formulardaten für automatisches Ausfüllen</translation>
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
-<translation id="688738109438487280">Vorhandene Daten werden zu <ph name="TO_ACCOUNT" /> hinzugefügt.</translation>
+<translation id="688738109438487280">Vorhandene Daten werden zu <ph name="TO_ACCOUNT" /> hinzugefügt</translation>
 <translation id="6891726759199484455">Entsperren, um Ihr Passwort zu kopieren</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
@@ -925,7 +925,7 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7682724950699840886">Probieren Sie folgende Tipps aus: Sorgen Sie dafür, dass auf Ihrem Gerät ausreichend Speicherplatz vorhanden ist, und wiederholen Sie den Export.</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
 <translation id="7704317875155739195">Suchanfragen und URLs automatisch vervollständigen</translation>
-<translation id="7725024127233776428">Seiten, die Sie als Lesezeichen speichern, werden hier angezeigt</translation>
+<translation id="7725024127233776428">Seiten, die Sie als Lesezeichen speichern, werden hier angezeigt.</translation>
 <translation id="7735637452482172701">Mit Displaysperre entsperren</translation>
 <translation id="7746457520633464754">Chrome sendet die URLs einiger von Ihnen besuchter Seiten, bestimmte Systeminformationen und einige Seiteninhalte an Google, um gefährliche Apps und Websites zu erkennen</translation>
 <translation id="7757787379047923882">Text geteilt von <ph name="DEVICE_NAME" /></translation>

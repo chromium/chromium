@@ -4919,7 +4919,7 @@
 <translation id="6828860976882136098">ಎಲ್ಲ ಬಳಕೆದಾರರಿಗೆ ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಹೊಂದಿಸುವುದು ವಿಫಲವಾಗಿದೆ (ಪ್ರೀಫ್ಲೈಟ್ ಅನುಷ್ಠಾನ ದೋಷ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="6829250331733125857">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಮೂಲಕ ಸಹಾಯವನ್ನು ಪಡೆದುಕೊಳ್ಳಿ.</translation>
 <translation id="682971198310367122">Google ಗೌಪ್ಯತೆ ನೀತಿ</translation>
-<translation id="6831043979455480757">ಅನುವಾದಿಸು</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="683373380308365518">ಸ್ಮಾರ್ಟ್ ಮತ್ತು ಸುರಕ್ಷಿತ ಬ್ರೌಸರ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="6835762382653651563">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸಿ.</translation>
 <translation id="6838034009068684089">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ತೆರೆಯಲು ಮತ್ತು ಇರಿಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ ಸೂಚನೆ ನೀಡಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
@@ -5983,7 +5983,7 @@
 <translation id="8063535366119089408">ಫೈಲ್ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8064279191081105977">ಗುಂಪು <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8068253693380742035">ಸೈನ್ ಇನ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ</translation>
-<translation id="8069615408251337349">Google ಕ್ಲೌಡ್ ಮುದ್ರಣ</translation>
+<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ಚಿತ್ರದಂತೆ ಪ್ರಿಂಟ್ ಮಾಡಿ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ಆ್ಯಪ್ ಡೇಟಾವು ಸಂಪರ್ಕಗಳು, ಸಂದೇಶಗಳು ಮತ್ತು ಫೋಟೋಗಳಂತಹ ಡೇಟಾ ಸೇರಿದಂತೆ, ಆ್ಯಪ್ ಉಳಿಸಿರುವಂತಹ (ಡೆವಲಪರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಧರಿಸಿ) ಯಾವುದೇ ಡೇಟಾ ಆಗಿರಬಹುದು.<ph name="END_PARAGRAPH1" />
  <ph name="BEGIN_PARAGRAPH2" />ಬ್ಯಾಕಪ್‌ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಮಗುವಿನ ಡ್ರೈವ್‌ ಸಂಗ್ರಹಣೆ ಕೋಟಾದಲ್ಲಿ ಪರಿಗಣಿಸಲಾಗುವುದಿಲ್ಲ.<ph name="END_PARAGRAPH2" />
@@ -6957,7 +6957,7 @@
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="9215742531438648683">Google Play ಸ್ಟೋರ್‌‌ ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="9218430445555521422">ಡಿಫಾಲ್ಟ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
-<translation id="9219103736887031265">ಚಿತ್ರಗಳು</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9220525904950070496">ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="9220820413868316583">ಬೆರಳನ್ನು ಸರಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="923467487918828349">ಎಲ್ಲಾ ತೋರಿಸಿ</translation>

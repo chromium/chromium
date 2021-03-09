@@ -733,7 +733,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963721102035795474">Olvasási mód</translation>
 <translation id="3963837677003247395">Folytatja manuálisan?</translation>
-<translation id="3964661563329879394">{COUNT,plural, =0{Nincs}=1{ 1 webhelytől }other{# webhelytől }}</translation>
+<translation id="3964661563329879394">{COUNT,plural, =0{Nincs}=1{ 1 webhelyről }other{# webhelyről }}</translation>
 <translation id="397105322502079400">Számítás…</translation>
 <translation id="3973234410852337861">A(z) <ph name="HOST_NAME" /> le van tiltva</translation>
 <translation id="3987405730340719549">A Chrome azt észlelte, hogy ez a webhely hamis vagy megtévesztő szándékú lehet.
@@ -844,7 +844,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4326324639298822553">Ellenőrizze a lejárati dátumot, majd próbálja újra</translation>
 <translation id="4331519897422864041">5. kötegelő</translation>
 <translation id="4331708818696583467">Nem biztonságos</translation>
-<translation id="4340982228985273705">A rendszer nem vállalat által kezeltként érzékeli ezt a számítógépet, ezért a házirend csak a Chrome Internetes áruházban tárolt bővítményeket tudja automatikusan telepíteni. A Chrome Internetes áruház frissítési URL-je: <ph name="CWS_UPDATE_URL" />.</translation>
+<translation id="4340982228985273705">A rendszer nem vállalat által kezeltként érzékeli ezt a számítógépet, ezért a házirend csak a Chrome Webáruházban tárolt bővítményeket tudja automatikusan telepíteni. A Chrome Webáruház frissítési URL-je: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Elfogadott hitelkártyák</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4349531505348777662">Megtévesztő webhelyen adta meg jelszavát. A Chrome azt javasolja, hogy keresse fel azokat a webhelyeket (pl. <ph name="WEBSITE_1" /> és <ph name="WEBSITE_2" />), amelyeken ezt a jelszót használja, és módosítsa most a jelszót.</translation>
@@ -1660,7 +1660,7 @@ További részletek:
 <translation id="7673278391011283842">6. postaláda</translation>
 <translation id="7676643023259824263">Vágólapon lévő szöveg keresése, <ph name="TEXT" /></translation>
 <translation id="7682287625158474539">Szállítási cím</translation>
-<translation id="7687186412095877299">Kitölti a fizetési űrlapokat az Ön mentett fizetési módjaival</translation>
+<translation id="7687186412095877299">Kitölti a fizetési űrlapokat az Ön mentett fizetési adataival</translation>
 <translation id="7687305263118037187">Újrapróbálkozás időtúllépése</translation>
 <translation id="7693583928066320343">Fogadott oldalsorrend</translation>
 <translation id="7697066736081121494">Prc8 (boríték)</translation>

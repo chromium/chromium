@@ -1008,7 +1008,7 @@
 <translation id="2152281589789213846">დაამატეთ პრინტერები თქვენს პროფილს</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="2154484045852737596">ბარათის რედაქტირება</translation>
-<translation id="2154710561487035718">დააკოპიე URL</translation>
+<translation id="2154710561487035718">URL-ის კოპირება</translation>
 <translation id="2155772377859296191">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">სერვისის დამმუშავებელი: <ph name="SCRIPT_URL" /></translation>
 <translation id="2157474325782140681">დამატებითი ფუნქციებით სარგებლობისთვის გამოიყენეთ Dell-ის სამაგრი, რომელიც შექმნილია ამ Chromebook-თან მუშაობისთვის.</translation>
@@ -5508,7 +5508,7 @@
 <translation id="7548856833046333824">ლიმონადი</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />-ის ჩამოტვირთვა ვერ მოხერხდა</translation>
-<translation id="7551643184018910560">დაამაგრეთ თაროზე</translation>
+<translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
 <translation id="7552846755917812628">ცადეთ შემდეგი:</translation>
 <translation id="7553012839257224005">მიმდინარეობს Linux-ის კონტეინერის შემოწმება</translation>
 <translation id="7553242001898162573">შეიყვანეთ თქვენი პაროლი</translation>

@@ -163,7 +163,7 @@
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
-<translation id="255671100581129685">Google Ассистент не работает в сеансе общего доступа.</translation>
+<translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
 <translation id="2582112259361606227">Перезагрузить и обновить</translation>
@@ -638,7 +638,7 @@
 <translation id="7568294522609223312">Выключение автоматического нажатия</translation>
 <translation id="7568637526529101738">Чтобы, например, посмотреть определение слова или перевести одни единицы измерения в другие, выберите нужный элемент с помощью правого клика или долгого нажатия.</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
-<translation id="7579778809502851308">Демонстрация экрана</translation>
+<translation id="7579778809502851308">Запись экрана</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7600875258240007829">Показать все уведомления</translation>

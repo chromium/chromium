@@ -54,7 +54,7 @@
 <translation id="2267918077332197517">Энэ сайтын бүх мэдэгдлийг блоклох</translation>
 <translation id="2289052229480071835">Дэлгэцийнхээ хүрэх хэсгийг товшино уу.</translation>
 <translation id="2295140143284145483">Судалгаа</translation>
-<translation id="2297836609126180313"><ph name="QUANTITY" /> терабайт/секунд</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/секунд</translation>
 <translation id="2353636109065292463">Таны интернэт холболтыг шалгаж байна</translation>
 <translation id="2388990488038464401">Таны утаснаас энэ дугаар луу залгах уу?</translation>
 <translation id="24452542372838207">Мэдэгдлийг дэлгэх</translation>
@@ -81,7 +81,7 @@
 <translation id="2931838996092594335">дарах</translation>
 <translation id="2981684127883932071">Зөвлөмжийг үзүүлж байна</translation>
 <translation id="3036649622769666520">Файл нээх</translation>
-<translation id="3049748772180311791"><ph name="QUANTITY" /> Мегабайт</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3068711042108640621">Зүүн талын shelf</translation>
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -206,7 +206,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 минут үлдсэн }other{# минут үлдсэн}}</translation>
 <translation id="7430878839542012341">Энэ хайлтыг түүхээсээ устгах уу?</translation>
-<translation id="7460907917090416791"><ph name="QUANTITY" /> терабайт</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7507604095951736240">Эможи</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
@@ -228,7 +228,7 @@
 <translation id="815598010540052116">Доош нь гүйлгэж харах</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8210608804940886430">Хуудас доошлуулах</translation>
-<translation id="8245914219290430011">Чихтэй хуудас</translation>
+<translation id="8245914219290430011">Таб</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апп</translation>
 <translation id="8259556432390118667">Hex өнгөний утга</translation>
 <translation id="8328145009876646418">Зүүн тал</translation>
@@ -257,7 +257,7 @@
 <translation id="9002566407876343676">нээх</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Мэдэгдлийг буулгах</translation>
-<translation id="9150735707954472829">Чихтэй хуудас</translation>
+<translation id="9150735707954472829">Таб</translation>
 <translation id="9161053988251441839">САНАЛ БОЛГОСОН АПП</translation>
 <translation id="9170848237812810038">&amp; Буцаах</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />-н 1 илэрцийг үзүүлж байна</translation>

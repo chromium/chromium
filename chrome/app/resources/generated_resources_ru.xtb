@@ -9,7 +9,7 @@
 <translation id="1005333234656240382">Включить отладку с ADB?</translation>
 <translation id="1006873397406093306">Расширению разрешено просматривать и изменять ваши данные на сайтах. Вы можете выбрать, к каким сайтам у него будет доступ.</translation>
 <translation id="1007408791287232274">Не удалось загрузить список устройств.</translation>
-<translation id="1008186147501209563">Экспорт закладок</translation>
+<translation id="1008186147501209563">Экспортировать закладки</translation>
 <translation id="1008557486741366299">Не сейчас</translation>
 <translation id="1010498023906173788">Эта вкладка подключена к последовательному порту.</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{Страница не отвечает}one{Страницы не отвечают}few{Страницы не отвечают}many{Страницы не отвечают}other{Страницы не отвечают}}</translation>
@@ -887,7 +887,7 @@
 <translation id="2007404777272201486">Сообщить о проблеме...</translation>
 <translation id="2010501376126504057">Совместимые устройства</translation>
 <translation id="2017334798163366053">Запретить сбор данных о производительности</translation>
-<translation id="2017836877785168846">Удаление истории и вариантов автозаполнения в адресной строке</translation>
+<translation id="2017836877785168846">Будет удалена история и варианты автозаполнения в адресной строке.</translation>
 <translation id="2018352199541442911">Внешнее запоминающее устройство не поддерживается.</translation>
 <translation id="2019718679933488176">Открыть аудио в новой вкладке</translation>
 <translation id="2020183425253392403">Показать настройки сетевых адресов</translation>
@@ -1062,7 +1062,7 @@
 <translation id="2218019600945559112">Мышь и сенсорная панель</translation>
 <translation id="2218320521449013367">При удалении вредоносного ПО произошла ошибка.</translation>
 <translation id="2218515861914035131">Вставить как обычный текст</translation>
-<translation id="2220409419896228519">Добавляйте закладки в любимые приложения Google.</translation>
+<translation id="2220409419896228519">Добавьте закладки для любимых приложений Google</translation>
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
@@ -1872,7 +1872,7 @@
 <translation id="3165371858310906303">Спрашивать перед передачей на сайт информации о вашем присутствии</translation>
 <translation id="3165390001037658081">Некоторые операторы могут блокировать эту функцию.</translation>
 <translation id="316652501498554287">Аккаунты G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3170072451822350649">Можно пропустить это действие и начать <ph name="LINK_START" />гостевой сеанс<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Язык страницы:</translation>
 <translation id="3179982752812949580">Шрифт текста</translation>
@@ -3881,7 +3881,7 @@
     <ph name="BEGIN_PARAGRAPH2" />Отключение этой функции не повлияет на возможность устройства отправлять информацию, необходимую для обновления Android и системы безопасности.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Чтобы включить или отключить функцию, нажмите "Настройки &gt; Расширенные настройки &gt; Автоматически отправлять статистику использования и данные диагностики в Google".<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Если включена запись истории приложений и веб-поиска, эта информация будет сохраняться в аккаунте Google. Вы можете посмотреть и удалить ее, а также изменить настройки аккаунта на странице account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">Подсказки</translation>
+<translation id="5585019845078534178">Карточки</translation>
 <translation id="5585118885427931890">Не удалось создать папку с закладками.</translation>
 <translation id="558563010977877295">Заданные страницы</translation>
 <translation id="5585898376467608182">На устройстве осталось мало места. Чтобы использовать приложение "<ph name="APP_NAME" />", нужно как минимум <ph name="MINIMUM_SPACE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
@@ -5098,7 +5098,7 @@
 <translation id="7043108582968290193">Готово! Несовместимых приложений не обнаружено.</translation>
 <translation id="7044124535091449260">Подробнее о доступе для сайта…</translation>
 <translation id="7044606776288350625">Синхронизация данных</translation>
-<translation id="7047059339731138197">Выберите фон.</translation>
+<translation id="7047059339731138197">Выберите фон</translation>
 <translation id="7049293980323620022">Сохранить файл?</translation>
 <translation id="7051943809462976355">Поиск мыши…</translation>
 <translation id="7052237160939977163">Отправлять данные отслеживания производительности</translation>
@@ -5402,7 +5402,7 @@
 <translation id="742130257665691897">Закладки удалены</translation>
 <translation id="7421925624202799674">Просмотр кода страницы</translation>
 <translation id="7422192691352527311">Настройки...</translation>
-<translation id="7423098979219808738">Всегда спрашивать</translation>
+<translation id="7423098979219808738">Сначала спрашивать</translation>
 <translation id="7423513079490750513">Удалить "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="7423807071740419372">Необходимо разрешение для запуска <ph name="APP_NAME" /></translation>
 <translation id="7427315641433634153">MSCHAP</translation>
@@ -6997,7 +6997,7 @@
 <translation id="964790508619473209">Расположение экранов</translation>
 <translation id="965211523698323809">Отправлять и получать SMS на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
-<translation id="967624055006145463">Объем занятой памяти</translation>
+<translation id="967624055006145463">Объем памяти</translation>
 <translation id="968000525894980488">Включите сервисы Google Play.</translation>
 <translation id="968037381421390582">Вст&amp;авить и найти "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="968174221497644223">Кеш приложения</translation>

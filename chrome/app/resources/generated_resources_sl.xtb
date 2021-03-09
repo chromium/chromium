@@ -1281,7 +1281,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2471506181342525583">Dostop do lokacije je dovoljen</translation>
 <translation id="2473195200299095979">Prevede to stran</translation>
 <translation id="2475982808118771221">Prišlo je do napake</translation>
-<translation id="2476578072172137802">Nastavitve mesta</translation>
+<translation id="2476578072172137802">Nastavitve spletnega mesta</translation>
 <translation id="2476974672882258506">Zaustavite sistem Windows, če želite odmestiti program <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478176599153288112">Dovoljenja za predstavnostne datoteke za razširitev »<ph name="EXTENSION" />«</translation>
 <translation id="247949520305900375">Skupna raba zvoka</translation>
@@ -1666,7 +1666,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2910318910161511225">Vzpostavite povezavo z omrežjem in poskusite znova</translation>
 <translation id="291056154577034373">NEPREBRANO</translation>
 <translation id="2910718431259223434">Prišlo je do napake. Poskusite znova ali se obrnite na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
-<translation id="2913331724188855103">Dovoli spletnim mestom shranjevanje in branje podatkov piškotkov (priporočljivo)</translation>
+<translation id="2913331724188855103">Spletnim mestom dovoli shranjevanje in branje podatkov piškotkov (priporočljivo)</translation>
 <translation id="2915102088417824677">Ogled dnevnika dejavnosti</translation>
 <translation id="2915873080513663243">Samodejno iskanje</translation>
 <translation id="2915996080311180594">Znova zaženi pozneje</translation>

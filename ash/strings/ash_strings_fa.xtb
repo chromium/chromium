@@ -98,7 +98,7 @@
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">باز کردن قفل با اثر انگشت</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) تغییر کرده است. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
-<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر فعالیت‌ها تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
+<translation id="1919743966458266018">کلیدهای میان‌بر باز کردن مدیر فعالیت‌ها تغییر کرده است. لطفاً از <ph name="NEW_SHORTCUT" /> به‌جای <ph name="OLD_SHORTCUT" /> استفاده کنید.</translation>
 <translation id="1923539912171292317">کلیک‌های خودکار</translation>
 <translation id="1928739107511554905">‏برای دریافت به‌روزرسانی، از صفحه لمسی برای بازراه‌اندازی Chromebook خود با صفحه‌کلید متصل استفاده کنید.</translation>
 <translation id="1951012854035635156">دستیار</translation>
@@ -632,7 +632,7 @@
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">وقت خواب</translation>
-<translation id="7551643184018910560">پین به راه‌انداز</translation>
+<translation id="7551643184018910560">پین کردن به فقسه</translation>
 <translation id="7561982940498449837">بستن منو</translation>
 <translation id="7564874036684306347">انتقال پنجره‌ها به میز کار دیگر می‌تواند به رفتار غیرمنتظره منجر شود. اعلان‌ها، پنجره‌ها و کادرهای گفتگوی بعدی ممکن است بین میز کارها تقسیم شوند.</translation>
 <translation id="7568294522609223312">خاموش کردن کلیک‌های خودکار</translation>

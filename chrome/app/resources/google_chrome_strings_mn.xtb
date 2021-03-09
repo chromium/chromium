@@ -16,7 +16,7 @@
 <translation id="123620459398936149">Chrome OS нь таны өгөгдлийг sync хийж чадсангүй. Sync-ийн нэвтрэх хэллэгээ шинэчилнэ үү.</translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="1355000804395496115">Ажлын болон хувийн хөтчийг тусгаарлах эсвэл энэ төхөөрөмжийг ашигладаг өөр бусад хүнд зориулж Chrome дээр өөр профайлуудыг ашиглана уу</translation>
-<translation id="137466361146087520">Google Chrome Бэта</translation>
+<translation id="137466361146087520">Google Chrome Бета</translation>
 <translation id="1399397803214730675">Google Chrome-ийн сүүлийн үеийн хувилбар аль хэдийн энэ компьютерт байна. Хэрэв программ хангамж ажиллахгүй байгаа бол Google Chrome-ийг устгаад, дахин оролдож үзнэ үү.</translation>
 <translation id="1434626383986940139">Chrome Canary програмууд</translation>
 <translation id="1513277449617685876">Хувийн болон <ph name="NEW_USER" />-н хөтчийг тусгаарлахын тулд Chrome дээр шинэ профайл үүсгэнэ үү</translation>
@@ -28,7 +28,7 @@
 <translation id="162448658176061655">Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд нэг хормын өмнө шалгасан.</translation>
 <translation id="162629503687514352">Chrome үйлдлийн систем таны нууц үгийг синк хийж чадсангүй.</translation>
 <translation id="1628000112320670027">Chrome-с тусламж авах</translation>
-<translation id="1662639173275167396">Chrome OS нь нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" /> болох <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бэта)<ph name="END_LINK_LINUX_OSS" />-р боломжтой байдаг.</translation>
+<translation id="1662639173275167396">Chrome OS нь нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" /> болох <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бета)<ph name="END_LINK_LINUX_OSS" />-р боломжтой байдаг.</translation>
 <translation id="1666409074978194368">Шинэчилж дуусаж байна! Шинэчлэлтийг дуусгахын тулд Google Chrome-г дахин ачаална уу. Нууцлалтай цонхыг дахин нээхгүй.</translation>
 <translation id="1674870198290878346">Холбоосыг Chrome-н нууцлалтай цонхонд нээх</translation>
 <translation id="1682634494516646069">Google Chrome нь өөрийн өгөгдлийн хадгалалтын сан руу уншуулж бас бичиж чадахгүй:
@@ -43,7 +43,7 @@
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
-<translation id="1874309113135274312">Google Chrome Бэта (mDNS-In)</translation>
+<translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="2063848847527508675">Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome үйлдлийн системийг дахин эхлүүлнэ үү.</translation>
@@ -65,7 +65,7 @@
 <translation id="2586406160782125153">Энэ нь төхөөрөмжөөс таны хайлтын өгөгдлийг устгах болно. Өгөгдлөө дараа нь сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2622559029861875898">Chrome нь шинэчлэлтийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="2644798301485385923">Chrome OS-н систем</translation>
-<translation id="2652691236519827073">Холбоосыг шинэ Chrome-н чихтэй хуудсанд нээх</translation>
+<translation id="2652691236519827073">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="2665296953892887393">Google рүү эвдрэлийн тайлан болон <ph name="UMA_LINK" />-ыг илгээх замаар Google Chrome-ыг сайжруулахад туслаач</translation>
 <translation id="2689103672227170538">Энэ өргөтгөл нь таныг Chrome-г эхлүүлэх үед хуудсанд харагдах зүйлийг өөрчилсөн.</translation>
 <translation id="2765403129283291972">Энэ сайтыг ашиглахын тулд Chrome-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>
@@ -82,7 +82,7 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
 <translation id="3059710691562604940">Аюулгүй үзэх онцлог унтраалттай байна. Chrome түүнийг асаахыг зөвлөж байна.</translation>
-<translation id="3065168410429928842">Chrome-н чихтэй хуудас</translation>
+<translation id="3065168410429928842">Chrome-н таб</translation>
 <translation id="3080151273017101988">Google Chrome хаагдсан үед үндсэн аппликйешнуудыг үргэлжлүүлэн ажиллуул</translation>
 <translation id="3089968997497233615">Google Chrome-ийн шинэ, илүү аюулгүй хувилбар бэлэн боллоо.</translation>
 <translation id="3114643501466072395">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chrome-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
@@ -149,7 +149,7 @@
 <translation id="479167709087336770">Энэ нь Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг. Та энэ ажиллах төлөвийг хүссэн үедээ тохиргоонд өөрчилж болно</translation>
 <translation id="4891791193823137474">Google Chrome-ыг энэ дэвсгэр дээр ажиллуулна уу</translation>
 <translation id="489337168347244450">{NUM_DAYS,plural, =1{Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд 1 хоногийн өмнө шалгасан.}other{Chrome нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд {NUM_DAYS} хоногийн өмнө шалгасан.}}</translation>
-<translation id="4895437082222824641">Холбоосыг шинэ Chrome-н чихтэй хуудсанд нээх</translation>
+<translation id="4895437082222824641">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="4953650215774548573">Google Chrome-ыг өөрийн анхдагч веб хөтөч болгон тохируулна уу</translation>
 <translation id="495931528404527476">Chrome-д</translation>
 <translation id="4990567037958725628">Google Chrome цайвар шаргал өнгө</translation>
@@ -203,10 +203,10 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
-<translation id="6885412569789873916">Chrome Бэта Апп</translation>
+<translation id="6885412569789873916">Chrome Бета Апп</translation>
 <translation id="6943584222992551122">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
-<translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бэта-н дотоод дүрэм.</translation>
-<translation id="6982337800632491844"><ph name="DOMAIN" />-аас таныг энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцлийг уншиж, хүлээн зөвшөөрсөн байхыг шаардаж байна. Эдгээр нөхцлүүд нь Google Chrome OS нөхцлүүдийг өргөтгөж, өөрчилж бас хязгаарлахгүй.</translation>
+<translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бета-н дотоод дүрэм.</translation>
+<translation id="6982337800632491844"><ph name="DOMAIN" />-аас таныг энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцлийг уншиж, хүлээн зөвшөөрсөн байхыг шаардаж байна. Эдгээр нөхцөл нь Google Chrome OS нөхцлүүдийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="6989339256997917931">Google Chrome шинэчлэгдсэн байна, гэхдээ та үүнийг ядаж 30 хоног ч ашиглаагүй байна.</translation>
 <translation id="7054640471403081847">Энэ компьютерийн хатуу диск дэмжигдэхээ больсон учир удахгүй Google Chrome-ийн шинэчлэлтийг хүлээн авахаа болино.</translation>
 <translation id="7062128746136194023">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэхийг зөвшөөрдөггүй.</translation>

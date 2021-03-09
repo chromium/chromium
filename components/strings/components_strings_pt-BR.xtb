@@ -85,7 +85,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
 <translation id="1294154142200295408">Variações de linha de comando</translation>
-<translation id="129553762522093515">Recentemente fechadas</translation>
+<translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Tente limpar os cookies<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Verifique suas configurações de DNS seguro</translation>
 <translation id="1307966114820526988">Recursos obsoletos</translation>
@@ -577,7 +577,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3366477098757335611">Ver cartões</translation>
 <translation id="3369192424181595722">Erro do relógio</translation>
 <translation id="3371076217486966826"><ph name="URL" /> quer:
-      • criar um mapa 3D dos seus arredores e acompanhar a posição da câmera;
+      • criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera;
       • usar a câmera.</translation>
 <translation id="337363190475750230">Desprovisionado</translation>
 <translation id="3377144306166885718">Versão obsoleta do TLS usada no servidor.</translation>
@@ -619,7 +619,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3487845404393360112">Bandeja 4</translation>
 <translation id="3495081129428749620">Encontrar na página
     <ph name="PAGE_TITLE" /></translation>
-<translation id="3507936815618196901">Criar um mapa 3D dos seus arredores e acompanhar a posição da câmera</translation>
+<translation id="3507936815618196901">Criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
 <translation id="3512163584740124171">Esta política é ignorada porque outra política do mesmo grupo tem uma prioridade mais alta.</translation>
 <translation id="3518941727116570328">Gerenciamento de vários objetos</translation>
 <translation id="3528171143076753409">O certificado do servidor não é confiável.</translation>
@@ -758,7 +758,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4101413244023615925">Texto e gráficos</translation>
 <translation id="4103249731201008433">O número de série do dispositivo é inválido</translation>
 <translation id="4110652170750985508">Analisar seu pagamento</translation>
-<translation id="4112140312785995938">Retroceder</translation>
+<translation id="4112140312785995938">Voltar</translation>
 <translation id="4116663294526079822">Sempre permitir neste site</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4117700440116928470">O escopo da política não é suportado.</translation>
@@ -1411,7 +1411,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6710594484020273272">&lt;Digitar termo de pesquisa&gt;</translation>
 <translation id="671076103358959139">Token de inscrição:</translation>
 <translation id="6711464428925977395">Há algo errado com o servidor proxy, ou o endereço está incorreto.</translation>
-<translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D dos seus arredores e acompanhar a posição da câmera</translation>
+<translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
 <translation id="6718612893943028815">Usar a câmera?</translation>
 <translation id="6738516213925468394">Seus dados foram criptografados com sua <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" /> em <ph name="TIME" />. Digite-a para iniciar a sincronização.</translation>
 <translation id="674375294223700098">Erro, certificado de servidor desconhecido.</translation>
@@ -1721,7 +1721,7 @@ Mais detalhes:
 <translation id="7951415247503192394">32 bits</translation>
 <translation id="7953569069500808819">Costura na parte superior</translation>
 <translation id="7954523986259449736">Como o site está usando uma conexão que não é inteiramente segura, suas informações ficarão visíveis para outras pessoas.</translation>
-<translation id="7956713633345437162">Favoritos de dispositivos móveis</translation>
+<translation id="7956713633345437162">Favoritos nos dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de conta da tarefa</translation>
 <translation id="7976214039405368314">Excesso de solicitações</translation>
@@ -1839,7 +1839,7 @@ Mais detalhes:
 <translation id="8438786541497918448">Usar a câmera e o microfone?</translation>
 <translation id="8446884382197647889">Saiba mais</translation>
 <translation id="8457125768502047971">Indefinida</translation>
-<translation id="8461694314515752532">Criptografar dados sincronizados com sua senha de sincronização</translation>
+<translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}one{# cartão de crédito}other{# cartões de crédito}}</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474910779563686872">Mostrar detalhes do desenvolvedor</translation>
@@ -1923,7 +1923,7 @@ Mais detalhes:
 <translation id="8866481888320382733">Configurações da política de análise de erros</translation>
 <translation id="8866928039507595380">Dobrar</translation>
 <translation id="886872106311861689">B3</translation>
-<translation id="8870413625673593573">Recentemente fechadas</translation>
+<translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8870494189203302833">Mesma ordem virada para baixo</translation>
 <translation id="8874824191258364635">Informe um número de cartão válido</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>

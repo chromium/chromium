@@ -1754,7 +1754,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3016641847947582299">Összetevő frissítve</translation>
 <translation id="3017079585324758401">Háttér</translation>
 <translation id="3019285239893817657">Aloldal gombja</translation>
-<translation id="3020183492814296499">Billentyűparancsok</translation>
+<translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3020990233660977256">Sorozatszám: <ph name="SERIAL_NUMBER" /></translation>
 <translation id="3021065318976393105">Amíg akkumulátorról működik</translation>
 <translation id="3021066826692793094">Pillangó</translation>
@@ -2391,7 +2391,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3771294271822695279">Videofájlok</translation>
 <translation id="3775432569830822555">SSL-szerver tanúsítvány</translation>
 <translation id="3775705724665058594">Küldés a saját eszközökre</translation>
-<translation id="3776796446459804932">A bővítmény sérti a Chrome Internetes áruház irányelvét.</translation>
+<translation id="3776796446459804932">A bővítmény sérti a Chrome Webáruház irányelvét.</translation>
 <translation id="3777483481409781352">Nem sikerült a mobileszköz aktiválása</translation>
 <translation id="3777806571986431400">Bővítmény engedélyezve</translation>
 <translation id="3778152852029592020">Letöltés megszakítva.</translation>
@@ -4054,7 +4054,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5794476117027678724">A webhelyek nem láthatják a vágólapon szereplő szöveget és képeket</translation>
 <translation id="5794700615121138172">Megosztott Linux-mappák</translation>
 <translation id="5794786537412027208">Összes Chrome-alkalmazás bezárása</translation>
-<translation id="5797070761912323120">A Google felhasználhatja az Ön előzményeit a Keresés, a hirdetések és más Google-szolgáltatások személyre szabására</translation>
+<translation id="5797070761912323120">A Google felhasználhatja az Ön előzményeit a Kereső, a hirdetések és más Google-szolgáltatások személyre szabására</translation>
 <translation id="5798301976526354562">Szöveg mérete (az Élő feliratozás funkcióra is érvényes)</translation>
 <translation id="579915268381781820">Eltávolította a biztonsági hardverkulcsot.</translation>
 <translation id="5799508265798272974">Linuxos virtuális gép: <ph name="LINUX_VM_NAME" /></translation>
@@ -5368,7 +5368,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7376553024552204454">Az egérmutató kiemelése mozgás közben</translation>
 <translation id="7377451353532943397">Érzékelő-hozzáférés tiltásának fenntartása</translation>
 <translation id="7378611153938412599">A gyenge jelszavakat könnyű kitalálni. Figyeljen arra, hogy erős jelszavakat hozzon létre. <ph name="BEGIN_LINK" />Itt további biztonsági tippeket talál.<ph name="END_LINK" /></translation>
-<translation id="73786666777299047">A Chrome Internetes áruház megnyitása</translation>
+<translation id="73786666777299047">A Chrome Webáruház megnyitása</translation>
 <translation id="7378812711085314936">Adatkapcsolat kérése</translation>
 <translation id="7380622428988553498">Az eszköznév érvénytelen karaktereket tartalmaz</translation>
 <translation id="7380768571499464492">Frissítve: <ph name="PRINTER_NAME" /></translation>
@@ -5854,7 +5854,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7925247922861151263">AAA-ellenőrzés sikertelen</translation>
 <translation id="7925285046818567682">Várakozás a szerverre: <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nem én voltam.</translation>
-<translation id="7926975587469166629">Kártya beceneve</translation>
+<translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7928175190925744466">Módosította már ezt a jelszót?</translation>
 <translation id="7928836894214140642">Kezelő: <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="7930294771522048157">Az elmentett fizetési módok itt jelennek meg</translation>
@@ -6392,7 +6392,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8561853412914299728"><ph name="TAB_TITLE" /> <ph name="EMOJI_PLAYING" /></translation>
 <translation id="8565650234829130278">Megpróbálta alacsonyabb verzióra váltani az alkalmazást.</translation>
 <translation id="8569682776816196752">Nem található célhely</translation>
-<translation id="8571213806525832805">Az elmúlt négy hétből</translation>
+<translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
 <translation id="8571687764447439720">Kerberos-jegy hozzáadása</translation>
 <translation id="8574990355410201600">Hangok folyamatos engedélyezése a következőn: <ph name="HOST" /></translation>
 <translation id="8575286410928791436">A kilépéshez tartsa lenyomva a következő billentyűkombinációt: <ph name="KEY_EQUIVALENT" />.</translation>

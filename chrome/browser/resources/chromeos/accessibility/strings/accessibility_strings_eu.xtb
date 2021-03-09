@@ -262,7 +262,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2999559350546931576">Jaitsi tonua</translation>
 <translation id="3009352964623081324">Bilatu + O; gero, S. Erabili ahotsak instalatu, kudeatu eta pertsonalizatzeko.</translation>
 <translation id="3014130421870723208">@ed 8puntu</translation>
-<translation id="3030432017085518523">Menuko elementuaren irrati-botoia</translation>
+<translation id="3030432017085518523">Menuko elementuaren aukera-botoia</translation>
 <translation id="3037392361165431467">{COUNT,plural, =1{apostrofoa}other{# apostrofo}}</translation>
 <translation id="3040901448410802366">Prozesuaren aurrerapen-adierazlea</translation>
 <translation id="3046838483509668188">ChromeVox aukerak</translation>
@@ -291,7 +291,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3143851963874289911">cll</translation>
 <translation id="3149472044574196936">Hurrengo lerroa</translation>
 <translation id="3153024374267644603">Aktibatu hizketa</translation>
-<translation id="3153928844647607688"><ph name="TABLENAME" /> taula: <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
+<translation id="3153928844647607688"><ph name="TABLENAME" /> taula: <ph name="TABLEROWS" /> × <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beixa</translation>
 <translation id="316542773973815724">Nabigazioa</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{zuriunea}other{# zuriune}}</translation>
@@ -470,7 +470,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4547556996012970016">5 mailako hurrengo goiburua</translation>
 <translation id="4562381607973973258">Goiburua</translation>
 <translation id="4597532268155981612">inprimakia</translation>
-<translation id="4601367666219428522"><ph name="TABLENAME" /> taula <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4601367666219428522"><ph name="TABLENAME" /> taula <ph name="TABLEROWS" /> × <ph name="TABLECOLS" /></translation>
 <translation id="4615592953348396470">Ez ikusi egingo zaio hurrengo tekla-sakatzeari</translation>
 <translation id="4623097797855662355">Azken oharra</translation>
 <translation id="463135993322337640">Berritasunak jakiteko, sakatu ChromeVox, O eta N</translation>
@@ -584,7 +584,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="549602578321198708">Hitzez hitzekoa</translation>
 <translation id="5513242761114685513">Laster-menua</translation>
 <translation id="551361796444814639">Bizitasun ertaineko urdina</translation>
-<translation id="552195134157544755">Irrati-botoia</translation>
+<translation id="552195134157544755">Aukera-botoia</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">Gris urdinxka argia</translation>
 <translation id="5549179427201066174">Aktibatu edo desaktibatu soinu bidezko erantzunak (soinu adierazgarriak)</translation>
@@ -594,7 +594,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5574412348552378458">ChromeVox-en ikasteko modua</translation>
 <translation id="5585044216466955529">Editatu testua, idatzi helbide elektronikoa</translation>
 <translation id="5597170376237141345">Hurrengo koadroa</translation>
-<translation id="5598905979683743333"><ph name="NAME" /> irrati-botoia desautatu da</translation>
+<translation id="5598905979683743333"><ph name="NAME" /> aukera-botoia desautatu da</translation>
 <translation id="5601172225407283979">Gauzatu ekintza lehenetsia</translation>
 <translation id="5608798115546226984">Osatze automatiko txertatua</translation>
 <translation id="561939826962581046">ordua</translation>
@@ -838,7 +838,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7609342235116740824">Iragarri uneko orriaren URLa</translation>
 <translation id="7609363189280667021">Aktibatu/Desaktibatu braille-oinak</translation>
 <translation id="761303759119251275">Adierazpena</translation>
-<translation id="762020119231868829">Unean erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
+<translation id="762020119231868829">Une honetan erreproduzitzen ari diren multimedia-widgetak pausatzen ditu</translation>
 <translation id="7625690649919402823">Hurrengo taula</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), <ph name="GRADE" />. maila</translation>
 <translation id="7639968568612851608">Gris iluna</translation>
@@ -849,11 +849,11 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7676847077928500578">Berrezarri testua ahots bihurtzeko eginbidearen ezarpenak</translation>
 <translation id="7684431668231950609">Editatu testua. URLa idazteko eremua.</translation>
 <translation id="7685589220304187312">tlbar</translation>
-<translation id="7693840228159394336">Aurreko irrati-botoia</translation>
+<translation id="7693840228159394336">Aurreko aukera-botoia</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Ez dago beste koadro konbinaturik honen ondoren</translation>
-<translation id="772146615414628379">Zorionak! Lortu dituzu ChromeVox erabiltzeko oinarrizko ezagutzak. Gogoratu: ChromeVox-eko agindu-menua irekitzeko, sakatu bilaketa-tekla eta puntuaren tekla. ChromeVox eta Chrome OS-ri buruzko informazio gehiago lortzeko, irakurri artikulu hauek.
+<translation id="772146615414628379">Zorionak! Lortu dituzu ChromeVox erabiltzeko oinarrizko ezagutzak. Gogoratu: ChromeVox-eko agindu-menua irekitzeko, sakatu bilaketa-tekla eta puntuaren tekla. ChromeVox eta Chrome OS-i buruzko informazio gehiago lortzeko, irakurri artikulu hauek.
     Tutoriala amaitu baduzu, erabili ChromeVox Itxi botoira joan, eta hura sakatzeko.</translation>
 <translation id="7724603315864178912">Ebaki</translation>
 <translation id="7731785449856576010">Ez dago beste multimedia-widgetik honen ondoren</translation>

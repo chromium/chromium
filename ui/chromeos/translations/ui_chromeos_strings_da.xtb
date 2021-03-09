@@ -296,7 +296,7 @@
 <translation id="4298972503445160211">Dansk tastatur</translation>
 <translation id="4299729908419173967">Brasiliansk</translation>
 <translation id="4309915981827077375">Generelle oplysninger</translation>
-<translation id="4315949787858895817">Hollandsk (Belgien)</translation>
+<translation id="4315949787858895817">Nederlandsk (Belgien)</translation>
 <translation id="4326192123064055915">Kaffe</translation>
 <translation id="4336032328163998280">Kopieringen mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -391,7 +391,7 @@
    Hvis du fjerner din enhed, mens den er i brug, kan det medføre datatab. Vent, indtil handlingen er fuldført, og fjern derefter enheden ved hjælp af appen Filer.</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="516592729076796170">Amerikansk (Programmer Dvorak) tastatur</translation>
-<translation id="5167131699331641907">Hollandsk tastatur</translation>
+<translation id="5167131699331641907">Nederlandsk tastatur</translation>
 <translation id="5170477580121653719">Ledig plads på Google Drev: <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
@@ -437,7 +437,7 @@
 <translation id="5524517123096967210">Filen kunne ikke læses.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-billede</translation>
 <translation id="5534520101572674276">Beregner størrelse</translation>
-<translation id="5583640892426849032">Returtast</translation>
+<translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Amerikansk (Dvorak)</translation>
 <translation id="5640179856859982418">Schweizisk tastatur</translation>
 <translation id="5649768706273821470">Lyt</translation>
@@ -606,7 +606,7 @@
 <translation id="7508545000531937079">Diasshow</translation>
 <translation id="751507702149411736">Hviderussisk</translation>
 <translation id="7544853251252956727">Bland</translation>
-<translation id="7547811415869834682">Hollandsk</translation>
+<translation id="7547811415869834682">Nederlandsk</translation>
 <translation id="7551643184018910560">Fastgør til hylde</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Vent et øjeblik</translation>
@@ -729,7 +729,7 @@
 <translation id="8722421161699219904">Internationalt amerikansk tastatur</translation>
 <translation id="872537912056138402">Kroatisk</translation>
 <translation id="874420130893181774">Traditionel Pinyin-indtastningsmetode</translation>
-<translation id="8770002329960263418">Hollandsk (Holland) med amerikansk internationalt computertastatur</translation>
+<translation id="8770002329960263418">Nederlandsk (Nederlandene) med amerikansk internationalt computertastatur</translation>
 <translation id="8775404590947523323">Din ændringer gemmes automatisk.<ph name="BREAKS" />Hvis du gemmer en kopi af det oprindelige billede, skal du fjerne markeringen for "Overskriv originalen"</translation>
 <translation id="8803496343472038847">Russisk tastatur (fonetisk)</translation>
 <translation id="8808686172382650546">Kat</translation>

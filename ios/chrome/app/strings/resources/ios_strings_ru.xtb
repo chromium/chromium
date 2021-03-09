@@ -17,12 +17,12 @@
 <translation id="110724200315609752">Переключиться на открытое окно</translation>
 <translation id="1112015203684611006">Ошибка печати</translation>
 <translation id="1125564390852150847">Создать вкладку</translation>
-<translation id="1145536944570833626">Удалить сохраненные данные.</translation>
+<translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1154690515305205900">Создать ссылку на выделенный текст нельзя.</translation>
 <translation id="1165039591588034296">Ошибка</translation>
 <translation id="1172898394251786223">Следующее поле</translation>
 <translation id="1176932207622159128">Не удалось сохранить</translation>
-<translation id="1180526666083833456">Синхронизация данных и персонализация на всех устройствах.</translation>
+<translation id="1180526666083833456">Синхронизация данных и персонализация на всех устройствах</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1207113853726624428">Новый поиск</translation>
 <translation id="1209206284964581585">Скрыть</translation>
@@ -197,7 +197,7 @@
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
 <translation id="3161291298470460782">Вы выйдете из аккаунта, синхронизация будет отключена, а все данные Chrome – удалены с этого устройства. Синхронизированные данные останутся в вашем аккаунте Google.</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендации</translation>
 <translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3178650076442119961">Последние действия: сегодня</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
@@ -447,7 +447,7 @@
 <translation id="5964480694698977962">Создать вкладку инкогнито.</translation>
 <translation id="5965679971710331625">Вы вошли в аккаунт</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>
-<translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" />.</translation>
+<translation id="5982717868370722439">Объединить сохраненные данные с данными пользователя <ph name="USER_EMAIL" /></translation>
 <translation id="5984222099446776634">Недавно посещенные страницы</translation>
 <translation id="5988851877894965432">Открывать URL в Chrome</translation>
 <translation id="6012140227487808125">Шифрование…</translation>
@@ -462,7 +462,7 @@
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6125339936101702016">Устройством управляет компания "<ph name="COMPANY" />". <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="6127379762771434464">Быстрая ссылка удалена</translation>
+<translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6136914049981179737">только что</translation>
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
 <translation id="616831107264507309">Читать позже</translation>
@@ -628,7 +628,7 @@
 <translation id="7839985698273989086">Офлайн-версия страницы</translation>
 <translation id="7840771868269352570">Выбранные элементы будут удалены</translation>
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
-<translation id="7859704718976024901">История просмотра веб-страниц</translation>
+<translation id="7859704718976024901">История браузера</translation>
 <translation id="7887198238286927132">Чтобы обеспечить конфиденциальность ваших данных, Chrome не использует автозаполнение для этого поля.</translation>
 <translation id="7918293828610777738">Список для чтения доступен без подключения к Интернету. Чтобы добавить в него страницу, нажмите <ph name="SHARE_OPENING_ICON" />, а затем –<ph name="READ_LATER_TEXT" />.</translation>
 <translation id="7938254975914653459">FaceTime</translation>

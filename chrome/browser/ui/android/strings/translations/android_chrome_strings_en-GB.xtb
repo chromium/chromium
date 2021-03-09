@@ -649,7 +649,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5817918615728894473">Pair</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5833984609253377421">Share link</translation>
-<translation id="5836192821815272682">Downloading Chrome Update…</translation>
+<translation id="5836192821815272682">Downloading Chrome update…</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
@@ -849,7 +849,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149158118503947153"><ph name="BEGIN_LINK" />Load original page<ph name="END_LINK" /> from <ph name="DOMAIN_NAME" /></translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
-<translation id="7173114856073700355">Open Settings</translation>
+<translation id="7173114856073700355">Open settings</translation>
 <translation id="7177466738963138057">You can change this later in Settings</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
@@ -1063,7 +1063,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8683039184091909753">image</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{Signal Strength Level: # bar}other{Signal Strength Level: # bars}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{Signal strength level: # bar}other{Signal strength level: # bars}}</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8712637175834984815">Got it</translation>

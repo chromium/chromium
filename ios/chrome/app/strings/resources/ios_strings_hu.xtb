@@ -111,7 +111,7 @@
 <translation id="2139867232736819575">Vágólapra másolt szöveg keresése</translation>
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2175927920773552910">QR-kód</translation>
-<translation id="2198757192731523470">A Google felhasználhatja az Ön előzményeit a Keresés, a hirdetések és más Google-szolgáltatások személyre szabására.</translation>
+<translation id="2198757192731523470">A Google felhasználhatja az Ön előzményeit a Kereső, a hirdetések és más Google-szolgáltatások személyre szabására.</translation>
 <translation id="2218443599109088993">Kicsinyítés</translation>
 <translation id="2230173723195178503">A weboldal betöltött</translation>
 <translation id="2239626343334228536">Böngészési adatok törlése…</translation>
@@ -222,7 +222,7 @@ Inkognitó módban a webhelyek nem használhatnak cookie-kat arra, hogy megfigye
 <translation id="3371831930909698441">Rendelkezésre áll fordítás. A beállítások a képernyő alsó részén találhatók.</translation>
 <translation id="3393920035788932672">Pop-up megengedett</translation>
 <translation id="3399930248910934354">Chrome-beállítások megnyitása</translation>
-<translation id="3425644765244388016">Egyedi kártyanév</translation>
+<translation id="3425644765244388016">Egyéni kártyanév</translation>
 <translation id="3433057996795775706">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />. Ha szeretné megőrizni fiókja biztonságát, módosítsa a(z) <ph name="WEBSITE" /> domainen használt jelszavát.</translation>
 <translation id="3443810440409579745">Sikerült a lap fogadása.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> perc</translation>

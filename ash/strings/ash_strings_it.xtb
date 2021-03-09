@@ -479,7 +479,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="579415080077680903">Silenzioso</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
-<translation id="5860033963881614850">OFF</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
@@ -572,7 +572,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
-<translation id="6790428901817661496">Play</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
@@ -633,7 +633,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
-<translation id="7551643184018910560">Fissa sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sullo shelf</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
 <translation id="7568294522609223312">Disattiva i clic automatici</translation>

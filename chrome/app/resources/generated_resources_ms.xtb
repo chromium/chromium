@@ -3880,9 +3880,9 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5583640892426849032">Undur ruang</translation>
 <translation id="5584088138253955452">Simpan nama pengguna?</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />Maklumat ini ialah maklumat umum tentang peranti anda dan cara anda menggunakan peranti tersebut (seperti paras kuasa bateri, aktiviti sistem dan apl, serta ralat). Data tersebut akan digunakan untuk menambah baik Android, dan sesetengah maklumat teragregat akan membantu apl dan rakan kongsi Google, seperti pembangun Android, menghasilkan apl dan produk yang lebih baik juga.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti anda untuk menghantar maklumat yang diperlukan oleh perkhidmatan penting seperti kemas kini sistem dan keselamatan.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti anda untuk menghantar maklumat yang diperlukan oleh perkhidmatan penting seperti kemaskinian sistem dan keselamatan.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pemilik boleh mengawal ciri ini daripada Tetapan &gt; Terperinci &gt; Hantar data diagnostik dan penggunaan kepada Google secara automatik.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan ke Akaun Google anda. Anda boleh melihat dan memadamkan data anda serta menukar tetapan akaun anda di account.google.com.<ph name="END_PARAGRAPH4" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda. Anda boleh melihat dan memadamkan data anda serta menukar tetapan akaun anda pada account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5585019845078534178">Kad</translation>
 <translation id="5585118885427931890">Tidak dapat mencipta folder penanda halaman.</translation>
 <translation id="558563010977877295">Buka halaman tertentu atau satu set halaman.</translation>
@@ -6156,9 +6156,9 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8266947622852630193">Semua kaedah input</translation>
 <translation id="8267539814046467575">Tambahkan pencetak</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Maklumat ini ialah maklumat umum tentang peranti ini dan cara peranti ini digunakan (seperti paras kuasa bateri, aktiviti sistem dan apl, serta ralat). Data tersebut akan digunakan untuk menambah baik Android, dan sesetengah maklumat teragregat akan membantu apl dan rakan kongsi Google, seperti pembangun Android, menghasilkan apl dan produk yang lebih baik juga.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan oleh perkhidmatan penting seperti kemas kini sistem dan keselamatan.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH2" />Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan oleh perkhidmatan penting seperti kemaskinian sistem dan keselamatan.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Pemilik boleh mengawal ciri ini daripada Tetapan &gt; Terperinci &gt; Hantar data diagnostik dan penggunaan kepada Google secara automatik.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan ke Akaun Google mereka. Ketahui lebih lanjut tentang tetapan ini dan cara menyelaraskan tetapan ini di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Google mereka. Ketahui lebih lanjut tentang tetapan ini dan cara menyelaraskan tetapan ini pada families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Sijil pelanggan tidak sah</translation>
 <translation id="8270242299912238708">Dokumen PDF</translation>
 <translation id="827097179112817503">Paparkan butang laman utama</translation>

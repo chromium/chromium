@@ -3,7 +3,7 @@
 <translationbundle lang="mr">
 <translation id="1012876632442809908">USB-C डिव्‍हाइस (पुढील बाजूचे पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> बदलून <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
-<translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर हा पिन प्रविष्ट करा: <ph name="PINCODE" /></translation>
+<translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर हा पिन एंटर करा: <ph name="PINCODE" /></translation>
 <translation id="1032891413405719768">स्टायलस बॅटरी कमी आहे</translation>
 <translation id="1036672894875463507">मी Google Assistant आहे, तुम्हाला संपूर्ण दिवसभर मदत करण्यासाठी येथे आहे!
 सुरुवात करण्यासाठी, तुम्ही करून पाहू शकता अशा गोष्टी या आहेत.</translation>
@@ -525,7 +525,7 @@
 <translation id="6288235558961782912">पालकाच्या परवानगीने <ph name="USER_EMAIL_ADDRESS" /> नंतर पुन्हा जोडता येईल.</translation>
 <translation id="6297287540776456956">विभाग निवडण्यासाठी स्टायलस वापरा</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> <ph name="ROTATION" /> वर फिरविले होते</translation>
-<translation id="6315170314923504164">व्हॉइस</translation>
+<translation id="6315170314923504164">Voice</translation>
 <translation id="6376931439017688372">ब्लूटूथ सुरू आहे</translation>
 <translation id="6381109794406942707">डिव्हाइस अनलॉक करण्यासाठी, तुमचा पिन एंटर करा.</translation>
 <translation id="639644700271529076">CAPS LOCK बंद आहे</translation>
@@ -554,7 +554,7 @@
 <translation id="6614169507485700968">गोपनीयता स्क्रीन सुरू आहे</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6637729079642709226">वेळ बदला</translation>
-<translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर ही पासकी प्रविष्ट करा: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर ही पासकी एंटर करा: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6665545700722362599">वेबसाइट, अ‍ॅप्स आणि एक्स्टेंशनना स्थान सेवा, डिव्हाइसचा मायक्रोफोन, कॅमेरा किंवा इतर वैशिष्ट्ये वापरण्याची परवानगी द्या</translation>
 <translation id="6670153871843998651">डेस्‍क ३</translation>
@@ -584,7 +584,7 @@
 <translation id="6910714959251846841">या अपडेटसाठी तुमचे डिव्हाइस Powerwash करणे आवश्यक आहे. <ph name="SYSTEM_APP_NAME" /> च्या नवीनतम अपडेटबाबत अधिक जाणून घ्या.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="6945221475159498467">निवडा</translation>
-<translation id="6972754398087986839">प्रारंभ करा</translation>
+<translation id="6972754398087986839">सुरू करा</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
 <translation id="698231206551913481">एकदा हा वापरकर्ता काढल्यानंतर या वापरकर्त्याशी संबद्ध सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
@@ -697,7 +697,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> शी कनेक्ट केलेले</translation>
-<translation id="813913629614996137">प्रारंभ करत आहे…</translation>
+<translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8142441511840089262">डबल क्लिक करा</translation>
 <translation id="8142699993796781067">खाजगी नेटवर्क</translation>
 <translation id="8152092012181020186">बंद करण्यासाठी Ctrl + W दाबा.</translation>

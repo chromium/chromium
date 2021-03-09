@@ -39,7 +39,7 @@
 <translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
 <translation id="7151209024774799310">Remover guias do grupo</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
-<translation id="753732157349120914">Alternador de guias</translation>
+<translation id="753732157349120914">Seletor de guias</translation>
 <translation id="7559245342362162951">Mostrar guias do grupo em grade de tela cheia</translation>
 <translation id="7792771145871471484">Revisar as sugestões.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>

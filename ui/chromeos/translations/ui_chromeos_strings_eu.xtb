@@ -30,7 +30,7 @@
 <translation id="1208421848177517699">Transliterazioa (namaste → નમસ્તે)</translation>
 <translation id="1243314992276662751">Kargatu</translation>
 <translation id="1249250836236328755">Generoa</translation>
-<translation id="1276362640455948667">Portugaldarra, AEBko nazioarteko teklatuarekin</translation>
+<translation id="1276362640455948667">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
 <translation id="1278813325885878377">QWERTY teklatu hungariarra</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
 <translation id="1297922636971898492">Une honetan, Google Drive ez dago erabilgarri. Erabilgarri dagoenean, automatikoki hasiko da berriro kargatzen.</translation>
@@ -88,7 +88,7 @@
 <translation id="1847880352285315359">Gordeta</translation>
 <translation id="1853795129690976061">Karpeta hau Linux-ekin partekatuta dago</translation>
 <translation id="1864756863218646478">Ezin izan da aurkitu fitxategia.</translation>
-<translation id="1921986354447415460">Turkierako F teklatua</translation>
+<translation id="1921986354447415460">Turkiarra (F teklatua)</translation>
 <translation id="1924372192547904021">Formateatu da <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Eslovakiarra</translation>
 <translation id="1933345018156373194">Ezin izan da mugitu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
@@ -113,24 +113,24 @@
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Teklatu vietnamdarra (TCVN)</translation>
 <translation id="2168214441502403371">Teklatu persiarra</translation>
-<translation id="2198315389084035571">Txinera (sinplifikatua)</translation>
+<translation id="2198315389084035571">Idazkera txinatar sinplifikatua</translation>
 <translation id="2208158072373999562">ZIP artxiboa</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2275059641601412272">Mugitu da.</translation>
 <translation id="2278988676849463018">Teklatu kannadarra (fonetikoa)</translation>
-<translation id="2287742181953707290">Portugaldarra, AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="2287742181953707290">Portugaldarra, nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
 <translation id="2305020378527873881">Kanporatu da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2325650632570794183">Ez dira mota horretako fitxategiak onartzen. Horrelako fitxategiak ireki ditzaketen aplikazioak aurkitzeko, zoaz Chrome Web Store dendara.</translation>
-<translation id="23434688402327542">Kazakherako teklatua</translation>
+<translation id="23434688402327542">Teklatu kazakhtarra</translation>
 <translation id="2352947182261340447">Ez dago behar adina toki biltegi lokalean.</translation>
 <translation id="2377319039870049694">Aldatu zerrenda-ikuspegira</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Linux-ekin</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fitxategi hautatu dira</translation>
-<translation id="2384596874640104496">Teklatu sinhaldarra</translation>
+<translation id="2384596874640104496">Teklatu sinhalarra</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> erabilgarri</translation>
 <translation id="2425665904502185219">Fitxategiaren tamaina guztira</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> elementu <ph name="FOLDER_NAME" /> karpetan kopiatzen</translation>
@@ -141,7 +141,7 @@
 <translation id="247772113373397749">Teklatu kanadar eleanitza</translation>
 <translation id="2494837236724268445">Teklatu gujaratarra (fonetikoa)</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">AEBko teklatua</translation>
+<translation id="2529133382850673012">Teklatu estatubatuarra</translation>
 <translation id="2542049655219295786">Google taula</translation>
 <translation id="2547921442987553570">Gehitu <ph name="EXTENSION_NAME" /> luzapenean</translation>
 <translation id="255937426064304553">AEBko nazioarteko teklatu-diseinua</translation>
@@ -155,7 +155,7 @@
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
 <translation id="2672394958563893062">Errore bat gertatu da. Berriro hasieratik hasteko, sakatu hau.</translation>
 <translation id="2676946222714718093">Hemen erreproduzitzen:</translation>
-<translation id="2735698359135166290">Errumanierako teklatu estandarra</translation>
+<translation id="2735698359135166290">Teklatu errumaniar estandarra</translation>
 <translation id="2771816809568414714">Gazta</translation>
 <translation id="2781645665747935084">Belgikarra</translation>
 <translation id="2782104745158847185">Errore bat gertatu da Linux aplikazioa instalatzean</translation>
@@ -193,10 +193,10 @@
 <translation id="3116361045094675131">Erresuma Batuko teklatua</translation>
 <translation id="3126026824346185272">Ktrl</translation>
 <translation id="3144126448740580210">EGINDA</translation>
-<translation id="3157729859914172001">AEBko nazioarteko teklatua (PCrako)</translation>
+<translation id="3157729859914172001">Nazioarteko teklatu estatubatuarra (ordenagailurako)</translation>
 <translation id="3187212781151025377">Teklatu hebrearra</translation>
 <translation id="3188257591659621405">Nire fitxategiak</translation>
-<translation id="3197563288998582412">UK Dvorak</translation>
+<translation id="3197563288998582412">Erresuma Batuko Dvorak</translation>
 <translation id="3202131003361292969">Bide-izena</translation>
 <translation id="3224239078034945833">Kanadar eleanitza</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" /> domeinuari transferituko zaio jabetza.</translation>
@@ -233,7 +233,7 @@
 <translation id="357479282490346887">Lituaniarra</translation>
 <translation id="3583509704582854624">Idazketa alfanumerikoa (teklatu japoniarrerako)</translation>
 <translation id="3603385196401704894">Frantsesa (Kanada)</translation>
-<translation id="3606220979431771195">Turkierako F teklatua</translation>
+<translation id="3606220979431771195">Turkiarra (F teklatua)</translation>
 <translation id="3609785682760573515">Sinkronizatzen…</translation>
 <translation id="3616113530831147358">Audioa</translation>
 <translation id="3619115746895587757">Kaputxinoa</translation>
@@ -306,7 +306,7 @@
 <translation id="4465830120256509958">Teklatu brasildarra</translation>
 <translation id="4470564870223067757">2. hangul-karaktere sorta</translation>
 <translation id="4477219268485577442">Bulgariar fonetikoa</translation>
-<translation id="4479812471636796472">AEBko Dvorak teklatua</translation>
+<translation id="4479812471636796472">Dvorak teklatu estatubatuarra</translation>
 <translation id="4481711095103932593">Karpeta hau Windows-ekin partekatuta dago</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4542387084127299777">Ezin da ireki "<ph name="PATH" />"</translation>
@@ -421,7 +421,7 @@
 <translation id="5368191757080475556">Partekatu karpeta Linux erabilita</translation>
 <translation id="5402367795255837559">Braillea</translation>
 <translation id="5412637665001827670">Teklatu bulgariarra</translation>
-<translation id="5418923334382419584">Teklatu myanmartarra</translation>
+<translation id="5418923334382419584">Teklatu birmaniarra</translation>
 <translation id="5428105026674456456">Espaniarra</translation>
 <translation id="5438282218546237410">Ez dago "<ph name="SEARCH_TERM" />" bilaketaren emaitzarik.</translation>
 <translation id="5449551289610225147">Pasahitzak ez du balio</translation>
@@ -437,7 +437,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> irudia</translation>
 <translation id="5534520101572674276">Tamaina kalkulatzen</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
-<translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5605830556594064952">Dvorak estatubatuarra</translation>
 <translation id="5640179856859982418">Teklatu suitzarra</translation>
 <translation id="5649768706273821470">Entzun</translation>
 <translation id="5678784840044122290">Linux aplikazioa erabilgarri egongo da zure terminalean eta baliteke haren ikonoa abiarazlean agertzea.</translation>
@@ -447,7 +447,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> ez dago jada.</translation>
 <translation id="5700087501958648444">Audioari buruzko informazioa</translation>
 <translation id="5731409020711461763">Argazki berri bat</translation>
-<translation id="5752453871435543420">Chrome OS sistemaren babeskopiak hodeian</translation>
+<translation id="5752453871435543420">Chrome OS-en hodeiko babeskopiak</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5771585441665576801">Transliterazioa (geia → γεια)</translation>
 <translation id="5776325638577448643">Ezabatu eduki guztia eta formatea ezazu</translation>
@@ -475,7 +475,7 @@
 <translation id="5982621672636444458">Ordenatze-aukerak</translation>
 <translation id="6005282720244019462">Teklatu latinoamerikarra</translation>
 <translation id="6007237601604674381">Ezin izan da eraman. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="6012987430370760224">Maratherako teklatua (fonetikoa)</translation>
+<translation id="6012987430370760224">Teklatu maratharra (fonetikoa)</translation>
 <translation id="6019169947004469866">Moztu</translation>
 <translation id="60357267506638014">QWERTY txekiarra</translation>
 <translation id="604001903249547235">Hodeiko babeskopia</translation>
@@ -513,7 +513,7 @@
 <translation id="6462109140674788769">Teklatu greziarra</translation>
 <translation id="6466492211071551451">Teklatu irlandarra</translation>
 <translation id="6485131920355264772">Ezin izan da berreskuratu zuriuneei buruzko informazioa</translation>
-<translation id="6503256918647795660">Teklatu frantses suitzarra</translation>
+<translation id="6503256918647795660">Teklatu frantsesa (Suitza)</translation>
 <translation id="6505918941256367791">Teklatu tamildarra (InScript)</translation>
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6527303717912515753">Partekatu</translation>
@@ -577,7 +577,7 @@
 <translation id="7172053773111046550">Teklatu estoniarra</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">AEBko programatzaileen Dvorak teklatua</translation>
+<translation id="719009910964971313">Programatzaileen Dvorak teklatu estatubatuarra</translation>
 <translation id="7191454237977785534">Gorde fitxategia honela</translation>
 <translation id="7222624196722476520">Teklatu bulgariarra (fonetikoa)</translation>
 <translation id="7238097264433196391">Unitatearen izena</translation>
@@ -590,7 +590,7 @@
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
 <translation id="7389722738210761877">Teklatu thailandiarra (TIS 820-2531)</translation>
-<translation id="7396038720194014279">Hindiko teklatua (fonetikoa)</translation>
+<translation id="7396038720194014279">Teklatu hindia (fonetikoa)</translation>
 <translation id="7417453074306512035">Teklatu etiopiarra</translation>
 <translation id="7417705661718309329">Google mapa</translation>
 <translation id="7419631653042041064">Teklatu katalana</translation>
@@ -646,20 +646,20 @@
 <translation id="7873831373602885875">Ezin da gorde ezer <ph name="FOLDER_NAME" /> karpetan. Aldaketa guztiak Deskargak karpetako <ph name="DOWNLOADS_FOLDER" /> karpetan gordeko dira.</translation>
 <translation id="7881969471599061635">Desgaitu azpitituluak</translation>
 <translation id="78946041517601018">Unitate partekatuak</translation>
-<translation id="7896906914454843592">AEBko teklatu hedatua</translation>
+<translation id="7896906914454843592">Teklatu estatubatuar hedatua</translation>
 <translation id="7898607018410277265">Teklatu gujaratarra (fonetiko berria)</translation>
 <translation id="7908793776359722643">Partizio bat formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza.</translation>
 <translation id="7917972308273378936">Teklatu lituaniarra</translation>
 <translation id="7925686952655276919">Ez erabili datu-konexioa sinkronizatzeko</translation>
 <translation id="7928710562641958568">Kanporatu gailua</translation>
-<translation id="7943385054491506837">US Colemak</translation>
+<translation id="7943385054491506837">Colemak estatubatuarra</translation>
 <translation id="7953739707111622108">Ezin da ireki gailua bere fitxategi-sistema ezezaguna delako.</translation>
 <translation id="7969525169268594403">Esloveniarra</translation>
 <translation id="7982283708762922719">Altuera</translation>
 <translation id="7987485481246785146">Arabieran oinarritutako teklatu sorani kurdua</translation>
 <translation id="8008366997883261463">Jack Russell Terrier arrazako zakurra</translation>
 <translation id="8028993641010258682">Tamaina</translation>
-<translation id="8031722894461705849">Eslovakierako teklatua</translation>
+<translation id="8031722894461705849">Teklatu eslovakiarra</translation>
 <translation id="803771048473350947">Fitxategia</translation>
 <translation id="8038111231936746805">(lehenetsia)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> audioa</translation>
@@ -703,7 +703,7 @@
 <translation id="8395901698320285466">Dimentsioak</translation>
 <translation id="8412586565681117057">Idazketa-metodo bizkorra</translation>
 <translation id="8418113698656761985">Teklatu errumaniarra</translation>
-<translation id="8432745813735585631">AEBko Colemak teklatua</translation>
+<translation id="8432745813735585631">Colemak teklatu estatubatuarra</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Izenak ez du balio</translation>
 <translation id="8466234950814670489">Tar artxiboa</translation>
@@ -725,10 +725,10 @@
 <translation id="8698464937041809063">Google-ko marrazkia</translation>
 <translation id="8714406895390098252">Bizikleta</translation>
 <translation id="8719721339511222681">Hautatu da <ph name="ENTRY_NAME" />.</translation>
-<translation id="8722421161699219904">AEBtako nazioarteko teklatua</translation>
+<translation id="8722421161699219904">Nazioarteko teklatu estatubatuarra</translation>
 <translation id="872537912056138402">Kroaziarra</translation>
 <translation id="874420130893181774">Pinyin idazketa-metodo tradizionala</translation>
-<translation id="8770002329960263418">Nederlandarra (Herbehereak), AEBko nazioarteko teklatuarekin (ordenagailurako)</translation>
+<translation id="8770002329960263418">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="8775404590947523323">Aldaketak automatikoki gordetzen dira.<ph name="BREAKS" />Jatorrizko irudiaren kopia bat gordetzeko, kendu marka "Gainidatzi jatorrizkoa" aukerari</translation>
 <translation id="8803496343472038847">Teklatu errusiarra (fonetikoa)</translation>
 <translation id="8808686172382650546">Katua</translation>

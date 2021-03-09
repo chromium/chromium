@@ -687,7 +687,7 @@
 <translation id="1768278914020124551">На жаль, не вдалося зв’язатися із сервером для входу. Перевірте з’єднання з Інтернетом і доменне ім’я та повторіть спробу.</translation>
 <translation id="1769104665586091481">Відкрити посилання в новому &amp;вікні</translation>
 <translation id="1773212559869067373">Сертифікат автентифікації відхилений локально</translation>
-<translation id="177336675152937177">Дані розміщених програм</translation>
+<translation id="177336675152937177">Дані розміщених додатків</translation>
 <translation id="1776712937009046120">Додати користувача</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
 <translation id="1778457539567749232">Позначити як непрочитане</translation>
@@ -1302,7 +1302,7 @@
 <translation id="249303669840926644">Не вдалося закінчити реєстрацію</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="2495777824269688114">Відкрийте для себе нові функції або отримайте відповіді. Виберіть "?", щоб переглянути довідку.</translation>
-<translation id="2496180316473517155">Історія переглядів</translation>
+<translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2497229222757901769">Швидкість миші</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="2498539833203011245">Згорнути</translation>
@@ -1874,7 +1874,7 @@
 <translation id="3165371858310906303">Запитувати, коли сайт хоче дізнатися, чи ви присутні</translation>
 <translation id="3165390001037658081">Деякі оператори можуть блокувати цю функцію.</translation>
 <translation id="316652501498554287">Облікові записи G Suite for Education</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Рекомендації</translation>
 <translation id="3170072451822350649">Можна також пропустити вхід і <ph name="LINK_START" />працювати в режимі "Гість"<ph name="LINK_END" />.</translation>
 <translation id="3177909033752230686">Мова сторінки:</translation>
 <translation id="3179982752812949580">Шрифт тексту</translation>
@@ -2475,7 +2475,7 @@
 <translation id="3855676282923585394">Імпорт закладок і налаштувань...</translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3856800405688283469">Виберіть часовий пояс</translation>
-<translation id="3857807444929313943">Підніміть і знову торкніться</translation>
+<translation id="3857807444929313943">Підніміть і опустіть палець</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3862693525629180217">Підтвердити через вбудований датчик</translation>
@@ -2493,7 +2493,7 @@
 <translation id="3873423927483480833">Показати PIN-коди</translation>
 <translation id="3873915545594852654">Виникла проблема з ARC++.</translation>
 <translation id="3874164307099183178">Увімкнути Google Асистента</translation>
-<translation id="3879748587602334249">Диспетчер завантажень</translation>
+<translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3881478300875776315">Показати менше рядків</translation>
 <translation id="3882165008614329320">Наявні відео з камери або файлу</translation>
 <translation id="3884152383786131369">Для веб-контенту, доступного багатьма мовами, використовуватиметься перший доступний варіант зі списку нижче. Ці параметри синхронізуються з налаштуваннями веб-переглядача. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -2551,7 +2551,7 @@
 <translation id="3937734102568271121">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">Пристрої від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3940233957883229251">Увімкнути автоповтор</translation>
-<translation id="3941014780699102620">Не вдалося розпізнати хост</translation>
+<translation id="3941014780699102620">не вдалося розпізнати хост</translation>
 <translation id="3941565636838060942">Щоб сховати доступ до цієї програми, потрібно видалити її за допомогою міні-додатка
   <ph name="CONTROL_PANEL_APPLET_NAME" /> на панелі керування.
 
@@ -3035,7 +3035,7 @@
 <translation id="4546692474302123343">Голосовий ввід через Google Асистента</translation>
 <translation id="4547659257713117923">Немає вкладок з інших пристроїв</translation>
 <translation id="4547672827276975204">Налаштовувати автоматично</translation>
-<translation id="4548483925627140043">Сигнал не знайдено</translation>
+<translation id="4548483925627140043">сигнал не знайдено</translation>
 <translation id="4549791035683739768">На ключі безпеки немає збережених відбитків</translation>
 <translation id="4551763574344810652">Щоб відмінити, натисніть <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4552089082226364758">Flash</translation>
@@ -4323,7 +4323,7 @@
 <translation id="6104311680260824317">Не вдається приєднати пристрій до домену. Сервер не підтримує вказані типи шифрування Kerberos. Перегляньте розділ "Більше опцій", щоб налаштувати шифрування.</translation>
 <translation id="6104796831253957966">Черга принтера заповнена</translation>
 <translation id="6105994589138235234">Синхронізація веб-переглядача Chrome</translation>
-<translation id="6108689792487843350">Шлюз недоступний</translation>
+<translation id="6108689792487843350">шлюз недоступний</translation>
 <translation id="6111972606040028426">Увімкнути Google Асистента</translation>
 <translation id="6112294629795967147">Торкніться, щоб змінити розмір</translation>
 <translation id="6112727384379533756">Додати квиток</translation>
@@ -4354,7 +4354,7 @@
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143186082490678276">Довідка</translation>
 <translation id="6144938890088808325">Допоможіть нам покращити Chromebook</translation>
-<translation id="6147020289383635445">Помилка версії для друку.</translation>
+<translation id="6147020289383635445">Помилка попереднього перегляду друку.</translation>
 <translation id="6148576794665275391">Відкрити зараз</translation>
 <translation id="6149015141270619212">Не вдається під'єднати пристрій до Інтернету</translation>
 <translation id="614940544461990577">Спробуйте:</translation>
@@ -4516,7 +4516,7 @@
 <translation id="6322653941595359182">За допомогою Chromebook можна обмінюватися текстовими повідомленнями</translation>
 <translation id="6324916366299863871">Змінення ярлика</translation>
 <translation id="6325191661371220117">Вимкнути автозапуск</translation>
-<translation id="6325525973963619867">Не вдалось</translation>
+<translation id="6325525973963619867">Помилка</translation>
 <translation id="6326175484149238433">Видалити з Chrome</translation>
 <translation id="6326855256003666642">Кількість процесів, які використовуються розширеннями</translation>
 <translation id="632707535499064463"><ph name="ORGANIZATION_NAME" /> вимагає, щоб ви оновили цей пристрій до кінцевого терміну.</translation>
@@ -4677,7 +4677,7 @@
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
-<translation id="6532101170117367231">Зберегти на Диску Google</translation>
+<translation id="6532101170117367231">Зберегти на Google Диску</translation>
 <translation id="6532106788206463496">Зберегти зміни</translation>
 <translation id="6532206849875187177">Безпека та вхід</translation>
 <translation id="6532527800157340614">Не вдалось отримати маркер доступу та ввійти. Перевірте з'єднання з мережею та повторіть спробу.</translation>
@@ -5045,7 +5045,7 @@
 <translation id="6979044105893951891">Запустити сеанси в режимі "Гість", якими керує адміністратор, і вийти з них</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6979737339423435258">Увесь час</translation>
-<translation id="6981982820502123353">Доступність</translation>
+<translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="6983507711977005608">Від'єднати мережу миттєвої точки доступу</translation>
 <translation id="6983783921975806247">Зареєстрований ідентифікатор об'єкта (OID)</translation>
 <translation id="6984299437918708277">Виберіть зображення облікового запису, яке відображатиметься на екрані входу</translation>
@@ -5864,7 +5864,7 @@
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{Увімкнути звук на сайті}one{Увімкнути звук на сайтах}few{Увімкнути звук на сайтах}many{Увімкнути звук на сайтах}other{Увімкнути звук на сайтах}}</translation>
 <translation id="7933634003144813719">Керувати спільними папками</translation>
 <translation id="793531125873261495">Не вдалося завантажити віртуальну машину. Повторіть спробу.</translation>
-<translation id="7936303884198020182">Не знайдено серверів імен</translation>
+<translation id="7936303884198020182">не знайдено серверів імен</translation>
 <translation id="7938594894617528435">Зараз офлайн</translation>
 <translation id="7939062555109487992">Розширені параметри</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>

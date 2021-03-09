@@ -7,7 +7,7 @@
 <translation id="1036727731225946849">Се додава <ph name="WEBAPK_NAME" />…</translation>
 <translation id="1041308826830691739">Од веб-сајтови</translation>
 <translation id="1045899828449635435">Да се избришат податоците и од сајтовиве?</translation>
-<translation id="1047303875618851375">Chrome не можеше да ги потврди вашите податоци</translation>
+<translation id="1047303875618851375">Chrome не може да ги потврди вашите податоци</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="10614374240317010">Никогаш не е зачувано</translation>
 <translation id="1067922213147265141">Други услуги на Google</translation>
@@ -40,7 +40,7 @@
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Список за читање</translation>
-<translation id="1266864766717917324">Не можеше да се сподели <ph name="CONTENT_TYPE" /></translation>
+<translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Допрете за да се прошири</translation>
 <translation id="1285310382777185058">Изменете го јазикот</translation>
 <translation id="1291207594882862231">Исчистете ги историјата, колачињата, податоците на сајтот, кешот…</translation>
@@ -161,7 +161,7 @@
 <translation id="2154710561487035718">Копирај URL</translation>
 <translation id="2156074688469523661">Останати сајтови (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">За да споделите нешто од телефонот на друг уред, вклучете ја синхронизацијата во поставките за Chrome на двата уреди</translation>
-<translation id="2158408438301413340">Chrome не можеше да ги провери сите лозинки</translation>
+<translation id="2158408438301413340">Chrome не може да ги провери сите лозинки</translation>
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Се споделува</translation>
@@ -365,7 +365,7 @@
 <translation id="3738139272394829648">Допри за пребарување</translation>
 <translation id="3739899004075612870">Обележано во <ph name="PRODUCT_NAME" /></translation>
 <translation id="3749259744154402564">Неподдржано</translation>
-<translation id="3771001275138982843">Не можеше да се преземе ажурирањето</translation>
+<translation id="3771001275138982843">Не може да се преземе ажурирањето</translation>
 <translation id="3771033907050503522">Инкогнито картички</translation>
 <translation id="3771290962915251154">Поставкава е оневозможена бидејќи се вклучени родителските контроли</translation>
 <translation id="3771694256347217732">Услови за користење на Google</translation>
@@ -764,7 +764,7 @@
 <translation id="6545017243486555795">Избриши ги сите податоци</translation>
 <translation id="6560414384669816528">Пребарување со Sogou</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
-<translation id="6566259936974865419">Chrome ви заштеди <ph name="GIGABYTES" /> гб</translation>
+<translation id="6566259936974865419">Chrome ви заштеди <ph name="GIGABYTES" /> GB</translation>
 <translation id="6573096386450695060">Секогаш дозволувај</translation>
 <translation id="6573431926118603307">Картичките што сте ги отвориле во Chrome на другите уреди ќе се појават тука.</translation>
 <translation id="6583199322650523874">Ставете обележувач на тековната страница</translation>
@@ -826,7 +826,7 @@
 <translation id="6963766334940102469">Избриши обележувачи</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
 <translation id="6981982820502123353">Пристапност</translation>
-<translation id="6989267951144302301">Не можеше да се преземе</translation>
+<translation id="6989267951144302301">Не може да се преземе</translation>
 <translation id="6990079615885386641">Преземете ја апликацијата од продавницата на Google Play: <ph name="APP_ACTION" /></translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="7015203776128479407">Првичното поставување на синхронизацијата не беше завршено. Синхронизацијата е исклучена.</translation>
@@ -836,7 +836,7 @@
 <translation id="703523980599857277">Промени ја почетната страница</translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
-<translation id="7063006564040364415">Не можеше да се поврзе на серверот за синхронизација.</translation>
+<translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
 <translation id="7071521146534760487">Управувајте со сметката</translation>
 <translation id="707155805709242880">Одберете што да се синхронизира подолу</translation>
 <translation id="7077143737582773186">SD-картичка</translation>
@@ -1088,7 +1088,7 @@
 <translation id="8922289737868596582">Преземете ги страниците преку копчето „Повеќе опции“ за да ги користите офлајн</translation>
 <translation id="8937772741022875483">Да се отстрани вашата активност на Chrome од „Дигитална благосостојба“?</translation>
 <translation id="8942627711005830162">Отвори во друг прозорец</translation>
-<translation id="8951232171465285730">Chrome ви заштеди <ph name="MEGABYTES" /> мб</translation>
+<translation id="8951232171465285730">Chrome ви заштеди <ph name="MEGABYTES" /> MB</translation>
 <translation id="8965591936373831584">чека на ред</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8972098258593396643">Дали да се преземе во стандардната папка?</translation>

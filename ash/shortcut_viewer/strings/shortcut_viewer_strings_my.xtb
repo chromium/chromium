@@ -34,7 +34,7 @@
 <translation id="215292019801409139"><ph name="SEARCH" /><ph name="SEPARATOR" /> ၁ မှစ၍ =</translation>
 <translation id="2181097965834437145">ဝဘ်လိပ်စာဘားကို ပြရန် သို့မဟုတ် ဝှက်ရန်</translation>
 <translation id="2185166372312820725">ယခင်တဘ်သို့ သွားရန်</translation>
-<translation id="2194790690264064655"><ph name="CTRL" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို ကလစ်နှိပ်ပါ</translation>
+<translation id="2194790690264064655"><ph name="CTRL" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို နှိပ်ပါ</translation>
 <translation id="2246352309084894470">မျက်နှာပြင်ပြည့် စတင်စနစ်ကို ဖွင့်သည်/ပိတ်သည်</translation>
 <translation id="2354531887393764880">အစက်</translation>
 <translation id="2382644247745281995">လက်ရှိ ကီးဘုတ်လက်ကွက်ကို ပံ့ပိုးမထားပါ</translation>
@@ -55,7 +55,7 @@
 <translation id="2764005613199379871">ရှာဖွေမှု လိပ်စာဘားတန်းကို ရွေးရန်</translation>
 <translation id="2774822903829597107">စားပွဲအသစ် ပြုလုပ်ရန်</translation>
 <translation id="2789868185375229787">စာမျက်နှာကို ဇူးမ်ဖြုတ်ရန်</translation>
-<translation id="2804480015716812239"><ph name="ALT" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို ကလစ်နှိပ်ပါ</translation>
+<translation id="2804480015716812239"><ph name="ALT" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို နှိပ်ပါ</translation>
 <translation id="2830827904629746450">ဝင်းဒိုးကို ညာဘက်တွင် နေရာချ၍ ဖွင့်ရန်</translation>
 <translation id="2840766858109427815">နောက်စာမျက်နှာသို့ သွားရန်</translation>
 <translation id="2872353916818027657">အဓိက မော်နီတားကို ဖလှယ်ရန်</translation>
@@ -105,7 +105,7 @@
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> သို့မဟုတ် <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">အခြေအနေပြ နေရာကို ဖွင့်ရန် (သင့်အကောင့်ပုံ ပေါ်မည့်နေရာ)</translation>
 <translation id="4642092649622328492">ဖန်သားပြင်ဓာတ်ပုံကို တစ်စိတ်တစ်ပိုင်းသာ ရိုက်ရန်</translation>
-<translation id="4698850295812410683">စတိုင်လက်စ်ကိရိယာများကို ပြရန်</translation>
+<translation id="4698850295812410683">စတိုင်လပ်စ်ကိရိယာများကို ပြရန်</translation>
 <translation id="4801989101741319327">နောက်စကားလုံး၏ အဆုံးသို့ ရွှေ့ရန်</translation>
 <translation id="4866066940972151697">ညာဘက်ရှိ စားပွဲကို စဖွင့်အသုံးပြုပါ</translation>
 <translation id="4916163929714267752">လင့်ခ်ကို ဝင်းဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
@@ -121,7 +121,7 @@
 <translation id="539072479502328326">နေရာတကျအကွက်ဖြင့် ချဲ့ပေးသည့် မှန်ဘီလူးကို အဖွင့်အပိတ် ပြုလုပ်ရန်</translation>
 <translation id="5541719484267030947">ဝဘ်ကို ဖိဆွဲနေစဉ် <ph name="ESC" /> ကို နှိပ်ပါ</translation>
 <translation id="5554139136362089836">လက်ရှိစာမျက်နှာတွင် ရှာဖွေရန်</translation>
-<translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို ကလစ်နှိပ်ပါ</translation>
+<translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ကို ဖိထားပြီး လင့်ခ်တစ်ခုကို နှိပ်ပါ</translation>
 <translation id="561814908794220892">ဝဘ်စာမျက်နှာကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5620219513321115856">လက်ရှိဖွင့်ထားသည့် ဝင်းဒိုးကို စားပွဲ၏ ညာဘက်သို့ ရွှေ့ပါ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> သို့မဟုတ် <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
@@ -212,7 +212,7 @@
 <translation id="9106898733795143799">စာမျက်နှာနှင့် ဝဘ်ဘရောင်ဇာ</translation>
 <translation id="9162942292291287644"><ph name="QUERY" /> အတွက် ရှာဖွေမှု ရလဒ် မရှိပါ</translation>
 <translation id="9179672198516322668">လူသုံးများသည့် ဖြတ်လမ်းလင့်ခ်များ</translation>
-<translation id="93603345341560814"><ph name="SHIFT" /> ကို နှိပ်ပြီး လင့်ခ်ကို ကလစ်နှိပ်ပါ</translation>
+<translation id="93603345341560814"><ph name="SHIFT" /> ကို နှိပ်ပြီး လင့်ခ်ကို နှိပ်ပါ</translation>
 <translation id="945383118875625837">လင့်ခ်ကို လိပ်စာဘားသို့ ဖိဆွဲပါ</translation>
 <translation id="969054500339500113">မီနူးဘားကို ရွေးရန်</translation>
 <translation id="98120814841227350">မှတ်တမ်း အဆုံးသို့ သွားပါ</translation>

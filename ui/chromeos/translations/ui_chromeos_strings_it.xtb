@@ -64,7 +64,7 @@
 <translation id="1572585716423026576">Imposta come sfondo</translation>
 <translation id="158809615184981282">Tastiera faroese</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1620510694547887537">Videocamera</translation>
+<translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1646136617204068573">Tastiera ungherese</translation>
 <translation id="164729547906544836">Tastiera Tamil (itrans)</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
@@ -447,7 +447,7 @@
 <translation id="5691596662111998220">Spiacenti. <ph name="FILE_NAME" /> non esiste più.</translation>
 <translation id="5700087501958648444">Info audio</translation>
 <translation id="5731409020711461763">1 nuova foto</translation>
-<translation id="5752453871435543420">Backup nella cloud Chrome OS</translation>
+<translation id="5752453871435543420">Backup nel cloud Chrome OS</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
 <translation id="5771585441665576801">Traslitterazione (geia → γεια)</translation>
 <translation id="5776325638577448643">Resetta e formatta</translation>
@@ -478,7 +478,7 @@
 <translation id="6012987430370760224">Tastiera Marathi (fonetica)</translation>
 <translation id="6019169947004469866">Ritaglia</translation>
 <translation id="60357267506638014">Tastiera QWERTY Ceco</translation>
-<translation id="604001903249547235">Backup nella cloud</translation>
+<translation id="604001903249547235">Backup nel cloud</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6054173164583630569">Tastiera francese</translation>
 <translation id="6074825444536523002">Modulo Google</translation>
@@ -533,7 +533,7 @@
 <translation id="6718273304615422081">Compressione...</translation>
 <translation id="6751256176799620176">1 cartella selezionata</translation>
 <translation id="6760765581316020278">Tastiera Vietnamita (VNI)</translation>
-<translation id="6790428901817661496">Play</translation>
+<translation id="6790428901817661496">Riproduci</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Gestisci condivisione con Linux</translation>
 <translation id="6808193438228982088">Volpe</translation>
@@ -606,7 +606,7 @@
 <translation id="751507702149411736">Bielorusso</translation>
 <translation id="7544853251252956727">Riproduzione casuale</translation>
 <translation id="7547811415869834682">Olandese</translation>
-<translation id="7551643184018910560">Fissa sullo shelf</translation>
+<translation id="7551643184018910560">Blocca sullo shelf</translation>
 <translation id="7576032389798113292">6 x 4</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
 <translation id="7603724359189955920">Griglie</translation>
@@ -622,7 +622,7 @@
 <translation id="7706319470528945664">Tastiera portoghese</translation>
 <translation id="7711920809702896782">Info immagine</translation>
 <translation id="7724603315864178912">Taglia</translation>
-<translation id="7730494089396812859">Mostra dettagli backup nella cloud</translation>
+<translation id="7730494089396812859">Mostra dettagli backup nel cloud</translation>
 <translation id="7748626145866214022">Nella barra delle azioni sono disponibili altre opzioni. Premi ALT + A per impostare lo stato attivo sulla barra.</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7774365994322694683">Uccellino</translation>

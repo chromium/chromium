@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">इतिहास नोंदींची सूची</translation>
 <translation id="1517433312004943670">फोन नंबर आवश्यक आहे</translation>
 <translation id="1519264250979466059">बिल्ड तारीख</translation>
-<translation id="1521655867290435174">Google पत्रक</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">कनेक्शनची वाट पाहत आहे...</translation>
 <translation id="1529521330346880926">10x15 (Envelope)10x15 (Envelope)</translation>
 <translation id="1529789484829130889">ट्रे ८</translation>
@@ -248,7 +248,7 @@
 <translation id="1871208020102129563">प्रॉक्सी निश्चित प्रॉक्सी सर्व्हर वापरण्‍यास सेट करण्‍यात आले आहे, .pac स्क्रिप्ट URL नव्हे.</translation>
 <translation id="1871284979644508959">या जागा भरणे आवश्यक</translation>
 <translation id="1875512691959384712">Google Forms</translation>
-<translation id="187918866476621466">प्रारंभ पृष्ठ उघडा</translation>
+<translation id="187918866476621466">सुरू पृष्ठ उघडा</translation>
 <translation id="1883255238294161206">सूची कोलॅप्स</translation>
 <translation id="1898423065542865115">फिल्टर करणे</translation>
 <translation id="1901443836186977402">{1,plural, =1{या सर्व्हरला तो <ph name="DOMAIN" />असल्याचे सिद्ध करता आले नाही; त्याचे सुरक्षितता प्रमाणपत्र शेवटच्या तारखेला एक्स्पायर झाले आहे. हे कदाचित चुकीच्या काँफिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झाले आहे. तुमच्या काँप्युटरचे घड्याळ सध्या <ph name="CURRENT_DATE" /> वर सेट केले आहे. हे योग्य आहे का? ते योग्य नसल्यास, तुम्ही तुमच्या सिस्टमचे घड्याळ पुन्हा सेट करा आणि त्यानंतर हे पेज रिफ्रेश करा.}other{या सर्व्हरला तो <ph name="DOMAIN" />असल्याचे सिद्ध करता आले नाही; त्याचे सुरक्षितता प्रमाणपत्र # दिवसांपूर्वी एक्स्पायर झाले आहे. हे कदाचित चुकीच्या काँफिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झाले आहे. तुमच्या काँप्युटरचे घड्याळ सध्या <ph name="CURRENT_DATE" /> वर सेट केले आहे. हे योग्य आहे का? ते योग्य नसल्यास, तुम्ही तुमच्या सिस्टमचे घड्याळ पुन्हा सेट करा आणि त्यानंतर हे पेज रिफ्रेश करा.}}</translation>
@@ -916,7 +916,7 @@
 <translation id="4670064810192446073">आभासी वास्तविकता</translation>
 <translation id="467662567472608290">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याच्या सुरक्षितता सर्टिफिकेटमध्ये एरर आहेत. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ला ॲक्सेसिबिलिटी इव्‍हेंटना प्रतिसाद द्यायचा आहे</translation>
-<translation id="467809019005607715">Google स्लाइड</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुम्ही हा पासवर्ड आता जेथे वापरता अशा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> आणि इतर साइटसाठी तुमचे सेव्ह केलेले पासवर्ड तपासण्याची Chromium शिफारस करते.</translation>
 <translation id="4690462567478992370">चुकीचे सर्टिफिकेट वापरणे थांबवा</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
@@ -1370,10 +1370,10 @@
 <translation id="6451458296329894277">फॉर्म रीसबमिशनची पुष्टी करा</translation>
 <translation id="6457206614190510200">साडल स्टिच</translation>
 <translation id="6465306955648956876">पासवर्ड व्यवस्थापित करा...</translation>
-<translation id="6468485451923838994">फॉन्ट</translation>
+<translation id="6468485451923838994">फॉंट</translation>
 <translation id="647261751007945333">डिव्हाइस धोरणे</translation>
 <translation id="6476284679642588870">पेमेंट पद्धती व्यवस्थापित करा</translation>
-<translation id="6489534406876378309">क्रॅश अपलोड करणे प्रारंभ करा</translation>
+<translation id="6489534406876378309">क्रॅश अपलोड करणे सुरू करा</translation>
 <translation id="6499038740797743453">पासवर्ड रीसेट करायचा?</translation>
 <translation id="6502991525169604759">तुमच्या बदलांशिवाय</translation>
 <translation id="6508722015517270189">Chrome रीस्टार्ट करा</translation>
@@ -1440,7 +1440,7 @@
 <translation id="6810899417690483278">सानुकूलीकरण आयडी</translation>
 <translation id="6825578344716086703">तुम्ही <ph name="DOMAIN" /> वर पोहोचण्याचा प्रयत्न केला, परंतु सर्व्हरने एका कमकुवत स्वाक्षरी अल्गोरिदमचा (जसे SHA-1) वापर करून स्वाक्षरीकृत केलेले प्रमाणपत्र सादर केले. याचा अर्थ असा आहे, की सर्व्हरने सादर केलेली सुरक्षितता क्रेडेंशियल बनावट असू शकतात आणि हा सर्व्हर तुम्ही अपेक्षा करत असलेला नसेल. (तुम्ही कदाचित एखाद्या हल्लेखोराशी संभाषण करत आहात).</translation>
 <translation id="6826993739343257035">AR ला अनुमती द्यायची का?</translation>
-<translation id="6831043979455480757">भाषांतर करा</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">क्षेत्र</translation>
 <translation id="6846340164947227603">व्हर्च्युअल कार्ड नंबर वापरा...</translation>
 <translation id="6852204201400771460">ॲप रीलोड करायचे?</translation>
@@ -1472,7 +1472,7 @@
 <translation id="6973656660372572881">निश्चित प्रॉक्सी सर्व्हर आणि .pac स्क्रिप्ट URL निर्दिष्‍ट करण्‍यात आले आहेत.</translation>
 <translation id="6973932557599545801">सॉरी मला मदत करता आली नाही कृपया तुम्ही स्वतःच सुरू ठेवा.</translation>
 <translation id="6975012522936652259">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुम्ही हा पासवर्ड जेथे वापरता अशा <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> आणि इतर साइटवर जाण्याची आणि तो आता बदलण्याची Chromium शिफारस करते.</translation>
-<translation id="6979158407327259162">Google ड्राइव्ह</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">निःशब्द करा (डीफॉल्ट)</translation>
 <translation id="6979983982287291980">तुम्ही डाउनलोड केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात.</translation>
 <translation id="6989763994942163495">प्रगत सेटिंग्ज दर्शवा...</translation>
@@ -2013,14 +2013,14 @@
 <translation id="917450738466192189">सर्व्हरचे सर्टिफिकेट चुकीचे आहे.</translation>
 <translation id="9174917557437862841">टॅब स्विच बटण, या टॅबवर जाण्यासाठी एंटर दाबा</translation>
 <translation id="9179703756951298733">Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड यांची माहिती व्‍यवस्‍थापित करा</translation>
-<translation id="9183302530794969518">Google दस्तऐवज</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> असमर्थित प्रोटोकॉल वापरतो.</translation>
 <translation id="9191834167571392248">पंच बॉटम लेफ्ट</translation>
 <translation id="9205078245616868884">तुमचा डेटा तुमच्या सिंक सांकेतिक पासफ्रेझासह एंक्रिप्ट केलेला केला जातो. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="9207861905230894330">लेख जोडण्यात अयशस्वी.</translation>
 <translation id="9213433120051936369">स्वरूप कस्टमाइझ करा</translation>
 <translation id="9215416866750762878">एक ॲप्लिकेशन Chrome ला या साइटशी सुरक्षितपणे कनेक्ट करण्यापासून थांबवत आहे</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">फॉर्म साफ करा</translation>
 <translation id="936474030629450166">Super-B</translation>

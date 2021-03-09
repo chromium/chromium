@@ -79,7 +79,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1677507110654891115">Povezava s funkcijo <ph name="FEATURE_NAME" /> ni vzpostavljena.</translation>
 <translation id="1698080062160024910">Časovnik (<ph name="TOTAL_TIME" />) · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Naslov IPv6: <ph name="ADDRESS" /></translation>
-<translation id="1708345662127501511">Pisalna miza: <ph name="DESK_NAME" /></translation>
+<translation id="1708345662127501511">Namizje: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Omrežne nastavitve</translation>
 <translation id="1743570585616704562">Ni prepoznano</translation>
 <translation id="1746730358044914197">Načine vnosa konfigurira skrbnik.</translation>
@@ -113,13 +113,13 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2012624427112548395">Ctrl+ tipka za iskanje + H</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
-<translation id="2049240716062114887">Ime pisalne mize je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
+<translation id="2049240716062114887">Ime namizja je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2067602449040652523">Svetlost tipkovnice</translation>
 <translation id="2074759828767813253">Nedavni posnetki zaslona in prenosi</translation>
 <translation id="2083190527011054446">Lahko noč, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ni povezave z omrežjem</translation>
-<translation id="2126242104232412123">Nova delovna miza</translation>
+<translation id="2126242104232412123">Novo namizje</translation>
 <translation id="2127372758936585790">Nizkoenergijski polnilnik</translation>
 <translation id="2135456203358955318">Zasidrana lupa</translation>
 <translation id="2144487987174258011">Če želite posodobiti Adobe Flash Player, znova zaženite</translation>
@@ -170,7 +170,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
 <translation id="2617342710774726426">Kartica SIM je zaklenjena</translation>
 <translation id="2621713457727696555">Varno</translation>
-<translation id="2640255526076764619">Poteza na sledilni ploščici za preklop na prejšnjo pisalno mizo je spremenjena. Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnjo pisalno mizo.</translation>
+<translation id="2640255526076764619">Poteza na sledilni ploščici za preklop na prejšnje namizje je spremenjena. Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnje namizje.</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2658778018866295321">Klikanje in vlečenje</translation>
 <translation id="2700493154570097719">Nastavitev tipkovnice</translation>
@@ -482,7 +482,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5876666360658629066">Vnos kode starša</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
-<translation id="5909862606227538307">Neaktivna pisalna miza.</translation>
+<translation id="5909862606227538307">Neaktivno namizje.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
@@ -500,7 +500,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6018164090099858612">Izhod iz zrcalnega načina</translation>
 <translation id="602001110135236999">Pomik levo</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
-<translation id="6029337736376922061">Poteza na sledilni ploščici za preklop na naslednjo pisalno mizo je spremenjena. Povlecite s štirimi prsti v desno, če želite preklopiti na naslednjo pisalno mizo.</translation>
+<translation id="6029337736376922061">Poteza na sledilni ploščici za preklop na naslednje namizje je spremenjena. Povlecite s štirimi prsti v desno, če želite preklopiti na naslednje namizje.</translation>
 <translation id="6030495522958826102">Meni je bil premaknjen v spodnji levi kot zaslona.</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6043212731627905357">Ta monitor se ne ujema z napravo <ph name="DEVICE_TYPE" /> (monitor ni podprt).</translation>

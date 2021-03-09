@@ -53,7 +53,7 @@
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
 <translation id="1055806300943943258">Bluetooth va USB qurilmalar qidirilmoqda...</translation>
-<translation id="1056466516655540509"><ph name="MINUTES" /> daqiqa oldin yangilangan</translation>
+<translation id="1056466516655540509"><ph name="MINUTES" /> daq oldin yangilandi</translation>
 <translation id="1056775291175587022">Tarmoq topilmadi</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -353,7 +353,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1398853756734560583">Yoyish</translation>
 <translation id="139911022479327130">Telefonni qulfdan chiqaring va shaxsingizni tasdiqlang</translation>
 <translation id="1399511500114202393">Foydalanuvchi sertifikati yo‘q</translation>
-<translation id="1401308693935339022">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga bu qurilmaning joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Google joylashuv haqidagi axborotni muntazam toʻplaydi va undan anonim tarzda joylashuv aniqligi va joylashuv axborotiga asoslangan xizmatlarni yaxshilashda foydalanadi.</translation>
+<translation id="1401308693935339022">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="1403222014593521787">Proksi-serverga ulanib boʻlmadi</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (boshqariladigan profil)</translation>
 <translation id="1405779994569073824">Ishdan chiqdi.</translation>
@@ -1695,7 +1695,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2947605845283690091">Veb-brauzer tez ishlashi kerak. <ph name="BEGIN_LINK" />Kengaytmalaringizni<ph name="END_LINK" /> hoziroq tekshiring.</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> sahifasiga o‘tish</translation>
 <translation id="29488703364906173">Tezkor, oddiy va xavfsiz veb brauzeri, zamonaviy internet uchun yaratilgan.</translation>
-<translation id="2949289451367477459">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga bu qurilmaning joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Google joylashuv haqidagi axborotni muntazam to‘plab borishi hamda undan anonim tarzda joylashuv aniqligi va joylashuv axborotiga asoslangan xizmatlarni yaxshilab boradi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
+<translation id="2949289451367477459">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="2950666755714083615">Yozilish</translation>
 <translation id="2956070239128776395">Boʻlim guruhlandi: <ph name="ERROR_LINE" /></translation>
 <translation id="2957117904572187936">Saytlarga qurilmadagi fayl va jildlarni tahrirlashni taqiqlash</translation>
@@ -2572,7 +2572,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3955896417885489542">Sozlangandan keyin Google Play parametrlarini tekshiring</translation>
 <translation id="3956702100721821638">Google Play xizmatiga ulanib bo‘lmadi.</translation>
 <translation id="3957079323242030166">Zaxiralangan maʼlumotlar Google Drive omboringizdan joy egallamaydi.</translation>
-<translation id="3957844511978444971">Mazkur Google xizmatlari sozlamalarini tasdiqlash uchun “Roziman” tugmasini bosing.</translation>
+<translation id="3957844511978444971">Bu Google xizmatlari sozlamalarini tasdiqlash uchun Roziman tugmasini bosing.</translation>
 <translation id="3958088479270651626">Xatcho‘plar va sozlamalarni import qilish</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Mobil tarmoqni faolsizlantirish</translation>
@@ -2816,7 +2816,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4276288850178085042">Saytlarga kameradan foydalanishni taqiqlash</translation>
 <translation id="4278101229438943600">Assistentingiz tayyor</translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
-<translation id="4281844954008187215">Foydalanish shartlari</translation>
+<translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4282196459431406533">Smart Lock yoniq</translation>
 <translation id="4285418559658561636">Parolni yangilash</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>
@@ -3155,7 +3155,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4677772697204437347">GPU xotirasi</translation>
 <translation id="4680105648806843642">Bu sahifada ovoz bloklangan</translation>
 <translation id="4681453295291708042">Yaqin-atrofga yuborishni faolsizlashtirish</translation>
-<translation id="4681930562518940301">&amp;Asl rasmni yangi ichki oynada ochish</translation>
+<translation id="4681930562518940301">Asl rasmni yangi varaqda ochish</translation>
 <translation id="4682551433947286597">Orqa fon rasmi kirish ekranida paydo bo‘ladi.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (standart)</translation>
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
@@ -3993,7 +3993,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5722086096420375088">Yashil va oq</translation>
 <translation id="5722930212736070253">Ana xolos! Zip formatda arxivlashda xatolik yuz berdi.</translation>
 <translation id="5723034813131030312">Saytlarga seriyali qurilmalarga ulanishni taqiqlash</translation>
-<translation id="572328651809341494">Yaqinda ochilgan varaqlar</translation>
+<translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5723508132121499792">Orqa fonda ishlayotgan ilovalar yo‘q</translation>
 <translation id="5723967018671998714">Inkognito rejimida tashqi cookie fayllariga ruxsat berilmaydi</translation>
 <translation id="5727728807527375859">Kengaytma, ilova va mavzular kompyuterngizga zararli bo‘lishi mumkin. Davom ettirilsinmi?</translation>
@@ -4286,7 +4286,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6073903501322152803">Maxsus imkoniyatlar qo‘shish</translation>
 <translation id="6075731018162044558">Tizim bu qurilmada API uchun ruxsat tokenini qabul qila olmadi.</translation>
 <translation id="6075907793831890935"><ph name="HOSTNAME" /> qurilmasi bilan ma’lumotlar almashish</translation>
-<translation id="6076175485108489240">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga bu qurilmaning joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Google joylashuv haqidagi axborotni muntazam to‘plab borishi hamda undan anonim tarzda joylashuv aniqligi va joylashuv axborotiga asoslangan xizmatlarni yaxshilab boradi. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
+<translation id="6076175485108489240">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin. <ph name="BEGIN_LINK1" />Batafsil axborot<ph name="END_LINK1" /></translation>
 <translation id="6076491747490570887">Salqin kulrang</translation>
 <translation id="6077131872140550515">Afzal tarmoqlardan olib tashlash</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> maslahat va yangiliklari</translation>
@@ -4533,7 +4533,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6344170822609224263">Tarmoq ulanishlari ro‘yxatiga ruxsat</translation>
 <translation id="6344576354370880196">Saqlangan printerlar</translation>
 <translation id="6345418402353744910">Administrator tarmoqni sozlashi uchun <ph name="PROXY" /> proksi-serveri login va parolini kiritish zarur</translation>
-<translation id="6345878117466430440">Oʻqildi deb belgilash</translation>
+<translation id="6345878117466430440">Ochildi deb belgilash</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ilovasini oʻrnatish</translation>
 <translation id="6349170655202535379">Sinxronizatsiya ishlamayapti. Hisobingizdan chiqing va yana kiring.</translation>
 <translation id="6351063337294363751">Brauzer foliyati haqidagi ma’lumotlarni ushbu menyu orqali tozalashingiz mumkin</translation>
@@ -5069,7 +5069,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7003723821785740825">Barmoq izi orqali qulfdan yechish imkoniyatini sozlash</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">Sayt MIDI ishlatishi mumkin</translation>
-<translation id="7004499039102548441">Yaqinda ochilgan varaqlar</translation>
+<translation id="7004499039102548441">Oxirgi varaqlar</translation>
 <translation id="7005496624875927304">Qoʻshimcha ruxsatlar.</translation>
 <translation id="7005812687360380971">Xatolik</translation>
 <translation id="7005848115657603926">Sahifalar diapazoni noto‘g‘ri kiritildi. <ph name="EXAMPLE_PAGE_RANGE" /> ko‘rinishida kiriting.</translation>
@@ -6515,7 +6515,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8719653885894320876">“<ph name="PLUGIN_NAME" />” plagini yuklab olinmadi</translation>
 <translation id="8720200012906404956">Mobil tarmoq qidirilmoqda. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">Vaqt sozlamalarining oʻrnatilishini ishga tushirish vaqti tugadi.</translation>
-<translation id="8722912030556880711">Foydalanish va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
+<translation id="8722912030556880711">Foydalanish va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini Google kompaniyasiga avtomatik ravishda yubormoqda. Ular tizim va ilovalar barqarorligini yaxshilash kabi maqsadlarda ishlatiladi. Ayrim umumlashtirilgan axborotlar Google hamkorlari, masalan, Android ilova ishlab chiquvchilariga ham taqdim etilishi mumkin. Agar hisobingizda Vebva ilovalardagi kengaytirilgan faoluyat tarixi yoqilgan boʻlsa, bu axborotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
 <translation id="8724405322205516354">Agar shu belgi ko‘rinsa, identifikatsiya yoki xaridlarni tasdiqlash uchun barmoq izingizdan foydalaning.</translation>
 <translation id="8724409975248965964">Barmoq izi qo‘shildi</translation>
@@ -6791,7 +6791,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9018218886431812662">O‘rnatildi.</translation>
 <translation id="901834265349196618">e-pochta</translation>
 <translation id="9019062154811256702">Avtomatik to‘ldirish sozlamalarini o‘qish va o‘zgartirish</translation>
-<translation id="9019894137004772119">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Google joylashuv haqidagi axborotni muntazam toʻplaydi va undan anonim tarzda joylashuv aniqligi va joylashuv axborotiga asoslangan xizmatlarni yaxshilashda foydalanadi.</translation>
+<translation id="9019894137004772119">Joylashuv axborotidan foydalanish. Joylashuv axborotiga ruxsati bor ilova va xizmatlarga qurilmangiz joylashuvi haqidagi axborotdan foydalanishiga ruxsat bering. Joylashuv axborotining aniqligini oshirish hamda ayrim xizmatlar sifatini yaxshilash maqsadida Google vaqti-vaqti bilan foydalanuvchilarning joylashuvi haqidagi anonimlashtirilgan axborotni olib turishi ham mumkin.</translation>
 <translation id="9019956081903586892">Imloni tekshirish lugʻati yuklab olinmadi</translation>
 <translation id="9020362265352758658">4x</translation>
 <translation id="9021662811137657072">Virus topildi</translation>

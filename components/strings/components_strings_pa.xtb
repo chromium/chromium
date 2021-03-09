@@ -149,7 +149,7 @@
 <translation id="1513706915089223971">ਇਤਿਹਾਸ ਇੰਦਰਾਜਾਂ ਦੀ ਸੂਚੀ</translation>
 <translation id="1517433312004943670">ਫ਼ੋਨ ਨੰਬਰ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="1519264250979466059">ਬਿਲਡ ਤਾਰੀਖ</translation>
-<translation id="1521655867290435174">Google ਸ਼ੀਟਾਂ</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">ਕਨੈਕਸ਼ਨ ਦੀ ਉਡੀਕ ਹੋ ਰਹੀ ਹੈ...</translation>
 <translation id="1529521330346880926">10x15 (ਲਿਫ਼ਾਫ਼ਾ)</translation>
 <translation id="1529789484829130889">ਟ੍ਰੇਅ 8</translation>
@@ -904,7 +904,7 @@
 <translation id="4670064810192446073">ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ</translation>
 <translation id="467662567472608290">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦੇ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿੱਚ ਗੜਬੜੀਆਂ ਹਨ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ਦੀ ਪਹੁੰਚਯੋਗਤਾ ਇਵੈਂਟਾਂ 'ਤੇ ਪ੍ਰਤਿਕਿਰਿਆ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
-<translation id="467809019005607715">Google ਸਲਾਈਡਾਂ</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chromium ਵੱਲੋਂ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ਅਤੇ ਉਹਨਾਂ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ ਰੱਖਿਅਤ ਪਾਸਵਰਡਾਂ ਨੂੰ ਜਾਂਚਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿੱਥੇ ਹੁਣ ਤੁਸੀਂ ਇਹ ਪਾਸਵਰਡ ਵਰਤਦੇ ਹੋ।</translation>
 <translation id="4690462567478992370">ਅਵੈਧ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਰਤਣਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4691835149146451662">Architecture-A (ਲਿਫ਼ਾਫ਼ਾ)</translation>
@@ -1458,7 +1458,7 @@
 <translation id="6973656660372572881">ਦੋਵੇਂ ਸਥਿਰ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਅਤੇ ਇੱਕ .pac ਸਕ੍ਰਿਪਟ URL ਨਿਰਦਿਸ਼ਟ ਹਨ।</translation>
 <translation id="6973932557599545801">ਮਾਫ਼ ਕਰਨਾ ਮੇਰੇ ਵੱਲੋਂ ਮਦਦ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ, ਕਿਰਪਾ ਕਰਕੇ ਖੁਦ ਜਾਰੀ ਰੱਖੋ।</translation>
 <translation id="6975012522936652259">ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਕਿਸੇ ਭਰਮਪੂਰਨ ਸਾਈਟ 'ਤੇ ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕੀਤਾ ਹੈ। Chromium ਵੱਲੋਂ <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ਅਤੇ ਉਹਨਾਂ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਜਾ ਕੇ ਹੁਣੇ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਜਿੱਥੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਵਰਤਿਆ ਹੈ।</translation>
-<translation id="6979158407327259162">Google ਡਰਾਈਵ</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ਮਿਊਟ ਕਰੋ (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="6979983982287291980">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਹਨਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6989763994942163495">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ...</translation>
@@ -1999,7 +1999,7 @@
 <translation id="917450738466192189">ਸਰਵਰ ਦਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਵੈਧ ਹੈ।</translation>
 <translation id="9174917557437862841">ਟੈਬ ਬਦਲਣ ਦਾ ਬਟਨ, ਇਸ ਟੈਬ 'ਤੇ ਜਾਣ ਲਈ ਐਂਟਰ ਦਬਾਓ</translation>
 <translation id="9179703756951298733">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਭੁਗਤਾਨਾਂ ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="9183302530794969518">Google ਡੌਕਸ</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ਇੱਕ ਅਸਮਰਥਿਤ ਪ੍ਰੋਟੋਕੋਲ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।</translation>
 <translation id="9191834167571392248">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="9205078245616868884">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ ਸਮਕਾਲੀਕਰਨ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਮਕਾਲੀਕਰਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>

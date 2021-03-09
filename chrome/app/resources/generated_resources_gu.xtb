@@ -4915,7 +4915,7 @@ USB ડિવાઇસ</translation>
 <translation id="6828860976882136098">તમામ વપરાશકર્તાઓ માટે સ્વચલિત અપડેટ્સને સેટ કરવામાં નિષ્ફળ થયાં (પ્રીફ્લાઇટ અમલીકરણની ભૂલ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="6829250331733125857">તમારા <ph name="DEVICE_TYPE" /> સાથે સહાય મેળવો.</translation>
 <translation id="682971198310367122">Google ગોપનીયતા નીતિ</translation>
-<translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="683373380308365518">એક સ્માર્ટ અને સુરક્ષિત બ્રાઉઝર પર સ્વિચ કરો</translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="6838034009068684089">જ્યારે સાઇટને ખુલીને તમારી સ્ક્રીન પર વિંડો મુકવી હોય ત્યારે પૂછવામાં આવે (ભલામણ કરવામાં આવે છે)</translation>
@@ -5976,7 +5976,7 @@ USB ડિવાઇસ</translation>
 <translation id="8063535366119089408">ફાઇલ જુઓ</translation>
 <translation id="8064279191081105977">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8068253693380742035">સાઇન ઇન કરવા માટે ટચ કરો</translation>
-<translation id="8069615408251337349">Google ક્લાઉડ પ્રિન્ટ</translation>
+<translation id="8069615408251337349">Google Cloud Print</translation>
 <translation id="8071432093239591881">ફોટો તરીકે પ્રિન્ટ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ઍપ ડેટા એ સંપર્કો, સંદેશા અને ફોટા જેવા ડેટા સહિત, ઍપ દ્વારા (ડેવલપર સેટિંગના આધારે) સાચવવામાં આવેલ કોઈપણ ડેટા હોય શકે છે.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />બૅકઅપ ડેટાની ગણતરી તમારા બાળકના ડ્રાઇવ સ્ટોરેજના ક્વોટામાં નહીં થાય.<ph name="END_PARAGRAPH2" />
@@ -6949,7 +6949,7 @@ USB ડિવાઇસ</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" ઉમેરાયું</translation>
 <translation id="9215742531438648683">Google Play સ્ટોર અનઇન્સ્ટૉલ કરો</translation>
 <translation id="9218430445555521422">ડિફોલ્ટ તરીકે સેટ કરો</translation>
-<translation id="9219103736887031265">છબીઓ</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9220525904950070496">એકાઉન્ટ દૂર કરો</translation>
 <translation id="9220820413868316583">આંગળી ઉપાડી લો પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="923467487918828349">બધું બતાવો</translation>

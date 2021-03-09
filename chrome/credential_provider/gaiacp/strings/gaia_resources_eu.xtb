@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1156061499538526818">Laneko kontuaren pasahitza aldatu egin da. Windows-eko kontua laneko kontuarekin sinkroniza dadin, idatzi Windows-eko pasahitza.</translation>
-<translation id="1383286653814676580">Google-ren Kredentzial-hornitzailean saioa hasteko orria abiarazteko erabiltzen da.</translation>
+<translation id="1383286653814676580">Google-ren Kredentzial-hornitzailea zerbitzuan saioa hasteko orria abiarazteko erabiltzen da.</translation>
 <translation id="200772894174702141">Ezin da hasi saioa laneko kontuarekin. Ziurtatu gailua Internetera konektatuta dagoela eta saiatu berriro.</translation>
 <translation id="2048923169632968961">Arazo bat izan da laneko kontuaren pasahitza Windows-eko profilarekin sinkronizatzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2515346402363002066">Saioa iraungi egin da. Hasi saioa laneko kontuarekin.</translation>
@@ -19,7 +19,7 @@
 <translation id="5186761973554910131">Pasahitza aldatzen saiatzean emandako ordenagailu-izenak ez du balio. Jarri administratzailearekin harremanetan.</translation>
 <translation id="5265714013989877288">Ezin duzu egin aurrera, errore bat gertatu delako Windows-eko pasahitza aldatzean. Jarri administratzailearekin harremanetan.</translation>
 <translation id="5581861273642234526">Laneko beste kontu bat gailu honekin erlazionatuta dago dagoeneko. Hasi saioa Windows-eko kontuarekin.</translation>
-<translation id="6033715878377252112">Windows-erako Google-ren Kredentzial-hornitzailea programaren laguntzailea</translation>
+<translation id="6033715878377252112">Windows-erako Google-ren Kredentzial-hornitzailea zerbitzuaren laguntzailea</translation>
 <translation id="6149399665202317746">Windows-erako Google-ren Kredentzial-hornitzailea</translation>
 <translation id="6243062314475217481">Laneko kontuaren pasahitza ez da Windows-ek eskatu bezain konplexua. Laguntza lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="6463752215771576050">Ezin da erregistratu ordenagailua enpresak kudeatzeko.  Hasi saioa laneko beste kontu batekin.</translation>
@@ -35,5 +35,5 @@
 <translation id="8453641970025433267">Administratzaileak ez dizu eman baimenik kontu honekin saioa hasteko. Erabili beste kontu bat.</translation>
 <translation id="8639729688781680518">Ahaztu Windows pasahitza</translation>
 <translation id="866458870819756755">Ezin izan da sortu erabiltzailea.</translation>
-<translation id="9055998212250844221">Windows-erako Google-ren Kredentzial-hornitzailea programaren bidez sortu da erabiltzaile-kontua</translation>
+<translation id="9055998212250844221">Windows-erako Google-ren Kredentzial-hornitzailea zerbitzuaren bidez sortu da erabiltzaile-kontua</translation>
 </translationbundle>

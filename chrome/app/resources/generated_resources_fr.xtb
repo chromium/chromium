@@ -247,7 +247,7 @@
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
 <translation id="1272978324304772054">Ce compte utilisateur n'appartient pas au domaine auprès duquel l'appareil est enregistré. Si vous souhaitez vous enregistrer auprès d'un autre domaine, vous devez d'abord suivre la procédure de récupération de votre appareil.</translation>
 <translation id="1274977772557788323">Paramètres de stockage d'Adobe Flash Player</translation>
-<translation id="1274997165432133392">Cookies et autres données de site</translation>
+<translation id="1274997165432133392">Cookies et autres données des sites</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
 <translation id="1276994519141842946">Impossible de désinstaller <ph name="APP_NAME" /></translation>
 <translation id="127946606521051357">Un appareil à proximité essaie de partager un contenu</translation>
@@ -613,7 +613,7 @@
 <translation id="1682867089915960590">Activer la navigation au clavier ?</translation>
 <translation id="1686550358074589746">Activer la saisie gestuelle</translation>
 <translation id="168715261339224929">Activez la synchronisation pour accéder à vos favoris sur tous vos appareils.</translation>
-<translation id="1688867105868176567">Effacer les données du site ?</translation>
+<translation id="1688867105868176567">Effacer les données de site ?</translation>
 <translation id="1688935057616748272">Saisissez une lettre</translation>
 <translation id="168991973552362966">Ajouter une imprimante à proximité</translation>
 <translation id="1689945336726856614">Copier l'&amp;URL</translation>
@@ -1255,7 +1255,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2445081178310039857">Le répertoire racine de l'extension doit être indiqué.</translation>
 <translation id="2445484935443597917">Créer un profil</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2448810255793562605">Recherche automatique de Switch Access</translation>
+<translation id="2448810255793562605">Recherche automatique Switch Access</translation>
 <translation id="2450223707519584812">Vous ne pourrez pas ajouter d'utilisateurs, car des clés API Google sont manquantes. Pour en savoir plus, rendez-vous sur <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Aucune vue active</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -1271,7 +1271,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2465237718053447668"><ph name="DOMAIN" /> vous demande de vous connecter au Wi-Fi et de télécharger une mise à jour. Vous pouvez aussi la télécharger sur une connexion facturée à l'usage (susceptible d'entraîner des frais).</translation>
 <translation id="2467267713099745100">Réseau <ph name="NETWORK_TYPE" />, désactivé</translation>
 <translation id="2468178265280335214">Accélération du défilement avec le pavé tactile</translation>
-<translation id="2468205691404969808">Utilise des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
+<translation id="2468205691404969808">Utiliser des cookies pour mémoriser vos préférences, même si vous n'accédez pas à ces pages</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2469259292033957819">Vous n'avez aucune imprimante enregistrée.</translation>
 <translation id="2469375675106140201">Personnaliser le correcteur orthographique</translation>
@@ -1354,7 +1354,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2542050502251273923">Définit le niveau de débogage du gestionnaire de connexion réseau et d'autres services à l'aide de ff_debug.</translation>
 <translation id="2544853746127077729">Certificat d'authentification rejeté par le réseau.</translation>
 <translation id="2546229857744484369">1 mot de passe est enregistré sur cet appareil</translation>
-<translation id="2546283357679194313">Cookies et données de sites</translation>
+<translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2548347166720081527">Autorisation "<ph name="PERMISSION" />" accordée</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2550212893339833758">Espace mémoire d'échange</translation>
@@ -2415,7 +2415,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3797739167230984533">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par votre organisation</translation>
 <translation id="3797900183766075808">&amp;Rechercher "<ph name="SEARCH_TERMS" />" avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798449238516105146">Version</translation>
-<translation id="3799128412641261490">Paramètres de Switch Access</translation>
+<translation id="3799128412641261490">Paramètres Switch Access</translation>
 <translation id="3800806661949714323">Tout afficher (recommandé)</translation>
 <translation id="380408572480438692">L'activation de la collecte d'informations relatives aux performances nous permet d'améliorer le système au fil du temps. Aucune information n'est envoyée jusqu'à ce que vous envoyiez un rapport de commentaires (Alt-Shift-I) comprenant des informations relatives aux performances. Vous pouvez revenir sur cet écran afin de désactiver la collecte des informations à tout moment.</translation>
 <translation id="3807249107536149332">L'extension <ph name="EXTENSION_NAME" /> (ID d'extension "<ph name="EXTENSION_ID" />") n'est pas autorisée sur un écran de connexion.</translation>
@@ -2836,7 +2836,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4303079906735388947">Configurez un nouveau code pour votre clé de sécurité</translation>
 <translation id="4305402730127028764">Copier sur <ph name="DEVICE_NAME" /></translation>
 <translation id="4306119971288449206">Les applications doivent être diffusées avec le type de contenu <ph name="CONTENT_TYPE" /></translation>
-<translation id="4307992518367153382">Options de base</translation>
+<translation id="4307992518367153382">Paramètres de base</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> Ko (<ph name="NUM_KILOBYTES_LIVE" /> Ko effectifs)</translation>
 <translation id="4310139701823742692">Le format du fichier n'est pas valide. Vérifiez le fichier PPD, puis réessayez.</translation>
 <translation id="431076611119798497">&amp;Détails</translation>
@@ -4233,7 +4233,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6009781704028455063">Capteur intégré</translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
-<translation id="6011449291337289699">Effacer les données de sites</translation>
+<translation id="6011449291337289699">Effacer les données des sites</translation>
 <translation id="6015266928248016057">Clé PUK incorrecte. Il vous reste <ph name="RETRIES" /> tentative(s).</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6016178549409952427">Accéder au contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
@@ -4704,7 +4704,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
 <translation id="6560151649238390891">Suggestion ajoutée</translation>
-<translation id="6561560012278703671">Activer l'affichage discret (permet d'empêcher les invites liées aux notifications de vous interrompre)</translation>
+<translation id="6561560012278703671">Activer l'affichage discret (empêche les notifications de vous interrompre)</translation>
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stockez les journaux système dans le répertoire des téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez le raccourcir ou changer d'emplacement.</translation>
@@ -4833,7 +4833,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6732801395666424405">Certificats non importés.</translation>
 <translation id="6732900235521116609">Impossible de supprimer le raccourci</translation>
 <translation id="6734468588183300211">Lorsque vous êtes en mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
-<translation id="6735304988756581115">Afficher les cookies et autres données de site...</translation>
+<translation id="6735304988756581115">Afficher les cookies et autres données des sites...</translation>
 <translation id="6736243959894955139">Adresse</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
 <translation id="6737663862851963468">Supprimer un ticket Kerberos</translation>
@@ -5700,7 +5700,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7769672763586021400">ID du modèle</translation>
 <translation id="7770612696274572992">Image copiée depuis un autre appareil</translation>
 <translation id="7771452384635174008">Mise en page</translation>
-<translation id="7772032839648071052">Confirmer la phrase secrète</translation>
+<translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772127298218883077">À propos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7772773261844472235">Vérifiez l'état de votre Chromebook</translation>
 <translation id="7773726648746946405">Stockage de session</translation>
@@ -5917,7 +5917,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7986295104073916105">Consulter et modifier les paramètres relatifs aux mots de passe enregistrés</translation>
 <translation id="7987814697832569482">Toujours se connecter via ce VPN</translation>
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>
-<translation id="7991296728590311172">Paramètres de Switch Access</translation>
+<translation id="7991296728590311172">Paramètres Switch Access</translation>
 <translation id="7993750787380199093">Enregistrez tous vos mots de passe dans votre compte Google pour les utiliser sur l'ensemble de vos appareils</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
@@ -6116,7 +6116,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8225753906568652947">Utiliser vos offres</translation>
 <translation id="8226222018808695353">Interdit</translation>
 <translation id="8226619461731305576">File d'attente</translation>
-<translation id="8226628635270268143">Choisissez vos photos et vos albums préférés</translation>
+<translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230134520748321204">Enregistrer le mot de passe pour <ph name="ORIGIN" /> ?</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
@@ -6889,7 +6889,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>
 <translation id="9128335130883257666">Accéder aux paramètres pour "<ph name="INPUT_METHOD_NAME" />"</translation>
-<translation id="9128870381267983090">Se connecter au réseau</translation>
+<translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9130015405878219958">Le mode indiqué est incorrect.</translation>
 <translation id="9131487537093447019">Envoyer des messages à des appareils Bluetooth, et en recevoir de ces derniers</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>

@@ -45,7 +45,7 @@
 <translation id="2587578672395088481">Шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium үйлдлийн системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2615699638672665509">Энэ техник хангамжийг цаашид дэмжиж ажиллахгүй учраас энэ компьютероос цаашид Chromium-ын шинэчлэлтүүдийг хүлээн авахаа зогсоох болно.</translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
-<translation id="2711502716910134313">Chromium чихтэй хуудас</translation>
+<translation id="2711502716910134313">Chromium таб</translation>
 <translation id="2718390899429598676">Таны аюулгүй байдлыг сайжруулахын тулд Chromium таны өгөгдлийг шифрлэх болно.</translation>
 <translation id="2770231113462710648">Стандарт веб хөтчийг дараах руу өөрчил:</translation>
 <translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд 1 минутын өмнө шалгасан.}other{Chromium нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд {NUM_MINS} минутын өмнө шалгасан.}}</translation>
@@ -80,7 +80,7 @@
 <translation id="3651803019964686660"><ph name="ORIGIN" />-с Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийнхөө аль алинаас нь Chromium-д нэвтэрнэ үү.</translation>
 <translation id="3685209450716071127">Chromium таны нууц үгсийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас хүсэж байна}=1{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас хүсэж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chromium-г дахин ачаалахыг таны администратор танаас хүсэж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
-<translation id="3713809861844741608">Холбоосыг шинэ Chromium болон чихтэй хуудсанд нээх</translation>
+<translation id="3713809861844741608">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="3728336900324680424">Chromium хаяг оруулах хэсэгт зөвлөмж харуулахын тулд таны Драйвт хандах болно</translation>
 <translation id="378917192836375108">Chromium танд веб сайтад байгаа дугаар дээр дараад Skype-тай дуудлага хийх боломжийг олгоно.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
@@ -139,7 +139,7 @@
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5987687638152509985">Синкийг эхлүүлэхийн тулд Chromium-г шинэчлэх</translation>
-<translation id="6013050204643758987">Chromium OS нь <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эхийн нэмэлт программ хангамж<ph name="END_LINK_CROS_OSS" /> болох <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бэта)<ph name="END_LINK_LINUX_OSS" />-н тусламжтайгаар боломжтой болсон.</translation>
+<translation id="6013050204643758987">Chromium OS нь <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эхийн нэмэлт программ хангамж<ph name="END_LINK_CROS_OSS" /> болох <ph name="BEGIN_LINK_LINUX_OSS" />Linux (Бета)<ph name="END_LINK_LINUX_OSS" />-н тусламжтайгаар боломжтой болсон.</translation>
 <translation id="6039377483953237732">Chromium үйлдлийн системийн хувилбар</translation>
 <translation id="6055895534982063517">Chromium-ийн шинэ хувилбар боломжтой байна. Хэзээ хэзээнээс ч хурдан.</translation>
 <translation id="6063093106622310249">&amp;Chromium-д нээх</translation>
@@ -257,7 +257,7 @@
 <translation id="9019929317751753759">Chromium-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="9093206154853821181">{0,plural, =1{Chromium-г 1 цагийн дотор дахин ажиллуулна}other{Chromium-г # цагийн дотор дахин ажиллуулна}}</translation>
-<translation id="91086099826398415">Холбоосыг шинэ Chromium болон чихтэй хуудсанд нээх</translation>
+<translation id="91086099826398415">Холбоосыг шинэ Chromium болон табад нээх</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>
 <translation id="9158494823179993217">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
 <translation id="9164845895615421500">Chromium нь хүсээгүй программ хангамжийг долоо хоногт нэг удаа шалгадаг. Хамгийн сүүлд нэг хормын өмнө шалгасан.</translation>

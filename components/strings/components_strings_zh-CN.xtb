@@ -137,7 +137,7 @@
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1472675084647422956">显示更多</translation>
+<translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1476595624592550506">更改您的密码</translation>
@@ -297,7 +297,7 @@
 <translation id="2114841414352855701">由于已被 <ph name="POLICY_NAME" /> 替换，该政策已忽略。</translation>
 <translation id="2119505898009119320">颁发对象：<ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">打孔（右下角）</translation>
-<translation id="2129079103035905234">动态传感器</translation>
+<translation id="2129079103035905234">移动传感器</translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="213826338245044447">移动设备书签</translation>
 <translation id="214556005048008348">取消付款</translation>
@@ -345,7 +345,7 @@
 <translation id="2297722699537546652">B5 (Envelope)</translation>
 <translation id="2300306941146563769">未上传</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
-<translation id="2316887270356262533">释放了不到 1 MB。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
+<translation id="2316887270356262533">释放不到 1 MB 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供用户名和密码。</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
@@ -739,7 +739,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{包含 {COUNT} 页内容的 PDF 文档}other{包含 {COUNT} 页内容的 PDF 文档}}</translation>
 <translation id="4030383055268325496">撤消添加(&amp;U)</translation>
 <translation id="4032320456957708163">您的浏览器由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
-<translation id="4056223980640387499">棕色调</translation>
+<translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4058922952496707368">“<ph name="SUBKEY" />”键：<ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
 <translation id="4067947977115446013">添加有效地址</translation>
@@ -1318,7 +1318,7 @@
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
 <translation id="6328784461820205019">“您的连接不是私密连接”、“&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;”、“&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;”、“&lt;span class="error-code"&gt;ERR_CERT_SYMANTEC_LEGACY&lt;/span&gt;”或“SSL 证书错误”</translation>
 <translation id="6328786501058569169">此网站是欺骗性网站</translation>
-<translation id="6337133576188860026">释放了不到 <ph name="SIZE" />。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
+<translation id="6337133576188860026">释放不到 <ph name="SIZE" /> 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
 <translation id="6337534724793800597">按名称过滤政策</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
 <translation id="6358450015545214790">这分别意味着什么？</translation>

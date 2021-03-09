@@ -111,7 +111,7 @@
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2175927920773552910">QR kodea</translation>
-<translation id="2198757192731523470">Baliteke Google-k historia erabiltzea Bilaketa, iragarkiak eta beste Google-ren zerbitzu batzuk pertsonalizatzeko.</translation>
+<translation id="2198757192731523470">Baliteke Google-k historia erabiltzea Bilaketa, iragarkiak eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>
 <translation id="2218443599109088993">Txikitu</translation>
 <translation id="2230173723195178503">Kargatu da webgunea</translation>
 <translation id="2239626343334228536">Arakatze-datuak garbitzen…</translation>
@@ -346,7 +346,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4805759445554688327">Txartel-zenbakiak ez du balio</translation>
 <translation id="4808744395915275922">Eguneratzeak</translation>
 <translation id="4818522717893377262">Gehitu hizkuntza bat…</translation>
-<translation id="481968316161811770">Cookieak, webguneko datuak</translation>
+<translation id="481968316161811770">Cookieak, webguneetako datuak</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826218269716039351">Blokeatu hirugarrenen cookieak</translation>
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>
@@ -519,7 +519,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6624219055418309072">Blokeatu ezkutuko moduan</translation>
 <translation id="6628106477656132239">Iraungitze-datak ez du balio</translation>
 <translation id="6638511529934826365">Aplikatu zooma testuari…</translation>
-<translation id="6639730758971422557">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu "Arakatze segurua".</translation>
+<translation id="6639730758971422557">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>
 <translation id="6642362222295953972">Joan lehendik dagoen fitxara</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6645899968535965230">QR kodea: <ph name="PAGE_TITLE" /></translation>
@@ -527,7 +527,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6668619169535738264">Editatu laster-marka</translation>
 <translation id="667999046851023355">Dokumentua</translation>
-<translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google Panela atalean</translation>
+<translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google-ren Panela atalean</translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
 <translation id="6748108480210050150">Igorlea</translation>

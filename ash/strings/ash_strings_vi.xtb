@@ -16,7 +16,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
-<translation id="112308213915226829">Tự động ẩn giá</translation>
+<translation id="112308213915226829">Tự động ẩn kệ</translation>
 <translation id="1153356358378277386">Thiết bị được ghép nối</translation>
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -53,7 +53,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1419738280318246476">Mở khóa thiết bị để thực hiện hành động đối với thông báo</translation>
 <translation id="1420408895951708260">Bật/tắt chế độ Ánh sáng đêm. <ph name="STATE_TEXT" /></translation>
-<translation id="1420527829902822813">Đã chụp ảnh màn hình và lưu vào khay nhớ tạm</translation>
+<translation id="1420527829902822813">Đã chụp ảnh màn hình và lưu vào bảng nhớ tạm</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
@@ -192,8 +192,8 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2878884018241093801">Không có mục nào gần đây</translation>
 <translation id="2903844815300039659">Đã kết nối tới <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2942350706960889382">Phóng to ở vị trí cố định</translation>
-<translation id="2942516765047364088">Vị trí giá</translation>
-<translation id="2946119680249604491">Thêm kết nối</translation>
+<translation id="2942516765047364088">Vị trí kệ</translation>
+<translation id="2946119680249604491">Thêm đường kết nối</translation>
 <translation id="2961963223658824723">Đã xảy ra sự cố. Hãy thử lại sau vài giây.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">Cài đặt ứng dụng, tiện ích và chủ đề</translation>
@@ -515,7 +515,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6192859646269780503">Tìm điện thoại</translation>
 <translation id="622484624075952240">Xuống</translation>
-<translation id="6236290670123303279">Quản lý các tùy chọn cài đặt</translation>
+<translation id="6236290670123303279">Quản lý chế độ cài đặt</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
@@ -632,7 +632,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Giờ đi ngủ</translation>
-<translation id="7551643184018910560">Ghim vào giá</translation>
+<translation id="7551643184018910560">Ghim vào kệ</translation>
 <translation id="7561982940498449837">Đóng trình đơn</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7568294522609223312">Tắt tính năng tự động nhấp</translation>
@@ -676,7 +676,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7904094684485781019">Quản trị viên của tài khoản này đã không cho phép đăng nhập nhiều tài khoản.</translation>
 <translation id="7933084174919150729">Bạn chỉ có thể sử dụng Trợ lý Google cho hồ sơ chính.</translation>
 <translation id="79341161159229895">Tài khoản được quản lý bởi <ph name="FIRST_PARENT_EMAIL" /> và <ph name="SECOND_PARENT_EMAIL" /></translation>
-<translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem khay nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào khay nhớ tạm.</translation>
+<translation id="793716872548410480">Nhấn tổ hợp phím <ph name="SHORTCUT_KEY_NAME" /> + V để xem bảng nhớ tạm. 5 mục gần đây nhất mà bạn đã sao chép sẽ được lưu vào bảng nhớ tạm.</translation>
 <translation id="7955885781510802139">Chế độ tương phản cao</translation>
 <translation id="7977927628060636163">Đang tìm kiếm mạng di động...</translation>
 <translation id="7980780401175799550">Thử những cách mới để thao tác trong Chrome OS</translation>

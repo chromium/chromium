@@ -98,7 +98,7 @@
 <translation id="3594780231884063836">Stäng av ljudet för videon</translation>
 <translation id="3596414637720633074">Blockera cookies från tredje part med inkognitoläget</translation>
 <translation id="3600792891314830896">Stäng av ljudet på webbplatser</translation>
-<translation id="3744111561329211289">Synkronisera i bakgrunden</translation>
+<translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3763247130972274048">Hoppa över 10 s genom att trycka två gånger till vänster/höger på videon</translation>
 <translation id="381841723434055211">Telefonnummer</translation>
 <translation id="385051799172605136">Föregående</translation>
@@ -109,7 +109,7 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Tillåt cookies för en enskild webbplats.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
-<translation id="4165986682804962316">Platsinställningar</translation>
+<translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4200726100658658164">Öppna platsinställningarna</translation>
 <translation id="4226663524361240545">Aviseringar kan göra att enheten vibrerar</translation>
 <translation id="4259722352634471385">Webbadressen har blockerats: <ph name="URL" /></translation>
@@ -161,7 +161,7 @@
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
-<translation id="5677928146339483299">Blockerade</translation>
+<translation id="5677928146339483299">Blockerat</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5710871682236653961">Fråga innan webbplatser tillåts att skicka och ta emot uppgifter när du snuddar vid NFC-enheter (rekommenderas)</translation>
@@ -267,7 +267,7 @@
 <translation id="8300705686683892304">Hanteras av app</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8372893542064058268">Tillåt bakgrundssynkronisering för en specifik webbplats.</translation>
-<translation id="8376384591331888629">Inklusive cookies från tredje part på den här webbplatsen</translation>
+<translation id="8376384591331888629">Inkludera cookies från tredje part på den här webbplatsen</translation>
 <translation id="83792324527827022">En webbplats använder kameran och mikrofonen</translation>
 <translation id="8380167699614421159">Påträngande eller vilseledande annonser visas på den här webbplatsen</translation>
 <translation id="8394832520002899662">Återgå till webbplatsen genom att trycka här</translation>

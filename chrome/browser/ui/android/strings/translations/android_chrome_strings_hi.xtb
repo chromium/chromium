@@ -325,7 +325,7 @@
 <translation id="3384347053049321195">इमेज शेयर करें</translation>
 <translation id="3387650086002190359">सिस्‍टम त्रुटियों के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="3389286852084373014">टेक्स्ट बहुत बड़ा है</translation>
-<translation id="3398320232533725830">बुकमार्क प्रबंधक खोलें</translation>
+<translation id="3398320232533725830">बुकमार्क मैनेजर खोलें</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3478363558367712427">आप अपना सर्च इंजन चुन सकते हैं</translation>
@@ -418,7 +418,7 @@
 <translation id="4170011742729630528">सेवा उपलब्ध नहीं है; बाद में फिर से प्रयास करें.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> इस्तेमाल किए गए</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
-<translation id="4183868528246477015">'Google लेंस' से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">Google Lens से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
 <translation id="4209895695669353772">Google की ओर से सुझाई गई मनमुताबिक सामग्री पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -981,7 +981,7 @@
 <translation id="806745655614357130">मेरा डेटा अलग रखें</translation>
 <translation id="8073388330009372546">इमेज 'नए टैब' में खोलें</translation>
 <translation id="8076492880354921740">टैब</translation>
-<translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>
+<translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
@@ -1127,7 +1127,7 @@
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कॉल नहीं कर पा रहे</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाएं</translation>
 <translation id="927968626442779827">Google Chrome पर लाइट मोड का इस्तेमाल करें</translation>
 <translation id="932327136139879170">होम बटन</translation>

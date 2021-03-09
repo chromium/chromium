@@ -13,7 +13,7 @@
 <translation id="1843424232666537147">Та Chromium-н онцлогийн тусламжтайгаар интернэт өгөгдлөө удирдах, веб хуудсыг богино хугацаанд ачаалах боломжтой.
 <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Интернэт холболтоо шалгаж үзнэ үү.</translation>
-<translation id="2075400798887076382">Таны компьютерт нээлттэй байгаа чихтэй хуудсанд эндээс хандана уу. Компьютероос Chromium-г нээж, цэс рүү очоод "Chromium-д нэвтрэх..." гэснийг сонгоно уу</translation>
+<translation id="2075400798887076382">Таны компьютерт нээлттэй байгаа табад эндээс хандана уу. Компьютероос Chromium-г нээж, цэс рүү очоод "Chromium-д нэвтрэх..." гэснийг сонгоно уу</translation>
 <translation id="2168108852149185974">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тиймээс тэдгээрийг устгана уу:</translation>
 <translation id="2178608107313874732">Chromium одоогоор таны камерыг ашиглах боломжгүй байна</translation>
 <translation id="2195025571279539885">Та дараагийн удаад Chromium-г энэ сайтаас <ph name="LANGUAGE_NAME" /> хуудсыг хөрвүүлэхийг зөвшөөрөх үү?</translation>
@@ -27,11 +27,11 @@
 <translation id="3472200483164753384">Chromium Канар дээр дэмжихгүй</translation>
 <translation id="3639997914391704523">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгнүүдийг шалгах боломжтой.</translation>
 <translation id="3805899903892079518">Chromium-д таны зураг, видеонд хандах зөвшөөрөл байхгүй байна. Хандалтыг iOS Тохиргоо &gt; Нууцлал &gt; Зураг хэсэгт идэвхжүүлээрэй.</translation>
-<translation id="4099085513035183040">Chromium Бэта дээр дэмжихгүй</translation>
+<translation id="4099085513035183040">Chromium Бета дээр дэмжихгүй</translation>
 <translation id="4166206055865952171">Chromium-г өгөгдмөлөө болгох</translation>
 <translation id="4555020257205549924">Энэ онцлог асаалттай үед Chromium бусад хэл дээрх хуудсыг Google Орчуулагчаар орчуулахыг санал болгоно. <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium сканнерыг асаах</translation>
-<translation id="4787850887676698916">Таны бусад төхөөрөмжийн Chromium-д нээсэн чихтэй хуудас энд харагдана.</translation>
+<translation id="4787850887676698916">Таны бусад төхөөрөмжийн Chromium-д нээсэн таб энд харагдана.</translation>
 <translation id="4828317641996116749">Chromium бүх нууц үгийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="4985291216379576555">Офлайн байна, Chromium-н шинэчлэлтийг шалгах боломжгүй байна</translation>
 <translation id="4999538639245140991">Ta <ph name="SIGNOUT_MANAGED_DOMAIN" />-н удирддаг бүртгэлээс гарч байгаа тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс устгана. Таны өгөгдөл таны Google Бүртгэлд хэвээр үлдэнэ.</translation>
@@ -46,12 +46,11 @@
 <translation id="602807004951640891">Chromium-г суулгаснаар та <ph name="BEGIN_LINK_TOS" />Үйлчилгээний нөхцөлийг<ph name="END_LINK_TOS" /> зөвшөөрч байна.</translation>
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
 <translation id="6424492062988593837">Chromium-ыг сайжрууллаа! Одоо шинэ хувилбарыг ашиглах боломжтой.</translation>
-<translation id="6604711459180487467">Өөрийн байршилд тулгуурлан Chromium-н хэрэглээгээ сайжруулна уу.</translation>
 <translation id="6820823224820483452">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдоно уу.</translation>
 <translation id="7018284295775193585">Chromium-г шинэчлэх боломжгүй байна</translation>
 <translation id="7099326575020694068">Chromium таны камерыг хувааж харах горимд ашиглах боломжгүй</translation>
 <translation id="7118091470949186573">Та одоо Chromium-г хэзээд ч мессеж, документ болон бусад аппын холбоосон дээр товшин ашиглах боломжтой.</translation>
-<translation id="7208566199746267865">Chromium таны бүртгэлийг вэбэд оруулснаар таны цагийг хэмнэдэг. Та тохиргоо хэсэгт бүртгэл нэмэх, эсвэл устгах боломжтой.</translation>
+<translation id="7208566199746267865">Chromium таны бүртгэлийг вебэд оруулснаар таны цагийг хэмнэдэг. Та тохиргоо хэсэгт бүртгэл нэмэх, эсвэл устгах боломжтой.</translation>
 <translation id="725427773388857052">Chromium нь таныг өгөгдлийн зөрчил, аюултай вебсайт болон бусад зүйлээс хамгаалахад туслах боломжтой.</translation>
 <translation id="7269362888766543920">Зарим нэмэлт онцлог нь Chromium-г эвдрэхэд хүргэдэг. Тэдгээрийг устгана уу.</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -62,6 +61,7 @@
 <translation id="7746854981345936341">Chromium-н зөвлөгөө. Буцаах, Урагшлуулах болон Хайх зэрэг зарим товчлуур таны дэлгэцийн доод хэсэгт байрладаг боллоо.</translation>
 <translation id="786327964234957808">Та синк хийх бүртгэлийг <ph name="USER_EMAIL1" />-с <ph name="USER_EMAIL2" /> рүү шилжүүлж байна. Таны одоогийн Chromium-н өгөгдлийг <ph name="DOMAIN" />-с удирддаг. Энэ нь таны өгөгдлийг энэ төхөөрөмжөөс устгах хэдий ч эдгээр нь <ph name="USER_EMAIL1" />-д хэвээр үлдэнэ.</translation>
 <translation id="7890287942691234100">Chromium сканнерыг ашиглаж эхлэх</translation>
+<translation id="7980860476903281594">Chromium таны байршлыг таны зөвшөөрсөн сайтуудтай хуваалцана.</translation>
 <translation id="8013573822802650211">Та Chromium-г хаанаас ч ашигласан бай табуудаа харахын тулд бүх төхөөрөмж дээрээ нэвтэрнэ үү</translation>
 <translation id="8073677936375100957">Энэ төхөөрөмжөөс Chromium-н өгөгдлөө устгах уу?</translation>
 <translation id="8175055321229419309">Зөвлөгөө: <ph name="BEGIN_LINK" />Chromium-г апп-н мөр рүү зөөнө үү<ph name="END_LINK" /></translation>

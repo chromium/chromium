@@ -629,7 +629,7 @@
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7774365994322694683">ציפור</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
-        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב לא מקוון<ph name="MARKUP_3" />
+        <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
@@ -762,7 +762,7 @@
 <translation id="913758436357682283">‏מקלדת Myanmar Myansan</translation>
 <translation id="9148058034647219655">יציאה</translation>
 <translation id="9153744823707037316">שיטת קלט של מערך</translation>
-<translation id="9154418932169119429">תמונה זו אינה זמינה במצב לא מקוון.</translation>
+<translation id="9154418932169119429">תמונה זו אינה זמינה במצב אופליין.</translation>
 <translation id="9206487995878691001">‏שיטת קלט Cangjie</translation>
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>

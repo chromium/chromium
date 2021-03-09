@@ -414,7 +414,7 @@
 <translation id="1468571364034902819">نمی‌توان از این نمایه استفاده کرد</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه‌ها به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
 <translation id="1470946456740188591">‏برای روشن یا خاموش کردن مرور با نشانگر نوشتار، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
-<translation id="1472675084647422956">بیشتر ببینید</translation>
+<translation id="1472675084647422956">نمایش بیشتر</translation>
 <translation id="1474785664565228650">‏برای اعمال تغییر ایجادشده در میکروفون، باید Parallels Desktop را راه‌اندازی مجدد کنید. برای ادامه، Parallels Desktop را راه‌اندازی مجدد کنید.</translation>
 <translation id="1475502736924165259">گواهی‌هایی برای فایل دارید که در هیچ‌کدام از دسته‌های دیگر قرار نمی‌گیرد</translation>
 <translation id="1476088332184200792">کپی در دستگاه</translation>
@@ -1175,7 +1175,7 @@
 <translation id="2349896577940037438">‏اگر تنظیم «فعالیت وب و برنامه» تکمیلی روشن باشد، ممکن است این داده‌ها در «حساب Google» شما ذخیره شود. می‌توانید در account.google.com، داده‌هایتان را ببینید، حذف کنید، و تنظیمات حسابتان را تغییر دهید.</translation>
 <translation id="2350133097354918058">تازه‌سازی شد</translation>
 <translation id="2350182423316644347">راه‌اندازی برنامه کاربردی...</translation>
-<translation id="2350796302381711542">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را به جای <ph name="REPLACED_HANDLER_TITLE" /> باز کند؟</translation>
+<translation id="2350796302381711542">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را به‌جای <ph name="REPLACED_HANDLER_TITLE" /> باز کند؟</translation>
 <translation id="2351266942280602854">زبان و ورودی</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{۱ مورد}one{{NUM_ITEMS} مورد}other{{NUM_ITEMS} مورد}}</translation>
 <translation id="2352662711729498748">کمتر از ۱ مگابایت</translation>
@@ -1616,7 +1616,7 @@
 <translation id="2859806420264540918">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد.</translation>
 <translation id="2861301611394761800">به‌روزرسانی سیستم کامل شد. لطفاً سیستم را راه‌اندازی مجدد کنید.</translation>
 <translation id="2861941300086904918">‏مدیر امنیت Native Client</translation>
-<translation id="2864601841139725659">تصویر نمایه اضافه کنید</translation>
+<translation id="2864601841139725659">عکس نمایه اضافه کنید</translation>
 <translation id="2865919525181940183">نماگرفت برنامه‌هایی که درحال‌حاضر روی صفحه هستند</translation>
 <translation id="286674810810214575">درحال بررسی منابع برق...</translation>
 <translation id="2867768963760577682">بازکردن به‌عنوان برگه پین شده</translation>
@@ -3699,7 +3699,7 @@
 <translation id="5376169624176189338">برای برگشت به عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
 <translation id="5376931455988532197">فایل بسیار بزرگ است</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> باموفقیت به <ph name="DEVICE_NAME" /> ارسال شد}one{<ph name="ATTACHMENTS" /> باموفقیت به <ph name="DEVICE_NAME" /> ارسال شد}other{<ph name="ATTACHMENTS" /> باموفقیت به <ph name="DEVICE_NAME" /> ارسال شد}}</translation>
-<translation id="537813040452600081">صفحاتی که در این پنجره مشاهده می‌کنید در سابقه مروگر نشان داده نمی‌شوند و بعد از خروج از سیستم هیچ رد دیگری در رایانه از خود به جای نمی‌گذارند (مانند کوکی‌ها). فایل‌هایی که بارگیری می‌کنید و نشانک‌هایی که ایجاد می‌کنید حفظ نمی‌شوند.</translation>
+<translation id="537813040452600081">صفحاتی که در این پنجره مشاهده می‌کنید در سابقه مروگر نشان داده نمی‌شوند و بعد از خروج از سیستم هیچ رد دیگری در رایانه از خود به‌جای نمی‌گذارند (مانند کوکی‌ها). فایل‌هایی که بارگیری می‌کنید و نشانک‌هایی که ایجاد می‌کنید حفظ نمی‌شوند.</translation>
 <translation id="5379140238605961210">ادامه مسدود کردن دسترسی به میکروفون</translation>
 <translation id="5382591305415226340">مدیریت پیوندهای پشتیبانی‌شده</translation>
 <translation id="5383377866517186886">‏در «تنظیمات برگزیده سیستم Mac»، دوربین خاموش است</translation>
@@ -4417,7 +4417,7 @@
 <translation id="6227280783235722609">افزونه</translation>
 <translation id="6229849828796482487">‏قطع اتصال شبکه Wi-Fi</translation>
 <translation id="6229890768313448549">‏شرایط و ضوابط Google Play نمی‌تواند بارگیری شود. لطفاً دوباره امتحان کنید.</translation>
-<translation id="6231782223312638214">پیشنهاد شده</translation>
+<translation id="6231782223312638214">پیشنهادی</translation>
 <translation id="6231881193380278751">‏افزودن پارامتر جستار در نشانی وب برای بازخوانی خودکار صفحه: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">باتری</translation>
 <translation id="6232116551750539448">اتصال به <ph name="NAME" /> قطع شده است</translation>
@@ -4559,7 +4559,7 @@
 <translation id="6387674443318562538">تقسیم عمودی</translation>
 <translation id="6388429472088318283">زبان‌های جستجو</translation>
 <translation id="6390020764191254941">انتقال برگه به پنجره جدید</translation>
-<translation id="6390799748543157332">صفحاتی که در این پنجره مشاهده می‌کنید در سابقه مرورگر نشان داده نمی‌شوند و بعد از بسته شدن همه پنجره‌های مهمان باز، هیچ رد دیگری (مانند کوکی) در رایانه از خود به جای نمی‌گذارند. با این وجود، فایل‌هایی که بارگیری می‌کنید، حفظ می‌شوند.</translation>
+<translation id="6390799748543157332">صفحاتی که در این پنجره مشاهده می‌کنید در سابقه مرورگر نشان داده نمی‌شوند و بعد از بسته شدن همه پنجره‌های مهمان باز، هیچ رد دیگری (مانند کوکی) در رایانه از خود به‌جای نمی‌گذارند. با این وجود، فایل‌هایی که بارگیری می‌کنید، حفظ می‌شوند.</translation>
 <translation id="6393156038355142111">پیشنهاد گذرواژه قوی</translation>
 <translation id="6395423953133416962">ارسال <ph name="BEGIN_LINK1" />اطلاعات سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
 <translation id="6396988158856674517">سایت‌ها نمی‌توانند از حسگرهای حرکتی استفاده کنند</translation>
@@ -4730,7 +4730,7 @@
 <translation id="6601612474695404578">برخی سایت‌ها برای بارگیری صفحاتشان از کوکی‌های شخص ثالث استفاده می‌کنند. اگر سایتی کار نمی‌کند، می‌توانید کوکی‌ها را مجاز کنید.</translation>
 <translation id="6602937173026466876">دسترسی به چاپگرها</translation>
 <translation id="6602956230557165253">از کلیدهای پیکان سمت راست و چپ برای پیمایش استفاده کنید.</translation>
-<translation id="6605847144724004692">قبلاً هیچ کاربری رتبه‌بندی نکرده است.</translation>
+<translation id="6605847144724004692">قبلاً هیچ کاربری رده‌بندی نکرده است.</translation>
 <translation id="6607831829715835317">ا&amp;بزارهای بیشتر</translation>
 <translation id="6607890859198268021">‏درحال‌حاضر <ph name="DOMAIN" /> <ph name="USER_EMAIL" /> را مدیریت می‌کند. برای استفاده از کنترل‌های والدین با «حساب Google» دیگر، بعد از راه‌اندازی از سیستم خارج شوید و سپس «افزودن فرد» را در صفحه ورود به سیستم انتخاب کنید.</translation>
 <translation id="6611972847767394631">برگه‌هایتان را در اینجا پیدا کنید</translation>
@@ -4777,13 +4777,13 @@
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6664237456442406323">‏متأسفانه، رایانه شما با یک شناسه سخت‌افزار ناقص پیکربندی شده است. این موضوح Chrome OS را از به‌روزرسانی با جدیدترین اصلاحات امنیتی باز می‌دارد که <ph name="BEGIN_BOLD" />می‌تواند رایانه شما را در برابر حملات مخرب آسیب‌پذیر نماید<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">هنگام باز کردن نمایه‌تان مشکلی پیش آمد. لطفاً از سیستم خارج شوید و دوباره به آن وارد شوید.</translation>
-<translation id="6670142487971298264"><ph name="APP_NAME" /> اکنون در دسترس است</translation>
+<translation id="6670142487971298264">‫<ph name="APP_NAME" /> اکنون دردسترس است</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6675665718701918026">دستگاه نشانگر متصل شد</translation>
 <translation id="6676212663108450937">لطفاً درحین آموزش صدایتان، از هدفون استفاده کنید</translation>
 <translation id="6678717876183468697">نشانی وب عبارت</translation>
 <translation id="6680442031740878064">در دسترس: <ph name="AVAILABLE_SPACE" /></translation>
-<translation id="6680650203439190394">رتبه‌بندی</translation>
+<translation id="6680650203439190394">رده‌بندی</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
 <translation id="6684827949542560880">درحال بارگیری آخرین به‌روزرسانی</translation>
 <translation id="668599234725812620">‏باز کردن Google Play</translation>
@@ -5054,7 +5054,7 @@
 <translation id="6991665348624301627">انتخاب مقصد</translation>
 <translation id="6992554835374084304">روشن کردن غلط‌گیر املای بهبودیافته</translation>
 <translation id="6994069045767983299">رنگ‌های معکوس</translation>
-<translation id="6995899638241819463">اگر گذرواژه‌ها به دلیل نقض داده لو رفته باشد، هشدار می‌دهد</translation>
+<translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - گزارش فعالیت</translation>
 <translation id="6997707937646349884">در دستگاه‌های شما:</translation>
 <translation id="6998093258894828179">مخفی کردن کارت‌ها</translation>
@@ -5194,7 +5194,7 @@
 <translation id="716810439572026343">در حال بارگیری <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">حداقل اندازه قلم</translation>
 <translation id="7170041865419449892">خارج از محدوده</translation>
-<translation id="7170236477717446850">تصویر نمایه</translation>
+<translation id="7170236477717446850">عکس نمایه</translation>
 <translation id="7171259390164035663">ثبت‌نام نشود</translation>
 <translation id="7171559745792467651">نصب برنامه‌ها از دستگاه‌های دیگرتان</translation>
 <translation id="7172470549472604877">{NUM_TABS,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه‌ها به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
@@ -5506,7 +5506,7 @@
 <translation id="7548856833046333824">لیموناد</translation>
 <translation id="7550830279652415241">bookmarks<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> بارگیری نشد</translation>
-<translation id="7551643184018910560">پین به راه‌انداز</translation>
+<translation id="7551643184018910560">پین کردن به فقسه</translation>
 <translation id="7552846755917812628">نکته‌های زیر را امتحان کنید:</translation>
 <translation id="7553012839257224005">‏درحال بررسی محتوی Linux</translation>
 <translation id="7553242001898162573">گذرواژه‌تان را وارد کنید</translation>
@@ -5905,7 +5905,7 @@
 <translation id="7978450511781612192">‏با این کار از سیستم حساب Google خود خارج می‌شوید. نشانک‌ها، سابقه، گذرواژه‌ها و سایر موارد دیگر همگام‌سازی نمی‌شوند.</translation>
 <translation id="7980084013673500153">شناسه دارایی: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
-<translation id="798145602633458219">افزودن پیشنهاد <ph name="SUGGESTION_NAME" /> به کادر جستجو</translation>
+<translation id="798145602633458219">افزودن پیشنهاد <ph name="SUGGESTION_NAME" /> به چارگوش جستجو</translation>
 <translation id="7982083145464587921">لطفاً برای رفع این خطا دستگاه خود را مجدداً راه‌اندازی کنید.</translation>
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7984068253310542383">نمایش <ph name="DISPLAY_NAME" /> روی دستگاه دیگر</translation>
@@ -6536,7 +6536,7 @@
 <translation id="8734674662128056360">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="873545264931343897">وفتی به‌روزرسانی <ph name="PLUGIN_NAME" /> تمام شد، برای فعال کردن آن، صفحه را تازه‌سازی کنید</translation>
 <translation id="8736288397686080465">این سایت در پس‌زمینه به‌روزرسانی شده است.</translation>
-<translation id="8737685506611670901">باز کردن پیوندهای <ph name="PROTOCOL" /> به جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
+<translation id="8737685506611670901">باز کردن پیوندهای <ph name="PROTOCOL" /> به‌جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8742998548129056176">‏این اطلاعاتی عمومی درباره دستگاه شما و نحوه استفاده شما از آن (مانند سطح باتری، فعالیت سیستم و برنامه، و خطاها) است. از این داده‌ها برای بهبود Android استفاده می‌شود و بعضی اطلاعات انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند برنامه‌ها و محصولاتشان را بهتر کنند.</translation>
 <translation id="8743390665131937741">میزان بزرگ‌نمایی تمام‌صفحه:</translation>
@@ -7011,7 +7011,7 @@
 <translation id="980731642137034229">دکمه منوی کنش‌ها</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="983511809958454316">‏این ویژگی در VR پشتیبانی نمی‌شود</translation>
-<translation id="984136553749462603">وقتی سایتی محتوایی را پخش می‌کند که تحت‌محافظت حق نسخه‌برداری است، شاید اجازه بخواهد دستگاهتان را شناسایی کند</translation>
+<translation id="984136553749462603">وقتی سایتی محتوایی را پخش می‌کند که تحت‌محافظت حق نشر است، شاید اجازه بخواهد دستگاهتان را شناسایی کند</translation>
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="98515147261107953">افقی</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>

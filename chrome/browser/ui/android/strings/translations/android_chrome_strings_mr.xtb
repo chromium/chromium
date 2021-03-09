@@ -71,7 +71,7 @@
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
-<translation id="1506061864768559482">शोध इंजिन</translation>
+<translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड हटवा</translation>
 <translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
@@ -318,7 +318,7 @@
 <translation id="3350687908700087792">सर्व गुप्त टॅब बंद करा</translation>
 <translation id="3353615205017136254">Google द्वारे पुरवलेले लाइट पेज. मूळ पेज लोड करण्यासाठी मूळ लोड करा बटणावर टॅप करा.</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
-<translation id="3367813778245106622">सिंक प्रारंभ करण्‍यासाठी पुन्हा साइन इन करा</translation>
+<translation id="3367813778245106622">सिंक सुरू करण्‍यासाठी पुन्हा साइन इन करा</translation>
 <translation id="337236281855091893">शोधण्यासाठी, शब्दावर टॅप करण्याऐवजी त्याला स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="3373979091428520308">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, दुसर्‍या डिव्हाइसवर Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="3374023511497244703">तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर Chrome डेटा आता तुमच्या Google खात्यामध्ये सिंक केला जाणार नाही</translation>
@@ -328,7 +328,7 @@
 <translation id="3398320232533725830">बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3443221991560634068">वर्तमान पृष्‍ठ रीलोड करा</translation>
-<translation id="3478363558367712427">तुम्ही तुमचे शोध इंजिन निवडू शकता</translation>
+<translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
 <translation id="3492207499832628349">नवीन गुप्त टॅब</translation>
 <translation id="3493531032208478708">सूचित केलेल्या आशयविषयी <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -744,7 +744,7 @@
 <translation id="6412673304250309937">Chrome मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीमध्ये URL तपासतो. साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानीकारक फाइल डाउनलोड केल्यावर, Chrome, पेज आशयाच्या भागांसह, URL सुरक्षित ब्राउझिंग कडे पाठवू शकतो.</translation>
 <translation id="641643625718530986">प्रिंट करा...</translation>
 <translation id="6427112570124116297">वेबचे भाषांतर करा</translation>
-<translation id="6433501201775827830">तुमचे शोध इंजिन निवडा</translation>
+<translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6437478888915024427">पेज माहिती</translation>
 <translation id="6441734959916820584">नाव खूपच मोठे आहे</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# इमेज}other{# इमेज}}</translation>
@@ -1107,7 +1107,7 @@
 <translation id="9065203028668620118">संपादन</translation>
 <translation id="9065383040763568503">Chrome ला महत्त्वाचा वाटत नसलेला सेव्ह केलेला डेटा (उदा. सेटिंग्ज सेव्ह नसलेल्या किंवा तुम्ही सारखे भेट देत नसलेल्या साइट)</translation>
 <translation id="9069543557624799859">डाउनलोड <ph name="TIME" /> वाजता सुरू होईल.</translation>
-<translation id="9070377983101773829">व्हॉइस शोध प्रारंभ करा</translation>
+<translation id="9070377983101773829">व्हॉइस शोध सुरू करा</translation>
 <translation id="9074336505530349563">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="9086302186042011942">समक्रमण करीत आहे</translation>
 <translation id="9086455579313502267">नेटवर्क ॲक्सेस करण्यात अक्षम</translation>
@@ -1127,7 +1127,7 @@
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">कॉल करू शकत नाही</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="926205370408745186">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाका</translation>
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="932327136139879170">होम</translation>

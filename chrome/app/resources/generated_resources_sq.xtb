@@ -178,7 +178,7 @@
 <translation id="1197979282329025000">Ndodhi një gabim gjatë gjetjes së aftësive të printerit për printerin <ph name="PRINTER_NAME" />. Ky printer nuk mund të regjistrohej me <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="119944043368869598">Pastroji të gjitha</translation>
 <translation id="1199814941632954229">Certifikatat po përgatiten për këto profile të certifikatave</translation>
-<translation id="1201402288615127009">Tjetra</translation>
+<translation id="1201402288615127009">Para</translation>
 <translation id="1202596434010270079">Aplikacioni "kioskë" është përditësuar. Hiqe memorien USB.</translation>
 <translation id="120368089816228251">Notë muzikore</translation>
 <translation id="1203942045716040624">Procesi i ndarë i punës: <ph name="SCRIPT_URL" /></translation>
@@ -576,7 +576,7 @@
 <translation id="1645516838734033527">Për ta mbajtur <ph name="DEVICE_TYPE" /> të sigurt, Smart Lock kërkon një kyçje ekrani në telefonin tënd.</translation>
 <translation id="1646982517418478057">Fut një fjalëkalimin për të enkriptuar këtë certifikatë</translation>
 <translation id="1648528859488547844">Përdor Wi‑Fi ose rrjetet celulare për të përcaktuar vendndodhjen</translation>
-<translation id="164936512206786300">Shkëput pajisjen me Bluetooth</translation>
+<translation id="164936512206786300">Anulo çiftimin me pajisjen me Bluetooth</translation>
 <translation id="1650371550981945235">Shfaq opsionet e hyrjes</translation>
 <translation id="1651008383952180276">Duhet të fusësh dy herë të njëjtën frazë kalimi</translation>
 <translation id="1652326691684645429">Aktivizo "Ndarjen në afërsi"</translation>
@@ -5092,7 +5092,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7037509989619051237">Teksti për t'u shikuar paraprakisht</translation>
 <translation id="7038632520572155338">Qasja me çelës</translation>
 <translation id="7039326228527141150">Qasu te pajisjet me USB nga <ph name="VENDOR_NAME" /></translation>
-<translation id="7039912931802252762">Identifikimi i Microsoft me "Kartën inteligjente"</translation>
+<translation id="7039912931802252762">Identifikimi i Microsoft me "Kartën smart"</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7043108582968290193">U krye! Nuk u gjet asnjë aplikacion i papërputhshëm.</translation>
 <translation id="7044124535091449260">Mëso më shumë për qasjen te sajti</translation>
@@ -6255,7 +6255,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8397825320644530257">Shkëput telefonin e lidhur</translation>
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8400146488506985033">Menaxho kontaktet</translation>
-<translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde inteligjente.</translation>
+<translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>

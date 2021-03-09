@@ -103,7 +103,7 @@
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
 <translation id="2046702855113914483">रामेन</translation>
-<translation id="2070909990982335904">डॉटने प्रारंभ होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
+<translation id="2070909990982335904">डॉटने सुरू होणारी नावे सिस्टमसाठी आरक्षित आहेत. कृपया दुसरे नाव निवडा.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080010875307505892">सर्बियन कीबोर्ड</translation>
 <translation id="2084108471225856927">डिव्हाइस सेटिंग्ज</translation>
@@ -564,7 +564,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6970230597523682626">बल्गेरियन</translation>
 <translation id="6973630695168034713">फोल्डर</translation>
 <translation id="6978611942794658017">ही फाईल Windows सॉफ्‍टवेअर वापरून PC साठी डिझाइन केली आहे. ही Chrome OS चालविणार्‍या आपल्‍या डिव्‍हाइससह सुसंगत नाही. कृपया एका योग्य प्रतिस्थापन अ‍ॅपसाठी Chrome वेब स्‍टोअर शोधा.</translation>
-<translation id="6979158407327259162">Google ड्राइव्ह</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डर निवडली</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -764,7 +764,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9154418932169119429">ही इमेज ऑफलाइन उपलब्ध नाही.</translation>
 <translation id="9206487995878691001">कँगजी इनपुट पद्धत</translation>
 <translation id="9213073329713032541">इंस्टॉलेशनला यशस्वीरीत्या सुरुवात झाली.</translation>
-<translation id="9219103736887031265">इमेज</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">लुनार</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="942954117721265519">या डिरेक्टरीमध्ये कोणत्याही इमेज नाहीत.</translation>

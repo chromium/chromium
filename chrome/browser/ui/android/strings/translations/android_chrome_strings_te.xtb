@@ -68,7 +68,7 @@
 <translation id="1409879593029778104">ఫైల్ ఇప్పటికే ఉన్నందున <ph name="FILE_NAME" /> డౌన్‌లోడ్ నిరోధించబడింది.</translation>
 <translation id="1414981605391750300">Googleని సంప్రదిస్తోంది. ఇందుకు ఒక నిమిషం పట్టవచ్చు…</translation>
 <translation id="1416550906796893042">అప్లికేషన్ వెర్షన్</translation>
-<translation id="1430915738399379752">ముద్రించు</translation>
+<translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
@@ -101,7 +101,7 @@
 <translation id="1782483593938241562">ముగింపు తేదీ <ph name="DATE" /></translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
-<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సేవా నిబంధనలు</translation>
+<translation id="1795251344124198516">Chrome, Chrome OS అదనపు సర్వీస్ నియమాలు</translation>
 <translation id="1807246157184219062">లేత</translation>
 <translation id="1810845389119482123">ప్రారంభ సింక్ సెటప్ పూర్తి కాలేదు</translation>
 <translation id="1821253160463689938">మీ ప్రాధాన్యతలను గుర్తుంచుకోవడానికి కుక్కీలను ఉపయోగిస్తుంది, మీరు ఆ పేజీలను సందర్శించకపోయినా కూడా అది అమలవుతుంది</translation>
@@ -197,7 +197,7 @@
 
 ఏదైనా పదంపై తాకి &amp; అలాగే నొక్కి ఉంచడం ద్వారా, దానిని వెతకండి. మీ శోధనను మెరుగుపరచడానికి, మరిన్ని లేదా తక్కువ పదాలను ఎంచుకోండి. మీ శోధనను ఎడిట్ చేయడానికి, ప్యానెల్‌ను తెరిచి, చిహ్నంపై ట్యాప్ చేయడం ద్వారా కొత్త ట్యాబ్‌లో తెరిచి, శోధన పెట్టెలో మీ మార్పులు చేయండి.</translation>
 <translation id="246532703174860178">షేర్ చేయండి</translation>
-<translation id="2478076885740497414">అనువర్తనాన్ని ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="2478076885740497414">యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2494974097748878569">Chromeలో Google అసిస్టెంట్</translation>
@@ -427,7 +427,7 @@
 <translation id="4248098802131000011">డేటా ఉల్లంఘనలు, ఇతర సెక్యూరిటీ సమస్యల నుండి మీ పాస్‌వర్డ్‌లను సురక్షితంగా ఉంచుకోండి</translation>
 <translation id="4250229828105606438">స్క్రీన్‌షాట్</translation>
 <translation id="4256782883801055595">ఓపెన్ సోర్స్ లైసెన్స్‌లు</translation>
-<translation id="4269820728363426813">లింక్ చిరునామాను కాపీ చేయి</translation>
+<translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
 <translation id="4298388696830689168">లింక్ చేసిన సైట్‌లు</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">ప్రాథమికాలు</translation>
@@ -521,7 +521,7 @@
 <translation id="4882831918239250449">Search, యాడ్స్‌లతో పాటు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="4885273946141277891">మద్దతు లేనన్ని సార్లు Chromeను ప్రారంభించడానికి ప్రయత్నించారు.</translation>
 <translation id="4908869848243824489">Google ద్వారా Discover</translation>
-<translation id="4910889077668685004">చెల్లింపు అనువర్తనాలు</translation>
+<translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4913161338056004800">గణాంకాలను రీసెట్ చేయి</translation>
 <translation id="4913169188695071480">రీఫ్రెష్ చేయడం ఆపివేయి</translation>
 <translation id="4915549754973153784">పరికరాల కోసం స్కాన్ చేస్తున్నప్పుడు <ph name="BEGIN_LINK" />సహాయం పొందండి<ph name="END_LINK" />…</translation>
@@ -552,7 +552,7 @@
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, చరిత్ర, మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="5136035049889637840">ఇలాంటి ప్రోడక్ట్‌ కొను <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="5139940364318403933">Google డిస్క్‌ని ఎలా ఉపయోగించాలో తెలుసుకోండి</translation>
-<translation id="5152843274749979095">మద్దతు గల అనువర్తనాలు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
+<translation id="5152843274749979095">మద్దతు గల యాప్‌లు ఏవీ ఇన్‌స్టాల్ చేయబడలేదు</translation>
 <translation id="5161254044473106830">శీర్షిక అవసరం</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 డౌన్‌లోడ్ విఫలమైంది.}other{# డౌన్‌లోడ్‌లు విఫలమయ్యాయి.}}</translation>
 <translation id="5170568018924773124">ఫోల్డర్‌లో చూపించు</translation>
@@ -1104,7 +1104,7 @@
 <translation id="9042893549633094279">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>
 <translation id="9063523880881406963">డెస్క్‌టాప్ సైట్ అభ్యర్థనను ఆఫ్ చేయండి</translation>
-<translation id="9065203028668620118">సవరించు</translation>
+<translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9065383040763568503">Chrome ముఖ్యమైనదిగా భావించని నిల్వ చేసిన డేటా (ఉదా. సేవ్ చేసిన సెట్టింగ్‌లు లేని సైట్‌లు లేదా మీరు తరచుగా సందర్శించని సైట్‌లు)</translation>
 <translation id="9069543557624799859"><ph name="TIME" />కు డౌన్‌లోడ్ చేయడం ప్రారంభమవుతుంది.</translation>
 <translation id="9070377983101773829">వాయిస్ శోధనను ప్రారంభించండి</translation>
@@ -1127,7 +1127,7 @@
 <translation id="9204836675896933765">1 ఫైల్ మిగిలి ఉంది</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">కాల్‌లను చేయడం సాధ్యం కాదు</translation>
-<translation id="9219103736887031265">చిత్రాలు</translation>
+<translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome కార్యకలాపాన్ని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>
 <translation id="932327136139879170">హోమ్</translation>

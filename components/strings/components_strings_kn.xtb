@@ -148,7 +148,7 @@
 <translation id="1513706915089223971">ಇತಿಹಾಸ ನಮೂದುಗಳ ಪಟ್ಟಿ</translation>
 <translation id="1517433312004943670">ಫೋನ್ ಸಂಖ್ಯೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="1519264250979466059">ಬಿಲ್ಡ್ ಡೇಟಾ</translation>
-<translation id="1521655867290435174">Google ಶೀಟ್‌ಗಳು</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1527263332363067270">ಸಂಪರ್ಕಕ್ಕೆ ಕಾಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1529521330346880926">10x15 (Envelope)</translation>
 <translation id="1529789484829130889">ಟ್ರೇ 8</translation>
@@ -887,7 +887,7 @@
 <translation id="4552089082226364758">ಫ್ಲ್ಯಾಶ್‌</translation>
 <translation id="4558551763791394412">ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4559332380232738994">10x11</translation>
-<translation id="457875822857220463">ವಿತರಣೆ</translation>
+<translation id="457875822857220463">ಡೆಲಿವರಿ</translation>
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">ಕಾರ್ಡ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4587425331216688090">Chrome ನಿಂದ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
@@ -905,7 +905,7 @@
 <translation id="4670064810192446073">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ</translation>
 <translation id="467662567472608290">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರದಲ್ಲಿ ಸಾಕಷ್ಟು ದೋಷಗಳಿವೆ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="4677585247300749148">ಪ್ರವೇಶಿಸುವಿಕೆ ಈವೆಂಟ್‌ಗಳಿಗೆ <ph name="URL" /> ಪ್ರತಿಕ್ರಿಯಿಸಲು ಬಯಸುತ್ತದೆ</translation>
-<translation id="467809019005607715">Google ಸ್ಲೈಡ್‌ಗಳು</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4680804919228900307">ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈಗಷ್ಟೇ ನೀವು ನಮೂದಿಸಿದ್ದೀರಿ. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> ಮತ್ತು ಈ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸುವ ಇತರ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈಗಲೇ ಪರಿಶೀಲಿಸುವಂತೆ Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4690462567478992370">ಅಮಾನ್ಯ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಬಳಸಿಕೊಂಡು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
@@ -1427,7 +1427,7 @@
 <translation id="6810899417690483278">ಕಸ್ಟಮೈಸೇಶನ್ ಐಡಿ</translation>
 <translation id="6825578344716086703">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿದಿರಿ, ಆದರೆ ದುರ್ಬಲ ಸಹಿ ಅಲ್ಗಾರಿದಮ್ (SHA-1 ಅದರಂತೆ) ಬಳಸಿಕೊಂಡು ಸಹಿ ಮಾಡಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಒದಗಿಸಿದೆ. ಇದರರ್ಥ ಸರ್ವರ್ ಒದಗಿಸಿದ ಸುರಕ್ಷತೆ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಖೋಟಾ ತಯಾರಿಸಿರಬಹುದು, ಮತ್ತು ನೀವು ನಿರೀಕ್ಷಿಸಿದ ಸರ್ವರ್ ಅದಾಗಿರದೇ ಇರಬಹುದು (ನೀವು ದಾಳಿಕೋರರೊಂದಿಗೆ ಸಂವಹನ ಮಾಡುತ್ತಿರಬಹುದು).</translation>
 <translation id="6826993739343257035">AR ಅನ್ನು ಅನುಮತಿಸುವುದೇ?</translation>
-<translation id="6831043979455480757">ಅನುವಾದಿಸು</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6839929833149231406">ಪ್ರದೇಶ</translation>
 <translation id="6846340164947227603">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯೊಂದನ್ನು ಬಳಸಿ...</translation>
 <translation id="6852204201400771460">ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪುನಃ ಆರಂಭಿಸಬೇಕೆ?</translation>
@@ -1459,7 +1459,7 @@
 <translation id="6973656660372572881">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಮತ್ತು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಎರಡನ್ನೂ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="6973932557599545801">ಕ್ಷಮಿಸಿ, ನನ್ನಿಂದ ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ, ನಿಮ್ಮ ವಿವೇಚನೆಗೆ ತಕ್ಕಂತೆ ಮುಂದುವರಿಸಿ.</translation>
 <translation id="6975012522936652259">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ಹಾಗೂ ಈ ಪಾಸ್‌ವರ್ಡ್ ಬಳಸುವ ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈಗಲೇ ಬದಲಾಯಿಸಲು Chromium ನಿಮಗೆ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
-<translation id="6979158407327259162">Google ಡ್ರೈವ್‌‌</translation>
+<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="6979983982287291980">ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆ ಮಾಡಲು, ಅವುಗಳನ್ನು Google ಕ್ಲೌಡ್ ಅಥವಾ ಥರ್ಡ್ ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಅವುಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="6989763994942163495">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸು...</translation>
@@ -2000,14 +2000,14 @@
 <translation id="917450738466192189">ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರವು ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
 <translation id="9174917557437862841">ಟ್ಯಾಬ್ ಬದಲಿಸುವ ಬಟನ್, ಈ ಟ್ಯಾಬ್‌ಗೆ ಬದಲಾಯಿಸಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="9179703756951298733">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="9183302530794969518">Google ಡಾಕ್ಸ್‌</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183425211371246419"><ph name="HOST_NAME" /> ಬೆಂಬಲಿತವಲ್ಲದ ಪ್ರೋಟೋಕಾಲ್ ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="9191834167571392248">ಕೆಳಗಿನ ಎಡಭಾಗದಲ್ಲಿ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="9205078245616868884">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ನೊಂದಿಗೆ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅದನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="9207861905230894330">ಲೇಖನವನ್ನು ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9213433120051936369">ಗೋಚರತೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="9215416866750762878">ಈ ಸೈಟ್‌ಗೆ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಪರ್ಕಿಸುವ Chromeನ ಕಾರ್ಯವನ್ನು ಅಪ್ಲಿಕೇಶನ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ</translation>
-<translation id="9219103736887031265">ಚಿತ್ರಗಳು</translation>
+<translation id="9219103736887031265">Images</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ಫಾರ್ಮ್ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="936474030629450166">Super-B</translation>

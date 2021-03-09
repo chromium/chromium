@@ -51,7 +51,7 @@
 <translation id="1433600251059882049">Aquesta carpeta es comparteix amb Linux i Windows</translation>
 <translation id="1435838927755162558">Comparteix la carpeta amb Parallels Desktop</translation>
 <translation id="1439494416798956626">S'ha mogut a <ph name="FOLDER_NAME" />.</translation>
-<translation id="1441841714100794440">Teclat vietnamita (Telex)</translation>
+<translation id="1441841714100794440">Teclat vietnamita (tèlex)</translation>
 <translation id="1455548678241328678">Teclat noruec</translation>
 <translation id="1464724975715666883">1 error.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
@@ -327,7 +327,7 @@
 <translation id="4694604912444486114">Mico</translation>
 <translation id="4697043402264950621">La llista de fitxers es mostra per <ph name="COLUMN_NAME" /> en ordre ascendent.</translation>
 <translation id="4711094779914110278">Turc</translation>
-<translation id="4713544552769165154">Aquest fitxer està dissenyat per a un ordinador que faci servir programari de Macintosh. No és compatible amb el vostre dispositiu, que funciona amb Chrome OS. Podeu cercar una aplicació adequada equivalent a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
+<translation id="4713544552769165154">Aquest fitxer està dissenyat per a un ordinador amb programari de Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />. <ph name="BEGIN_LINK_HELP" />Més informació<ph name="END_LINK_HELP" /></translation>
 <translation id="4724850507808590449">S'ha creat una còpia de seguretat de <ph name="FILE_COUNT" /> fotos</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4732760563705710320">El dispositiu d'emissió no admet aquest vídeo.</translation>
@@ -657,7 +657,7 @@
 <translation id="7953739707111622108">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no s'ha reconegut.</translation>
 <translation id="7969525169268594403">Eslovè</translation>
 <translation id="7982283708762922719">Alçada</translation>
-<translation id="7987485481246785146">Teclat de kurd sorani basat en l'àrab</translation>
+<translation id="7987485481246785146">Teclat de kurd central basat en l'àrab</translation>
 <translation id="8008366997883261463">Gos</translation>
 <translation id="8028993641010258682">Mida</translation>
 <translation id="8031722894461705849">Teclat eslovac</translation>
@@ -687,7 +687,7 @@
 <translation id="8249296373107784235">Cancel·la</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8269755669432358899">Replega els taulers amb informació dels fitxers</translation>
-<translation id="8279388322240498158">Teclat de kurd sorani basat en l'anglès</translation>
+<translation id="8279388322240498158">Teclat de kurd central basat en l'anglès</translation>
 <translation id="8280151743281770066">Fonètic armeni</translation>
 <translation id="8294431847097064396">Font</translation>
 <translation id="8297012244086013755">Configuració 3 de hangul (sense majúscules)</translation>
@@ -746,7 +746,7 @@
 <translation id="9017798300203431059">Fonètic rus</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9035012421917565900">Com que els elements no es poden retornar a <ph name="DESTINATION_NAME" />, aquesta acció no es pot desfer.</translation>
-<translation id="9038620279323455325">Ja hi ha un fitxer anomenat "<ph name="FILE_NAME" />". Tria un altre nom.</translation>
+<translation id="9038620279323455325">Ja hi ha un fitxer anomenat <ph name="FILE_NAME" />. Tria un altre nom.</translation>
 <translation id="9064939804718829769">S'està transferint...</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>
@@ -757,7 +757,7 @@
 <translation id="9130775360844693113">Els membres de la unitat <ph name="DESTINATION_NAME" />, obtindran accés a aquets elements.</translation>
 <translation id="9131598836763251128">Seleccioneu un o diversos fitxers</translation>
 <translation id="9133055936679483811">S'ha produït un error en la compressió. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="9134524245363717059">Aquest fitxer s'ha dissenyat per a un ordinador amb programari Macintosh. No és compatible amb el vostre dispositiu, que funciona amb Chrome OS. Cerqueu una aplicació opcional adequada a Chrome Web Store.</translation>
+<translation id="9134524245363717059">Aquest fitxer està dissenyat per a un ordinador amb programari de Macintosh. No és compatible amb el teu dispositiu, que funciona amb Chrome OS. Cerca una aplicació alternativa adequada a Chrome Web Store.</translation>
 <translation id="913758436357682283">Teclat myansan de Birmània</translation>
 <translation id="9148058034647219655">Surt</translation>
 <translation id="9153744823707037316">Mètode d'introducció de la matriu</translation>
