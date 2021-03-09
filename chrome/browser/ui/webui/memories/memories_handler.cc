@@ -15,7 +15,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -32,21 +31,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/base/l10n/time_format.h"
 #endif
-
-namespace {
-
-GURL GetRandomlySizedThumbnailUrl() {
-  const std::vector<int> dimensions = {150, 160, 170, 180, 190, 200};
-  auto random_dimension = [&dimensions]() {
-    return dimensions[rand() % dimensions.size()];
-  };
-  return GURL(base::StringPrintf("https://via.placeholder.com/%dX%d",
-                                 random_dimension(), random_dimension()));
-}
-
-}  // namespace
 
 MemoriesHandler::MemoriesHandler(
     mojo::PendingReceiver<memories::mojom::PageHandler> pending_page_handler,
@@ -91,8 +76,10 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
                                             MemoriesResultCallback callback,
                                             history::QueryResults results) {
   auto memories_result_mojom = memories::mojom::MemoriesResult::New();
-  memories_result_mojom->title = base::UTF8ToUTF16(query);
-  memories_result_mojom->thumbnail_url = GetRandomlySizedThumbnailUrl();
+  memories_result_mojom->title =
+      base::UTF8ToUTF16("Related to \"" + query + "\"");
+  memories_result_mojom->thumbnail_url =
+      GURL("https://via.placeholder.com/200");
 
   auto memory_mojom = memories::mojom::Memory::New();
   memory_mojom->id = base::UnguessableToken::Create();
@@ -109,6 +96,13 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
     if (memory_mojom->last_visit_time.is_null()) {
       memory_mojom->last_visit_time = result.visit_time();
     }
+
+    // Keep track of all the visited URLs.
+    auto webpage = memories::mojom::WebPage::New();
+    webpage->url = result.url();
+    webpage->title = result.title();
+    webpage->thumbnail_url = GURL("https://via.placeholder.com/200");
+    memory_mojom->pages[result.url()] = std::move(webpage);
 
     // Check if the URL is a valid search URL.
     base::string16 search_terms;
@@ -143,13 +137,7 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
       auto visit = memories::mojom::Visit::New();
       // TOOD(mahmadi): URLResult does not contain visit_id.
       visit->url = result.url();
-      visit->page_title = result.title();
-      visit->thumbnail_url = GetRandomlySizedThumbnailUrl();
       visit->time = result.visit_time();
-      visit->relative_date = ui::TimeFormat::Simple(
-          ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-          base::Time::Now() - visit->time);
-      visit->time_of_day = base::TimeFormatTimeOfDay(visit->time);
 
       std::function<void(std::vector<memories::mojom::VisitPtr>&, bool)>
           add_visit;
@@ -188,34 +176,22 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
     const TabStripModel* tab_strip_model = browser->tab_strip_model();
     const TabGroupModel* group_model = tab_strip_model->group_model();
     for (const auto& group_id : group_model->ListTabGroups()) {
+      std::vector<GURL> related_tab_group_urls;
       const TabGroup* tab_group = group_model->GetTabGroup(group_id);
-      bool tab_group_has_url_in_memory = false;
       gfx::Range tabs = tab_group->ListTabs();
       for (uint32_t index = tabs.start(); index < tabs.end(); ++index) {
         content::WebContents* web_contents =
             tab_strip_model->GetWebContentsAt(index);
         const GURL& url = web_contents->GetLastCommittedURL();
-        auto matching_result_it = std::find_if(
-            results.begin(), results.end(),
-            [&url](const auto& result) { return result.url() == url; });
-        if (matching_result_it != results.end()) {
-          tab_group_has_url_in_memory = true;
-          break;
+        if (base::Contains(memory_mojom->pages, url)) {
+          related_tab_group_urls.push_back(url);
         }
       }
-      if (tab_group_has_url_in_memory) {
+      if (!related_tab_group_urls.empty()) {
         auto tab_group_mojom = memories::mojom::TabGroup::New();
         tab_group_mojom->id = tab_group->id().token();
         tab_group_mojom->title = tab_group->visual_data()->title();
-        for (uint32_t index = tabs.start(); index < tabs.end(); ++index) {
-          content::WebContents* web_contents =
-              tab_strip_model->GetWebContentsAt(index);
-          auto webpage = memories::mojom::WebPage::New();
-          webpage->url = web_contents->GetLastCommittedURL();
-          webpage->title = web_contents->GetTitle();
-          webpage->thumbnail_url = GetRandomlySizedThumbnailUrl();
-          tab_group_mojom->pages.push_back(std::move(webpage));
-        }
+        tab_group_mojom->urls = related_tab_group_urls;
         memory_mojom->related_tab_groups.push_back(std::move(tab_group_mojom));
       }
     }
@@ -228,16 +204,8 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
     std::vector<bookmarks::UrlAndTitle> bookmarks;
     model->GetBookmarks(&bookmarks);
     for (const auto& bookmark : bookmarks) {
-      auto matching_result_it = std::find_if(
-          results.begin(), results.end(), [&bookmark](const auto& result) {
-            return result.url() == bookmark.url;
-          });
-      if (matching_result_it != results.end()) {
-        auto webpage = memories::mojom::WebPage::New();
-        webpage->url = matching_result_it->url();
-        webpage->title = matching_result_it->title();
-        webpage->thumbnail_url = GetRandomlySizedThumbnailUrl();
-        memory_mojom->bookmarks.push_back(std::move(webpage));
+      if (base::Contains(memory_mojom->pages, bookmark.url)) {
+        memory_mojom->bookmarks.push_back(bookmark.url);
       }
     }
   }
