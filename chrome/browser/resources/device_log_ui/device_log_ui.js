@@ -146,8 +146,8 @@ const DeviceLogUI = (function() {
    * Gets log information from WebUI.
    */
   document.addEventListener('DOMContentLoaded', function() {
-    // Show all levels except 'Debug' by default.
-    $('log-level-select').value = 'Event';
+    // Debug is the default level to show.
+    $('log-level-select').value = 'Debug';
     $('log-level-select').onchange = requestLog;
 
     // Show all types by default.
