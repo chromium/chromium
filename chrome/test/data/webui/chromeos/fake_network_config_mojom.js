@@ -100,13 +100,22 @@
 
     this.vpnProviders_ = [];
 
-    ['getNetworkState', 'getNetworkStateList', 'getDeviceStateList',
-     'getManagedProperties', 'setNetworkTypeEnabledState', 'requestNetworkScan',
-     'getGlobalPolicy', 'getVpnProviders', 'getNetworkCertificates',
-     'setProperties', 'setCellularSimState']
-        .forEach((methodName) => {
-          this.resolverMap_.set(methodName, new PromiseResolver());
-        });
+    ['getNetworkState',
+     'getNetworkStateList',
+     'getDeviceStateList',
+     'getManagedProperties',
+     'setNetworkTypeEnabledState',
+     'requestNetworkScan',
+     'getGlobalPolicy',
+     'getVpnProviders',
+     'getNetworkCertificates',
+     'setProperties',
+     'setCellularSimState',
+     'startConnect',
+     'configureNetwork',
+    ].forEach((methodName) => {
+      this.resolverMap_.set(methodName, new PromiseResolver());
+    });
   }
 
   /**
@@ -182,6 +191,43 @@
       managed.connectionState = state;
     }
     this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @return {!Promise<{result:
+   *     !chromeos.networkConfig.mojom.StartConnectResult}>}
+   */
+  startConnect(guid) {
+    return new Promise(resolve => {
+      this.methodCalled('startConnect');
+      resolve(
+          {result: chromeos.networkConfig.mojom.StartConnectResult.kCanceled});
+    });
+  }
+
+  /**
+   * @param {chromeos.networkConfig.mojom.ConfigProperties} properties
+   * @param {boolean} shared
+   * @return {!Promise<{guid: string, errorMessage: string}>}
+   */
+  configureNetwork(properties, shared) {
+    return new Promise(resolve => {
+      this.methodCalled('configureNetwork');
+      resolve({guid: 'test_guid', errorMessage: ''});
+    });
+  }
+
+  /**
+   * @param {string} guid
+   * @param {chromeos.networkConfig.mojom.ConfigProperties} properties
+   * @return {!Promise<{success: boolean, errorMessage: string}>}
+   */
+  setProperties(guid, properties) {
+    return new Promise(resolve => {
+      this.methodCalled('setProperties');
+      resolve({success: true, errorMessage: ''});
+    });
   }
 
   /**

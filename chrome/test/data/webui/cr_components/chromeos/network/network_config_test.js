@@ -6,10 +6,12 @@
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/network/network_config.m.js';
 
+// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {eventToPromise} from '../../../test_util.m.js';
 // clang-format on
 
 suite('network-config', function() {
@@ -58,6 +60,17 @@ suite('network-config', function() {
     });
   }
 
+  /**
+   * Simulate an element of id |elementId| fires enter event.
+   * @param {string} elementId
+   */
+  function simulateEnterPressedInElement(elementId) {
+    let element = networkConfig.$$(`#${elementId}`);
+    networkConfig.connectOnEnter = true;
+    assertTrue(!!element);
+    element.fire('enter', {path: [element]});
+  }
+
   suite('New WiFi Config', function() {
     setup(function() {
       mojoApi_.resetForTest();
@@ -95,6 +108,8 @@ suite('network-config', function() {
       wifi1.source = chromeos.networkConfig.mojom.OncSource.kDevice;
       wifi1.typeProperties.wifi.security =
           chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+      wifi1.typeProperties.wifi.ssid.activeValue = '11111111111';
+      wifi1.typeProperties.wifi.passphrase = {activeValue: 'test_passphrase'};
       setNetworkConfig(wifi1);
       initNetworkConfig();
     });
@@ -112,6 +127,14 @@ suite('network-config', function() {
         assertTrue(!!networkConfig.$$('#ssid'));
         assertTrue(!!networkConfig.$$('#security'));
         assertTrue(networkConfig.$$('#security').disabled);
+      });
+    });
+
+    test('WiFi input fires enter event on keydown', function() {
+      return flushAsync().then(() => {
+        assertFalse(networkConfig.propertiesSent_);
+        simulateEnterPressedInElement('ssid');
+        assertTrue(networkConfig.propertiesSent_);
       });
     });
   });
@@ -260,6 +283,23 @@ suite('network-config', function() {
         assertTrue(!!outer);
         assertTrue(!outer.disabled);
         assertEquals('PEAP', outer.value);
+      });
+    });
+
+    test('Ethernet input fires enter event on keydown', function() {
+      const eth = OncMojo.getDefaultManagedProperties(
+          chromeos.networkConfig.mojom.NetworkType.kEthernet, 'eapguid', '');
+      eth.typeProperties.ethernet.authentication =
+          OncMojo.createManagedString('8021x');
+      eth.typeProperties.ethernet.eap = {
+        outer: OncMojo.createManagedString('PEAP')
+      };
+      setNetworkConfig(eth);
+      initNetworkConfig();
+      return flushAsync().then(() => {
+        assertFalse(networkConfig.propertiesSent_);
+        simulateEnterPressedInElement('oncEAPIdentity');
+        assertTrue(networkConfig.propertiesSent_);
       });
     });
   });

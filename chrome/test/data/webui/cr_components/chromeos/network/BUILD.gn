@@ -28,6 +28,8 @@ js_modulizer("modulize") {
     "network_siminfo_test.js",
     "sim_lock_dialogs_test.js",
   ]
-  namespace_rewrites =
-      [ "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl" ]
+  namespace_rewrites = [
+    "network_config.MojoInterfaceProviderImpl|MojoInterfaceProviderImpl",
+    "test_util.eventToPromise|eventToPromise",
+  ]
 }

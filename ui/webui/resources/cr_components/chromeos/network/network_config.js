@@ -335,6 +335,8 @@ Polymer({
     'updateIsConfigured_(selectedUserCertHash_)',
   ],
 
+  listeners: {'enter': 'onEnterEvent_'},
+
   /** @const */
   MIN_PASSPHRASE_LENGTH: 5,
 
@@ -454,6 +456,18 @@ Polymer({
         'network-config-select:not([disabled])');
     if (e) {
       e.focus();
+    }
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onEnterEvent_(event) {
+    if (event.path[0].localName === 'network-config-input' ||
+        event.path[0].localName === 'network-password-input') {
+      this.onEnterPressedInInput_();
+      event.stopPropagation();
     }
   },
 

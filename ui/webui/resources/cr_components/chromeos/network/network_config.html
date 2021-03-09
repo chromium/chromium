@@ -39,8 +39,7 @@
       <template is="dom-if" if="[[isWiFi_(mojoType_)]]" restamp>
         <network-config-input id="ssid" label="[[i18n('OncWiFi-SSID')]]"
             value="{{configProperties_.typeConfig.wifi.ssid}}"
-            readonly="[[hasGuid_(guid)]]"
-            on-enter="onEnterPressedInInput_">
+            readonly="[[hasGuid_(guid)]]">
         </network-config-input>
       </template>
 
@@ -61,7 +60,6 @@
         <network-password-input id="wifi-passphrase"
             label="[[i18n('OncWiFi-Passphrase')]]"
             value="{{configProperties_.typeConfig.wifi.passphrase}}"
-            on-enter="onEnterPressedInInput_"
             property="[[managedProperties_.typeProperties.wifi.passphrase]]">
         </network-password-input>
       </template>
@@ -83,13 +81,11 @@
         <template is="dom-if" if="[[!showVpn_.OpenVPN]]">
           <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
               value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
-              property="[[managedProperties_.typeProperties.vpn.l2tp.username]]"
-          >
+              property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
           </network-config-input>
           <network-password-input label="[[i18n('OncVPN-L2TP-Password')]]"
               value="{{configProperties_.typeConfig.vpn.l2tp.password}}"
-              property="[[managedProperties_.typeProperties.vpn.l2tp.password]]"
-          >
+              property="[[managedProperties_.typeProperties.vpn.l2tp.password]]">
           </network-password-input>
           <network-config-input label="[[i18n('OncVPN-IPsec-Group')]]"
               value="{{configProperties_.typeConfig.vpn.ipSec.group}}"
@@ -166,7 +162,7 @@
             property="[[managedEapProperties_.clientCertType]]"
             device-certs-only="[[deviceCertsOnly_]]">
         </network-config-select>
-        <network-config-input label="[[i18n('OncEAP-Identity')]]"
+        <network-config-input id="oncEAPIdentity" label="[[i18n('OncEAP-Identity')]]"
             value="{{eapProperties_.identity}}" hidden="[[!showEap_.Identity]]"
             property="[[managedEapProperties_.identity]]">
         </network-config-input>
