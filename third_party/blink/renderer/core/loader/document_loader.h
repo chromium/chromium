@@ -423,9 +423,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // to the parser in a nested message loop.
   void ProcessDataBuffer(const char* bytes = nullptr, size_t length = 0);
 
-  // Sends an intervention report if the page is being served as a preview.
-  void ReportPreviewsIntervention() const;
-
   // WebNavigationBodyLoader::Client
   void BodyCodeCacheReceived(mojo_base::BigBuffer data) override;
   void BodyDataReceived(base::span<const char> data) override;

@@ -2318,7 +2318,6 @@ void DocumentLoader::CreateParserPostCommit() {
   document->MaybeHandleHttpRefresh(
       response_.HttpHeaderField(http_names::kRefresh),
       Document::kHttpRefreshFromHeader);
-  ReportPreviewsIntervention();
 }
 
 const AtomicString& DocumentLoader::MimeType() const {
@@ -2409,34 +2408,6 @@ void DocumentLoader::RecordConsoleMessagesForCommit() {
   // console messages will be properly displayed.
   frame_->Console().ReportResourceResponseReceived(
       this, main_resource_identifier_, response_);
-}
-
-void DocumentLoader::ReportPreviewsIntervention() const {
-  // Only send reports for main frames.
-  if (!frame_->IsMainFrame())
-    return;
-
-  // Verify that certain types are not on main frame requests.
-  DCHECK_NE(PreviewsTypes::kSubresourceRedirectOn, previews_state_);
-
-  static_assert(PreviewsTypes::kPreviewsStateLast ==
-                    PreviewsTypes::kSubresourceRedirectOn,
-                "If a new Preview type is added, verify that the Intervention "
-                "Report should be sent (or not sent) for that type.");
-
-  // If the preview type is not unspecified, off, or no transform, it is a
-  // preview that needs to be reported.
-  if (previews_state_ == PreviewsTypes::kPreviewsUnspecified ||
-      previews_state_ & PreviewsTypes::kPreviewsOff ||
-      previews_state_ & PreviewsTypes::kPreviewsNoTransform) {
-    return;
-  }
-
-  Intervention::GenerateReport(
-      frame_, "LitePageServed",
-      "Modified page load behavior on the page because the page was expected "
-      "to take a long amount of time to load. "
-      "https://www.chromestatus.com/feature/5148050062311424");
 }
 
 void DocumentLoader::ApplyClientHintsConfig(

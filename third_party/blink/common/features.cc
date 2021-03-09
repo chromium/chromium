@@ -483,11 +483,6 @@ const base::Feature kIgnoreCrossOriginWindowWhenNamedAccessOnWindow{
     "IgnoreCrossOriginWindowWhenNamedAccessOnWindow",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, scripts in iframes are not force deferred by the DeferAllScript
-// intervention.
-const base::Feature kDisableForceDeferInChildFrames{
-    "DisableForceDeferInChildFrames", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables redirecting subresources in the page to better compressed and
 // optimized versions to provide data savings.
 const base::Feature kSubresourceRedirect{"SubresourceRedirect",
