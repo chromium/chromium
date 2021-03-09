@@ -28,9 +28,9 @@ mojom::PermissionsPolicyFeature kUnavailableFeature =
 
 }  // namespace
 
-class FeaturePolicyTest : public testing::Test {
+class PermissionsPolicyTest : public testing::Test {
  protected:
-  FeaturePolicyTest()
+  PermissionsPolicyTest()
       : feature_list_({{kDefaultOnFeature,
                         PermissionsPolicyFeatureDefault(
                             PermissionsPolicyFeatureDefault::EnableForAll)},
@@ -39,7 +39,7 @@ class FeaturePolicyTest : public testing::Test {
                             PermissionsPolicyFeatureDefault::EnableForSelf)}}) {
   }
 
-  ~FeaturePolicyTest() override = default;
+  ~PermissionsPolicyTest() override = default;
 
   std::unique_ptr<PermissionsPolicy> CreateFromParentPolicy(
       const PermissionsPolicy* parent,
@@ -73,7 +73,7 @@ class FeaturePolicyTest : public testing::Test {
   PermissionsPolicyFeatureList feature_list_;
 };
 
-TEST_F(FeaturePolicyTest, TestInitialPolicy) {
+TEST_F(PermissionsPolicyTest, TestInitialPolicy) {
   // +-------------+
   // |(1)Origin A  |
   // |No Policy    |
@@ -86,7 +86,7 @@ TEST_F(FeaturePolicyTest, TestInitialPolicy) {
   EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestInitialSameOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, TestInitialSameOriginChildPolicy) {
   // +-----------------+
   // |(1)Origin A      |
   // |No Policy        |
@@ -105,7 +105,7 @@ TEST_F(FeaturePolicyTest, TestInitialSameOriginChildPolicy) {
   EXPECT_TRUE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestInitialCrossOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, TestInitialCrossOriginChildPolicy) {
   // +-----------------+
   // |(1)Origin A      |
   // |No Policy        |
@@ -124,7 +124,7 @@ TEST_F(FeaturePolicyTest, TestInitialCrossOriginChildPolicy) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestCrossOriginChildCannotEnableFeature) {
+TEST_F(PermissionsPolicyTest, TestCrossOriginChildCannotEnableFeature) {
   // +----------------------------------------+
   // |(1) Origin A                            |
   // |No Policy                               |
@@ -145,7 +145,7 @@ TEST_F(FeaturePolicyTest, TestCrossOriginChildCannotEnableFeature) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestFrameSelfInheritance) {
+TEST_F(PermissionsPolicyTest, TestFrameSelfInheritance) {
   // +------------------------------------------+
   // |(1) Origin A                              |
   // |Feature-Policy: default-self 'self'       |
@@ -180,7 +180,7 @@ TEST_F(FeaturePolicyTest, TestFrameSelfInheritance) {
   EXPECT_FALSE(policy5->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestReflexiveFrameSelfInheritance) {
+TEST_F(PermissionsPolicyTest, TestReflexiveFrameSelfInheritance) {
   // +------------------------------------+
   // |(1) Origin A                        |
   // |Feature-Policy: default-self 'self' |
@@ -208,7 +208,7 @@ TEST_F(FeaturePolicyTest, TestReflexiveFrameSelfInheritance) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance) {
+TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance) {
   // +------------------------------------------+
   // |(1) Origin A                              |
   // |Feature-Policy: default-self OriginB      |
@@ -241,7 +241,7 @@ TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance2) {
+TEST_F(PermissionsPolicyTest, TestSelectiveFrameInheritance2) {
   // +------------------------------------------+
   // |(1) Origin A                              |
   // |Feature-Policy: default-self OriginB      |
@@ -276,7 +276,7 @@ TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance2) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestPolicyCanBlockSelf) {
+TEST_F(PermissionsPolicyTest, TestPolicyCanBlockSelf) {
   // +----------------------------------+
   // |(1)Origin A                       |
   // |Feature-Policy: default-on 'none' |
@@ -289,7 +289,7 @@ TEST_F(FeaturePolicyTest, TestPolicyCanBlockSelf) {
   EXPECT_FALSE(policy1->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestParentPolicyBlocksSameOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, TestParentPolicyBlocksSameOriginChildPolicy) {
   // +----------------------------------+
   // |(1)Origin A                       |
   // |Feature-Policy: default-on 'none' |
@@ -308,7 +308,7 @@ TEST_F(FeaturePolicyTest, TestParentPolicyBlocksSameOriginChildPolicy) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestChildPolicyCanBlockSelf) {
+TEST_F(PermissionsPolicyTest, TestChildPolicyCanBlockSelf) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |No Policy                             |
@@ -327,7 +327,7 @@ TEST_F(FeaturePolicyTest, TestChildPolicyCanBlockSelf) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestChildPolicyCanBlockChildren) {
+TEST_F(PermissionsPolicyTest, TestChildPolicyCanBlockChildren) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |No Policy                             |
@@ -354,7 +354,7 @@ TEST_F(FeaturePolicyTest, TestChildPolicyCanBlockChildren) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestParentPolicyBlocksCrossOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, TestParentPolicyBlocksCrossOriginChildPolicy) {
   // +----------------------------------+
   // |(1)Origin A                       |
   // |Feature-Policy: default-on 'none' |
@@ -373,7 +373,7 @@ TEST_F(FeaturePolicyTest, TestParentPolicyBlocksCrossOriginChildPolicy) {
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestEnableForAllOrigins) {
+TEST_F(PermissionsPolicyTest, TestEnableForAllOrigins) {
   // +--------------------------------+
   // |(1) Origin A                    |
   // |Feature-Policy: default-self *  |
@@ -400,7 +400,7 @@ TEST_F(FeaturePolicyTest, TestEnableForAllOrigins) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestEnableForAllOriginsAndDelegate) {
+TEST_F(PermissionsPolicyTest, TestEnableForAllOriginsAndDelegate) {
   // +--------------------------------------+
   // |(1) Origin A                          |
   // |Feature-Policy: default-self *        |
@@ -430,7 +430,7 @@ TEST_F(FeaturePolicyTest, TestEnableForAllOriginsAndDelegate) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultOnStillNeedsSelf) {
+TEST_F(PermissionsPolicyTest, TestDefaultOnStillNeedsSelf) {
   // +---------------------------------------+
   // |(1) Origin A                           |
   // |Feature-Policy: default-on OriginB     |
@@ -460,7 +460,7 @@ TEST_F(FeaturePolicyTest, TestDefaultOnStillNeedsSelf) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultOnEnablesForAllDescendants) {
+TEST_F(PermissionsPolicyTest, TestDefaultOnEnablesForAllDescendants) {
   // +----------------------------------------+
   // |(1) Origin A                            |
   // |Feature-Policy: default-on self OriginB |
@@ -491,7 +491,7 @@ TEST_F(FeaturePolicyTest, TestDefaultOnEnablesForAllDescendants) {
   EXPECT_TRUE(policy4->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultSelfRequiresDelegation) {
+TEST_F(PermissionsPolicyTest, TestDefaultSelfRequiresDelegation) {
   // +---------------------------------------+
   // |(1) Origin A                           |
   // |Feature-Policy: default-self OriginB   |
@@ -522,7 +522,7 @@ TEST_F(FeaturePolicyTest, TestDefaultSelfRequiresDelegation) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
+TEST_F(PermissionsPolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
   // +------------------------------------------+
   // |(1) Origin A                              |
   // |Feature-Policy: default-self self OriginB |
@@ -556,7 +556,7 @@ TEST_F(FeaturePolicyTest, TestDefaultSelfRespectsSameOriginEmbedding) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestDelegationRequiredAtAllLevels) {
+TEST_F(PermissionsPolicyTest, TestDelegationRequiredAtAllLevels) {
   // +------------------------------------+
   // |(1) Origin A                        |
   // |<iframe allow="default-self *">     |
@@ -587,7 +587,7 @@ TEST_F(FeaturePolicyTest, TestDelegationRequiredAtAllLevels) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestBlockedFrameCannotReenable) {
+TEST_F(PermissionsPolicyTest, TestBlockedFrameCannotReenable) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |Feature-Policy: default-self 'self'   |
@@ -620,7 +620,7 @@ TEST_F(FeaturePolicyTest, TestBlockedFrameCannotReenable) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestEnabledFrameCanDelegate) {
+TEST_F(PermissionsPolicyTest, TestEnabledFrameCanDelegate) {
   // +---------------------------------------------------+
   // |(1) Origin A                                       |
   // |No Policy                                          |
@@ -651,7 +651,7 @@ TEST_F(FeaturePolicyTest, TestEnabledFrameCanDelegate) {
   EXPECT_TRUE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestEnabledFrameCanDelegateByDefault) {
+TEST_F(PermissionsPolicyTest, TestEnabledFrameCanDelegateByDefault) {
   // +-----------------------------------------------+
   // |(1) Origin A                                   |
   // |Feature-Policy: default-on 'self' OriginB      |
@@ -683,7 +683,7 @@ TEST_F(FeaturePolicyTest, TestEnabledFrameCanDelegateByDefault) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultOnFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestFeaturesDontDelegateByDefault) {
+TEST_F(PermissionsPolicyTest, TestFeaturesDontDelegateByDefault) {
   // +-----------------------------------------------+
   // |(1) Origin A                                   |
   // |Feature-Policy: default-self 'self' OriginB    |
@@ -715,7 +715,7 @@ TEST_F(FeaturePolicyTest, TestFeaturesDontDelegateByDefault) {
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, TestFeaturesAreIndependent) {
+TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
   // +-----------------------------------------------+
   // |(1) Origin A                                   |
   // |No Policy                                      |
@@ -762,7 +762,7 @@ TEST_F(FeaturePolicyTest, TestFeaturesAreIndependent) {
 
 // Test frame policies
 
-TEST_F(FeaturePolicyTest, TestSimpleFramePolicy) {
+TEST_F(PermissionsPolicyTest, TestSimpleFramePolicy) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |No Policy                             |
@@ -789,7 +789,7 @@ TEST_F(FeaturePolicyTest, TestSimpleFramePolicy) {
       policy2->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
-TEST_F(FeaturePolicyTest, TestAllOriginFramePolicy) {
+TEST_F(PermissionsPolicyTest, TestAllOriginFramePolicy) {
   // +--------------------------------+
   // |(1)Origin A                     |
   // |No Policy                       |
@@ -816,7 +816,7 @@ TEST_F(FeaturePolicyTest, TestAllOriginFramePolicy) {
       policy2->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
-TEST_F(FeaturePolicyTest, TestFramePolicyCanBeFurtherDelegated) {
+TEST_F(PermissionsPolicyTest, TestFramePolicyCanBeFurtherDelegated) {
   // +------------------------------------------+
   // |(1)Origin A                               |
   // |No Policy                                 |
@@ -866,7 +866,7 @@ TEST_F(FeaturePolicyTest, TestFramePolicyCanBeFurtherDelegated) {
       policy4->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultOnCanBeDisabledByFramePolicy) {
+TEST_F(PermissionsPolicyTest, TestDefaultOnCanBeDisabledByFramePolicy) {
   // +-----------------------------------+
   // |(1)Origin A                        |
   // |No Policy                          |
@@ -912,7 +912,7 @@ TEST_F(FeaturePolicyTest, TestDefaultOnCanBeDisabledByFramePolicy) {
       policy3->IsFeatureEnabledForOrigin(kDefaultOnFeature, origin_c_));
 }
 
-TEST_F(FeaturePolicyTest, TestFramePolicyModifiesHeaderPolicy) {
+TEST_F(PermissionsPolicyTest, TestFramePolicyModifiesHeaderPolicy) {
   // +---------------------------------------------+
   // |(1)Origin A                                  |
   // |Feature-Policy: default-self 'self' OriginB  |
@@ -957,7 +957,7 @@ TEST_F(FeaturePolicyTest, TestFramePolicyModifiesHeaderPolicy) {
       policy3->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
-TEST_F(FeaturePolicyTest, TestCombineFrameAndHeaderPolicies) {
+TEST_F(PermissionsPolicyTest, TestCombineFrameAndHeaderPolicies) {
   // +-----------------------------------------+
   // |(1)Origin A                              |
   // |No Policy                                |
@@ -1004,7 +1004,7 @@ TEST_F(FeaturePolicyTest, TestCombineFrameAndHeaderPolicies) {
       policy3->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_c_));
 }
 
-TEST_F(FeaturePolicyTest, TestFeatureDeclinedAtTopLevel) {
+TEST_F(PermissionsPolicyTest, TestFeatureDeclinedAtTopLevel) {
   // +-----------------------------------------+
   // |(1)Origin A                              |
   // |Feature-Policy: default-self 'none'      |
@@ -1044,7 +1044,7 @@ TEST_F(FeaturePolicyTest, TestFeatureDeclinedAtTopLevel) {
       policy3->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_a_));
 }
 
-TEST_F(FeaturePolicyTest, TestFeatureDelegatedAndAllowed) {
+TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
   // +--------------------------------------------+
   // |(1)Origin A                                 |
   // |Feature-Policy: default-self 'self' OriginB |
@@ -1100,7 +1100,7 @@ TEST_F(FeaturePolicyTest, TestFeatureDelegatedAndAllowed) {
       policy4->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
-TEST_F(FeaturePolicyTest, TestDefaultSandboxedFramePolicy) {
+TEST_F(PermissionsPolicyTest, TestDefaultSandboxedFramePolicy) {
   // +------------------+
   // |(1)Origin A       |
   // |No Policy         |
@@ -1127,7 +1127,7 @@ TEST_F(FeaturePolicyTest, TestDefaultSandboxedFramePolicy) {
                                                   sandboxed_origin));
 }
 
-TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForAllOrigins) {
+TEST_F(PermissionsPolicyTest, TestSandboxedFramePolicyForAllOrigins) {
   // +----------------------------------------+
   // |(1)Origin A                             |
   // |No Policy                               |
@@ -1156,7 +1156,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForAllOrigins) {
                                                  sandboxed_origin));
 }
 
-TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForOpaqueSrcOrigin) {
+TEST_F(PermissionsPolicyTest, TestSandboxedFramePolicyForOpaqueSrcOrigin) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |No Policy                             |
@@ -1185,7 +1185,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFramePolicyForOpaqueSrcOrigin) {
                                                  sandboxed_origin));
 }
 
-TEST_F(FeaturePolicyTest, TestSandboxedFrameFromHeaderPolicy) {
+TEST_F(PermissionsPolicyTest, TestSandboxedFrameFromHeaderPolicy) {
   // +--------------------------------------+
   // |(1)Origin A                           |
   // |Feature-Policy: default-self *        |
@@ -1212,7 +1212,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedFrameFromHeaderPolicy) {
                                                   sandboxed_origin));
 }
 
-TEST_F(FeaturePolicyTest, TestSandboxedPolicyIsNotInherited) {
+TEST_F(PermissionsPolicyTest, TestSandboxedPolicyIsNotInherited) {
   // +----------------------------------------+
   // |(1)Origin A                             |
   // |No Policy                               |
@@ -1254,7 +1254,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedPolicyIsNotInherited) {
                                                   sandboxed_origin_2));
 }
 
-TEST_F(FeaturePolicyTest, TestSandboxedPolicyCanBePropagated) {
+TEST_F(PermissionsPolicyTest, TestSandboxedPolicyCanBePropagated) {
   // +--------------------------------------------+
   // |(1)Origin A                                 |
   // |No Policy                                   |
@@ -1294,7 +1294,7 @@ TEST_F(FeaturePolicyTest, TestSandboxedPolicyCanBePropagated) {
                                                  sandboxed_origin_2));
 }
 
-TEST_F(FeaturePolicyTest, TestUndefinedFeaturesInFramePolicy) {
+TEST_F(PermissionsPolicyTest, TestUndefinedFeaturesInFramePolicy) {
   // +---------------------------------------------------+
   // |(1)Origin A                                        |
   // |No Policy                                          |
@@ -1331,7 +1331,7 @@ TEST_F(FeaturePolicyTest, TestUndefinedFeaturesInFramePolicy) {
 // where this differs from the current feature policy algorithm are called
 // out specifically. See https://crbug.com/937131 for additional context.
 
-TEST_F(FeaturePolicyTest, ProposedTestImplicitPolicy) {
+TEST_F(PermissionsPolicyTest, ProposedTestImplicitPolicy) {
   // +-----------------+
   // |(1)Origin A      |
   // |No Policy        |
@@ -1363,7 +1363,7 @@ TEST_F(FeaturePolicyTest, ProposedTestImplicitPolicy) {
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, ProposedTestCompletelyBlockedPolicy) {
+TEST_F(PermissionsPolicyTest, ProposedTestCompletelyBlockedPolicy) {
   // +------------------------------------+
   // |(1)Origin A                         |
   // |Feature-Policy: default-self 'none' |
@@ -1420,7 +1420,7 @@ TEST_F(FeaturePolicyTest, ProposedTestCompletelyBlockedPolicy) {
   EXPECT_FALSE(policy6->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   // +------------------------------------+
   // |(1)Origin A                         |
   // |Feature-Policy: default-self 'self' |
@@ -1483,7 +1483,7 @@ TEST_F(FeaturePolicyTest, ProposedTestDisallowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy6->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
   // +-----------------------------------------------+
   // |(1)Origin A                                    |
   // |Feature-Policy: default-self 'self' OriginB;   |
@@ -1546,7 +1546,7 @@ TEST_F(FeaturePolicyTest, ProposedTestAllowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy6->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
+TEST_F(PermissionsPolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
   // +------------------------------------+
   // |(1)Origin A                         |
   // |Feature-Policy: default-self *      |
@@ -1608,7 +1608,7 @@ TEST_F(FeaturePolicyTest, ProposedTestAllAllowedCrossOriginChildPolicy) {
   EXPECT_FALSE(policy6->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(FeaturePolicyTest, ProposedTestNestedPolicyPropagates) {
+TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
   // +-----------------------------------------------+
   // |(1)Origin A                                    |
   // |Feature-Policy: default-self 'self' OriginB;   |

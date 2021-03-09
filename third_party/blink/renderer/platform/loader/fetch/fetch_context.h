@@ -161,7 +161,9 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return MakeGarbageCollected<FetchContext>();
   }
 
-  virtual const PermissionsPolicy* GetFeaturePolicy() const { return nullptr; }
+  virtual const PermissionsPolicy* GetPermissionsPolicy() const {
+    return nullptr;
+  }
 
   // Determine if the request is on behalf of an advertisement. If so, return
   // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in

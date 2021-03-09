@@ -165,7 +165,7 @@ class SystemNetworkContextManager {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
-      SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+      SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
       Test);
 
   class URLLoaderFactoryForSystem;

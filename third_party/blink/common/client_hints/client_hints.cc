@@ -38,7 +38,7 @@ const char* const kClientHintsHeaderMapping[] = {
 
 const unsigned kClientHintsNumberOfLegacyHints = 4;
 
-const mojom::PermissionsPolicyFeature kClientHintsFeaturePolicyMapping[] = {
+const mojom::PermissionsPolicyFeature kClientHintsPermissionsPolicyMapping[] = {
     // Legacy Hints that are sent cross-origin regardless of Permissions Policy
     // when kAllowClientHintsToThirdParty is enabled.
     mojom::PermissionsPolicyFeature::kClientHintDeviceMemory,
@@ -67,7 +67,7 @@ static_assert(
     "Client Hint name table size must match network::mojom::WebClientHintsType "
     "range");
 
-static_assert(base::size(kClientHintsFeaturePolicyMapping) ==
+static_assert(base::size(kClientHintsPermissionsPolicyMapping) ==
                   kClientHintsMappingsCount,
               "Client Hint table sizes must be identical between names and "
               "feature policies");
@@ -153,7 +153,7 @@ void FindClientHintsToRemove(const PermissionsPolicy* permissions_policy,
              static_cast<network::mojom::WebClientHintsType>(i))) ||
         (permissions_policy &&
          !permissions_policy->IsFeatureEnabledForOrigin(
-             blink::kClientHintsFeaturePolicyMapping[i], origin))) {
+             blink::kClientHintsPermissionsPolicyMapping[i], origin))) {
       removed_headers->push_back(blink::kClientHintsHeaderMapping[i]);
     }
   }

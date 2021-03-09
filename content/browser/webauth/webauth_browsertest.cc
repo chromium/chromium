@@ -113,7 +113,7 @@ constexpr char kRelyingPartyRpIconUrlSecurityErrorMessage[] =
 constexpr char kAbortErrorMessage[] =
     "webauth: AbortError: Request has been aborted.";
 
-constexpr char kGetFeaturePolicyMissingMessage[] =
+constexpr char kGetPermissionsPolicyMissingMessage[] =
     "webauth: NotAllowedError: The 'publickey-credentials-get' feature is "
     "not enabled in this document. Permissions Policy may be used to delegate "
     "Web Authentication capabilities to cross-origin child frames.";
@@ -1267,7 +1267,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
     if (test.get_should_work) {
       EXPECT_EQ(std::string(kOkMessage), result);
     } else {
-      EXPECT_EQ(kGetFeaturePolicyMissingMessage, result);
+      EXPECT_EQ(kGetPermissionsPolicyMissingMessage, result);
     }
   }
 }

@@ -142,12 +142,12 @@ void SecurityContext::SetSandboxFlags(
   sandbox_flags_ = flags;
 }
 
-void SecurityContext::SetFeaturePolicy(
+void SecurityContext::SetPermissionsPolicy(
     std::unique_ptr<PermissionsPolicy> permissions_policy) {
   permissions_policy_ = std::move(permissions_policy);
 }
 
-void SecurityContext::SetReportOnlyFeaturePolicy(
+void SecurityContext::SetReportOnlyPermissionsPolicy(
     std::unique_ptr<PermissionsPolicy> permissions_policy) {
   report_only_permissions_policy_ = std::move(permissions_policy);
 }

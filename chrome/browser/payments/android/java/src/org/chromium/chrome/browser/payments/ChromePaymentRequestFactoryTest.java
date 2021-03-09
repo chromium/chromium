@@ -55,10 +55,10 @@ public class ChromePaymentRequestFactoryTest {
         Mockito.doReturn(true).when(mProfile).isOffTheRecord();
         ShadowProfile.setProfile(mProfile);
 
-        setPaymentFeaturePolicy(true);
+        setPaymentPermissionsPolicy(true);
     }
 
-    private void setPaymentFeaturePolicy(boolean enabled) {
+    private void setPaymentPermissionsPolicy(boolean enabled) {
         Mockito.doReturn(enabled)
                 .when(mRenderFrameHost)
                 .isFeatureEnabled(PermissionsPolicyFeature.PAYMENT);
@@ -82,7 +82,7 @@ public class ChromePaymentRequestFactoryTest {
     @Test
     @Feature({"Payments"})
     public void testDisabledPolicyCausesBadMessage() {
-        setPaymentFeaturePolicy(false);
+        setPaymentPermissionsPolicy(false);
         AtomicInteger isKilledReason = new AtomicInteger(0);
         Mockito.doAnswer(invocation -> {
                    isKilledReason.set((int) invocation.getArguments()[0]);

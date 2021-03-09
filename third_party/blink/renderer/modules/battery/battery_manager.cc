@@ -28,7 +28,7 @@ ScriptPromise BatteryManager::getBattery(ScriptState* script_state,
   LocalDOMWindow* window = navigator.DomWindow();
   if (!window->IsSecureContext())
     UseCounter::Count(window, WebFeature::kBatteryStatusInsecureOrigin);
-  window->GetFrame()->CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
+  window->GetFrame()->CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       WebFeature::kBatteryStatusCrossOrigin,
       WebFeature::kBatteryStatusSameOriginABA);
 

@@ -390,7 +390,7 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
 // These tests are not meant to cover every edge case as the PermissionsPolicy
 // class itself is tested thoroughly in permissions_policy_unittest.cc and in
 // render_frame_host_permissions_policy_unittest.cc.
-class MediaStreamUIProxyFeaturePolicyTest
+class MediaStreamUIProxyPermissionsPolicyTest
     : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
@@ -405,7 +405,7 @@ class MediaStreamUIProxyFeaturePolicyTest
       blink::mojom::PermissionsPolicyFeature feature) {
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
-    navigation->SetFeaturePolicyHeader({{feature, {}, false, false}});
+    navigation->SetPermissionsPolicyHeader({{feature, {}, false, false}});
     navigation->Commit();
   }
 
@@ -416,10 +416,9 @@ class MediaStreamUIProxyFeaturePolicyTest
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MediaStreamUIProxyFeaturePolicyTest::GetResultForRequestOnIOThread,
-            base::Unretained(this), std::move(request)));
+        FROM_HERE, base::BindOnce(&MediaStreamUIProxyPermissionsPolicyTest::
+                                      GetResultForRequestOnIOThread,
+                                  base::Unretained(this), std::move(request)));
     run_loop.Run();
     *devices_out = devices_;
     *result_out = result_;
@@ -474,9 +473,9 @@ class MediaStreamUIProxyFeaturePolicyTest
     proxy_ = MediaStreamUIProxy::CreateForTests(&delegate_);
     proxy_->RequestAccess(
         std::move(request),
-        base::BindOnce(
-            &MediaStreamUIProxyFeaturePolicyTest::FinishedGetResultOnIOThread,
-            base::Unretained(this)));
+        base::BindOnce(&MediaStreamUIProxyPermissionsPolicyTest::
+                           FinishedGetResultOnIOThread,
+                       base::Unretained(this)));
   }
 
   void FinishedGetResultOnIOThread(
@@ -486,8 +485,9 @@ class MediaStreamUIProxyFeaturePolicyTest
     proxy_.reset();
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&MediaStreamUIProxyFeaturePolicyTest::FinishedGetResult,
-                       base::Unretained(this), devices, result));
+        base::BindOnce(
+            &MediaStreamUIProxyPermissionsPolicyTest::FinishedGetResult,
+            base::Unretained(this), devices, result));
   }
 
   void FinishedGetResult(const blink::MediaStreamDevices& devices,
@@ -508,7 +508,7 @@ class MediaStreamUIProxyFeaturePolicyTest
   std::unique_ptr<MediaStreamUIProxy> proxy_;
 };
 
-TEST_F(MediaStreamUIProxyFeaturePolicyTest, PermissionsPolicy) {
+TEST_F(MediaStreamUIProxyPermissionsPolicyTest, PermissionsPolicy) {
   blink::MediaStreamDevices devices;
   blink::mojom::MediaStreamRequestResult result;
 

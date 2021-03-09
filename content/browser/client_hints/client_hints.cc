@@ -382,7 +382,7 @@ std::string SerializeHeaderString(std::string str) {
       .value_or(std::string());
 }
 
-bool IsFeaturePolicyForClientHintsEnabled() {
+bool IsPermissionsPolicyForClientHintsEnabled() {
   return base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints);
 }
 
@@ -423,11 +423,12 @@ struct ClientHintsExtendedData {
 
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
                          network::mojom::WebClientHintsType type) {
-  if (!IsFeaturePolicyForClientHintsEnabled() || data.is_main_frame)
+  if (!IsPermissionsPolicyForClientHintsEnabled() || data.is_main_frame)
     return data.is_1p_origin;
   return data.permissions_policy &&
          data.permissions_policy->IsFeatureEnabledForOrigin(
-             blink::kClientHintsFeaturePolicyMapping[static_cast<int>(type)],
+             blink::kClientHintsPermissionsPolicyMapping[static_cast<int>(
+                 type)],
              data.resource_origin);
 }
 
@@ -742,7 +743,7 @@ ParseAndPersistAcceptCHForNagivation(
     return base::nullopt;
 
   base::TimeDelta persist_duration;
-  if (IsFeaturePolicyForClientHintsEnabled()) {
+  if (IsPermissionsPolicyForClientHintsEnabled()) {
     // JSON cannot store "non-finite" values (i.e. NaN or infinite) so
     // base::TimeDelta::Max cannot be used. As this will be removed once
     // the FeaturePolicyForClientHints feature is shipped, a reasonably

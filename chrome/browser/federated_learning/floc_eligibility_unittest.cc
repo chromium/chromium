@@ -102,7 +102,7 @@ class FlocEligibilityUnitTest : public ChromeRenderViewHostTestHarness {
     }
 
     if (!floc_permissions_policy_enabled) {
-      simulator->SetFeaturePolicyHeader(
+      simulator->SetPermissionsPolicyHeader(
           {{blink::mojom::PermissionsPolicyFeature::kInterestCohort,
             /*values=*/{}, /*matches_all_origins=*/false,
             /*matches_opaque_src=*/false}});
@@ -187,7 +187,7 @@ TEST_F(FlocEligibilityUnitTest, StopObservingPrivateIP) {
   EXPECT_FALSE(IsUrlVisitEligibleToComputeFloc(url));
 }
 
-TEST_F(FlocEligibilityUnitTest, StopObservingFlocFeaturePolicyDisabled) {
+TEST_F(FlocEligibilityUnitTest, StopObservingFlocPermissionsPolicyDisabled) {
   GURL url("https://foo.com");
   NavigateToPage(url, /*publicly_routable=*/true,
                  /*floc_permissions_policy_enabled=*/false);

@@ -495,10 +495,6 @@ const base::Feature kOverscrollHistoryNavigation{
 const base::Feature kPeriodicBackgroundSync{"PeriodicBackgroundSync",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable permission policy for configuring and restricting feature behavior.
-const base::Feature kPermissionsPolicyHeader{"PermissionsPolicyHeader",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If Pepper 3D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 const base::Feature kPepper3DImageChromium {

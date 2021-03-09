@@ -153,7 +153,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // policies, as "the origin of the URL in the frame's src attribute" (see
   // https://w3c.github.io/webappsec-permissions-policy/#iframe-allow-attribute).
   // This method is intended to be overridden by specific frame classes.
-  virtual scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy()
+  virtual scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy()
       const {
     return SecurityOrigin::CreateUniqueOpaque();
   }

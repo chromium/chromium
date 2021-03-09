@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
-                       FeaturePolicyDisabled_ConversionNotRegistered) {
+                       PermissionsPolicyDisabled_ConversionNotRegistered) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "/page_with_conversion_measurement_disabled.html")));

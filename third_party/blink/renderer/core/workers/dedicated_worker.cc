@@ -461,7 +461,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_responses_map */,
       std::move(browser_interface_broker_), CreateBeginFrameProviderParams(),
-      GetExecutionContext()->GetSecurityContext().GetFeaturePolicy(),
+      GetExecutionContext()->GetSecurityContext().GetPermissionsPolicy(),
       GetExecutionContext()->GetAgentClusterID(),
       GetExecutionContext()->UkmSourceID(),
       GetExecutionContext()->GetExecutionContextToken(),

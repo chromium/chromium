@@ -743,7 +743,7 @@ bool ResourceLoader::WillFollowRedirect(
     std::vector<std::string>* removed_headers) {
   DCHECK(!passed_redirect_response.IsNull());
   if (removed_headers) {
-    FindClientHintsToRemove(Context().GetFeaturePolicy(),
+    FindClientHintsToRemove(Context().GetPermissionsPolicy(),
                             GURL(new_url.GetString().Utf8()), removed_headers);
   }
 

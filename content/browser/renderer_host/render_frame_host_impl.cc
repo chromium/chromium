@@ -684,12 +684,12 @@ void OnDataURLRetrieved(
 // (https://github.com/wicg/trust-token-api). If the operation's type is
 // "redemption" or "signing" (as opposed to "issuance"), the parent's frame
 // needs to have the trust-token-redemption Permissions Policy feature enabled.
-bool ParentNeedsTrustTokenFeaturePolicy(
+bool ParentNeedsTrustTokenPermissionsPolicy(
     const mojom::BeginNavigationParams& begin_params) {
   if (!begin_params.trust_token_params)
     return false;
 
-  return network::DoesTrustTokenOperationRequireFeaturePolicy(
+  return network::DoesTrustTokenOperationRequirePermissionsPolicy(
       begin_params.trust_token_params->type);
 }
 
@@ -1161,7 +1161,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // Verify is_local_root() now indicates whether this frame is a local root or
   // not. It is safe to use this method anywhere beyond this point.
   DCHECK_EQ(setup_local_render_widget_host, is_local_root());
-  ResetFeaturePolicy();
+  ResetPermissionsPolicy();
 
   // New RenderFrameHostImpl are put in their own virtual browsing context
   // group. Then, they can inherit from:
@@ -2911,7 +2911,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // permissions policy's state depends on the origin, so the PermissionsPolicy
   // object could be configured incorrectly if it were initialized before
   // knowing the value of |last_committed_origin_|. More at crbug.com/1112959.
-  ResetFeaturePolicy();
+  ResetPermissionsPolicy();
 }
 
 FrameTreeNode* RenderFrameHostImpl::AddChild(
@@ -5604,7 +5604,7 @@ void RenderFrameHostImpl::BeginNavigation(
     return;
   }
   if (begin_params->trust_token_params &&
-      ParentNeedsTrustTokenFeaturePolicy(*begin_params)) {
+      ParentNeedsTrustTokenPermissionsPolicy(*begin_params)) {
     RenderFrameHostImpl* parent = GetParent();
     if (!parent->IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kTrustTokenRedemption)) {
@@ -7774,7 +7774,7 @@ void RenderFrameHostImpl::CreateWebUsbService(
   GetContentClient()->browser()->CreateWebUsbService(this, std::move(receiver));
 }
 
-void RenderFrameHostImpl::ResetFeaturePolicy() {
+void RenderFrameHostImpl::ResetPermissionsPolicy() {
   RenderFrameHostImpl* parent_frame_host = GetParent();
   const blink::PermissionsPolicy* parent_policy =
       parent_frame_host ? parent_frame_host->permissions_policy() : nullptr;
@@ -8947,7 +8947,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // new ones.
   DCHECK(!navigation_request->IsServedFromBackForwardCache());
 
-  ResetFeaturePolicy();
+  ResetPermissionsPolicy();
   active_sandbox_flags_ = params.sandbox_flags;
   permissions_policy_header_ = params.permissions_policy_header;
   permissions_policy_->SetHeaderPolicy(params.permissions_policy_header);

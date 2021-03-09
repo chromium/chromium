@@ -26,7 +26,7 @@ namespace network {
 //  side of a privacy boundary, we’d like to prohibit these third-party frames
 //  from having access to the redeeming-context RRs without the top-level
 //  frame's explicit consent.
-constexpr bool DoesTrustTokenOperationRequireFeaturePolicy(
+constexpr bool DoesTrustTokenOperationRequirePermissionsPolicy(
     mojom::TrustTokenOperationType type) {
   switch (type) {
     case mojom::TrustTokenOperationType::kRedemption:

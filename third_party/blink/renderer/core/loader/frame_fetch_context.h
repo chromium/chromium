@@ -182,7 +182,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   Settings* GetSettings() const;
   String GetUserAgent() const;
   base::Optional<UserAgentMetadata> GetUserAgentMetadata() const;
-  const PermissionsPolicy* GetFeaturePolicy() const override;
+  const PermissionsPolicy* GetPermissionsPolicy() const override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
 

@@ -21,7 +21,7 @@ namespace content {
 // class itself is tested thoroughly in permissions_policy_unittest.cc. Instead
 // they are meant to ensure that integration with RenderFrameHost works
 // correctly.
-class RenderFrameHostFeaturePolicyTest
+class RenderFrameHostPermissionsPolicyTest
     : public content::RenderViewHostTestHarness {
  protected:
   static constexpr const char* kOrigin1 = "https://google.com";
@@ -58,7 +58,7 @@ class RenderFrameHostFeaturePolicyTest
     RenderFrameHost* current = *rfh;
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    navigation->SetFeaturePolicyHeader(CreateFPHeader(feature, origins));
+    navigation->SetPermissionsPolicyHeader(CreateFPHeader(feature, origins));
     navigation->Commit();
     *rfh = navigation->GetFinalRenderFrameHost();
   }
@@ -92,7 +92,7 @@ class RenderFrameHostFeaturePolicyTest
   }
 };
 
-TEST_F(RenderFrameHostFeaturePolicyTest, DefaultPolicy) {
+TEST_F(RenderFrameHostPermissionsPolicyTest, DefaultPolicy) {
   RenderFrameHost* parent = GetMainRFH(kOrigin1);
   RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
@@ -102,7 +102,7 @@ TEST_F(RenderFrameHostFeaturePolicyTest, DefaultPolicy) {
   EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(RenderFrameHostFeaturePolicyTest, HeaderPolicy) {
+TEST_F(RenderFrameHostPermissionsPolicyTest, HeaderPolicy) {
   RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   // Enable the feature for the child in the parent frame.
@@ -133,7 +133,7 @@ TEST_F(RenderFrameHostFeaturePolicyTest, HeaderPolicy) {
   EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(RenderFrameHostFeaturePolicyTest, ContainerPolicy) {
+TEST_F(RenderFrameHostPermissionsPolicyTest, ContainerPolicy) {
   RenderFrameHost* parent = GetMainRFH(kOrigin1);
   RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
@@ -152,7 +152,7 @@ TEST_F(RenderFrameHostFeaturePolicyTest, ContainerPolicy) {
   EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 }
 
-TEST_F(RenderFrameHostFeaturePolicyTest, HeaderAndContainerPolicy) {
+TEST_F(RenderFrameHostPermissionsPolicyTest, HeaderAndContainerPolicy) {
   RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   // Set a header policy and container policy. Check that they both take effect.

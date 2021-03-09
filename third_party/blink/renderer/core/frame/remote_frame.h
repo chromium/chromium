@@ -111,7 +111,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   void DidChangeVisibleToHitTesting() override;
 
-  void SetReplicatedFeaturePolicyHeader(
+  void SetReplicatedPermissionsPolicyHeader(
       const ParsedPermissionsPolicy& parsed_header);
 
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
@@ -242,7 +242,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // Returns false if detaching child frames reentrantly detached `this`.
   bool DetachChildren();
-  void ApplyReplicatedFeaturePolicyHeader();
+  void ApplyReplicatedPermissionsPolicyHeader();
   void RecordSentVisualProperties();
 
   static void BindToReceiver(

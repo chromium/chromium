@@ -87,7 +87,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetWasFetchedViaCache(bool was_fetched_via_cache) override;
   void SetIsSignedExchangeInnerResponse(
       bool is_signed_exchange_inner_response) override;
-  void SetFeaturePolicyHeader(
+  void SetPermissionsPolicyHeader(
       blink::ParsedPermissionsPolicy permissions_policy_header) override;
   void SetContentsMimeType(const std::string& contents_mime_type) override;
   void SetResponseHeaders(

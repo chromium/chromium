@@ -274,7 +274,7 @@ class NavigationSimulator {
       bool is_signed_exchange_inner_response) = 0;
 
   // Simulate receiving Permissions-Policy headers.
-  virtual void SetFeaturePolicyHeader(
+  virtual void SetPermissionsPolicyHeader(
       blink::ParsedPermissionsPolicy permissions_policy_header) = 0;
 
   // Provides the contents mime type to be set at commit. It should be

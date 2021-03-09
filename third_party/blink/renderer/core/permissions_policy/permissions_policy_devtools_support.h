@@ -15,25 +15,25 @@ namespace blink {
 class Frame;
 
 // The reason for a feature to be disallowed.
-enum class FeaturePolicyBlockReason {
+enum class PermissionsPolicyBlockReason {
   // Feature's allowlist declaration can be overridden either in HTTP header,
   // or in iframe attribute.
   kHeader,
   kIframeAttribute,
 };
 
-struct FeaturePolicyBlockLocator {
+struct PermissionsPolicyBlockLocator {
   // FrameId used in devtools protocol.
   String frame_id;
   // Note: Attribute declaration is on frame's owner element, which is
   // technically above 1 level in the frame tree.
-  FeaturePolicyBlockReason reason;
+  PermissionsPolicyBlockReason reason;
 };
 
 // Traces the root reason for a feature to be disabled in a frame.
 // Returns base::nullopt when the feature is enabled in the frame.
-CORE_EXPORT base::Optional<FeaturePolicyBlockLocator>
-TraceFeaturePolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
+CORE_EXPORT base::Optional<PermissionsPolicyBlockLocator>
+TracePermissionsPolicyBlockSource(Frame*, mojom::PermissionsPolicyFeature);
 
 }  // namespace blink
 

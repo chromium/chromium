@@ -449,7 +449,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   // the requesting document, and the origin of the resource.
   const PermissionsPolicy* policy =
       document_
-          ? document_->domWindow()->GetSecurityContext().GetFeaturePolicy()
+          ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()
           : nullptr;
 
   url::Origin resource_origin =
@@ -735,10 +735,11 @@ base::Optional<UserAgentMetadata> FrameFetchContext::GetUserAgentMetadata()
   return GetLocalFrameClient()->UserAgentMetadata();
 }
 
-const PermissionsPolicy* FrameFetchContext::GetFeaturePolicy() const {
-  return document_
-             ? document_->domWindow()->GetSecurityContext().GetFeaturePolicy()
-             : nullptr;
+const PermissionsPolicy* FrameFetchContext::GetPermissionsPolicy() const {
+  return document_ ? document_->domWindow()
+                         ->GetSecurityContext()
+                         .GetPermissionsPolicy()
+                   : nullptr;
 }
 
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()

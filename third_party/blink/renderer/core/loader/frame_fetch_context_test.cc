@@ -911,7 +911,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHints) {
 // Verify that the client hints should be attached for third-party subresources
 // fetched over secure transport, when specifically allowed by permissions
 // policy.
-TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
+TEST_F(FrameFetchContextHintsTest, MonitorAllHintsPermissionsPolicy) {
   RecreateFetchContext(
       KURL("https://www.example.com/"),
       "ch-dpr *; ch-device-memory *; ch-downlink *; ch-ect *; ch-lang *;"
@@ -977,7 +977,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorAllHintsFeaturePolicy) {
 
 // Verify that only the specifically allowed client hints are attached for
 // third-party subresources fetched over secure transport.
-TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
+TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   RecreateFetchContext(KURL("https://www.example.com/"),
                        "ch-device-memory 'self' https://www.example.net");
   document->GetSettings()->SetScriptEnabled(true);
@@ -1025,7 +1025,8 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsFeaturePolicy) {
 // Verify that the client hints are not attached for third-party subresources
 // fetched over insecure transport, even when specifically allowed by
 // permissions policy.
-TEST_F(FrameFetchContextHintsTest, MonitorHintsFeaturePolicyInsecureContext) {
+TEST_F(FrameFetchContextHintsTest,
+       MonitorHintsPermissionsPolicyInsecureContext) {
   RecreateFetchContext(KURL("https://www.example.com/"), "ch-device-memory *");
   document->GetSettings()->SetScriptEnabled(true);
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");

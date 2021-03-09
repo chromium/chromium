@@ -2065,14 +2065,15 @@ void DocumentLoader::CommitNavigation() {
     DCHECK(response_.HttpHeaderField(http_names::kFeaturePolicy).IsEmpty());
     DCHECK(response_.HttpHeaderField(http_names::kPermissionsPolicy).IsEmpty());
     DCHECK(response_.HttpHeaderField(http_names::kDocumentPolicy).IsEmpty());
-    security_init.InitFeaturePolicyFrom(previous_window->GetSecurityContext());
+    security_init.InitPermissionsPolicyFrom(
+        previous_window->GetSecurityContext());
     security_init.InitDocumentPolicyFrom(previous_window->GetSecurityContext());
   } else {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    security_init.ApplyFeaturePolicy(frame_.Get(), response_, origin_policy_,
-                                     frame_policy_);
+    security_init.ApplyPermissionsPolicy(frame_.Get(), response_,
+                                         origin_policy_, frame_policy_);
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
     // whether to block the document load or not.
@@ -2212,7 +2213,8 @@ void DocumentLoader::CommitNavigation() {
           history_item_.Get(), LoadTypeToCommitType(load_type_),
           previous_window != frame_->DomWindow(),
           frame_->DomWindow()->GetSandboxFlags(),
-          security_init.FeaturePolicyHeader(), document_policy_.feature_state);
+          security_init.PermissionsPolicyHeader(),
+          document_policy_.feature_state);
     }
     // TODO(dgozman): make DidCreateScriptContext notification call currently
     // triggered by installing new document happen here, after commit.

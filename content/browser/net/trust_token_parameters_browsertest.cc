@@ -162,9 +162,9 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
       expected_params_and_serialization.params));
 }
 
-class TrustTokenFeaturePolicyBrowsertest : public ContentBrowserTest {
+class TrustTokenPermissionsPolicyBrowsertest : public ContentBrowserTest {
  public:
-  TrustTokenFeaturePolicyBrowsertest() {
+  TrustTokenPermissionsPolicyBrowsertest() {
     features_.InitAndEnableFeature(network::features::kTrustTokens);
   }
 
@@ -176,7 +176,7 @@ class TrustTokenFeaturePolicyBrowsertest : public ContentBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
+IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesNegativeValueToFactoryParams) {
   // Since the trust-token-redemption Permissions Policy feature is disabled by
   // default in cross-site frames, the child's URLLoaderFactoryParams should be
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
+IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesPositiveValueToFactoryParams) {
   // Even though the trust-token-redemption Permissions Policy feature is
   // disabled by default in cross-site frames, the allow attribute on the iframe
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
+IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesNegativeValueToFactoryParamsAfterCrash) {
   // Since the trust-token-redemption Permissions Policy feature is disabled by
   // default in cross-site frames, the child's URLLoaderFactoryParams should be
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(TrustTokenFeaturePolicyBrowsertest,
+IN_PROC_BROWSER_TEST_F(TrustTokenPermissionsPolicyBrowsertest,
                        PassesPositiveValueToFactoryParamsAfterCrash) {
   // Even though the trust-token-redemption Permissions Policy feature is
   // disabled by default in cross-site frames, the allow attribute on the iframe

@@ -104,7 +104,7 @@ enum class RequiredOriginType {
   kSecure,
   // Must be a secure origin and be same-origin with all ancestor frames.
   kSecureAndSameWithAncestors,
-  // Must be a secure origin and the "publickey-credentials-get" feature
+  // Must be a secure origin and the "publickey-credentials-get" permissions
   // policy must be enabled. By default "publickey-credentials-get" is not
   // inherited by cross-origin child frames, so if that policy is not
   // explicitly enabled, behavior is the same as that of
@@ -112,9 +112,9 @@ enum class RequiredOriginType {
   // expressed in various ways, e.g.: |allow| iframe attribute and/or
   // permissions-policy header, and may be inherited from parent browsing
   // contexts. See Permissions Policy spec.
-  kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy,
+  kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
-  kSecureAndPermittedByWebOTPAssertionFeaturePolicy,
+  kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
 };
 
 bool IsSameOriginWithAncestors(const Frame* frame) {
@@ -198,7 +198,7 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::
-        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy:
+        kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy:
       // The 'publickey-credentials-get' feature's "default allowlist" is
       // "self", which means the webauthn feature is allowed by default in
       // same-origin child browsing contexts.
@@ -218,7 +218,8 @@ bool CheckSecurityRequirementsBeforeRequest(
       }
       break;
 
-    case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
+    case RequiredOriginType::
+        kSecureAndPermittedByWebOTPAssertionPermissionsPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -261,12 +262,13 @@ void AssertSecurityRequirementsBeforeResponse(
       break;
 
     case RequiredOriginType::
-        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy:
+        kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kPublicKeyCredentialsGet));
       break;
 
-    case RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy:
+    case RequiredOriginType::
+        kSecureAndPermittedByWebOTPAssertionPermissionsPolicy:
       SECURITY_CHECK(
           resolver->GetExecutionContext()->IsFeatureEnabled(
               mojom::blink::PermissionsPolicyFeature::kOTPCredentials) &&
@@ -642,7 +644,7 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
       resolver, resolver->GetExecutionContext()->IsFeatureEnabled(
                     mojom::blink::PermissionsPolicyFeature::kOTPCredentials)
                     ? RequiredOriginType::
-                          kSecureAndPermittedByWebOTPAssertionFeaturePolicy
+                          kSecureAndPermittedByWebOTPAssertionPermissionsPolicy
                     : RequiredOriginType::kSecureAndSameWithAncestors);
   if (status == mojom::blink::SmsStatus::kUnhandledRequest) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -939,11 +941,11 @@ ScriptPromise CredentialsContainer::get(
       RuntimeEnabledFeatures::
           WebAuthenticationGetAssertionFeaturePolicyEnabled()) {
     required_origin_type = RequiredOriginType::
-        kSecureAndPermittedByWebAuthGetAssertionFeaturePolicy;
+        kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy;
   } else if (options->hasOtp() &&
              RuntimeEnabledFeatures::WebOTPAssertionFeaturePolicyEnabled()) {
-    required_origin_type =
-        RequiredOriginType::kSecureAndPermittedByWebOTPAssertionFeaturePolicy;
+    required_origin_type = RequiredOriginType::
+        kSecureAndPermittedByWebOTPAssertionPermissionsPolicy;
   }
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;

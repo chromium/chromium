@@ -12,11 +12,11 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
 namespace blink {
-using FeaturePolicyDevtoolsSupportSimTest = SimTest;
+using PermissionsPolicyDevtoolsSupportSimTest = SimTest;
 
 // Note: fullscreen has default allowlist 'EnableForSelf'.
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest iframe_resource("https://example.com/foo.html", "text/html");
 
@@ -26,18 +26,18 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectIframeAttributeBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kIframeAttribute);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest,
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
        DetectNestedIframeAttributeBlockage) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest iframe_resource1("https://example.com/foo.html", "text/html");
@@ -52,18 +52,18 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
     )");
   iframe_resource2.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kIframeAttribute);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=()"},
@@ -73,18 +73,18 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectHeaderBlockage) {
   LoadURL("https://example.com");
   main_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kHeader);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=()"},
@@ -99,20 +99,20 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedHeaderBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kHeader);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
 }
 
 // When feature is disabled at multiple level of frames, report blockage
 // closest to the root of frame tree.
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=()"},
@@ -132,18 +132,19 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectRootHeaderBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kHeader);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectCrossOriginHeaderBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
+       DetectCrossOriginHeaderBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=self"},
@@ -162,18 +163,18 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectCrossOriginHeaderBlockage) {
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kHeader);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kHeader);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest,
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
        DetectCrossOriginDefaultAllowlistBlockage) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest iframe_resource("https://foo.com", "text/html");
@@ -184,18 +185,18 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kIframeAttribute);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest,
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
        DetectCrossOriginIframeAttributeBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
@@ -215,18 +216,19 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest,
     )");
   iframe_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
   ASSERT_NE(locator, base::nullopt);
   EXPECT_EQ(locator->frame_id,
             IdentifiersFactory::FrameId(MainFrame().GetFrame()->FirstChild()));
-  EXPECT_EQ(locator->reason, FeaturePolicyBlockReason::kIframeAttribute);
+  EXPECT_EQ(locator->reason, PermissionsPolicyBlockReason::kIframeAttribute);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedCrossOriginNoBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest,
+       DetectNestedCrossOriginNoBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=(self \"https://foo.com)\""},
@@ -254,8 +256,8 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedCrossOriginNoBlockage) {
     )");
   bar_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame()->FirstChild()->FirstChild(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 
@@ -277,7 +279,7 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNestedCrossOriginNoBlockage) {
   EXPECT_EQ(locator, base::nullopt);
 }
 
-TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNoBlockage) {
+TEST_F(PermissionsPolicyDevtoolsSupportSimTest, DetectNoBlockage) {
   SimRequest::Params main_params;
   main_params.response_http_headers = {
       {"Permissions-Policy", "fullscreen=*"},
@@ -287,8 +289,8 @@ TEST_F(FeaturePolicyDevtoolsSupportSimTest, DetectNoBlockage) {
   LoadURL("https://example.com");
   main_resource.Finish();
 
-  base::Optional<FeaturePolicyBlockLocator> locator =
-      TraceFeaturePolicyBlockSource(
+  base::Optional<PermissionsPolicyBlockLocator> locator =
+      TracePermissionsPolicyBlockSource(
           MainFrame().GetFrame(),
           mojom::blink::PermissionsPolicyFeature::kFullscreen);
 

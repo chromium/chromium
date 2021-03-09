@@ -12,11 +12,11 @@
 
 namespace blink {
 
-base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
+base::Optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
     Frame* frame,
     mojom::PermissionsPolicyFeature feature) {
   const PermissionsPolicy* current_policy =
-      frame->GetSecurityContext()->GetFeaturePolicy();
+      frame->GetSecurityContext()->GetPermissionsPolicy();
   DCHECK(current_policy);
   if (current_policy->IsFeatureEnabled(feature))
     return base::nullopt;
@@ -32,7 +32,8 @@ base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
   // - The iframe attribute on |child_frame|'s html frame owner element.
   while (true) {
     DCHECK(current_frame);
-    current_policy = current_frame->GetSecurityContext()->GetFeaturePolicy();
+    current_policy =
+        current_frame->GetSecurityContext()->GetPermissionsPolicy();
     DCHECK(current_policy);
 
     if (current_policy->IsFeatureEnabledByInheritedPolicy(feature))
@@ -55,9 +56,9 @@ base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
 
   if (!allowed_by_current_frame || !allowed_by_child_frame) {
     // Feature disabled by allowlist, i.e. value in HTTP header.
-    return FeaturePolicyBlockLocator{
+    return PermissionsPolicyBlockLocator{
         IdentifiersFactory::FrameId(current_frame),
-        FeaturePolicyBlockReason::kHeader,
+        PermissionsPolicyBlockReason::kHeader,
     };
   } else {
     // Otherwise, feature must be disabled by iframe attribute.
@@ -69,9 +70,9 @@ base::Optional<FeaturePolicyBlockLocator> TraceFeaturePolicyBlockSource(
     // Along with (2), we can conclude feature is enabled by container policy
     // (iframe attribute) which contradicts with the else branch condition.
     DCHECK(child_frame);
-    return FeaturePolicyBlockLocator{
+    return PermissionsPolicyBlockLocator{
         IdentifiersFactory::FrameId(child_frame),
-        FeaturePolicyBlockReason::kIframeAttribute,
+        PermissionsPolicyBlockReason::kIframeAttribute,
     };
   }
 }

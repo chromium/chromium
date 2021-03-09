@@ -552,9 +552,10 @@ bool BaseFetchContext::ShouldSendClientHint(
     origin_ok = true;
   } else if (RuntimeEnabledFeatures::FeaturePolicyForClientHintsEnabled()) {
     origin_ok =
-        (policy && policy->IsFeatureEnabledForOrigin(
-                       kClientHintsFeaturePolicyMapping[static_cast<int>(type)],
-                       resource_origin));
+        (policy &&
+         policy->IsFeatureEnabledForOrigin(
+             kClientHintsPermissionsPolicyMapping[static_cast<int>(type)],
+             resource_origin));
   } else {
     origin_ok = is_1p_origin;
   }

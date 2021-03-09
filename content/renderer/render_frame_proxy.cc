@@ -258,7 +258,7 @@ void RenderFrameProxy::SetReplicatedState(
   web_frame_->SetReplicatedInsecureNavigationsSet(
       state->insecure_navigations_set);
   web_frame_->SetReplicatedAdFrameType(state->ad_frame_type);
-  web_frame_->SetReplicatedFeaturePolicyHeader(
+  web_frame_->SetReplicatedPermissionsPolicyHeader(
       state->permissions_policy_header);
   if (state->has_active_user_gesture) {
     // TODO(crbug.com/1087963): This should be hearing about sticky activations

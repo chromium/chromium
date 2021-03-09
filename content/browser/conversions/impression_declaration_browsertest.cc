@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       ImpressionWithFeaturePolicyDisabled_NotRegistered) {
+                       ImpressionWithPermissionsPolicyDisabled_NotRegistered) {
   EXPECT_TRUE(NavigateToURL(
       web_contents(),
       https_server()->GetURL(
@@ -396,8 +396,9 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
   EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
 }
 
-IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       ImpressionInSubframeWithoutFeaturePolicy_NotRegistered) {
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    ImpressionInSubframeWithoutPermissionsPolicy_NotRegistered) {
   GURL page_url = https_server()->GetURL("b.test", "/page_with_iframe.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 
@@ -419,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
-                       ImpressionInSubframeWithFeaturePolicy_Registered) {
+                       ImpressionInSubframeWithPermissionsPolicy_Registered) {
   GURL page_url = https_server()->GetURL("b.test", "/page_with_iframe.html");
   EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
   EXPECT_TRUE(ExecJs(shell(), R"(

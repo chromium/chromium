@@ -41,7 +41,7 @@ class PolicyTest : public testing::Test {
     auto& security_context =
         page_holder_->GetFrame().DomWindow()->GetSecurityContext();
     security_context.SetSecurityOriginForTesting(origin);
-    security_context.SetFeaturePolicy(std::move(permissions_policy));
+    security_context.SetPermissionsPolicy(std::move(permissions_policy));
   }
 
   DOMFeaturePolicy* GetPolicy() const { return policy_; }

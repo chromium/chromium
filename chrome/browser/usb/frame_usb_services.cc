@@ -52,7 +52,7 @@ void FrameUsbServices::InitializeWebUsbChooser() {
 
 void FrameUsbServices::InitializeWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
-  if (!AllowedByFeaturePolicy()) {
+  if (!AllowedByPermissionsPolicy()) {
     mojo::ReportBadMessage(kPermissionsPolicyViolation);
     return;
   }
@@ -65,7 +65,7 @@ void FrameUsbServices::InitializeWebUsbService(
   web_usb_service_->BindReceiver(std::move(receiver));
 }
 
-bool FrameUsbServices::AllowedByFeaturePolicy() const {
+bool FrameUsbServices::AllowedByPermissionsPolicy() const {
   return render_frame_host_->IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature::kUsb);
 }

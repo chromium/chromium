@@ -81,7 +81,7 @@ void HTMLElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         kVideoTrackNotAvailableError);
       return;
-    case Status::kDisabledByFeaturePolicy:
+    case Status::kDisabledByPermissionsPolicy:
       exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
       return;
     case Status::kDisabledByAttribute:

@@ -961,7 +961,7 @@ ScriptPromise MediaCapabilities::GetEmeSupport(
     execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
-        kEncryptedMediaFeaturePolicyConsoleWarning));
+        kEncryptedMediaPermissionsPolicyConsoleWarning));
     exception_state.ThrowSecurityError(
         "decodingInfo(): Creating MediaKeySystemAccess is disabled by feature "
         "policy.");

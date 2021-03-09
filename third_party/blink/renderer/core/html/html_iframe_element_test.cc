@@ -19,9 +19,9 @@ namespace blink {
 
 class HTMLIFrameElementTest : public testing::Test {
  public:
-  scoped_refptr<const SecurityOrigin> GetOriginForFeaturePolicy(
+  scoped_refptr<const SecurityOrigin> GetOriginForPermissionsPolicy(
       HTMLIFrameElement* element) {
-    return element->GetOriginForFeaturePolicy();
+    return element->GetOriginForPermissionsPolicy();
   }
 
   void SetUp() final {
@@ -52,18 +52,18 @@ class HTMLIFrameElementTest : public testing::Test {
 TEST_F(HTMLIFrameElementTest, FramesUseCorrectOrigin) {
   frame_element_->setAttribute(html_names::kSrcAttr, "about:blank");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 
   frame_element_->setAttribute(
       html_names::kSrcAttr, "data:text/html;base64,PHRpdGxlPkFCQzwvdGl0bGU+");
-  effective_origin = GetOriginForFeaturePolicy(frame_element_);
+  effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
 
   frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
-  effective_origin = GetOriginForFeaturePolicy(frame_element_);
+  effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_FALSE(effective_origin->IsOpaque());
@@ -75,13 +75,13 @@ TEST_F(HTMLIFrameElementTest, SandboxFramesUseCorrectOrigin) {
   frame_element_->setAttribute(html_names::kSandboxAttr, "");
   frame_element_->setAttribute(html_names::kSrcAttr, "http://example.com/");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
 
   frame_element_->setAttribute(html_names::kSrcAttr, "http://example.net/");
-  effective_origin = GetOriginForFeaturePolicy(frame_element_);
+  effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
@@ -93,7 +93,7 @@ TEST_F(HTMLIFrameElementTest, SameOriginSandboxFramesUseCorrectOrigin) {
   frame_element_->setAttribute(html_names::kSandboxAttr, "allow-same-origin");
   frame_element_->setAttribute(html_names::kSrcAttr, "http://example.com/");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_FALSE(effective_origin->IsOpaque());
 }
@@ -103,7 +103,7 @@ TEST_F(HTMLIFrameElementTest, SameOriginSandboxFramesUseCorrectOrigin) {
 TEST_F(HTMLIFrameElementTest, SrcdocFramesUseCorrectOrigin) {
   frame_element_->setAttribute(html_names::kSrcdocAttr, "<title>title</title>");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 }
 
@@ -113,7 +113,7 @@ TEST_F(HTMLIFrameElementTest, SandboxedSrcdocFramesUseCorrectOrigin) {
   frame_element_->setAttribute(html_names::kSandboxAttr, "");
   frame_element_->setAttribute(html_names::kSrcdocAttr, "<title>title</title>");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
   EXPECT_TRUE(effective_origin->IsOpaque());
@@ -125,13 +125,13 @@ TEST_F(HTMLIFrameElementTest, RelativeURLsUseCorrectOrigin) {
   // Host-relative URLs should resolve to the same domain as the parent.
   frame_element_->setAttribute(html_names::kSrcAttr, "index2.html");
   scoped_refptr<const SecurityOrigin> effective_origin =
-      GetOriginForFeaturePolicy(frame_element_);
+      GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_TRUE(effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 
   // Scheme-relative URLs should not resolve to the same domain as the parent.
   frame_element_->setAttribute(html_names::kSrcAttr,
                                "//example.net/index2.html");
-  effective_origin = GetOriginForFeaturePolicy(frame_element_);
+  effective_origin = GetOriginForPermissionsPolicy(frame_element_);
   EXPECT_FALSE(
       effective_origin->IsSameOriginWith(window_->GetSecurityOrigin()));
 }
@@ -210,12 +210,12 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicy) {
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
+      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
   EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
+      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
 }
 
 // Test the ConstructContainerPolicy method when the "allowfullscreen" attribute
@@ -246,7 +246,7 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowPaymentRequest) {
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
+      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kPayment,
             container_policy[1].feature);
 }
@@ -271,12 +271,12 @@ TEST_F(HTMLIFrameElementTest, ConstructContainerPolicyWithAllowAttributes) {
   EXPECT_FALSE(container_policy[0].matches_all_origins);
   EXPECT_EQ(1UL, container_policy[0].allowed_origins.size());
   EXPECT_TRUE(container_policy[0].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
+      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kUsb,
             container_policy[1].feature);
   EXPECT_EQ(1UL, container_policy[1].allowed_origins.size());
   EXPECT_TRUE(container_policy[1].allowed_origins.begin()->IsSameOriginWith(
-      GetOriginForFeaturePolicy(frame_element_)->ToUrlOrigin()));
+      GetOriginForPermissionsPolicy(frame_element_)->ToUrlOrigin()));
   EXPECT_EQ(mojom::blink::PermissionsPolicyFeature::kFullscreen,
             container_policy[2].feature);
 }

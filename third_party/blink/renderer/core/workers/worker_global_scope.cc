@@ -588,7 +588,7 @@ WorkerGlobalScope::WorkerGlobalScope(
   // PermissionsPolicy::CreateFromParentPolicy, even if the parent policy is
   // null.
   DCHECK(creation_params->worker_permissions_policy);
-  GetSecurityContext().SetFeaturePolicy(
+  GetSecurityContext().SetPermissionsPolicy(
       std::move(creation_params->worker_permissions_policy));
 }
 

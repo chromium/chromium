@@ -213,7 +213,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature) const;
 
  private:
-  friend class FeaturePolicyTest;
+  friend class PermissionsPolicyTest;
 
   PermissionsPolicy(url::Origin origin,
                     const PermissionsPolicyFeatureList& feature_list);

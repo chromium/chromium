@@ -81,7 +81,7 @@ bool AllowedToUsePaymentFeatures(ScriptState* script_state) {
     return false;
   return ExecutionContext::From(script_state)
       ->GetSecurityContext()
-      .GetFeaturePolicy()
+      .GetPermissionsPolicy()
       ->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kPayment);
 }
 

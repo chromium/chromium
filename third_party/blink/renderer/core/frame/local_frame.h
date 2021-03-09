@@ -583,7 +583,7 @@ class CORE_EXPORT LocalFrame final
   // document, and triggers |blockedSameOrigin| if it is same-origin with the
   // top level, but is embedded in any way through a cross-origin frame.
   // (A->B->A embedding)
-  void CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
+  void CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
       mojom::WebFeature blocked_cross_origin,
       mojom::WebFeature blocked_same_origin);
 

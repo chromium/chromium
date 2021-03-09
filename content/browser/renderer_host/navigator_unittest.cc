@@ -1435,7 +1435,7 @@ TEST_F(NavigatorTest, NavigationRequestDeletedWhenCrossSiteCommits) {
 
 // Permissions Policy: Test that the permissions policy is reset when navigating
 // pages within a site.
-TEST_F(NavigatorTest, FeaturePolicySameSiteNavigation) {
+TEST_F(NavigatorTest, PermissionsPolicySameSiteNavigation) {
   const GURL kUrl1("http://www.chromium.org/");
   const GURL kUrl2("http://www.chromium.org/Home");
 
@@ -1458,7 +1458,7 @@ TEST_F(NavigatorTest, FeaturePolicySameSiteNavigation) {
 
 // Permissions Policy: Test that the permissions policy is not reset when
 // navigating within a page.
-TEST_F(NavigatorTest, FeaturePolicyFragmentNavigation) {
+TEST_F(NavigatorTest, PermissionsPolicyFragmentNavigation) {
   const GURL kUrl1("http://www.chromium.org/");
   const GURL kUrl2("http://www.chromium.org/#Home");
 
@@ -1480,7 +1480,7 @@ TEST_F(NavigatorTest, FeaturePolicyFragmentNavigation) {
 
 // Permissions Policy: Test that the permissions policy is set correctly when
 // inserting a new child frame.
-TEST_F(NavigatorTest, FeaturePolicyNewChild) {
+TEST_F(NavigatorTest, PermissionsPolicyNewChild) {
   const GURL kUrl1("http://www.chromium.org/");
   const GURL kUrl2("http://www.chromium.org/Home");
 

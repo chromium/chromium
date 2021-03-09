@@ -9239,7 +9239,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that the replicated permissions policy header is correct in remote
 // proxies after the local frame has navigated.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       TestFeaturePolicyReplicationToProxyOnNavigation) {
+                       TestPermissionsPolicyReplicationToProxyOnNavigation) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_two_frames.html"));
   GURL first_nav_url(
@@ -9659,7 +9659,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // results in the correct permissions policy in the RemoteSecurityContext.
 // https://crbug.com/852102
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       FeaturePolicyConstructionInExistingProxy) {
+                       PermissionsPolicyConstructionInExistingProxy) {
   WebContentsImpl* contents = web_contents();
   FrameTreeNode* root = contents->GetFrameTree()->root();
 

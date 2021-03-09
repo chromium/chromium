@@ -86,7 +86,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       network::mojom::blink::WebSandboxFlags) override;
   void SetReplicatedName(const WebString& name,
                          const WebString& unique_name) override;
-  void SetReplicatedFeaturePolicyHeader(
+  void SetReplicatedPermissionsPolicyHeader(
       const ParsedPermissionsPolicy& parsed_header) override;
   void SetReplicatedInsecureRequestPolicy(
       mojom::blink::InsecureRequestPolicy) override;

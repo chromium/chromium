@@ -208,7 +208,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     std::vector<url::Origin> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.push_back(url::Origin::Create(GURL(origin)));
-    navigation->SetFeaturePolicyHeader(
+    navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, false, false}});
     navigation->Commit();
     *rfh = navigation->GetFinalRenderFrameHost();

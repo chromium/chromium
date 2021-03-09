@@ -842,13 +842,13 @@ namespace {
 
 std::unique_ptr<protocol::Page::PermissionsPolicyBlockLocator>
 CreatePermissionsPolicyBlockLocator(
-    const blink::FeaturePolicyBlockLocator& locator) {
+    const blink::PermissionsPolicyBlockLocator& locator) {
   protocol::Page::PermissionsPolicyBlockReason reason;
   switch (locator.reason) {
-    case blink::FeaturePolicyBlockReason::kHeader:
+    case blink::PermissionsPolicyBlockReason::kHeader:
       reason = protocol::Page::PermissionsPolicyBlockReasonEnum::Header;
       break;
-    case blink::FeaturePolicyBlockReason::kIframeAttribute:
+    case blink::PermissionsPolicyBlockReason::kIframeAttribute:
       reason =
           protocol::Page::PermissionsPolicyBlockReasonEnum::IframeAttribute;
       break;
@@ -873,7 +873,7 @@ Response InspectorPageAgent::getPermissionsPolicyState(
     return Response::ServerError("No frame for given id found in this target");
 
   const blink::PermissionsPolicy* permissions_policy =
-      frame->GetSecurityContext()->GetFeaturePolicy();
+      frame->GetSecurityContext()->GetPermissionsPolicy();
 
   if (!permissions_policy)
     return Response::ServerError("Frame not ready");
@@ -888,8 +888,8 @@ Response InspectorPageAgent::getPermissionsPolicyState(
     if (blink::DisabledByOriginTrial(feature_name, frame->DomWindow()))
       continue;
 
-    base::Optional<blink::FeaturePolicyBlockLocator> locator =
-        blink::TraceFeaturePolicyBlockSource(frame, feature);
+    base::Optional<blink::PermissionsPolicyBlockLocator> locator =
+        blink::TracePermissionsPolicyBlockSource(frame, feature);
 
     std::unique_ptr<protocol::Page::PermissionsPolicyFeatureState>
         feature_state =

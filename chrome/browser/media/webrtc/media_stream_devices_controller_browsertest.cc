@@ -997,7 +997,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       RequestCamAndMicBlockedByFeaturePolicy) {
+                       RequestCamAndMicBlockedByPermissionsPolicy) {
   InitWithUrl(embedded_test_server()->GetURL("/iframe_blank.html"));
 
   // Create a cross-origin request by using localhost as the iframe origin.
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
-                       RequestCamBlockedByFeaturePolicy) {
+                       RequestCamBlockedByPermissionsPolicy) {
   InitWithUrl(embedded_test_server()->GetURL("/iframe_blank.html"));
 
   // Create a cross-origin request by using localhost as the iframe origin.

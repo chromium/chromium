@@ -44,7 +44,7 @@ class CORE_EXPORT PictureInPictureController
     kMetadataNotLoaded,
     kVideoTrackNotAvailable,
     kDisabledBySystem,
-    kDisabledByFeaturePolicy,
+    kDisabledByPermissionsPolicy,
     kDisabledByAttribute,
     kInvalidWidthOrHeightOption,
   };

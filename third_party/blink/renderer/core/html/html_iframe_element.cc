@@ -97,7 +97,7 @@ DOMFeaturePolicy* HTMLIFrameElement::featurePolicy() {
   if (!policy_ && GetExecutionContext()) {
     policy_ = MakeGarbageCollected<IFramePolicy>(
         GetExecutionContext(), GetFramePolicy().container_policy,
-        GetOriginForFeaturePolicy());
+        GetOriginForPermissionsPolicy());
   }
   return policy_.Get();
 }
@@ -313,7 +313,8 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (!GetExecutionContext())
     return ParsedPermissionsPolicy();
 
-  scoped_refptr<const SecurityOrigin> src_origin = GetOriginForFeaturePolicy();
+  scoped_refptr<const SecurityOrigin> src_origin =
+      GetOriginForPermissionsPolicy();
   scoped_refptr<const SecurityOrigin> self_origin =
       GetExecutionContext()->GetSecurityOrigin();
 

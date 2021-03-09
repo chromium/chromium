@@ -34,10 +34,10 @@
 // permissions_policy_unittest.cc and in
 // render_frame_host_permissions_policy_unittest.cc. Instead they are meant to
 // ensure that integration with content::PermissionContextBase works correctly.
-class PermissionContextBaseFeaturePolicyTest
+class PermissionContextBasePermissionsPolicyTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  PermissionContextBaseFeaturePolicyTest()
+  PermissionContextBasePermissionsPolicyTest()
       : last_request_result_(CONTENT_SETTING_DEFAULT), request_id_(0) {}
 
   void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
@@ -86,7 +86,7 @@ class PermissionContextBaseFeaturePolicyTest
     std::vector<url::Origin> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.push_back(url::Origin::Create(GURL(origin)));
-    navigation->SetFeaturePolicyHeader(
+    navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, false, false}});
     navigation->Commit();
     *rfh = navigation->GetFinalRenderFrameHost();
@@ -108,7 +108,7 @@ class PermissionContextBaseFeaturePolicyTest
     pcb->RequestPermission(
         content::WebContents::FromRenderFrameHost(rfh), id,
         rfh->GetLastCommittedURL(), /*user_gesture=*/true,
-        base::BindOnce(&PermissionContextBaseFeaturePolicyTest::
+        base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,
                        base::Unretained(this)));
     EXPECT_NE(CONTENT_SETTING_DEFAULT, last_request_result_);
@@ -145,7 +145,7 @@ class PermissionContextBaseFeaturePolicyTest
   int request_id_;
 };
 
-TEST_F(PermissionContextBaseFeaturePolicyTest, DefaultPolicy) {
+TEST_F(PermissionContextBasePermissionsPolicyTest, DefaultPolicy) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
   content::RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
@@ -168,7 +168,7 @@ TEST_F(PermissionContextBaseFeaturePolicyTest, DefaultPolicy) {
             GetPermissionForFrame(&notifications, child));
 }
 
-TEST_F(PermissionContextBaseFeaturePolicyTest, DisabledTopLevelFrame) {
+TEST_F(PermissionContextBasePermissionsPolicyTest, DisabledTopLevelFrame) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   // Disable midi in the top level frame.
@@ -192,7 +192,7 @@ TEST_F(PermissionContextBaseFeaturePolicyTest, DisabledTopLevelFrame) {
             GetPermissionForFrame(geolocation.get(), child));
 }
 
-TEST_F(PermissionContextBaseFeaturePolicyTest, EnabledForChildFrame) {
+TEST_F(PermissionContextBasePermissionsPolicyTest, EnabledForChildFrame) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   // Enable midi for the child frame.
@@ -212,7 +212,7 @@ TEST_F(PermissionContextBaseFeaturePolicyTest, EnabledForChildFrame) {
             GetPermissionForFrame(geolocation.get(), child));
 }
 
-TEST_F(PermissionContextBaseFeaturePolicyTest, RequestPermission) {
+TEST_F(PermissionContextBasePermissionsPolicyTest, RequestPermission) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   HostContentSettingsMapFactory::GetForProfile(profile())

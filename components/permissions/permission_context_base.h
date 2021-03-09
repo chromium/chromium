@@ -171,7 +171,8 @@ class PermissionContextBase : public KeyedService {
  private:
   friend class PermissionContextBaseTests;
 
-  bool PermissionAllowedByFeaturePolicy(content::RenderFrameHost* rfh) const;
+  bool PermissionAllowedByPermissionsPolicy(
+      content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
   void CleanUpRequest(const PermissionRequestID& id);

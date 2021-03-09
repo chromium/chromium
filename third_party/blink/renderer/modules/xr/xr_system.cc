@@ -311,8 +311,8 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
   }
 }
 
-bool HasRequiredFeaturePolicy(const ExecutionContext* context,
-                              device::mojom::XRSessionFeature feature) {
+bool HasRequiredPermissionsPolicy(const ExecutionContext* context,
+                                  device::mojom::XRSessionFeature feature) {
   if (!context)
     return false;
 
@@ -1335,8 +1335,8 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
                                            "' is not supported for mode: " +
                                            SessionModeToString(session_mode));
         result.invalid_features = true;
-      } else if (!HasRequiredFeaturePolicy(GetExecutionContext(),
-                                           feature_enum.value())) {
+      } else if (!HasRequiredPermissionsPolicy(GetExecutionContext(),
+                                               feature_enum.value())) {
         AddConsoleMessage(error_level,
                           "Feature '" + feature_string +
                               "' is not permitted by permissions policy");
@@ -1425,7 +1425,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
   }
 
   for (const auto& feature : default_features) {
-    if (HasRequiredFeaturePolicy(GetExecutionContext(), feature)) {
+    if (HasRequiredPermissionsPolicy(GetExecutionContext(), feature)) {
       required_features.valid_features.insert(feature);
     } else {
       DVLOG(2) << __func__

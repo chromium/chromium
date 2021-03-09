@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
-                       DeviceOrientationFeaturePolicyWarning) {
+                       DeviceOrientationPermissionsPolicyWarning) {
   // Main frame is on a.com, iframe is on b.com.
   GURL main_frame_url =
       https_embedded_test_server_->GetURL("a.com", "/cross_origin_iframe.html");

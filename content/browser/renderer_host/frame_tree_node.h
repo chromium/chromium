@@ -444,9 +444,9 @@ class CONTENT_EXPORT FrameTreeNode {
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessFeaturePolicyBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);
-  FRIEND_TEST_ALL_PREFIXES(SitePerProcessFeaturePolicyBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicySandboxDynamic);
 
   class OpenerDestroyedObserver;

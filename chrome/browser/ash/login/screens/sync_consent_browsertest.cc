@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentSplitSettingsSyncTest,
 
   histogram_tester_.ExpectUniqueSample(
       "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kSkipFeaturePolicy, 1);
+      SyncConsentScreen::SyncScreenBehavior::kSkipPermissionsPolicy, 1);
   // We don't test SyncEnabled because this test fakes the policy disable and
   // the sync engine is still enabled.
 }

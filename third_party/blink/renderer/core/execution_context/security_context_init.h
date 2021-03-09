@@ -34,7 +34,7 @@ class CORE_EXPORT SecurityContextInit {
   // Used to carry permissions policy information from previous document
   // to current document during XSLT navigation, because XSLT navigation
   // does not have header information available.
-  void InitFeaturePolicyFrom(const SecurityContext& other);
+  void InitPermissionsPolicyFrom(const SecurityContext& other);
 
   // Init |document_policy_| and |report_only_document_policy_| by copying
   // state from another security context instance.
@@ -43,15 +43,16 @@ class CORE_EXPORT SecurityContextInit {
   // does not have header information available.
   void InitDocumentPolicyFrom(const SecurityContext& other);
 
-  void ApplyFeaturePolicy(LocalFrame* frame,
-                          const ResourceResponse& response,
-                          const base::Optional<WebOriginPolicy>& origin_policy,
-                          const FramePolicy& frame_policy);
+  void ApplyPermissionsPolicy(
+      LocalFrame* frame,
+      const ResourceResponse& response,
+      const base::Optional<WebOriginPolicy>& origin_policy,
+      const FramePolicy& frame_policy);
   void ApplyDocumentPolicy(
       DocumentPolicy::ParsedDocumentPolicy& document_policy,
       const String& report_only_document_policy_header);
 
-  const ParsedPermissionsPolicy& FeaturePolicyHeader() const {
+  const ParsedPermissionsPolicy& PermissionsPolicyHeader() const {
     return permissions_policy_header_;
   }
 

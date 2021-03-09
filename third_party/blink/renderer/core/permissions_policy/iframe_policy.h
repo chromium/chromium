@@ -34,7 +34,7 @@ class IFramePolicy final : public DOMFeaturePolicy {
       const ParsedPermissionsPolicy& container_policy,
       scoped_refptr<const SecurityOrigin> src_origin) override {
     policy_ = PermissionsPolicy::CreateFromParentPolicy(
-        context_->GetSecurityContext().GetFeaturePolicy(), container_policy,
+        context_->GetSecurityContext().GetPermissionsPolicy(), container_policy,
         src_origin->ToUrlOrigin());
   }
 

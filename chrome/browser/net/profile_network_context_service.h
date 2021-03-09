@@ -104,7 +104,7 @@ class ProfileNetworkContextService
   FRIEND_TEST_ALL_PREFIXES(ProfileNetworkContextServiceDiskCacheBrowsertest,
                            DiskCacheSize);
   FRIEND_TEST_ALL_PREFIXES(
-      ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+      ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
       Test);
 
   friend class AmbientAuthenticationTestHelper;

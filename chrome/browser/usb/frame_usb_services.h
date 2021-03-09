@@ -39,7 +39,7 @@ class FrameUsbServices
   void InitializeWebUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
-  bool AllowedByFeaturePolicy() const;
+  bool AllowedByPermissionsPolicy() const;
 
   std::unique_ptr<WebUsbChooser> usb_chooser_;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;

@@ -133,14 +133,14 @@ class CORE_EXPORT SecurityContext {
     return insecure_request_policy_;
   }
 
-  const PermissionsPolicy* GetFeaturePolicy() const {
+  const PermissionsPolicy* GetPermissionsPolicy() const {
     return permissions_policy_.get();
   }
-  const PermissionsPolicy* GetReportOnlyFeaturePolicy() const {
+  const PermissionsPolicy* GetReportOnlyPermissionsPolicy() const {
     return report_only_permissions_policy_.get();
   }
-  void SetFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
-  void SetReportOnlyFeaturePolicy(std::unique_ptr<PermissionsPolicy>);
+  void SetPermissionsPolicy(std::unique_ptr<PermissionsPolicy>);
+  void SetReportOnlyPermissionsPolicy(std::unique_ptr<PermissionsPolicy>);
 
   const DocumentPolicy* GetDocumentPolicy() const {
     return document_policy_.get();

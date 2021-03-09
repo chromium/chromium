@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
-                       NotEligibleForHistoryDueToFeaturePolicy) {
+                       NotEligibleForHistoryDueToPermissionsPolicyLegacy) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
   SetRulesetWithRules(
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
-                       ApiNotAllowedDueToFeaturePolicy) {
+                       ApiNotAllowedDueToPermissionsPolicy) {
   GURL main_page_url(https_server_.GetURL(
       "a.test",
       "/federated_learning/"
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
-                       ApiNotAllowedInSubframeDueToFeaturePolicySelf) {
+                       ApiNotAllowedInSubframeDueToPermissionsPolicySelf) {
   GURL main_page_url(https_server_.GetURL(
       "a.test",
       "/federated_learning/"
@@ -445,18 +445,19 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
           .ExtractString());
 }
 
-class FlocEligibilityBrowserTestChromeFeaturePolicyDisabled
+class FlocEligibilityBrowserTestChromePermissionsPolicyDisabled
     : public FlocEligibilityBrowserTest {
  public:
-  FlocEligibilityBrowserTestChromeFeaturePolicyDisabled() {
+  FlocEligibilityBrowserTestChromePermissionsPolicyDisabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndDisableFeature(
         blink::features::kInterestCohortFeaturePolicy);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
-                       FeaturePolicyFeatureNotAvailable) {
+IN_PROC_BROWSER_TEST_F(
+    FlocEligibilityBrowserTestChromePermissionsPolicyDisabled,
+    PermissionsPolicyFeatureNotAvailable) {
   GURL main_page_url(https_server_.GetURL("a.test", "/title1.html"));
   ui_test_utils::NavigateToURL(browser(), main_page_url);
 
@@ -468,8 +469,9 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
 
 // Try configuring the permissions policy anyway. Check that the API succeeds
 // and the history is eligible for floc computation.
-IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTestChromeFeaturePolicyDisabled,
-                       FeaturePolicyFeatureNotEffective) {
+IN_PROC_BROWSER_TEST_F(
+    FlocEligibilityBrowserTestChromePermissionsPolicyDisabled,
+    PermissionsPolicyFeatureNotEffective) {
   net::IPAddress::ConsiderLoopbackIPToBePubliclyRoutableForTesting();
 
   GURL main_page_url(https_server_.GetURL(

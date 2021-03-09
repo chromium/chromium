@@ -2057,7 +2057,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                 base::WeakPtr<RenderFrameHostImpl> impl);
 
  private:
-  friend class RenderFrameHostFeaturePolicyTest;
+  friend class RenderFrameHostPermissionsPolicyTest;
   friend class TestRenderFrameHost;
   friend class TestRenderViewHost;
   friend class TextInputTestLocalFrame;
@@ -2507,7 +2507,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Clears any existing policy and constructs a new policy for this frame,
   // based on its parent frame.
-  void ResetFeaturePolicy();
+  void ResetPermissionsPolicy();
 
   // TODO(ekaramad): One major purpose behind the API is to traverse the frame
   // tree top-down to visit the  RenderWidgetHostViews of interest in the most

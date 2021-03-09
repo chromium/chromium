@@ -38,7 +38,7 @@ void RemoteSecurityContext::ResetAndEnforceSandboxFlags(
   }
 }
 
-void RemoteSecurityContext::InitializeFeaturePolicy(
+void RemoteSecurityContext::InitializePermissionsPolicy(
     const ParsedPermissionsPolicy& parsed_header,
     const ParsedPermissionsPolicy& container_policy,
     const PermissionsPolicy* parent_permissions_policy) {

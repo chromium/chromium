@@ -56,7 +56,8 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
     std::vector<url::Origin> allowlist;
     if (enabled)
       allowlist.push_back(origin_);
-    navigation->SetFeaturePolicyHeader({{feature, allowlist, false, false}});
+    navigation->SetPermissionsPolicyHeader(
+        {{feature, allowlist, false, false}});
     navigation->Commit();
   }
 
@@ -95,7 +96,8 @@ class MediaDevicesPermissionCheckerTest : public RenderViewHostImplTestHarness {
 // case as the PermissionsPolicy class itself is tested thoroughly in
 // permissions_policy_unittest.cc and in
 // render_frame_host_permissions_policy_unittest.cc.
-TEST_F(MediaDevicesPermissionCheckerTest, CheckPermissionWithFeaturePolicy) {
+TEST_F(MediaDevicesPermissionCheckerTest,
+       CheckPermissionWithPermissionsPolicy) {
   // Mic and Camera should be enabled by default for a frame (if permission is
   // granted).
   EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));

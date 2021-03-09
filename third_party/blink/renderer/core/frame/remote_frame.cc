@@ -471,10 +471,10 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
       .SetHasPointerEventsNone(IsIgnoredForHitTest());
 }
 
-void RemoteFrame::SetReplicatedFeaturePolicyHeader(
+void RemoteFrame::SetReplicatedPermissionsPolicyHeader(
     const ParsedPermissionsPolicy& parsed_header) {
   permissions_policy_header_ = parsed_header;
-  ApplyReplicatedFeaturePolicyHeader();
+  ApplyReplicatedPermissionsPolicyHeader();
 }
 
 void RemoteFrame::SetReplicatedSandboxFlags(
@@ -551,7 +551,7 @@ void RemoteFrame::SetReplicatedOrigin(
   security_origin->SetOpaqueOriginIsPotentiallyTrustworthy(
       is_potentially_trustworthy_unique_origin);
   security_context_.SetReplicatedOrigin(security_origin);
-  ApplyReplicatedFeaturePolicyHeader();
+  ApplyReplicatedPermissionsPolicyHeader();
 
   // If the origin of a remote frame changed, the accessibility object for the
   // owner element now points to a different child.
@@ -747,7 +747,7 @@ void RemoteFrame::DidSetFramePolicyHeaders(
       parsed_permissions_policy.size());
   for (size_t i = 0; i < parsed_permissions_policy.size(); ++i)
     parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
-  SetReplicatedFeaturePolicyHeader(parsed_permissions_policy_copy);
+  SetReplicatedPermissionsPolicyHeader(parsed_permissions_policy_copy);
 }
 
 // Update the proxy's FrameOwner with new sandbox flags and container policy
@@ -893,16 +893,16 @@ bool RemoteFrame::DetachChildren() {
   return !!Client();
 }
 
-void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
+void RemoteFrame::ApplyReplicatedPermissionsPolicyHeader() {
   const PermissionsPolicy* parent_permissions_policy = nullptr;
   if (Frame* parent_frame = Parent()) {
     parent_permissions_policy =
-        parent_frame->GetSecurityContext()->GetFeaturePolicy();
+        parent_frame->GetSecurityContext()->GetPermissionsPolicy();
   }
   ParsedPermissionsPolicy container_policy;
   if (Owner())
     container_policy = Owner()->GetFramePolicy().container_policy;
-  security_context_.InitializeFeaturePolicy(
+  security_context_.InitializePermissionsPolicy(
       permissions_policy_header_, container_policy, parent_permissions_policy);
 }
 

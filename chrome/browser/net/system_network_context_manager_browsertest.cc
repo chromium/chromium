@@ -483,11 +483,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(base::nullopt, true, false));
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-class SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
+class SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<bool> {
  public:
-  SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest() {
+  SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest() {
     bool use_builtin_cert_verifier = GetParam();
     cert_verifier_impl_ =
         use_builtin_cert_verifier
@@ -549,7 +549,7 @@ class SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
 };
 
 IN_PROC_BROWSER_TEST_P(
-    SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+    SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     Test) {
   network::mojom::NetworkContextParamsPtr network_context_params_ptr;
 
@@ -592,6 +592,6 @@ IN_PROC_BROWSER_TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SystemNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+    SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     ::testing::Bool());
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)

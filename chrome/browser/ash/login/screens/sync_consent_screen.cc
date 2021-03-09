@@ -131,7 +131,7 @@ bool SyncConsentScreen::MaybeSkip(WizardContext* context) {
       return false;
     case SyncScreenBehavior::kSkipNonGaiaAccount:
     case SyncScreenBehavior::kSkipPublicAccount:
-    case SyncScreenBehavior::kSkipFeaturePolicy:
+    case SyncScreenBehavior::kSkipPermissionsPolicy:
     case SyncScreenBehavior::kSkipAndEnableNonBrandedBuild:
     case SyncScreenBehavior::kSkipAndEnableEmphemeralUser:
     case SyncScreenBehavior::kSkipAndEnableScreenPolicy:
@@ -256,7 +256,7 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
       return;
     case SyncScreenBehavior::kSkipNonGaiaAccount:
     case SyncScreenBehavior::kSkipPublicAccount:
-    case SyncScreenBehavior::kSkipFeaturePolicy:
+    case SyncScreenBehavior::kSkipPermissionsPolicy:
       // Nothing to do.
       return;
     case SyncScreenBehavior::kSkipAndEnableNonBrandedBuild:
@@ -308,7 +308,7 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior()
 
   // Skip if sync-the-feature is disabled by policy.
   if (IsProfileSyncDisabledByPolicy())
-    return SyncScreenBehavior::kSkipFeaturePolicy;
+    return SyncScreenBehavior::kSkipPermissionsPolicy;
 
   if (IsProfileSyncEngineInitialized())
     return SyncScreenBehavior::kShow;

@@ -2554,7 +2554,7 @@ void LocalFrame::MaybeLogAdClickNavigation() {
     UseCounter::Count(GetDocument(), WebFeature::kAdClickNavigation);
 }
 
-void LocalFrame::CountUseIfFeatureWouldBeBlockedByFeaturePolicy(
+void LocalFrame::CountUseIfFeatureWouldBeBlockedByPermissionsPolicy(
     mojom::WebFeature blocked_cross_origin,
     mojom::WebFeature blocked_same_origin) {
   // Get the origin of the top-level document

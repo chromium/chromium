@@ -119,7 +119,7 @@ void SecurityContextInit::ApplyDocumentPolicy(
   }
 }
 
-void SecurityContextInit::ApplyFeaturePolicy(
+void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame* frame,
     const ResourceResponse& response,
     const base::Optional<WebOriginPolicy>& origin_policy,
@@ -127,7 +127,7 @@ void SecurityContextInit::ApplyFeaturePolicy(
   // If we are a HTMLViewSourceDocument we use container, header or
   // inherited policies. https://crbug.com/898688.
   if (frame->InViewSourceMode()) {
-    execution_context_->GetSecurityContext().SetFeaturePolicy(
+    execution_context_->GetSecurityContext().SetPermissionsPolicy(
         PermissionsPolicy::CreateFromParentPolicy(
             nullptr, {},
             execution_context_->GetSecurityOrigin()->ToUrlOrigin()));
@@ -214,13 +214,13 @@ void SecurityContextInit::ApplyFeaturePolicy(
   std::unique_ptr<PermissionsPolicy> permissions_policy;
   auto* parent_permissions_policy =
       frame->Tree().Parent()
-          ? frame->Tree().Parent()->GetSecurityContext()->GetFeaturePolicy()
+          ? frame->Tree().Parent()->GetSecurityContext()->GetPermissionsPolicy()
           : nullptr;
   permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
       parent_permissions_policy, container_policy,
       execution_context_->GetSecurityOrigin()->ToUrlOrigin());
   permissions_policy->SetHeaderPolicy(permissions_policy_header_);
-  execution_context_->GetSecurityContext().SetFeaturePolicy(
+  execution_context_->GetSecurityContext().SetPermissionsPolicy(
       std::move(permissions_policy));
 
   // Report-only permissions policy only takes effect when it is stricter than
@@ -238,17 +238,18 @@ void SecurityContextInit::ApplyFeaturePolicy(
             execution_context_->GetSecurityOrigin()->ToUrlOrigin());
     report_only_policy->SetHeaderPolicy(
         parsed_report_only_permissions_policy_header);
-    execution_context_->GetSecurityContext().SetReportOnlyFeaturePolicy(
+    execution_context_->GetSecurityContext().SetReportOnlyPermissionsPolicy(
         std::move(report_only_policy));
   }
 }
 
-void SecurityContextInit::InitFeaturePolicyFrom(const SecurityContext& other) {
+void SecurityContextInit::InitPermissionsPolicyFrom(
+    const SecurityContext& other) {
   auto& security_context = execution_context_->GetSecurityContext();
-  security_context.SetFeaturePolicy(
-      PermissionsPolicy::CopyStateFrom(other.GetFeaturePolicy()));
-  security_context.SetReportOnlyFeaturePolicy(
-      PermissionsPolicy::CopyStateFrom(other.GetReportOnlyFeaturePolicy()));
+  security_context.SetPermissionsPolicy(
+      PermissionsPolicy::CopyStateFrom(other.GetPermissionsPolicy()));
+  security_context.SetReportOnlyPermissionsPolicy(
+      PermissionsPolicy::CopyStateFrom(other.GetReportOnlyPermissionsPolicy()));
 }
 
 void SecurityContextInit::InitDocumentPolicyFrom(const SecurityContext& other) {

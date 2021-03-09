@@ -508,7 +508,7 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 }
 }  // namespace
 
-class ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
+class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
     : public policy::PolicyTest,
       public testing::WithParamInterface<bool> {
  public:
@@ -566,7 +566,7 @@ class ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest
 };
 
 IN_PROC_BROWSER_TEST_P(
-    ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+    ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     Test) {
   {
     content::BrowserContext::GetDefaultStoragePartition(CreateNewProfile())
@@ -614,7 +614,7 @@ IN_PROC_BROWSER_TEST_P(
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ProfileNetworkContextServiceCertVerifierBuiltinFeaturePolicyTest,
+    ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     ::testing::Bool());
 #endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
