@@ -90,9 +90,15 @@ IntentHandler = class {
         // line if empty.
         // TODO: detect when this is the end of the document; read "end of text"
         // if so.
-        ChromeVox.tts.speak(
-            cur.text.substring(cur.startOffset, cur.startOffset + 1) || '\n',
-            QueueMode.CATEGORY_FLUSH);
+        const text = cur.text.substring(cur.startOffset, cur.startOffset + 1);
+        ChromeVox.tts.speak(text || '\n', QueueMode.CATEGORY_FLUSH);
+        // Return false if |text| is empty. Do this to give the user more
+        // information than just "new line". For example, if moving by character
+        // moves us to the beginning/end of a separator, we want to include
+        // additional context.
+        if (!text) {
+          return false;
+        }
         return true;
 
       case IntentTextBoundaryType.LINE_END:

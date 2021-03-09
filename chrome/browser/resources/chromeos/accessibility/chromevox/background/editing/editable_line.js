@@ -97,10 +97,10 @@ editing.EditableLine = class {
   }
 
   /**
-* @param {boolean=} opt_baseLineOnStart Computes the line based on the start
-node if true.
- @private
- */
+   * @param {boolean=} opt_baseLineOnStart Computes the line based on the start
+   * node if true.
+   * @private
+   */
   computeLineData_(opt_baseLineOnStart) {
     // Note that we calculate the line based only upon |start_| or
     // |end_| even if they do not fall on the same line. It is up to

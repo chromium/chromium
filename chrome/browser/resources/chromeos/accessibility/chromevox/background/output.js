@@ -2328,6 +2328,7 @@ Output.ROLE_INFO_ = {
     inherits: 'abstractRange',
     earconId: 'LISTBOX'
   },
+  splitter: {msgId: 'role_separator'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
   suggestion: {msgId: 'role_suggestion', inherits: 'abstractContainer'},
   tab: {msgId: 'role_tab'},

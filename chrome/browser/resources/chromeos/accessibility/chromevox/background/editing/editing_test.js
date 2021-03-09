@@ -1623,3 +1623,32 @@ TEST_F('ChromeVoxEditingTest', 'MarkedContent', function() {
     input.focus();
   });
 });
+
+TEST_F('ChromeVoxEditingTest', 'Separator', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>Start</p>
+      <p><span>Hello</span></p>
+      <p><span role="separator">Separator content should not be read</span></p>
+      <p><span>World</span></p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    this.listenOnce(input, 'focus', function() {
+      mockFeedback.call(this.press(KeyCode.DOWN))
+          .expectSpeech('Hello')
+          .call(this.press(KeyCode.DOWN))
+          .expectNextSpeechUtteranceIsNot(
+              'Separator content should not be read')
+          .expectSpeech('Separator')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('World')
+          .call(this.press(KeyCode.LEFT))
+          .expectSpeech('Separator')
+          .replay();
+    });
+    input.focus();
+  });
+});
