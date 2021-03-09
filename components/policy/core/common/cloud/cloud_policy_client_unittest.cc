@@ -87,7 +87,6 @@ const char kDockMacAddress[] = "fake-dock-mac-address";
 const char kManufactureDate[] = "fake-manufacture-date";
 const char kOAuthToken[] = "fake-oauth-token";
 const char kDMToken[] = "fake-dm-token";
-const char kDMToken2[] = "fake-dm-token-2";
 const char kDeviceDMToken[] = "fake-device-dm-token";
 const char kMachineCertificate[] = "fake-machine-certificate";
 const char kEnrollmentCertificate[] = "fake-enrollment-certificate";
@@ -256,6 +255,30 @@ em::DeviceManagementResponse GetRegistrationResponse() {
   return registration_response;
 }
 
+em::DeviceManagementRequest GetReregistrationRequest() {
+  em::DeviceManagementRequest request;
+
+  em::DeviceRegisterRequest* reregister_request =
+      request.mutable_register_request();
+  reregister_request->set_type(em::DeviceRegisterRequest::USER);
+  reregister_request->set_machine_id(kMachineID);
+  reregister_request->set_machine_model(kMachineModel);
+  reregister_request->set_brand_code(kBrandCode);
+  reregister_request->mutable_device_register_identification()
+      ->set_attested_device_id(kAttestedDeviceId);
+  reregister_request->set_ethernet_mac_address(kEthernetMacAddress);
+  reregister_request->set_dock_mac_address(kDockMacAddress);
+  reregister_request->set_manufacture_date(kManufactureDate);
+  reregister_request->set_lifetime(
+      em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
+  reregister_request->set_flavor(
+      em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
+  reregister_request->set_reregister(true);
+  reregister_request->set_reregistration_dm_token(kDMToken);
+
+  return request;
+}
+
 }  // namespace
 
 class CloudPolicyClientTest : public testing::Test {
@@ -264,24 +287,6 @@ class CloudPolicyClientTest : public testing::Test {
       : job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-    em::DeviceRegisterRequest* reregister_request =
-        reregistration_request_.mutable_register_request();
-    reregister_request->set_type(em::DeviceRegisterRequest::USER);
-    reregister_request->set_machine_id(kMachineID);
-    reregister_request->set_machine_model(kMachineModel);
-    reregister_request->set_brand_code(kBrandCode);
-    reregister_request->mutable_device_register_identification()
-        ->set_attested_device_id(kAttestedDeviceId);
-    reregister_request->set_ethernet_mac_address(kEthernetMacAddress);
-    reregister_request->set_dock_mac_address(kDockMacAddress);
-    reregister_request->set_manufacture_date(kManufactureDate);
-    reregister_request->set_lifetime(
-        em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
-    reregister_request->set_flavor(
-        em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
-    reregister_request->set_reregister(true);
-    reregister_request->set_reregistration_dm_token(kDMToken);
-
     em::CertificateBasedDeviceRegistrationData data;
     data.set_certificate_type(em::CertificateBasedDeviceRegistrationData::
                                   ENTERPRISE_ENROLLMENT_CERTIFICATE);
@@ -307,9 +312,6 @@ class CloudPolicyClientTest : public testing::Test {
     fake_signing_service_.SignDataSynchronously(
         data.SerializeAsString(),
         cert_based_register_request->mutable_signed_request());
-
-    failed_reregistration_response_.mutable_register_response()
-        ->set_device_management_token(kDMToken2);
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -515,7 +517,6 @@ class CloudPolicyClientTest : public testing::Test {
   }
 
   // Request protobufs used as expectations for the client requests.
-  em::DeviceManagementRequest reregistration_request_;
   em::DeviceManagementRequest cert_based_registration_request_;
   em::DeviceManagementRequest enrollment_token_request_;
   em::DeviceManagementRequest unregistration_request_;
@@ -533,7 +534,6 @@ class CloudPolicyClientTest : public testing::Test {
   em::DeviceManagementRequest robot_auth_code_fetch_request_;
 
   // Protobufs used in successful responses.
-  em::DeviceManagementResponse failed_reregistration_response_;
   em::DeviceManagementResponse unregistration_response_;
   em::DeviceManagementResponse upload_certificate_response_;
   em::DeviceManagementResponse upload_status_response_;
@@ -2264,7 +2264,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   EXPECT_THAT(query_params_,
               Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            reregistration_request_.SerializePartialAsString());
+            GetReregistrationRequest().SerializePartialAsString());
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
@@ -2308,7 +2308,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_THAT(query_params_,
               Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken)));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            reregistration_request_.SerializePartialAsString());
+            GetReregistrationRequest().SerializePartialAsString());
   EXPECT_FALSE(client_->is_registered());
   EXPECT_TRUE(client_->requires_reregistration());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
