@@ -391,6 +391,12 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
     return;
   }
 
+  // All system token keys are allowed for corporate usage by default.
+  if (usage == KeyUsage::kCorporate && token_id_ == TokenId::kSystem) {
+    std::move(callback).Run(/*allowed=*/true, Status::kSuccess);
+    return;
+  }
+
   platform_keys_service_->GetAttributeForKey(
       token_id_, public_key_spki_der, KeyAttributeType::kKeyPermissions,
       base::BindOnce(

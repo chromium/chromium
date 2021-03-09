@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/gmock_callback_support.h"
+#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/chromeos/platform_keys/mock_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
@@ -104,16 +105,34 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     profile_ = std::make_unique<TestingProfile>();
 
     platform_keys_service_ = std::make_unique<MockPlatformKeysService>();
-    key_permissions_manager_ = std::make_unique<MockKeyPermissionsManager>();
+    user_token_key_permissions_manager_ =
+        std::make_unique<MockKeyPermissionsManager>();
 
     key_permissions_service_ = std::make_unique<KeyPermissionsServiceImpl>(
         /*is_regular_profile=*/true, /*profile_is_managed=*/true,
-        platform_keys_service_.get(), key_permissions_manager_.get());
+        platform_keys_service_.get(),
+        user_token_key_permissions_manager_.get());
 
-    // All test keys are not marked as corporate by default unless specified.
-    EXPECT_CALL(*key_permissions_manager_, IsKeyAllowedForUsage(_, _, _))
+    // All test keys that reside on user token only are not marked as corporate
+    // by default unless specified.
+    EXPECT_CALL(*user_token_key_permissions_manager_,
+                IsKeyAllowedForUsage(_, _, _))
         .WillRepeatedly(base::test::RunOnceCallback<0>(/*allowed=*/false,
                                                        Status::kSuccess));
+
+    system_token_key_permissions_manager_ =
+        std::make_unique<platform_keys::MockKeyPermissionsManager>();
+
+    // All test keys that reside on system token are marked for corporate usage
+    // by default unless specified.
+    EXPECT_CALL(*system_token_key_permissions_manager_,
+                IsKeyAllowedForUsage(_, _, _))
+        .WillRepeatedly(
+            base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
+
+    platform_keys::KeyPermissionsManagerImpl::
+        SetSystemTokenKeyPermissionsManagerForTesting(
+            system_token_key_permissions_manager_.get());
   }
 
  protected:
@@ -137,11 +156,11 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
   }
 
   void SetCorporateKey(const std::string& public_key) {
-    EXPECT_CALL(*key_permissions_manager_,
+    EXPECT_CALL(*user_token_key_permissions_manager_,
                 AllowKeyForUsage(_, KeyUsage::kCorporate, public_key))
         .Times(1)
         .WillOnce(base::test::RunOnceCallback<0>(Status::kSuccess));
-    EXPECT_CALL(*key_permissions_manager_,
+    EXPECT_CALL(*user_token_key_permissions_manager_,
                 IsKeyAllowedForUsage(_, KeyUsage::kCorporate, public_key))
         .WillOnce(
             base::test::RunOnceCallback<0>(/*allowed=*/true, Status::kSuccess));
@@ -156,7 +175,10 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
 
   std::unique_ptr<KeyPermissionsServiceImpl> key_permissions_service_;
   std::unique_ptr<MockPlatformKeysService> platform_keys_service_;
-  std::unique_ptr<MockKeyPermissionsManager> key_permissions_manager_;
+  std::unique_ptr<MockKeyPermissionsManager>
+      user_token_key_permissions_manager_;
+  std::unique_ptr<MockKeyPermissionsManager>
+      system_token_key_permissions_manager_;
 };
 
 TEST_F(KeyPermissionsServiceImplTest, SystemTokenKeyIsImplicitlyCorporate) {

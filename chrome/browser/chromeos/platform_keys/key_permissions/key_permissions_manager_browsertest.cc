@@ -315,21 +315,15 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_3.allowed().value());
 }
 
+// All system token keys are allowed for corporate usage.
 IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
                        IsKeyAllowedForUsage_Corporate) {
   WaitForOneTimeMigrationToFinish();
 
   std::string public_key_spki_der_1 = GenerateKey();
-  SetKeyUsageAllowanceInChaps(KeyUsage::kCorporate, /*allowed=*/true,
-                              public_key_spki_der_1);
-
   std::string public_key_spki_der_2 = GenerateKey();
-  SetKeyUsageAllowanceInChaps(KeyUsage::kCorporate, /*allowed=*/false,
-                              public_key_spki_der_2);
 
-  std::string public_key_spki_der_3 = GenerateKey();
-
-  // Check that public_key_spki_der_1 is allowed for ARC usage.
+  // Check that public_key_spki_der_1 is allowed for corporate usage.
   IsKeyAllowedForUsageExecutionWaiter is_key_allowed_for_usage_waiter_1;
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kCorporate,
@@ -339,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
 
-  // Check that public_key_spki_der_2 is not allowed for ARC usage.
+  // Check that public_key_spki_der_2 is allowed for corporate usage.
   IsKeyAllowedForUsageExecutionWaiter is_key_allowed_for_usage_waiter_2;
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kCorporate,
@@ -347,17 +341,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   is_key_allowed_for_usage_waiter_2.Wait();
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
-  EXPECT_FALSE(is_key_allowed_for_usage_waiter_2.allowed().value());
-
-  // Check that public_key_spki_der_3 is not allowed for ARC usage.
-  IsKeyAllowedForUsageExecutionWaiter is_key_allowed_for_usage_waiter_3;
-  GetKeyPermissionsManager()->IsKeyAllowedForUsage(
-      is_key_allowed_for_usage_waiter_3.GetCallback(), KeyUsage::kCorporate,
-      public_key_spki_der_3);
-  is_key_allowed_for_usage_waiter_3.Wait();
-  EXPECT_EQ(is_key_allowed_for_usage_waiter_3.status(), Status::kSuccess);
-  ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.allowed().has_value());
-  EXPECT_FALSE(is_key_allowed_for_usage_waiter_3.allowed().value());
+  EXPECT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().value());
 }
 
 IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,

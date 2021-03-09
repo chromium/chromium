@@ -121,19 +121,24 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
     return;
   }
 
-  bool key_on_user_token = false;
+  bool key_on_user_token_only = false;
   for (const auto key_location : key_locations) {
     switch (key_location) {
       case TokenId::kUser:
-        key_on_user_token = true;
+        key_on_user_token_only = true;
         break;
       case TokenId::kSystem:
-        std::move(callback).Run(/*corporate=*/true);
+        KeyPermissionsManagerImpl::GetSystemTokenKeyPermissionsManager()
+            ->IsKeyAllowedForUsage(
+                base::BindOnce(
+                    &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
+                    weak_factory_.GetWeakPtr(), std::move(callback)),
+                KeyUsage::kCorporate, public_key_spki_der);
         return;
     }
   }
 
-  if (key_on_user_token) {
+  if (key_on_user_token_only) {
     DCHECK(is_regular_user_profile_);
     profile_key_permissions_manager_->IsKeyAllowedForUsage(
         base::BindOnce(
