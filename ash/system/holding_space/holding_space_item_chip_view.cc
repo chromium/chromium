@@ -17,6 +17,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -107,10 +108,12 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
   layout->SetFlexForView(label_and_pin_button_container, 1);
 
   // Label.
+  // NOTE: A11y events for `label_` are handled by its parent.
   label_ = label_and_pin_button_container->AddChildView(
       std::make_unique<PaintCallbackLabel>(
           base::BindRepeating(&HoldingSpaceItemChipView::OnPaintLabelMask,
                               base::Unretained(this))));
+  label_->GetViewAccessibility().OverrideIsIgnored(true);
   label_->SetBorder(views::CreateEmptyBorder(kLabelMargins));
   label_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
