@@ -37,45 +37,6 @@
 
 namespace ui {
 
-namespace {
-
-// Returns the parent node of the provided child. Returns the parent node's tree
-// id and node id through the provided output parameters,|parent_tree_id| and
-// |parent_id|.
-AXNode* GetParent(AXNode* child,
-                  AXTreeID child_tree_id,
-                  AXTreeID* parent_tree_id,
-                  AXNodeID* parent_id) {
-  DCHECK(parent_tree_id);
-  DCHECK(parent_id);
-  *parent_tree_id = AXTreeIDUnknown();
-  *parent_id = kInvalidAXNodeID;
-  if (!child)
-    return nullptr;
-
-  AXNode* parent = child->parent();
-  *parent_tree_id = child_tree_id;
-
-  if (!parent) {
-    AXTreeManager* manager =
-        AXTreeManagerMap::GetInstance().GetManager(child_tree_id);
-    if (manager) {
-      parent = manager->GetParentNodeFromParentTreeAsAXNode();
-      *parent_tree_id = manager->GetParentTreeID();
-    }
-  }
-
-  if (!parent) {
-    *parent_tree_id = AXTreeIDUnknown();
-    return parent;
-  }
-
-  *parent_id = parent->id();
-  return parent;
-}
-
-}  // namespace
-
 // Defines the type of position in the accessibility tree.
 // A tree position is used when referring to a specific child of a node in the
 // accessibility tree.
@@ -388,10 +349,16 @@ class AXPosition {
   AXTreeID tree_id() const { return tree_id_; }
   AXNodeID anchor_id() const { return anchor_id_; }
 
-  AXNodeType* GetAnchor() const {
+  AXNode* GetAnchor() const {
     if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == kInvalidAXNodeID)
       return nullptr;
-    return GetNodeInTree(tree_id_, anchor_id_);
+
+    const AXTreeManager* manager =
+        AXTreeManagerMap::GetInstance().GetManager(tree_id());
+    if (manager)
+      return manager->GetNodeFromTree(tree_id(), anchor_id());
+
+    return nullptr;
   }
 
   int GetAnchorSiblingCount() const {
@@ -619,12 +586,11 @@ class AXPosition {
         if (text_position->AtEndOfAnchor() &&
             !text_position->AtEndOfTextSpan() &&
             text_position->IsInWhiteSpace() &&
-            GetNextOnLineID(text_position->anchor_id_) == kInvalidAXNodeID) {
+            text_position->GetNextOnLineID() == kInvalidAXNodeID) {
           return true;
         }
 
-        return GetPreviousOnLineID(text_position->anchor_id_) ==
-                   kInvalidAXNodeID &&
+        return text_position->GetPreviousOnLineID() == kInvalidAXNodeID &&
                text_position->AtStartOfAnchor();
     }
   }
@@ -681,11 +647,10 @@ class AXPosition {
         // in most but not all cases, the parent of an inline text box is a
         // static text object, whose end signifies the end of the text span. One
         // exception is line breaks.
-        if (GetNextOnLineID(text_position->anchor_id_) == kInvalidAXNodeID) {
+        if (text_position->GetNextOnLineID() == kInvalidAXNodeID) {
           return (!text_position->AtEndOfTextSpan() &&
                   text_position->IsInWhiteSpace() &&
-                  GetPreviousOnLineID(text_position->anchor_id_) !=
-                      kInvalidAXNodeID)
+                  text_position->GetPreviousOnLineID() != kInvalidAXNodeID)
                      ? text_position->AtStartOfAnchor()
                      : text_position->AtEndOfAnchor();
         }
@@ -1087,16 +1052,16 @@ class AXPosition {
 
   // This method finds the lowest common ancestor node in the accessibility tree
   // of this and |other| positions' anchor nodes.
-  AXNodeType* LowestCommonAnchor(const AXPosition& other) const {
+  AXNode* LowestCommonAnchor(const AXPosition& other) const {
     if (IsNullPosition() || other.IsNullPosition())
       return nullptr;
     if (GetAnchor() == other.GetAnchor())
       return GetAnchor();
 
-    base::stack<AXNodeType*> our_ancestors = GetAncestorAnchors();
-    base::stack<AXNodeType*> other_ancestors = other.GetAncestorAnchors();
+    base::stack<AXNode*> our_ancestors = GetAncestorAnchors();
+    base::stack<AXNode*> other_ancestors = other.GetAncestorAnchors();
 
-    AXNodeType* common_anchor = nullptr;
+    AXNode* common_anchor = nullptr;
     while (!our_ancestors.empty() && !other_ancestors.empty() &&
            our_ancestors.top() == other_ancestors.top()) {
       common_anchor = our_ancestors.top();
@@ -1121,7 +1086,7 @@ class AXPosition {
   // See "CreateParentPosition" for an explanation of the use of
   // |move_direction|.
   AXPositionInstance CreateAncestorPosition(
-      const AXNodeType* ancestor_anchor,
+      const AXNode* ancestor_anchor,
       ax::mojom::MoveDirection move_direction) const {
     if (!ancestor_anchor)
       return CreateNullPosition();
@@ -1147,7 +1112,7 @@ class AXPosition {
         if (!position->GetAnchor())
           return CreateNullPosition();
 
-        if (AXNodeType* empty_object_node = GetEmptyObjectAncestorNode()) {
+        if (const AXNode* empty_object_node = GetEmptyObjectAncestorNode()) {
           // In this class, (but only on certain platforms), we define the empty
           // node as a leaf node (see `AXNode::IsLeaf()`) that doesn't have any
           // content. So that such nodes will act as a character and a word
@@ -1166,7 +1131,7 @@ class AXPosition {
           // from the descendant to the empty leaf node itself. Otherwise,
           // character and word navigation won't work properly.
           return CreateTreePosition(
-              position->tree_id(), GetAnchorID(empty_object_node),
+              position->tree_id(), empty_object_node->id(),
               position->child_index() == BEFORE_TEXT ? BEFORE_TEXT : 0);
         }
 
@@ -1183,7 +1148,7 @@ class AXPosition {
         if (!position->GetAnchor())
           return CreateNullPosition();
 
-        if (AXNodeType* empty_object_node = GetEmptyObjectAncestorNode()) {
+        if (const AXNode* empty_object_node = GetEmptyObjectAncestorNode()) {
           // This is needed because an empty object as defined in this class and
           // on certain platforms can have descendants that should not be
           // exposed. See comment above in similar implementation for
@@ -1194,7 +1159,7 @@ class AXPosition {
           // is `AXNode::kEmbeddedCharacterLength`. If the invalid position was
           // already at the start of the node, we set it to 0.
           return CreateTextPosition(
-              position->tree_id(), GetAnchorID(empty_object_node),
+              position->tree_id(), empty_object_node->id(),
               position->text_offset() > 0 ? AXNode::kEmbeddedCharacterLength
                                           : 0,
               ax::mojom::TextAffinity::kDownstream);
@@ -2029,9 +1994,15 @@ class AXPosition {
 
     AXTreeID tree_id = AXTreeIDUnknown();
     AXNodeID child_id = kInvalidAXNodeID;
-    AnchorChild(child_index, &tree_id, &child_id);
+    const AXNode* child_anchor =
+        GetAnchor()->GetChildAtCrossingTreeBoundary(child_index);
+    if (!child_anchor)
+      return CreateNullPosition();
+    tree_id = child_anchor->tree()->GetAXTreeID();
+    child_id = child_anchor->id();
     DCHECK_NE(tree_id, AXTreeIDUnknown());
     DCHECK_NE(child_id, kInvalidAXNodeID);
+
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
         NOTREACHED();
@@ -2082,11 +2053,15 @@ class AXPosition {
     if (IsNullPosition())
       return CreateNullPosition();
 
-    AXTreeID tree_id = AXTreeIDUnknown();
-    AXNodeID parent_id = kInvalidAXNodeID;
-    AnchorParent(&tree_id, &parent_id);
-    if (tree_id == AXTreeIDUnknown() || parent_id == kInvalidAXNodeID)
+    AXTreeID parent_tree_id = AXTreeIDUnknown();
+    AXNodeID parent_anchor_id = kInvalidAXNodeID;
+    const AXNode* parent_anchor = GetAnchor()->GetParentCrossingTreeBoundary();
+    if (!parent_anchor)
       return CreateNullPosition();
+    parent_tree_id = parent_anchor->tree()->GetAXTreeID();
+    parent_anchor_id = parent_anchor->id();
+    DCHECK_NE(parent_tree_id, AXTreeIDUnknown());
+    DCHECK_NE(parent_anchor_id, kInvalidAXNodeID);
 
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
@@ -2100,7 +2075,8 @@ class AXPosition {
         // position anchored at the next child, depending on whether this is the
         // last child in its parent anchor.
         if (AtEndOfAnchor())
-          return CreateTreePosition(tree_id, parent_id, (child_index + 1));
+          return CreateTreePosition(parent_tree_id, parent_anchor_id,
+                                    (child_index + 1));
 
         switch (move_direction) {
           case ax::mojom::MoveDirection::kNone:
@@ -2117,7 +2093,8 @@ class AXPosition {
             // "AnchorIndexInParent" always returns a child index that is before
             // any "object replacement character" in our parent, we use that for
             // both situations.
-            return CreateTreePosition(tree_id, parent_id, child_index);
+            return CreateTreePosition(parent_tree_id, parent_anchor_id,
+                                      child_index);
           case ax::mojom::MoveDirection::kForward:
             // "move_direction" is only important when this position is an
             // "embedded object in parent", i.e., when this position's anchor is
@@ -2129,7 +2106,8 @@ class AXPosition {
             // "AnchorIndexInParent" for the child index.
             if (!AtStartOfAnchor() && IsEmbeddedObjectInParent())
               ++child_index;
-            return CreateTreePosition(tree_id, parent_id, child_index);
+            return CreateTreePosition(parent_tree_id, parent_anchor_id,
+                                      child_index);
         }
       }
 
@@ -2248,7 +2226,7 @@ class AXPosition {
         // breaks, which would create false positives.
 
         AXPositionInstance parent_position = CreateTextPosition(
-            tree_id, parent_id, parent_offset, parent_affinity);
+            parent_tree_id, parent_anchor_id, parent_offset, parent_affinity);
         if (AtEndOfAnchor() && !parent_position->AtStartOfAnchor() &&
             !parent_position->AtEndOfAnchor() &&
             parent_position->AtStartOfLine()) {
@@ -2257,8 +2235,6 @@ class AXPosition {
         return parent_position;
       }
     }
-
-    return CreateNullPosition();
   }
 
   // Creates a tree position using the next text-only node as its anchor.
@@ -2485,7 +2461,7 @@ class AXPosition {
     // rooted at this position's anchor. This is necessary because we don't want
     // to return a position that might be in the shadow DOM when this position
     // is not.
-    const AXNodeType* common_anchor = text_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = text_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       text_position = text_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kForward);
@@ -2559,7 +2535,7 @@ class AXPosition {
     // rooted at this position's anchor. This is necessary because we don't want
     // to return a position that might be in the shadow DOM when this position
     // is not.
-    const AXNodeType* common_anchor = text_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = text_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       text_position = text_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kBackward);
@@ -2708,7 +2684,7 @@ class AXPosition {
     // at the current position.
     // This is necessary because we don't want to return any position that might
     // be in the shadow DOM if the original position was not.
-    const AXNodeType* common_anchor = tree_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = tree_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       tree_position = tree_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kBackward);
@@ -2780,7 +2756,7 @@ class AXPosition {
     // rooted at the current position.
     // This is necessary because we don't want to return any position that might
     // be in the shadow DOM if the original position was not.
-    const AXNodeType* common_anchor = tree_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = tree_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       tree_position = tree_position->CreateAncestorPosition(
           common_anchor, ax::mojom::MoveDirection::kForward);
@@ -3014,7 +2990,7 @@ class AXPosition {
     // If the boundary is in the same subtree, return a position rooted at this
     // position's anchor. This is necessary because we don't want to return a
     // position that might be in the shadow DOM when this position is not.
-    const AXNodeType* common_anchor = text_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = text_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       text_position =
           text_position->CreateAncestorPosition(common_anchor, move_direction);
@@ -3155,7 +3131,7 @@ class AXPosition {
     // If the boundary is in the same subtree, return a position rooted at this
     // position's anchor. This is necessary because we don't want to return a
     // position that might be in the shadow DOM when this position is not.
-    const AXNodeType* common_anchor = text_position->LowestCommonAnchor(*this);
+    const AXNode* common_anchor = text_position->LowestCommonAnchor(*this);
     if (GetAnchor() == common_anchor) {
       text_position =
           text_position->CreateAncestorPosition(common_anchor, move_direction);
@@ -3300,10 +3276,10 @@ class AXPosition {
     // rather than calling `LowestCommonAnchor`. That way, we can discover the
     // first uncommon ancestors which we need to use in order to compare the two
     // positions.
-    const AXNodeType* common_anchor = nullptr;
-    base::stack<AXNodeType*> our_ancestors =
+    const AXNode* common_anchor = nullptr;
+    base::stack<AXNode*> our_ancestors =
         normalized_this_position->GetAncestorAnchors();
-    base::stack<AXNodeType*> other_ancestors =
+    base::stack<AXNode*> other_ancestors =
         normalized_other_position->GetAncestorAnchors();
     while (!our_ancestors.empty() && !other_ancestors.empty() &&
            our_ancestors.top() == other_ancestors.top()) {
@@ -3336,13 +3312,13 @@ class AXPosition {
       return SlowCompareTo(other);
 
     AXPositionInstance this_uncommon_tree_position =
-        CreateTreePosition(GetTreeID(our_ancestors.top()),
-                           GetAnchorID(our_ancestors.top()), 0 /*child_index*/);
+        CreateTreePosition(our_ancestors.top()->tree()->GetAXTreeID(),
+                           our_ancestors.top()->id(), 0 /*child_index*/);
     int this_uncommon_ancestor_index =
         this_uncommon_tree_position->AnchorIndexInParent();
-    AXPositionInstance other_uncommon_tree_position = CreateTreePosition(
-        GetTreeID(other_ancestors.top()), GetAnchorID(other_ancestors.top()),
-        0 /*child_index*/);
+    AXPositionInstance other_uncommon_tree_position =
+        CreateTreePosition(other_ancestors.top()->tree()->GetAXTreeID(),
+                           other_ancestors.top()->id(), 0 /*child_index*/);
     int other_uncommon_ancestor_index =
         other_uncommon_tree_position->AnchorIndexInParent();
     DCHECK_NE(this_uncommon_ancestor_index, other_uncommon_ancestor_index)
@@ -3485,7 +3461,7 @@ class AXPosition {
     // position of the other. In all other cases, no information will be lost
     // when converting to tree positions.
 
-    const AXNodeType* common_anchor = this->LowestCommonAnchor(other);
+    const AXNode* common_anchor = this->LowestCommonAnchor(other);
     if (!common_anchor)
       return base::nullopt;
 
@@ -3776,7 +3752,7 @@ class AXPosition {
            !IsIframe(GetAnchorRole());
   }
 
-  AXNodeType* GetEmptyObjectAncestorNode() const {
+  AXNode* GetEmptyObjectAncestorNode() const {
     if (g_ax_embedded_object_behavior ==
             AXEmbeddedObjectBehavior::kSuppressCharacter ||
         !GetAnchor()) {
@@ -3788,7 +3764,7 @@ class AXPosition {
       // is when we are inside of a collapsed popup button which is the parent
       // of a menu list popup, or inside a generic container that is the child
       // of an empty text field.
-      if (AXNodeType* popup_button =
+      if (AXNode* popup_button =
               GetAnchor()->GetCollapsedMenuListPopUpButtonAncestor()) {
         return popup_button;
       }
@@ -3803,13 +3779,13 @@ class AXPosition {
 
     // The first unignored ancestor is necessarily the empty object if this node
     // is the descendant of an empty object.
-    AXNodeType* ancestor_node = GetLowestUnignoredAncestor();
+    AXNode* ancestor_node = GetLowestUnignoredAncestor();
     if (!ancestor_node)
       return nullptr;
 
-    AXPositionInstance position = CreateTextPosition(
-        tree_id_, GetAnchorID(ancestor_node), 0 /* text_offset */,
-        ax::mojom::TextAffinity::kDownstream);
+    AXPositionInstance position =
+        CreateTextPosition(tree_id_, ancestor_node->id(), 0 /* text_offset */,
+                           ax::mojom::TextAffinity::kDownstream);
     if (position && position->IsEmptyObjectReplacedByCharacter())
       return ancestor_node;
 
@@ -3828,8 +3804,6 @@ class AXPosition {
     other.name_ = base::string16();
   }
 
-  // Abstract methods.
-
   // Returns the text (in UTF16 format) that is present inside the anchor node,
   // including any text found in descendant text nodes, based on the platform's
   // text representation. Some platforms use an embedded object replacement
@@ -3847,21 +3821,11 @@ class AXPosition {
     if (IsEmptyObjectReplacedByCharacter())
       return AXNode::kEmbeddedCharacter;
 
-    // Special case, if a position's anchor node is hosting another
-    // accessibility tree, return the text that is found in that tree's root.
-    const AXNode* anchor = GetAnchor();
-    const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*anchor);
-    if (child_tree_manager) {
-      // The child node exists in a separate tree from its parent.
-      anchor = child_tree_manager->GetRootAsAXNode();
-    }
-
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
-        return base::UTF8ToUTF16(anchor->GetInnerText());
+        return base::UTF8ToUTF16(GetAnchor()->GetInnerText());
       case AXEmbeddedObjectBehavior::kExposeCharacter:
-        return anchor->GetHypertext();
+        return GetAnchor()->GetHypertext();
     }
   }
 
@@ -3910,23 +3874,13 @@ class AXPosition {
     if (IsEmptyObjectReplacedByCharacter())
       return AXNode::kEmbeddedCharacterLength;
 
-    // Special case, if a position's anchor node is hosting another
-    // accessibility tree, return the text that is found in that tree's root.
-    const AXNode* anchor = GetAnchor();
-    const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*anchor);
-    if (child_tree_manager) {
-      // The child node exists in a separate tree from its parent.
-      anchor = child_tree_manager->GetRootAsAXNode();
-    }
-
     switch (g_ax_embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         // TODO(nektar): Switch to anchor->GetInnerTextLength() after AXPosition
         // switches to using UTF8.
-        return int{base::UTF8ToUTF16(anchor->GetInnerText()).length()};
+        return int{base::UTF8ToUTF16(GetAnchor()->GetInnerText()).length()};
       case AXEmbeddedObjectBehavior::kExposeCharacter:
-        return int{anchor->GetHypertext().length()};
+        return int{GetAnchor()->GetHypertext().length()};
     }
   }
 
@@ -4034,42 +3988,10 @@ class AXPosition {
     }
   }
 
-  // Abstract methods.
-  void AnchorChild(int child_index,
-                   AXTreeID* tree_id,
-                   AXNodeID* child_id) const {
-    DCHECK(tree_id);
-    DCHECK(child_id);
-    if (!GetAnchor() || child_index < 0 || child_index >= AnchorChildCount()) {
-      *tree_id = AXTreeIDUnknown();
-      *child_id = kInvalidAXNodeID;
-      return;
-    }
-
-    AXNode* child = nullptr;
-    const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
-    if (child_tree_manager) {
-      // The child node exists in a separate tree from its parent.
-      child = child_tree_manager->GetRootAsAXNode();
-      *tree_id = child_tree_manager->GetTreeID();
-    } else {
-      child = GetAnchor()->children()[size_t{child_index}];
-      *tree_id = this->tree_id();
-    }
-    *child_id = child->id();
-  }
-
   int AnchorChildCount() const {
     if (!GetAnchor())
       return 0;
-
-    const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
-    if (child_tree_manager)
-      return 1;
-
-    return int{GetAnchor()->children().size()};
+    return int{GetAnchor()->GetChildCountCrossingTreeBoundary()};
   }
 
   // When a child is ignored, it looks for unignored nodes of that child's
@@ -4083,17 +4005,7 @@ class AXPosition {
   int AnchorUnignoredChildCount() const {
     if (!GetAnchor())
       return 0;
-
-    const AXTreeManager* child_tree_manager =
-        AXTreeManagerMap::GetInstance().GetManagerForChildTree(*GetAnchor());
-    if (child_tree_manager) {
-      DCHECK_EQ(GetAnchor()->GetUnignoredChildCount(), 0u)
-          << "A node cannot be hosting both a child tree and other nodes as "
-             "children.";
-      return 1;  // A child tree is never ignored.
-    }
-
-    return int{GetAnchor()->GetUnignoredChildCount()};
+    return int{GetAnchor()->GetUnignoredChildCountCrossingTreeBoundary()};
   }
 
   int AnchorIndexInParent() const {
@@ -4101,63 +4013,27 @@ class AXPosition {
     return GetAnchor() ? int{GetAnchor()->index_in_parent()} : INVALID_INDEX;
   }
 
-  base::stack<AXNodeType*> GetAncestorAnchors() const {
+  base::stack<AXNode*> GetAncestorAnchors() const {
     if (!GetAnchor())
       return base::stack<AXNode*>();
 
     base::stack<AXNode*> anchors;
     AXNode* current_anchor = GetAnchor();
-    AXNodeID current_anchor_id = GetAnchor()->id();
-    AXTreeID current_tree_id = tree_id();
-    AXNodeID parent_anchor_id = kInvalidAXNodeID;
-    AXTreeID parent_tree_id = AXTreeIDUnknown();
-
     while (current_anchor) {
       anchors.push(current_anchor);
-      current_anchor = GetParent(
-          current_anchor /*child*/, current_tree_id /*child_tree_id*/,
-          &parent_tree_id /*parent_tree_id*/, &parent_anchor_id /*parent_id*/);
-
-      current_anchor_id = parent_anchor_id;
-      current_tree_id = parent_tree_id;
+      // TODO(nektar): Introduce `AXNode::GetParent()` in order to be able to
+      // cross tree boundaries and remove
+      // `AXNode::GetUnignoredParentCrossingTreeBoundaries`.
+      current_anchor = current_anchor->GetParentCrossingTreeBoundary();
     }
+
     return anchors;
   }
 
-  AXNodeType* GetLowestUnignoredAncestor() const {
+  AXNode* GetLowestUnignoredAncestor() const {
     if (!GetAnchor())
       return nullptr;
     return GetAnchor()->GetLowestPlatformAncestor();
-  }
-
-  void AnchorParent(AXTreeID* tree_id, AXNodeID* parent_id) const {
-    DCHECK(tree_id);
-    DCHECK(parent_id);
-    *tree_id = AXTreeIDUnknown();
-    *parent_id = kInvalidAXNodeID;
-    if (!GetAnchor())
-      return;
-
-    GetParent(GetAnchor() /*child*/, this->tree_id() /*child_tree_id*/,
-              tree_id /*parent_tree_id*/, parent_id /*parent_id*/);
-  }
-
-  AXNodeType* GetNodeInTree(AXTreeID tree_id, AXNodeData::AXID node_id) const {
-    if (node_id == kInvalidAXNodeID)
-      return nullptr;
-
-    AXTreeManager* manager =
-        AXTreeManagerMap::GetInstance().GetManager(tree_id);
-    if (manager)
-      return manager->GetNodeFromTree(tree_id, node_id);
-
-    return nullptr;
-  }
-
-  AXNodeData::AXID GetAnchorID(AXNodeType* node) const { return node->id(); }
-
-  AXTreeID GetTreeID(AXNodeType* node) const {
-    return node->tree()->GetAXTreeID();
   }
 
   // Returns the length of text (in UTF16 code points) that this anchor node
@@ -4237,7 +4113,7 @@ class AXPosition {
     return GetRole(GetAnchor());
   }
 
-  ax::mojom::Role GetRole(AXNodeType* node) const { return node->data().role; }
+  ax::mojom::Role GetRole(AXNode* node) const { return node->data().role; }
 
   AXNodeTextStyles GetTextStyles() const {
     // Check either the current anchor or its parent for text styles.
@@ -4288,30 +4164,30 @@ class AXPosition {
         ax::mojom::IntListAttribute::kWordEnds);
   }
 
-  AXNodeData::AXID GetNextOnLineID(AXNodeData::AXID node_id) const {
+  AXNodeID GetNextOnLineID() const {
     if (IsNullPosition())
       return kInvalidAXNodeID;
-    AXNode* node = GetNodeInTree(tree_id(), node_id);
+    DCHECK(GetAnchor());
+
     int next_on_line_id;
-    if (!node ||
-        !node->data().GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                      &next_on_line_id)) {
-      return kInvalidAXNodeID;
+    if (GetAnchor()->data().GetIntAttribute(
+            ax::mojom::IntAttribute::kNextOnLineId, &next_on_line_id)) {
+      return static_cast<AXNodeID>(next_on_line_id);
     }
-    return static_cast<AXNodeID>(next_on_line_id);
+    return kInvalidAXNodeID;
   }
 
-  AXNodeData::AXID GetPreviousOnLineID(AXNodeData::AXID node_id) const {
+  AXNodeID GetPreviousOnLineID() const {
     if (IsNullPosition())
       return kInvalidAXNodeID;
-    AXNode* node = GetNodeInTree(tree_id(), node_id);
+    DCHECK(GetAnchor());
+
     int previous_on_line_id;
-    if (!node ||
-        !node->data().GetIntAttribute(
+    if (GetAnchor()->data().GetIntAttribute(
             ax::mojom::IntAttribute::kPreviousOnLineId, &previous_on_line_id)) {
-      return kInvalidAXNodeID;
+      return static_cast<AXNodeID>(previous_on_line_id);
     }
-    return static_cast<AXNodeID>(previous_on_line_id);
+    return kInvalidAXNodeID;
   }
 
  private:

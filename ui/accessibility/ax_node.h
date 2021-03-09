@@ -125,12 +125,30 @@ class AX_EXPORT AXNode final {
   // Returns ownership of |data_| to the caller; effectively clearing |data_|.
   AXNodeData&& TakeData();
 
-  // Walking the tree skipping ignored nodes.
+  //
+  // Methods for walking the tree.
+  //
+
+  size_t GetChildCount() const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  size_t GetChildCountCrossingTreeBoundary() const;
   size_t GetUnignoredChildCount() const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  size_t GetUnignoredChildCountCrossingTreeBoundary() const;
+  AXNode* GetChildAt(size_t index) const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  AXNode* GetChildAtCrossingTreeBoundary(size_t index) const;
   AXNode* GetUnignoredChildAtIndex(size_t index) const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  AXNode* GetUnignoredChildAtIndexCrossingTreeBoundary(size_t index) const;
+  AXNode* GetParent() const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  AXNode* GetParentCrossingTreeBoundary() const;
   AXNode* GetUnignoredParent() const;
-  size_t GetUnignoredIndexInParent() const;
+  // TODO(nektar): Update `BrowserAccessibility` and remove this method.
+  AXNode* GetUnignoredParentCrossingTreeBoundary() const;
   size_t GetIndexInParent() const;
+  size_t GetUnignoredIndexInParent() const;
   AXNode* GetFirstUnignoredChild() const;
   AXNode* GetLastUnignoredChild() const;
   AXNode* GetDeepestFirstUnignoredChild() const;
