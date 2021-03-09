@@ -250,7 +250,7 @@ bool ExtensionFrameHelper::IsContextForEventPage(const ScriptContext* context) {
 
 void ExtensionFrameHelper::BindLocalFrame(
     mojo::PendingAssociatedReceiver<mojom::LocalFrame> pending_receiver) {
-  local_frame_receivers_.Add(this, std::move(pending_receiver));
+  local_frame_receiver_.Bind(std::move(pending_receiver));
 }
 
 void ExtensionFrameHelper::DidCreateDocumentElement() {
