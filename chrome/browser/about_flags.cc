@@ -1794,6 +1794,13 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
     {"exclude_mv_tiles", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
+const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2Finale[] =
+    {{"start_surface_variation", "single"},
+     {"show_last_active_tab_only", "true"},
+     {"omnibox_focused_on_new_tab", "true"},
+     {"home_button_on_grid_tab_switcher", "true"},
+     {"new_home_surface_from_home_button", "hide_tab_switcher_only"}};
+
 const FeatureEntry::FeatureParam
     kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles[] = {
         {"start_surface_variation", "single"},
@@ -1846,6 +1853,8 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      base::size(kStartSurfaceAndroid_SingleSurfaceFinale), nullptr},
     {"Single Surface V2", kStartSurfaceAndroid_SingleSurface_V2,
      base::size(kStartSurfaceAndroid_SingleSurface_V2), nullptr},
+    {"Single Surface V2 Finale", kStartSurfaceAndroid_SingleSurface_V2Finale,
+     base::size(kStartSurfaceAndroid_SingleSurface_V2Finale), nullptr},
     {"Single Surface without MV Tiles",
      kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles,
      base::size(kStartSurfaceAndroid_SingleSurfaceWithoutMvTiles), nullptr},
