@@ -630,6 +630,11 @@
     "args": ["--enable-blink-features=CSSModules", "--js-flags=--harmony-import-assertions"]
   },
   {
+    "prefix":"css-calc-infinity-and-nan",
+    "bases": ["external/wpt/css/css-values/"],
+    "args": ["--enable-blink-features=CSSCalcInfinityAndNaN"]
+  },
+  {
     "prefix": "import-assertions",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/import-assertions"],
     "args": ["--js-flags=--harmony-import-assertions"]

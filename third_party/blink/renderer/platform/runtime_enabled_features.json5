@@ -490,7 +490,6 @@
     {
       // https://github.com/DevSDK/calc-infinity-and-NaN/blob/master/explainer.md
       name: "CSSCalcInfinityAndNaN",
-      status: "test",
     },
     {
       // Support case-sensitive attribute selector modifier

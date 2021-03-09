@@ -9,9 +9,17 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
+
+class CSSPrimitiveValueTest : public PageTestBase,
+                              private ScopedCSSCalcInfinityAndNaNForTest {
+ public:
+  CSSPrimitiveValueTest() : ScopedCSSCalcInfinityAndNaNForTest(true) {}
+};
 
 using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -40,14 +48,14 @@ CSSPrimitiveValue* CreateNonNegativeSubtraction(UnitValue a, UnitValue b) {
       kValueRangeNonNegative);
 }
 
-TEST(CSSPrimitiveValueTest, IsTime) {
+TEST_F(CSSPrimitiveValueTest, IsTime) {
   EXPECT_FALSE(Create({5.0, UnitType::kNumber})->IsTime());
   EXPECT_FALSE(Create({5.0, UnitType::kDegrees})->IsTime());
   EXPECT_TRUE(Create({5.0, UnitType::kSeconds})->IsTime());
   EXPECT_TRUE(Create({5.0, UnitType::kMilliseconds})->IsTime());
 }
 
-TEST(CSSPrimitiveValueTest, IsTimeCalc) {
+TEST_F(CSSPrimitiveValueTest, IsTimeCalc) {
   {
     UnitValue a = {1.0, UnitType::kSeconds};
     UnitValue b = {1000.0, UnitType::kMilliseconds};
@@ -60,19 +68,19 @@ TEST(CSSPrimitiveValueTest, IsTimeCalc) {
   }
 }
 
-TEST(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
+TEST_F(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
   UnitValue a = {4926, UnitType::kMilliseconds};
   UnitValue b = {5, UnitType::kSeconds};
   EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds());
 }
 
-TEST(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
+TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
   UnitValue a = {89, UnitType::kDegrees};
   UnitValue b = {0.25, UnitType::kTurns};
   EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeDegrees());
 }
 
-TEST(CSSPrimitiveValueTest, IsResolution) {
+TEST_F(CSSPrimitiveValueTest, IsResolution) {
   EXPECT_FALSE(Create({5.0, UnitType::kNumber})->IsResolution());
   EXPECT_FALSE(Create({5.0, UnitType::kDegrees})->IsResolution());
   EXPECT_TRUE(Create({5.0, UnitType::kDotsPerPixel})->IsResolution());
@@ -80,7 +88,7 @@ TEST(CSSPrimitiveValueTest, IsResolution) {
 }
 
 // https://crbug.com/999875
-TEST(CSSPrimitiveValueTest, Zooming) {
+TEST_F(CSSPrimitiveValueTest, Zooming) {
   // Tests that the conversion CSSPrimitiveValue -> Length -> CSSPrimitiveValue
   // yields the same value under zooming.
 
@@ -102,7 +110,7 @@ TEST(CSSPrimitiveValueTest, Zooming) {
   EXPECT_EQ("calc(10% + 100px)", converted->CustomCSSText());
 }
 
-TEST(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
   UnitValue a = {std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
@@ -111,7 +119,7 @@ TEST(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
             value->ComputeLength<double>(conversion_data));
 }
 
-TEST(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
@@ -120,7 +128,7 @@ TEST(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
             value->ComputeLength<double>(conversion_data));
 }
 
-TEST(CSSPrimitiveValueTest, NaNLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, NaNLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
@@ -129,7 +137,7 @@ TEST(CSSPrimitiveValueTest, NaNLengthClamp) {
             value->ComputeLength<double>(conversion_data));
 }
 
-TEST(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPercentage});
   CSSToLengthConversionData conversion_data;
@@ -137,7 +145,7 @@ TEST(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
   EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
 }
 
-TEST(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPercentage});
   CSSToLengthConversionData conversion_data;
@@ -145,7 +153,7 @@ TEST(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
   EXPECT_EQ(std::numeric_limits<float>::lowest(), length.Percent());
 }
 
-TEST(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
+TEST_F(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
   CSSPrimitiveValue* value = Create(
       {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPercentage});
   CSSToLengthConversionData conversion_data;
@@ -153,21 +161,22 @@ TEST(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
   EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
 }
 
-TEST(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
+TEST_F(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
   EXPECT_TRUE(std::isnan(value->GetDoubleValueWithoutClamping()));
 }
 
-TEST(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowPositveInfinity) {
+TEST_F(CSSPrimitiveValueTest,
+       GetDoubleValueWithoutClampingAllowPositveInfinity) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
   EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
               value->GetDoubleValueWithoutClamping() > 0);
 }
 
-TEST(CSSPrimitiveValueTest,
-     GetDoubleValueWithoutClampingAllowNegativeInfinity) {
+TEST_F(CSSPrimitiveValueTest,
+       GetDoubleValueWithoutClampingAllowNegativeInfinity) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
 
@@ -175,19 +184,19 @@ TEST(CSSPrimitiveValueTest,
               value->GetDoubleValueWithoutClamping() < 0);
 }
 
-TEST(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
+TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
   EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
 }
 
-TEST(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {
+TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
   EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
 }
 
-TEST(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
+TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
   EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
