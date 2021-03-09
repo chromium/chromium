@@ -493,25 +493,33 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // trees.
   virtual bool IsCurrent() = 0;
 
-  // Returns true iff the RenderFrameHost is inactive i.e., when the
-  // RenderFrameHost is either in BackForwardCache or pending deletion. This
-  // function should be used when we are unsure if inactive RenderFrameHosts can
-  // be properly handled and their processing shouldn't be deferred until the
-  // RenderFrameHost becomes active again. Callers that only want to check
-  // whether a RenderFrameHost is current or not should use IsCurrent() instead.
-  //
-  // This method additionally has a side effect for back-forward cache: it
-  // disallows reactivating by evicting the document from the cache and
-  // triggering deletion. This avoids reactivating the frame as restoring would
-  // be unsafe after dropping an event, which means that the frame will never be
-  // shown to the user again and the event can be safely ignored.
-  //
-  // Note that if |IsInactiveAndDisallowReactivation()| returns false, then
-  // IsCurrent() returns false as well.
+  // Returns true iff the RenderFrameHost is inactive, i.e., when the
+  // RenderFrameHost is either in BackForwardCache, Prerendering, or pending
+  // deletion. This function should be used when we are unsure if inactive
+  // RenderFrameHosts can properly handle events and events processing shouldn't
+  // or can't be deferred until the RenderFrameHost becomes active again.
+  // Callers that only want to check whether a RenderFrameHost is active or not
+  // should use IsCurrent() instead.
+
+  // Additionally, this method has a side effect for back-forward cache and
+  // prerendering, where the document is prevented from ever becoming active
+  // after calling this method. This allows to safely ignore the event as the
+  // RenderFrameHost will never be shown to the user again.
+
+  // For BackForwardCache: it evicts the document from the cache and triggers
+  // deletion.
+  // For Prerendering: it cancels prerendering and triggers deletion.
+
   // This should not be called for speculative RenderFrameHosts as disallowing
   // reactivation before the document became active for the first time is not
   // supported. In that case |IsInactiveAndDisallowReactivation()|
   // returns false along with terminating the renderer process.
+
+  // Note that if |IsInactiveAndDisallowReactivation()| returns true, then
+  // IsCurrent() returns false.
+  //
+  // TODO(https://crbug.com/1175866): Rename this method with a more suitable
+  // name considering all document states.
   virtual bool IsInactiveAndDisallowReactivation() = 0;
 
   // Get the number of proxies to this frame, in all processes. Exposed for

@@ -1456,6 +1456,45 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LowEndDevice) {
       PrerenderHost::FinalStatus::kLowEndDevice, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       IsInactiveAndDisallowReactivationCancelsPrerendering) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Add <link rel=prerender> that will prerender `kPrerenderingUrl`.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  // A prerender host for the URL should be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  EXPECT_NE(prerender_host, nullptr);
+
+  // Invoke IsInactiveAndDisallowReactivation for the prerendered document.
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  EXPECT_EQ(prerendered_render_frame_host->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleState::kPrerendering);
+  EXPECT_TRUE(
+      prerendered_render_frame_host->IsInactiveAndDisallowReactivation());
+
+  // The prerender host for the URL should be destroyed as
+  // RenderFrameHost::IsInactiveAndDisallowReactivation cancels prerendering in
+  // LifecycleState::kPrerendering state.
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  // Cancelling the prerendering disables the activation. The navigation
+  // should issue a request again.
+  NavigateWithLocation(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
+}
+
 class PrerenderWithBackForwardCacheTest : public PrerenderBrowserTest {
  public:
   PrerenderWithBackForwardCacheTest() {

@@ -2843,17 +2843,21 @@ NavigationControllerImpl::HistoryNavigationAction
 NavigationControllerImpl::DetermineActionForHistoryNavigation(
     FrameTreeNode* frame,
     ReloadType reload_type) {
-  // Only active frames can navigate:
-  // - If the frame is in pending deletion, the browser already committed to
-  // destroying this RenderFrameHost. See https://crbug.com/930278.
-  // - If the frame is in back-forward cache, it's not allowed to navigate as it
-  // should remain frozen. Ignore the request and evict the document from
-  // back-forward cache.
-  //
-  // If the frame is inactive, there's no need to recurse into subframes, which
-  // should all be inactive as well.
-  if (frame->current_frame_host()->IsInactiveAndDisallowReactivation())
-    return HistoryNavigationAction::kStopLooking;
+  RenderFrameHostImpl* render_frame_host = frame->current_frame_host();
+  // Only active and prerendered frames can navigate.
+  if (render_frame_host->lifecycle_state() !=
+      RenderFrameHostImpl::LifecycleState::kPrerendering) {
+    // - If the frame is in pending deletion, the browser already committed to
+    // destroying this RenderFrameHost. See https://crbug.com/930278.
+    // - If the frame is in back-forward cache, it's not allowed to navigate as
+    // it should remain frozen. Ignore the request and evict the document from
+    // back-forward cache.
+    //
+    // If the frame is inactive, there's no need to recurse into subframes,
+    // which should all be inactive as well.
+    if (render_frame_host->IsInactiveAndDisallowReactivation())
+      return HistoryNavigationAction::kStopLooking;
+  }
 
   // If there's no last committed entry, there is no previous history entry to
   // compare against, so fall back to a different-document load.  Note that we

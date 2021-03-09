@@ -741,13 +741,20 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   // since we did load the current document, but we don't want to reload it if
   // that is the case. See crbug.com/1125106.
   DCHECK(!request->IsSameDocument());
-  // Inactive frames should never be navigated. If this happens, log a
-  // DumpWithoutCrashing to understand the root cause. See
-  // https://crbug.com/926820 and https://crbug.com/927705.
-  if (current_frame_host()->IsInactiveAndDisallowReactivation()) {
-    NOTREACHED() << "Navigation in an inactive frame";
-    DEBUG_ALIAS_FOR_GURL(url, request->common_params().url);
-    base::debug::DumpWithoutCrashing();
+
+  // Even though prerendering is considered an inactive state (i.e., not allowed
+  // to show any UI changes) it is still allowed to navigate, fetch, load and
+  // run documents in the background.
+  if ((current_frame_host()->lifecycle_state() !=
+       LifecycleState::kPrerendering)) {
+    // Inactive frames should never be navigated. If this happens, log a
+    // DumpWithoutCrashing to understand the root cause. See
+    // https://crbug.com/926820 and https://crbug.com/927705.
+    if (current_frame_host()->IsInactiveAndDisallowReactivation()) {
+      NOTREACHED() << "Navigation in an inactive frame";
+      DEBUG_ALIAS_FOR_GURL(url, request->common_params().url);
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // Speculative RFHs are deleted immediately.
