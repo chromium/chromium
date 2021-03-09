@@ -36,11 +36,10 @@ if (is_android) {
   import("//build/linux/extract_symbols.gni")
   import("//build/linux/strip_binary.gni")
 } else if (is_mac) {
-  import("//build/apple/compile_entitlements.gni")
-  import("//build/apple/compile_plist.gni")
   import("//build/apple/tweak_info_plist.gni")
   import("//build/compiled_action.gni")
   import("//build/config/apple/symbols.gni")
+  import("//build/config/mac/base_rules.gni")
   import("//build/config/mac/mac_sdk.gni")
   import("//build/config/mac/rules.gni")
   import("//build/util/branding.gni")

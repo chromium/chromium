@@ -51,7 +51,6 @@ def InterpolateString(value, substitutions):
     value in |substitutions|. Raises SubstitutionError if a variable has no
     substitution.
   """
-
   def repl(match):
     variable = match.group('id')
     if variable not in substitutions:
@@ -67,7 +66,6 @@ def InterpolateString(value, substitutions):
       return INVALID_CHARACTER_REGEXP.sub('-', substitutions[variable])
     else:
       return substitutions[variable]
-
   for substitution_regexp in SUBSTITUTION_REGEXP_LIST:
     value = substitution_regexp.sub(repl, value)
   return value
@@ -178,20 +176,19 @@ class MergeAction(Action):
 
   @staticmethod
   def _Register(parser):
-    parser.add_argument('-o',
-                        '--output',
-                        required=True,
-                        help='path to the output plist file')
-    parser.add_argument('-f',
-                        '--format',
-                        required=True,
-                        choices=('xml1', 'binary1'),
-                        help='format of the plist file to generate')
+    parser.add_argument(
+        '-o', '--output', required=True,
+        help='path to the output plist file')
+    parser.add_argument(
+        '-f', '--format', required=True, choices=('xml1', 'binary1'),
+        help='format of the plist file to generate')
     parser.add_argument(
         '-x',
         '--xcode-version',
         help='version of Xcode, ignored (can be used to force rebuild)')
-    parser.add_argument('path', nargs="+", help='path to plist files to merge')
+    parser.add_argument(
+          'path', nargs="+",
+          help='path to plist files to merge')
 
   @staticmethod
   def _Execute(args):
@@ -209,24 +206,18 @@ class SubstituteAction(Action):
 
   @staticmethod
   def _Register(parser):
-    parser.add_argument('-o',
-                        '--output',
-                        required=True,
-                        help='path to the output plist file')
-    parser.add_argument('-t',
-                        '--template',
-                        required=True,
-                        help='path to the template file')
-    parser.add_argument('-s',
-                        '--substitution',
-                        action='append',
-                        default=[],
-                        help='substitution rule in the format key=value')
-    parser.add_argument('-f',
-                        '--format',
-                        required=True,
-                        choices=('xml1', 'binary1'),
-                        help='format of the plist file to generate')
+    parser.add_argument(
+        '-o', '--output', required=True,
+        help='path to the output plist file')
+    parser.add_argument(
+        '-t', '--template', required=True,
+        help='path to the template file')
+    parser.add_argument(
+        '-s', '--substitution', action='append', default=[],
+        help='substitution rule in the format key=value')
+    parser.add_argument(
+        '-f', '--format', required=True, choices=('xml1', 'binary1'),
+        help='format of the plist file to generate')
     parser.add_argument(
         '-x',
         '--xcode-version',
