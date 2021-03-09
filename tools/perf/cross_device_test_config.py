@@ -101,7 +101,7 @@ TARGET_DEVICES = {
     },
     'linux-perf-calibration': {
         'speedometer2': {
-            'Speedometer2': 31,
+            'Speedometer2': 28,
         }
     }
 }
