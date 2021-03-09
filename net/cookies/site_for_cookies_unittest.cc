@@ -356,6 +356,151 @@ TEST_F(SchemefulSiteForCookiesTest, Wire) {
       out.ToDebugString());
 }
 
+TEST_F(SchemefulSiteForCookiesTest, SchemefulSite) {
+  const char* kTestCases[] = {"opaque.com",
+                              "http://a.com",
+                              "https://sub1.example.com:42/something",
+                              "https://a.com",
+                              "ws://a.com",
+                              "wss://a.com",
+                              "file://a.com",
+                              "file://folder1/folder2/file.txt",
+                              "file:///file.txt"};
+
+  for (std::string url : kTestCases) {
+    url::Origin origin = url::Origin::Create(GURL(url));
+    SiteForCookies from_origin = SiteForCookies::FromOrigin(origin);
+    SchemefulSite schemeful_site = SchemefulSite(origin);
+    SiteForCookies from_schemeful_site = SiteForCookies(schemeful_site);
+
+    EXPECT_TRUE(from_origin.IsEquivalent(from_schemeful_site));
+    EXPECT_TRUE(from_schemeful_site.IsEquivalent(from_origin));
+  }
+}
+
+TEST(SiteForCookiesTest, CompareWithFrameTreeSiteAndRevise) {
+  SchemefulSite secure_example = SchemefulSite(GURL("https://example.com"));
+  SchemefulSite insecure_example = SchemefulSite(GURL("http://example.com"));
+  SchemefulSite secure_other = SchemefulSite(GURL("https://other.com"));
+  SchemefulSite insecure_other = SchemefulSite(GURL("http://other.com"));
+
+  // Other scheme tests.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  AddStandardScheme("other", url::SCHEME_WITH_HOST);
+  SchemefulSite file_scheme =
+      SchemefulSite(GURL("file:///C:/Users/Default/Pictures/photo.png"));
+  SchemefulSite file_scheme2 = SchemefulSite(GURL("file:///C:/file.txt"));
+  SchemefulSite other_scheme = SchemefulSite(GURL("other://"));
+
+  // This function should work the same regardless the state of Schemeful
+  // Same-Site.
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(features::kSchemefulSameSite,
+                                            toggle);
+
+    SiteForCookies candidate1 = SiteForCookies(secure_example);
+    EXPECT_TRUE(candidate1.CompareWithFrameTreeSiteAndRevise(secure_example));
+    EXPECT_FALSE(candidate1.site().opaque());
+    EXPECT_TRUE(candidate1.schemefully_same());
+
+    SiteForCookies candidate2 = SiteForCookies(secure_example);
+    EXPECT_TRUE(candidate2.CompareWithFrameTreeSiteAndRevise(insecure_example));
+    EXPECT_FALSE(candidate2.site().opaque());
+    EXPECT_FALSE(candidate2.schemefully_same());
+
+    SiteForCookies candidate3 = SiteForCookies(secure_example);
+    EXPECT_FALSE(candidate3.CompareWithFrameTreeSiteAndRevise(secure_other));
+    EXPECT_TRUE(candidate3.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+
+    SiteForCookies candidate4 = SiteForCookies(secure_example);
+    EXPECT_FALSE(candidate4.CompareWithFrameTreeSiteAndRevise(insecure_other));
+    EXPECT_TRUE(candidate4.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+
+    // This function's check is bi-directional, so try reversed pairs just in
+    // case.
+    SiteForCookies candidate2_reversed = SiteForCookies(insecure_example);
+    EXPECT_TRUE(
+        candidate2_reversed.CompareWithFrameTreeSiteAndRevise(secure_example));
+    EXPECT_FALSE(candidate2_reversed.site().opaque());
+    EXPECT_FALSE(candidate2_reversed.schemefully_same());
+
+    SiteForCookies candidate3_reversed = SiteForCookies(secure_other);
+    EXPECT_FALSE(
+        candidate3_reversed.CompareWithFrameTreeSiteAndRevise(secure_example));
+    EXPECT_TRUE(candidate3_reversed.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+
+    SiteForCookies candidate4_reversed = SiteForCookies(insecure_other);
+    EXPECT_FALSE(
+        candidate4_reversed.CompareWithFrameTreeSiteAndRevise(secure_example));
+    EXPECT_TRUE(candidate4_reversed.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+
+    // Now try some different schemes.
+    SiteForCookies candidate5 = SiteForCookies(file_scheme);
+    EXPECT_TRUE(candidate5.CompareWithFrameTreeSiteAndRevise(file_scheme2));
+    EXPECT_FALSE(candidate5.site().opaque());
+    EXPECT_TRUE(candidate5.schemefully_same());
+
+    SiteForCookies candidate6 = SiteForCookies(file_scheme);
+    EXPECT_FALSE(candidate6.CompareWithFrameTreeSiteAndRevise(other_scheme));
+    EXPECT_TRUE(candidate6.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+
+    SiteForCookies candidate5_reversed = SiteForCookies(file_scheme2);
+    EXPECT_TRUE(
+        candidate5_reversed.CompareWithFrameTreeSiteAndRevise(file_scheme));
+    EXPECT_FALSE(candidate5_reversed.site().opaque());
+    EXPECT_TRUE(candidate5_reversed.schemefully_same());
+
+    SiteForCookies candidate6_reversed = SiteForCookies(other_scheme);
+    EXPECT_FALSE(
+        candidate6_reversed.CompareWithFrameTreeSiteAndRevise(file_scheme));
+    EXPECT_TRUE(candidate6_reversed.site().opaque());
+    // schemefully_same is N/A if the site() is opaque.
+  }
+}
+
+TEST(SiteForCookiesTest, CompareWithFrameTreeSiteAndReviseOpaque) {
+  url::Origin opaque1 = url::Origin();
+  url::Origin opaque2 = url::Origin();
+
+  SchemefulSite opaque_site1 = SchemefulSite(opaque1);
+  SchemefulSite opaque_site2 = SchemefulSite(opaque2);
+  SchemefulSite example = SchemefulSite(GURL("https://example.com"));
+
+  // Opaque origins are able to match on the frame comparison.
+  SiteForCookies candidate1 = SiteForCookies(opaque_site1);
+  EXPECT_TRUE(candidate1.CompareWithFrameTreeSiteAndRevise(opaque_site1));
+  EXPECT_TRUE(candidate1.site().opaque());
+  // schemefully_same is N/A if the site() is opaque.
+  EXPECT_EQ(candidate1.site(), opaque_site1);
+
+  SiteForCookies candidate2 = SiteForCookies(opaque_site1);
+  EXPECT_TRUE(candidate2.CompareWithFrameTreeSiteAndRevise(opaque_site2));
+  EXPECT_TRUE(candidate2.site().opaque());
+  // schemefully_same is N/A if the site() is opaque.
+  EXPECT_EQ(candidate2.site(), opaque_site1);
+
+  // But if only one is opaque they won't match.
+  SiteForCookies candidate3 = SiteForCookies(example);
+  EXPECT_FALSE(candidate3.CompareWithFrameTreeSiteAndRevise(opaque_site1));
+  EXPECT_TRUE(candidate3.site().opaque());
+  // schemefully_same is N/A if the site() is opaque.
+  EXPECT_NE(candidate3.site(), opaque_site1);
+
+  SiteForCookies candidate4 = SiteForCookies(opaque_site1);
+  EXPECT_FALSE(candidate4.CompareWithFrameTreeSiteAndRevise(example));
+  EXPECT_TRUE(candidate4.site().opaque());
+  // schemefully_same is N/A if the site() is opaque.
+  EXPECT_EQ(candidate4.site(), opaque_site1);
+}
+
+}  // namespace
+
 TEST(SiteForCookiesTest, SameScheme) {
   struct TestCase {
     const char* first;
@@ -388,7 +533,7 @@ TEST(SiteForCookiesTest, SameScheme) {
 
   for (const TestCase& t : kTestCases) {
     SiteForCookies first = SiteForCookies::FromUrl(GURL(t.first));
-    url::Origin second = url::Origin::Create(GURL(t.second));
+    SchemefulSite second(GURL(t.second));
     EXPECT_FALSE(first.IsNull());
     first.MarkIfCrossScheme(second);
     EXPECT_EQ(first.schemefully_same(), t.expected_value);
@@ -413,15 +558,17 @@ TEST(SiteForCookiesTest, SameSchemeOpaque) {
         SiteForCookies::FromOrigin(not_opaque_nonsecure);
     EXPECT_FALSE(nonsecure_sfc.IsNull());
 
+    SchemefulSite site(origin);
+
     EXPECT_TRUE(secure_sfc.schemefully_same());
-    secure_sfc.MarkIfCrossScheme(origin);
+    secure_sfc.MarkIfCrossScheme(site);
     EXPECT_FALSE(secure_sfc.schemefully_same());
 
     EXPECT_TRUE(nonsecure_sfc.schemefully_same());
-    nonsecure_sfc.MarkIfCrossScheme(origin);
+    nonsecure_sfc.MarkIfCrossScheme(site);
     EXPECT_FALSE(nonsecure_sfc.schemefully_same());
 
-    SiteForCookies opaque_sfc = SiteForCookies::FromOrigin(origin);
+    SiteForCookies opaque_sfc = SiteForCookies(site);
     EXPECT_TRUE(opaque_sfc.IsNull());
     // Slightly implementation detail specific as the value isn't relevant for
     // null SFCs.
@@ -429,27 +576,4 @@ TEST(SiteForCookiesTest, SameSchemeOpaque) {
   }
 }
 
-TEST_F(SchemefulSiteForCookiesTest, SchemefulSite) {
-  const char* kTestCases[] = {"opaque.com",
-                              "http://a.com",
-                              "https://sub1.example.com:42/something",
-                              "https://a.com",
-                              "ws://a.com",
-                              "wss://a.com",
-                              "file://a.com",
-                              "file://folder1/folder2/file.txt",
-                              "file:///file.txt"};
-
-  for (std::string url : kTestCases) {
-    url::Origin origin = url::Origin::Create(GURL(url));
-    SiteForCookies from_origin = SiteForCookies::FromOrigin(origin);
-    SchemefulSite schemeful_site = SchemefulSite(origin);
-    SiteForCookies from_schemeful_site = SiteForCookies(schemeful_site);
-
-    EXPECT_TRUE(from_origin.IsEquivalent(from_schemeful_site));
-    EXPECT_TRUE(from_schemeful_site.IsEquivalent(from_origin));
-  }
-}
-
-}  // namespace
 }  // namespace net
