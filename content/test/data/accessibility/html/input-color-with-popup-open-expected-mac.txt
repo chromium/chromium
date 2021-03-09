@@ -1,4 +1,3 @@
-#<skip -- crbug.com/1186138>
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
 ++++AXColorWell AXDescription='color picker' AXRoleDescription='color well' AXValue='rgb 1.00000 0.60000 0.00000 1'
