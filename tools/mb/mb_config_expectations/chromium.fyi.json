@@ -287,6 +287,16 @@
       "use_goma": true
     }
   },
+  "Win x64 Builder (reclient)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_rbe": true
+    }
+  },
   "android-code-coverage": {
     "gn_args": {
       "disable_android_lint": true,
