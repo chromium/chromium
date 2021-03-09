@@ -34,6 +34,17 @@
 
 namespace blink {
 
+namespace {
+
+bool CanCacheBaseStyle(const StyleRequest& style_request) {
+  return style_request.IsPseudoStyleRequest() ||
+         (!style_request.parent_override &&
+          !style_request.layout_parent_override &&
+          style_request.matching_behavior == kMatchAllRules);
+}
+
+}  // namespace
+
 StyleResolverState::StyleResolverState(Document& document,
                                        Element& element,
                                        const StyleRequest& style_request)
@@ -49,7 +60,8 @@ StyleResolverState::StyleResolverState(Document& document,
                                pseudo_element_),
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
-                        : ElementType::kElement) {
+                        : ElementType::kElement),
+      can_cache_base_style_(blink::CanCacheBaseStyle(style_request)) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (!parent_style_) {

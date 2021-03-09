@@ -163,8 +163,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                       StyleResolverState& state,
                       StyleCascade& cascade,
                       MatchResult& match_result,
-                      RuleMatchingBehavior matching_behavior,
-                      bool can_cache_animation_base_computed_style);
+                      RuleMatchingBehavior matching_behavior);
   void ApplyInterpolations(StyleResolverState& state,
                            StyleCascade& cascade,
                            ActiveInterpolationsMap& interpolations);

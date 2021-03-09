@@ -165,7 +165,6 @@ class CORE_EXPORT StyleResolverState {
   // stored in the MatchedPropertiesCache.
   const CSSValue& ResolveLightDarkPair(const CSSProperty&, const CSSValue&);
 
-  void SetCanCacheBaseStyle(bool state) { can_cache_base_style_ = state; }
   bool CanCacheBaseStyle() const { return can_cache_base_style_; }
 
   bool HadNoMatchedProperties() const { return had_no_matched_properties_; }
