@@ -119,11 +119,6 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
 
   MaybeRemoveComingFromArcFlag(web_contents, starting_url_, url);
 
-  base::Optional<ThrottleCheckResult> web_app_capture =
-      CaptureWebAppScopeNavigations(web_contents, handle);
-  if (web_app_capture.has_value())
-    return web_app_capture.value();
-
   // Do not pop up the intent picker bubble or automatically launch the app if
   // we shouldn't override url loading, or if we don't have a browser, or we are
   // already in an app browser.
@@ -135,6 +130,14 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
     if (ShouldCancelNavigation(handle)) {
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
+
+    // Handles web app link capturing that has not yet integrated with the
+    // intent handling system.
+    // TODO(crbug.com/1163398): Remove this code path.
+    base::Optional<ThrottleCheckResult> web_app_capture =
+        CaptureWebAppScopeNavigations(web_contents, handle);
+    if (web_app_capture.has_value())
+      return web_app_capture.value();
 
     if (ShouldDeferNavigation(handle)) {
       // Handling is now deferred to ArcIntentPickerAppFetcher, which
@@ -174,6 +177,24 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
   if (!app_id)
     return base::nullopt;
 
+  // Experimental tabbed web app link capturing behaves like new-client.
+  // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
+  // favor of kWebAppEnableLinkCapturing.
+  bool app_in_tabbed_mode =
+      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
+  bool tabbed_link_capturing =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
+  bool web_apps_integrated_into_intent_handling =
+      base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
+
+  // This particular link capturing code path only applies to tabbed web app
+  // link capturing and the version of declarative link capturing that has not
+  // yet integrated with app service's intent handling system.
+  if ((!app_in_tabbed_mode || !tabbed_link_capturing) &&
+      web_apps_integrated_into_intent_handling) {
+    return base::nullopt;
+  }
+
   auto* tab_helper =
       web_app::WebAppTabHelperBase::FromWebContents(web_contents);
   if (tab_helper && tab_helper->GetAppId() == *app_id) {
@@ -186,13 +207,6 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
                                                  ->GetAppById(*app_id)
                                                  ->capture_links();
 
-  // Experimental tabbed web app link capturing behaves like new-client.
-  // This will be removed once we phase out kDesktopPWAsTabStripLinkCapturing in
-  // favor of kWebAppEnableLinkCapturing.
-  bool app_in_tabbed_mode =
-      provider->registrar().IsInExperimentalTabbedWindowMode(*app_id);
-  bool tabbed_link_capturing =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripLinkCapturing);
   if (capture_links == blink::mojom::CaptureLinks::kUndefined &&
       app_in_tabbed_mode && tabbed_link_capturing) {
     capture_links = blink::mojom::CaptureLinks::kNewClient;

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -241,10 +243,34 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
 }
 
 class WebAppDeclarativeLinkCapturingBrowserTest
-    : public WebAppLinkCapturingBrowserTest {
+    : public WebAppLinkCapturingBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
+  static std::string ParamToString(
+      const ::testing::TestParamInfo<bool> param_info) {
+    return param_info.param ? "PersistenceOn" : "PersistenceOff";
+  }
+
   WebAppDeclarativeLinkCapturingBrowserTest() {
-    features_.InitAndEnableFeature(blink::features::kWebAppEnableLinkCapturing);
+    if (GetParam()) {
+      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing,
+                                  features::kIntentPickerPWAPersistence},
+                                 {});
+    } else {
+      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing},
+                                 {features::kIntentPickerPWAPersistence});
+    }
+  }
+
+  bool IsIntentPickerPersistenceEnabled() {
+    return base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
+  }
+
+  void TurnOnLinkCapturing() {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->AddPreferredApp(app_id_, start_url_);
+    proxy->FlushMojoCallsForTesting();
   }
 
  protected:
@@ -254,7 +280,7 @@ class WebAppDeclarativeLinkCapturingBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksUnset) {
   InstallTestApp("/web_apps/basic.html", /*await_metric=*/false);
 
@@ -266,9 +292,20 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   Navigate(browser(), start_url_);
   EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
   ExpectTabs(browser(), {start_url_});
+
+  if (IsIntentPickerPersistenceEnabled()) {
+    TurnOnLinkCapturing();
+
+    // Users can enable link capturing regardless of declarative link capturing.
+    Navigate(browser(), out_of_scope_);
+    Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+    ExpectTabs(browser(), {out_of_scope_});
+    ExpectTabs(app_browser, {in_scope_1_});
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksNone) {
   InstallTestApp("/web_apps/capture_links_none.html", /*await_metric=*/true);
 
@@ -280,6 +317,17 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   Navigate(browser(), start_url_);
   EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
   ExpectTabs(browser(), {start_url_});
+
+  if (IsIntentPickerPersistenceEnabled()) {
+    TurnOnLinkCapturing();
+
+    // Users can enable link capturing regardless of declarative link capturing.
+    Navigate(browser(), out_of_scope_);
+    Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+    ExpectTabs(browser(), {out_of_scope_});
+    ExpectTabs(app_browser, {in_scope_1_});
+  }
 }
 
 // Flaky on Linux, crbug.com/1185680
@@ -288,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
 #else
 #define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
 #endif
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        MAYBE_CaptureLinksNewClient) {
   InstallTestApp("/web_apps/capture_links_new_client.html",
                  /*await_metric=*/true);
@@ -297,9 +345,17 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
 
-  Navigate(browser(), out_of_scope_);
+  if (IsIntentPickerPersistenceEnabled()) {
+    // No link capturing should happen until the user turns it on.
+    Navigate(browser(), start_url_);
+    EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+    ExpectTabs(browser(), {start_url_});
+
+    TurnOnLinkCapturing();
+  }
 
   // In scope navigation should open an app window.
+  Navigate(browser(), out_of_scope_);
   Browser* app_browser_1 = GetNewBrowserFromNavigation(browser(), in_scope_1_);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_1, app_id_));
   ExpectTabs(browser(), {out_of_scope_});
@@ -321,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(app_browser_2, {in_scope_2_});
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        InAppScopeNavigationIgnored) {
   InstallTestApp("/web_apps/capture_links_new_client.html",
                  /*await_metric=*/true);
@@ -330,17 +386,20 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
 
-  // Start browser in app scope.
-  AddTab(browser(), in_scope_1_);
+  if (IsIntentPickerPersistenceEnabled())
+    TurnOnLinkCapturing();
+
+  // Put the browser in the app scope.
+  AddTab(browser(), start_url_);
 
   // Navigations that happen inside the app scope should not capture even if
   // done outside of an app window.
-  Navigate(browser(), in_scope_2_);
+  Navigate(browser(), in_scope_1_);
   EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {about_blank_, in_scope_2_});
+  ExpectTabs(browser(), {about_blank_, in_scope_1_});
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
                        CaptureLinksExistingClientNavigate) {
   InstallTestApp("/web_apps/capture_links_existing_client_navigate.html",
                  /*await_metric=*/true);
@@ -348,6 +407,9 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   histogram_tester_.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
+
+  if (IsIntentPickerPersistenceEnabled())
+    TurnOnLinkCapturing();
 
   Navigate(browser(), out_of_scope_);
 
@@ -370,5 +432,16 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingBrowserTest,
   ExpectTabs(browser(), {out_of_scope_});
   ExpectTabs(app_browser, {in_scope_1_});
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppDeclarativeLinkCapturingBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    /*persistence=*/testing::Values(true, false),
+#else
+    // App service intent handling is not yet available outside of Chrome OS.
+    /*persistence=*/testing::Values(false),
+#endif
+    &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
 
 }  // namespace web_app

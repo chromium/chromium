@@ -192,10 +192,22 @@ content::WebContents* WebAppsBase::LaunchAppWithIntentImpl(
     return nullptr;
   }
 
+  const web_app::WebAppRegistrar& registrar = *WebAppsBase::GetRegistrar();
+  if (registrar.GetAppById(app_id)->capture_links() ==
+      blink::mojom::CaptureLinks::kExistingClientNavigate) {
+    content::WebContents* web_contents =
+        provider()->ui_manager().NavigateExistingWindow(
+            app_id, intent->url ? intent->url.value()
+                                : registrar.GetAppLaunchUrl(app_id));
+    if (web_contents) {
+      return web_contents;
+    }
+  }
+
   auto params = apps::CreateAppLaunchParamsForIntent(
       app_id, event_flags, GetAppLaunchSource(launch_source), display_id,
       web_app::ConvertDisplayModeToAppLaunchContainer(
-          GetRegistrar()->GetAppEffectiveDisplayMode(app_id)),
+          registrar.GetAppEffectiveDisplayMode(app_id)),
       std::move(intent));
   return LaunchAppWithParams(std::move(params));
 }

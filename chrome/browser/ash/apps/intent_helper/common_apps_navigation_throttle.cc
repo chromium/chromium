@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/components/web_app_tab_helper_base.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -134,37 +135,50 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   if (app_ids.empty())
     return false;
 
-  if (navigate_from_link()) {
-    auto preferred_app_id = proxy->PreferredApps().FindPreferredAppForUrl(url);
+  if (!navigate_from_link())
+    return false;
 
-    if (preferred_app_id.has_value() &&
-        base::Contains(app_ids, preferred_app_id.value())) {
-      // Only automatically launch PWA if the flag is on.
-      auto app_type =
-          proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
-      if (app_type == apps::mojom::AppType::kArc ||
-          (app_type == apps::mojom::AppType::kWeb &&
-           base::FeatureList::IsEnabled(
-               features::kIntentPickerPWAPersistence))) {
-        auto launch_source = apps::mojom::LaunchSource::kFromLink;
-        proxy->LaunchAppWithUrl(
-            preferred_app_id.value(),
-            GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
-                          WindowOpenDisposition::NEW_WINDOW,
-                          /*prefer_container=*/true),
-            url, launch_source,
-            apps::MakeWindowInfo(display::kDefaultDisplayId));
-        CloseOrGoBack(web_contents);
-        IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
-            /*selected_app_package=*/preferred_app_id.value(),
-            GetPickerEntryType(app_type),
-            apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
-            apps::Source::kHttpOrHttps, /*should_persist=*/false);
-        return true;
-      }
-    }
+  base::Optional<std::string> preferred_app_id =
+      proxy->PreferredApps().FindPreferredAppForUrl(url);
+  if (!preferred_app_id.has_value() ||
+      !base::Contains(app_ids, preferred_app_id.value())) {
+    return false;
   }
-  return false;
+
+  // Only automatically launch PWA if the flag is on.
+  apps::mojom::AppType app_type =
+      proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
+  if (app_type != apps::mojom::AppType::kArc &&
+      (app_type != apps::mojom::AppType::kWeb ||
+       !base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence))) {
+    return false;
+  }
+
+  // Don't capture if already inside the target app scope.
+  if (app_type == apps::mojom::AppType::kWeb) {
+    auto* tab_helper =
+        web_app::WebAppTabHelperBase::FromWebContents(web_contents);
+    if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
+      return false;
+  }
+
+  auto launch_source = apps::mojom::LaunchSource::kFromLink;
+  proxy->LaunchAppWithUrl(
+      preferred_app_id.value(),
+      GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                    WindowOpenDisposition::NEW_WINDOW,
+                    /*prefer_container=*/true),
+      url, launch_source, apps::MakeWindowInfo(display::kDefaultDisplayId));
+
+  if (web_contents->GetVisibleURL().IsAboutBlank())
+    web_contents->ClosePage();
+
+  IntentHandlingMetrics::RecordIntentPickerUserInteractionMetrics(
+      /*selected_app_package=*/preferred_app_id.value(),
+      GetPickerEntryType(app_type),
+      apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
+      apps::Source::kHttpOrHttps, /*should_persist=*/false);
+  return true;
 }
 
 bool CommonAppsNavigationThrottle::ShouldShowDisablePage(

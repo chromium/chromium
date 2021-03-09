@@ -74,6 +74,13 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
  private:
   // Returns whether navigation to |url| was captured by a web app and what to
   // do next if so.
+  // Note that this implementation is only for:
+  //  - |kDesktopPWAsTabStripLinkCapturing|
+  //  - |kWebAppEnableLinkCapturing| when |kIntentPickerPWAPersistence| is
+  //    disabled.
+  // When |kIntentPickerPWAPersistence| is enabled |kWebAppEnableLinkCapturing|
+  // is handled by WebAppsBase::LaunchAppWithIntentImpl() instead and integrates
+  // properly with App Service's intent handling system.
   base::Optional<ThrottleCheckResult> CaptureWebAppScopeNavigations(
       content::WebContents* web_contents,
       content::NavigationHandle* handle) const;
