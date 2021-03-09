@@ -570,7 +570,7 @@ public class ChromePaymentRequestService
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
                         mSpec.getPaymentOptions(), mSkipToGPayHelper != null);
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
-        return !selectedPaymentApp.isAutofillInstrument();
+        return selectedPaymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
     }
 
     private PaymentHandlerHost getPaymentHandlerHost() {
@@ -691,7 +691,7 @@ public class ChromePaymentRequestService
             }
         } else {
             PaymentApp firstApp = mPaymentUiService.getPaymentApps().get(0);
-            if (firstApp.isAutofillInstrument()) {
+            if (firstApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
                 missingFields = ((AutofillPaymentInstrument) (firstApp)).getMissingFields();
             }
         }

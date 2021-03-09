@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.payments.ui;
 import org.chromium.chrome.browser.payments.PaymentPreferencesUtil;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.payments.mojom.PaymentOptions;
 
@@ -72,7 +73,8 @@ import java.util.Comparator;
     @Override
     public int compare(PaymentApp a, PaymentApp b) {
         // Non-autofill apps first.
-        int autofill = (a.isAutofillInstrument() ? 1 : 0) - (b.isAutofillInstrument() ? 1 : 0);
+        int autofill = (a.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0)
+                - (b.getPaymentAppType() == PaymentAppType.AUTOFILL ? 1 : 0);
         if (autofill != 0) return autofill;
 
         // Complete cards before cards with missing information.

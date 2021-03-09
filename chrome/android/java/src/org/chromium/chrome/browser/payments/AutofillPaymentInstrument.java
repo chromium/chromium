@@ -114,11 +114,6 @@ public class AutofillPaymentInstrument
     }
 
     @Override
-    public boolean isAutofillInstrument() {
-        return true;
-    }
-
-    @Override
     public boolean isServerAutofillInstrument() {
         return !mCard.getIsLocal();
     }

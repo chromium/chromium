@@ -111,14 +111,6 @@ public abstract class PaymentApp extends EditableOption {
      */
     public abstract Set<String> getInstrumentMethodNames();
 
-    /**
-     * @return Whether this is an autofill app. All autofill apps are sorted below all non-autofill
-     *         apps.
-     */
-    public boolean isAutofillInstrument() {
-        return false;
-    }
-
     /** @return Whether this is a server autofill app. */
     public boolean isServerAutofillInstrument() {
         return false;

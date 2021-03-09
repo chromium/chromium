@@ -53,6 +53,7 @@ import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -1043,7 +1044,8 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         PaymentApp selectedApp = mPaymentMethodSectionInformation == null
                 ? null
                 : (PaymentApp) mPaymentMethodSectionInformation.getSelectedItem();
-        mPayButton.setText(selectedApp != null && !selectedApp.isAutofillInstrument()
+        mPayButton.setText(
+                selectedApp != null && selectedApp.getPaymentAppType() != PaymentAppType.AUTOFILL
                         ? R.string.payments_continue_button
                         : R.string.payments_pay_button);
         mReadyToPayNotifierForTest.run();

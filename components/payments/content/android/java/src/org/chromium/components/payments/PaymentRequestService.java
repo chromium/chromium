@@ -702,8 +702,7 @@ public class PaymentRequestService
     private void logSelectedMethod(PaymentApp invokedPaymentApp) {
         @PaymentMethodCategory
         int category = PaymentMethodCategory.OTHER;
-        if (invokedPaymentApp.isAutofillInstrument()) {
-            assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL;
+        if (invokedPaymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
             category = PaymentMethodCategory.BASIC_CARD;
         } else {
             for (String method : invokedPaymentApp.getInstrumentMethodNames()) {
@@ -905,9 +904,9 @@ public class PaymentRequestService
         if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onPaymentAppCreated(paymentApp);
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
-        mHasNonAutofillApp |= !paymentApp.isAutofillInstrument();
+        mHasNonAutofillApp |= paymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
 
-        if (paymentApp.isAutofillInstrument()) {
+        if (paymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
             mJourneyLogger.setAvailableMethod(PaymentMethodCategory.BASIC_CARD);
         } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
                 || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
@@ -1077,7 +1076,8 @@ public class PaymentRequestService
     private static boolean onlySingleAppCanProvideAllRequiredInformation(
             PaymentOptions options, List<PaymentApp> allApps) {
         if (!PaymentOptionsUtils.requestAnyInformation(options)) {
-            return allApps.size() == 1 && !allApps.get(0).isAutofillInstrument();
+            return allApps.size() == 1
+                    && allApps.get(0).getPaymentAppType() != PaymentAppType.AUTOFILL;
         }
 
         boolean anAppCanProvideAllInfo = false;
