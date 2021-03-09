@@ -263,6 +263,7 @@ class TabSwitcherMediator
                 if (newModel.isIncognito() && newModel.getCount() == 0 && oldModel.getCount() > 0) {
                     oldModel.getTabAt(oldModel.index()).hide(TabHidingType.CHANGED_TABS);
                 }
+                setInitialScrollIndexOffset();
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
