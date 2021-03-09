@@ -557,7 +557,7 @@ void AuthenticatorRequestDialogModel::SelectAccount(
         callback) {
   if (preselected_account_) {
     for (auto& response : responses) {
-      if (response.user_entity() == preselected_account_) {
+      if (response.user_entity == preselected_account_) {
         std::move(callback).Run(std::move(response));
         return;
       }
@@ -570,7 +570,7 @@ void AuthenticatorRequestDialogModel::SelectAccount(
   ephemeral_state_.responses_ = std::move(responses);
   ephemeral_state_.users_ = {};
   for (const auto& response : ephemeral_state_.responses_) {
-    ephemeral_state_.users_.push_back(*response.user_entity());
+    ephemeral_state_.users_.push_back(*response.user_entity);
   }
   selection_callback_ = std::move(callback);
   SetCurrentStep(Step::kSelectAccount);

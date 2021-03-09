@@ -5325,7 +5325,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     std::sort(responses.begin(), responses.end(),
               [](const device::AuthenticatorGetAssertionResponse& a,
                  const device::AuthenticatorGetAssertionResponse& b) {
-                return a.user_entity()->id < b.user_entity()->id;
+                return a.user_entity->id < b.user_entity->id;
               });
 
     std::vector<std::string> string_reps;
@@ -5333,7 +5333,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         responses.begin(), responses.end(), std::back_inserter(string_reps),
         [](const device::AuthenticatorGetAssertionResponse& response) {
           const device::PublicKeyCredentialUserEntity& user =
-              response.user_entity().value();
+              response.user_entity.value();
           return base::HexEncode(user.id.data(), user.id.size()) + ":" +
                  user.name.value_or("") + ":" + user.display_name.value_or("");
         });
@@ -5343,7 +5343,7 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     const auto selected = std::find_if(
         responses.begin(), responses.end(),
         [this](const device::AuthenticatorGetAssertionResponse& response) {
-          return response.user_entity()->id == selected_user_id_;
+          return response.user_entity->id == selected_user_id_;
         });
     ASSERT_TRUE(selected != responses.end());
 

@@ -181,8 +181,6 @@ component("fido") {
       "platform_credential_store.h",
       "reset_request_handler.cc",
       "reset_request_handler.h",
-      "response_data.cc",
-      "response_data.h",
       "set_pin_request_handler.cc",
       "set_pin_request_handler.h",
       "u2f_command_constructor.cc",

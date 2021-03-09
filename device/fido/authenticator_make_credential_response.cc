@@ -64,8 +64,7 @@ AuthenticatorMakeCredentialResponse::CreateFromU2fRegisterResponse(
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(
     base::Optional<FidoTransportProtocol> transport_used,
     AttestationObject attestation_object)
-    : ResponseData(attestation_object.GetCredentialId()),
-      attestation_object_(std::move(attestation_object)),
+    : attestation_object_(std::move(attestation_object)),
       transport_used_(transport_used) {}
 
 AuthenticatorMakeCredentialResponse::AuthenticatorMakeCredentialResponse(

@@ -62,16 +62,16 @@ AuthenticatorGetAssertionResponse::CreateFromU2fSignResponse(
 
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(signature));
-  response.SetCredential(PublicKeyCredentialDescriptor(
-      CredentialType::kPublicKey, fido_parsing_utils::Materialize(key_handle)));
+  response.credential = PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, fido_parsing_utils::Materialize(key_handle));
   return std::move(response);
 }
 
 AuthenticatorGetAssertionResponse::AuthenticatorGetAssertionResponse(
     AuthenticatorData authenticator_data,
     std::vector<uint8_t> signature)
-    : authenticator_data_(std::move(authenticator_data)),
-      signature_(std::move(signature)) {}
+    : authenticator_data(std::move(authenticator_data)),
+      signature(std::move(signature)) {}
 
 AuthenticatorGetAssertionResponse::AuthenticatorGetAssertionResponse(
     AuthenticatorGetAssertionResponse&& that) = default;
@@ -81,58 +81,5 @@ AuthenticatorGetAssertionResponse& AuthenticatorGetAssertionResponse::operator=(
 
 AuthenticatorGetAssertionResponse::~AuthenticatorGetAssertionResponse() =
     default;
-
-const std::array<uint8_t, kRpIdHashLength>&
-AuthenticatorGetAssertionResponse::GetRpIdHash() const {
-  return authenticator_data_.application_parameter();
-}
-
-AuthenticatorGetAssertionResponse&
-AuthenticatorGetAssertionResponse::SetCredential(
-    PublicKeyCredentialDescriptor credential) {
-  credential_ = std::move(credential);
-  raw_credential_id_ = credential_->id();
-  return *this;
-}
-
-AuthenticatorGetAssertionResponse&
-AuthenticatorGetAssertionResponse::SetUserEntity(
-    PublicKeyCredentialUserEntity user_entity) {
-  user_entity_ = std::move(user_entity);
-  return *this;
-}
-
-AuthenticatorGetAssertionResponse&
-AuthenticatorGetAssertionResponse::SetNumCredentials(uint8_t num_credentials) {
-  num_credentials_ = num_credentials;
-  return *this;
-}
-
-void AuthenticatorGetAssertionResponse::set_large_blob_key(
-    const base::span<const uint8_t, kLargeBlobKeyLength> large_blob_key) {
-  large_blob_key_ = fido_parsing_utils::Materialize(large_blob_key);
-}
-
-base::Optional<base::span<const uint8_t>>
-AuthenticatorGetAssertionResponse::hmac_secret() const {
-  if (hmac_secret_) {
-    return *hmac_secret_;
-  }
-  return base::nullopt;
-}
-
-void AuthenticatorGetAssertionResponse::set_hmac_secret(
-    std::vector<uint8_t> hmac_secret) {
-  hmac_secret_ = std::move(hmac_secret);
-}
-
-bool AuthenticatorGetAssertionResponse::hmac_secret_not_evaluated() const {
-  return hmac_secret_not_evaluated_;
-}
-
-void AuthenticatorGetAssertionResponse::set_hmac_secret_not_evaluated(
-    bool value) {
-  hmac_secret_not_evaluated_ = value;
-}
 
 }  // namespace device

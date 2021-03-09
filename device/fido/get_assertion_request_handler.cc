@@ -139,12 +139,13 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
                    const AuthenticatorGetAssertionResponse& response) {
   // The underlying code must take care of filling in the credential from the
   // allow list as needed.
-  CHECK(response.credential());
+  CHECK(response.credential);
 
-  if (response.GetRpIdHash() !=
-          fido_parsing_utils::CreateSHA256Hash(request.rp_id) &&
+  const std::array<uint8_t, kRpIdHashLength>& rp_id_hash =
+      response.authenticator_data.application_parameter();
+  if (rp_id_hash != fido_parsing_utils::CreateSHA256Hash(request.rp_id) &&
       (!request.app_id ||
-       response.GetRpIdHash() != request.alternative_application_parameter)) {
+       rp_id_hash != request.alternative_application_parameter)) {
     return false;
   }
 
@@ -157,11 +158,11 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
   //   mandatory.
   // TODO(hongjunchoi) : Add link to section of the CTAP spec once it is
   // published.
-  const auto& user_entity = response.user_entity();
+  const auto& user_entity = response.user_entity;
   const bool has_user_identifying_info =
       user_entity &&
       (user_entity->display_name || user_entity->name || user_entity->icon_url);
-  if (!response.auth_data().obtained_user_verification() &&
+  if (!response.authenticator_data.obtained_user_verification() &&
       has_user_identifying_info) {
     return false;
   }
@@ -170,18 +171,18 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
     return false;
   }
 
-  if (response.num_credentials().value_or(0u) > 1 && !user_entity) {
+  if (response.num_credentials.value_or(0u) > 1 && !user_entity) {
     return false;
   }
 
   // The authenticatorData on an GetAssertionResponse must not have
   // attestedCredentialData set.
-  if (response.auth_data().attested_data().has_value()) {
+  if (response.authenticator_data.attested_data().has_value()) {
     return false;
   }
 
   const base::Optional<cbor::Value>& extensions =
-      response.auth_data().extensions();
+      response.authenticator_data.extensions();
   if (extensions &&
       !ValidateResponseExtensions(request, options, *extensions)) {
     FIDO_LOG(ERROR) << "assertion response invalid due to extensions block: "
@@ -643,7 +644,7 @@ void GetAssertionRequestHandler::HandleResponse(
     return;
   }
 
-  const size_t num_responses = response->num_credentials().value_or(1);
+  const size_t num_responses = response->num_credentials.value_or(1);
   if (num_responses == 0 ||
       (num_responses > 1 && !request.allow_list.empty())) {
     std::move(completion_callback_)
@@ -756,8 +757,8 @@ void GetAssertionRequestHandler::OnGetAssertionSuccess(
     DCHECK(authenticator->Options()->supports_large_blobs);
     std::vector<LargeBlobKey> keys;
     for (const auto& response : responses_) {
-      if (response.large_blob_key()) {
-        keys.emplace_back(*response.large_blob_key());
+      if (response.large_blob_key) {
+        keys.emplace_back(*response.large_blob_key);
       }
     }
     if (!keys.empty()) {
@@ -791,10 +792,10 @@ void GetAssertionRequestHandler::OnReadLargeBlobs(
     for (auto& response : responses_) {
       const auto blob =
           base::ranges::find_if(*blobs, [&response](const auto& pair) {
-            return pair.first == response.large_blob_key();
+            return pair.first == response.large_blob_key;
           });
       if (blob != blobs->end()) {
-        response.set_large_blob(std::move(blob->second));
+        response.large_blob = std::move(blob->second);
       }
     }
   } else {
@@ -812,8 +813,8 @@ void GetAssertionRequestHandler::OnWriteLargeBlob(
     FIDO_LOG(ERROR) << "Writing large blob failed with code "
                     << static_cast<int>(status);
   }
-  responses_.at(0).set_large_blob_written(status ==
-                                          CtapDeviceResponseCode::kSuccess);
+  responses_.at(0).large_blob_written =
+      (status == CtapDeviceResponseCode::kSuccess);
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kSuccess, std::move(responses_), authenticator);
 }

@@ -95,7 +95,7 @@ void GetAssertionOperation::PromptTouchIdDone(bool success) {
   }
 
   if (empty_allow_list) {
-    response->SetNumCredentials(credentials->size());
+    response->num_credentials = credentials->size();
     credentials->pop_front();
     matching_credentials_ = std::move(*credentials);
   }
@@ -141,9 +141,9 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential) {
   }
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(*signature));
-  response.SetCredential(PublicKeyCredentialDescriptor(
-      CredentialType::kPublicKey, credential.credential_id));
-  response.SetUserEntity(metadata->ToPublicKeyCredentialUserEntity());
+  response.credential = PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, credential.credential_id);
+  response.user_entity = metadata->ToPublicKeyCredentialUserEntity();
   return response;
 }
 

@@ -643,12 +643,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
                                 base::nullopt),
       /*signature=*/{1});
-  response_1.SetUserEntity(user_1);
+  response_1.user_entity = user_1;
   device::AuthenticatorGetAssertionResponse response_2(
       device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
                                 base::nullopt),
       /*signature=*/{2});
-  response_2.SetUserEntity(user_2);
+  response_2.user_entity = user_2;
 
   uint8_t selected_id = -1;
   std::vector<device::AuthenticatorGetAssertionResponse> responses;
@@ -658,7 +658,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
       std::move(responses),
       base::BindLambdaForTesting(
           [&](device::AuthenticatorGetAssertionResponse selected) {
-            selected_id = selected.signature()[0];
+            selected_id = selected.signature[0];
           }));
   EXPECT_EQ(selected_id, 1);
 }

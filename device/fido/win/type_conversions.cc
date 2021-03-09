@@ -96,14 +96,14 @@ ToAuthenticatorGetAssertionResponse(
       std::move(*authenticator_data),
       std::vector<uint8_t>(assertion.pbSignature,
                            assertion.pbSignature + assertion.cbSignature));
-  response.SetCredential(PublicKeyCredentialDescriptor(
+  response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       std::vector<uint8_t>(
           assertion.Credential.pbId,
-          assertion.Credential.pbId + assertion.Credential.cbId)));
+          assertion.Credential.pbId + assertion.Credential.cbId));
   if (assertion.cbUserId > 0) {
-    response.SetUserEntity(PublicKeyCredentialUserEntity(std::vector<uint8_t>(
-        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId)));
+    response.user_entity = PublicKeyCredentialUserEntity(std::vector<uint8_t>(
+        assertion.pbUserId, assertion.pbUserId + assertion.cbUserId));
   }
   return response;
 }

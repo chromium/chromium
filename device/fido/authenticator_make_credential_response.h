@@ -17,7 +17,6 @@
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/response_data.h"
 
 namespace device {
 
@@ -25,8 +24,7 @@ namespace device {
 // data, and attestation statement returned by the authenticator as a response
 // to MakeCredential request.
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorMakeCredential
-class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
-    : public ResponseData {
+class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse {
  public:
   static base::Optional<AuthenticatorMakeCredentialResponse>
   CreateFromU2fRegisterResponse(
@@ -41,7 +39,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
       AuthenticatorMakeCredentialResponse&& that);
   AuthenticatorMakeCredentialResponse& operator=(
       AuthenticatorMakeCredentialResponse&& other);
-  ~AuthenticatorMakeCredentialResponse() override;
+  ~AuthenticatorMakeCredentialResponse();
 
   std::vector<uint8_t> GetCBOREncodedAttestationObject() const;
 
@@ -60,8 +58,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorMakeCredentialResponse
   // not intended to be trackable.)
   bool IsAttestationCertificateInappropriatelyIdentifying();
 
-  // ResponseData:
-  const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const override;
+  const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const;
 
   const AttestationObject& attestation_object() const {
     return attestation_object_;

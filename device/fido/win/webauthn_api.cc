@@ -458,7 +458,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       ToAuthenticatorGetAssertionResponse(*assertion, request.allow_list);
   if (response && !request_options.prf_inputs.empty()) {
     // Windows does not yet support passing in inputs for hmac_secret.
-    response->set_hmac_secret_not_evaluated(true);
+    response->hmac_secret_not_evaluated = true;
   }
   return {response ? CtapDeviceResponseCode::kSuccess
                    : CtapDeviceResponseCode::kCtap2ErrOther,

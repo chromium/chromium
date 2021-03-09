@@ -98,6 +98,15 @@ const char kU2fRegisterType[] = "navigator.id.finishEnrollment";
 
 namespace {
 
+std::string Base64UrlEncode(const base::span<const uint8_t> input) {
+  std::string ret;
+  base::Base64UrlEncode(
+      base::StringPiece(reinterpret_cast<const char*>(input.data()),
+                        input.size()),
+      base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
+  return ret;
+}
+
 // Validates whether the given origin is authorized to use the provided App
 // ID value, mostly according to the rules in
 // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-appid-and-facets-v1.2-ps-20170411.html#determining-if-a-caller-s-facetid-is-authorized-for-an-appid.
@@ -321,8 +330,8 @@ CreateMakeCredentialResponse(
   common_info->authenticator_data = response_data.attestation_object()
                                         .authenticator_data()
                                         .SerializeToByteArray();
-  common_info->raw_id = response_data.raw_credential_id();
-  common_info->id = response_data.GetId();
+  common_info->raw_id = response_data.attestation_object().GetCredentialId();
+  common_info->id = Base64UrlEncode(common_info->raw_id);
   response->info = std::move(common_info);
 
   // The transport list must not contain duplicates but the order doesn't matter
@@ -425,14 +434,14 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json.begin(),
                                        client_data_json.end());
-  common_info->raw_id = response_data.raw_credential_id();
-  common_info->id = response_data.GetId();
+  common_info->raw_id = response_data.credential->id();
+  common_info->id = Base64UrlEncode(common_info->raw_id);
   response->info = std::move(common_info);
   response->info->authenticator_data =
-      response_data.auth_data().SerializeToByteArray();
-  response->signature = response_data.signature();
-  response_data.user_entity()
-      ? response->user_handle.emplace(response_data.user_entity()->id)
+      response_data.authenticator_data.SerializeToByteArray();
+  response->signature = response_data.signature;
+  response_data.user_entity
+      ? response->user_handle.emplace(response_data.user_entity->id)
       : response->user_handle.emplace();
 
   for (RequestExtension ext : requested_extensions) {
@@ -440,7 +449,7 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
       case RequestExtension::kAppID:
         DCHECK(app_id);
         response->echo_appid_extension = true;
-        if (response_data.GetRpIdHash() ==
+        if (response_data.authenticator_data.application_parameter() ==
             CreateApplicationParameter(*app_id)) {
           response->appid_extension = true;
         }
@@ -448,7 +457,7 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
       case RequestExtension::kPRF: {
         response->echo_prf = true;
         base::Optional<base::span<const uint8_t>> hmac_secret =
-            response_data.hmac_secret();
+            response_data.hmac_secret;
         if (hmac_secret) {
           auto prf_values = blink::mojom::PRFValues::New();
           DCHECK(hmac_secret->size() == 32 || hmac_secret->size() == 64);
@@ -460,19 +469,18 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
           }
           response->prf_results = std::move(prf_values);
         } else {
-          response->prf_not_evaluated =
-              response_data.hmac_secret_not_evaluated();
+          response->prf_not_evaluated = response_data.hmac_secret_not_evaluated;
         }
         break;
       }
       case RequestExtension::kLargeBlobRead:
         response->echo_large_blob = true;
-        response->large_blob = response_data.large_blob();
+        response->large_blob = response_data.large_blob;
         break;
       case RequestExtension::kLargeBlobWrite:
         response->echo_large_blob = true;
         response->echo_large_blob_written = true;
-        response->large_blob_written = response_data.large_blob_written();
+        response->large_blob_written = response_data.large_blob_written;
         break;
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
@@ -638,15 +646,6 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return discovery_factory;
-}
-
-std::string Base64UrlEncode(const base::span<const uint8_t> input) {
-  std::string ret;
-  base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(input.data()),
-                        input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &ret);
-  return ret;
 }
 
 // ToJSONString encodes |in| as a JSON string, using the specific escaping rules
@@ -855,8 +854,8 @@ void AuthenticatorCommon::OnLargeBlobCompressed(
 void AuthenticatorCommon::OnLargeBlobUncompressed(
     device::AuthenticatorGetAssertionResponse response,
     data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result) {
-  response.set_large_blob(
-      device::fido_parsing_utils::MaterializeOrNull(result.value));
+  response.large_blob =
+      device::fido_parsing_utils::MaterializeOrNull(result.value);
   InvokeCallbackAndCleanup(
       std::move(get_assertion_response_callback_),
       blink::mojom::AuthenticatorStatus::SUCCESS,
@@ -1721,14 +1720,14 @@ void AuthenticatorCommon::OnSignResponse(
       // built-in. In that case, consider that credential pre-selected.
       if (empty_allow_list_ &&
           (response_data->size() > 1 ||
-           (response_data->at(0).user_entity() &&
-            (response_data->at(0).user_entity()->name ||
-             response_data->at(0).user_entity()->display_name)))) {
+           (response_data->at(0).user_entity &&
+            (response_data->at(0).user_entity->name ||
+             response_data->at(0).user_entity->display_name)))) {
         std::vector<device::PublicKeyCredentialUserEntity> users_list;
         users_list.reserve(response_data->size());
         for (const auto& response : *response_data) {
-          if (response.user_entity()) {
-            users_list.push_back(*response.user_entity());
+          if (response.user_entity) {
+            users_list.push_back(*response.user_entity);
           }
         }
         request_delegate_->SelectAccount(
@@ -1745,8 +1744,8 @@ void AuthenticatorCommon::OnSignResponse(
 
 void AuthenticatorCommon::OnAccountSelected(
     device::AuthenticatorGetAssertionResponse response) {
-  if (response.large_blob()) {
-    std::vector<uint8_t> blob = std::move(*response.large_blob());
+  if (response.large_blob) {
+    std::vector<uint8_t> blob = std::move(*response.large_blob);
     data_decoder_.GzipUncompress(
         blob, base::BindOnce(&AuthenticatorCommon::OnLargeBlobUncompressed,
                              weak_factory_.GetWeakPtr(), std::move(response)));

@@ -248,9 +248,9 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
   AuthenticatorGetAssertionResponse authenticator_response(
       std::move(*authenticator_data), std::move(signature));
   const std::string& credential_id = assertion.credential_id();
-  authenticator_response.SetCredential(PublicKeyCredentialDescriptor(
+  authenticator_response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
-      std::vector<uint8_t>(credential_id.begin(), credential_id.end())));
+      std::vector<uint8_t>(credential_id.begin(), credential_id.end()));
   std::move(callback).Run(CtapDeviceResponseCode::kSuccess,
                           std::move(authenticator_response));
 }

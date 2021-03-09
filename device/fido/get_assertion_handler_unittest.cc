@@ -345,9 +345,9 @@ TEST_F(FidoGetAssertionHandlerTest, ValidEmptyCredential) {
   EXPECT_EQ(GetAssertionStatus::kSuccess, get_assertion_callback().status());
   ASSERT_TRUE(response);
   ASSERT_EQ(1u, response->size());
-  EXPECT_TRUE(response.value()[0].credential());
+  EXPECT_TRUE(response.value()[0].credential);
   EXPECT_THAT(
-      response.value()[0].raw_credential_id(),
+      response.value()[0].credential->id(),
       ::testing::ElementsAreArray(test_data::kTestGetAssertionCredentialId));
 }
 
@@ -372,8 +372,8 @@ TEST_F(FidoGetAssertionHandlerTest, TruncatedUTF8) {
   EXPECT_EQ(GetAssertionStatus::kSuccess, get_assertion_callback().status());
   ASSERT_TRUE(response);
   ASSERT_EQ(1u, response->size());
-  ASSERT_TRUE(response.value()[0].user_entity());
-  EXPECT_EQ(63u, response.value()[0].user_entity()->name->size());
+  ASSERT_TRUE(response.value()[0].user_entity);
+  EXPECT_EQ(63u, response.value()[0].user_entity->name->size());
 }
 
 TEST_F(FidoGetAssertionHandlerTest, TruncatedAndInvalidUTF8) {

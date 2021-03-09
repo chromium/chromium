@@ -411,22 +411,22 @@ std::vector<uint8_t> EncodeGetAssertionResponse(
     const AuthenticatorGetAssertionResponse& response,
     bool allow_invalid_utf8) {
   cbor::Value::MapValue response_map;
-  if (response.credential()) {
-    response_map.emplace(1, AsCBOR(*response.credential()));
+  if (response.credential) {
+    response_map.emplace(1, AsCBOR(*response.credential));
   }
 
-  response_map.emplace(2, response.auth_data().SerializeToByteArray());
-  response_map.emplace(3, response.signature());
+  response_map.emplace(2, response.authenticator_data.SerializeToByteArray());
+  response_map.emplace(3, response.signature);
 
-  if (response.user_entity()) {
+  if (response.user_entity) {
     response_map.emplace(
-        4, *UserEntityAsCBOR(*response.user_entity(), allow_invalid_utf8));
+        4, *UserEntityAsCBOR(*response.user_entity, allow_invalid_utf8));
   }
-  if (response.num_credentials()) {
-    response_map.emplace(5, response.num_credentials().value());
+  if (response.num_credentials) {
+    response_map.emplace(5, response.num_credentials.value());
   }
-  if (response.large_blob_key()) {
-    response_map.emplace(0x07, cbor::Value(*response.large_blob_key()));
+  if (response.large_blob_key) {
+    response_map.emplace(0x07, cbor::Value(*response.large_blob_key));
   }
 
   return WriteCBOR(cbor::Value(std::move(response_map)), allow_invalid_utf8);
@@ -1479,13 +1479,13 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     }
 
     if (include_credential) {
-      assertion.SetCredential(
-          {CredentialType::kPublicKey,
-           fido_parsing_utils::Materialize(registration.first)});
+      assertion.credential = PublicKeyCredentialDescriptor(
+          CredentialType::kPublicKey,
+          fido_parsing_utils::Materialize(registration.first));
     }
 
     if (registration.second->is_resident) {
-      assertion.SetUserEntity(registration.second->user.value());
+      assertion.user_entity = registration.second->user.value();
     }
 
     if (request.large_blob_key) {
@@ -1493,14 +1493,14 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
       }
       if (registration.second->large_blob_key) {
-        assertion.set_large_blob_key(*registration.second->large_blob_key);
+        assertion.large_blob_key = *registration.second->large_blob_key;
       }
     }
 
     if (!done_first) {
       if (found_registrations.size() > 1) {
         DCHECK_LT(found_registrations.size(), 256u);
-        assertion.SetNumCredentials(found_registrations.size());
+        assertion.num_credentials = found_registrations.size();
       }
       *response = EncodeGetAssertionResponse(
           assertion, config_.allow_invalid_utf8_in_credential_entities);

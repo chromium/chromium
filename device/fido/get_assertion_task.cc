@@ -38,11 +38,11 @@ bool MayFallbackToU2fWithAppIdExtension(
 bool SetResponseCredential(
     AuthenticatorGetAssertionResponse* response,
     const std::vector<PublicKeyCredentialDescriptor>& allow_list) {
-  if (response->credential()) {
+  if (response->credential) {
     if (!allow_list.empty() &&
         std::none_of(allow_list.cbegin(), allow_list.cend(),
                      [&response](const auto& credential) {
-                       return credential.id() == response->raw_credential_id();
+                       return credential.id() == response->credential->id();
                      })) {
       return false;
     }
@@ -54,7 +54,7 @@ bool SetResponseCredential(
     return false;
   }
 
-  response->SetCredential(allow_list[0]);
+  response->credential = allow_list[0];
   return true;
 }
 
@@ -278,7 +278,7 @@ void GetAssertionTask::HandleResponse(
 
     // Decrypt any hmac-secret response.
     const base::Optional<cbor::Value>& extensions_cbor =
-        response_data->auth_data().extensions();
+        response_data->authenticator_data.extensions();
     if (extensions_cbor) {
       // Parsing has already checked that |extensions_cbor| is a map.
       const cbor::Value::MapValue& extensions = extensions_cbor->GetMap();
@@ -298,7 +298,7 @@ void GetAssertionTask::HandleResponse(
                                    base::nullopt);
           return;
         }
-        response_data->set_hmac_secret(std::move(plaintext.value()));
+        response_data->hmac_secret = std::move(plaintext.value());
       }
     }
   }
@@ -328,7 +328,7 @@ void GetAssertionTask::HandleResponseToSilentRequest(
           allow_list_batches_.at(current_allow_list_batch_ - 1))) {
     CtapGetAssertionRequest request = request_;
     const PublicKeyCredentialDescriptor& matching_credential =
-        *response_data->credential();
+        *response_data->credential;
     request.allow_list = {matching_credential};
     MaybeSetPRFParameters(
         &request, GetPRFInputForCredential(options_, matching_credential.id()));
