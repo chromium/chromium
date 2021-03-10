@@ -4887,6 +4887,93 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
   VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
 }
 
+// Test reordering desks in RTL mode.
+TEST_F(DesksBentoTest, ReorderDesksInRTLMode) {
+  // Turn on RTL mode.
+  base::i18n::SetICUDefaultLocale("ar");
+  EXPECT_TRUE(base::i18n::IsRTL());
+
+  auto* desks_controller = DesksController::Get();
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  const auto* desks_bar_view =
+      GetOverviewGridForRoot(root_window)->desks_bar_view();
+
+  auto* event_generator = GetEventGenerator();
+
+  // Add two desks (Now we have three desks).
+  NewDesk();
+  NewDesk();
+
+  // Cache the mini view and corresponding desks.
+  std::vector<DeskMiniView*> mini_views = desks_bar_view->mini_views();
+  DeskMiniView* mini_view_0 = mini_views[0];
+  Desk* desk_0 = mini_view_0->desk();
+  DeskMiniView* mini_view_1 = mini_views[1];
+  Desk* desk_1 = mini_view_1->desk();
+  DeskMiniView* mini_view_2 = mini_views[2];
+  Desk* desk_2 = mini_view_2->desk();
+
+  // Set desk names. Force update user prefs because `SetName()` does not
+  // trigger it but `DeskMiniView::OnViewBlurred`.
+  desk_0->SetName(base::ASCIIToUTF16("0"), /*set_by_user=*/true);
+  desk_1->SetName(base::ASCIIToUTF16("1"), /*set_by_user=*/true);
+  desk_2->SetName(base::ASCIIToUTF16("2"), /*set_by_user=*/true);
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "1", "2"});
+
+  // Swap the positions of the |desk_1| and the |desk_2| by mouse.
+  StartDragDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  gfx::Point desk_center_2 =
+      mini_view_2->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveMouseTo(desk_center_2);
+
+  // Now, the desks order should be [0, 2, 1]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_1));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"0", "2", "1"});
+  event_generator->ReleaseLeftButton();
+
+  // Swap the positions of the |desk_1| and the |desk_0| by gesture.
+  LongTapOnDeskPreview(mini_view_1, event_generator);
+  EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
+
+  gfx::Point desk_center_0 =
+      mini_view_0->GetPreviewBoundsInScreen().CenterPoint();
+  event_generator->MoveTouch(desk_center_0);
+
+  // Now, the desks order should be [1, 0, 2]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_0));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_2));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "0", "2"});
+  event_generator->ReleaseTouch();
+
+  // Swap the positions of the |desk_0| and the |desk_2| by keyboard.
+  // Highlight the |desk_0|.
+  overview_controller->overview_session()
+      ->highlight_controller()
+      ->MoveHighlightToView(mini_view_0);
+
+  // Swap the positions of the |desk_0| and the |desk_2| by pressing Ctrl + <-.
+  event_generator->PressKey(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN);
+
+  // Now, the desks order should be [1, 2, 0]:
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_1));
+  EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
+  EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_0));
+  VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "2", "0"});
+}
+  
 // TODO(zxdan): Add a regression test for crbug/1171880
 
 // TODO(afakhry): Add more tests:

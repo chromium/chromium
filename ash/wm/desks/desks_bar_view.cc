@@ -89,31 +89,6 @@ OverviewHighlightController* GetHighlightController() {
   return overview_controller->overview_session()->highlight_controller();
 }
 
-int DetermineMoveIndex(const std::vector<DeskMiniView*>& views,
-                       int old_index,
-                       int location_screen_x) {
-  DCHECK_GE(old_index, 0);
-
-  const int views_size = static_cast<int>(views.size());
-  DCHECK_LT(old_index, views_size);
-
-  for (int new_index = 0; new_index < views_size; new_index++) {
-    // Note that we cannot directly use |GetBoundsInScreen|. Because we may
-    // perform animation (transform) on mini views. The bounds gotten from
-    // |GetBoundsInScreen| may be the intermediate bounds during animation.
-    // Therefore, we transfer a mini view's origin from its parent level to
-    // avoid the influence of its own transform.
-    auto* view = views[new_index];
-    gfx::Point center_in_screen = view->bounds().CenterPoint();
-    views::View::ConvertPointToScreen(view->parent(), &center_in_screen);
-
-    if (location_screen_x < center_in_screen.x())
-      return new_index;
-  }
-
-  return views_size - 1;
-}
-
 int GetSpaceBetweenMiniViews(DeskMiniView* mini_view) {
   return kMiniViewsSpacing - mini_view->GetPreviewBorderInsets().width();
 }
@@ -637,8 +612,8 @@ bool DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   // Otherwise, the position is determined by the drag proxy's location.
   int new_index =
       (cursor_y < bar_bounds.origin().y() || cursor_y > bar_bounds.bottom())
-          ? mini_views_.size() - 1
-          : DetermineMoveIndex(mini_views_, old_index, drag_pos_in_screen.x());
+          ? (GetMirrored() ? 0 : mini_views_.size() - 1)
+          : DetermineMoveIndex(drag_pos_in_screen.x());
 
   if (old_index != new_index)
     Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);
@@ -898,6 +873,36 @@ void DesksBarView::ScrollToShowMiniViewIfNecessary(
   } else if (beyond_right) {
     scroll_view_->ScrollToPosition(scroll_bar, mini_view_bounds.x());
   }
+}
+
+int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
+  const int views_size = static_cast<int>(mini_views_.size());
+
+  // We find the target position according to the x-axis coordinate of the
+  // desks' center positions in screen in ascending order. Therefore, if the
+  // desks bar is mirrored, check from right to left, otherwise check from left
+  // to right.
+  const bool mirrored = GetMirrored();
+  const int start_index = mirrored ? views_size - 1 : 0;
+  const int end_index = mirrored ? -1 : views_size;
+  const int iter_step = mirrored ? -1 : 1;
+
+  for (int new_index = start_index; new_index != end_index;
+       new_index += iter_step) {
+    auto* mini_view = mini_views_[new_index];
+
+    // Note that we cannot directly use |GetBoundsInScreen|. Because we may
+    // perform animation (transform) on mini views. The bounds gotten from
+    // |GetBoundsInScreen| may be the intermediate bounds during animation.
+    // Therefore, we transfer a mini view's origin from its parent level to
+    // avoid the influence of its own transform.
+    gfx::Point center_screen_pos = mini_view->GetMirroredBounds().CenterPoint();
+    views::View::ConvertPointToScreen(mini_view->parent(), &center_screen_pos);
+    if (location_screen_x < center_screen_pos.x())
+      return new_index;
+  }
+
+  return end_index - iter_step;
 }
 
 DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
