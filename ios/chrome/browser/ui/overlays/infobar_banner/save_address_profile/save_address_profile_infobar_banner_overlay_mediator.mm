@@ -45,10 +45,7 @@ using save_address_profile_infobar_overlays::
 
 #pragma mark - InfobarOverlayRequestMediator
 
-- (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
-  // TODO(crbug.com/1167062): Set up modal view with the details.
-  [self dismissOverlay];
-}
+// TODO(crbug.com/1167062): Set up modal view with the details.
 
 @end
 

@@ -37,7 +37,7 @@ void SaveAddressProfileInfobarBannerInteractionHandler::MainButtonTapped(
 void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
-  if (!visible)
+  if (!visible && !infobar->accepted())
     GetInfobarDelegate(infobar)->InfoBarDismissed();
 }
 
