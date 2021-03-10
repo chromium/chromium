@@ -27,6 +27,8 @@
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
+#include <iostream>
+
 using ::base::test::RunCallback;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
@@ -135,6 +137,8 @@ class VideoDecoderStreamTest
     // TODO(wolenetz/xhwang): Fix tests to have better MediaLog checking.
     EXPECT_MEDIA_LOG(HasSubstr("video")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("Video")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("audio")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
   }
 
@@ -328,6 +332,11 @@ class VideoDecoderStreamTest
                             base::Unretained(this)),
         base::BindRepeating(&VideoDecoderStreamTest::OnWaiting,
                             base::Unretained(this)));
+
+    EXPECT_MEDIA_LOG(HasSubstr("video")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("Video")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("audio")).Times(AnyNumber());
+    EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     base::RunLoop().RunUntilIdle();
   }
 
@@ -389,6 +398,7 @@ class VideoDecoderStreamTest
   }
 
   void ReadAllFrames(int expected_decoded_frames) {
+    // Reading all frames reinitializes the demuxer.
     do {
       ReadOneFrame();
     } while (frame_read_.get() && !frame_read_->metadata().end_of_stream);
@@ -659,7 +669,6 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
   // We should initially be using a hardware decoder
   EXPECT_TRUE(decoder_);
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
-
   ReadAllFrames();
 
   // We should end up on a software decoder
@@ -851,6 +860,7 @@ TEST_P(VideoDecoderStreamTest, Reset_AfterInitialization) {
 
 TEST_P(VideoDecoderStreamTest, Reset_DuringReinitialization) {
   Initialize();
+
   EnterPendingState(DECODER_REINIT);
   // VideoDecoder::Reset() is not called when we reset during reinitialization.
   pending_reset_ = true;
