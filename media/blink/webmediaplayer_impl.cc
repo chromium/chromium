@@ -2979,6 +2979,11 @@ void WebMediaPlayerImpl::SetDelegateState(DelegateState new_state,
       delegate_->PlayerGone(delegate_id_);
       break;
     case DelegateState::PLAYING: {
+      // When delegate get PlayerGone it removes all state, need to make sure
+      // it is up-to-date before calling DidPlay.
+      delegate_->DidMediaMetadataChange(
+          delegate_id_, delegate_has_audio_, HasVideo(),
+          DurationToMediaContentType(GetPipelineMediaDuration()));
       if (HasVideo())
         client_->DidPlayerSizeChange(NaturalSize());
       client_->DidPlayerStartPlaying();

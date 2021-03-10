@@ -1518,6 +1518,34 @@ TEST_F(WebMediaPlayerImplTest, ComputePlayState_Streaming) {
   EXPECT_FALSE(state.is_memory_reporting_enabled);
 }
 
+TEST_F(WebMediaPlayerImplTest, ResumeEnded) {
+  PipelineMetadata metadata;
+  metadata.has_video = true;
+  metadata.video_decoder_config = TestVideoConfig::Normal();
+  metadata.has_audio = true;
+  metadata.audio_decoder_config = TestAudioConfig::Normal();
+
+  SetUpMediaSuspend(true);
+  InitializeWebMediaPlayerImpl();
+
+  EXPECT_CALL(delegate_, DidMediaMetadataChange(_, true, true, _)).Times(2);
+
+  OnMetadata(metadata);
+  SetReadyState(blink::WebMediaPlayer::kReadyStateHaveFutureData);
+  Play();
+  // Cause PlayerGone
+  Pause();
+  BackgroundPlayer();
+
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // DidMediaMetadataChange should be called again after player gone.
+  EXPECT_CALL(delegate_, DidMediaMetadataChange(_, true, true, _));
+
+  ForegroundPlayer();
+  Play();
+}
+
 TEST_F(WebMediaPlayerImplTest, AutoplayMuted) {
   PipelineMetadata metadata;
   metadata.has_video = true;
