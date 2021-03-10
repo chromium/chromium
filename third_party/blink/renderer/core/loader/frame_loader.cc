@@ -655,9 +655,11 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-    if (!app_history->DispatchNavigateEvent(url, request.Form(), false,
-                                            frame_load_type)) {
-      return;
+    if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
+      if (!app_history->DispatchNavigateEvent(url, request.Form(), false,
+                                              frame_load_type)) {
+        return;
+      }
     }
   }
 
