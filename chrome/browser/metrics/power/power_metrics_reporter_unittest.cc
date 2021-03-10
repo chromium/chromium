@@ -16,6 +16,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -201,6 +202,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
+  EXPECT_EQ(entries[0]->source_id,
+            fake_interval_data.source_id_for_longest_visible_origin);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kUptimeSecondsName,
       ukm::GetExponentialBucketMinForUserTiming(
@@ -309,6 +312,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
+  EXPECT_EQ(entries[0]->source_id, 42);
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kBrowserShuttingDownName, true);
 }
@@ -517,4 +521,34 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
   histogram_tester_.ExpectUniqueSample(
       kBatteryDischargeModeHistogramName,
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
+  UsageScenarioDataStore::IntervalData fake_interval_data;
+
+  fake_interval_data.max_tab_count = 0;
+  fake_interval_data.max_visible_window_count = 0;
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::kInvalidSourceId;
+
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  fake_metrics.cpu_usage = 0.5;
+
+  WaitForNextSample(fake_metrics);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  EXPECT_EQ(entries[0]->source_id, ukm::kInvalidSourceId);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kUptimeSecondsName,
+      ukm::GetExponentialBucketMinForUserTiming(
+          fake_interval_data.uptime_at_interval_end.InSeconds()));
 }

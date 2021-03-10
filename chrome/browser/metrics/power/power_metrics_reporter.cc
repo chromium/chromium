@@ -170,11 +170,6 @@ void PowerMetricsReporter::ReportUKMs(
   auto usage_metrics = data_store_->ResetIntervalData();
   auto source_id = usage_metrics.source_id_for_longest_visible_origin;
 
-  // TODO(sebmarchand): Figure out if we need to report data when we don't have
-  // a valid sourceID.
-  if (source_id == ukm::kInvalidSourceId)
-    return;
-
   ukm::builders::PowerUsageScenariosIntervalData builder(source_id);
   builder.SetURLVisibilityTimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.source_id_for_longest_visible_origin_duration.InSeconds()));
