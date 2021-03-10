@@ -292,11 +292,12 @@ public class PermissionDialogController
             // schedule the next dialog.
             if (mState == State.PROMPT_DENIED) {
                 mDialogDelegate.onCancel();
+                destroyDelegate(ContentSettingValues.BLOCK);
             } else {
                 assert mState == State.PROMPT_OPEN;
                 mDialogDelegate.onDismiss();
+                destroyDelegate(ContentSettingValues.DEFAULT);
             }
-            destroyDelegate(ContentSettingValues.BLOCK);
             scheduleDisplay();
         }
     }
