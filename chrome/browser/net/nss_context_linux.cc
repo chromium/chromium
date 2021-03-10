@@ -11,10 +11,8 @@
 
 namespace {
 net::NSSCertDatabase* g_nss_cert_database = NULL;
-}  // namespace
 
 net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
-    content::ResourceContext* context,
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
   // This initialization is not thread safe. This CHECK ensures that this code
   // is only run on a single thread.
@@ -36,4 +34,15 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
         crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()) /* private slot */);
   }
   return g_nss_cert_database;
+}
+
+}  // namespace
+
+NssCertDatabaseGetter CreateNSSCertDatabaseGetter(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Not used, but should not be nullptr, since it's used by the ChromeOS Ash
+  // implementation of this method.
+  DCHECK(browser_context);
+  return base::BindOnce(&GetNSSCertDatabaseForResourceContext);
 }

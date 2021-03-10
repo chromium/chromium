@@ -14,13 +14,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/net/nss_context.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/ssl/client_cert_identity.h"
 
 namespace content {
 class BrowserContext;
-class ResourceContext;
 }  // namespace content
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -267,7 +267,7 @@ class CertificateManagerModel {
       CreationCallback callback,
       net::NSSCertDatabase* cert_db);
   static void GetCertDBOnIOThread(std::unique_ptr<Params> params,
-                                  content::ResourceContext* resource_context,
+                                  NssCertDatabaseGetter database_getter,
                                   CertificateManagerModel::Observer* observer,
                                   CreationCallback callback);
 

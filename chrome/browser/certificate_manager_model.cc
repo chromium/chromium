@@ -56,7 +56,7 @@ using content::BrowserThread;
 //                  \--------------------------------------v
 //                                CertificateManagerModel::GetCertDBOnIOThread
 //                                                         |
-//                                     GetNSSCertDatabaseForResourceContext
+//                                               NssCertDatabaseGetter
 //                                                         |
 //                               CertificateManagerModel::DidGetCertDBOnIOThread
 //                                                         |
@@ -511,10 +511,10 @@ void CertificateManagerModel::Create(
 #endif
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
-                     std::move(params), browser_context->GetResourceContext(),
-                     observer, std::move(callback)));
+      FROM_HERE, base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
+                                std::move(params),
+                                CreateNSSCertDatabaseGetter(browser_context),
+                                observer, std::move(callback)));
 }
 
 CertificateManagerModel::CertificateManagerModel(
@@ -712,7 +712,7 @@ void CertificateManagerModel::DidGetCertDBOnIOThread(
 // static
 void CertificateManagerModel::GetCertDBOnIOThread(
     std::unique_ptr<Params> params,
-    content::ResourceContext* resource_context,
+    NssCertDatabaseGetter database_getter,
     CertificateManagerModel::Observer* observer,
     CreationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -721,8 +721,8 @@ void CertificateManagerModel::GetCertDBOnIOThread(
       base::BindOnce(&CertificateManagerModel::DidGetCertDBOnIOThread,
                      std::move(params), observer, std::move(callback)));
 
-  net::NSSCertDatabase* cert_db = GetNSSCertDatabaseForResourceContext(
-      resource_context, did_get_cert_db_callback);
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(did_get_cert_db_callback);
   // If the NSS database was already available, |cert_db| is non-null and
   // |did_get_cert_db_callback| has not been called. Call it explicitly.
   if (cert_db)

@@ -20,19 +20,26 @@ class NSSCertDatabase;
 }
 
 namespace content {
+class BrowserContext;
 class ResourceContext;
 }  // namespace content
 
-// Returns a pointer to the NSSCertDatabase for the user associated with
-// |context|, if it is ready. If it is not ready and |callback| is non-null, the
-// |callback| will be run once the DB is initialized. Ownership is not
-// transferred, but the caller may save the pointer, which will remain valid for
-// the lifetime of the ResourceContext.
-// Must be called only on the IO thread.
-net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
-    content::ResourceContext* context,
-    base::OnceCallback<void(net::NSSCertDatabase*)> callback)
-    WARN_UNUSED_RESULT;
+// NssCertDatabaseGetter is a callback that MUST only be invoked on the IO
+// thread, and will either synchronously return the associated NSSCertDatabase*
+// (if available), or nullptr along with a commitment to asynchronously invoke
+// the caller-supplied callback once the NSSCertDatabase* has been initialized.
+// Ownership of the NSSCertDatabase is not transferred, and the lifetime should
+// only be considered valid for the current Task.
+//
+// TODO(https://crbug.com/1186373): Provide better lifetime guarantees.
+using NssCertDatabaseGetter = base::OnceCallback<net::NSSCertDatabase*(
+    base::OnceCallback<void(net::NSSCertDatabase*)> callback)>;
+
+// Must be called on the UI thread. Returns a Getter that may only be invoked on
+// the IO thread. To avoid UAF, the getter must be immediately posted to the IO
+// thread and then invoked.
+NssCertDatabaseGetter CreateNSSCertDatabaseGetter(
+    content::BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Sets the |username_hash| associated with |context|.

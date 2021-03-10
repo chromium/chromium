@@ -75,18 +75,17 @@ void CheckIsSystemSlotAvailableOnIOThreadWithCertDb(
   std::move(done_closure).Run();
 }
 
-void CheckIsSystemSlotAvailableOnIOThread(
-    content::ResourceContext* resource_context,
-    bool* out_system_slot_available,
-    base::OnceClosure done_closure) {
+void CheckIsSystemSlotAvailableOnIOThread(NssCertDatabaseGetter database_getter,
+                                          bool* out_system_slot_available,
+                                          base::OnceClosure done_closure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto did_get_cert_db_callback = base::BindRepeating(
       &CheckIsSystemSlotAvailableOnIOThreadWithCertDb,
       out_system_slot_available,
       base::AdaptCallbackForRepeating(std::move(done_closure)));
 
-  net::NSSCertDatabase* cert_db = GetNSSCertDatabaseForResourceContext(
-      resource_context, did_get_cert_db_callback);
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(did_get_cert_db_callback);
   if (cert_db)
     did_get_cert_db_callback.Run(cert_db);
 }
@@ -102,8 +101,8 @@ bool IsSystemSlotAvailable(Profile* profile) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(CheckIsSystemSlotAvailableOnIOThread,
-                     profile->GetResourceContext(), &system_slot_available,
-                     run_loop.QuitClosure()));
+                     CreateNSSCertDatabaseGetter(profile),
+                     &system_slot_available, run_loop.QuitClosure()));
   run_loop.Run();
   return system_slot_available;
 }

@@ -39,10 +39,10 @@ class DBTester {
   bool DoGetDBTests() {
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DBTester::GetDBAndDoTestsOnIOThread,
-                       base::Unretained(this), profile_->GetResourceContext(),
-                       run_loop.QuitClosure()));
+        FROM_HERE, base::BindOnce(&DBTester::GetDBAndDoTestsOnIOThread,
+                                  base::Unretained(this),
+                                  CreateNSSCertDatabaseGetter(profile_),
+                                  run_loop.QuitClosure()));
     run_loop.Run();
     return !!db_;
   }
@@ -51,10 +51,10 @@ class DBTester {
   void DoGetDBAgainTests() {
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DBTester::DoGetDBAgainTestsOnIOThread,
-                       base::Unretained(this), profile_->GetResourceContext(),
-                       run_loop.QuitClosure()));
+        FROM_HERE, base::BindOnce(&DBTester::DoGetDBAgainTestsOnIOThread,
+                                  base::Unretained(this),
+                                  CreateNSSCertDatabaseGetter(profile_),
+                                  run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -66,10 +66,11 @@ class DBTester {
   }
 
  private:
-  void GetDBAndDoTestsOnIOThread(content::ResourceContext* context,
+  void GetDBAndDoTestsOnIOThread(NssCertDatabaseGetter database_getter,
                                  const base::RepeatingClosure& done_callback) {
-    net::NSSCertDatabase* db = GetNSSCertDatabaseForResourceContext(
-        context, base::BindOnce(&DBTester::DoTestsOnIOThread,
+    net::NSSCertDatabase* db =
+        std::move(database_getter)
+            .Run(base::BindOnce(&DBTester::DoTestsOnIOThread,
                                 base::Unretained(this), done_callback));
     if (db) {
       DVLOG(1) << "got db synchronously";
@@ -93,10 +94,10 @@ class DBTester {
                                                  std::move(done_callback));
   }
 
-  void DoGetDBAgainTestsOnIOThread(content::ResourceContext* context,
+  void DoGetDBAgainTestsOnIOThread(NssCertDatabaseGetter database_getter,
                                    base::OnceClosure done_callback) {
-    net::NSSCertDatabase* db = GetNSSCertDatabaseForResourceContext(
-        context, base::BindOnce(&NotCalledDbCallback));
+    net::NSSCertDatabase* db =
+        std::move(database_getter).Run(base::BindOnce(&NotCalledDbCallback));
     // Should always be synchronous now.
     EXPECT_TRUE(db);
     // Should return the same db as before.

@@ -470,7 +470,7 @@ void IsCertInNSSDatabaseOnIOThreadWithCertDb(
       out_system_slot_available, std::move(done_closure)));
 }
 
-void IsCertInNSSDatabaseOnIOThread(content::ResourceContext* resource_context,
+void IsCertInNSSDatabaseOnIOThread(NssCertDatabaseGetter database_getter,
                                    const std::string& subject_common_name,
                                    bool* out_cert_found,
                                    base::OnceClosure done_closure) {
@@ -479,8 +479,8 @@ void IsCertInNSSDatabaseOnIOThread(content::ResourceContext* resource_context,
       &IsCertInNSSDatabaseOnIOThreadWithCertDb, subject_common_name,
       out_cert_found, base::AdaptCallbackForRepeating(std::move(done_closure)));
 
-  net::NSSCertDatabase* cert_db = GetNSSCertDatabaseForResourceContext(
-      resource_context, did_get_cert_db_callback);
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(did_get_cert_db_callback);
   if (cert_db)
     did_get_cert_db_callback.Run(cert_db);
 }
@@ -495,7 +495,7 @@ bool IsCertInNSSDatabase(Profile* profile,
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(IsCertInNSSDatabaseOnIOThread,
-                     profile->GetResourceContext(), subject_common_name,
+                     CreateNSSCertDatabaseGetter(profile), subject_common_name,
                      &cert_found, run_loop.QuitClosure()));
   run_loop.Run();
   return cert_found;

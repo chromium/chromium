@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 
 using content::BrowserThread;
 
@@ -30,7 +29,7 @@ void DidGetCertDBOnIOThread(
 
 // Gets NSSCertDatabase for the resource context.
 void GetCertDBOnIOThread(
-    content::ResourceContext* context,
+    NssCertDatabaseGetter database_getter,
     scoped_refptr<base::SequencedTaskRunner> response_task_runner,
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -40,7 +39,7 @@ void GetCertDBOnIOThread(
   auto completion_callback = base::AdaptCallbackForRepeating(base::BindOnce(
       &DidGetCertDBOnIOThread, response_task_runner, std::move(callback)));
   net::NSSCertDatabase* cert_db =
-      GetNSSCertDatabaseForResourceContext(context, completion_callback);
+      std::move(database_getter).Run(completion_callback);
 
   if (cert_db)
     completion_callback.Run(cert_db);
@@ -55,6 +54,6 @@ void GetNSSCertDatabaseForProfile(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&GetCertDBOnIOThread, profile->GetResourceContext(),
+      base::BindOnce(&GetCertDBOnIOThread, CreateNSSCertDatabaseGetter(profile),
                      base::ThreadTaskRunnerHandle::Get(), std::move(callback)));
 }

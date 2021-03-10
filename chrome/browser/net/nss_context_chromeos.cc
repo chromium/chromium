@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "crypto/nss_util_internal.h"
@@ -130,13 +131,22 @@ void SetSystemSlotOfDBForResourceContext(content::ResourceContext* context,
     callback.Run(db);
 }
 
-}  // namespace
-
 net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
     content::ResourceContext* context,
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
   return GetNSSCertDatabaseChromeOS(
       context, base::BindOnce(&CallWithNSSCertDatabase, std::move(callback)));
+}
+
+}  // namespace
+
+NssCertDatabaseGetter CreateNSSCertDatabaseGetter(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(browser_context);
+  return base::BindOnce(
+      &GetNSSCertDatabaseForResourceContext,
+      base::Unretained(browser_context->GetResourceContext()));
 }
 
 void SetNSSCertDatabaseUsernameHash(content::ResourceContext* context,

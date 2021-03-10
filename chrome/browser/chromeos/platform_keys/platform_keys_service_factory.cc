@@ -46,14 +46,14 @@ void DidGetCertDbOnIoThread(
 void GetCertDatabaseOnIoThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& origin_task_runner,
     PlatformKeysServiceImplDelegate::OnGotNSSCertDatabase callback,
-    content::ResourceContext* context) {
+    NssCertDatabaseGetter database_getter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   base::RepeatingCallback<void(net::NSSCertDatabase*)> on_got_on_io_thread =
       base::BindRepeating(&DidGetCertDbOnIoThread, origin_task_runner,
                           base::Passed(&callback));
   net::NSSCertDatabase* cert_db =
-      GetNSSCertDatabaseForResourceContext(context, on_got_on_io_thread);
+      std::move(database_getter).Run(on_got_on_io_thread);
 
   if (cert_db)
     on_got_on_io_thread.Run(cert_db);
@@ -72,7 +72,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
         FROM_HERE,
         base::BindOnce(&GetCertDatabaseOnIoThread,
                        base::ThreadTaskRunnerHandle::Get(), std::move(callback),
-                       browser_context_->GetResourceContext()));
+                       CreateNSSCertDatabaseGetter(browser_context_)));
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
