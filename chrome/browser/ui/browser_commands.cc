@@ -1061,11 +1061,14 @@ bool CanBookmarkAllTabs(const Browser* browser) {
 }
 
 bool CanMoveActiveTabToReadLater(Browser* browser) {
-  GURL url =
-      GetURLToBookmark(browser->tab_strip_model()->GetActiveWebContents());
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
   ReadingListModel* model = GetReadingListModel(browser);
-  if (!model)
+  // |web_contents| can be nullptr if the last tab in the browser was closed
+  // but the browser wasn't closed yet. https://crbug.com/799668
+  if (!web_contents || !model)
     return false;
+  GURL url = GetURLToBookmark(web_contents);
   return model->IsUrlSupported(url);
 }
 
