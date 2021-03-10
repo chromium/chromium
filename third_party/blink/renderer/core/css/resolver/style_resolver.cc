@@ -735,7 +735,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
   ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade,
-                 cascade.MutableMatchResult(), style_request.matching_behavior);
+                 cascade.MutableMatchResult());
 
   if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties())
     return state.TakeStyle();
@@ -873,8 +873,7 @@ void StyleResolver::ApplyBaseStyle(
     const StyleRequest& style_request,
     StyleResolverState& state,
     StyleCascade& cascade,
-    MatchResult& match_result,
-    RuleMatchingBehavior matching_behavior) {
+    MatchResult& match_result) {
   DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
   bool base_is_usable =
@@ -1487,7 +1486,7 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
   ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade,
-                 cascade.MutableMatchResult(), kMatchAllRules);
+                 cascade.MutableMatchResult());
   ApplyInterpolations(state, cascade, interpolations);
 
   return state.TakeStyle();
