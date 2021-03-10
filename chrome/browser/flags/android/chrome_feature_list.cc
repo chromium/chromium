@@ -229,8 +229,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kTabReparenting,
     &kTabSwitcherOnReturn,
     &kTabToGTSAnimation,
-    &kTabbedAppOverflowMenuIcons,
-    &kTabbedAppOverflowMenuRegroup,
     &kTabbedAppOverflowMenuThreeButtonActionbar,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -645,12 +643,6 @@ const base::Feature kTabSwitcherOnReturn{"TabSwitcherOnReturn",
 
 const base::Feature kTabToGTSAnimation{"TabToGTSAnimation",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kTabbedAppOverflowMenuIcons{
-    "TabbedAppOverflowMenuIcons", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kTabbedAppOverflowMenuRegroup{
-    "TabbedAppOverflowMenuRegroup", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTabbedAppOverflowMenuThreeButtonActionbar{
     "TabbedAppOverflowMenuThreeButtonActionbar",

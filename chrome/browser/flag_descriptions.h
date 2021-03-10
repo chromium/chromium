@@ -1970,12 +1970,6 @@ extern const char kAndroidDarkSearchDescription[];
 extern const char kSwipeToMoveCursorName[];
 extern const char kSwipeToMoveCursorDescription[];
 
-extern const char kTabbedAppOverflowMenuIconsName[];
-extern const char kTabbedAppOverflowMenuIconsDescription[];
-
-extern const char kTabbedAppOverflowMenuRegroupName[];
-extern const char kTabbedAppOverflowMenuRegroupDescription[];
-
 extern const char kTabbedAppOverflowMenuThreeButtonActionbarName[];
 extern const char kTabbedAppOverflowMenuThreeButtonActionbarDescription[];
 

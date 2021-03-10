@@ -247,11 +247,9 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
-    @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP,
-            ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_ICONS})
+    @DisableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_THREE_BUTTON_ACTIONBAR})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testBookmarkMenuItem() throws IOException {
+    public void testBookmarkMenuItem() throws IOException {
         MenuItem bookmarkStar =
                 AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
                         .findItem(R.id.bookmark_this_page_id);
@@ -259,7 +257,7 @@ public class TabbedAppMenuTest {
         Assert.assertEquals("Incorrect content description.",
                 mActivityTestRule.getActivity().getString(R.string.menu_bookmark),
                 bookmarkStar.getTitleCondensed());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row");
+        mRenderTestRule.render(getListView().getChildAt(0), "rounded_corner_icon_row");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
@@ -272,7 +270,8 @@ public class TabbedAppMenuTest {
         Assert.assertEquals("Incorrect content description for bookmarked page.",
                 mActivityTestRule.getActivity().getString(R.string.edit_bookmark),
                 bookmarkStar.getTitleCondensed());
-        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_page_bookmarked");
+        mRenderTestRule.render(
+                getListView().getChildAt(0), "rounded_corner_icon_row_page_bookmarked");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
@@ -288,7 +287,8 @@ public class TabbedAppMenuTest {
     testActionChipViewMenuItem() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
+        mRenderTestRule.render(
+                getListView().getChildAt(0), "tinted_rounded_corner_icon_row_three_buttons");
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
@@ -330,7 +330,8 @@ public class TabbedAppMenuTest {
     testDestinationChipViewMenuItem() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
+        mRenderTestRule.render(
+                getListView().getChildAt(0), "tinted_rounded_corner_icon_row_three_buttons");
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
@@ -372,7 +373,8 @@ public class TabbedAppMenuTest {
     testAddToMenuItem_not_bookmarked() throws IOException {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals(3, actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
+        mRenderTestRule.render(
+                getListView().getChildAt(0), "tinted_rounded_corner_icon_row_three_buttons");
 
         int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
         Assert.assertNotEquals("No add to row found.", -1, addToIndex);
@@ -408,7 +410,8 @@ public class TabbedAppMenuTest {
         LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
         Assert.assertEquals("Add to Bookmarks/Downloads/Home screen should be shown", 3,
                 actionBar.getChildCount());
-        mRenderTestRule.render(getListView().getChildAt(0), "tinted_icon_row_three_buttons");
+        mRenderTestRule.render(
+                getListView().getChildAt(0), "tinted_rounded_corner_icon_row_three_buttons");
 
         int addToIndex = findIndexOfMenuItemById(R.id.add_to_menu_id);
         Assert.assertNotEquals("No add to row found.", -1, addToIndex);
@@ -433,7 +436,6 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP})
     public void testDividerLineMenuItem() throws IOException {
         int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
         Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
