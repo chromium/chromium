@@ -3366,7 +3366,9 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   leaf.SetSubjectAltName(kHostname);
 
   // Make two versions of the intermediate - one that is SHA256 signed, and one
-  // that is SHA1 signed.
+  // that is SHA1 signed. Note that the subjectKeyIdentifier for `intermediate`
+  // is intentionally not changed, so that path building will consider both
+  // certificate paths.
   intermediate.SetSignatureAlgorithmRsaPkca1(DigestAlgorithm::Sha256);
   intermediate.SetRandomSerialNumber();
   auto intermediate_sha256 = intermediate.DupCertBuffer();

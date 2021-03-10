@@ -5,6 +5,7 @@
 #include "net/test/cert_builder.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "crypto/openssl_util.h"
@@ -82,20 +83,13 @@ std::string FinishCBB(CBB* cbb) {
 }  // namespace
 
 CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert, CertBuilder* issuer)
-    : issuer_(issuer) {
-  if (!issuer_)
-    issuer_ = this;
-
-  crypto::EnsureOpenSSLInit();
-  if (orig_cert)
-    InitFromCert(der::Input(x509_util::CryptoBufferAsStringPiece(orig_cert)));
-}
+    : CertBuilder(orig_cert, issuer, /*unique_subject_key_identifier=*/true) {}
 
 // static
 std::unique_ptr<CertBuilder> CertBuilder::FromStaticCert(CRYPTO_BUFFER* cert,
                                                          EVP_PKEY* key) {
-  std::unique_ptr<CertBuilder> builder =
-      std::make_unique<CertBuilder>(cert, nullptr);
+  std::unique_ptr<CertBuilder> builder = base::WrapUnique(
+      new CertBuilder(cert, nullptr, /*unique_subject_key_identifier=*/false));
   // |cert_|, |key_|, and |subject_tlv_| must be initialized for |builder| to
   // function as the |issuer| of another CertBuilder.
   builder->cert_ = bssl::UpRef(cert);
@@ -384,6 +378,57 @@ void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {
   validity_tlv_ = FinishCBB(cbb.get());
 }
 
+void CertBuilder::SetSubjectKeyIdentifier(
+    const std::string& subject_key_identifier) {
+  ASSERT_FALSE(subject_key_identifier.empty());
+
+  // From RFC 5280:
+  //   KeyIdentifier ::= OCTET STRING
+  //   SubjectKeyIdentifier ::= KeyIdentifier
+  bssl::ScopedCBB cbb;
+  ASSERT_TRUE(CBB_init(cbb.get(), 32));
+
+  ASSERT_TRUE(CBB_add_asn1_octet_string(
+      cbb.get(),
+      reinterpret_cast<const uint8_t*>(subject_key_identifier.data()),
+      subject_key_identifier.size()));
+
+  // Replace the existing SKI. Note it MUST be non-critical, per RFC 5280.
+  SetExtension(SubjectKeyIdentifierOid(), FinishCBB(cbb.get()),
+               /*critical=*/false);
+}
+
+void CertBuilder::SetAuthorityKeyIdentifier(
+    const std::string& authority_key_identifier) {
+  // If an empty AKI is presented, simply erase the existing one. Creating
+  // an empty AKI is technically valid, but there's no use case for this.
+  // An empty AKI would an empty (ergo, non-unique) SKI on the issuer,
+  // which would violate RFC 5280, so using the empty value as a placeholder
+  // unless and until a use case emerges is fine.
+  if (authority_key_identifier.empty()) {
+    EraseExtension(AuthorityKeyIdentifierOid());
+    return;
+  }
+
+  // From RFC 5280:
+  //
+  //   AuthorityKeyIdentifier ::= SEQUENCE {
+  //       keyIdentifier             [0] KeyIdentifier           OPTIONAL,
+  //       authorityCertIssuer       [1] GeneralNames            OPTIONAL,
+  //       authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL  }
+  //
+  //   KeyIdentifier ::= OCTET STRING
+  bssl::ScopedCBB cbb;
+  CBB aki, aki_value;
+  ASSERT_TRUE(CBB_init(cbb.get(), 32));
+  ASSERT_TRUE(CBB_add_asn1(cbb.get(), &aki, CBS_ASN1_SEQUENCE));
+  ASSERT_TRUE(CBB_add_asn1(&aki, &aki_value, CBS_ASN1_CONTEXT_SPECIFIC | 0));
+  ASSERT_TRUE(CBBAddBytes(&aki_value, authority_key_identifier));
+  ASSERT_TRUE(CBB_flush(&aki));
+
+  SetExtension(AuthorityKeyIdentifierOid(), FinishCBB(cbb.get()));
+}
+
 void CertBuilder::SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest) {
   switch (digest) {
     case DigestAlgorithm::Sha256: {
@@ -433,6 +478,24 @@ uint64_t CertBuilder::GetSerialNumber() {
   return serial_number_;
 }
 
+std::string CertBuilder::GetSubjectKeyIdentifier() {
+  std::string ski_oid = SubjectKeyIdentifierOid().AsString();
+  if (extensions_.find(ski_oid) == extensions_.end()) {
+    // If no SKI is present, this means that the certificate was either
+    // created by FromStaticCert() and lacked one, or it was explicitly
+    // deleted as an extension.
+    return std::string();
+  }
+
+  auto& extension_value = extensions_[ski_oid];
+  der::Input ski_value;
+  if (!ParseSubjectKeyIdentifier(der::Input(&extension_value.value),
+                                 &ski_value)) {
+    return std::string();
+  }
+  return ski_value.AsString();
+}
+
 bool CertBuilder::GetValidity(base::Time* not_before,
                               base::Time* not_after) const {
   der::GeneralizedTime not_before_generalized_time;
@@ -471,6 +534,23 @@ std::string CertBuilder::GetDER() {
   return std::string(x509_util::CryptoBufferAsStringPiece(GetCertBuffer()));
 }
 
+CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert,
+                         CertBuilder* issuer,
+                         bool unique_subject_key_identifier)
+    : issuer_(issuer) {
+  if (!issuer_)
+    issuer_ = this;
+
+  crypto::EnsureOpenSSLInit();
+  if (orig_cert)
+    InitFromCert(der::Input(x509_util::CryptoBufferAsStringPiece(orig_cert)));
+
+  if (unique_subject_key_identifier) {
+    GenerateSubjectKeyIdentifier();
+    SetAuthorityKeyIdentifier(issuer_->GetSubjectKeyIdentifier());
+  }
+}
+
 void CertBuilder::Invalidate() {
   cert_.reset();
 }
@@ -480,6 +560,15 @@ void CertBuilder::GenerateKey() {
 
   auto private_key = crypto::RSAPrivateKey::Create(2048);
   key_ = bssl::UpRef(private_key->key());
+}
+
+void CertBuilder::GenerateSubjectKeyIdentifier() {
+  // 20 bytes are chosen here for no other reason than it's compatible with
+  // systems that assume the SKI is SHA-1(SPKI), which RFC 5280 notes as one
+  // mechanism for generating an SKI, while also noting that random/unique
+  // SKIs are also fine.
+  std::string random_ski = base::RandBytesAsString(20);
+  SetSubjectKeyIdentifier(random_ski);
 }
 
 void CertBuilder::GenerateSubject() {
