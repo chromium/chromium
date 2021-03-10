@@ -162,7 +162,8 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
     return false;
 
   // Call finch helper only after all the profile checks are complete.
-  HatsFinchHelper hats_finch_helper(profile);
+  HatsFinchHelper hats_finch_helper(profile,
+                                    features::kHappinessTrackingSystem);
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 

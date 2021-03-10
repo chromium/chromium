@@ -104,8 +104,9 @@ std::unique_ptr<HatsDialog> HatsDialog::CreateAndShow() {
   if (!user_locale.length())
     user_locale = kDefaultProfileLocale;
 
-  std::unique_ptr<HatsDialog> hats_dialog(
-      new HatsDialog(HatsFinchHelper::GetTriggerID(), profile));
+  std::unique_ptr<HatsDialog> hats_dialog(new HatsDialog(
+      HatsFinchHelper::GetTriggerID(features::kHappinessTrackingSystem),
+      profile));
 
   // Raw pointer is used here since the dialog is owned by the hats
   // notification controller which lives until the end of the user session. The

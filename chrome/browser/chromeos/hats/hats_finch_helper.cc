@@ -27,14 +27,14 @@ const char HatsFinchHelper::kResetAllParam[] = "reset_all";
 // static
 const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
 
-std::string HatsFinchHelper::GetTriggerID() {
-  DCHECK(base::FeatureList::IsEnabled(features::kHappinessTrackingSystem));
-  return base::GetFieldTrialParamValueByFeature(
-      features::kHappinessTrackingSystem, kTriggerIdParam);
+std::string HatsFinchHelper::GetTriggerID(const base::Feature& feature) {
+  DCHECK(base::FeatureList::IsEnabled(feature));
+  return base::GetFieldTrialParamValueByFeature(feature, kTriggerIdParam);
 }
 
-HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
-  LoadFinchParamValues();
+HatsFinchHelper::HatsFinchHelper(Profile* profile, const base::Feature& feature)
+    : profile_(profile) {
+  LoadFinchParamValues(feature);
 
   // Reset prefs related to survey cycle if the finch seed has the reset param
   // set. Do no futher op until a new finch seed with the reset flags unset is
@@ -52,8 +52,7 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile) : profile_(profile) {
 
 HatsFinchHelper::~HatsFinchHelper() {}
 
-void HatsFinchHelper::LoadFinchParamValues() {
-  const auto& feature = features::kHappinessTrackingSystem;
+void HatsFinchHelper::LoadFinchParamValues(const base::Feature& feature) {
   if (!base::FeatureList::IsEnabled(feature))
     return;
 
@@ -86,7 +85,7 @@ void HatsFinchHelper::LoadFinchParamValues() {
   first_survey_start_date_ =
       base::Time().FromJsTime(first_survey_start_date_ms);
 
-  trigger_id_ = GetTriggerID();
+  trigger_id_ = GetTriggerID(feature);
 
   reset_survey_cycle_ = base::GetFieldTrialParamByFeatureAsBool(
       feature, kResetSurveyCycleParam, false);

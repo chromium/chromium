@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/common/chrome_features.h"
 
 class Profile;
 
@@ -19,9 +20,9 @@ namespace chromeos {
 // information related to the hats finch experiment.
 class HatsFinchHelper {
  public:
-  static std::string GetTriggerID();
+  static std::string GetTriggerID(const base::Feature& feature);
 
-  explicit HatsFinchHelper(Profile* profile);
+  explicit HatsFinchHelper(Profile* profile, const base::Feature& feature);
   ~HatsFinchHelper();
 
   bool IsDeviceSelectedForCurrentCycle() const {
@@ -45,7 +46,7 @@ class HatsFinchHelper {
 
   // Loads all the param values from the finch seed and initializes the member
   // variables.
-  void LoadFinchParamValues();
+  void LoadFinchParamValues(const base::Feature& feature);
 
   // Returns true if the survey cycle that was active most recently has passed
   // its end date.
