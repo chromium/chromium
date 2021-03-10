@@ -23,7 +23,12 @@ void SelectFileDialogExtensionUserData::SetRoutingIdForWebContents(
 // static
 std::string SelectFileDialogExtensionUserData::GetRoutingIdForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  // There's a race condition. This can be called from a callback after the
+  // webcontents has been deleted.
+  if (!web_contents) {
+    return "";
+  }
+
   SelectFileDialogExtensionUserData* data =
       static_cast<SelectFileDialogExtensionUserData*>(
           web_contents->GetUserData(kSelectFileDialogExtensionUserDataKey));
