@@ -905,7 +905,7 @@
       # and two kevin bots when the PFQ has it enabled.
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
-      'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients',
+      'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
       'chromeos-kevin-compile-rel': 'chromeos_kevin',
@@ -1709,6 +1709,10 @@
 
     'chromeos_amd64-generic_use_fake_dbus_clients': [
       'chromeos_amd64-generic', 'use_fake_dbus_clients',
+    ],
+
+    'chromeos_amd64-generic_use_fake_dbus_clients_dchecks': [
+      'chromeos_amd64-generic', 'use_fake_dbus_clients', 'dcheck_always_on',
     ],
 
     'chromeos_arm-generic': [
