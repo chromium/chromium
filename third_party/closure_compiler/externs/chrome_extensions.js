@@ -7134,60 +7134,6 @@ chrome.system.network.NetworkInterface.prototype.address;
 /** @const {number} The prefix length */
 chrome.system.network.NetworkInterface.prototype.prefixLength;
 
-/**
- * @const
- * @see https://developer.chrome.com/apps/system_powerSource
- */
-chrome.system.powerSource = {};
-
-/**
- * @enum {string}
- */
-chrome.system.powerSource.PowerSourceType = {
-  UNKNOWN: '',
-  MAINS: '',
-  USB: '',
-};
-
-/**
- * PowerSourceInfo
- * @constructor
- */
-chrome.system.powerSource.PowerSourceInfo = function() {};
-
-/** @type {!chrome.system.powerSource.PowerSourceType} */
-chrome.system.powerSource.PowerSourceInfo.prototype.type;
-
-/** @type {number|undefined} */
-chrome.system.powerSource.PowerSourceInfo.prototype.maxPower;
-
-/** @type {boolean} */
-chrome.system.powerSource.PowerSourceInfo.prototype.active;
-
-/**
- * Requests information on attached power sources.
- *
- * @param {function(!Array<!chrome.system.powerSource.PowerSourceType>):void}
- *     callback The callback to invoke with the results or undefined if the
- *     power source information is not known.
- */
-chrome.system.powerSource.getPowerSourceInfo = function(callback) {};
-
-/**
- * Requests a power source status update. Resulting power source
- * status updates are observable using onPowerChanged.
- */
-chrome.system.powerSource.requestStatusUpdate = function() {};
-
-/**
- * Event for changes in the set of connected power sources.
- *
- * It takes an additional, optional `extraInfoSpec` argument, which we ignore.
- * @type {!ChromeBaseEvent<function(string,
- *     !chrome.system.powerSource.PowerSourceInfo): (boolean|undefined)>}
- */
-chrome.system.powerSource.onPowerChanged;
-
 
 /**
  * @const
@@ -10022,36 +9968,6 @@ chrome.serial.onReceiveError;
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////// Chrome Private APIs ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
-/** @const */
-chrome.screenlockPrivate = {};
-
-
-/**
- * @param {string} message Displayed on the unlock screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.showMessage = function(message) {};
-
-
-/**
- * @param {function(boolean)} callback
- * @return {undefined}
- */
-chrome.screenlockPrivate.getLocked = function(callback) {};
-
-
-/**
- * @param {boolean} locked If true and the screen is unlocked, locks the screen.
- *     If false and the screen is locked, unlocks the screen.
- * @return {undefined}
- */
-chrome.screenlockPrivate.setLocked = function(locked) {};
-
-
-/** @type {!ChromeBooleanEvent} */
-chrome.screenlockPrivate.onChanged;
 
 
 /**
