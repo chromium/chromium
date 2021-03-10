@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 
 #include <algorithm>
 #include <limits>
@@ -108,7 +108,9 @@ void RecordFeatureUsage(content::RenderFrameHost* rfh,
 std::string GetHeavyAdReportMessage(const ad_metrics::FrameTreeData& frame_data,
                                     bool will_unload_adframe) {
   const char kChromeStatusMessage[] =
-      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
+      "See "
+      "https://www.chromestatus.com/feature/"
+      "4800491902992384?utm_source=devtools";
   const char kReportingOnlyMessage[] =
       "A future version of Chrome may remove this ad";
   const char kInterventionMessage[] = "Ad was removed";

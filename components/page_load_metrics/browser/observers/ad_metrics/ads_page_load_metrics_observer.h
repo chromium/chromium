@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
-#define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
+#ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
+#define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include <bitset>
 #include <list>
@@ -17,9 +17,9 @@
 #include "base/scoped_observer.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/frame_data.h"
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/page_ad_density_tracker.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/frame_data.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/page_ad_density_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -341,4 +341,4 @@ class AdsPageLoadMetricsObserver
   DISALLOW_COPY_AND_ASSIGN(AdsPageLoadMetricsObserver);
 };
 
-#endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_
+#endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_ADS_PAGE_LOAD_METRICS_OBSERVER_H_

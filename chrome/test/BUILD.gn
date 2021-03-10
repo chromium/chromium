@@ -3641,8 +3641,6 @@ test("unit_tests") {
     "../browser/optimization_guide/prediction/prediction_model_download_manager_unittest.cc",
     "../browser/page_load_metrics/metrics_web_contents_observer_unittest.cc",
     "../browser/page_load_metrics/observers/aborts_page_load_metrics_observer_unittest.cc",
-    "../browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer_unittest.cc",
-    "../browser/page_load_metrics/observers/ad_metrics/page_ad_density_tracker_unittest.cc",
     "../browser/page_load_metrics/observers/core/amp_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer_unittest.cc",
     "../browser/page_load_metrics/observers/data_reduction_proxy_metrics_observer_test_utils.cc",

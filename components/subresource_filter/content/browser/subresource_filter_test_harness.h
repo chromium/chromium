@@ -19,6 +19,7 @@
 class GURL;
 
 namespace content {
+class NavigationThrottle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -81,14 +82,10 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   }
 
  protected:
-  // Tests run as part of unit_tests must override these methods to return true
-  // to avoid crashes, as in that context the PrefService is already set in
-  // UserPrefs and subresource filter navigation throttles are added
-  // automatically.
-  // TODO(crbug.com/1116095): Remove these methods entirely when
-  // the AdsPageLoadMetricsObserver unittest is componentized.
-  virtual bool DisableSettingPrefServiceInUserPrefs();
-  virtual bool DisableAddingNavigationThrottles();
+  // Tests can override this to have custom throttles added to navigations.
+  virtual void AppendCustomNavigationThrottles(
+      content::NavigationHandle* navigation_handle,
+      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles) {}
 
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;

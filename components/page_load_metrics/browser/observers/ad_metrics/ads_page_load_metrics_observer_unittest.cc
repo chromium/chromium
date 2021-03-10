@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/ads_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 
 #include <map>
 #include <memory>
@@ -21,14 +21,14 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/page_load_metrics/observers/ad_metrics/frame_data.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
 #include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
+#include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/observers/ad_metrics/frame_data.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -399,7 +399,6 @@ class FrameRemoteTester : public content::FakeLocalFrame {
   // blink::mojom::LocalFrame
   void SendInterventionReport(const std::string& id,
                               const std::string& message) override {
-
     if (id.empty()) {
       if (!on_empty_report_callback_)
         return;
@@ -804,13 +803,18 @@ class AdsPageLoadMetricsObserverTest
   }
 
  private:
-  // SubresourceFilterTestHarness:
-  // TODO(crbug.com/1116095): Remove these methods altogether when this test is
-  // componentized.
-  bool DisableSettingPrefServiceInUserPrefs() override { return true; }
-  bool DisableAddingNavigationThrottles() override { return true; }
-
   const std::string& application_locale() { return application_locale_; }
+
+  // SubresourceFilterTestHarness::
+  void AppendCustomNavigationThrottles(
+      content::NavigationHandle* navigation_handle,
+      std::vector<std::unique_ptr<content::NavigationThrottle>>* throttles)
+      override {
+    if (navigation_handle->IsInMainFrame()) {
+      throttles->push_back(page_load_metrics::MetricsNavigationThrottle::Create(
+          navigation_handle));
+    }
+  }
 
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) {
     auto observer = std::make_unique<AdsPageLoadMetricsObserver>(
@@ -831,14 +835,6 @@ class AdsPageLoadMetricsObserverTest
       ui::ScopedVisibilityTracker visibility_tracker(clock_.get(), true);
       tracker->SetVisibilityTrackerForTesting(visibility_tracker);
     }
-  }
-
-  // TODO(crbug.com/1116095): Eliminate this override once this test is
-  // componentized; it's present only to satisfy a unit_tests DCHECK that all
-  // BrowserContexts are subclasses of Profile.
-  // content::RenderViewHostTestHarness:
-  std::unique_ptr<content::BrowserContext> CreateBrowserContext() final {
-    return TestingProfile::Builder().Build();
   }
 
   std::string application_locale_ = "en-US";
@@ -2080,7 +2076,9 @@ TEST_F(AdsPageLoadMetricsObserverTest, HeavyAdNetworkUsage_InterventionFired) {
 
   const char kInterventionMessage[] =
       "Ad was removed because its network usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
+      "See "
+      "https://www.chromestatus.com/feature/"
+      "4800491902992384?utm_source=devtools";
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   EXPECT_EQ(kInterventionMessage, PopLastInterventionReportMessage());
 
@@ -2311,7 +2309,9 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   const char kReportOnlyMessage[] =
       "Ad was removed because its "
       "total CPU usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
+      "See "
+      "https://www.chromestatus.com/feature/"
+      "4800491902992384?utm_source=devtools";
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   histogram_tester().ExpectUniqueSample(
       SuffixedHistogram("HeavyAds.InterventionType2"),
@@ -2789,7 +2789,9 @@ TEST_F(AdsPageLoadMetricsObserverTest,
   const char kReportOnlyMessage[] =
       "A future version of Chrome may remove this ad because its network "
       "usage exceeded the limit. "
-      "See https://www.chromestatus.com/feature/4800491902992384?utm_source=devtools";
+      "See "
+      "https://www.chromestatus.com/feature/"
+      "4800491902992384?utm_source=devtools";
 
   EXPECT_TRUE(HasInterventionReportsAfterFlush(ad_frame));
   EXPECT_EQ(kReportOnlyMessage, PopLastInterventionReportMessage());

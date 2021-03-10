@@ -47,8 +47,7 @@ void SubresourceFilterTestHarness::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
 
   // Set up prefs-related state needed by various tests.
-  if (!DisableSettingPrefServiceInUserPrefs())
-    user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
+  user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
 
   // Ensure correct features.
   scoped_configuration_.ResetConfiguration(Configuration(
@@ -109,15 +108,14 @@ void SubresourceFilterTestHarness::TearDown() {
 // content::WebContentsObserver:
 void SubresourceFilterTestHarness::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (DisableAddingNavigationThrottles())
-    return;
-
   if (navigation_handle->IsSameDocument())
     return;
 
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
   ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
       ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
+
+  AppendCustomNavigationThrottles(navigation_handle, &throttles);
 
   for (auto& it : throttles) {
     navigation_handle->RegisterThrottleForTesting(std::move(it));
@@ -167,14 +165,6 @@ void SubresourceFilterTestHarness::TagSubframeAsAd(
     content::RenderFrameHost* render_frame_host) {
   ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
       ->SetFrameAsAdSubframeForTesting(render_frame_host);
-}
-
-bool SubresourceFilterTestHarness::DisableSettingPrefServiceInUserPrefs() {
-  return false;
-}
-
-bool SubresourceFilterTestHarness::DisableAddingNavigationThrottles() {
-  return false;
 }
 
 }  // namespace subresource_filter
