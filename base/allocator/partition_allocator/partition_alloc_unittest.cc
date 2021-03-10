@@ -2616,8 +2616,11 @@ TEST_F(PartitionAllocTest, Alignment) {
 #endif
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
-    // rounding up the allocation size. The returned pointer points after the
-    // ref-count.
+    // rounding up the allocation size, making the raw size not a power of two.
+    // The returned pointer points after the ref-count (except when
+    // REF_COUNT_AT_END_OF_ALLOCATION is on, but even then the size increase
+    // by kInSlotRefCountBufferSize will cause non-1st allocations to be
+    // misaligned).
     expected_alignment =
         std::min({expected_alignment, kInSlotRefCountBufferSize});
 #endif
@@ -2625,7 +2628,7 @@ TEST_F(PartitionAllocTest, Alignment) {
       void* ptr = allocator.root()->Alloc(size, "");
       allocated_ptrs.push_back(ptr);
       EXPECT_EQ(0u, reinterpret_cast<uintptr_t>(ptr) % expected_alignment)
-          << index << "-th allocation of size = " << size;
+          << (index + 1) << "-th allocation of size=" << size;
     }
   }
 
@@ -2676,17 +2679,39 @@ TEST_F(PartitionAllocTest, FundamentalAlignment) {
   }
 }
 
+void VerifyAlignment(PartitionRoot<ThreadSafe>* root,
+                     size_t size,
+                     size_t alignment) {
+  std::vector<void*> allocated_ptrs;
+
+  for (int index = 0; index < 3; index++) {
+    void* ptr = root->AlignedAllocFlags(0, alignment, size);
+    ASSERT_TRUE(ptr);
+    allocated_ptrs.push_back(ptr);
+    EXPECT_EQ(0ull, reinterpret_cast<uintptr_t>(ptr) % alignment)
+        << (index + 1) << "-th allocation of size=" << size
+        << ", alignment=" << alignment;
+  }
+
+  for (void* ptr : allocated_ptrs)
+    PartitionRoot<ThreadSafe>::Free(ptr);
+}
+
 TEST_F(PartitionAllocTest, AlignedAllocations) {
-  size_t alloc_sizes[] = {1, 10, 100, 1000, 100000, 1000000};
-  size_t alignemnts[] = {8, 16, 32, 64, 1024, 4096};
+  size_t alloc_sizes[] = {1, 10, 100, 1000, 10000, 100000, 1000000};
+  size_t alignemnts[] = {8, 16, 32, 64, 256, 1024, 4096, 8192};
 
   for (size_t alloc_size : alloc_sizes) {
     for (size_t alignment : alignemnts) {
-      void* ptr =
-          aligned_allocator.root()->AlignedAllocFlags(0, alignment, alloc_size);
-      ASSERT_TRUE(ptr);
-      EXPECT_EQ(reinterpret_cast<uintptr_t>(ptr) % alignment, 0ull);
-      allocator.root()->Free(ptr);
+      VerifyAlignment(aligned_allocator.root(), alloc_size, alignment);
+
+      // AlignedAllocFlags() can't be called on regular allocator, if there are
+      // extras before the allocation. Extras after the allocation are ok
+      // (REF_COUNT_AT_END_OF_ALLOCATION) and this is what's being tested here.
+#if !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) || \
+                        BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
+      VerifyAlignment(allocator.root(), alloc_size, alignment);
+#endif
     }
   }
 }
