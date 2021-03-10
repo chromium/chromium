@@ -26,25 +26,20 @@ struct AllowlistEntry {
 
 const char* const kScopedBlockingCallAllowedArgs[] = {
     "file_name", "function_name", "source_location", nullptr};
-const char* const kPeekMessageAllowedArgs[] = {"sent_messages_in_queue",
-                                               "chrome_message_pump", nullptr};
-// TODO(ssid): Remove this if we no longer have this argument. All latencyInfo
-// events seem to be converted already.
-const char* const kInputLatencyAllowedArgs[] = {"data", nullptr};
+const char* const kPeekMessageAllowedArgs[] = {"chrome_message_pump", nullptr};
 const char* const kMemoryDumpAllowedArgs[] = {
     "count", "dumps", "function", "top_queued_message_tag", nullptr};
 const char* const kRendererHostAllowedArgs[] = {
     "class",           "line", "should_background", "has_pending_views",
     "bytes_allocated", nullptr};
-const char* const kUIAllowedArgs[] = {
-    "dpi", "message_id", "chrome_window_handle_event_info", nullptr};
+const char* const kUIAllowedArgs[] = {"chrome_window_handle_event_info",
+                                      nullptr};
 const char* const kV8GCAllowedArgs[] = {"num_items", "num_tasks", nullptr};
-const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"ipc_hash", nullptr};
-const char* const kLifecyclesTaskPostedAllowedArgs[] = {
-    "task_queue_name", "time_since_disabled_ms", "ipc_hash", "location",
-    nullptr};
+const char* const kTopLevelIpcRunTaskAllowedArgs[] = {"chrome_task_annotator",
+                                                      nullptr};
+// TODO(ddrone): add args once creation_location_iid is parsed
 const char* const kMemoryPressureEventsAllowedArgs[] = {
-    "level", "listener_creation_info", nullptr};
+    "chrome_memory_pressure_notification", nullptr};
 
 const AllowlistEntry kEventArgsAllowlist[] = {
     // Args recorded in perfetto protos and exported by trace processor JSON
@@ -71,19 +66,19 @@ const AllowlistEntry kEventArgsAllowlist[] = {
     {"browser", "KeyedServiceFactory::GetServiceForContext", nullptr},
     {"ipc", "GpuChannelHost::Send", nullptr},
     {"ipc", "SyncChannel::Send", nullptr},
-    {"latencyInfo", "*", kInputLatencyAllowedArgs},
     {"memory", "RenderThreadImpl::OnMemoryPressure",
      kMemoryPressureEventsAllowedArgs},
     {"shutdown", "*", nullptr},
     {"startup", "PrefProvider::PrefProvider", nullptr},
     {"startup", "TestAllowlist*", nullptr},
     {"toplevel", "*", nullptr},
-    {"toplevel.ipc", "TaskAnnotator::RunTask", kTopLevelIpcRunTaskAllowedArgs},
     {"ui", "HWNDMessageHandler::OnWndProc", kUIAllowedArgs},
     {"ui", "HWNDMessageHandler::OnDwmCompositionChanged", kUIAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("cpu_profiler"), "*", nullptr},
     {TRACE_DISABLED_BY_DEFAULT("lifecycles"), "task_posted_to_disabled_queue",
-     kLifecyclesTaskPostedAllowedArgs},
+     nullptr},
+    {TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"), "TaskAnnotator::RunTask",
+     kTopLevelIpcRunTaskAllowedArgs},
     {TRACE_DISABLED_BY_DEFAULT("user_action_samples"), "UserAction", nullptr},
 
     // Needs conversion to perfetto protos:
