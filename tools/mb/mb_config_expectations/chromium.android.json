@@ -465,7 +465,6 @@
   "android-pie-arm64-coverage-experimental-rel": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
