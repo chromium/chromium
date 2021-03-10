@@ -537,13 +537,23 @@ scoped_refptr<base::SingleThreadTaskRunner> ChildThreadImpl::GetIOTaskRunner() {
 
 void ChildThreadImpl::SetFieldTrialGroup(const std::string& trial_name,
                                          const std::string& group_name) {
-  if (field_trial_syncer_)
-    field_trial_syncer_->OnSetFieldTrialGroup(trial_name, group_name);
+  if (!field_trial_syncer_)
+    return;
+
+  handling_set_field_trial_group_notification_ = true;
+  field_trial_syncer_->OnSetFieldTrialGroup(trial_name, group_name);
+  handling_set_field_trial_group_notification_ = false;
 }
 
 void ChildThreadImpl::OnFieldTrialGroupFinalized(
     const std::string& trial_name,
     const std::string& group_name) {
+  // If we're currently in SetFieldTrialGroup(), it's a field trial the browser
+  // is telling us about. Don't send a mojo request back to the browser, since
+  // it's unnecessary.
+  if (handling_set_field_trial_group_notification_)
+    return;
+
   mojo::Remote<mojom::FieldTrialRecorder> field_trial_recorder;
   BindHostReceiver(field_trial_recorder.BindNewPipeAndPassReceiver());
   field_trial_recorder->FieldTrialActivated(trial_name);
