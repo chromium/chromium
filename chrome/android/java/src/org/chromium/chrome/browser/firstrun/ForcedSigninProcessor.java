@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.firstrun;
 import android.accounts.Account;
 import android.app.Activity;
 
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.childaccounts.ChildAccountService;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,8 +16,11 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
@@ -47,11 +51,25 @@ public final class ForcedSigninProcessor {
     public static void start() {
         ChildAccountService.checkChildAccountStatus(status -> {
             if (ChildAccountStatus.isChild(status)) {
+                final AccountManagerFacade accountManagerFacade =
+                        AccountManagerFacadeProvider.getInstance();
                 // Account cache is already available when child account status is ready.
-                final List<Account> accounts =
-                        AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
+                final List<Account> accounts = accountManagerFacade.tryGetGoogleAccounts();
                 assert accounts.size() == 1 : "Child account should be the only account on device!";
-                signinAndEnableSync(accounts.get(0));
+                new AsyncTask<String>() {
+                    @Override
+                    protected String doInBackground() {
+                        return accountManagerFacade.getAccountGaiaId(accounts.get(0).name);
+                    }
+
+                    @Override
+                    protected void onPostExecute(String accountGaiaId) {
+                        final CoreAccountInfo coreAccountInfo =
+                                new CoreAccountInfo(new CoreAccountId(accountGaiaId),
+                                        accounts.get(0).name, accountGaiaId);
+                        signinAndEnableSync(coreAccountInfo);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
     }
@@ -60,7 +78,7 @@ public final class ForcedSigninProcessor {
      * Processes the fully automatic non-FRE-related forced sign-in.
      * This is used to enforce the environment for child accounts.
      */
-    private static void signinAndEnableSync(final Account childAccount) {
+    private static void signinAndEnableSync(final CoreAccountInfo childAccount) {
         final Profile profile = Profile.getLastUsedRegularProfile();
         if (IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount()) {
             // TODO(https://crbug.com/1044206): Remove this.

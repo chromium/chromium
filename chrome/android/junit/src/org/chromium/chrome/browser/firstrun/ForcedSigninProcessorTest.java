@@ -23,7 +23,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
+import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -42,6 +45,7 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  * JUnit tests for {@link ForcedSigninProcessor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {CustomShadowAsyncTask.class})
 public class ForcedSigninProcessorTest {
     private static final Account CHILD_ACCOUNT =
             AccountUtils.createAccountFromName("child.account@gmail.com");
@@ -91,7 +95,7 @@ public class ForcedSigninProcessorTest {
             return null;
         })
                 .when(mSigninManagerMock)
-                .signinAndEnableSync(anyInt(), any(Account.class), notNull());
+                .signinAndEnableSync(anyInt(), any(CoreAccountInfo.class), notNull());
     }
 
     @Test
@@ -119,21 +123,21 @@ public class ForcedSigninProcessorTest {
         ForcedSigninProcessor.start();
         verify(mSigninManagerMock).onFirstRunCheckDone();
         verify(mSigninManagerMock, never())
-                .signinAndEnableSync(anyInt(), any(Account.class), any());
+                .signinAndEnableSync(anyInt(), any(CoreAccountInfo.class), any());
         verify(mProfileSyncServiceMock, never())
                 .setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
     }
 
     @Test
     public void testStartWhenSigninAllowed() {
-        mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
+        CoreAccountInfo childAccount = mAccountManagerTestRule.addAccount(CHILD_ACCOUNT);
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
 
         ForcedSigninProcessor.start();
         verify(mSigninManagerMock).onFirstRunCheckDone();
         verify(mSigninManagerMock)
                 .signinAndEnableSync(
-                        eq(SigninAccessPoint.FORCED_SIGNIN), eq(CHILD_ACCOUNT), notNull());
+                        eq(SigninAccessPoint.FORCED_SIGNIN), eq(childAccount), notNull());
         verify(mProfileSyncServiceMock)
                 .setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
     }
