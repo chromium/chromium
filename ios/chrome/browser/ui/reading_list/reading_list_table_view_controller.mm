@@ -77,8 +77,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 @property(nonatomic, readonly)
     TableViewModel<TableViewItem<ReadingListListItem>*>* tableViewModel;
 
-// Whether the UI is currently modifying the model.
-@property(nonatomic, assign) BOOL dataSourceBeingModifiedByUI;
+// The number of batch operation triggered by UI.
+// One UI operation can trigger multiple batch operation, so this can be greater
+// than 1.
+@property(nonatomic, assign) int numberOfBatchOperationInProgress;
 // Whether the data source has been modified while in editing mode.
 @property(nonatomic, assign) BOOL dataSourceModifiedWhileEditing;
 // The toolbar button manager.
@@ -371,7 +373,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (void)dataSourceChanged {
   // If the model is updated when the UI is already making a change, set a flag
   // to reload the data at the end of the editing.
-  if (self.dataSourceBeingModifiedByUI) {
+  if (self.numberOfBatchOperationInProgress) {
     self.dataSourceModifiedWhileEditing = YES;
   } else {
     [self reloadData];
@@ -591,12 +593,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 - (void)performBatchTableViewUpdates:(void (^)(void))updates
                           completion:(void (^)(BOOL finished))completion {
-  DCHECK(!self.dataSourceBeingModifiedByUI);
-  self.dataSourceBeingModifiedByUI = YES;
+  self.numberOfBatchOperationInProgress += 1;
   void (^releaseDataSource)(BOOL) = ^(BOOL finished) {
-    // Set dataSourceBeingModifiedByUI before calling completion, as completion
-    // may trigger another change.
-    self.dataSourceBeingModifiedByUI = NO;
+    // Set numberOfBatchOperationInProgress before calling completion, as
+    // completion may trigger another change.
+    DCHECK_GT(self.numberOfBatchOperationInProgress, 0);
+    self.numberOfBatchOperationInProgress -= 1;
     if (completion) {
       completion(finished);
     }
