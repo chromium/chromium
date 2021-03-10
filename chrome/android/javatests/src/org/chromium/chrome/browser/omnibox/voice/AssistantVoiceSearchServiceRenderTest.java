@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_SUPPORTED;
 
 import android.support.test.filters.MediumTest;
 
@@ -64,9 +63,7 @@ public class AssistantVoiceSearchServiceRenderTest {
 
     @Before
     public void setUp() {
-        AssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(true);
         SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
-        SharedPreferencesManager.getInstance().writeBoolean(ASSISTANT_VOICE_SEARCH_SUPPORTED, true);
 
         GSAState gsaState = Mockito.mock(GSAState.class);
         doReturn(false).when(gsaState).isAgsaVersionBelowMinimum(anyString(), anyString());

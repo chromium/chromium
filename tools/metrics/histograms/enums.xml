@@ -21365,6 +21365,9 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="CHROME_NOT_GOOGLE_SIGNED"/>
   <int value="5" label="AGSA_NOT_GOOGLE_SIGNED"/>
   <int value="6" label="ACCOUNT_MISMATCH"/>
+  <int value="7" label="NON_GOOGLE_SEARCH_ENGINE"/>
+  <int value="8" label="NO_CHROME_ACCOUNT"/>
+  <int value="9" label="LOW_END_DEVICE"/>
 </enum>
 
 <enum name="EmbeddedWorkerStartingPhase">

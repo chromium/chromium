@@ -26,7 +26,9 @@ import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -88,7 +90,9 @@ class SearchBoxMediator
     public void onFinishNativeInitialization() {
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext,
                 ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.get(),
-                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance());
+                GSAState.getInstance(mContext), this, SharedPreferencesManager.getInstance(),
+                IdentityServicesProvider.get().getIdentityManager(
+                        Profile.getLastUsedRegularProfile()));
         onAssistantVoiceSearchServiceChanged();
     }
 

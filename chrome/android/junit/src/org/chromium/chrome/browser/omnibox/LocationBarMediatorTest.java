@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
@@ -79,6 +80,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -210,6 +212,12 @@ public class LocationBarMediatorTest {
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock
     private LensController mLensController;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private Profile mProfile;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -231,6 +239,9 @@ public class LocationBarMediatorTest {
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
         SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
+        Profile.setLastUsedProfileForTesting(mProfile);
+        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         mMediator = new LocationBarMediator(/*context=*/RuntimeEnvironment.application,
                 mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
