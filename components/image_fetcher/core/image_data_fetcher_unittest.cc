@@ -114,6 +114,7 @@ TEST_F(ImageDataFetcherTest, FetchImageDataWithDataUrl) {
   std::string data_url = "data:image/png;base64," + data;
 
   RequestMetadata expected_metadata;
+  expected_metadata.mime_type = "image/png";
   std::string expected;
   base::Base64Decode(data, &expected);
   EXPECT_CALL(*this, OnImageDataFetched(expected, expected_metadata));
