@@ -55,7 +55,7 @@ if (is_android) {
     outputs =
         weblayer_components_strings_java_resources +
         [ "grit/components_strings.h" ] +
-        process_file_template(locales_with_fake_bidi,
+        process_file_template(locales_with_pseudolocales,
                               [ "components_strings_{{source_name_part}}.pak" ])
   }
 
@@ -73,7 +73,7 @@ if (is_android) {
     ]
     outputs = [ "grit/components_chromium_strings.h" ] +
               process_file_template(
-                  locales_with_fake_bidi,
+                  locales_with_pseudolocales,
                   [ "components_chromium_strings_{{source_name_part}}.pak" ])
   }
 

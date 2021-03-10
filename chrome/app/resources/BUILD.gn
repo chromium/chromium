@@ -16,7 +16,7 @@ grit("locale_settings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/locale_settings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "locale_settings_{{source_name_part}}.pak" ])
 }
 
@@ -39,7 +39,7 @@ grit("platform_locale_settings") {
   defines = chrome_grit_defines
   outputs = [ "grit/platform_locale_settings.h" ] +
             process_file_template(
-                locales_with_fake_bidi,
+                locales_with_pseudolocales,
                 [ "platform_locale_settings_{{source_name_part}}.pak" ])
   output_dir = "$root_gen_dir/chrome"
 }

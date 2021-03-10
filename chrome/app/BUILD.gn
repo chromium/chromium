@@ -70,7 +70,7 @@ grit("generated_resources") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/generated_resources.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "generated_resources_{{source_name_part}}.pak" ])
   if (is_android) {
     outputs += android_generated_java_resources
@@ -92,7 +92,7 @@ grit("google_chrome_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs = [ "grit/google_chrome_strings.h" ] +
             process_file_template(
-                locales_with_fake_bidi,
+                locales_with_pseudolocales,
                 [ "google_chrome_strings_{{source_name_part}}.pak" ])
 }
 
@@ -102,7 +102,7 @@ grit("chromium_strings") {
   output_dir = "$root_gen_dir/chrome"
   outputs =
       [ "grit/chromium_strings.h" ] +
-      process_file_template(locales_with_fake_bidi,
+      process_file_template(locales_with_pseudolocales,
                             [ "chromium_strings_{{source_name_part}}.pak" ])
 }
 

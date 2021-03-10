@@ -62,7 +62,7 @@ repack("web_engine_pak") {
   visibility = [ ":*" ]
 }
 
-foreach(locale, locales_with_fake_bidi) {
+foreach(locale, locales_with_pseudolocales) {
   repack("web_engine_locale_${locale}_pak") {
     # WebEngine requires the following locale-specific resources:
     # 1. Locale settings (e.g. default encoding, accept-languages per locale).
@@ -153,7 +153,7 @@ component("web_engine_core") {
   # package.
   deps += [ ":web_engine_pak" ]
   data = [ "$root_gen_dir/common_resources.pak" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     deps += [ ":web_engine_locale_${locale}_pak" ]
     data += [ "$root_gen_dir/locales/${locale}.pak" ]
   }

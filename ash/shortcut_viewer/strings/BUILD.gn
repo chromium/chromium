@@ -9,6 +9,6 @@ grit("strings") {
   source = "../shortcut_viewer_strings.grd"
   outputs = [ "grit/shortcut_viewer_strings.h" ] +
             process_file_template(
-                locales_with_fake_bidi,
+                locales_with_pseudolocales,
                 [ "shortcut_viewer_strings_{{source_name_part}}.pak" ])
 }

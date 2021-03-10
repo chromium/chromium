@@ -17,7 +17,7 @@ group("strings") {
 grit("ui_strings") {
   source = "ui_strings.grd"
   outputs = [ "grit/ui_strings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "ui_strings_$locale.pak" ]
   }
 }
@@ -25,7 +25,7 @@ grit("ui_strings") {
 grit("app_locale_settings") {
   source = "app_locale_settings.grd"
   outputs = [ "grit/app_locale_settings.h" ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "app_locale_settings_$locale.pak" ]
   }
 }
