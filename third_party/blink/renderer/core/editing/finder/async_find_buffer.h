@@ -32,19 +32,7 @@ class AsyncFindBuffer final : public FindBufferRunner {
            FindOptions options,
            Callback completeCallback);
 
-  void NextIteration(Range* search_range,
-                     String search_text,
-                     FindOptions options,
-                     Callback completeCallback);
-
   TaskHandle pending_find_match_task_;
-
-  // Number of iterations it took to complete |FindMatchInRange| request. Used
-  // for recording UMA histograms.
-  int iterations_ = 0;
-
-  // |FindMatchInRange| start time. Used for recorsing UMA histograms.
-  base::TimeTicks search_start_time_;
 };
 }  // namespace blink
 

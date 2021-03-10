@@ -303,17 +303,14 @@ void TextFragmentSelectorGenerator::RequestSelector(
     GenerateSelector();
   } else {
     DCHECK_NE(state_, kNotStarted);
-    if (state_ == kFailure || state_ == kSuccess) {
-      selector_requested_before_ready_ = false;
-      if (state_ == kFailure) {
-        NotifyClientSelectorReady(
-            TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
-      } else {
-        NotifyClientSelectorReady(*selector_);
-      }
-      return;
+    if (state_ == kFailure) {
+      std::move(pending_generate_selector_callback_)
+          .Run(
+              TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid)
+                  .ToString());
+    } else if (state_ == kSuccess) {
+      std::move(pending_generate_selector_callback_).Run(selector_->ToString());
     }
-    selector_requested_before_ready_ = true;
   }
 }
 
@@ -366,11 +363,11 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
       NOTREACHED();
       ABSL_FALLTHROUGH_INTENDED;
     case kFailure:
-      OnSelectorReady(
+      NotifySelectorReady(
           TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid));
       break;
     case kSuccess:
-      OnSelectorReady(*selector_);
+      NotifySelectorReady(*selector_);
       break;
   }
 }
@@ -411,20 +408,48 @@ void TextFragmentSelectorGenerator::NoMatchFound() {
   ResolveSelectorState();
 }
 
-void TextFragmentSelectorGenerator::OnSelectorReady(
+void TextFragmentSelectorGenerator::NotifySelectorReady(
     const TextFragmentSelector& selector) {
-  RecordAllMetrics(selector);
-  if (pending_generate_selector_callback_) {
-    NotifyClientSelectorReady(selector);
-  }
-}
+  // TODO(crbug.com/1133823): Add unit tests for all SharedHighlights.*
+  // histograms.
+  UMA_HISTOGRAM_BOOLEAN(
+      "SharedHighlights.LinkGenerated",
+      selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
 
-void TextFragmentSelectorGenerator::NotifyClientSelectorReady(
-    const TextFragmentSelector& selector) {
-  DCHECK(pending_generate_selector_callback_);
-  if (base::FeatureList::IsEnabled(features::kPreemptiveLinkToTextGeneration))
-    RecordPreemptiveGenerationMetrics(selector);
-  std::move(pending_generate_selector_callback_).Run(selector.ToString());
+  ukm::UkmRecorder* recorder = selection_frame_->GetDocument()->UkmRecorder();
+  ukm::SourceId source_id = selection_frame_->GetDocument()->UkmSourceID();
+
+  if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
+    UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
+                              selector.ToString().length());
+
+    UMA_HISTOGRAM_EXACT_LINEAR("SharedHighlights.LinkGenerated.Iterations",
+                               iteration_, kMaxIterationCountToRecord);
+    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.TimeToGenerate",
+                        base::DefaultTickClock::GetInstance()->NowTicks() -
+                            generation_start_time_);
+    UMA_HISTOGRAM_ENUMERATION(
+        "SharedHighlights.LinkGenerated.SelectorParameters",
+        TextFragmentAnchorMetrics::GetParametersForSelector(selector));
+
+    shared_highlighting::LogLinkGeneratedSuccessUkmEvent(recorder, source_id);
+  } else {
+    UMA_HISTOGRAM_EXACT_LINEAR(
+        "SharedHighlights.LinkGenerated.Error.Iterations", iteration_,
+        kMaxIterationCountToRecord);
+    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
+                        base::DefaultTickClock::GetInstance()->NowTicks() -
+                            generation_start_time_);
+
+    LinkGenerationError error =
+        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
+    shared_highlighting::LogLinkGenerationErrorReason(error);
+    shared_highlighting::LogLinkGeneratedErrorUkmEvent(recorder, source_id,
+                                                       error);
+  }
+
+  if (pending_generate_selector_callback_)
+    std::move(pending_generate_selector_callback_).Run(selector.ToString());
 }
 
 void TextFragmentSelectorGenerator::ClearSelection() {
@@ -652,69 +677,5 @@ void TextFragmentSelectorGenerator::Reset() {
   num_range_words_ = 0;
   iteration_ = 0;
   selector_ = nullptr;
-  selector_requested_before_ready_.reset();
 }
-
-void TextFragmentSelectorGenerator::RecordAllMetrics(
-    const TextFragmentSelector& selector) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "SharedHighlights.LinkGenerated",
-      selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
-
-  ukm::UkmRecorder* recorder = selection_frame_->GetDocument()->UkmRecorder();
-  ukm::SourceId source_id = selection_frame_->GetDocument()->UkmSourceID();
-
-  if (selector.Type() != TextFragmentSelector::SelectorType::kInvalid) {
-    UMA_HISTOGRAM_COUNTS_1000("SharedHighlights.LinkGenerated.ParamLength",
-                              selector.ToString().length());
-
-    UMA_HISTOGRAM_EXACT_LINEAR("SharedHighlights.LinkGenerated.Iterations",
-                               iteration_, kMaxIterationCountToRecord);
-    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.TimeToGenerate",
-                        base::DefaultTickClock::GetInstance()->NowTicks() -
-                            generation_start_time_);
-    UMA_HISTOGRAM_ENUMERATION(
-        "SharedHighlights.LinkGenerated.SelectorParameters",
-        TextFragmentAnchorMetrics::GetParametersForSelector(selector));
-
-    shared_highlighting::LogLinkGeneratedSuccessUkmEvent(recorder, source_id);
-  } else {
-    UMA_HISTOGRAM_EXACT_LINEAR(
-        "SharedHighlights.LinkGenerated.Error.Iterations", iteration_,
-        kMaxIterationCountToRecord);
-    UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
-                        base::DefaultTickClock::GetInstance()->NowTicks() -
-                            generation_start_time_);
-
-    LinkGenerationError error =
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
-    shared_highlighting::LogLinkGenerationErrorReason(error);
-    shared_highlighting::LogLinkGeneratedErrorUkmEvent(recorder, source_id,
-                                                       error);
-  }
-}
-
-void TextFragmentSelectorGenerator::RecordPreemptiveGenerationMetrics(
-    const TextFragmentSelector& selector) {
-  DCHECK(selector_requested_before_ready_.has_value());
-
-  bool success =
-      selector.Type() != TextFragmentSelector::SelectorType::kInvalid;
-
-  std::string uma_prefix = "SharedHighlights.LinkGenerated";
-  if (selector_requested_before_ready_.value()) {
-    uma_prefix = base::StrCat({uma_prefix, ".RequestedBeforeReady"});
-  } else {
-    uma_prefix = base::StrCat({uma_prefix, ".RequestedAfterReady"});
-  }
-  base::UmaHistogramBoolean(uma_prefix, success);
-
-  if (!success) {
-    LinkGenerationError error =
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
-    base::UmaHistogramEnumeration(
-        "SharedHighlights.LinkGenerated.Error.Requested", error);
-  }
-}
-
 }  // namespace blink
