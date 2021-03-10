@@ -212,9 +212,11 @@ Polymer({
       },
       'dialogShown': (e) => {
         this.navigationEnabled = false;
+        chrome.send('enableShelfButtons', [false]);
       },
       'dialogHidden': (e) => {
         this.navigationEnabled = true;
+        chrome.send('enableShelfButtons', [true]);
       },
       'exit': (e) => {
         this.fire('exit', e.detail);
