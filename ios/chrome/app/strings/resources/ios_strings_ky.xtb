@@ -538,6 +538,8 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6524918542306337007">Жашыруун режим жеткиликсиз</translation>
 <translation id="6561262006871132942">Чоңойтуу</translation>
 <translation id="6585618849026997638">Маанилүү барактарга кайра кайтып келүү үчүн кыстармаларды кошуп коюңуз</translation>
+<translation id="6603393121510733479">Уюмуңуз жекече серептөөнү өчүрүп койду.
+<ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Которуу параметрлери</translation>
 <translation id="6620279676667515405">Жокко чыгаруу</translation>
 <translation id="6624219055418309072">Жашыруун режимде бөгөттөө</translation>
@@ -582,6 +584,8 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6988572888918530647">Google аккаунтунун жөндөөлөрүнө өтүү</translation>
 <translation id="6995899638241819463">Сырсөзүңүздү кимдир-бирөө билип алса, эскертүү жөнөтүлсүн</translation>
 <translation id="6998989275928107238">Кимге</translation>
+<translation id="7004032350256606903">Уюмуңуз жекече серептөөнү талап кылат.
+<ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Акыркы өтмөктөр</translation>
 <translation id="7006788746334555276">Мазмун жөндөөлөрү</translation>
 <translation id="7015203776128479407">Баштапкы шайкештирүү жөндөөсү аяктаган жок. Шайкештештирүү өчүк.</translation>
@@ -683,7 +687,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8059533439631660104">Бөлүмдү жыйыштырат.</translation>
 <translation id="8065292699993359127">URL даректерин Chrome'до Жашыруун режимде ачуу</translation>
 <translation id="806745655614357130">Дайындарды өзүнчө сактоо</translation>
-<translation id="8073670137947914548">Жүктөп алуу аягына чыкты</translation>
+<translation id="8073670137947914548">Жүктөлүп алынды</translation>
 <translation id="8073872304774253879">Издөө жана серептөө аракеттериңизди жакшыртыңыз</translation>
 <translation id="8076014560081431679">Сакталган сайт жөндөөлөрү өзгөрүлбөйт, андыктан, сайттарды адаттагыдай карай бересиз. <ph name="BEGIN_LINK" />Көбүрөөк маалымат алуу<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Бул жөндөөнү администраторуңуз башкарат. Көбүрөөк маалымат алуу үчүн эки жолу басыңыз</translation>
@@ -743,6 +747,8 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8756969031206844760">Сырсөз жаңыртылсынбы?</translation>
 <translation id="8775144690796719618">Жараксыз URL</translation>
 <translation id="8803639129939845298">Корголгон</translation>
+<translation id="8806823403540278281">Уюмуңуз жекече серептөөнү талап кылат. Жашыруун режимде өтмөктөр сакталбайт.
+<ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
 <translation id="8870413625673593573">Жакында жабылган</translation>

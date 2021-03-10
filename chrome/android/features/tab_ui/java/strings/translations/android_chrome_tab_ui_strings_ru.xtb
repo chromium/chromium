@@ -21,6 +21,7 @@
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свернуть <ph name="TABS_COUNT_ONE" /> вкладку.}one{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}few{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}many{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладок под названием "<ph name="TITLE_OF_GROUP" />".}other{Свернуть группу из <ph name="TABS_COUNT_MANY" /> вкладки под названием "<ph name="TITLE_OF_GROUP" />".}}</translation>
+<translation id="3882834874697329510">Чтобы получать оповещения о снижении цены на открытой вкладке, включите уведомления в настройках.</translation>
 <translation id="3940195383040445971">Отслеживать цены на вкладках</translation>
 <translation id="3996880007329611795">Получать уведомления</translation>
 <translation id="4133493477912226187">Обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>

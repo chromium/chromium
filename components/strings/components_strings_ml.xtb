@@ -537,6 +537,7 @@
 <translation id="3037605927509011580">കഷ്ടം!</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3060227939791841287">C9 (എൻവലപ്പ്)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="3061707000357573562">പാച്ച് സേവനം</translation>
 <translation id="3064966200440839136">ബാഹ്യ ആപ്പ് വഴി പണമടയ്‌ക്കാൻ അദൃശ്യ മോഡ് ഒഴിവാക്കുന്നു. തുടരണോ?</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
@@ -773,6 +774,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന് }other{# സൈറ്റുകളിൽ നിന്ന് }}</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="3973357910713125165">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="3987405730340719549">ഈ സൈറ്റ് വ്യാജമോ വഞ്ചനാപരമോ ആകാമെന്ന് Chrome നിർണ്ണയിച്ചു.
 
     ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
@@ -852,6 +854,7 @@
     &lt;h4&gt;ഘട്ടം 5: അധിക സഹായം സ്വീകരിക്കുക&lt;/h4&gt;
     &lt;p&gt;നിങ്ങൾ ഇപ്പോഴും പിശക് കാണുന്നുവെങ്കിൽ, വെബ്‌സൈറ്റ് ഉടമയെ ബന്ധപ്പെടുക.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> എന്ന സൈറ്റിലേക്ക് പോവുക<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">സാധുത</translation>
 <translation id="4250431568374086873">ഈ സൈറ്റിലുള്ള നിങ്ങളുടെ കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
@@ -977,6 +980,7 @@
 <translation id="4756388243121344051">&amp;ചരിത്രം</translation>
 <translation id="4758311279753947758">കോൺടാക്റ്റ് വിവരങ്ങൾ ചേർക്കുക</translation>
 <translation id="4761104368405085019">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
+<translation id="4761869838909035636">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ലെ വെബ്‌പേജ് താല്‍‌ക്കാലികമായി പ്രവര്‍‌ത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍‌ ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് ശാശ്വതമായി നീക്കംചെയ്യപ്പെട്ടിരിക്കാം.</translation>
 <translation id="4766713847338118463">താഴെ ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

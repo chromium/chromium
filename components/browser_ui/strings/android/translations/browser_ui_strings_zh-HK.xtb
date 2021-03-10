@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1644574205037202324">記錄</translation>
+<translation id="1647582022260550163">確定要重設權限，並清除 Cookie 和網站資料嗎？</translation>
 <translation id="1660204651932907780">允許網站播放音效 (建議)</translation>
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="1688867105868176567">要清除網站資料嗎？</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>
+<translation id="930525582205581608">要清除此網站的資料嗎？</translation>
 <translation id="965817943346481315">封鎖顯示滋擾性或誤導廣告網站上的廣告 (建議)</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

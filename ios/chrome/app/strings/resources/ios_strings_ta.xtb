@@ -538,6 +538,8 @@
 <translation id="6524918542306337007">மறைநிலைப் பயன்முறையைப் பயன்படுத்த முடியாது</translation>
 <translation id="6561262006871132942">பெரிதாக்கு</translation>
 <translation id="6585618849026997638">முக்கியமான பக்கங்களை புக்மார்க் செய்வதன் மூலம் எப்போது வேண்டுமானாலும் அவற்றை உடனடியாக அணுகலாம்</translation>
+<translation id="6603393121510733479">மறைநிலை உலாவலை உங்கள் நிறுவனம் முடக்கியுள்ளது.
+<ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">மொழிபெயர்ப்பு விருப்பத்தேர்வுகள்</translation>
 <translation id="6620279676667515405">ரத்துசெய்</translation>
 <translation id="6624219055418309072">மறைநிலையில் தடு</translation>
@@ -582,6 +584,8 @@
 <translation id="6988572888918530647">உங்கள் Google கணக்கை நிர்வகியுங்கள்</translation>
 <translation id="6995899638241819463">தரவு மீறலினால் கடவுச்சொற்கள் வெளியாகியிருந்தால் அதுகுறித்து எச்சரி</translation>
 <translation id="6998989275928107238">பெறுநர்:</translation>
+<translation id="7004032350256606903">மறைநிலையில் உலாவுமாறு உங்கள் நிறுவனம் கோருகிறது.
+<ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
 <translation id="7006788746334555276">உள்ளடக்க அமைப்புகள்</translation>
 <translation id="7015203776128479407">ஒத்திசைப்பதற்கான துவக்க அமைவு முடியவில்லை. ஒத்திசைவு முடக்கப்பட்டுள்ளது.</translation>
@@ -743,6 +747,8 @@
 <translation id="8756969031206844760">கடவுச்சொல்லைப் புதுப்பிக்கவா?</translation>
 <translation id="8775144690796719618">தவறான URL</translation>
 <translation id="8803639129939845298">பாதுகாப்பானது</translation>
+<translation id="8806823403540278281">மறைநிலையில் உலாவுமாறு உங்கள் நிறுவனம் கோருகிறது. மறைநிலைப் பயன்முறையில் தாவல்கள் சேமிக்கப்படாது.
+<ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="8840513115188359703">உங்கள் Google கணக்கிலிருந்து வெளியேறமாட்டீர்கள்.</translation>
 <translation id="8870413625673593573">சமீபத்தில் மூடியவை</translation>

@@ -538,6 +538,8 @@
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">你可以將重要網頁加入書籤，以便再次造訪</translation>
+<translation id="6603393121510733479">貴機構已關閉私密瀏覽功能。
+<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6620279676667515405">取消</translation>
 <translation id="6624219055418309072">在無痕模式中封鎖</translation>
@@ -582,6 +584,8 @@
 <translation id="6988572888918530647">管理你的 Google 帳戶</translation>
 <translation id="6995899638241819463">當密碼因資料侵害事件遭到外洩時發出警告</translation>
 <translation id="6998989275928107238">收件者</translation>
+<translation id="7004032350256606903">貴機構要求你使用私密瀏覽模式。
+<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
 <translation id="7015203776128479407">尚未完成初始同步處理設定。已關閉同步功能。</translation>
@@ -743,6 +747,8 @@
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8775144690796719618">網址無效</translation>
 <translation id="8803639129939845298">安全</translation>
+<translation id="8806823403540278281">貴機構要求你使用私密瀏覽模式。在無痕模式下無法儲存分頁。
+<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>

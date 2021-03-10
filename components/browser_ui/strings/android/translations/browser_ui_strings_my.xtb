@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">ဝဘ်ဆိုက်အတော်များများရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်သည်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
+<translation id="1647582022260550163">ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ပြီး ကွတ်ကီးများနှင့် ဝဘ်ဆိုက်ဒေတာကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="1660204651932907780">ဝဘ်ဆိုက်များအား အသံဖွင့်ခွင့်ပြုရန် (အကြံပြုထားသည်)</translation>
 <translation id="1677097821151855053">သင့်ကို မှတ်ထားရန်အတွက် ကွတ်ကီးများနှင့် အခြား ဝဘ်ဆိုက်ဒေတာများကို အသုံးပြုပြီး ဥပမာ - သင့်ကို အကောင့်ဝင်ပေးရန် သို့မဟုတ် စိတ်ကြိုက်ပြင်ထားသော ကြော်ငြာများပြရန်။ ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="1688867105868176567">ဝဘ်ဆိုက်ဒေတာများကို ရှင်းလင်းလိုပါသလား။</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်များကို ဖွင့်ပါ။</translation>
+<translation id="930525582205581608">ဤဝဘ်ဆိုက်ကို မေ့ပစ်မလား။</translation>
 <translation id="965817943346481315">စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများ ပြလျှင် ဝဘ်ဆိုက်ကို ပိတ်သည် (အကြံပြုထားသည်)</translation>
 <translation id="967624055006145463">သိမ်းဆည်းထားသည့် ဒေတာ</translation>
 </translationbundle>

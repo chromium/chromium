@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">பெரும்பாலான தளங்களிலுள்ள அம்சங்கள் செயல்படாமல் போகக்கூடும்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1644574205037202324">வரலாறு</translation>
+<translation id="1647582022260550163">அனுமதிகளை மீட்டமைத்து, குக்கீகளையும் தளத் தரவையும் அழிக்க விரும்புகிறீர்களா?</translation>
 <translation id="1660204651932907780">ஒலியை இயக்க, தளங்களை அனுமதிக்கும் (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="1677097821151855053">குக்கீகளும் பிற தளத்தின் தரவும் உங்கள் செயல்பாட்டை நினைவில் வைத்துக்கொள்ளப் பயன்படுத்தப்படுகின்றன. உதாரணமாக, உங்களை உள்நுழையச் செய்வது, விளம்பரங்களைப் பிரத்தியேகமாக்குவது. அனைத்துத் தளங்களுக்கான குக்கீகளையும் நிர்வகிக்க, <ph name="BEGIN_LINK" />அமைப்புகளைப்<ph name="END_LINK" /> பார்க்கவும்.</translation>
 <translation id="1688867105868176567">தளத் தரவை அழிக்கவா?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> &amp; மேலும் <ph name="NUM_MORE" /> அனுமதிகள்}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android அமைப்புகளில் <ph name="END_LINK" /> <ph name="APP_NAME" /> ஆப்ஸுக்கான அனுமதிகளை இயக்கவும்.</translation>
+<translation id="930525582205581608">இந்தத் தளத்தை அகற்றவா?</translation>
 <translation id="965817943346481315">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களை தளம் காண்பித்தால், அதைத் தடு (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="967624055006145463">சேமிக்கப்பட்ட தரவின்படி</translation>
 </translationbundle>

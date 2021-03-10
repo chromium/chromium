@@ -538,6 +538,8 @@
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
+<translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
+<ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
 <translation id="6620279676667515405">Отмена</translation>
 <translation id="6624219055418309072">Запретить использование в режиме инкогнито</translation>
@@ -582,6 +584,8 @@
 <translation id="6988572888918530647">Перейти в настройки аккаунта Google</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="6998989275928107238">Кому</translation>
+<translation id="7004032350256606903">Согласно правилам вашей организации, использовать режим инкогнито обязательно.
+<ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Недавние вкладки</translation>
 <translation id="7006788746334555276">Настройки контента</translation>
 <translation id="7015203776128479407">Первоначальная настройка синхронизации не завершена. Синхронизация выключена.</translation>
@@ -743,6 +747,8 @@
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8775144690796719618">Недействительный URL</translation>
 <translation id="8803639129939845298">Защищено</translation>
+<translation id="8806823403540278281">Согласно правилам вашей организации, использовать режим инкогнито обязательно. В этом режиме вкладки не сохраняются.
+<ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>

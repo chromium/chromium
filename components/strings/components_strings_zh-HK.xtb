@@ -534,6 +534,7 @@
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="3060227939791841287">C9 (信封)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="3064966200440839136">即將退出無痕模式，改用外部應用程式付款，要繼續嗎？</translation>
 <translation id="3080254622891793721">圖片</translation>
@@ -770,6 +771,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
+<translation id="3973357910713125165">執行 Chrome 安全檢查按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度執行安全檢查</translation>
 <translation id="3987405730340719549">Chrome 判斷這可能是偽造或詐騙網站。
 
     如果您認為系統不應顯示此訊息，請前往 https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals。</translation>
@@ -846,6 +848,7 @@
     &lt;h4&gt;步驟 5：尋求更多協助&lt;/h4&gt;
     &lt;p&gt;如果您仍然看到錯誤訊息，請聯絡網站擁有者。&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
+<translation id="4229544452621580519">在 Chrome 設定中執行安全檢查</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />繼續前往 <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4250431568374086873">您與此網站的連線並非完全安全</translation>
@@ -971,6 +974,7 @@
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4758311279753947758">新增聯絡人資訊</translation>
 <translation id="4761104368405085019">使用您的麥克風</translation>
+<translation id="4761869838909035636">執行 Chrome 安全檢查</translation>
 <translation id="4764776831041365478"><ph name="URL" /> 的網頁可能暫時無法使用或被永久移至新網址。</translation>
 <translation id="4766713847338118463">雙釘 (底部)</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />

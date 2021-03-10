@@ -23,6 +23,7 @@
 <translation id="1509960214886564027">शायद कई साइटों पर सुविधाएं ठीक से काम न करें</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
+<translation id="1647582022260550163">क्या आप वाकई में कुकी और साइट डेटा मिटाना चाहते हैं और अनुमतियों को रीसेट करना चाहते हैं?</translation>
 <translation id="1660204651932907780">साइटों को आवाज़ चलाने दें (सुझाया गया)</translation>
 <translation id="1677097821151855053">कुकी और अन्य साइट डेटा का इस्तेमाल आपकी जानकारी को याद रखने के लिए किया जाता है, जैसे कि आपको साइन इन करने देना या आपकी पसंद को ध्यान में रखकर विज्ञापन दिखाना. सभी साइटों से जुड़ी कुकी प्रबंधित करने के लिए, <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> देखें.</translation>
 <translation id="1688867105868176567">'साइट डेटा' हटाएं?</translation>
@@ -309,6 +310,7 @@
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाएं}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर, <ph name="APP_NAME" /> के लिए अनुमतियां चालू करें.</translation>
+<translation id="930525582205581608">क्या आप इस साइट की सेव की गई जानकारी मिटाना चाहते हैं?</translation>
 <translation id="965817943346481315">अगर साइट तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं, तो उन्हें ब्लॉक करें (सुझाव)</translation>
 <translation id="967624055006145463">डेटा संग्रहित किया गया</translation>
 </translationbundle>

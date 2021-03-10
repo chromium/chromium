@@ -538,6 +538,7 @@
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
 <translation id="3041612393474885105">சான்றிதழ் தகவல்</translation>
 <translation id="3060227939791841287">C9 (என்வலப்)</translation>
+<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="3061707000357573562">பேட்ச் சேவை</translation>
 <translation id="3064966200440839136">வெளிப்புற ஆப்ஸின் மூலம் பணத்தை செலுத்த, மறைநிலையிலிருந்து வெளியேறுகிறீர்கள். தொடரவா?</translation>
 <translation id="3080254622891793721">கிராஃபிக்</translation>
@@ -771,6 +772,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ஏதுமில்லை}=1{1 தளத்திலிருந்து }other{# தளங்களிலிருந்து }}</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> தடுக்கப்பட்டுள்ளது</translation>
+<translation id="3973357910713125165">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்கும் பட்டன். Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Enter விசையை அழுத்துங்கள்</translation>
 <translation id="3987405730340719549">இந்த இணையதளம் பொய்யானதாகவோ மோசடியானதாகவோ இருக்கக்கூடும் என்று Chrome கண்டறிந்துள்ளது.
 
     பிழையாக இது காட்டப்படுகிறது என்று நீங்கள் கருதினால் https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals என்பதற்குச் செல்லவும்.</translation>
@@ -852,6 +854,7 @@
     &lt;h4&gt;படி 5: கூடுதல் உதவி பெறுங்கள்&lt;/h4&gt;
     &lt;p&gt;அப்போதும் பிழை வந்தால், இணையதள உரிமையாளரைத் தொடர்புகொள்ளவும்.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />நெட்வொர்க் டயக்னாஸ்டிக்ஸ் கருவியை இயக்கவும்<ph name="END_LINK" />.</translation>
+<translation id="4229544452621580519">Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்குங்கள்</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />இணைப்பிற்கு செல்க <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">செல்லுபடியானது</translation>
 <translation id="4250431568374086873">இந்தத் தளத்திற்கான உங்கள் இணைப்பு, முழுப் பாதுகாப்புடன் இல்லை</translation>
@@ -977,6 +980,7 @@
 <translation id="4756388243121344051">&amp;வரலாறு</translation>
 <translation id="4758311279753947758">தொடர்புத் தகவலைச் சேர்</translation>
 <translation id="4761104368405085019">உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தலாம்</translation>
+<translation id="4761869838909035636">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்கு</translation>
 <translation id="4764776831041365478"><ph name="URL" /> இல் உள்ள வலைப்பக்கமானது தற்காலிகமாக இயங்காமல் இருக்கலாம் அல்லது அது ஒரு புதிய வலை முகவரிக்கு நிரந்தரமாக நகர்த்தப்பட்டிருக்கலாம்.</translation>
 <translation id="4766713847338118463">டூயல் ஸ்டேப்பில் பாட்டம்</translation>
 <translation id="4768815695067202997"><ph name="BEGIN_BOLD" />
