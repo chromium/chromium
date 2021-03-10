@@ -1892,7 +1892,6 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
 
   char data[] = "ABCD";
   MockQuicData quic_data2(version_);
-  std::unique_ptr<quic::QuicEncryptedPacket> ack_and_data_out;
   quic_data2.AddRead(
       SYNCHRONOUS, server_maker_.MakePingPacket(1, /*include_version=*/false));
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -1911,7 +1910,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   quic_data2.AddSocketDataToFactory(&socket_factory_);
   // Create connected socket.
   std::unique_ptr<DatagramClientSocket> new_socket =
-      socket_factory_.CreateDatagramClientSocket(DatagramSocket::DEFAULT_BIND,
+      socket_factory_.CreateDatagramClientSocket(DatagramSocket::RANDOM_BIND,
                                                  &net_log_, NetLogSource());
   EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
@@ -1926,8 +1925,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
 
+  IPEndPoint local_address;
+  new_socket->GetLocalAddress(&local_address);
+  IPEndPoint peer_address;
+  new_socket->GetPeerAddress(&peer_address);
   // Migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
+      ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
       std::move(new_socket), std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();
@@ -1966,13 +1970,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
     quic_data2.AddWrite(
         SYNCHRONOUS,
-        client_maker_.MakePingPacket(i + packet_num, /*include_version=*/true));
+        client_maker_.MakePingPacket(packet_num++, /*include_version=*/true));
 
     quic_data2.AddSocketDataToFactory(&socket_factory_);
 
     // Create connected socket.
     std::unique_ptr<DatagramClientSocket> new_socket =
-        socket_factory_.CreateDatagramClientSocket(DatagramSocket::DEFAULT_BIND,
+        socket_factory_.CreateDatagramClientSocket(DatagramSocket::RANDOM_BIND,
                                                    &net_log_, NetLogSource());
     EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
@@ -1987,9 +1991,14 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
 
+    IPEndPoint local_address;
+    new_socket->GetLocalAddress(&local_address);
+    IPEndPoint peer_address;
+    new_socket->GetPeerAddress(&peer_address);
     // Migrate session.
     if (i < kMaxReadersPerQuicSession - 1) {
       EXPECT_TRUE(session_->MigrateToSocket(
+          ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
           std::move(new_socket), std::move(new_reader), std::move(new_writer)));
       // Spin message loop to complete migration.
       base::RunLoop().RunUntilIdle();
@@ -1998,6 +2007,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
     } else {
       // Max readers exceeded.
       EXPECT_FALSE(session_->MigrateToSocket(
+          ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
           std::move(new_socket), std::move(new_reader), std::move(new_writer)));
       EXPECT_TRUE(quic_data2.AllReadDataConsumed());
       EXPECT_FALSE(quic_data2.AllWriteDataConsumed());
@@ -2040,7 +2050,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
 
   // Create connected socket.
   std::unique_ptr<DatagramClientSocket> new_socket =
-      socket_factory_.CreateDatagramClientSocket(DatagramSocket::DEFAULT_BIND,
+      socket_factory_.CreateDatagramClientSocket(DatagramSocket::RANDOM_BIND,
                                                  &net_log_, NetLogSource());
   EXPECT_THAT(new_socket->Connect(kIpEndPoint), IsOk());
 
@@ -2055,8 +2065,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_socket.get(), session_.get()));
 
+  IPEndPoint local_address;
+  new_socket->GetLocalAddress(&local_address);
+  IPEndPoint peer_address;
+  new_socket->GetPeerAddress(&peer_address);
   // Store old socket and migrate session.
   EXPECT_TRUE(session_->MigrateToSocket(
+      ToQuicSocketAddress(local_address), ToQuicSocketAddress(peer_address),
       std::move(new_socket), std::move(new_reader), std::move(new_writer)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();

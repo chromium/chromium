@@ -107,6 +107,15 @@ class QuicTestPacketMaker {
       quic::QuicStreamId data_stream_id,
       absl::string_view data);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
+      uint64_t num,
+      bool include_version,
+      quic::QuicStreamId rst_stream_id,
+      quic::QuicRstStreamErrorCode rst_error_code,
+      quic::QuicStreamId data_stream_id,
+      absl::string_view data);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
       uint64_t num,
       bool include_version,
@@ -303,6 +312,18 @@ class QuicTestPacketMaker {
       quic::QuicStreamId parent_stream_id,
       size_t* spdy_headers_frame_length);
 
+  std::unique_ptr<quic::QuicReceivedPacket>
+  MakeRetransmissionAndRequestHeadersPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      bool should_include_version,
+      bool fin,
+      spdy::SpdyPriority priority,
+      spdy::Http2HeaderBlock headers,
+      quic::QuicStreamId parent_stream_id,
+      size_t* spdy_headers_frame_length);
+
   std::unique_ptr<quic::QuicReceivedPacket> MakeRequestHeadersAndRstPacket(
       uint64_t packet_number,
       quic::QuicStreamId stream_id,
@@ -371,6 +392,11 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionPacket(
       uint64_t original_packet_number,
+      uint64_t new_packet_number,
+      bool should_include_version);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakeCombinedRetransmissionPacket(
+      const std::vector<uint64_t>& original_packet_numbers,
       uint64_t new_packet_number,
       bool should_include_version);
 

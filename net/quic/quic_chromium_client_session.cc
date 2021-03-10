@@ -2337,7 +2337,6 @@ void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_delegate(nullptr);
   writer->set_delegate(this);
-  connection()->SetSelfAddress(self_address);
 
   if (!migrate_idle_session_ && !HasActiveRequestStreams()) {
     // If idle sessions won't be migrated, close the connection.
@@ -2353,8 +2352,8 @@ void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
 
   // Migrate to the probed socket immediately: socket, writer and reader will
   // be acquired by connection and used as default on success.
-  if (!MigrateToSocket(std::move(socket), std::move(reader),
-                       std::move(writer))) {
+  if (!MigrateToSocket(self_address, peer_address, std::move(socket),
+                       std::move(reader), std::move(writer))) {
     LogMigrateToSocketStatus(false);
     net_log_.AddEvent(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
@@ -2363,8 +2362,6 @@ void QuicChromiumClientSession::OnPortMigrationProbeSucceeded(
 
   LogMigrateToSocketStatus(true);
 
-  // Notify the connection that migration succeeds after probing.
-  connection()->OnSuccessfulMigration(/*is_port_change=*/true);
   num_migrations_++;
   HistogramAndLogMigrationSuccess(connection_id());
 }
@@ -2397,7 +2394,6 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_delegate(nullptr);
   writer->set_delegate(this);
-  connection()->SetSelfAddress(self_address);
 
   // Close streams that are not migratable to the probed |network|.
   ResetNonMigratableStreams();
@@ -2416,8 +2412,8 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
 
   // Migrate to the probed socket immediately: socket, writer and reader will
   // be acquired by connection and used as default on success.
-  if (!MigrateToSocket(std::move(socket), std::move(reader),
-                       std::move(writer))) {
+  if (!MigrateToSocket(self_address, peer_address, std::move(socket),
+                       std::move(reader), std::move(writer))) {
     LogMigrateToSocketStatus(false);
     net_log_.AddEvent(
         NetLogEventType::QUIC_CONNECTION_MIGRATION_FAILURE_AFTER_PROBING);
@@ -2425,9 +2421,6 @@ void QuicChromiumClientSession::OnConnectionMigrationProbeSucceeded(
   }
 
   LogMigrateToSocketStatus(true);
-
-  // Notify the connection that migration succeeds after probing.
-  connection()->OnSuccessfulMigration(/*is_port_change=*/false);
 
   net_log_.AddEventWithInt64Params(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_SUCCESS_AFTER_PROBING,
@@ -3534,9 +3527,12 @@ MigrationResult QuicChromiumClientSession::Migrate(
       ->set_delegate(nullptr);
   new_writer->set_delegate(this);
 
+  IPEndPoint self_address;
+  socket->GetLocalAddress(&self_address);
   // Migrate to the new socket.
-  if (!MigrateToSocket(std::move(socket), std::move(new_reader),
-                       std::move(new_writer))) {
+  if (!MigrateToSocket(ToQuicSocketAddress(self_address),
+                       ToQuicSocketAddress(peer_address), std::move(socket),
+                       std::move(new_reader), std::move(new_writer))) {
     HistogramAndLogMigrationFailure(MIGRATION_STATUS_TOO_MANY_CHANGES,
                                     connection_id(), "Too many changes");
     if (close_session_on_error) {
@@ -3558,6 +3554,8 @@ MigrationResult QuicChromiumClientSession::Migrate(
 }
 
 bool QuicChromiumClientSession::MigrateToSocket(
+    const quic::QuicSocketAddress& self_address,
+    const quic::QuicSocketAddress& peer_address,
     std::unique_ptr<DatagramClientSocket> socket,
     std::unique_ptr<QuicChromiumPacketReader> reader,
     std::unique_ptr<QuicChromiumPacketWriter> writer) {
@@ -3577,8 +3575,8 @@ bool QuicChromiumClientSession::MigrateToSocket(
   // WriteToNewSocket completes.
   DVLOG(1) << "Force blocking the packet writer";
   writer->set_force_write_blocked(true);
-  // TODO(jri): Make SetQuicPacketWriter take a scoped_ptr.
-  connection()->SetQuicPacketWriter(writer.release(), /*owns_writer=*/true);
+  MigratePath(self_address, peer_address, writer.release(),
+              /*owns_writer=*/true);
 
   // Post task to write the pending packet or a PING packet to the new
   // socket. This avoids reentrancy issues if there is a write error

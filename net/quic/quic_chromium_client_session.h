@@ -784,7 +784,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // successful migration, or false if number of migrations exceeds
   // kMaxReadersPerQuicSession. Takes ownership of |socket|, |reader|,
   // and |writer|.
-  bool MigrateToSocket(std::unique_ptr<DatagramClientSocket> socket,
+  bool MigrateToSocket(const quic::QuicSocketAddress& self_address,
+                       const quic::QuicSocketAddress& peer_address,
+                       std::unique_ptr<DatagramClientSocket> socket,
                        std::unique_ptr<QuicChromiumPacketReader> reader,
                        std::unique_ptr<QuicChromiumPacketWriter> writer);
 
