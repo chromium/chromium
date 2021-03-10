@@ -3878,12 +3878,12 @@
   {
     "name": "omnibox-on-device-head-suggestions-incognito",
     "owners": [ "cechen", "suggest-2g@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "omnibox-on-device-head-suggestions-non-incognito",
     "owners": [ "cechen", "suggest-2g@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "omnibox-on-focus-suggestions",

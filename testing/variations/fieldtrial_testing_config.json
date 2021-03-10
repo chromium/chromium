@@ -5020,7 +5020,28 @@
             ]
         }
     ],
-    "OmniboxOnDeviceHeadSuggestNonIncognito": [
+    "OmniboxOnDeviceHeadNonIncognitoTuningMobile": [
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "NoDelayWithScore1K",
+                    "params": {
+                        "DelayOnDeviceHeadSuggestRequestMs": "0",
+                        "DemoteOnDeviceSearchSuggestionsMode": "decrease-relevances",
+                        "OnDeviceSuggestMaxScoreForNonUrlInput": "1000"
+                    },
+                    "enable_features": [
+                        "OmniboxOnDeviceHeadProviderNonIncognito"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OmniboxOnDeviceHeadSuggestBigModel": [
         {
             "platforms": [
                 "windows",
@@ -5031,9 +5052,12 @@
             ],
             "experiments": [
                 {
-                    "name": "OnDeviceHeadSuggest_NonIncognito_Enabled",
+                    "name": "500K",
+                    "params": {
+                        "ForceModelLocaleConstraint": "500000"
+                    },
                     "enable_features": [
-                        "OmniboxOnDeviceHeadProviderNonIncognito"
+                        "OmniboxOnDeviceHeadProviderIncognito"
                     ]
                 }
             ]

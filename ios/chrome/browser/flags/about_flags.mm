@@ -128,38 +128,10 @@ const FeatureEntry::FeatureVariation
             nullptr,
         },
         {
-            "request-delay-100ms",
+            "no-delay-relevance-1000",
             (FeatureEntry::FeatureParam[]){
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "100"}},
-            1,
-            nullptr,
-        },
-        {
-            "delay-100ms-relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "100"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
-                 "1000"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
-                 "decrease-relevances"}},
-            3,
-            nullptr,
-        },
-        {
-            "request-delay-200ms",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "200"}},
-            1,
-            nullptr,
-        },
-        {
-            "delay-200ms-relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "200"},
+                 "0"},
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
                  "1000"},
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
@@ -399,7 +371,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kOnDeviceHeadProviderNonIncognito,
          kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
-         "OmniboxOnDeviceHeadSuggestNonIncognitoIOS")},
+         "OmniboxOnDeviceHeadNonIncognitoTuningMobile")},
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesDescription,

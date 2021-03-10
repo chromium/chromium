@@ -2086,6 +2086,7 @@ const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
 
 const FeatureEntry::FeatureVariation
     kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
+#if defined(OS_ANDROID)
         {
             "relevance-1000",
             (FeatureEntry::FeatureParam[]){
@@ -2097,38 +2098,10 @@ const FeatureEntry::FeatureVariation
             nullptr,
         },
         {
-            "request-delay-100ms",
+            "no-delay-relevance-1000",
             (FeatureEntry::FeatureParam[]){
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "100"}},
-            1,
-            nullptr,
-        },
-        {
-            "delay-100ms-relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "100"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
-                 "1000"},
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
-                 "decrease-relevances"}},
-            3,
-            nullptr,
-        },
-        {
-            "request-delay-200ms",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "200"}},
-            1,
-            nullptr,
-        },
-        {
-            "delay-200ms-relevance-1000",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadSuggestDelaySuggestRequestMs,
-                 "200"},
+                 "0"},
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput,
                  "1000"},
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
@@ -2136,6 +2109,24 @@ const FeatureEntry::FeatureVariation
             3,
             nullptr,
         }};
+#else   // !defined(OS_ANDROID)
+        {
+            "model-500k-queries",
+            (FeatureEntry::FeatureParam[]){
+                {OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint,
+                 "500000"}},
+            1,
+            nullptr,
+        },
+        {
+            "model-1m-queries",
+            (FeatureEntry::FeatureParam[]){
+                {OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint,
+                 "1000000"}},
+            1,
+            nullptr,
+        }};
+#endif  // defined(OS_ANDROID)
 
 const FeatureEntry::FeatureParam
     kQuietNotificationPromptsWithAdaptiveActivation[] = {
@@ -4283,7 +4274,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kOnDeviceHeadProviderNonIncognito,
          kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
-         "OmniboxOnDeviceHeadSuggestNonIncognito")},
+#if defined(OS_ANDROID)
+         "OmniboxOnDeviceHeadNonIncognitoTuningMobile"
+#else   // !defined(OS_ANDROID)
+         "OmniboxOnDeviceHeadSuggestBigModel"
+#endif  // defined(OS_ANDROID)
+         )},
 
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,
