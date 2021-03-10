@@ -128,7 +128,12 @@ WebEngineRenderFrameObserver*
 WebEngineContentRendererClient::GetWebEngineRenderFrameObserverForRenderFrameId(
     int render_frame_id) const {
   auto iter = render_frame_id_to_observer_map_.find(render_frame_id);
-  DCHECK(iter != render_frame_id_to_observer_map_.end());
+
+  // TODO(https://crbug.com/1181062): Change this back to a DCHECK once the root
+  // cause of this bug has been found.
+  CHECK(iter != render_frame_id_to_observer_map_.end())
+      << "No WebEngineRenderFrameObserver for RenderFrame ID "
+      << render_frame_id;
   return iter->second.get();
 }
 
