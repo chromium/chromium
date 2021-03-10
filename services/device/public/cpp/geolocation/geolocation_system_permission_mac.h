@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_SYSTEM_PERMISSION_MAC_H_
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
@@ -15,7 +16,7 @@ namespace device {
 
 // This class is owned by the browser process and keeps track of the macOS
 // location permissions for the browser.
-class GeolocationSystemPermissionManager {
+class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
  public:
   class GeolocationPermissionObserver : public base::CheckedObserver {
    public:
