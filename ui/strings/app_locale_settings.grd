@@ -16,6 +16,7 @@
       <output filename="app_locale_settings_hy.pak" type="data_package" lang="hy" />
       <output filename="app_locale_settings_is.pak" type="data_package" lang="is" />
       <output filename="app_locale_settings_ka.pak" type="data_package" lang="ka" />
+      <output filename="app_locale_settings_kab.pak" type="data_package" lang="kab" />
       <output filename="app_locale_settings_kk.pak" type="data_package" lang="kk" />
       <output filename="app_locale_settings_km.pak" type="data_package" lang="km" />
       <output filename="app_locale_settings_ky.pak" type="data_package" lang="ky" />
