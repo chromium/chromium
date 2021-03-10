@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS getTotalLength and getPointAtLength do not take pathLength into account
-FAIL getPointAtLength() returns instance of DOMPoint assert_true: expected true got false
-Harness: the test ran to completion.
-
