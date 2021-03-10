@@ -89,6 +89,7 @@ class WebAXObject {
   BLINK_EXPORT static bool MaybeUpdateLayoutAndCheckValidity(
       const WebDocument&);
   BLINK_EXPORT static void UpdateLayout(const WebDocument&);
+  BLINK_EXPORT static bool IsDirty(const WebDocument&);
   // A Freeze() occurs during a serialization run.
   // Used here as a hint for DCHECKS to enforce the following behavior:
   // objects in the ax hierarchy should not be destroyed during serialization.
