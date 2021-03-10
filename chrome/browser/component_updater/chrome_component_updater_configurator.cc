@@ -141,7 +141,7 @@ base::Version ChromeConfigurator::GetBrowserVersion() const {
 }
 
 std::string ChromeConfigurator::GetChannel() const {
-  return chrome::GetChannelName();
+  return chrome::GetChannelName(chrome::WithExtendedStable(true));
 }
 
 std::string ChromeConfigurator::GetBrand() const {
