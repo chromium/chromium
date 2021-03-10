@@ -7,6 +7,7 @@ package org.chromium.components.signin;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -66,8 +67,9 @@ public class AccountTrackerService {
         mSystemAccountsChanged = false;
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static AccountTrackerService create(long nativeAccountTrackerService) {
+    static AccountTrackerService create(long nativeAccountTrackerService) {
         ThreadUtils.assertOnUiThread();
         return new AccountTrackerService(nativeAccountTrackerService);
     }
@@ -215,18 +217,12 @@ public class AccountTrackerService {
 
         mSystemAccountsSeedingStatus = SystemAccountsSeedingStatus.SEEDING_VALIDATING;
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            if (mSystemAccountsChanged
-                    || mSystemAccountsSeedingStatus
-                            != SystemAccountsSeedingStatus.SEEDING_VALIDATING) {
-                return;
-            }
-
-            String[] accountNames = new String[accounts.size()];
-            for (int i = 0; i < accounts.size(); ++i) {
-                accountNames[i] = accounts.get(i).name;
-            }
-            if (AccountTrackerServiceJni.get().areAccountsSeeded(
-                        mNativeAccountTrackerService, accountNames)) {
+            final String[] accountEmails =
+                    AccountUtils.toAccountNames(accounts).toArray(new String[0]);
+            if (mSystemAccountsSeedingStatus == SystemAccountsSeedingStatus.SEEDING_VALIDATING
+                    && !mSystemAccountsChanged
+                    && AccountTrackerServiceJni.get().areAccountsSeeded(
+                            mNativeAccountTrackerService, accountEmails)) {
                 mSystemAccountsSeedingStatus = SystemAccountsSeedingStatus.SEEDING_DONE;
                 notifyObserversOnSeedingComplete();
             }

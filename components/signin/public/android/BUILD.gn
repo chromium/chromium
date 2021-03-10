@@ -117,6 +117,7 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
+    "junit/src/org/chromium/components/signin/AccountTrackerServiceTest.java",
     "junit/src/org/chromium/components/signin/ObservableValueTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
   ]
