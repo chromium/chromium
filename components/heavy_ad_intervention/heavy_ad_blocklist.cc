@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_blocklist.h"
+#include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 
 #include <string>
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
+#include "components/heavy_ad_intervention/heavy_ad_features.h"
 
 namespace {
 

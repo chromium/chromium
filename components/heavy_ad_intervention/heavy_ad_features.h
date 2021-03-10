@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
-#define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
+#ifndef COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
+#define COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -23,4 +23,4 @@ extern const base::Feature kHeavyAdPrivacyMitigations;
 
 }  // namespace features
 
-#endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_
+#endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_FEATURES_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_
-#define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_
+#ifndef COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_
+#define COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_
 
 #include <stdint.h>
 
@@ -58,4 +58,4 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
   DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklist);
 };
 
-#endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_
+#endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_BLOCKLIST_H_

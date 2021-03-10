@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_
-#define CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_
+#ifndef COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_
+#define COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_
 
 #include <string>
 
@@ -15,4 +15,4 @@ std::string PrepareHeavyAdPage(const std::string& application_locale);
 
 }  // namespace heavy_ads
 
-#endif  // CHROME_BROWSER_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_
+#endif  // COMPONENTS_HEAVY_AD_INTERVENTION_HEAVY_AD_HELPER_H_

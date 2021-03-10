@@ -144,6 +144,7 @@ include_rules = [
   "+components/guest_view/browser",
   "+components/handoff",
   "+components/heap_profiling",
+  "+components/heavy_ad_intervention",
   "+components/history/content/browser",
   "+components/history/core/browser",
   "+components/history/core/common",

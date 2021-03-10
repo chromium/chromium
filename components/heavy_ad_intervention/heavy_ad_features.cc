@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
+#include "components/heavy_ad_intervention/heavy_ad_features.h"
 
 namespace features {
 

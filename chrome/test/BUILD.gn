@@ -3575,7 +3575,6 @@ test("unit_tests") {
     "../browser/google/google_search_domain_mixing_metrics_emitter_factory_unittest.cc",
     "../browser/google/google_search_domain_mixing_metrics_emitter_unittest.cc",
     "../browser/google/google_update_settings_unittest.cc",
-    "../browser/heavy_ad_intervention/heavy_ad_blocklist_unittest.cc",
     "../browser/history/history_tab_helper_unittest.cc",
     "../browser/idle/idle_detection_permission_context_unittest.cc",
     "../browser/infobars/mock_infobar_service.cc",

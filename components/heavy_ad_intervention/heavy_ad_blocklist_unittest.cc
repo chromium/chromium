@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_blocklist.h"
+#include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
 
 #include <stdint.h>
 
@@ -12,9 +12,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_store.h"
+#include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/variations/variations_associated_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

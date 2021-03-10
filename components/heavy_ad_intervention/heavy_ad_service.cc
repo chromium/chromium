@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_service.h"
+#include "components/heavy_ad_intervention/heavy_ad_service.h"
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -11,9 +11,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_blocklist.h"
-#include "chrome/browser/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/blocklist/opt_out_blocklist/sql/opt_out_store_sql.h"
+#include "components/heavy_ad_intervention/heavy_ad_blocklist.h"
+#include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
