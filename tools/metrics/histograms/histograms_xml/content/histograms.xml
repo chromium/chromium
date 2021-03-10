@@ -580,7 +580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
-    expires_after="2021-08-01">
+    expires_after="2022-03-01">
   <owner>rogerm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -590,7 +590,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.AppLifecycle.Events"
-    enum="AppLifecycleEvent" expires_after="2021-06-20">
+    enum="AppLifecycleEvent" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -602,7 +605,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.AppLifecycle.NumRowsForDeletion"
-    units="count" expires_after="2020-10-01">
+    units="count" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -615,7 +621,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.AvailableOffline.Opened"
-    enum="Boolean" expires_after="2021-06-06">
+    enum="Boolean" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -630,7 +639,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.AvailableOffline.Shown" enum="Boolean"
-    expires_after="2021-04-04">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -657,7 +669,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
-    units="ms" expires_after="2022-01-20">
+    units="ms" expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -671,7 +683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed"
-    units="ms" expires_after="2022-01-20">
+    units="ms" expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -695,7 +707,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Count" units="entries"
-    expires_after="M90">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -744,7 +759,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.FetchPendingSpinner.Shown"
-    enum="FeedSpinnerType" expires_after="2021-07-04">
+    enum="FeedSpinnerType" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -756,7 +774,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDuration"
-    units="ms" expires_after="2021-06-20">
+    units="ms" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -769,7 +790,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.FetchPendingSpinner.VisibleDurationWithoutCompleting"
-    units="ms" expires_after="M90">
+    units="ms" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -781,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-08-09">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -792,7 +816,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInSource"
-    units="index" expires_after="2021-02-14">
+    units="index" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -803,7 +830,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.InterestHeader.NotInterestedInTopic"
-    units="index" expires_after="2021-02-14">
+    units="index" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -814,7 +844,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.InternalError"
-    enum="FeedInternalError" expires_after="M90">
+    enum="FeedInternalError" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -822,7 +855,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadKeysTime" units="ms"
-    expires_after="M90">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -832,7 +868,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
-    units="ms" expires_after="2021-08-01">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -846,7 +882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.BackgroundRefresh"
-    enum="FeedLoadStreamStatus" expires_after="2021-09-05">
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -856,7 +892,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.Initial"
-    enum="FeedLoadStreamStatus" expires_after="2021-05-01">
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -867,7 +903,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.InitialFromStore"
-    enum="FeedLoadStreamStatus" expires_after="2021-07-11">
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -880,7 +916,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"
-    enum="FeedLoadStreamStatus" expires_after="2021-09-05">
+    enum="FeedLoadStreamStatus" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -891,7 +927,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
-    expires_after="M90">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -901,7 +940,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration" units="ms"
-    expires_after="2021-09-05">
+    expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -912,7 +951,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.Duration.{NetworkEvent}"
-    units="ms" expires_after="2022-01-13">
+    units="ms" expires_after="2022-03-01">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -939,7 +978,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestStatusCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-06-20">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -951,7 +990,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseSizeKB" units="KB"
-    expires_after="2021-09-05">
+    expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -962,7 +1001,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.ResponseStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-09-05">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -972,7 +1011,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
-    expires_after="M90">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -982,7 +1024,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2021-09-05">
+    enum="GoogleServiceAuthError" expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -993,7 +1035,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled" enum="Boolean"
-    expires_after="2021-07-11">
+    expires_after="2022-03-01">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1197,7 +1239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.TimeSpentInFeed" units="ms"
-    expires_after="2021-09-05">
+    expires_after="2022-03-01">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1267,7 +1309,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions" enum="FeedUserActionType"
-    expires_after="2021-09-05">
+    expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1279,7 +1321,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserActions.Commands"
-    enum="FeedUserCommandType" expires_after="2021-09-01">
+    enum="FeedUserCommandType" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1291,7 +1333,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.GetMore.FailureDuration"
-    units="ms" expires_after="2021-07-11">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1302,7 +1344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.GetMore.SuccessDuration"
-    units="ms" expires_after="2021-07-11">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1313,7 +1355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.Failure"
-    enum="Boolean" expires_after="2021-09-05">
+    enum="Boolean" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1324,7 +1366,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenCard.SuccessDuration"
-    units="ms" expires_after="2021-09-05">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1335,7 +1377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenFeed.FailureDuration"
-    units="ms" expires_after="2021-07-11">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1347,7 +1389,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.UserJourney.OpenFeed.SuccessDuration"
-    units="ms" expires_after="2021-07-11">
+    units="ms" expires_after="2022-03-01">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1377,7 +1419,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisualElement.Clicked" units="index"
-    expires_after="M90">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1392,7 +1437,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.VisualElement.Clicked.TimeSinceElementFetched"
-    units="ms" expires_after="M90">
+    units="ms" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1405,7 +1453,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.VisualElement.Viewed" units="index"
-    expires_after="2021-07-04">
+    expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1421,7 +1472,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.VisualElement.Viewed.TimeSinceElementFetched"
-    units="ms" expires_after="M90">
+    units="ms" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1435,7 +1489,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.ContentCount"
-    units="count" expires_after="M90">
+    units="count" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1447,7 +1504,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ZeroStateRefreshCompleted.TokenCount"
-    units="count" expires_after="M90">
+    units="count" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1459,7 +1519,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ZeroStateShown.Reason"
-    enum="FeedZeroStateShowReason" expires_after="2021-06-20">
+    enum="FeedZeroStateShowReason" expires_after="M89">
+  <obsolete>
+    Removed along with FeedV1 in M89
+  </obsolete>
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
