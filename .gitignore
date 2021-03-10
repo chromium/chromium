@@ -281,6 +281,7 @@ vs-chromium-project.txt
 /sql/sql_unittests_run.xml
 /sync/sync.xml
 /testing/libfuzzer/fuzzer_corpus_for_bots/
+/testing/location_tags.json
 /testing/rts/
 /testserver.log
 # See third_party/.gitignore for entries covering src/third_party.

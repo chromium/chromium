@@ -78,11 +78,13 @@ template("test") {
       executable(_exec_target) {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []
-        data_deps = []
-        forward_variables_from(invoker,
-                               "*",
-                               TESTONLY_AND_VISIBILITY + _wrapper_script_vars +
-                                   [ "extra_dist_files" ])
+        forward_variables_from(
+            invoker,
+            "*",
+            TESTONLY_AND_VISIBILITY + _wrapper_script_vars + [
+                  "data_deps",
+                  "extra_dist_files",
+                ])
 
         # Thanks to the set_defaults() for test(), configs are initialized with
         # the default shared_library configs rather than executable configs.
@@ -91,6 +93,16 @@ template("test") {
           "//build/config/android:hide_all_but_jni",
         ]
         configs += [ "//build/config:executable_config" ]
+
+        if (defined(invoker.data_deps)) {
+          data_deps = invoker.data_deps
+        } else {
+          data_deps = []
+        }
+        if (!defined(data)) {
+          data = []
+        }
+        data += [ "//testing/location_tags.json" ]
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
@@ -225,6 +237,13 @@ template("test") {
           ":$_library_target",
         ]
       }
+
+      if (defined(invoker.data_deps)) {
+        data_deps = invoker.data_deps
+      } else {
+        data_deps = []
+      }
+      data = [ "//testing/location_tags.json" ]
     }
   } else if (is_fuchsia) {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
@@ -279,6 +298,7 @@ template("test") {
       package = ":$_pkg_target"
       package_name_override = _output_name
 
+      data = [ "//testing/location_tags.json" ]
       data_deps = [ "//testing/buildbot/filters:fuchsia_filters" ]
     }
 
@@ -316,7 +336,6 @@ template("test") {
       forward_variables_from(invoker,
                              [
                                "data",
-                               "data_deps",
                                "deps",
                                "executable_args",
                                "retries",
@@ -334,6 +353,11 @@ template("test") {
       ]
 
       wrapper_output_name = "${_wrapper_output_name}"
+
+      if (!defined(data)) {
+        data = []
+      }
+      data += [ "//testing/location_tags.json" ]
     }
 
     _resources_bundle_data = target_name + "_resources_bundle_data"
@@ -404,6 +428,7 @@ template("test") {
       generated_script = "$root_build_dir/bin/run_" + invoker.target_name
       test_exe = invoker.target_name
       runtime_deps_file = _runtime_deps_file
+      data = [ "//testing/location_tags.json" ]
     }
 
     executable(target_name) {
@@ -453,6 +478,7 @@ template("test") {
         executable = "//testing/test_env.py"
         data += [ "//testing/test_env.py" ]
       }
+      data += [ "//testing/location_tags.json" ]
 
       executable_args = [
         "@WrappedPath(../../build/lacros/test_runner.py)",
@@ -528,6 +554,7 @@ template("test") {
         executable = "//testing/test_env.py"
         data += [ "//testing/test_env.py" ]
       }
+      data += [ "//testing/location_tags.json" ]
 
       executable_args = [
         "@WrappedPath(./${_executable})",
@@ -631,6 +658,8 @@ template("script_test") {
     if (defined(invoker.data)) {
       data += invoker.data
     }
+    data += [ "//testing/location_tags.json" ]
+
     data_deps = []
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
