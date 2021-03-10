@@ -117,7 +117,7 @@ template <typename STRING_TYPE> class BasicStringPiece {
  public:
   // We provide non-explicit singleton constructors so users can pass
   // in a "const char*" or a "string" wherever a "StringPiece" is
-  // expected (likewise for char16, string16, StringPiece16).
+  // expected (likewise for char16_t, string16, StringPiece16).
   constexpr BasicStringPiece() : ptr_(nullptr), length_(0) {}
   // TODO(crbug.com/1049498): Construction from nullptr is not allowed for
   // std::basic_string_view, so remove the special handling for it.

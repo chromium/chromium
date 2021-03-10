@@ -136,7 +136,7 @@ base::string16 FileVersionInfoWin::special_build() {
   return GetStringValue(u"SpecialBuild");
 }
 
-bool FileVersionInfoWin::GetValue(const base::char16* name,
+bool FileVersionInfoWin::GetValue(const char16_t* name,
                                   base::string16* value) const {
   const struct LanguageAndCodePage lang_codepages[] = {
       // Use the language and codepage from the DLL.
@@ -158,15 +158,14 @@ bool FileVersionInfoWin::GetValue(const base::char16* name,
     uint32_t size;
     BOOL r = ::VerQueryValue(data_, sub_block, &value_ptr, &size);
     if (r && value_ptr && size) {
-      value->assign(static_cast<base::char16*>(value_ptr), size - 1);
+      value->assign(static_cast<char16_t*>(value_ptr), size - 1);
       return true;
     }
   }
   return false;
 }
 
-base::string16 FileVersionInfoWin::GetStringValue(
-    const base::char16* name) const {
+base::string16 FileVersionInfoWin::GetStringValue(const char16_t* name) const {
   base::string16 str;
   GetValue(name, &str);
   return str;

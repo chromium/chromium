@@ -34,8 +34,8 @@ const std::string teststring("Hello world");  // note non-aligned string length
 const std::wstring testwstring(L"Hello, world");
 const string16 teststring16(ASCIIToUTF16("Hello, world"));
 const char testrawstring[] = "Hello new world"; // Test raw string writing
-// Test raw char16 writing, assumes UTF16 encoding is ANSI for alpha chars.
-const char16 testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
+// Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
+const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const char testdata[] = "AAA\0BBB\0";
 const int testdatalen = base::size(testdata) - 1;
 
@@ -475,7 +475,7 @@ TEST(PickleTest, EvilLengths) {
   EXPECT_EQ(1U, str16.length());
 
   // Check we don't fail in a length check with invalid String16 size.
-  // (1<<31) * sizeof(char16) == 0, so this is particularly evil.
+  // (1<<31) * sizeof(char16_t) == 0, so this is particularly evil.
   Pickle bad_len;
   bad_len.WriteInt(1 << 31);
   iter = PickleIterator(bad_len);

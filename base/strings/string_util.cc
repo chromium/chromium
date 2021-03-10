@@ -393,7 +393,7 @@ char* WriteInto(std::string* str, size_t length_with_null) {
   return internal::WriteIntoT(str, length_with_null);
 }
 
-char16* WriteInto(string16* str, size_t length_with_null) {
+char16_t* WriteInto(string16* str, size_t length_with_null) {
   return internal::WriteIntoT(str, length_with_null);
 }
 

@@ -42,7 +42,7 @@ void ConvertJavaStringToUTF8(JNIEnv* env, jstring str, std::string* result) {
   // function that yields plain (non Java-modified) UTF8.
   const jchar* chars = env->GetStringChars(str, NULL);
   DCHECK(chars);
-  UTF16ToUTF8(reinterpret_cast<const char16*>(chars), length, result);
+  UTF16ToUTF8(reinterpret_cast<const char16_t*>(chars), length, result);
   env->ReleaseStringChars(str, chars);
   CheckException(env);
 }
@@ -91,7 +91,7 @@ void ConvertJavaStringToUTF16(JNIEnv* env, jstring str, string16* result) {
   DCHECK(chars);
   // GetStringChars isn't required to NULL-terminate the strings
   // it returns, so the length must be explicitly checked.
-  result->assign(reinterpret_cast<const char16*>(chars), length);
+  result->assign(reinterpret_cast<const char16_t*>(chars), length);
   env->ReleaseStringChars(str, chars);
   CheckException(env);
 }

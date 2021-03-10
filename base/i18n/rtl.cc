@@ -223,7 +223,7 @@ TextDirection GetTextDirectionForLocale(const char* locale_name) {
 }
 
 TextDirection GetFirstStrongCharacterDirection(const string16& text) {
-  const char16* string = text.c_str();
+  const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
   while (position < length) {
@@ -239,7 +239,7 @@ TextDirection GetFirstStrongCharacterDirection(const string16& text) {
 }
 
 TextDirection GetLastStrongCharacterDirection(const string16& text) {
-  const char16* string = text.c_str();
+  const char16_t* string = text.c_str();
   size_t position = text.length();
   while (position > 0) {
     UChar32 character;
@@ -254,7 +254,7 @@ TextDirection GetLastStrongCharacterDirection(const string16& text) {
 }
 
 TextDirection GetStringDirection(const string16& text) {
-  const char16* string = text.c_str();
+  const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
 
@@ -363,14 +363,14 @@ bool UnadjustStringForLocaleDirection(string16* text) {
     return false;
 
   size_t begin_index = 0;
-  char16 begin = text->at(begin_index);
+  char16_t begin = text->at(begin_index);
   if (begin == kLeftToRightMark ||
       begin == kRightToLeftMark) {
     ++begin_index;
   }
 
   size_t end_index = text->length() - 1;
-  char16 end = text->at(end_index);
+  char16_t end = text->at(end_index);
   if (end == kLeftToRightMark ||
       end == kRightToLeftMark) {
     --end_index;
@@ -404,7 +404,7 @@ void SanitizeUserSuppliedString(string16* text) {
 }
 
 bool StringContainsStrongRTLChars(const string16& text) {
-  const char16* string = text.c_str();
+  const char16_t* string = text.c_str();
   size_t length = text.length();
   size_t position = 0;
   while (position < length) {
@@ -481,7 +481,7 @@ string16 StripWrappingBidiControlCharacters(const string16& text) {
   if (text.empty())
     return text;
   size_t begin_index = 0;
-  char16 begin = text[begin_index];
+  char16_t begin = text[begin_index];
   if (begin == kLeftToRightEmbeddingMark ||
       begin == kRightToLeftEmbeddingMark ||
       begin == kLeftToRightOverride ||

@@ -8,7 +8,7 @@ namespace base {
 
 string16 Latin1OrUTF16ToUTF16(size_t length,
                               const Latin1Char* latin1,
-                              const char16* utf16) {
+                              const char16_t* utf16) {
   if (!length)
     return string16();
   if (latin1)

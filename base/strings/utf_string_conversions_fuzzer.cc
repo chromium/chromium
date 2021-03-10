@@ -22,15 +22,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::UTF8ToUTF16(reinterpret_cast<const char*>(data), size,
                     &output_string16);
 
-  // Test for char16.
+  // Test for char16_t.
   if (size % 2 == 0) {
     base::StringPiece16 string_piece_input16(
-        reinterpret_cast<const base::char16*>(data), size / 2);
+        reinterpret_cast<const char16_t*>(data), size / 2);
     ignore_result(base::UTF16ToWide(output_string16));
-    base::UTF16ToWide(reinterpret_cast<const base::char16*>(data), size / 2,
+    base::UTF16ToWide(reinterpret_cast<const char16_t*>(data), size / 2,
                       &output_std_wstring);
     ignore_result(base::UTF16ToUTF8(string_piece_input16));
-    base::UTF16ToUTF8(reinterpret_cast<const base::char16*>(data), size / 2,
+    base::UTF16ToUTF8(reinterpret_cast<const char16_t*>(data), size / 2,
                       &output_std_string);
   }
 

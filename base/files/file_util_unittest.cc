@@ -476,7 +476,7 @@ TEST_F(FileUtilTest, NormalizeFilePathReparsePoints) {
   // TEMP can have a lower case drive letter.
   std::wstring temp_base_a = base_a.value();
   ASSERT_FALSE(temp_base_a.empty());
-  temp_base_a[0] = ToUpperASCII(char16{temp_base_a[0]});
+  temp_base_a[0] = ToUpperASCII(char16_t{temp_base_a[0]});
   base_a = FilePath(temp_base_a);
 #endif
   ASSERT_TRUE(CreateDirectory(base_a));

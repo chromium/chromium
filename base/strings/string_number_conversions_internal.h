@@ -88,9 +88,9 @@ class WhitespaceHelper<char> {
 };
 
 template <>
-class WhitespaceHelper<char16> {
+class WhitespaceHelper<char16_t> {
  public:
-  static bool Invoke(char16 c) { return 0 != iswspace(c); }
+  static bool Invoke(char16_t c) { return 0 != iswspace(c); }
 };
 
 template <typename CHAR>

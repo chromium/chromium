@@ -81,7 +81,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Test for StringPiece16 if size is even.
   if (size % 2 == 0) {
     base::StringPiece16 string_piece_input16(
-        reinterpret_cast<const base::char16*>(data), size / 2);
+        reinterpret_cast<const char16_t*>(data), size / 2);
 
     base::StringToInt(string_piece_input16, &out_int);
     base::StringToUint(string_piece_input16, &out_uint);

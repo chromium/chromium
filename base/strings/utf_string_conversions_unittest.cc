@@ -180,12 +180,8 @@ TEST(UTFStringConversionsTest, ConvertUTF32ToUTF8) {
 #endif  // defined(WCHAR_T_IS_UTF32)
 
 TEST(UTFStringConversionsTest, ConvertMultiString) {
-  static char16 multi16[] = {
-    'f', 'o', 'o', '\0',
-    'b', 'a', 'r', '\0',
-    'b', 'a', 'z', '\0',
-    '\0'
-  };
+  static char16_t multi16[] = {'f',  'o', 'o', '\0', 'b',  'a', 'r',
+                               '\0', 'b', 'a', 'z',  '\0', '\0'};
   static char multi[] = {
     'f', 'o', 'o', '\0',
     'b', 'a', 'r', '\0',

@@ -204,7 +204,7 @@ Value::Value(std::string&& in_string) noexcept : data_(std::move(in_string)) {
   DCHECK(IsStringUTF8AllowingNoncharacters(GetString()));
 }
 
-Value::Value(const char16* in_string16) : Value(StringPiece16(in_string16)) {}
+Value::Value(const char16_t* in_string16) : Value(StringPiece16(in_string16)) {}
 
 Value::Value(StringPiece16 in_string16) : Value(UTF16ToUTF8(in_string16)) {}
 
@@ -367,7 +367,7 @@ void Value::Append(std::string&& value) {
   list().emplace_back(std::move(value));
 }
 
-void Value::Append(const char16* value) {
+void Value::Append(const char16_t* value) {
   list().emplace_back(value);
 }
 

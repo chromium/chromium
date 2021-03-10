@@ -18,23 +18,23 @@
 namespace base {
 namespace i18n {
 
-static_assert(sizeof(UChar) == sizeof(char16),
-              "Error: UChar and char16 are not of the same size.");
+static_assert(sizeof(UChar) == sizeof(char16_t),
+              "Error: UChar and char16_t are not of the same size.");
 
-inline const UChar* ToUCharPtr(const char16* str) {
+inline const UChar* ToUCharPtr(const char16_t* str) {
   return reinterpret_cast<const UChar*>(str);
 }
 
-inline UChar* ToUCharPtr(char16* str) {
+inline UChar* ToUCharPtr(char16_t* str) {
   return reinterpret_cast<UChar*>(str);
 }
 
-inline const char16* ToChar16Ptr(const UChar* str) {
-  return reinterpret_cast<const char16*>(str);
+inline const char16_t* ToChar16Ptr(const UChar* str) {
+  return reinterpret_cast<const char16_t*>(str);
 }
 
-inline char16* ToChar16Ptr(UChar* str) {
-  return reinterpret_cast<char16*>(str);
+inline char16_t* ToChar16Ptr(UChar* str) {
+  return reinterpret_cast<char16_t*>(str);
 }
 
 }  // namespace i18n

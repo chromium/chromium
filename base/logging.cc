@@ -1140,14 +1140,14 @@ std::ostream& std::operator<<(std::ostream& out, const std::wstring& wstr) {
 }
 
 std::ostream& std::operator<<(std::ostream& out, const char16_t* str16) {
-  // TODO(crbug.com/911896): Drop cast once base::char16 is char16_t everywhere.
+  // TODO(crbug.com/911896): Drop cast once char16_t is char16_t everywhere.
   return out << (str16 ? base::StringPiece16(
-                             reinterpret_cast<const base::char16*>(str16))
+                             reinterpret_cast<const char16_t*>(str16))
                        : base::StringPiece16());
 }
 
 std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
-  // TODO(crbug.com/911896): Drop cast once base::char16 is char16_t everywhere.
+  // TODO(crbug.com/911896): Drop cast once char16_t is char16_t everywhere.
   return out << base::StringPiece16(
-             reinterpret_cast<const base::char16*>(str16.data()), str16.size());
+             reinterpret_cast<const char16_t*>(str16.data()), str16.size());
 }

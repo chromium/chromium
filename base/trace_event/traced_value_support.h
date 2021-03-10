@@ -125,18 +125,18 @@ struct TraceFormatTraits<std::u16string> {
 };
 
 template <size_t N>
-struct TraceFormatTraits<::base::char16[N]> {
+struct TraceFormatTraits<char16_t[N]> {
   static void WriteIntoTracedValue(perfetto::TracedValue context,
-                                   const ::base::char16 value[N]) {
+                                   const char16_t value[N]) {
     return std::move(context).WriteString(
         ::base::UTF16ToUTF8(::base::StringPiece16(value)));
   }
 };
 
 template <>
-struct TraceFormatTraits<const ::base::char16*> {
+struct TraceFormatTraits<const char16_t*> {
   static void WriteIntoTracedValue(perfetto::TracedValue context,
-                                   const ::base::char16* value) {
+                                   const char16_t* value) {
     return std::move(context).WriteString(
         ::base::UTF16ToUTF8(::base::StringPiece16(value)));
   }

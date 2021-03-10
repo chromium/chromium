@@ -27,7 +27,7 @@ typedef unsigned char Latin1Char;
 // avoid binary bloat in all the callers of the conversion operator.
 BASE_EXPORT string16 Latin1OrUTF16ToUTF16(size_t length,
                                           const Latin1Char* latin1,
-                                          const char16* utf16);
+                                          const char16_t* utf16);
 
 }  // namespace base
 

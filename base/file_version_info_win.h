@@ -41,11 +41,11 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
 
   // Lets you access other properties not covered above. |value| is only
   // modified if GetValue() returns true.
-  bool GetValue(const base::char16* name, base::string16* value) const;
+  bool GetValue(const char16_t* name, base::string16* value) const;
 
   // Similar to GetValue but returns a string16 (empty string if the property
   // does not exist).
-  base::string16 GetStringValue(const base::char16* name) const;
+  base::string16 GetStringValue(const char16_t* name) const;
 
   // Get file version number in dotted version format.
   base::Version GetFileVersion() const;

@@ -18,13 +18,13 @@ class FilePath;
 
 namespace i18n {
 
-const char16 kRightToLeftMark = 0x200F;
-const char16 kLeftToRightMark = 0x200E;
-const char16 kLeftToRightEmbeddingMark = 0x202A;
-const char16 kRightToLeftEmbeddingMark = 0x202B;
-const char16 kPopDirectionalFormatting = 0x202C;
-const char16 kLeftToRightOverride = 0x202D;
-const char16 kRightToLeftOverride = 0x202E;
+const char16_t kRightToLeftMark = 0x200F;
+const char16_t kLeftToRightMark = 0x200E;
+const char16_t kLeftToRightEmbeddingMark = 0x202A;
+const char16_t kRightToLeftEmbeddingMark = 0x202B;
+const char16_t kPopDirectionalFormatting = 0x202C;
+const char16_t kLeftToRightOverride = 0x202D;
+const char16_t kRightToLeftOverride = 0x202E;
 
 // Locale.java mirrored this enum TextDirection. Please keep in sync.
 enum TextDirection {

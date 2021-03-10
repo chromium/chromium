@@ -100,7 +100,7 @@ const unsigned char* RefCountedString16::front() const {
 }
 
 size_t RefCountedString16::size() const {
-  return data_.size() * sizeof(char16);
+  return data_.size() * sizeof(char16_t);
 }
 
 RefCountedSharedMemoryMapping::RefCountedSharedMemoryMapping(

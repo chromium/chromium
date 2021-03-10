@@ -184,10 +184,11 @@ BASE_EXPORT const string16& EmptyString16();
 // encoding. Null-terminated. The ASCII versions are the whitespaces as defined
 // by HTML5, and don't include control characters.
 BASE_EXPORT extern const wchar_t kWhitespaceWide[];  // Includes Unicode.
-BASE_EXPORT extern const char16 kWhitespaceUTF16[];  // Includes Unicode.
-BASE_EXPORT extern const char16 kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
+BASE_EXPORT extern const char16_t kWhitespaceUTF16[];  // Includes Unicode.
+BASE_EXPORT extern const char16_t
+    kWhitespaceNoCrLfUTF16[];  // Unicode w/o CR/LF.
 BASE_EXPORT extern const char kWhitespaceASCII[];
-BASE_EXPORT extern const char16 kWhitespaceASCIIAs16[];  // No unicode.
+BASE_EXPORT extern const char16_t kWhitespaceASCIIAs16[];  // No unicode.
 
 // Null-terminated string representing the UTF-8 byte order mark.
 BASE_EXPORT extern const char kUtf8ByteOrderMark[];
@@ -452,7 +453,7 @@ BASE_EXPORT void ReplaceSubstringsAfterOffset(
 // than str.c_str() will get back a string of whatever size |str| had on entry
 // to this function (probably 0).
 BASE_EXPORT char* WriteInto(std::string* str, size_t length_with_null);
-BASE_EXPORT char16* WriteInto(string16* str, size_t length_with_null);
+BASE_EXPORT char16_t* WriteInto(string16* str, size_t length_with_null);
 
 // Joins a list of strings into a single string, inserting |separator| (which
 // may be empty) in between all elements.

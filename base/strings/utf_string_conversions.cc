@@ -35,7 +35,7 @@ struct SizeCoefficient {
 };
 
 template <>
-struct SizeCoefficient<char16, char> {
+struct SizeCoefficient<char16_t, char> {
   // One UTF-16 codeunit corresponds to at most 3 codeunits in UTF-8.
   static constexpr int value = 3;
 };
@@ -48,7 +48,7 @@ struct SizeCoefficient<wchar_t, char> {
 };
 
 template <>
-struct SizeCoefficient<wchar_t, char16> {
+struct SizeCoefficient<wchar_t, char16_t> {
   // UTF-16 uses at most 2 codeunits per character.
   static constexpr int value = 2;
 };
@@ -111,13 +111,13 @@ bool DoUTFConversion(const char* src,
 }
 
 template <typename DestChar>
-bool DoUTFConversion(const char16* src,
+bool DoUTFConversion(const char16_t* src,
                      int32_t src_len,
                      DestChar* dest,
                      int32_t* dest_len) {
   bool success = true;
 
-  auto ConvertSingleChar = [&success](char16 in) -> int32_t {
+  auto ConvertSingleChar = [&success](char16_t in) -> int32_t {
     if (!CBU16_IS_SINGLE(in) || !IsValidCodepoint(in)) {
       success = false;
       return kErrorCodePoint;
@@ -223,7 +223,7 @@ string16 UTF8ToUTF16(StringPiece utf8) {
   return ret;
 }
 
-bool UTF16ToUTF8(const char16* src, size_t src_len, std::string* output) {
+bool UTF16ToUTF8(const char16_t* src, size_t src_len, std::string* output) {
   return UTFConversion(StringPiece16(src, src_len), output);
 }
 
@@ -249,7 +249,7 @@ string16 WideToUTF16(WStringPiece wide) {
   return string16(wide.begin(), wide.end());
 }
 
-bool UTF16ToWide(const char16* src, size_t src_len, std::wstring* output) {
+bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
   output->assign(src, src + src_len);
   return true;
 }
@@ -272,7 +272,7 @@ string16 WideToUTF16(WStringPiece wide) {
   return ret;
 }
 
-bool UTF16ToWide(const char16* src, size_t src_len, std::wstring* output) {
+bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
   return UTFConversion(StringPiece16(src, src_len), output);
 }
 

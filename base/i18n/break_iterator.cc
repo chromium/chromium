@@ -232,7 +232,7 @@ bool BreakIterator::Advance() {
   }
 }
 
-bool BreakIterator::SetText(const base::char16* text, const size_t length) {
+bool BreakIterator::SetText(const char16_t* text, const size_t length) {
   UErrorCode status = U_ZERO_ERROR;
   ubrk_setText(static_cast<UBreakIterator*>(iter_), ToUCharPtr(text), length,
                &status);

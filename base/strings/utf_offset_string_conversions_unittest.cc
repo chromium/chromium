@@ -45,7 +45,7 @@ TEST(UTFOffsetStringConversionsTest, AdjustOffset) {
   }
 
   struct UTF16ToUTF8Case {
-    char16 utf16[10];
+    char16_t utf16[10];
     size_t input_offset;
     size_t output_offset;
   } utf16_to_utf8_cases[] = {

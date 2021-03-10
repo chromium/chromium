@@ -356,7 +356,7 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
 
 #if defined(WCHAR_T_IS_UTF16)
 TEST(StringUtilTest, as_wcstr) {
-  char16 rw_buffer[10] = {};
+  char16_t rw_buffer[10] = {};
   static_assert(
       std::is_same<wchar_t*, decltype(as_writable_wcstr(rw_buffer))>::value,
       "");
@@ -367,7 +367,7 @@ TEST(StringUtilTest, as_wcstr) {
       std::is_same<wchar_t*, decltype(as_writable_wcstr(rw_str))>::value, "");
   EXPECT_EQ(static_cast<const void*>(rw_str.data()), as_writable_wcstr(rw_str));
 
-  const char16 ro_buffer[10] = {};
+  const char16_t ro_buffer[10] = {};
   static_assert(
       std::is_same<const wchar_t*, decltype(as_wcstr(ro_buffer))>::value, "");
   EXPECT_EQ(static_cast<const void*>(ro_buffer), as_wcstr(ro_buffer));
@@ -386,29 +386,31 @@ TEST(StringUtilTest, as_wcstr) {
 TEST(StringUtilTest, as_u16cstr) {
   wchar_t rw_buffer[10] = {};
   static_assert(
-      std::is_same<char16*, decltype(as_writable_u16cstr(rw_buffer))>::value,
+      std::is_same<char16_t*, decltype(as_writable_u16cstr(rw_buffer))>::value,
       "");
   EXPECT_EQ(static_cast<void*>(rw_buffer), as_writable_u16cstr(rw_buffer));
 
   std::wstring rw_str(10, '\0');
   static_assert(
-      std::is_same<char16*, decltype(as_writable_u16cstr(rw_str))>::value, "");
+      std::is_same<char16_t*, decltype(as_writable_u16cstr(rw_str))>::value,
+      "");
   EXPECT_EQ(static_cast<const void*>(rw_str.data()),
             as_writable_u16cstr(rw_str));
 
   const wchar_t ro_buffer[10] = {};
   static_assert(
-      std::is_same<const char16*, decltype(as_u16cstr(ro_buffer))>::value, "");
+      std::is_same<const char16_t*, decltype(as_u16cstr(ro_buffer))>::value,
+      "");
   EXPECT_EQ(static_cast<const void*>(ro_buffer), as_u16cstr(ro_buffer));
 
   const std::wstring ro_str(10, '\0');
   static_assert(
-      std::is_same<const char16*, decltype(as_u16cstr(ro_str))>::value, "");
+      std::is_same<const char16_t*, decltype(as_u16cstr(ro_str))>::value, "");
   EXPECT_EQ(static_cast<const void*>(ro_str.data()), as_u16cstr(ro_str));
 
   WStringPiece piece = ro_buffer;
-  static_assert(std::is_same<const char16*, decltype(as_u16cstr(piece))>::value,
-                "");
+  static_assert(
+      std::is_same<const char16_t*, decltype(as_u16cstr(piece))>::value, "");
   EXPECT_EQ(static_cast<const void*>(piece.data()), as_u16cstr(piece));
 }
 #endif  // defined(WCHAR_T_IS_UTF16)
@@ -522,10 +524,10 @@ TEST(StringUtilTest, IsStringUTF8) {
 TEST(StringUtilTest, IsStringASCII) {
   static char char_ascii[] =
       "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-  static char16 char16_ascii[] = {
-      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A',
-      'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6',
-      '7', '8', '9', '0', 'A', 'B', 'C', 'D', 'E', 'F', 0 };
+  static char16_t char16_ascii[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8',
+                                    '9', '0', 'A', 'B', 'C', 'D', 'E', 'F', '0',
+                                    '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                                    '0', 'A', 'B', 'C', 'D', 'E', 'F', 0};
   static std::wstring wchar_ascii(
       L"0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF");
 
@@ -638,9 +640,12 @@ TEST(StringUtilTest, ToLowerASCII) {
   EXPECT_EQ('c', ToLowerASCII('c'));
   EXPECT_EQ('2', ToLowerASCII('2'));
 
-  EXPECT_EQ(static_cast<char16>('c'), ToLowerASCII(static_cast<char16>('C')));
-  EXPECT_EQ(static_cast<char16>('c'), ToLowerASCII(static_cast<char16>('c')));
-  EXPECT_EQ(static_cast<char16>('2'), ToLowerASCII(static_cast<char16>('2')));
+  EXPECT_EQ(static_cast<char16_t>('c'),
+            ToLowerASCII(static_cast<char16_t>('C')));
+  EXPECT_EQ(static_cast<char16_t>('c'),
+            ToLowerASCII(static_cast<char16_t>('c')));
+  EXPECT_EQ(static_cast<char16_t>('2'),
+            ToLowerASCII(static_cast<char16_t>('2')));
 
   EXPECT_EQ("cc2", ToLowerASCII("Cc2"));
   EXPECT_EQ(ASCIIToUTF16("cc2"), ToLowerASCII(ASCIIToUTF16("Cc2")));
@@ -651,9 +656,12 @@ TEST(StringUtilTest, ToUpperASCII) {
   EXPECT_EQ('C', ToUpperASCII('c'));
   EXPECT_EQ('2', ToUpperASCII('2'));
 
-  EXPECT_EQ(static_cast<char16>('C'), ToUpperASCII(static_cast<char16>('C')));
-  EXPECT_EQ(static_cast<char16>('C'), ToUpperASCII(static_cast<char16>('c')));
-  EXPECT_EQ(static_cast<char16>('2'), ToUpperASCII(static_cast<char16>('2')));
+  EXPECT_EQ(static_cast<char16_t>('C'),
+            ToUpperASCII(static_cast<char16_t>('C')));
+  EXPECT_EQ(static_cast<char16_t>('C'),
+            ToUpperASCII(static_cast<char16_t>('c')));
+  EXPECT_EQ(static_cast<char16_t>('2'),
+            ToUpperASCII(static_cast<char16_t>('2')));
 
   EXPECT_EQ("CC2", ToUpperASCII("Cc2"));
   EXPECT_EQ(ASCIIToUTF16("CC2"), ToUpperASCII(ASCIIToUTF16("Cc2")));
@@ -1325,7 +1333,7 @@ TEST(StringUtilTest, MakeBasicStringPieceTest) {
   EXPECT_EQ(MakeStringPiece(foo.begin(), foo.end()).size(), foo.size());
   EXPECT_TRUE(MakeStringPiece(foo.end(), foo.end()).empty());
 
-  constexpr char16 kBar[] = u"Bar";
+  constexpr char16_t kBar[] = u"Bar";
   static_assert(MakeStringPiece16(kBar, kBar + 3) == kBar, "");
   static_assert(MakeStringPiece16(kBar, kBar + 3).data() == kBar, "");
   static_assert(MakeStringPiece16(kBar, kBar + 3).size() == 3, "");

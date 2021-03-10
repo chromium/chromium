@@ -166,7 +166,7 @@ TEST(StringNumberConversionsTest, StringToInt) {
   EXPECT_EQ(6, output);
 
   output = 0;
-  const char16 negative_wide_input[] = {0xFF4D, '4', '2', 0};
+  const char16_t negative_wide_input[] = {0xFF4D, '4', '2', 0};
   EXPECT_FALSE(StringToInt(string16(negative_wide_input), &output));
   EXPECT_EQ(0, output);
 }
@@ -232,7 +232,7 @@ TEST(StringNumberConversionsTest, StringToUint) {
   EXPECT_EQ(6U, output);
 
   output = 0;
-  const char16 negative_wide_input[] = {0xFF4D, '4', '2', 0};
+  const char16_t negative_wide_input[] = {0xFF4D, '4', '2', 0};
   EXPECT_FALSE(StringToUint(string16(negative_wide_input), &output));
   EXPECT_EQ(0U, output);
 }

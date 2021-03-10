@@ -640,7 +640,7 @@ TEST(StringPiece16Test, CheckSTL) {
   StringPiece16 f(fifth);
 
   ASSERT_EQ(f[3], '\0');
-  ASSERT_EQ(f[5], static_cast<char16>(0xdffe));
+  ASSERT_EQ(f[5], static_cast<char16_t>(0xdffe));
 
   ASSERT_EQ(f.size(), 6U);
 }

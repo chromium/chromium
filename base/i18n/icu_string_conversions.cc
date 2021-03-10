@@ -180,7 +180,7 @@ bool CodepageToUTF16(base::StringPiece encoded,
   size_t uchar_max_length = encoded.length() + 1;
 
   SetUpErrorHandlerForToUChars(on_error, converter, &status);
-  std::unique_ptr<char16[]> buffer(new char16[uchar_max_length]);
+  std::unique_ptr<char16_t[]> buffer(new char16_t[uchar_max_length]);
   int actual_size =
       ucnv_toUChars(converter, i18n::ToUCharPtr(buffer.get()),
                     static_cast<int>(uchar_max_length), encoded.data(),

@@ -19,7 +19,6 @@
 #include <string>
 
 namespace base {
-using char16 = char16_t;
 using string16 = std::u16string;
 }  // namespace base
 

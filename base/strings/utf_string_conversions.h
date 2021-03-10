@@ -32,13 +32,15 @@ BASE_EXPORT std::wstring UTF8ToWide(StringPiece utf8) WARN_UNUSED_RESULT;
 BASE_EXPORT bool WideToUTF16(const wchar_t* src, size_t src_len,
                              string16* output);
 BASE_EXPORT string16 WideToUTF16(WStringPiece wide) WARN_UNUSED_RESULT;
-BASE_EXPORT bool UTF16ToWide(const char16* src, size_t src_len,
+BASE_EXPORT bool UTF16ToWide(const char16_t* src,
+                             size_t src_len,
                              std::wstring* output);
 BASE_EXPORT std::wstring UTF16ToWide(StringPiece16 utf16) WARN_UNUSED_RESULT;
 
 BASE_EXPORT bool UTF8ToUTF16(const char* src, size_t src_len, string16* output);
 BASE_EXPORT string16 UTF8ToUTF16(StringPiece utf8) WARN_UNUSED_RESULT;
-BASE_EXPORT bool UTF16ToUTF8(const char16* src, size_t src_len,
+BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
+                             size_t src_len,
                              std::string* output);
 BASE_EXPORT std::string UTF16ToUTF8(StringPiece16 utf16) WARN_UNUSED_RESULT;
 

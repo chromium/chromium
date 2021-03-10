@@ -21,7 +21,7 @@ namespace registry_util {
 
 namespace {
 
-constexpr base::char16 kTimestampDelimiter[] = u"$";
+constexpr char16_t kTimestampDelimiter[] = u"$";
 constexpr wchar_t kTempTestKeyPath[] = L"Software\\Chromium\\TempTestKeys";
 
 void DeleteStaleTestKeys(const base::Time& now,

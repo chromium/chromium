@@ -89,9 +89,9 @@ TEST(TracedValueSupportTest, UnguessableToken) {
 
 TEST(TracedValueSupportTest, UTF16String) {
   EXPECT_EQ(perfetto::TracedValueToString(u"utf-16"), "utf-16");
-  EXPECT_EQ(perfetto::TracedValueToString(
-                static_cast<const base::char16*>(u"utf-16")),
-            "utf-16");
+  EXPECT_EQ(
+      perfetto::TracedValueToString(static_cast<const char16_t*>(u"utf-16")),
+      "utf-16");
   EXPECT_EQ(perfetto::TracedValueToString(std::u16string(u"utf-16")), "utf-16");
 }
 

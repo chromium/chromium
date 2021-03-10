@@ -74,7 +74,7 @@ TEST(EstimateMemoryUsageTest, String) {
 
 TEST(EstimateMemoryUsageTest, String16) {
   string16 string(777, 'a');
-  EXPECT_EQ(sizeof(char16) * (string.capacity() + 1),
+  EXPECT_EQ(sizeof(char16_t) * (string.capacity() + 1),
             EstimateMemoryUsage(string));
 }
 
