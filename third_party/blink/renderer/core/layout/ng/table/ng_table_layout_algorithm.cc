@@ -816,13 +816,14 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
       AddCaptionResult(caption, &block_offset);
   }
 
+  LayoutUnit block_size = std::max(grid_block_size, block_offset);
   if (ConstraintSpace().IsFixedBlockSize()) {
     container_builder_.SetFragmentBlockSize(
         ConstraintSpace().AvailableSize().block_size);
   } else {
-    container_builder_.SetFragmentBlockSize(block_offset);
+    container_builder_.SetFragmentBlockSize(block_size);
   }
-  container_builder_.SetIntrinsicBlockSize(block_offset);
+  container_builder_.SetIntrinsicBlockSize(block_size);
 
   const WritingModeConverter grid_converter(
       Style().GetWritingDirection(),
