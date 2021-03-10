@@ -2484,24 +2484,26 @@
             ]
         }
     ],
-    "DesktopNtpShoppingTasksModule": [
+    "DesktopNtpModules": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "ShoppingTasks_Enabled",
                     "params": {
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
                     "enable_features": [
                         "NtpModules",
                         "NtpShoppingTasksModule"
+                    ],
+                    "disable_features": [
+                        "NtpChromeCartModule",
+                        "NtpRecipeTasksModule"
                     ]
                 }
             ]
