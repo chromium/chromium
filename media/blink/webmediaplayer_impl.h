@@ -193,6 +193,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   uint64_t VideoDecodedByteCount() const override;
 
   void SetVolumeMultiplier(double multiplier) override;
+  void SetPersistentState(bool persistent) override;
   void SuspendForFrameClosed() override;
 
   bool HasAvailableVideoFrame() const override;

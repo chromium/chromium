@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ipc/ipc_message_macros.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
@@ -265,16 +266,22 @@ void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
 void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   if (!fullscreen_player_)
     return;
+  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
+    auto* remote = GetMediaPlayerRemote(*fullscreen_player_);
+    DCHECK(remote);
 
-  auto* render_frame_host =
-      RenderFrameHost::FromID(fullscreen_player_->frame_routing_id);
-  DCHECK(render_frame_host);
+    // The message is sent to the renderer even though the video is already the
+    // fullscreen element itself. It will eventually be handled by Blink.
+    remote->SetPersistentState(value);
+  } else {
+    auto* render_frame_host =
+        RenderFrameHost::FromID(fullscreen_player_->frame_routing_id);
+    DCHECK(render_frame_host);
 
-  // The message is sent to the renderer even though the video is already the
-  // fullscreen element itself. It will eventually be handled by Blink.
-  render_frame_host->Send(new MediaPlayerDelegateMsg_BecamePersistentVideo(
-      render_frame_host->GetRoutingID(), fullscreen_player_->delegate_id,
-      value));
+    render_frame_host->Send(new MediaPlayerDelegateMsg_BecamePersistentVideo(
+        render_frame_host->GetRoutingID(), fullscreen_player_->delegate_id,
+        value));
+  }
 }
 
 bool MediaWebContentsObserver::IsPlayerActive(

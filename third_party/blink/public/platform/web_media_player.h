@@ -244,6 +244,10 @@ class WebMediaPlayer {
   // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
   virtual void SetVolumeMultiplier(double multiplier) = 0;
 
+  // Set the player as the persistent video. Persistent video should hide its
+  // controls and go fullscreen.
+  virtual void SetPersistentState(bool persistent) {}
+
   // Suspends the player for the host frame closed.
   virtual void SuspendForFrameClosed() = 0;
 

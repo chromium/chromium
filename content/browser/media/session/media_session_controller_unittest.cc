@@ -131,6 +131,8 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
       run_loop_for_volume_->Quit();
   }
 
+  void SetPersistentState(bool persistent) override {}
+
   void SetAudioSinkId(const std::string& sink_id) override {}
 
   void SuspendForFrameClosed() override {}

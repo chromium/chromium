@@ -194,7 +194,7 @@ TEST_F(HTMLVideoElementTest, AutoPIPExitPIPTest) {
   test::RunPendingTasks();
 
   // Set in auto PIP.
-  video()->OnBecamePersistentVideo(true);
+  video()->SetPersistentState(true);
 
   // Shouldn't get to PictureInPictureController::ExitPictureInPicture
   // and fail the DCHECK.

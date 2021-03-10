@@ -2508,14 +2508,18 @@ void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
   SetVolume(volume_);
 }
 
+void WebMediaPlayerImpl::SetPersistentState(bool value) {
+  overlay_info_.is_persistent_video = value;
+  MaybeSendOverlayInfoToDecoder();
+}
+
 void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
   SetVolumeMultiplier(multiplier);
 }
 
 void WebMediaPlayerImpl::OnBecamePersistentVideo(bool value) {
   client_->OnBecamePersistentVideo(value);
-  overlay_info_.is_persistent_video = value;
-  MaybeSendOverlayInfoToDecoder();
+  SetPersistentState(value);
 }
 
 void WebMediaPlayerImpl::OnPowerExperimentState(bool state) {

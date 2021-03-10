@@ -517,6 +517,7 @@ class CORE_EXPORT HTMLMediaElement
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
   void SetVolumeMultiplier(double multiplier) override;
+  void SetPersistentState(bool persistent) override {}
   void SetAudioSinkId(const String&) override;
   void SuspendForFrameClosed() override;
 

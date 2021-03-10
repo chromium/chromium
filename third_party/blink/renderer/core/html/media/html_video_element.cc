@@ -134,7 +134,7 @@ void HTMLVideoElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLMediaElement::RemovedFrom(insertion_point);
   custom_controls_fullscreen_detector_->Detach();
 
-  OnBecamePersistentVideo(false);
+  SetPersistentState(false);
 }
 
 void HTMLVideoElement::ContextDestroyed() {
@@ -275,9 +275,19 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
 // TODO(zqzhang): this callback could be used to hide native controls instead of
 // using a settings. See `HTMLMediaElement::onMediaControlsEnabledChange`.
 void HTMLVideoElement::OnBecamePersistentVideo(bool value) {
-  is_auto_picture_in_picture_ = value;
+  SetPersistentStateInternal(value);
+}
 
-  if (value) {
+void HTMLVideoElement::SetPersistentState(bool persistent) {
+  SetPersistentStateInternal(persistent);
+  if (GetWebMediaPlayer())
+    GetWebMediaPlayer()->SetPersistentState(persistent);
+}
+
+void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
+  is_auto_picture_in_picture_ = persistent;
+
+  if (persistent) {
     // Record the type of video. If it is already fullscreen, it is a video with
     // native controls, otherwise it is assumed to be with custom controls.
     // This is only recorded when entering this mode.

@@ -2765,7 +2765,7 @@ void Internals::mediaPlayerPlayingRemotelyChanged(
 void Internals::setPersistent(HTMLVideoElement* video_element,
                               bool persistent) {
   DCHECK(video_element);
-  video_element->OnBecamePersistentVideo(persistent);
+  video_element->SetPersistentState(persistent);
 }
 
 void Internals::forceStaleStateForMediaElement(HTMLMediaElement* media_element,
