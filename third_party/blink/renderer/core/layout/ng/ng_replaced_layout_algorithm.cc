@@ -18,7 +18,7 @@ NGReplacedLayoutAlgorithm::NGReplacedLayoutAlgorithm(
                         .ConvertToLogical(Style().GetWritingMode())) {}
 
 scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
-  DCHECK(!BreakToken());
+  DCHECK(!BreakToken() || BreakToken()->IsBreakBefore());
   // Set this as a legacy root so that legacy painters are used.
   container_builder_.SetIsLegacyLayoutRoot();
 
