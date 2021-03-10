@@ -39,6 +39,29 @@ bool HasControlClip(const NGPhysicalBoxFragment& self) {
   return box && box->HasControlClip();
 }
 
+bool ShouldUsePositionForPointInBlockFlowDirection(
+    const LayoutObject& layout_object) {
+  const LayoutBlock* const layout_block = DynamicTo<LayoutBlock>(layout_object);
+  if (!layout_block)
+    return false;
+  if (layout_block->IsTableRow()) {
+    // See editing/selection/click-before-and-after-table.html
+    return false;
+  }
+  if (layout_block->StyleRef().SpecifiesColumns()) {
+    // Columns are laid out in inline direction.
+    return false;
+  }
+  if (layout_block->IsTable())
+    return false;
+  // Note: For legacy layout compatibility, we find child by using
+  // |PositionForPointInBlockFlowDirection()| for flex and grid.
+  // TODO(yosin): We should have specific functions for flex and grid instead
+  // of using |PositionForPointInBlockFlowDirection()|,
+  // e.g. "flex-direction:row" layouts children horizontally.
+  return true;
+}
+
 inline bool IsHitTestCandidate(const NGPhysicalBoxFragment& fragment) {
   return fragment.Size().height &&
          fragment.Style().Visibility() == EVisibility::kVisible &&
@@ -900,27 +923,44 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
     return layout_object_->PositionForPoint(point);
   }
 
-  if (IsScrollContainer())
-    point += PhysicalOffset(PixelSnappedScrolledContentOffset());
+  const PhysicalOffset point_in_contents =
+      IsScrollContainer()
+          ? point + PhysicalOffset(PixelSnappedScrolledContentOffset())
+          : point;
 
   if (const NGFragmentItems* items = Items()) {
     NGInlineCursor cursor(*this, *items);
     if (const PositionWithAffinity position =
-            cursor.PositionForPointInInlineFormattingContext(point, *this))
+            cursor.PositionForPointInInlineFormattingContext(point_in_contents,
+                                                             *this))
       return AdjustForEditingBoundary(position);
     return layout_object_->CreatePositionWithAffinity(0);
   }
 
-  if (!RuntimeEnabledFeatures::LayoutNGFullPositionForPointEnabled()) {
-    DCHECK(layout_object_->ChildrenInline());
+  if (IsA<LayoutBlockFlow>(layout_object_) &&
+      layout_object_->ChildrenInline()) {
+    // Here |this| may have out-of-flow children without inline children, we
+    // don't find closest child of |point| for out-of-flow children.
+    // See WebFrameTest.SmartClipData
     return layout_object_->CreatePositionWithAffinity(0);
   }
 
+  if (layout_object_->IsTable())
+    return PositionForPointInTable(point_in_contents);
+
+  if (ShouldUsePositionForPointInBlockFlowDirection(*layout_object_))
+    return PositionForPointInBlockFlowDirection(point_in_contents);
+
+  return PositionForPointByClosestChild(point_in_contents);
+}
+
+PositionWithAffinity NGPhysicalBoxFragment::PositionForPointByClosestChild(
+    PhysicalOffset point_in_contents) const {
   NGLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
   bool found_hit_test_candidate = false;
   const PhysicalSize pixel_size(LayoutUnit(1), LayoutUnit(1));
-  PhysicalRect point_rect(point, pixel_size);
+  const PhysicalRect point_rect(point_in_contents, pixel_size);
 
   // This is a general-purpose algorithm for finding the nearest child. There
   // may be cases where want to introduce specialized algorithms that e.g. takes
@@ -978,11 +1018,89 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   }
 
   if (!closest_child.fragment)
-    return layout_object_->CreatePositionWithAffinity(0);
+    return layout_object_->FirstPositionInOrBeforeThis();
+  return To<NGPhysicalBoxFragment>(*closest_child)
+      .PositionForPoint(point_in_contents - closest_child.offset);
+}
 
-  const auto& child = To<NGPhysicalBoxFragment>(*closest_child);
-  Node* child_node = child.NonPseudoNode();
-  PhysicalOffset point_in_child = point - closest_child.offset;
+PositionWithAffinity
+NGPhysicalBoxFragment::PositionForPointInBlockFlowDirection(
+    PhysicalOffset point_in_contents) const {
+  // Note: Children of <table> and "columns" are not laid out in block flow
+  // direction.
+  DCHECK(!layout_object_->IsTable()) << this;
+  DCHECK(ShouldUsePositionForPointInBlockFlowDirection(*layout_object_))
+      << this;
+  const bool blocks_are_flipped = Style().IsFlippedBlocksWritingMode();
+  WritingModeConverter converter(Style().GetWritingDirection(), Size());
+  const LogicalOffset logical_point_in_contents =
+      converter.ToLogical(point_in_contents, PhysicalSize());
+
+  // Loop over block children to find a child logically below
+  // |point_in_contents|.
+  const NGLink* last_candidate_box = nullptr;
+  for (const NGLink& child : Children()) {
+    const auto& box_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+    if (!IsHitTestCandidate(box_fragment))
+      continue;
+    // We hit child if our click is above the bottom of its padding box (like
+    // IE6/7 and FF3).
+    const LogicalRect logical_child_rect =
+        converter.ToLogical(PhysicalRect(child.offset, box_fragment.Size()));
+    if (logical_point_in_contents.block_offset <
+            logical_child_rect.BlockEndOffset() ||
+        (blocks_are_flipped && logical_point_in_contents.block_offset ==
+                                   logical_child_rect.BlockEndOffset())) {
+      // |child| is logically below |point_in_contents|.
+      return PositionForPointRespectingEditingBoundaries(
+          To<NGPhysicalBoxFragment>(*child.fragment),
+          point_in_contents - child.offset);
+    }
+
+    // |last_candidate_box| is logical above |point_in_contents|.
+    last_candidate_box = &child;
+  }
+
+  // Here all children are logically above |point_in_contents|.
+  if (last_candidate_box) {
+    // editing/selection/block-with-positioned-lastchild.html reaches here.
+    return PositionForPointRespectingEditingBoundaries(
+        To<NGPhysicalBoxFragment>(*last_candidate_box->fragment),
+        point_in_contents - last_candidate_box->offset);
+  }
+
+  // We only get here if there are no hit test candidate children below the
+  // click.
+  return PositionForPointByClosestChild(point_in_contents);
+}
+
+PositionWithAffinity NGPhysicalBoxFragment::PositionForPointInTable(
+    PhysicalOffset point_in_contents) const {
+  DCHECK(layout_object_->IsTable()) << this;
+  if (!layout_object_->NonPseudoNode())
+    return PositionForPointByClosestChild(point_in_contents);
+
+  // Adjust for writing-mode:vertical-rl
+  const LayoutUnit adjusted_left = Style().IsFlippedBlocksWritingMode()
+                                       ? Size().width - point_in_contents.left
+                                       : point_in_contents.left;
+  if (adjusted_left < 0 || adjusted_left > Size().width ||
+      point_in_contents.top < 0 || point_in_contents.top > Size().height) {
+    // |point_in_contents| is outside of <table>.
+    // See editing/selection/click-before-and-after-table.html
+    if (adjusted_left <= Size().width / 2)
+      return layout_object_->FirstPositionInOrBeforeThis();
+    return layout_object_->LastPositionInOrAfterThis();
+  }
+
+  return PositionForPointByClosestChild(point_in_contents);
+}
+
+PositionWithAffinity
+NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
+    const NGPhysicalBoxFragment& child,
+    PhysicalOffset point_in_child) const {
+  Node* const child_node = child.NonPseudoNode();
   if (!child.IsCSSBox() || !child_node)
     return child.PositionForPoint(point_in_child);
 
@@ -1000,14 +1118,13 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
   // If editiability isn't the same in the ancestor and the child, then we
   // return a visible position just before or after the child, whichever side is
   // closer.
-  WritingModeConverter converter(child.Style().GetWritingDirection(), Size());
-  LogicalOffset logical_point = converter.ToLogical(point, pixel_size);
-  LogicalOffset child_logical_offset =
-      converter.ToLogical(closest_child.offset, child.Size());
-  LogicalOffset logical_point_in_child = logical_point - child_logical_offset;
-  LogicalSize child_logical_size = converter.ToLogical(child.Size());
-  LayoutUnit child_middle = child_logical_size.inline_size / 2;
-  if (logical_point_in_child.inline_offset < child_middle)
+  WritingModeConverter converter(child.Style().GetWritingDirection(),
+                                 child.Size());
+  const LogicalOffset logical_point_in_child =
+      converter.ToLogical(point_in_child, PhysicalSize());
+  const LayoutUnit logical_child_inline_size =
+      converter.ToLogical(child.Size()).inline_size;
+  if (logical_point_in_child.inline_offset < logical_child_inline_size / 2)
     return child.GetLayoutObject()->PositionBeforeThis();
   return child.GetLayoutObject()->PositionAfterThis();
 }

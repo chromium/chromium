@@ -409,6 +409,19 @@ class CORE_EXPORT NGPhysicalBoxFragment final
                                    bool inline_container_relative,
                                    Vector<PhysicalRect>* outline_rects) const;
 
+  PositionWithAffinity PositionForPointByClosestChild(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointInBlockFlowDirection(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointInTable(
+      PhysicalOffset point_in_contents) const;
+
+  PositionWithAffinity PositionForPointRespectingEditingBoundaries(
+      const NGPhysicalBoxFragment& child,
+      PhysicalOffset point_in_child) const;
+
 #if DCHECK_IS_ON()
   void CheckIntegrity() const;
 #endif
