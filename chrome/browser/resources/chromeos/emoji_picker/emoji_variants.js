@@ -36,7 +36,6 @@ function hasVariation(variants, codepoint) {
 function partitionArray(array, subarrayLengths) {
   const subarrays = [];
   let used = 0;
-
   for (const len of subarrayLengths) {
     if (len < 0) {
       used += -len;
@@ -122,7 +121,6 @@ export class EmojiVariants extends PolymerElement {
       return [5, 5, 5, 5, 5];
     }
 
-    console.error('unimplemented variation: ', variants);
     return [];
   }
 

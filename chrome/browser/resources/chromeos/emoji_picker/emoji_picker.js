@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE, EMOJI_SIZE_PX} from './constants.js';
+import {EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_PADDING_PX, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
 import {RecentEmojiStore} from './store.js';
@@ -134,8 +134,28 @@ export class EmojiPicker extends PolymerElement {
     /** @private {?number} */
     this.scrollTimeout = null;
 
+    /** @private {?number} */
+    this.groupScrollTimeout = null;
+
     /** @private {?EmojiButton} */
     this.activeVariant = null;
+
+    /** @private {boolean} */
+    this.autoScrollingToGroup = false;
+
+    // basic click handlers
+    this.addEventListener(
+        GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
+    this.addEventListener(
+        EMOJI_BUTTON_CLICK,
+        ev => this.insertEmoji(ev.detail.emoji, ev.detail.isVariant));
+
+    // variant popup related handlers
+    this.addEventListener(
+        EMOJI_VARIANTS_SHOWN,
+        ev => this.onShowEmojiVariants(
+            /** @type {!EmojiVariantsShownEvent} */ (ev)));
+    this.addEventListener('click', () => this.hideEmojiVariants());
   }
 
   ready() {
@@ -151,22 +171,7 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-picker-height': EMOJI_PICKER_HEIGHT_PX,
       '--emoji-size': EMOJI_SIZE_PX,
       '--emoji-per-row': EMOJI_PER_ROW,
-    });
-
-    afterNextRender(this, () => {
-      // basic click handlers
-      this.addEventListener(
-          GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
-      this.addEventListener(
-          EMOJI_BUTTON_CLICK,
-          ev => this.insertEmoji(ev.detail.emoji, ev.detail.isVariant));
-
-      // variant popup related handlers
-      this.addEventListener(
-          EMOJI_VARIANTS_SHOWN,
-          ev => this.onShowEmojiVariants(
-              /** @type {!EmojiVariantsShownEvent} */ (ev)));
-      this.addEventListener('click', () => this.hideEmojiVariants());
+      '--emoji-picker-padding': EMOJI_PICKER_PADDING_PX,
     });
   }
 
@@ -195,7 +200,7 @@ export class EmojiPicker extends PolymerElement {
         this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
     group.querySelector('emoji-group')
         .shadowRoot.querySelector('emoji-button')
-        .focusButton({preventScroll: true});
+        .focusButton();
     group.scrollIntoView();
   }
 
@@ -206,8 +211,54 @@ export class EmojiPicker extends PolymerElement {
     if (this.scrollTimeout) {
       clearTimeout(this.scrollTimeout);
     }
-    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 100);
+    this.scrollTimeout = setTimeout(this.updateActiveGroup.bind(this), 250);
   }
+
+  onRightChevronClick() {
+    this.shadowRoot.getElementById('tabs').scrollLeft =
+        GROUP_ICON_SIZE * (GROUP_PER_ROW + 1);
+    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 2].groupId);
+  }
+
+  onLeftChevronClick() {
+    this.shadowRoot.getElementById('tabs').scrollLeft = 0;
+    // TODO(crbug/1152237): need to handle case where recent is empty
+    this.scrollToGroup(GROUP_TABS[0].groupId);
+  }
+
+  /**
+   * @param {string} newGroup The group ID to scroll to
+   */
+  scrollToGroup(newGroup) {
+    // TODO(crbug/1152237): This should use behaviour:'smooth', but when you do
+    // that it doesn't scroll.
+    this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`)
+        .scrollIntoView();
+  }
+
+  onGroupsScroll() {
+    this.updateChevrons();
+  }
+
+  /**
+   * @private
+   */
+  updateChevrons() {
+    if (this.shadowRoot.getElementById('tabs').scrollLeft > GROUP_ICON_SIZE) {
+      this.shadowRoot.getElementById('leftChevron').style.display = 'flex';
+    } else {
+      this.shadowRoot.getElementById('leftChevron').style.display = 'none';
+    }
+    // 1 less because we need to allow room for the chevrons
+    if (this.shadowRoot.getElementById('tabs').scrollLeft +
+            GROUP_ICON_SIZE * GROUP_PER_ROW <
+        GROUP_ICON_SIZE * (GROUP_TABS.length + 1)) {
+      this.shadowRoot.getElementById('rightChevron').style.display = 'flex';
+    } else {
+      this.shadowRoot.getElementById('rightChevron').style.display = 'none';
+    }
+  }
+
 
   updateActiveGroup() {
     // no need to update scroll state if search is showing.
@@ -229,16 +280,31 @@ export class EmojiPicker extends PolymerElement {
     assert(activeGroup, 'no group element was activated');
     const activeGroupId = activeGroup.dataset.group;
 
+    let index = 0;
     // set active to true for selected group and false for others.
     this.emojiGroupTabs.forEach((g, i) => {
       const isActive = g.groupId === activeGroupId;
+      if (isActive) {
+        index = i;
+      }
       this.set(['emojiGroupTabs', i, 'active'], isActive);
     });
 
-    // scroll the active group button into view on the tab bar.
-    this.shadowRoot
-        .querySelector(`emoji-group-button[data-group="${activeGroupId}"]`)
-        .scrollIntoView();
+    // Maybe group icons tab scroll to match active group
+    if (this.shadowRoot.getElementById('tabs').scrollLeft >
+        GROUP_ICON_SIZE * index) {
+      this.shadowRoot.getElementById('tabs').scrollLeft =
+          GROUP_ICON_SIZE * (index - 1);
+    }
+    // Maybe increase icons tab scroll to match active group
+    if (this.shadowRoot.getElementById('tabs').scrollLeft +
+            GROUP_ICON_SIZE * (GROUP_PER_ROW - 2) <
+        GROUP_ICON_SIZE * (index)) {
+      // 3 = 1 for 1 based index + 2 for chevrons (left and right can display at
+      // the same time).
+      this.shadowRoot.getElementById('tabs').scrollLeft =
+          GROUP_ICON_SIZE * (index + 3 - GROUP_PER_ROW);
+    }
   }
 
 
@@ -278,7 +344,7 @@ export class EmojiPicker extends PolymerElement {
     const rect = variants.getBoundingClientRect();
     const overflowWidth = rect.x + rect.width - pickerRect.width;
     // shift left by overflowWidth rounded up to next multiple of EMOJI_SIZE.
-    const shift = EMOJI_SIZE * Math.ceil(overflowWidth / EMOJI_SIZE);
+    const shift = EMOJI_ICON_SIZE * Math.ceil(overflowWidth / EMOJI_ICON_SIZE);
     // negative value means we are already within bounds, so no shift needed.
     variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
   }

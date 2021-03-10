@@ -55,13 +55,15 @@ suite('<emoji-picker>', () => {
     assert(customElements.get('emoji-picker'));
   });
 
-  test('first tab should be active by default', () => {
-    const button = findInEmojiPicker('emoji-group-button:first-child', 'div');
+  test('first non-chevron tab should be active by default', () => {
+    const button =
+        findInEmojiPicker('emoji-group-button[data-group="history"]', 'div');
     assertTrue(isGroupButtonActive(button));
   });
 
-  test('second tab should be inactive by default', () => {
-    const button = findInEmojiPicker('emoji-group-button:nth-child(2)', 'div');
+  test('second non-chevron tab should be inactive by default', () => {
+    const button =
+        findInEmojiPicker('emoji-group-button[data-group="1"]', 'div');
     assertFalse(isGroupButtonActive(button));
   });
 
@@ -70,20 +72,23 @@ suite('<emoji-picker>', () => {
     const emojiGroups = findInEmojiPicker('#groups');
     const initialScroll = emojiGroups.scrollTop;
 
+    // History group doesn't exist when there is no history, so scrolling to
+    // the first non-history group (0) may not trigger a scroll, so scroll to
+    // group (1).
     const firstButton =
         findInEmojiPicker('emoji-group-button[data-group="history"]', 'div');
-    const secondButton =
+    const thirdButton =
         findInEmojiPicker('emoji-group-button[data-group="1"]', 'div');
 
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
         () => findInEmojiPicker(
-            '[data-group="1"] > emoji-group', 'emoji-button', 'button'));
-    secondButton.click();
+            '[data-group="5"] > emoji-group', 'emoji-button', 'button'));
+    thirdButton.click();
 
     // wait while waiting for scroll to happen and update buttons.
     await waitForCondition(
-        () => isGroupButtonActive(secondButton) &&
+        () => isGroupButtonActive(thirdButton) &&
             !isGroupButtonActive(firstButton));
 
     const newScroll = emojiGroups.scrollTop;

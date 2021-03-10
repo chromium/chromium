@@ -2,6 +2,7 @@
   :host {
     /* values overriden in Javascript from constants.js */
     --emoji-picker-height: 0;
+    --emoji-picker-padding: 0;
     --emoji-picker-width: 0;
     --emoji-size: 0;
     --emoji-per-row: 0;
@@ -11,10 +12,10 @@
     display: flex;
     flex-direction: column;
     font-family: 'Roboto', sans-serif;
-    height: calc(var(--emoji-picker-height) - 20px);
+    height: calc(var(--emoji-picker-height) - 2 * var(--emoji-picker-padding));
     margin-top: 0;
-    padding: 10px;
-    width: calc(var(--emoji-picker-width) - 20px);
+    padding: var(--emoji-picker-padding);
+    width: calc(var(--emoji-picker-width) - 2 * var(--emoji-picker-padding));
   }
 
   #searchContainer,
@@ -30,8 +31,11 @@
     display: flex;
     flex-shrink: 0;
     overflow-x: scroll;
-    /* scroll-behavior: smooth; */
+    scroll-behavior: smooth;
     width: 100%;
+  }
+  #tabs::-webkit-scrollbar {
+    display: none;
   }
 
   #tabs::-webkit-scrollbar {
@@ -41,7 +45,25 @@
   #groups {
     flex-grow: 1;
     overflow-y: scroll;
-    /* scroll-behavior: smooth; */
+  }
+
+  .chevron {
+    background-color: var(--cr-card-background-color);
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 36px;
+    z-index: 2;
+  }
+
+  #rightChevron {
+    left: calc(36px*8 + var(--emoji-picker-padding));
+  }
+
+  #leftChevron {
+    display: none;
+    left: 10px;
   }
 
   .divider {
@@ -73,7 +95,14 @@
 
   <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
 
-  <div id="tabs">
+  <div id="tabs" on-scroll="onGroupsScroll">
+    <cr-icon-button
+      id="leftChevron"
+      class="chevron"
+      on-click="onLeftChevronClick"
+      iron-icon="emoji_picker:keyboard_arrow_left"
+      >
+      </cr-icon-button>
     <template is="dom-repeat" items="[[emojiGroupTabs]]">
       <emoji-group-button
           data-group$="[[item.groupId]]" group-id="[[item.groupId]]"
@@ -81,6 +110,26 @@
           name="[[item.name]]">
       </emoji-group-button>
     </template>
+    <!--Fake group button to increase maximum scrolling, need an icon to render
+      as invisible-->
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+      <emoji-group-button id="RightChevronScrollTarget"
+        icon="[[emojiGroupTabs[0].icon]]">
+      </emoji-group-button>
+   <cr-icon-button
+    id="rightChevron"
+      class="chevron"
+    on-click="onRightChevronClick"
+    iron-icon="emoji_picker:keyboard_arrow_right"
+    >
+    </cr-icon-button>
   </div>
 
   <div class="sr-only" role="heading" aria-level="1">Emoji Groups</div>
