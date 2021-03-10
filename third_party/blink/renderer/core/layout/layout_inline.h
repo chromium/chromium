@@ -294,6 +294,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
       bool ignore_scroll_offset) const final;
 
  private:
+  bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<FloatQuad>& quads,
                             MapCoordinatesFlags mode,
                             bool map_to_absolute) const;

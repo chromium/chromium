@@ -3355,6 +3355,13 @@ TransformationMatrix LayoutObject::LocalToAncestorTransform(
   return transform_state.AccumulatedTransform();
 }
 
+bool LayoutObject::OffsetForContainerDependsOnPoint(
+    const LayoutObject* container) const {
+  return IsLayoutFlowThread() ||
+         (container->StyleRef().IsFlippedBlocksWritingMode() &&
+          container->IsBox());
+}
+
 PhysicalOffset LayoutObject::OffsetFromContainer(
     const LayoutObject* o,
     bool ignore_scroll_offset) const {

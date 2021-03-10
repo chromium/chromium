@@ -1438,15 +1438,9 @@ const LayoutObject* LayoutBoxModelObject::PushMappingToContainer(
   }
 
   PhysicalOffset container_offset = OffsetFromContainer(container);
-  bool offset_depends_on_point;
-  if (IsLayoutFlowThread()) {
+  bool offset_depends_on_point = OffsetForContainerDependsOnPoint(container);
+  if (offset_depends_on_point && IsLayoutFlowThread())
     container_offset += PhysicalOffsetToBeNoop(ColumnOffset(LayoutPoint()));
-    offset_depends_on_point = true;
-  } else {
-    offset_depends_on_point =
-        container->StyleRef().IsFlippedBlocksWritingMode() &&
-        container->IsBox();
-  }
 
   bool preserve3d =
       container->StyleRef().Preserves3D() || StyleRef().Preserves3D();

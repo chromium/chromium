@@ -323,6 +323,10 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   // Returns false iff this object or one of its ancestors has opacity:0.
   bool HasNonZeroEffectiveOpacity() const;
 
+  // Returns true if the offset ot the containing block depends on the point
+  // being mapped.
+  bool OffsetForContainerDependsOnPoint(const LayoutObject* container) const;
+
  protected:
   void EnsureIdForTesting() {
     NOT_DESTROYED();
