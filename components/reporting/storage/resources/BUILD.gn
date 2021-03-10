@@ -28,6 +28,7 @@ source_set("unit_tests") {
     ":resource_interface",
     "//base",
     "//base/test:test_support",
+    "//components/reporting/util:test_callbacks_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

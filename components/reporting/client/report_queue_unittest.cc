@@ -12,6 +12,7 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,42 +22,6 @@ using ::testing::WithArg;
 
 namespace reporting {
 namespace {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform some
-//       other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//       collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() { EXPECT_FALSE(run_loop_->running()) << "Not responded"; }
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 class ReportQueueTest : public ::testing::Test {
  protected:
@@ -72,7 +37,7 @@ TEST_F(ReportQueueTest, EnqueueTest) {
       .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status::StatusOK());
       })));
-  TestEvent<Status> e;
+  test::TestEvent<Status> e;
   queue.Enqueue("Record", FAST_BATCH, e.cb());
   ASSERT_OK(e.result());
 }

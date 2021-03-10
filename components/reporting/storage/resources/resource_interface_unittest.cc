@@ -9,6 +9,7 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,36 +17,6 @@ using ::testing::Eq;
 
 namespace reporting {
 namespace {
-
-class TestCallbackWaiter {
- public:
-  TestCallbackWaiter() = default;
-  TestCallbackWaiter(const TestCallbackWaiter& other) = delete;
-  TestCallbackWaiter& operator=(const TestCallbackWaiter& other) = delete;
-
-  void Attach() {
-    const size_t old_counter = counter_.fetch_add(1);
-    DCHECK_GT(old_counter, 0u) << "Cannot attach when already being released";
-  }
-
-  void Signal() {
-    const size_t old_counter = counter_.fetch_sub(1);
-    DCHECK_GT(old_counter, 0u) << "Already being released";
-    if (old_counter == 1u) {
-      // Dropped last owner.
-      run_loop_.Quit();
-    }
-  }
-
-  void Wait() {
-    Signal();  // Rid of the constructor's ownership.
-    run_loop_.Run();
-  }
-
- private:
-  std::atomic<size_t> counter_{1};  // Owned by constructor.
-  base::RunLoop run_loop_;
-};
 
 class ResourceInterfaceTest
     : public ::testing::TestWithParam<ResourceInterface*> {
@@ -74,7 +45,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
   uint64_t size = resource_interface()->GetTotal();
 
   // Schedule reservations.
-  TestCallbackWaiter reserve_waiter;
+  test::TestCallbackWaiter reserve_waiter;
   while ((size / 2) > 0u) {
     size /= 2;
     reserve_waiter.Attach();
@@ -82,7 +53,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](size_t size, ResourceInterface* resource_interface,
-               TestCallbackWaiter* waiter) {
+               test::TestCallbackWaiter* waiter) {
               EXPECT_TRUE(resource_interface->Reserve(size));
               waiter->Signal();
             },
@@ -91,14 +62,14 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
   reserve_waiter.Wait();
 
   // Schedule discards.
-  TestCallbackWaiter discard_waiter;
+  test::TestCallbackWaiter discard_waiter;
   for (; size < resource_interface()->GetTotal(); size *= 2) {
     discard_waiter.Attach();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](size_t size, ResourceInterface* resource_interface,
-               TestCallbackWaiter* waiter) {
+               test::TestCallbackWaiter* waiter) {
               resource_interface->Discard(size);
               waiter->Signal();
             },
@@ -111,7 +82,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousReservationTest) {
 
 TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
   uint64_t size = resource_interface()->GetTotal();
-  TestCallbackWaiter waiter;
+  test::TestCallbackWaiter waiter;
   while ((size / 2) > 0u) {
     size /= 2;
     waiter.Attach();
@@ -119,7 +90,7 @@ TEST_P(ResourceInterfaceTest, SimultaneousScopedReservationTest) {
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             [](size_t size, ResourceInterface* resource_interface,
-               TestCallbackWaiter* waiter) {
+               test::TestCallbackWaiter* waiter) {
               { ScopedReservation(size, resource_interface); }
               waiter->Signal();
             },

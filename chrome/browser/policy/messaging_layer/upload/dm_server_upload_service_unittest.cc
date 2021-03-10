@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/util/shared_vector.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,82 +26,24 @@ namespace reporting {
 namespace {
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType* res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
-
 // Ensures that profile cannot be null.
 TEST(DmServerUploadServiceTest, DeniesNullptrProfile) {
   content::BrowserTaskEnvironment task_envrionment;
-  TestEvent<StatusOr<std::unique_ptr<DmServerUploadService>>> e;
+  test::TestEvent<StatusOr<std::unique_ptr<DmServerUploadService>>> e;
   DmServerUploadService::Create(/*client=*/nullptr, base::DoNothing(),
                                 base::DoNothing(), e.cb());
   StatusOr<std::unique_ptr<DmServerUploadService>> result = e.result();
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.status().error_code(), error::INVALID_ARGUMENT);
+  EXPECT_THAT(result.status(),
+              Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
 }
-
-class TestCallbackWaiter {
- public:
-  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
-
-  DmServerUploadService::CompletionCallback cb() {
-    return base::BindOnce(
-        [](TestCallbackWaiter* self,
-           DmServerUploadService::CompletionResponse response) {
-          self->response_ = std::move(response);
-          self->run_loop_->Quit();
-        },
-        base::Unretained(this));
-  }
-
-  DmServerUploadService::CompletionResponse result() {
-    run_loop_->Run();
-    return std::move(response_);
-  }
-
- private:
-  DmServerUploadService::CompletionResponse response_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
 
 class TestRecordHandler : public DmServerUploadService::RecordHandler {
  public:
@@ -178,7 +121,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  TestCallbackWaiter callback_waiter;
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
       callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
@@ -226,7 +169,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  TestCallbackWaiter callback_waiter;
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
       callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
@@ -252,14 +195,14 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  TestCallbackWaiter callback_waiter;
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
       callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_FALSE(response.ok());
-  EXPECT_EQ(response.status().error_code(), error::FAILED_PRECONDITION);
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
 TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
@@ -279,14 +222,14 @@ TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
-  TestCallbackWaiter callback_waiter;
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
       callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_FALSE(response.ok());
-  EXPECT_EQ(response.status().error_code(), error::DEADLINE_EXCEEDED);
+  EXPECT_THAT(response.status(),
+              Property(&Status::error_code, Eq(error::DEADLINE_EXCEEDED)));
 }
 
 TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
@@ -317,7 +260,7 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
     EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _)).Times(0);
   }
 
-  TestCallbackWaiter callback_waiter;
+  test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
       callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
@@ -326,8 +269,8 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
   if (need_encryption_key()) {
     EXPECT_OK(response);
   } else {
-    EXPECT_FALSE(response.ok());
-    EXPECT_EQ(response.status().error_code(), error::INVALID_ARGUMENT);
+    EXPECT_THAT(response.status(),
+                Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
   }
 }
 

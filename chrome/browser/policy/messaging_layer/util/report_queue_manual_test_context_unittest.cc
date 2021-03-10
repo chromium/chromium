@@ -12,6 +12,7 @@
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,34 +23,6 @@ namespace {
 using testing::_;
 using testing::Invoke;
 using testing::WithArgs;
-
-class TestCallbackWaiter {
- public:
-  TestCallbackWaiter() = default;
-
-  virtual void Signal() { run_loop_.Quit(); }
-
-  void Wait() { run_loop_.Run(); }
-
- protected:
-  base::RunLoop run_loop_;
-};
-
-class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
- public:
-  explicit TestCallbackWaiterWithCounter(size_t counter_limit)
-      : counter_limit_(counter_limit) {}
-
-  void Signal() override {
-    DCHECK_GT(counter_limit_, 0u);
-    if (--counter_limit_ == 0u) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  std::atomic<size_t> counter_limit_;
-};
 
 class ReportQueueManualTestContextTest : public testing::Test {
  protected:
@@ -88,29 +61,21 @@ TEST_F(ReportQueueManualTestContextTest,
   uint64_t kNumberOfMessagesToEnqueue = 5;
   base::TimeDelta kFrequency = base::TimeDelta::FromSeconds(1);
 
-  TestCallbackWaiterWithCounter enqueue_waiter{kNumberOfMessagesToEnqueue};
   EXPECT_CALL(*mock_report_queue_, AddRecord(_, _, _))
-      .WillRepeatedly(WithArgs<2>(Invoke(
-          [&enqueue_waiter](ReportQueue::EnqueueCallback enqueue_callback) {
+      .Times(kNumberOfMessagesToEnqueue)
+      .WillRepeatedly(
+          WithArgs<2>(Invoke([](ReportQueue::EnqueueCallback enqueue_callback) {
             std::move(enqueue_callback).Run(Status::StatusOK());
-            enqueue_waiter.Signal();
           })));
 
-  TestCallbackWaiter completion_waiter;
-  auto completion_cb = base::BindOnce(
-      [](TestCallbackWaiter* completion_waiter, Status status) {
-        EXPECT_TRUE(status.ok());
-        completion_waiter->Signal();
-      },
-      &completion_waiter);
-
+  test::TestEvent<Status> completion_event;
   Start<ReportQueueManualTestContext>(
       kFrequency, kNumberOfMessagesToEnqueue, destination_, priority_,
-      std::move(completion_cb),
+      completion_event.cb(),
       base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits()));
 
-  enqueue_waiter.Wait();
-  completion_waiter.Wait();
+  const Status status = completion_event.result();
+  EXPECT_OK(status) << status;
 }
 
 }  // namespace

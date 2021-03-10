@@ -22,6 +22,7 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,42 +38,6 @@ using ::reporting::test::TestStorageModule;
 
 namespace reporting {
 namespace {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType* res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 // Creates a |ReportQueue| using |TestStorageModule| and
 // |TestEncryptionModule|. Allows access to the storage module for checking
@@ -134,7 +99,7 @@ class ReportQueueImplTest : public testing::Test {
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(kTestString, priority_, a.cb());
   EXPECT_OK(a.result());
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -148,7 +113,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   constexpr char kTestValue[] = "TEST_VALUE";
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(test_dict, priority_, a.cb());
   EXPECT_OK(a.result());
 
@@ -165,7 +130,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   EXPECT_OK(a.result());
 
@@ -189,7 +154,7 @@ TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
 
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
@@ -200,7 +165,7 @@ TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(kTestString, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
@@ -212,7 +177,7 @@ TEST_F(ReportQueueImplTest, EnqueueProtoFailsOnPolicy) {
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
@@ -226,7 +191,7 @@ TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
   constexpr char kTestValue[] = "TEST_VALUE";
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
-  TestEvent<Status> a;
+  test::TestEvent<Status> a;
   report_queue_->Enqueue(test_dict, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());

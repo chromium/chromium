@@ -314,6 +314,7 @@ source_set("chromeos") {
     "//components/reporting/client:report_queue_provider",
     "//components/reporting/util:status",
     "//components/reporting/util:task_runner_context",
+    "//components/reporting/util:test_callbacks_support",
     "//components/rlz",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/db:metadata_proto",

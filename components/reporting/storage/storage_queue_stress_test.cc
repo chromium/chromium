@@ -24,6 +24,7 @@
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,42 +45,6 @@ namespace {
 constexpr size_t kTotalQueueStarts = 4;
 constexpr size_t kTotalWritesPerStart = 16;
 constexpr char kDataPrefix[] = "Rec";
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform some
-//       other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//       collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() { EXPECT_FALSE(run_loop_->running()) << "Not responded"; }
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 class TestUploadClient : public UploaderInterface {
  public:
@@ -175,7 +140,7 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
-    TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
     StorageQueue::Create(
         options,
         base::BindRepeating(&StorageQueueStressTest::BuildTestUploader,
@@ -234,45 +199,12 @@ class StorageQueueStressTest : public ::testing::TestWithParam<size_t> {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-class TestCallbackWaiter {
- public:
-  TestCallbackWaiter() : runner_(base::ThreadTaskRunnerHandle::Get()) {}
-  TestCallbackWaiter(const TestCallbackWaiter& other) = delete;
-  TestCallbackWaiter& operator=(const TestCallbackWaiter& other) = delete;
-
-  void Attach() {
-    const size_t old_counter = counter_.fetch_add(1);
-    DCHECK_GT(old_counter, 0u) << "Cannot attach when already being released";
-  }
-
-  void Signal() {
-    const size_t old_counter = counter_.fetch_sub(1);
-    DCHECK_GT(old_counter, 0u) << "Already being released";
-    if (old_counter > 1u) {
-      // There are more owners.
-      return;
-    }
-    // Dropping the last owner.
-    run_loop_.Quit();
-  }
-
-  void Wait() {
-    Signal();  // Rid of the constructor's ownership.
-    run_loop_.Run();
-  }
-
- private:
-  std::atomic<size_t> counter_{1};  // Owned by constructor.
-  const scoped_refptr<base::SingleThreadTaskRunner> runner_;
-  base::RunLoop run_loop_;
-};
-
 TEST_P(StorageQueueStressTest,
        WriteIntoNewStorageQueueReopenWriteMoreAndUpload) {
   for (size_t iStart = 0; iStart < kTotalQueueStarts; ++iStart) {
-    TestCallbackWaiter write_waiter;
+    test::TestCallbackWaiter write_waiter;
     base::RepeatingCallback<void(Status)> cb = base::BindRepeating(
-        [](TestCallbackWaiter* waiter, Status status) {
+        [](test::TestCallbackWaiter* waiter, Status status) {
           EXPECT_OK(status);
           waiter->Signal();
         },

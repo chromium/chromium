@@ -22,6 +22,7 @@
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,42 +42,6 @@ namespace {
 
 // Metadata file name prefix.
 const base::FilePath::CharType METADATA_NAME[] = FILE_PATH_LITERAL("META");
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform some
-//       other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//       collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() { EXPECT_FALSE(run_loop_->running()) << "Not responded"; }
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
  public:
@@ -305,7 +270,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_FALSE(storage_queue_) << "StorageQueue already assigned";
     test_encryption_module_ =
         base::MakeRefCounted<test::TestEncryptionModule>();
-    TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
+    test::TestEvent<StatusOr<scoped_refptr<StorageQueue>>> e;
     StorageQueue::Create(
         options,
         base::BindRepeating(&StorageQueueTest::BuildMockUploader,
@@ -350,7 +315,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
 
   Status WriteString(base::StringPiece data) {
     EXPECT_TRUE(storage_queue_) << "StorageQueue not created yet";
-    TestEvent<Status> w;
+    test::TestEvent<Status> w;
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -366,7 +331,7 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
 
   void ConfirmOrDie(base::Optional<std::int64_t> sequencing_id,
                     bool force = false) {
-    TestEvent<Status> c;
+    test::TestEvent<Status> c;
     storage_queue_->Confirm(sequencing_id, force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;

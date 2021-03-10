@@ -18,6 +18,7 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,42 +38,6 @@ using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType* res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 class ReportClientTest : public testing::Test {
  public:
@@ -135,7 +100,7 @@ TEST_F(ReportClientTest, CreatesReportQueue) {
       dm_token_, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
   ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
                                    a.cb());
   ASSERT_OK(a.result());
@@ -147,14 +112,14 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
       dm_token_, destination_, policy_checker_callback_);
   EXPECT_TRUE(config_result.ok());
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
   ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
                                    a1.cb());
   auto result = a1.result();
   ASSERT_OK(result);
   auto report_queue_1 = std::move(result.ValueOrDie());
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
   config_result = ReportQueueConfiguration::Create(dm_token_, destination_,
                                                    policy_checker_callback_);
   ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
@@ -172,14 +137,14 @@ TEST_F(ReportClientTest, EnqueueMessageAndUpload) {
       dm_token_, destination_, policy_checker_callback_);
   EXPECT_TRUE(config_result.ok());
 
-  TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
   ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
                                    create_queue_event.cb());
   auto result = create_queue_event.result();
   ASSERT_OK(result);
   auto report_queue = std::move(result.ValueOrDie());
 
-  TestEvent<Status> enqueue_record_event;
+  test::TestEvent<Status> enqueue_record_event;
   report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
   ASSERT_OK(enqueue_record_event.result());
 

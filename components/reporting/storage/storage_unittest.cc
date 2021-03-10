@@ -26,6 +26,7 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "crypto/sha2.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,42 +47,6 @@ using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform some
-//       other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//       collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() { EXPECT_FALSE(run_loop_->running()) << "Not responded"; }
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 // Context of single decryption. Self-destructs upon completion or failure.
 class SingleDecryptionContext {
@@ -556,7 +521,7 @@ class StorageTest
           .RetiresOnSaturation();
     }
     // Initialize Storage with no key.
-    TestEvent<StatusOr<scoped_refptr<Storage>>> e;
+    test::TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     Storage::Create(options,
                     base::BindRepeating(&StorageTest::BuildMockUploader,
                                         base::Unretained(this)),
@@ -615,7 +580,7 @@ class StorageTest
 
   Status WriteString(Priority priority, base::StringPiece data) {
     EXPECT_TRUE(storage_) << "Storage not created yet";
-    TestEvent<Status> w;
+    test::TestEvent<Status> w;
     Record record;
     record.set_data(std::string(data));
     record.set_destination(UPLOAD_EVENTS);
@@ -632,7 +597,7 @@ class StorageTest
   void ConfirmOrDie(Priority priority,
                     base::Optional<std::int64_t> sequencing_id,
                     bool force = false) {
-    TestEvent<Status> c;
+    test::TestEvent<Status> c;
     storage_->Confirm(priority, sequencing_id, force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
@@ -645,7 +610,7 @@ class StorageTest
     Encryptor::PublicKeyId public_key_id;
     uint8_t public_value[X25519_PUBLIC_VALUE_LEN];
     X25519_keypair(public_value, private_key);
-    TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
+    test::TestEvent<StatusOr<Encryptor::PublicKeyId>> prepare_key_pair;
     decryptor_->RecordKeyPair(
         std::string(reinterpret_cast<const char*>(private_key),
                     X25519_PRIVATE_KEY_LEN),

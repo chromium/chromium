@@ -4254,6 +4254,7 @@ test("unit_tests") {
     "//components/reporting/client:test_support",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
+    "//components/reporting/util:test_callbacks_support",
     "//components/resources",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/password_protection:mock_password_protection",

@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//components/reporting/storage/resources:resource_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
+    "//components/reporting/util:test_callbacks_support",
     "//crypto",
     "//testing/gmock",
     "//testing/gtest",

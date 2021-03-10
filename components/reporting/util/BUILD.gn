@@ -66,6 +66,15 @@ source_set("task_runner_context") {
   deps = [ "//base" ]
 }
 
+source_set("test_callbacks_support") {
+  sources = [
+    "test_support_callbacks.cc",
+    "test_support_callbacks.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
@@ -84,6 +93,7 @@ source_set("unit_tests") {
     ":status_macros",
     ":status_proto",
     ":task_runner_context",
+    ":test_callbacks_support",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",

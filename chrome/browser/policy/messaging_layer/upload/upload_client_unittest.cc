@@ -21,6 +21,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -57,83 +58,6 @@ MATCHER_P(EqualsProto,
   arg.SerializeToString(&actual_serialized);
   return expected_serialized == actual_serialized;
 }
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//   base::OnceCallback<void(ResType* res)> type which also may perform some
-//   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() = default;
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
-
-class TestCallbackWaiter {
- public:
-  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
-
-  virtual void Signal() { run_loop_->Quit(); }
-
-  void CompleteExpectSequencingInformation(SequencingInformation expected,
-                                           bool expected_force_confirm,
-                                           SequencingInformation info,
-                                           bool force_confirm) {
-    EXPECT_THAT(info, EqualsProto(expected));
-    EXPECT_THAT(force_confirm, Eq(expected_force_confirm));
-    Signal();
-  }
-
-  void Wait() { run_loop_->Run(); }
-
- protected:
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
- public:
-  explicit TestCallbackWaiterWithCounter(size_t counter_limit)
-      : counter_limit_(counter_limit) {
-    DCHECK_GT(counter_limit, 0u);
-  }
-
-  void Signal() override {
-    const size_t old_count = counter_limit_.fetch_sub(1);
-    DCHECK_GT(old_count, 0u);
-    if (old_count > 1) {
-      return;
-    }
-    run_loop_->Quit();
-  }
-
- private:
-  std::atomic<size_t> counter_limit_;
-};
 
 // Helper function composes JSON represented as base::Value from Sequencing
 // information in request.
@@ -279,30 +203,26 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   client->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
-  TestCallbackWaiter waiter;
   const bool force_confirm_flag = force_confirm();
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
-          Invoke([&waiter, &force_confirm_flag](
+          Invoke([&force_confirm_flag](
                      base::Value request,
                      policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
                 .Run(ValueFromSucceededSequencingInfo(std::move(request),
                                                       force_confirm_flag));
-            base::ThreadPool::PostTask(
-                FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                base::BindOnce(&TestCallbackWaiter::Signal,
-                               base::Unretained(&waiter)));
           })));
 
-  TestCallbackWaiter completion_callback_waiter;
+  test::TestMultiEvent<SequencingInformation, bool> upload_completion;
   UploadClient::ReportSuccessfulUploadCallback completion_cb =
-      base::BindRepeating(
-          &TestCallbackWaiter::CompleteExpectSequencingInformation,
-          base::Unretained(&completion_callback_waiter),
-          records->back().sequencing_information(), force_confirm());
+      upload_completion.cb();
 
-  TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
+  // Save last record seq info for verification.
+  const SequencingInformation last_record_seq_info =
+      records->back().sequencing_information();
+
+  test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(client.get(), completion_cb, encryption_key_attached_cb,
                        e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
@@ -313,8 +233,10 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       upload_client->EnqueueUpload(need_encryption_key(), std::move(records));
   EXPECT_TRUE(enqueue_result.ok());
 
-  waiter.Wait();
-  completion_callback_waiter.Wait();
+  auto completion_result = upload_completion.result();
+  EXPECT_THAT(std::get<0>(completion_result),
+              EqualsProto(last_record_seq_info));
+  EXPECT_THAT(std::get<1>(completion_result), Eq(force_confirm()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

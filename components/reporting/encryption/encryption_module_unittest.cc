@@ -19,48 +19,13 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
 namespace reporting {
 namespace {
-
-// Usage (in tests only):
-//
-//   TestEvent<ResType> e;
-//   ... Do some async work passing e.cb() as a completion callback of
-//       base::OnceCallback<void(ResType* res)> type which also may perform some
-//       other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//       collected result.
-//
-template <typename ResType>
-class TestEvent {
- public:
-  TestEvent() : run_loop_(std::make_unique<base::RunLoop>()) {}
-  ~TestEvent() { EXPECT_FALSE(run_loop_->running()) << "Not responded"; }
-  TestEvent(const TestEvent& other) = delete;
-  TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    run_loop_->Run();
-    return std::forward<ResType>(result_);
-  }
-
-  // Completion callback to hand over to the processing method.
-  base::OnceCallback<void(ResType res)> cb() {
-    return base::BindOnce(
-        [](base::RunLoop* run_loop, ResType* result, ResType res) {
-          *result = std::forward<ResType>(res);
-          run_loop->Quit();
-        },
-        base::Unretained(run_loop_.get()), base::Unretained(&result_));
-  }
-
- private:
-  std::unique_ptr<base::RunLoop> run_loop_;
-  ResType result_;
-};
 
 class EncryptionModuleTest : public ::testing::Test {
  protected:
@@ -79,7 +44,7 @@ class EncryptionModuleTest : public ::testing::Test {
   }
 
   StatusOr<EncryptedRecord> EncryptSync(base::StringPiece data) {
-    TestEvent<StatusOr<EncryptedRecord>> encrypt_record;
+    test::TestEvent<StatusOr<EncryptedRecord>> encrypt_record;
     encryption_module_->EncryptRecord(data, encrypt_record.cb());
     return encrypt_record.result();
   }
@@ -87,18 +52,18 @@ class EncryptionModuleTest : public ::testing::Test {
   StatusOr<std::string> DecryptSync(
       std::pair<std::string /*shared_secret*/, std::string /*encrypted_data*/>
           encrypted) {
-    TestEvent<StatusOr<Decryptor::Handle*>> open_decrypt;
+    test::TestEvent<StatusOr<Decryptor::Handle*>> open_decrypt;
     decryptor_->OpenRecord(encrypted.first, open_decrypt.cb());
     auto open_decrypt_result = open_decrypt.result();
     RETURN_IF_ERROR(open_decrypt_result.status());
     Decryptor::Handle* const dec_handle = open_decrypt_result.ValueOrDie();
 
-    TestEvent<Status> add_decrypt;
+    test::TestEvent<Status> add_decrypt;
     dec_handle->AddToRecord(encrypted.second, add_decrypt.cb());
     RETURN_IF_ERROR(add_decrypt.result());
 
     std::string decrypted_string;
-    TestEvent<Status> close_decrypt;
+    test::TestEvent<Status> close_decrypt;
     dec_handle->CloseRecord(base::BindOnce(
         [](std::string* decrypted_string,
            base::OnceCallback<void(Status)> close_cb,
@@ -119,7 +84,7 @@ class EncryptionModuleTest : public ::testing::Test {
       Encryptor::PublicKeyId public_key_id,
       base::StringPiece encrypted_key) {
     // Retrieve private key that matches public key hash.
-    TestEvent<StatusOr<std::string>> retrieve_private_key;
+    test::TestEvent<StatusOr<std::string>> retrieve_private_key;
     decryptor_->RetrieveMatchingPrivateKey(public_key_id,
                                            retrieve_private_key.cb());
     ASSIGN_OR_RETURN(std::string private_key, retrieve_private_key.result());
@@ -135,7 +100,7 @@ class EncryptionModuleTest : public ::testing::Test {
     uint8_t out_private_key[X25519_PRIVATE_KEY_LEN];
     X25519_keypair(out_public_value, out_private_key);
 
-    TestEvent<StatusOr<Encryptor::PublicKeyId>> record_keys;
+    test::TestEvent<StatusOr<Encryptor::PublicKeyId>> record_keys;
     decryptor_->RecordKeyPair(
         std::string(reinterpret_cast<const char*>(out_private_key),
                     X25519_PRIVATE_KEY_LEN),
@@ -144,7 +109,7 @@ class EncryptionModuleTest : public ::testing::Test {
         record_keys.cb());
     ASSIGN_OR_RETURN(Encryptor::PublicKeyId new_public_key_id,
                      record_keys.result());
-    TestEvent<Status> set_public_key;
+    test::TestEvent<Status> set_public_key;
     encryption_module_->UpdateAsymmetricKey(
         std::string(reinterpret_cast<const char*>(out_public_value),
                     X25519_PUBLIC_VALUE_LEN),
@@ -518,7 +483,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   }
 
   // Register all key pairs for decryption.
-  std::vector<TestEvent<StatusOr<Encryptor::PublicKeyId>>> record_results(
+  std::vector<test::TestEvent<StatusOr<Encryptor::PublicKeyId>>> record_results(
       public_value_strings.size());
   for (size_t i = 0; i < public_value_strings.size(); ++i) {
     base::ThreadPool::PostTask(
@@ -543,7 +508,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   }
 
   // Encrypt all records in parallel.
-  std::vector<TestEvent<StatusOr<EncryptedRecord>>> results(
+  std::vector<test::TestEvent<StatusOr<EncryptedRecord>>> results(
       kTestStrings.size());
   for (size_t i = 0; i < kTestStrings.size(); ++i) {
     // Choose random key pair.
@@ -555,7 +520,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   }
 
   // Decrypt all records in parallel.
-  std::vector<TestEvent<StatusOr<std::string>>> decryption_results(
+  std::vector<test::TestEvent<StatusOr<std::string>>> decryption_results(
       kTestStrings.size());
   for (size_t i = 0; i < results.size(); ++i) {
     // Verify encryption success.
