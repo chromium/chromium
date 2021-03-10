@@ -40,8 +40,8 @@ class MockSyncService : public syncer::TestSyncService {
         /*birthday=*/std::string(), /*bag_of_chips=*/std::string(),
         syncer::ModelNeutralState(), syncer::ProgressMarkerMap(), false, 0, 0,
         0, true, 0, base::Time::Now(), base::Time::Now(),
-        std::vector<int>(syncer::ModelType::NUM_ENTRIES, 0),
-        std::vector<int>(syncer::ModelType::NUM_ENTRIES, 0),
+        std::vector<int>(syncer::GetNumModelTypes(), 0),
+        std::vector<int>(syncer::GetNumModelTypes(), 0),
         sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::TimeDelta::FromMinutes(1),
         false));
 

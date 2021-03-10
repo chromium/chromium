@@ -26,8 +26,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshot() const {
 SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin) const {
   ProgressMarkerMap download_progress_markers;
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
-    ModelType type(ModelTypeFromInt(i));
+  for (ModelType type : ModelTypeSet::All()) {
     const UpdateHandler* update_handler =
         context_->model_type_registry()->GetUpdateHandler(type);
     if (update_handler == nullptr) {
@@ -40,8 +39,8 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
 
   // TODO(crbug.com/923287): Most of the counters below are outdated. Remove.
   int num_entries = 0;
-  std::vector<int> num_entries_by_type(ModelType::NUM_ENTRIES, 0);
-  std::vector<int> num_to_delete_entries_by_type(ModelType::NUM_ENTRIES, 0);
+  std::vector<int> num_entries_by_type(GetNumModelTypes(), 0);
+  std::vector<int> num_to_delete_entries_by_type(GetNumModelTypes(), 0);
 
   SyncCycleSnapshot snapshot(
       context_->birthday(), context_->bag_of_chips(),

@@ -26,9 +26,9 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       /*num_server_conflicts=*/7, /*notifications_enabled=*/false,
       /*num_entries=*/0, /*sync_start_time=*/base::Time::Now(),
       /*poll_finish_time=*/base::Time::Now(),
-      /*num_entries_by_type=*/std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      /*num_entries_by_type=*/std::vector<int>(GetNumModelTypes(), 0),
       /*num_to_delete_entries_by_type=*/
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      std::vector<int>(GetNumModelTypes(), 0),
       /*get_updates_origin=*/sync_pb::SyncEnums::UNKNOWN_ORIGIN,
       /*poll_interval=*/base::TimeDelta::FromMinutes(30),
       /*has_remaining_local_changes=*/false);

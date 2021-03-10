@@ -543,9 +543,14 @@ void SyncAuthManager::AccessTokenFetched(
     case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
       SetLastAuthError(error);
       break;
-    default:
+    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       DLOG(ERROR) << "Unexpected persistent error: " << error.ToString();
       SetLastAuthError(error);
+      break;
+    case GoogleServiceAuthError::NUM_STATES:
+      NOTREACHED();
+      break;
   }
 
   credentials_changed_callback_.Run();

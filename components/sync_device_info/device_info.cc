@@ -136,7 +136,8 @@ std::string DeviceInfo::GetOSString() const {
       // TODO(lipalani): crbug.com/170375. Add support for ios
       // phones and tablets.
       return "android";
-    default:
+    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
+    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
       return "unknown";
   }
 }
@@ -152,7 +153,8 @@ std::string DeviceInfo::GetDeviceTypeString() const {
       return "phone";
     case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
       return "tablet";
-    default:
+    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
+    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
       return "unknown";
   }
 }

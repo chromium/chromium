@@ -38,7 +38,25 @@ std::string GetUpdatesResponseEvent::GetDetails() const {
     case SyncerError::SERVER_MORE_TO_DOWNLOAD:
       return base::StringPrintf("Received %d update(s).  Some updates remain.",
                                 response_.get_updates().entries_size());
-    default:
+    case SyncerError::UNSET:
+    case SyncerError::CANNOT_DO_WORK:
+    case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
+    case SyncerError::NETWORK_IO_ERROR:
+    case SyncerError::SYNC_SERVER_ERROR:
+    case SyncerError::SYNC_AUTH_ERROR:
+    case SyncerError::SERVER_RETURN_UNKNOWN_ERROR:
+    case SyncerError::SERVER_RETURN_THROTTLED:
+    case SyncerError::SERVER_RETURN_TRANSIENT_ERROR:
+    case SyncerError::SERVER_RETURN_MIGRATION_DONE:
+    case SyncerError::SERVER_RETURN_CLEAR_PENDING:
+    case SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY:
+    case SyncerError::SERVER_RETURN_CONFLICT:
+    case SyncerError::SERVER_RESPONSE_VALIDATION_FAILED:
+    case SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN:
+    case SyncerError::SERVER_RETURN_PARTIAL_FAILURE:
+    case SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE:
+    case SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE:
+    case SyncerError::DATATYPE_TRIGGERED_RETRY:
       return "Received error: " + error_.ToString();
   }
 }

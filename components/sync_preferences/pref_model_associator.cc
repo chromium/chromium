@@ -479,7 +479,7 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
 }
 
 void PrefModelAssociator::RegisterPref(const std::string& name) {
-  DCHECK(registered_preferences_.count(name) == 0);
+  DCHECK(!base::Contains(registered_preferences_, name));
   registered_preferences_.insert(name);
 
   // Make sure data in the local store matches the registered type (where "type"
@@ -492,8 +492,8 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
 
 void PrefModelAssociator::RegisterPrefWithLegacyModelType(
     const std::string& name) {
-  DCHECK(legacy_model_type_preferences_.count(name) == 0);
-  DCHECK(registered_preferences_.count(name) == 0);
+  DCHECK(!base::Contains(legacy_model_type_preferences_, name));
+  DCHECK(!base::Contains(registered_preferences_, name));
   legacy_model_type_preferences_.insert(name);
 }
 

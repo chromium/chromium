@@ -44,31 +44,32 @@ SyncStatus AllStatus::CalcSyncing(const SyncCycleEvent& event) const {
   status.server_conflicts = snapshot.num_server_conflicts();
   status.committed_count =
       snapshot.model_neutral_state().num_successful_commits;
-
-  if (event.what_happened == SyncCycleEvent::SYNC_CYCLE_BEGIN) {
-    status.syncing = true;
-  } else if (event.what_happened == SyncCycleEvent::SYNC_CYCLE_ENDED) {
-    status.syncing = false;
-  }
-
   status.num_entries_by_type = snapshot.num_entries_by_type();
   status.num_to_delete_entries_by_type =
       snapshot.num_to_delete_entries_by_type();
 
-  // Accumulate update count only once per cycle to avoid double-counting.
-  if (event.what_happened == SyncCycleEvent::SYNC_CYCLE_ENDED) {
-    status.updates_received +=
-        snapshot.model_neutral_state().num_updates_downloaded_total;
-    status.tombstone_updates_received +=
-        snapshot.model_neutral_state().num_tombstone_updates_downloaded_total;
-    status.reflected_updates_received +=
-        snapshot.model_neutral_state().num_reflected_updates_downloaded_total;
-    status.num_commits_total +=
-        snapshot.model_neutral_state().num_successful_commits;
-    status.num_local_overwrites_total +=
-        snapshot.model_neutral_state().num_local_overwrites;
-    status.num_server_overwrites_total +=
-        snapshot.model_neutral_state().num_server_overwrites;
+  switch (event.what_happened) {
+    case SyncCycleEvent::SYNC_CYCLE_BEGIN:
+      status.syncing = true;
+      break;
+    case SyncCycleEvent::SYNC_CYCLE_ENDED:
+      status.syncing = false;
+      // Accumulate update count only once per cycle to avoid double-counting.
+      status.updates_received +=
+          snapshot.model_neutral_state().num_updates_downloaded_total;
+      status.tombstone_updates_received +=
+          snapshot.model_neutral_state().num_tombstone_updates_downloaded_total;
+      status.reflected_updates_received +=
+          snapshot.model_neutral_state().num_reflected_updates_downloaded_total;
+      status.num_commits_total +=
+          snapshot.model_neutral_state().num_successful_commits;
+      status.num_local_overwrites_total +=
+          snapshot.model_neutral_state().num_local_overwrites;
+      status.num_server_overwrites_total +=
+          snapshot.model_neutral_state().num_server_overwrites;
+      break;
+    case SyncCycleEvent::STATUS_CHANGED:
+      break;
   }
   return status;
 }
@@ -82,16 +83,7 @@ void AllStatus::AddObserver(SyncStatusObserver* observer) {
 
 void AllStatus::OnSyncCycleEvent(const SyncCycleEvent& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (event.what_happened) {
-    case SyncCycleEvent::SYNC_CYCLE_BEGIN:
-    case SyncCycleEvent::STATUS_CHANGED:
-    case SyncCycleEvent::SYNC_CYCLE_ENDED:
-      status_ = CalcSyncing(event);
-      break;
-    default:
-      LOG(ERROR) << "Unrecognized Syncer Event: " << event.what_happened;
-      break;
-  }
+  status_ = CalcSyncing(event);
   NotifyStatusChanged();
 }
 

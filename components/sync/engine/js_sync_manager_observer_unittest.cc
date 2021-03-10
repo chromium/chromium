@@ -59,8 +59,8 @@ TEST_F(JsSyncManagerObserverTest, OnSyncCycleCompleted) {
       /*birthday=*/std::string(), /*bag_of_chips=*/std::string(),
       ModelNeutralState(), ProgressMarkerMap(), false, 5, 2, 7, false, 0,
       base::Time::Now(), base::Time::Now(),
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      std::vector<int>(GetNumModelTypes(), 0),
+      std::vector<int>(GetNumModelTypes(), 0),
       sync_pb::SyncEnums::UNKNOWN_ORIGIN,
       /*poll_interval=*/base::TimeDelta::FromMinutes(30),
       /*has_remaining_local_changes=*/false);

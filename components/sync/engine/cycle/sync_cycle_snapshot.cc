@@ -34,8 +34,8 @@ SyncCycleSnapshot::SyncCycleSnapshot()
       num_server_conflicts_(0),
       notifications_enabled_(false),
       num_entries_(0),
-      num_entries_by_type_(ModelType::NUM_ENTRIES, 0),
-      num_to_delete_entries_by_type_(ModelType::NUM_ENTRIES, 0),
+      num_entries_by_type_(GetNumModelTypes(), 0),
+      num_to_delete_entries_by_type_(GetNumModelTypes(), 0),
       has_remaining_local_changes_(false),
       is_initialized_(false) {}
 
@@ -115,15 +115,14 @@ std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
 
   std::unique_ptr<base::DictionaryValue> counter_entries(
       new base::DictionaryValue());
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; i++) {
+  for (ModelType type : ModelTypeSet::All()) {
     std::unique_ptr<base::DictionaryValue> type_entries(
         new base::DictionaryValue());
-    type_entries->SetInteger("numEntries", num_entries_by_type_[i]);
+    type_entries->SetInteger("numEntries", num_entries_by_type_[type]);
     type_entries->SetInteger("numToDeleteEntries",
-                             num_to_delete_entries_by_type_[i]);
+                             num_to_delete_entries_by_type_[type]);
 
-    const std::string model_type = ModelTypeToString(static_cast<ModelType>(i));
-    counter_entries->Set(model_type, std::move(type_entries));
+    counter_entries->Set(ModelTypeToString(type), std::move(type_entries));
   }
   value->Set("counter_entries", std::move(counter_entries));
   value->SetBoolean("hasRemainingLocalChanges", has_remaining_local_changes_);

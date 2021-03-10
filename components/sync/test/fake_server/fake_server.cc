@@ -253,8 +253,12 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
     case sync_pb::ClientToServerMessage::COMMIT:
       last_commit_message_ = message;
       break;
-    default:
+    case sync_pb::ClientToServerMessage::CLEAR_SERVER_DATA:
       // Don't care.
+      break;
+    case sync_pb::ClientToServerMessage::DEPRECATED_3:
+    case sync_pb::ClientToServerMessage::DEPRECATED_4:
+      NOTREACHED();
       break;
   }
 

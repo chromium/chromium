@@ -343,8 +343,9 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
         response->mutable_clear_server_data();
         success = true;
         break;
-      default:
-        response->Clear();
+      case sync_pb::ClientToServerMessage::DEPRECATED_3:
+      case sync_pb::ClientToServerMessage::DEPRECATED_4:
+        NOTREACHED();
         return net::HTTP_BAD_REQUEST;
     }
 

@@ -88,9 +88,8 @@ SyncManagerImpl::SyncManagerImpl(
       observing_network_connectivity_changes_(false),
       sync_encryption_handler_(nullptr) {
   // Pre-fill |notification_info_map_|.
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
-    notification_info_map_.insert(
-        std::make_pair(ModelTypeFromInt(i), NotificationInfo()));
+  for (ModelType type : ModelTypeSet::All()) {
+    notification_info_map_.insert(std::make_pair(type, NotificationInfo()));
   }
 }
 

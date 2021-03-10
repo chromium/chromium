@@ -108,15 +108,6 @@ class SyncerTest : public testing::Test,
 
   void OnSyncCycleEvent(const SyncCycleEvent& event) override {
     DVLOG(1) << "HandleSyncEngineEvent in unittest " << event.what_happened;
-    // we only test for entry-specific events, not status changed ones.
-    switch (event.what_happened) {
-      case SyncCycleEvent::SYNC_CYCLE_BEGIN:  // Fall through.
-      case SyncCycleEvent::STATUS_CHANGED:
-      case SyncCycleEvent::SYNC_CYCLE_ENDED:
-        return;
-      default:
-        FAIL() << "Handling unknown error type in unit tests!!";
-    }
   }
 
   void OnActionableError(const SyncProtocolError& error) override {}

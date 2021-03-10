@@ -24,8 +24,8 @@ SyncStatus::SyncStatus()
       crypto_has_pending_keys(false),
       has_keystore_key(false),
       passphrase_type(PassphraseType::kImplicitPassphrase),
-      num_entries_by_type(ModelType::NUM_ENTRIES, 0),
-      num_to_delete_entries_by_type(ModelType::NUM_ENTRIES, 0) {}
+      num_entries_by_type(GetNumModelTypes(), 0),
+      num_to_delete_entries_by_type(GetNumModelTypes(), 0) {}
 
 SyncStatus::SyncStatus(const SyncStatus& other) = default;
 

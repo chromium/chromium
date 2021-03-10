@@ -50,7 +50,40 @@ base::TimeDelta GetDefaultDelayForType(ModelType model_type,
       return kSlowNudgeDelay;
     case SHARING_MESSAGE:
       return GetSharingMessageDelay(minimum_delay);
-    default:
+    case PASSWORDS:
+    case AUTOFILL_PROFILE:
+    case AUTOFILL_WALLET_DATA:
+    case AUTOFILL_WALLET_METADATA:
+    case AUTOFILL_WALLET_OFFER:
+    case THEMES:
+    case TYPED_URLS:
+    case EXTENSIONS:
+    case SEARCH_ENGINES:
+    case APPS:
+    case APP_SETTINGS:
+    case EXTENSION_SETTINGS:
+    case HISTORY_DELETE_DIRECTIVES:
+    case DICTIONARY:
+    case DEVICE_INFO:
+    case PRIORITY_PREFERENCES:
+    case SUPERVISED_USER_SETTINGS:
+    case APP_LIST:
+    case DEPRECATED_SUPERVISED_USER_ALLOWLISTS:
+    case ARC_PACKAGE:
+    case PRINTERS:
+    case READING_LIST:
+    case USER_CONSENTS:
+    case SEND_TAB_TO_SELF:
+    case SECURITY_EVENTS:
+    case WIFI_CONFIGURATIONS:
+    case WEB_APPS:
+    case OS_PREFERENCES:
+    case OS_PRIORITY_PREFERENCES:
+    case PROXY_TABS:
+    case NIGORI:
+      return minimum_delay;
+    case UNSPECIFIED:
+      NOTREACHED();
       return minimum_delay;
   }
 }

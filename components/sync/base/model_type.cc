@@ -183,14 +183,14 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      ModelTypeForHistograms::kNigori},
 };
 
-static_assert(base::size(kModelTypeInfoMap) == ModelType::NUM_ENTRIES,
-              "kModelTypeInfoMap should have ModelType::NUM_ENTRIES elements");
+static_assert(base::size(kModelTypeInfoMap) == GetNumModelTypes(),
+              "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(38 == syncer::ModelType::NUM_ENTRIES,
+static_assert(38 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(38 == syncer::ModelType::NUM_ENTRIES,
+static_assert(38 == syncer::GetNumModelTypes(),
               "When adding a new type, update kAllocatorDumpNameAllowlist in "
               "base/trace_event/memory_infra_background_allowlist.cc.");
 
@@ -310,9 +310,6 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case SHARING_MESSAGE:
       specifics->mutable_sharing_message();
       break;
-    case ModelType::NUM_ENTRIES:
-      NOTREACHED() << "No default field value for " << ModelTypeToString(type);
-      break;
   }
 }
 
@@ -332,7 +329,7 @@ int GetSpecificsFieldNumberFromModelType(ModelType model_type) {
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(38 == ModelType::NUM_ENTRIES,
+  static_assert(38 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -414,7 +411,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(38 == ModelType::NUM_ENTRIES,
+  static_assert(38 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();
@@ -562,7 +559,7 @@ bool NotificationTypeToRealModelType(const std::string& notification_type,
 
 bool IsRealDataType(ModelType model_type) {
   return model_type >= FIRST_REAL_MODEL_TYPE &&
-         model_type < ModelType::NUM_ENTRIES;
+         model_type <= LAST_REAL_MODEL_TYPE;
 }
 
 bool IsProxyType(ModelType model_type) {

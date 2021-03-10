@@ -28,7 +28,7 @@ namespace syncer {
 // In order to track datatype association results, we need at least as many
 // entries as datatypes. Reserve additional space for other kinds of events that
 // are likely to happen during first sync or startup.
-const unsigned int kMaxEntries = ModelType::NUM_ENTRIES + 10;
+const unsigned int kMaxEntries = GetNumModelTypes() + 10;
 
 // Listens to events and records them in a queue. And passes the events to
 // syncer when requested.

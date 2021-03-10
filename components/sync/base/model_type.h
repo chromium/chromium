@@ -151,7 +151,8 @@ enum ModelType {
   NIGORI,
   LAST_REAL_MODEL_TYPE = NIGORI,
 
-  NUM_ENTRIES,
+  // NEW ENTRIES MUST BE ADDED ABOVE THIS.
+  LAST_ENTRY = LAST_REAL_MODEL_TYPE,
 };
 
 using ModelTypeSet =
@@ -159,9 +160,13 @@ using ModelTypeSet =
 using FullModelTypeSet = EnumSet<ModelType, UNSPECIFIED, LAST_REAL_MODEL_TYPE>;
 using ModelTypeNameMap = std::map<ModelType, const char*>;
 
+constexpr int GetNumModelTypes() {
+  return static_cast<int>(ModelType::LAST_ENTRY) + 1;
+}
+
 inline ModelType ModelTypeFromInt(int i) {
   DCHECK_GE(i, 0);
-  DCHECK_LT(i, ModelType::NUM_ENTRIES);
+  DCHECK_LT(i, GetNumModelTypes());
   return static_cast<ModelType>(i);
 }
 

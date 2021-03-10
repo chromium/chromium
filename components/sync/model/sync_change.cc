@@ -70,10 +70,7 @@ std::string SyncChange::ChangeTypeToString(SyncChangeType change_type) {
       return "ACTION_UPDATE";
     case ACTION_DELETE:
       return "ACTION_DELETE";
-    default:
-      NOTREACHED();
   }
-  return std::string();
 }
 
 std::string SyncChange::ToString() const {

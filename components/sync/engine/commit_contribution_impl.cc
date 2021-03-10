@@ -19,6 +19,40 @@
 
 namespace syncer {
 
+namespace {
+
+CommitResponseData BuildCommitResponseData(
+    const CommitRequestData& commit_request,
+    const sync_pb::CommitResponse_EntryResponse& entry_response) {
+  CommitResponseData response_data;
+  response_data.id = entry_response.id_string();
+  if (response_data.id != commit_request.entity->id) {
+    // Server has changed the sync id in the request. Write back the
+    // original sync id. This is useful for data types without a notion of
+    // a client tag such as bookmarks.
+    response_data.id_in_request = commit_request.entity->id;
+  }
+  response_data.response_version = entry_response.version();
+  response_data.client_tag_hash = commit_request.entity->client_tag_hash;
+  response_data.sequence_number = commit_request.sequence_number;
+  response_data.specifics_hash = commit_request.specifics_hash;
+  response_data.unsynced_time = commit_request.unsynced_time;
+  return response_data;
+}
+
+FailedCommitResponseData BuildFailedCommitResponseData(
+    const CommitRequestData& commit_request,
+    const sync_pb::CommitResponse_EntryResponse& entry_response) {
+  FailedCommitResponseData response_data;
+  response_data.client_tag_hash = commit_request.entity->client_tag_hash;
+  response_data.response_type = entry_response.response_type();
+  response_data.datatype_specific_error =
+      entry_response.datatype_specific_error();
+  return response_data;
+}
+
+}  // namespace
+
 CommitContributionImpl::CommitContributionImpl(
     ModelType type,
     const sync_pb::DataTypeContext& context,
@@ -84,75 +118,48 @@ void CommitContributionImpl::AddToCommitMessage(
 SyncerError CommitContributionImpl::ProcessCommitResponse(
     const sync_pb::ClientToServerResponse& response,
     StatusController* status) {
-  const sync_pb::CommitResponse& commit_response = response.commit();
-
-  bool unknown_error = false;
-  int transient_error_commits = 0;
-  int conflicting_commits = 0;
-  int successes = 0;
-
-  CommitResponseDataList committed_response_list;
+  CommitResponseDataList success_response_list;
   FailedCommitResponseDataList error_response_list;
+  bool has_unknown_error = false;
+  bool has_conflicting_commits = false;
+  bool has_transient_error_commits = false;
 
   for (size_t i = 0; i < commit_requests_.size(); ++i) {
+    // Fill |success_response_list| or |error_response_list|.
     const sync_pb::CommitResponse_EntryResponse& entry_response =
-        commit_response.entryresponse(entries_start_index_ + i);
-    const CommitRequestData& commit_request = *commit_requests_[i];
-
+        response.commit().entryresponse(entries_start_index_ + i);
     if (entry_response.response_type() == sync_pb::CommitResponse::SUCCESS) {
-      ++successes;
-
-      CommitResponseData response_data;
-      response_data.id = entry_response.id_string();
-
-      if (response_data.id != commit_request.entity->id) {
-        // Server has changed the sync id in the request. Write back the
-        // original sync id. This is useful for data types without a notion of
-        // a client tag such as bookmarks.
-        response_data.id_in_request = commit_request.entity->id;
-      }
-      response_data.response_version = entry_response.version();
-      response_data.client_tag_hash = commit_request.entity->client_tag_hash;
-      response_data.sequence_number = commit_request.sequence_number;
-      response_data.specifics_hash = commit_request.specifics_hash;
-      response_data.unsynced_time = commit_request.unsynced_time;
-      committed_response_list.push_back(response_data);
-
-      status->increment_num_successful_commits();
-      if (type_ == BOOKMARKS) {
-        status->increment_num_successful_bookmark_commits();
-      }
+      success_response_list.push_back(
+          BuildCommitResponseData(*commit_requests_[i], entry_response));
     } else {
-      FailedCommitResponseData response_data;
-      response_data.client_tag_hash = commit_request.entity->client_tag_hash;
+      error_response_list.push_back(
+          BuildFailedCommitResponseData(*commit_requests_[i], entry_response));
+    }
 
-      response_data.response_type = entry_response.response_type();
-      response_data.datatype_specific_error =
-          entry_response.datatype_specific_error();
-      error_response_list.push_back(response_data);
-
-      switch (entry_response.response_type()) {
-        case sync_pb::CommitResponse::INVALID_MESSAGE:
-          DLOG(ERROR) << "Server reports commit message is invalid.";
-          unknown_error = true;
-          break;
-        case sync_pb::CommitResponse::CONFLICT:
-          DVLOG(1) << "Server reports conflict for commit message.";
-          ++conflicting_commits;
-          status->increment_num_server_conflicts();
-          break;
-        case sync_pb::CommitResponse::OVER_QUOTA:
-        case sync_pb::CommitResponse::RETRY:
-        case sync_pb::CommitResponse::TRANSIENT_ERROR:
-          DLOG(WARNING) << "Entity commit blocked by transient error.";
-          ++transient_error_commits;
-          break;
-        // TODO(vitaliii): avoid the default clause and list all values
-        // explicitly (this will fail at compile time if enum is extended).
-        default:
-          DLOG(ERROR) << "Bad commit response.";
-          unknown_error = true;
-      }
+    // Update |status| and mark the presence of specific errors (e.g.
+    // conflicting commits).
+    switch (entry_response.response_type()) {
+      case sync_pb::CommitResponse::SUCCESS:
+        status->increment_num_successful_commits();
+        if (type_ == BOOKMARKS) {
+          status->increment_num_successful_bookmark_commits();
+        }
+        break;
+      case sync_pb::CommitResponse::INVALID_MESSAGE:
+        DLOG(ERROR) << "Server reports commit message is invalid.";
+        has_unknown_error = true;
+        break;
+      case sync_pb::CommitResponse::CONFLICT:
+        DVLOG(1) << "Server reports conflict for commit message.";
+        status->increment_num_server_conflicts();
+        has_conflicting_commits = true;
+        break;
+      case sync_pb::CommitResponse::OVER_QUOTA:
+      case sync_pb::CommitResponse::RETRY:
+      case sync_pb::CommitResponse::TRANSIENT_ERROR:
+        DLOG(WARNING) << "Entity commit blocked by transient error.";
+        has_transient_error_commits = true;
+        break;
     }
   }
 
@@ -160,22 +167,23 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
   // parent. It's the schedulers job to handle the failures, but parent may
   // react to them as well.
   std::move(on_commit_response_callback_)
-      .Run(committed_response_list, error_response_list);
+      .Run(success_response_list, error_response_list);
 
   // Commit was successfully processed. We do not want to call both
   // |on_commit_response_callback_| and |on_full_commit_failure_callback_|.
   on_full_commit_failure_callback_.Reset();
 
   // Let the scheduler know about the failures.
-  if (unknown_error) {
+  if (has_unknown_error) {
     return SyncerError(SyncerError::SERVER_RETURN_UNKNOWN_ERROR);
-  } else if (transient_error_commits > 0) {
-    return SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
-  } else if (conflicting_commits > 0) {
-    return SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
-  } else {
-    return SyncerError(SyncerError::SYNCER_OK);
   }
+  if (has_transient_error_commits) {
+    return SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
+  }
+  if (has_conflicting_commits) {
+    return SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
+  }
+  return SyncerError(SyncerError::SYNCER_OK);
 }
 
 void CommitContributionImpl::ProcessCommitFailure(
