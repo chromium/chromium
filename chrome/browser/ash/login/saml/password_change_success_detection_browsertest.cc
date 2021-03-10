@@ -182,9 +182,7 @@ class PasswordChangeSuccessDetectionTest
   std::unique_ptr<InSessionPasswordChangeManager> password_change_manager_;
 };
 
-// TODO(crbug.com/1022192) This test fails when HTML Imports is disabled.
-IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest,
-                       DISABLED_DetectAdfsSuccess) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest, DetectAdfsSuccess) {
   fake_idp_.SetFormSubmitAction("/adfs/portal/updatepassword/");
   fake_idp_.RedirectNextPostTo("/adfs/portal/updatepassword/?status=0");
 
@@ -192,9 +190,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest,
   WaitForPasswordChangeDetected();
 }
 
-// TODO(crbug.com/1022192) This test fails when HTML Imports is disabled.
-IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest,
-                       DISABLED_DetectAzureSuccess) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest, DetectAzureSuccess) {
   fake_idp_.SetFormSubmitAction("/ChangePassword.aspx");
   fake_idp_.RedirectNextPostTo("/ChangePassword.aspx?ReturnCode=0");
 
@@ -202,9 +198,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest,
   WaitForPasswordChangeDetected();
 }
 
-// TODO(crbug.com/1022192) This test fails when HTML Imports is disabled.
-IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest,
-                       DISABLED_DetectPingSuccess) {
+IN_PROC_BROWSER_TEST_F(PasswordChangeSuccessDetectionTest, DetectPingSuccess) {
   fake_idp_.SetFormSubmitAction(
       "/idp/directory/a/12345/password/chg/67890?returnurl=/Selection");
   fake_idp_.RedirectNextPostTo("/Selection");
