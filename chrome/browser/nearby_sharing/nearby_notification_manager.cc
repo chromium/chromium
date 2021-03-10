@@ -581,6 +581,7 @@ NearbyNotificationManager::NearbyNotificationManager(
   DCHECK(notification_display_service_);
   DCHECK(nearby_service_);
   DCHECK(pref_service_);
+  nearby_service_->AddObserver(this);
   nearby_service_->RegisterReceiveSurface(
       this, NearbySharingService::ReceiveSurfaceState::kBackground);
   nearby_service_->RegisterSendSurface(
@@ -588,6 +589,7 @@ NearbyNotificationManager::NearbyNotificationManager(
 }
 
 NearbyNotificationManager::~NearbyNotificationManager() {
+  nearby_service_->RemoveObserver(this);
   nearby_service_->UnregisterReceiveSurface(this);
   nearby_service_->UnregisterSendSurface(this, this);
 }
@@ -653,6 +655,16 @@ void NearbyNotificationManager::OnShareTargetDiscovered(
 
 void NearbyNotificationManager::OnShareTargetLost(ShareTarget share_target) {
   // Nothing to do here.
+}
+
+void NearbyNotificationManager::OnNearbyProcessStopped() {
+  if (share_target_ && last_transfer_status_) {
+    ShowFailure(
+        *share_target_,
+        TransferMetadataBuilder().set_status(*last_transfer_status_).build());
+  }
+  share_target_ = base::nullopt;
+  last_transfer_status_ = base::nullopt;
 }
 
 void NearbyNotificationManager::ShowProgress(

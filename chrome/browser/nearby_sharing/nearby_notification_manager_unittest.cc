@@ -512,26 +512,36 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
   for (FileAttachment::Type type : param.file_attachments)
     share_target.file_attachments.push_back(CreateFileAttachment(type));
 
-  for (std::pair<TransferMetadata::Status, int> error :
-       std::vector<std::pair<TransferMetadata::Status, int>>{
-           {TransferMetadata::Status::kNotEnoughSpace,
-            IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE},
-           {TransferMetadata::Status::kTimedOut, IDS_NEARBY_ERROR_TIME_OUT},
-           {TransferMetadata::Status::kUnsupportedAttachmentType,
-            IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE},
-           {TransferMetadata::Status::kFailed, 0},
+  for (base::Optional<std::pair<TransferMetadata::Status, int>> error :
+       std::vector<base::Optional<std::pair<TransferMetadata::Status, int>>>{
+           std::make_pair(TransferMetadata::Status::kNotEnoughSpace,
+                          IDS_NEARBY_ERROR_NOT_ENOUGH_SPACE),
+           std::make_pair(TransferMetadata::Status::kTimedOut,
+                          IDS_NEARBY_ERROR_TIME_OUT),
+           std::make_pair(TransferMetadata::Status::kUnsupportedAttachmentType,
+                          IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE),
+           std::make_pair(TransferMetadata::Status::kFailed, 0),
+           base::nullopt,
        }) {
-    manager()->ShowFailure(
-        share_target,
-        TransferMetadataBuilder().set_status(error.first).build());
+    if (error) {
+      manager()->ShowFailure(
+          share_target,
+          TransferMetadataBuilder().set_status(error->first).build());
+    } else {
+      manager()->OnTransferUpdate(
+          share_target, TransferMetadataBuilder()
+                            .set_status(TransferMetadata::Status::kInProgress)
+                            .build());
+      manager()->OnNearbyProcessStopped();
+    }
 
     base::string16 expected_title = FormatNotificationTitle(
         is_incoming ? IDS_NEARBY_NOTIFICATION_RECEIVE_FAILURE_TITLE
                     : IDS_NEARBY_NOTIFICATION_SEND_FAILURE_TITLE,
         param, device_name, /*use_capitalized_resource=*/false);
     base::string16 expected_message =
-        error.second ? l10n_util::GetStringUTF16(error.second)
-                     : base::string16();
+        error && error->second ? l10n_util::GetStringUTF16(error->second)
+                               : base::string16();
 
     std::vector<message_center::Notification> notifications =
         GetDisplayedNotifications();

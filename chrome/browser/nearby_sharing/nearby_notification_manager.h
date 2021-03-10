@@ -10,12 +10,13 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/share_target_discovered_callback.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 
-class NearbySharingService;
 class NotificationDisplayService;
 class PrefService;
 class Profile;
@@ -25,7 +26,8 @@ class SkBitmap;
 // be shown as simultaneous connections are not supported. All methods should be
 // called from the UI thread.
 class NearbyNotificationManager : public TransferUpdateCallback,
-                                  public ShareTargetDiscoveredCallback {
+                                  public ShareTargetDiscoveredCallback,
+                                  public NearbySharingService::Observer {
  public:
   static constexpr base::TimeDelta kOnboardingDismissedTimeout =
       base::TimeDelta::FromMinutes(15);
@@ -60,6 +62,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // ShareTargetDiscoveredCallback:
   void OnShareTargetDiscovered(ShareTarget share_target) override;
   void OnShareTargetLost(ShareTarget share_target) override;
+
+  // NearbySharingService::Observer
+  void OnHighVisibilityChanged(bool in_high_visibility) override {}
+  void OnNearbyProcessStopped() override;
+  void OnShutdown() override {}
 
   // Shows a progress notification of the data being transferred to or from
   // |share_target|. Has a cancel action to cancel the transfer.
