@@ -10,6 +10,10 @@
 #include "ash/ash_export.h"
 #include "ui/compositor/layer.h"
 
+namespace gfx {
+class Canvas;
+}
+
 namespace ash {
 
 class PointScanLayer : public AccessibilityLayer {
@@ -44,6 +48,11 @@ class PointScanLayer : public AccessibilityLayer {
   int GetInset() const override;
 
  private:
+  void DrawLineWithOffsets(gfx::Canvas* canvas,
+                           cc::PaintFlags flags,
+                           int x_offset,
+                           int y_offset);
+
   // ui:LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnLayerChange(PointScanLayerAnimationInfo* animation_info);

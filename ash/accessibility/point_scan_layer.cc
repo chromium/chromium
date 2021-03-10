@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -19,10 +20,14 @@
 namespace ash {
 
 namespace {
-const int kDefaultStrokeWidth = 6;
+constexpr int kStrokeWidth = 2;
 constexpr int kDefaultRangeWidthDips = 150;
 constexpr int kDefaultRangeHeightDips = 120;
-constexpr int kDefaultPaddingDips = 4;
+constexpr int kDashLengthDips = 6;
+constexpr int kGapLengthDips = 3;
+
+constexpr SkColor kInnerColor = gfx::kGoogleBlue300;
+constexpr SkColor kOuterColor = gfx::kGoogleBlue600;
 
 display::Display GetPrimaryDisplay() {
   DCHECK(display::Screen::GetScreen());
@@ -43,24 +48,20 @@ PointScanLayer::PointScanLayer(AccessibilityLayerDelegate* delegate,
 }
 
 void PointScanLayer::Start() {
-  gfx::Point start;
+  gfx::Point start = bounds().origin();
   gfx::Point end;
+  int padding = kStrokeWidth / 2 + 1;
 
-  // Set the end point, based on the orientation.
-  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL)
+  // Set the end point, based on the orientation. Offset by padding so lines
+  // draw onscreen.
+  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
     end = bounds().bottom_left();
-  else if (orientation_ == PointScanLayer::Orientation::VERTICAL)
+    start.Offset(padding, 0);
+    end.Offset(padding, 0);
+  } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
     end = bounds().top_right();
-
-  // Ranges need to offset |line_| by the range width.
-  if (type_ == PointScanLayer::Type::RANGE) {
-    if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
-      start.Offset(kDefaultPaddingDips, 0);
-      end.Offset(kDefaultPaddingDips, 0);
-    } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
-      start.Offset(0, kDefaultPaddingDips);
-      end.Offset(0, kDefaultPaddingDips);
-    }
+    start.Offset(0, padding);
+    end.Offset(0, padding);
   }
 
   line_.start = start;
@@ -70,6 +71,7 @@ void PointScanLayer::Start() {
 
 void PointScanLayer::Pause() {
   is_moving_ = false;
+  layer()->SchedulePaint(bounds());
 }
 
 bool PointScanLayer::IsMoving() const {
@@ -91,24 +93,60 @@ void PointScanLayer::OnPaintLayer(const ui::PaintContext& context) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kDefaultStrokeWidth);
-  flags.setColor(gfx::kGoogleBlue300);
+  flags.setStrokeWidth(kStrokeWidth);
+  int half_stroke_width = kStrokeWidth / 2;
 
-  SkPath path;
-
-  if (type_ == PointScanLayer::Type::RANGE) {
-    if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
-      path.moveTo(line_.start.x() + kDefaultRangeWidthDips, line_.start.y());
-      path.lineTo(line_.end.x() + kDefaultRangeWidthDips, line_.end.y());
-    } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
-      path.moveTo(line_.start.x(), line_.start.y() + kDefaultRangeHeightDips);
-      path.lineTo(line_.end.x(), line_.end.y() + kDefaultRangeHeightDips);
-    }
+  if (is_moving_) {
+    SkScalar intervals[] = {kDashLengthDips, kGapLengthDips};
+    int intervals_length = 2;
+    flags.setPathEffect(SkDashPathEffect::Make(intervals, intervals_length, 0));
   }
 
-  path.moveTo(line_.start.x(), line_.start.y());
-  path.lineTo(line_.end.x(), line_.end.y());
-  recorder.canvas()->DrawPath(path, flags);
+  flags.setColor(kOuterColor);
+  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, -half_stroke_width, 0);
+  } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, 0, -half_stroke_width);
+  }
+
+  flags.setColor(kInnerColor);
+  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, half_stroke_width, 0);
+  } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, 0, half_stroke_width);
+  }
+
+  if (type_ != PointScanLayer::Type::RANGE)
+    return;
+
+  // Draw the second line for range scanning.
+  flags.setColor(kOuterColor);
+  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags,
+                        kDefaultRangeWidthDips - half_stroke_width, 0);
+  } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, 0,
+                        kDefaultRangeHeightDips - half_stroke_width);
+  }
+
+  flags.setColor(kInnerColor);
+  if (orientation_ == PointScanLayer::Orientation::HORIZONTAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags,
+                        kDefaultRangeWidthDips + half_stroke_width, 0);
+  } else if (orientation_ == PointScanLayer::Orientation::VERTICAL) {
+    DrawLineWithOffsets(recorder.canvas(), flags, 0,
+                        kDefaultRangeHeightDips + half_stroke_width);
+  }
+}
+
+void PointScanLayer::DrawLineWithOffsets(gfx::Canvas* canvas,
+                                         cc::PaintFlags flags,
+                                         int x_offset,
+                                         int y_offset) {
+  SkPath path;
+  path.moveTo(line_.start.x() + x_offset, line_.start.y() + y_offset);
+  path.lineTo(line_.end.x() + x_offset, line_.end.y() + y_offset);
+  canvas->DrawPath(path, flags);
 }
 
 }  // namespace ash
