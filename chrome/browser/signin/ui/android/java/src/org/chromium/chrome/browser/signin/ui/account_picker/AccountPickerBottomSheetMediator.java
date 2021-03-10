@@ -51,13 +51,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mAccountPickerDelegate = accountPickerDelegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
 
-        OnClickListener onDismissClicked = v -> {
-            SigninMetricsUtils.logAccountConsistencyPromoAction(
-                    AccountConsistencyPromoAction.DISMISSED_BUTTON);
-            SigninPreferencesManager.getInstance()
-                    .incrementAccountPickerBottomSheetActiveDismissalCount();
-            dismissBottomSheetRunnable.run();
-        };
+        OnClickListener onDismissClicked = v -> dismissBottomSheetRunnable.run();
+
         mModel = AccountPickerBottomSheetProperties.createModel(
                 this::onSelectedAccountClicked, this::onContinueAsClicked, onDismissClicked);
         mProfileDataCache.addObserver(mProfileDataSourceObserver);
