@@ -242,10 +242,10 @@ NearbyConnections::NearbyConnections(
                      MojoDependencyName::kSocketManager),
       base::SequencedTaskRunnerHandle::Get());
 
-  mdns_responder_.Bind(
-      std::move(dependencies->webrtc_dependencies->mdns_responder),
+  mdns_responder_factory_.Bind(
+      std::move(dependencies->webrtc_dependencies->mdns_responder_factory),
       io_task_runner);
-  mdns_responder_.set_disconnect_handler(
+  mdns_responder_factory_.set_disconnect_handler(
       base::BindOnce(&NearbyConnections::OnDisconnect,
                      weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kMdnsResponder),

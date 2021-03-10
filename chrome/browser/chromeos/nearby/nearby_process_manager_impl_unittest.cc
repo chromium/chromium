@@ -114,7 +114,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
               location::nearby::connections::mojom::WebRtcDependencies::New(
                   webrtc_dependencies_->socket_manager_
                       .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->mdns_responder_
+                  webrtc_dependencies_->mdns_responder_factory_
                       .BindNewPipeAndPassRemote(),
                   webrtc_dependencies_->ice_config_fetcher_
                       .BindNewPipeAndPassRemote(),

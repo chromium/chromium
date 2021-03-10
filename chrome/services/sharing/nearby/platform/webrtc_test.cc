@@ -53,13 +53,14 @@ class WebRtcMediumTest : public ::testing::Test {
   WebRtcMediumTest()
       : socket_manager_(mojo_impl_.socket_manager_.BindNewPipeAndPassRemote(),
                         task_environment_.GetMainThreadTaskRunner()),
-        mdns_responder_(mojo_impl_.mdns_responder_.BindNewPipeAndPassRemote(),
-                        task_environment_.GetMainThreadTaskRunner()),
+        mdns_responder_factory_(
+            mojo_impl_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
+            task_environment_.GetMainThreadTaskRunner()),
         ice_config_fetcher_(
             mojo_impl_.ice_config_fetcher_.BindNewPipeAndPassRemote()),
         messenger_(mojo_impl_.messenger_.BindNewPipeAndPassRemote()),
         webrtc_medium_(socket_manager_,
-                       mdns_responder_,
+                       mdns_responder_factory_,
                        ice_config_fetcher_,
                        messenger_,
                        base::ThreadTaskRunnerHandle::Get()) {}
@@ -105,7 +106,8 @@ class WebRtcMediumTest : public ::testing::Test {
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+      mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
 

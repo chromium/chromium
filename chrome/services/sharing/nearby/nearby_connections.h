@@ -73,9 +73,10 @@ class NearbyConnections : public mojom::NearbyConnections {
       const {
     return socket_manager_;
   }
-  const mojo::SharedRemote<network::mojom::MdnsResponder>& mdns_responder()
-      const {
-    return mdns_responder_;
+  const mojo::SharedRemote<
+      location::nearby::connections::mojom::MdnsResponderFactory>&
+  mdns_responder_factory() const {
+    return mdns_responder_factory_;
   }
   const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
   ice_config_fetcher() const {
@@ -180,7 +181,8 @@ class NearbyConnections : public mojom::NearbyConnections {
   // to sequence binding the Remote.
   mojo::SharedRemote<bluetooth::mojom::Adapter> bluetooth_adapter_;
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::SharedRemote<network::mojom::MdnsResponder> mdns_responder_;
+  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+      mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
