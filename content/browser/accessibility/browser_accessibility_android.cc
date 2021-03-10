@@ -1309,9 +1309,6 @@ base::string16 BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kIgnored:
       // No role description.
       break;
-    case ax::mojom::Role::kImageMap:
-      message_id = IDS_AX_ROLE_GRAPHIC;
-      break;
     case ax::mojom::Role::kImage:
       message_id = IDS_AX_ROLE_GRAPHIC;
       break;

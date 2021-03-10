@@ -702,6 +702,12 @@ base::string16 AXPlatformNodeBase::GetRoleDescription() const {
   return GetDelegate()->GetLocalizedStringForRoleDescription();
 }
 
+bool AXPlatformNodeBase::IsImageWithMap() const {
+  DCHECK_EQ(GetData().role, ax::mojom::Role::kImage)
+      << "Only call IsImageWithMap() on an image";
+  return GetChildCount();
+}
+
 AXPlatformNodeBase* AXPlatformNodeBase::GetSelectionContainer() const {
   if (!delegate_)
     return nullptr;

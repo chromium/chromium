@@ -340,8 +340,6 @@ const char* ToString(ax::mojom::Role role) {
       return "iframePresentational";
     case ax::mojom::Role::kIgnored:
       return "ignored";
-    case ax::mojom::Role::kImageMap:
-      return "imageMap";
     case ax::mojom::Role::kImage:
       return "image";
     case ax::mojom::Role::kImeCandidate:

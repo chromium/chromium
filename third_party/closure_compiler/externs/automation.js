@@ -243,7 +243,6 @@ chrome.automation.RoleType = {
   IFRAME_PRESENTATIONAL: 'iframePresentational',
   IGNORED: 'ignored',
   IMAGE: 'image',
-  IMAGE_MAP: 'imageMap',
   IME_CANDIDATE: 'imeCandidate',
   INLINE_TEXT_BOX: 'inlineTextBox',
   INPUT_TIME: 'inputTime',

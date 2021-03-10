@@ -125,10 +125,10 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (owner->IsNativeTextControl() || owner->HasContentEditableAttributeSet())
     return false;
 
-  // Image maps can only use <img usemap> to "own" <area> children.
+  // Images can only use <img usemap> to "own" <area> children.
   // This requires special parenting logic, and aria-owns is prevented here in
   // order to keep things from getting too complex.
-  if (owner->RoleValue() == ax::mojom::blink::Role::kImageMap)
+  if (owner->RoleValue() == ax::mojom::blink::Role::kImage)
     return false;
 
   // Similarly, do not allow <area> to own another object.

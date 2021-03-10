@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++imageMap name='pipe'
+++++++image name='pipe'
 ++++++++link name='pipe1'
 ++++++++link name='pipe1'
 ++++++paragraph

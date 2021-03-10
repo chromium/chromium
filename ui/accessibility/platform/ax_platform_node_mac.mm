@@ -142,7 +142,6 @@ RoleMap BuildRoleMap() {
       {ax::mojom::Role::kIframePresentational, NSAccessibilityGroupRole},
       {ax::mojom::Role::kIgnored, NSAccessibilityUnknownRole},
       {ax::mojom::Role::kImage, NSAccessibilityImageRole},
-      {ax::mojom::Role::kImageMap, NSAccessibilityGroupRole},
       {ax::mojom::Role::kInputTime, @"AXTimeField"},
       {ax::mojom::Role::kLabelText, NSAccessibilityGroupRole},
       {ax::mojom::Role::kLayoutTable, NSAccessibilityGroupRole},

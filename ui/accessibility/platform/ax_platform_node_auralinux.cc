@@ -2803,9 +2803,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kIgnored:
       return ATK_ROLE_REDUNDANT_OBJECT;
     case ax::mojom::Role::kImage:
-      return ATK_ROLE_IMAGE;
-    case ax::mojom::Role::kImageMap:
-      return ATK_ROLE_IMAGE_MAP;
+      return IsImageWithMap() ? ATK_ROLE_IMAGE_MAP : ATK_ROLE_IMAGE;
     case ax::mojom::Role::kInlineTextBox:
       return kStaticRole;
     case ax::mojom::Role::kInputTime:

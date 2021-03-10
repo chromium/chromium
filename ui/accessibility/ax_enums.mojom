@@ -214,7 +214,6 @@ enum Role {
   kIframePresentational,
   kIgnored,
   kImage,
-  kImageMap,
   kImeCandidate,
   kInlineTextBox,
   kInputTime,

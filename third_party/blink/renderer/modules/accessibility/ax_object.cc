@@ -497,7 +497,6 @@ const InternalRoleEntry kInternalRoles[] = {
     {ax::mojom::blink::Role::kIframePresentational, "IframePresentational"},
     {ax::mojom::blink::Role::kIframe, "Iframe"},
     {ax::mojom::blink::Role::kIgnored, "Ignored"},
-    {ax::mojom::blink::Role::kImageMap, "ImageMap"},
     {ax::mojom::blink::Role::kImage, "Image"},
     {ax::mojom::blink::Role::kImeCandidate, "ImeCandidate"},
     {ax::mojom::blink::Role::kInlineTextBox, "InlineTextBox"},
@@ -946,10 +945,10 @@ void AXObject::EnsureCorrectParentComputation() {
   if (!GetNode() || !GetLayoutObject())
     return;
 
-  // Don't check the computed parent if the cached parent is an image map:
+  // Don't check the computed parent if the cached parent is an image:
   // <area> children's location in the DOM and HTML hierarchy does not match.
   // TODO(aleventhal) Try to remove this rule, it may be unnecessary now.
-  if (parent_->RoleValue() == ax::mojom::blink::Role::kImageMap)
+  if (parent_->RoleValue() == ax::mojom::blink::Role::kImage)
     return;
 
   // TODO(aleventhal) Different in test fast/css/first-letter-removed-added.html
@@ -3555,14 +3554,6 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   return ax::mojom::blink::Role::kUnknown;
 }
 
-void AXObject::UpdateRoleForImage() {
-  // There's no need to fire a role changed event or MarkDirty because the
-  // only time the role changes is when we're updating children anyway.
-  // TODO(accessibility) Use one Blink role and move this to the browser.
-  role_ = children_.size() ? ax::mojom::blink::Role::kImageMap
-                           : ax::mojom::blink::Role::kImage;
-}
-
 bool AXObject::IsEditableRoot() const {
   UpdateCachedAttributeValuesIfNeeded();
   return cached_is_editable_root_;
@@ -4066,10 +4057,10 @@ void AXObject::UpdateChildrenIfNecessary() {
   if (!NeedsToUpdateChildren())
     return;
 
-    // Ensure children already cleared.
 #if DCHECK_IS_ON()
+  // Ensure there are no unexpected, preexisting children, before we add more.
   if (IsMenuList()) {
-    // AXMenuList is special and keeps its popup child.
+    // AXMenuList is special and keeps its popup child, even when cleared.
     DCHECK_LE(children_.size(), 1U);
   } else {
     // Ensure children have been correctly cleared.
@@ -5216,7 +5207,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kFooterAsNonLandmark:
     case ax::mojom::blink::Role::kGenericContainer:
     case ax::mojom::blink::Role::kHeaderAsNonLandmark:
-    case ax::mojom::blink::Role::kImageMap:
     case ax::mojom::blink::Role::kInlineTextBox:
     case ax::mojom::blink::Role::kLabelText:
     case ax::mojom::blink::Role::kLayoutTable:

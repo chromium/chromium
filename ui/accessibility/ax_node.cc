@@ -1499,11 +1499,12 @@ bool AXNode::IsLeaf() const {
     // contents. See https://crbug.com/689204.
     // So we decided to not enforce the leafiness of buttons and expose all
     // children.
+    // Images are not leaves because the same role is used for image maps,
+    // which can have link and/or text children.
     case ax::mojom::Role::kButton:
       return false;
     case ax::mojom::Role::kDocCover:
     case ax::mojom::Role::kGraphicsSymbol:
-    case ax::mojom::Role::kImage:
     case ax::mojom::Role::kMeter:
     case ax::mojom::Role::kScrollBar:
     case ax::mojom::Role::kSlider:

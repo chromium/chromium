@@ -191,11 +191,8 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
     return DetermineTableCellRole();
 
   if (IsImageOrAltText(layout_object_, node)) {
-    if (node && node->IsLink())
-      return ax::mojom::blink::Role::kImageMap;
     if (IsA<HTMLInputElement>(node))
       return ButtonRoleType();
-
     return ax::mojom::blink::Role::kImage;
   }
 

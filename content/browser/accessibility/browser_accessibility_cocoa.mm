@@ -1995,6 +1995,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
               _owner->HasState(ax::mojom::State::kMultiline)) ||
              (_owner->IsRichTextField() && !ui::IsComboBox(role))) {
     cocoa_role = NSAccessibilityTextAreaRole;
+  } else if (role == ax::mojom::Role::kImage && _owner->GetChildCount()) {
+    // An image map is an image with children, and exposed on Mac as a group.
+    cocoa_role = NSAccessibilityGroupRole;
   } else if (role == ax::mojom::Role::kImage &&
              _owner->HasExplicitlyEmptyName()) {
     cocoa_role = NSAccessibilityUnknownRole;

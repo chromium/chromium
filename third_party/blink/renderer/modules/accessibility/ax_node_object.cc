@@ -801,25 +801,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (!GetNode())
     return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
 
-  if (GetNode()->IsLink()) {
-    if (IsA<HTMLImageElement>(GetNode())) {
-      // If the image will have area children, it is a map, otherwise an image.
-      // Unlike most roles, this may be recomputed again in the lifetime of
-      // |this| object, as children are gained or removed.
-      HTMLMapElement* map_element = GetMapForImage(GetLayoutObject());
-      // Make sure this is the primary image for this <map>. For more details on
-      // multiple images referring to the same map, see AddImageMapChildren().
-      if (map_element && map_element->ImageElement() == GetElement())
-        return ax::mojom::blink::Role::kImageMap;
-      return ax::mojom::blink::Role::kImage;
-    }
-    if (IsA<HTMLImageElement>(GetNode())) {
-      return children_.size() ? ax::mojom::blink::Role::kImageMap
-                              : ax::mojom::blink::Role::kImage;
-    } else {  // <a href> or <svg:a xlink:href>
-      // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
-      return ax::mojom::blink::Role::kLink;
-    }
+  if (IsA<HTMLImageElement>(GetNode()))
+    return ax::mojom::blink::Role::kImage;
+
+  if (GetNode()->IsLink()) {  // <a href> or <svg:a xlink:href>
+    // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
+    return ax::mojom::blink::Role::kLink;
   }
 
   if (IsA<HTMLPortalElement>(*GetNode())) {
@@ -3621,17 +3608,8 @@ void AXNodeObject::AddImageMapChildren() {
         ax_primary_image->ChildCountIncludingIgnored() == 0 &&
         Traversal<HTMLAreaElement>::FirstWithin(*map)) {
       // The primary image still needs to add the area children, and there's at
-      // least one to add. Its role also needs to change to kImageMap.
-      // The children change will force the role change as well.
+      // least one to add.
       AXObjectCache().ChildrenChanged(primary_image_element);
-      // The current image may change role from an image map to an image.
-      // Unlike many role changes, this can be done on the same object.
-      // There's no need to fire a role changed event or MarkDirty because the
-      // only time the role changes is when we're updating children anyway.
-      if (role_ == ax::mojom::blink::Role::kImageMap) {
-        ax_primary_image->ClearChildren();  // Clear the children now.
-        ax_primary_image->UpdateRoleForImage();
-      }
     }
     return;
   }
@@ -3647,11 +3625,7 @@ void AXNodeObject::AddImageMapChildren() {
         DCHECK(ax_previous_parent->GetNode());
         AXObjectCache().ChildrenChangedWithCleanLayout(
             ax_previous_parent->GetNode(), ax_previous_parent);
-        if (ax_previous_parent->RoleValue() ==
-            ax::mojom::blink::Role::kImageMap) {
           ax_previous_parent->ClearChildren();
-          ax_previous_parent->UpdateRoleForImage();
-        }
       }
     }
 
@@ -3660,14 +3634,6 @@ void AXNodeObject::AddImageMapChildren() {
          Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
       // Add an <area> element for this child if it has a link and is visible.
       AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(&area, this));
-    }
-
-    // The current image may change role from an image to an image map.
-    // Unlike many role changes, this can be done on the same object.
-    if (role_ == ax::mojom::blink::Role::kImage) {
-      // There's no need to fire a role changed event or MarkDirty because the
-      // only time the role changes is when we're updating children anyway.
-      UpdateRoleForImage();
     }
   }
 }

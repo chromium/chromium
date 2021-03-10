@@ -390,6 +390,10 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   base::string16 GetRoleDescriptionFromImageAnnotationStatusOrFromAttribute()
       const;
 
+  // Return true if a kImage corresponds to an image map (has children).
+  // Cannot be called on nodes with a role other than kImage.
+  bool IsImageWithMap() const;
+
   // Cast a gfx::NativeViewAccessible to an AXPlatformNodeBase if it is one,
   // or return NULL if it's not an instance of this class.
   static AXPlatformNodeBase* FromNativeViewAccessible(

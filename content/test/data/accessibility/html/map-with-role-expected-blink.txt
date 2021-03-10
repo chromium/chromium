@@ -1,5 +1,5 @@
 rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer
-++++++imageMap name='pipe'
+++++++image name='pipe'
 ++++++++link name='pipe1'

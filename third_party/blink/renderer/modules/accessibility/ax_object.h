@@ -779,7 +779,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // ARIA attributes.
   virtual ax::mojom::blink::Role DetermineAccessibilityRole() = 0;
-  void UpdateRoleForImage();  // Set role to image (leaf) or map (has children).
   ax::mojom::blink::Role DetermineAriaRoleAttribute() const;
   virtual ax::mojom::blink::Role AriaRoleAttribute() const;
   virtual bool HasAriaAttribute() const { return false; }

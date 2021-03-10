@@ -280,7 +280,6 @@ bool IsImage(const ax::mojom::Role role) {
     case ax::mojom::Role::kDocCover:
     case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
     case ax::mojom::Role::kSvgRoot:
       return true;
     default:
@@ -754,7 +753,6 @@ bool ShouldHaveReadonlyStateByDefault(const ax::mojom::Role role) {
     case ax::mojom::Role::kDocument:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
     case ax::mojom::Role::kList:
     case ax::mojom::Role::kListItem:
     case ax::mojom::Role::kPdfRoot:

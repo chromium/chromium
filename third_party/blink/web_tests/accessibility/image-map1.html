@@ -30,7 +30,7 @@
             var body = accessibilityController.accessibleElementById('body');
             var container = body.childAtIndex(0);
 
-            shouldBe("container.role", "'AXRole: AXImageMap'");
+            shouldBe("container.role", "'AXRole: AXImage'");
 
 
             shouldBe("container.childAtIndex(0).role", "'AXRole: AXLink'");

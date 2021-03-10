@@ -5334,7 +5334,6 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_GROUPING;
 
     case ax::mojom::Role::kImage:
-    case ax::mojom::Role::kImageMap:
       return ROLE_SYSTEM_GRAPHIC;
 
     case ax::mojom::Role::kInputTime:
@@ -5835,8 +5834,9 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
     case ax::mojom::Role::kIframe:
       ia2_role = IA2_ROLE_INTERNAL_FRAME;
       break;
-    case ax::mojom::Role::kImageMap:
-      ia2_role = IA2_ROLE_IMAGE_MAP;
+    case ax::mojom::Role::kImage:
+      if (IsImageWithMap())
+        ia2_role = IA2_ROLE_IMAGE_MAP;
       break;
     case ax::mojom::Role::kLabelText:
     case ax::mojom::Role::kLegend:
@@ -6165,9 +6165,6 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
 
     case ax::mojom::Role::kImage:
       return L"img";
-
-    case ax::mojom::Role::kImageMap:
-      return L"document";
 
     case ax::mojom::Role::kImeCandidate:
       // Internal role, not used on Windows.
@@ -6841,10 +6838,8 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_GroupControlTypeId;
 
     case ax::mojom::Role::kImage:
-      return UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kImageMap:
-      return UIA_DocumentControlTypeId;
+      return IsImageWithMap() ? UIA_DocumentControlTypeId
+                              : UIA_ImageControlTypeId;
 
     case ax::mojom::Role::kInputTime:
       return UIA_GroupControlTypeId;
