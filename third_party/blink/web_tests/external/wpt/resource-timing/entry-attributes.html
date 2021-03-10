@@ -93,31 +93,38 @@ function assert_http_resource(entry) {
   ]);
 }
 
-promise_test(async () => {
-  // Clear out everything that isn't the one ResourceTiming entry under test.
-  performance.clearResourceTimings();
-  await load_image("resources/fake_responses.py#hash=1");
-  const entry_list = performance.getEntriesByType("resource");
-  if (entry_list.length != 1) {
-    throw new Error("There should be one entry for one resource");
-  }
-  const entry = entry_list[0];
-  assert_true(entry.name.includes('#hash=1'),
-    "There should be a hash in the resource name");
+// Given a resource-loader and a PerformanceResourceTiming validator, loads a
+// resource and validates the resulting entry.
+function attribute_test(load_resource, validate, test_label) {
+  promise_test(
+    async () => {
+      // Clear out everything that isn't the one ResourceTiming entry under test.
+      performance.clearResourceTimings();
 
-  assert_http_resource(entry);
-}, "Image resources should generate conformant entries");
+      await load_resource();
 
-promise_test(async () => {
-  // Clear out everything that isn't the one ResourceTiming entry under test.
-  performance.clearResourceTimings();
-  await load_font("/fonts/Ahem.ttf");
-  const entry_list = performance.getEntriesByType("resource");
-  if (entry_list.length != 1) {
-    throw new Error("There should be one entry for one resource");
-  }
-  assert_http_resource(entry_list[0]);
-}, "Font resources should generate conformant entries");
+      const entry_list = performance.getEntriesByType("resource");
+      if (entry_list.length != 1) {
+        throw new Error(`There should be one entry for one resource (found ${entry_list.length})`);
+      }
+
+      validate(entry_list[0]);
+  }, test_label);
+}
+
+attribute_test(
+  () => load_image("resources/fake_responses.py#hash=1"),
+  entry => {
+    assert_true(entry.name.includes('#hash=1'),
+      "There should be a hash in the resource name");
+    assert_http_resource(entry);
+  },
+  "Image resources should generate conformant entries");
+
+attribute_test(
+  () => load_font("/fonts/Ahem.ttf"),
+  assert_http_resource,
+  "Font resources should generate conformant entries");
 
 </script>
 </head>
