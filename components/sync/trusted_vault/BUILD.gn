@@ -45,3 +45,17 @@ static_library("trusted_vault") {
     "//third_party/boringssl",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_security_domains_server.cc",
+    "fake_security_domains_server.h",
+  ]
+
+  deps = [
+    "//components/sync/protocol",
+    "//components/sync/trusted_vault",
+    "//net:test_support",
+  ]
+}

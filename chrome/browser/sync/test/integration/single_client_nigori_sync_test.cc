@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -33,7 +34,9 @@
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
+#include "components/sync/trusted_vault/fake_security_domains_server.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/ec_private_key.h"
@@ -194,6 +197,43 @@ class TrustedVaultRecoverabilityNotDegradedChecker
                 ->GetUserSettings()
                 ->IsTrustedVaultRecoverabilityDegraded();
   }
+};
+
+class FakeSecurityDomainsServerMemberStatusChecker
+    : public StatusChangeChecker {
+ public:
+  FakeSecurityDomainsServerMemberStatusChecker(
+      int expected_member_count,
+      const std::vector<uint8_t>& expected_trusted_vault_key,
+      const syncer::FakeSecurityDomainsServer* server)
+      : expected_member_count_(expected_member_count),
+        expected_trusted_vault_key_(expected_trusted_vault_key),
+        server_(server) {}
+  ~FakeSecurityDomainsServerMemberStatusChecker() override = default;
+
+ protected:
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for security domains server to have members with"
+           " expected key.";
+    if (server_->GetMemberCount() != expected_member_count_) {
+      *os << "Security domains server member count ("
+          << server_->GetMemberCount() << ") doesn't match expected value ("
+          << expected_member_count_ << ").";
+      return false;
+    }
+    if (!server_->AllMembersHaveKey(expected_trusted_vault_key_)) {
+      *os << "Some members in security domains service don't have expected "
+             "key.";
+      return false;
+    }
+    return true;
+  }
+
+ private:
+  int expected_member_count_;
+  std::vector<uint8_t> expected_trusted_vault_key_;
+  const syncer::FakeSecurityDomainsServer* server_;
 };
 
 class SingleClientNigoriSyncTest : public SyncTest {
@@ -1021,6 +1061,74 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   EXPECT_EQ(sync_ui_util::NO_SYNC_ERROR,
             sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {
+ public:
+  SingleClientNigoriSyncTestWithSecurityDomainsServer()
+      : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitAndEnableFeature(
+        switches::kFollowTrustedVaultKeyRotation);
+  }
+  SingleClientNigoriSyncTestWithSecurityDomainsServer(
+      const SingleClientNigoriSyncTestWithSecurityDomainsServer& other) =
+      delete;
+  SingleClientNigoriSyncTestWithSecurityDomainsServer& operator=(
+      const SingleClientNigoriSyncTestWithSecurityDomainsServer& other) =
+      delete;
+  ~SingleClientNigoriSyncTestWithSecurityDomainsServer() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    security_domains_server_ =
+        std::make_unique<syncer::FakeSecurityDomainsServer>(
+            embedded_test_server()->base_url());
+    command_line->AppendSwitchASCII(
+        switches::kTrustedVaultServiceURL,
+        security_domains_server_->server_url().spec());
+    SyncTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(
+        base::BindRepeating(&syncer::FakeSecurityDomainsServer::HandleRequest,
+                            base::Unretained(security_domains_server_.get())));
+    embedded_test_server()->StartAcceptingConnections();
+    SyncTest::SetUpOnMainThread();
+  }
+
+  void TearDown() override {
+    // Test server shutdown is required before |security_domains_server_| can be
+    // destroyed.
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    SyncTest::TearDown();
+  }
+
+  syncer::FakeSecurityDomainsServer* GetSecurityDomainsServer() {
+    return security_domains_server_.get();
+  }
+
+ private:
+  std::unique_ptr<syncer::FakeSecurityDomainsServer> security_domains_server_;
+  base::test::ScopedFeatureList override_features_;
+};
+
+// Device registration attempt should be taken upon sign in into primary
+// profile. It should be successful when security domain server allows device
+// registration with constant key.
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
+                       ShouldRegisterDeviceWithConstantKey) {
+  ASSERT_TRUE(SetupSync());
+  // TODO(crbug.com/1113599): consider checking member public key (requires
+  // either ability to overload key generator in the test or exposing public key
+  // from the client).
+  EXPECT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->received_invalid_request());
 }
 
 }  // namespace
