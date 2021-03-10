@@ -62,12 +62,35 @@ NSString* const kSiriShortcutOpenInChrome = @"OpenInChromeIntent";
 NSString* const kSiriShortcutSearchInChrome = @"SearchInChromeIntent";
 NSString* const kSiriShortcutOpenInIncognito = @"OpenInChromeIncognitoIntent";
 
+// Constants for compatible mode for user activities.
+NSString* const kRegularMode = @"RegularMode";
+NSString* const kIncognitoMode = @"IncognitoMode";
+
 std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
   std::vector<GURL> URLs;
   for (NSURL* URL in intentURLs) {
     URLs.push_back(net::GURLWithNSURL(URL));
   }
   return URLs;
+}
+
+// Returns the compatible mode array for an user activity.
+NSArray* CompatibleModeForActivityType(NSString* activityType) {
+  if (activityType == CSSearchableItemActionType ||
+      activityType == kShortcutNewSearch ||
+      activityType == kShortcutVoiceSearch ||
+      activityType == kShortcutQRScanner ||
+      activityType == kSiriShortcutSearchInChrome) {
+    return @[ kRegularMode, kIncognitoMode ];
+  } else if (activityType == kSiriShortcutOpenInChrome) {
+    return @[ kRegularMode ];
+  } else if (activityType == kShortcutNewIncognitoSearch ||
+             activityType == kSiriShortcutOpenInIncognito) {
+    return @[ kIncognitoMode ];
+  } else {
+    NOTREACHED();
+  }
+  return nil;
 }
 
 }  // namespace
@@ -537,12 +560,16 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
 
 + (BOOL)canProceeedWithUserActivity:(NSUserActivity*)userActivity
                         prefService:(PrefService*)prefService {
-  return ([userActivity.activityType
-              isEqualToString:kSiriShortcutOpenInChrome] &&
-          IsIncognitoModeForced(prefService)) ||
-         ([userActivity.activityType
-              isEqualToString:kSiriShortcutOpenInIncognito] &&
-          IsIncognitoModeDisabled(prefService));
+  NSArray* array = CompatibleModeForActivityType(userActivity.activityType);
+
+  if (IsIncognitoModeDisabled(prefService)) {
+    return [array containsObject:kRegularMode];
+  } else if (IsIncognitoModeForced(prefService)) {
+    return [array containsObject:kIncognitoMode];
+  }
+
+  // Return YES if the compatible mode array is not nil.
+  return array != nil;
 }
 
 #pragma mark - Internal methods.
