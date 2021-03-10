@@ -13,7 +13,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 
@@ -44,12 +43,8 @@ public class PackageManagerDelegate {
     @SuppressLint("PackageManagerGetSignatures")
     public PackageInfo getPackageInfoWithSignatures(String packageName) {
         try {
-            // GET_SIGNATURES is deprecated in API level 28. See:
-            // https://developer.android.com/reference/android/content/pm/PackageManager#GET_SIGNATURES
-            int flag = Build.VERSION.SDK_INT >= 28 ? PackageManager.GET_SIGNING_CERTIFICATES
-                                                   : PackageManager.GET_SIGNATURES;
             return ContextUtils.getApplicationContext().getPackageManager().getPackageInfo(
-                    packageName, flag);
+                    packageName, PackageManager.GET_SIGNATURES);
         } catch (NameNotFoundException e) {
             return null;
         }
