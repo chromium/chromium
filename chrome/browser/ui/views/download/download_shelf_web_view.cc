@@ -9,9 +9,9 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/border.h"
-#include "url/url_constants.h"
 
 DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
                                            BrowserView* parent)
@@ -21,8 +21,7 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
       parent_(parent) {
   SetVisible(false);
 
-  // TODO: Replace with a new chrome::kChromeUIDownloadsBarURL.
-  LoadInitialURL(GURL(url::kAboutBlankURL));
+  LoadInitialURL(GURL(chrome::kChromeUIDownloadShelfURL));
 
   shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(
       gfx::Animation::ShouldRenderRichAnimation() ? 120 : 0));

@@ -105,6 +105,7 @@ if (enable_js_type_check) {
         "commander:closure_compile",
         "discards:closure_compile",
         "download_internals:closure_compile",
+        "download_shelf:closure_compile",
         "downloads:closure_compile",
         "feedback_webui/js:closure_compile",
         "gaia_auth_host:closure_compile",
