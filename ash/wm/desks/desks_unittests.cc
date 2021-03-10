@@ -1662,8 +1662,7 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   auto create_new_desk_with_mocked_time =
       [](DesksController* desks_controller, base::SimpleTestClock* test_clock) {
         NewDesk();
-        desks_controller->desks().back()->OverrideClockForTesting(  // IN-TEST
-            test_clock);
+        desks_controller->desks().back()->OverrideClockForTesting(test_clock);
       };
 
   // Set the time to 00:00:00 local time the next day, override the current
@@ -1671,9 +1670,8 @@ TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
   test_clock.SetNow(base::Time::Now().LocalMidnight());
   test_clock.Advance(base::TimeDelta::FromHours(1));
   auto* active_desk = desks_controller->active_desk();
-  const_cast<Desk*>(active_desk)
-      ->OverrideClockForTesting(&test_clock);                       // IN-TEST
-  const_cast<Desk*>(active_desk)->ResetVisitedMetricsForTesting();  // IN-TEST
+  const_cast<Desk*>(active_desk)->OverrideClockForTesting(&test_clock);
+  const_cast<Desk*>(active_desk)->ResetVisitedMetricsForTesting();
   EXPECT_EQ(
       0u,
       histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());

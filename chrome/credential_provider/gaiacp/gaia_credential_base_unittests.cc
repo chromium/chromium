@@ -3531,7 +3531,7 @@ void GcpGaiaCredentialBaseFetchCloudPoliciesTest::SetUp() {
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
-  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
 }
 
 TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {

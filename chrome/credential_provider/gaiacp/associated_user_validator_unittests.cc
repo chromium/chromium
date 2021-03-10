@@ -700,11 +700,9 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
       FakeInternetAvailabilityChecker::kHicForceYes);
 
   // Set MDM url for enrollment.
-  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl,
-                                          L"https://mdm.com"));  // IN-TEST
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L"https://mdm.com"));
   // Enable password sync.
-  ASSERT_EQ(S_OK,
-            SetGlobalFlagForTesting(kRegDisablePasswordSync, 0));  // IN-TEST
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegDisablePasswordSync, 0));
 
   bool should_user_locking_be_enabled =
       CGaiaCredentialProvider::IsUsageScenarioSupported(cpus);
@@ -778,7 +776,7 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
       should_user_locking_be_enabled && is_get_auth_enforced;
 
   EXPECT_EQ(should_user_be_blocked,
-            validator.IsUserAccessBlockedForTesting(OLE2W(sid)));  // IN-TEST
+            validator.IsUserAccessBlockedForTesting(OLE2W(sid)));
   EXPECT_EQ(is_get_auth_enforced, validator.IsAuthEnforcedForUser(OLE2W(sid)));
 
   if (is_get_auth_enforced && reauth_for_missing_policy) {
@@ -790,8 +788,7 @@ TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
   // Unlock the user.
   validator.AllowSigninForUsersWithInvalidTokenHandles();
 
-  EXPECT_EQ(false,
-            validator.IsUserAccessBlockedForTesting(OLE2W(sid)));  // IN-TEST
+  EXPECT_EQ(false, validator.IsUserAccessBlockedForTesting(OLE2W(sid)));
   EXPECT_NE(S_OK,
             GetMachineRegDWORD(kWinlogonUserListRegKey, username, &reg_value));
 }

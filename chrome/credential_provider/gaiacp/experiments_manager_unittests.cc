@@ -26,8 +26,7 @@ class ExperimentsManagerTest : public GlsRunnerTestBase {
 void ExperimentsManagerTest::SetUp() {
   GlsRunnerTestBase::SetUp();
 
-  ASSERT_EQ(S_OK,
-            SetGlobalFlagForTesting(L"experiments_enabled", 1));  // IN-TEST
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(L"experiments_enabled", 1));
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();

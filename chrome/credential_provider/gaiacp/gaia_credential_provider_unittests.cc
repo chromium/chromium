@@ -849,7 +849,7 @@ void GcpGaiaCredentialBaseMultiUserCloudPolicyTest::SetUp() {
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
   fakes.os_user_manager_for_testing = fake_os_user_manager();
-  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+  UserPoliciesManager::Get()->SetFakesForTesting(&fakes);
 }
 
 TEST_P(GcpGaiaCredentialBaseMultiUserCloudPolicyTest, CanCreateNewUsers) {

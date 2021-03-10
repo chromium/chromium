@@ -185,7 +185,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   FakeTokenGenerator fake_token_generator;
   fake_token_generator.SetTokensForTesting(
-      {base::GenerateGUID(), base::GenerateGUID()});  // IN-TEST
+      {base::GenerateGUID(), base::GenerateGUID()});
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
 
@@ -272,7 +272,7 @@ TEST_F(TaskManagerTest, BackOff) {
   std::wstring serial_number = L"1234";
   GoogleRegistrationDataForTesting g_registration_data(serial_number);
   std::wstring machine_guid = L"machine_guid";
-  SetMachineGuidForTesting(machine_guid);  // IN-TEST
+  SetMachineGuidForTesting(machine_guid);
 
   // Create a fake user associated to a gaia id.
   CComBSTR sid1;
@@ -286,7 +286,7 @@ TEST_F(TaskManagerTest, BackOff) {
 
   FakeTokenGenerator fake_token_generator;
   fake_token_generator.SetTokensForTesting(
-      {base::GenerateGUID(), base::GenerateGUID()});  // IN-TEST
+      {base::GenerateGUID(), base::GenerateGUID()});
 
   ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid1));
 

@@ -35,7 +35,7 @@ void AppInventoryManagerBaseTest::SetUp() {
   FakesForTesting fakes;
   fakes.fake_win_http_url_fetcher_creator =
       fake_http_url_fetcher_factory()->GetCreatorCallback();
-  AppInventoryManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
+  AppInventoryManager::Get()->SetFakesForTesting(&fakes);
 }
 
 std::wstring AppInventoryManagerBaseTest::CreateUser() {
