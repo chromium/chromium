@@ -1883,6 +1883,21 @@
             ]
         }
     ],
+    "ContentCapture": [
+        {
+            "platforms": [
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentCapture"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContentCaptureConstantStreaming": [
         {
             "platforms": [
