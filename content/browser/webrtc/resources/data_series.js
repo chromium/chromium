@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The maximum number of data points buffered for each stats. Old data points
+// will be shifted out when the buffer is full.
+export const MAX_STATS_DATA_POINT_BUFFER_SIZE = 1000;
+
 /**
  * A TimelineDataSeries collects an ordered series of (time, value) pairs,
  * and converts them to graph points.  It also keeps track of its color and
@@ -9,13 +13,8 @@
  * It keeps MAX_STATS_DATA_POINT_BUFFER_SIZE data points at most. Old data
  * points will be dropped when it reaches this size.
  */
-var TimelineDataSeries = (function() {
-  'use strict';
-
-  /**
-   * @constructor
-   */
-  function TimelineDataSeries() {
+export class TimelineDataSeries {
+  constructor() {
     // List of DataPoints in chronological order.
     this.dataPoints_ = [];
 
@@ -29,109 +28,106 @@ var TimelineDataSeries = (function() {
     this.cacheValues_ = [];
   }
 
-  TimelineDataSeries.prototype = {
-    /**
-     * @override
-     */
-    toJSON: function() {
-      if (this.dataPoints_.length < 1) {
-        return {};
-      }
-
-      var values = [];
-      for (var i = 0; i < this.dataPoints_.length; ++i) {
-        values.push(this.dataPoints_[i].value);
-      }
-      return {
-        startTime: this.dataPoints_[0].time,
-        endTime: this.dataPoints_[this.dataPoints_.length - 1].time,
-        values: JSON.stringify(values),
-      };
-    },
-
-    /**
-     * Adds a DataPoint to |this| with the specified time and value.
-     * DataPoints are assumed to be received in chronological order.
-     */
-    addPoint: function(timeTicks, value) {
-      var time = new Date(timeTicks);
-      this.dataPoints_.push(new DataPoint(time, value));
-
-      if (this.dataPoints_.length > MAX_STATS_DATA_POINT_BUFFER_SIZE) {
-        this.dataPoints_.shift();
-      }
-    },
-
-    isVisible: function() {
-      return this.isVisible_;
-    },
-
-    show: function(isVisible) {
-      this.isVisible_ = isVisible;
-    },
-
-    getColor: function() {
-      return this.color_;
-    },
-
-    setColor: function(color) {
-      this.color_ = color;
-    },
-
-    getCount: function() {
-      return this.dataPoints_.length;
-    },
-    /**
-     * Returns a list containing the values of the data series at |count|
-     * points, starting at |startTime|, and |stepSize| milliseconds apart.
-     * Caches values, so showing/hiding individual data series is fast.
-     */
-    getValues: function(startTime, stepSize, count) {
-      // Use cached values, if we can.
-      if (this.cacheStartTime_ === startTime &&
-          this.cacheStepSize_ === stepSize &&
-          this.cacheValues_.length === count) {
-        return this.cacheValues_;
-      }
-
-      // Do all the work.
-      this.cacheValues_ = this.getValuesInternal_(startTime, stepSize, count);
-      this.cacheStartTime_ = startTime;
-      this.cacheStepSize_ = stepSize;
-
-      return this.cacheValues_;
-    },
-
-    /**
-     * Returns the cached |values| in the specified time period.
-     */
-    getValuesInternal_: function(startTime, stepSize, count) {
-      var values = [];
-      var nextPoint = 0;
-      var currentValue = 0;
-      var time = startTime;
-      for (var i = 0; i < count; ++i) {
-        while (nextPoint < this.dataPoints_.length &&
-               this.dataPoints_[nextPoint].time < time) {
-          currentValue = this.dataPoints_[nextPoint].value;
-          ++nextPoint;
-        }
-        values[i] = currentValue;
-        time += stepSize;
-      }
-      return values;
+  /**
+   * @override
+   */
+  toJSON() {
+    if (this.dataPoints_.length < 1) {
+      return {};
     }
-  };
+
+    var values = [];
+    for (var i = 0; i < this.dataPoints_.length; ++i) {
+      values.push(this.dataPoints_[i].value);
+    }
+    return {
+      startTime: this.dataPoints_[0].time,
+      endTime: this.dataPoints_[this.dataPoints_.length - 1].time,
+      values: JSON.stringify(values),
+    };
+  }
 
   /**
-   * A single point in a data series.  Each point has a time, in the form of
-   * milliseconds since the Unix epoch, and a numeric value.
-   * @constructor
+   * Adds a DataPoint to |this| with the specified time and value.
+   * DataPoints are assumed to be received in chronological order.
    */
-  function DataPoint(time, value) {
+  addPoint(timeTicks, value) {
+    var time = new Date(timeTicks);
+    this.dataPoints_.push(new DataPoint(time, value));
+
+    if (this.dataPoints_.length > MAX_STATS_DATA_POINT_BUFFER_SIZE) {
+      this.dataPoints_.shift();
+    }
+  }
+
+  isVisible() {
+    return this.isVisible_;
+  }
+
+  show(isVisible) {
+    this.isVisible_ = isVisible;
+  }
+
+  getColor() {
+    return this.color_;
+  }
+
+  setColor(color) {
+    this.color_ = color;
+  }
+
+  getCount() {
+    return this.dataPoints_.length;
+  }
+  /**
+   * Returns a list containing the values of the data series at |count|
+   * points, starting at |startTime|, and |stepSize| milliseconds apart.
+   * Caches values, so showing/hiding individual data series is fast.
+   */
+  getValues(startTime, stepSize, count) {
+    // Use cached values, if we can.
+    if (this.cacheStartTime_ === startTime &&
+        this.cacheStepSize_ === stepSize &&
+        this.cacheValues_.length === count) {
+      return this.cacheValues_;
+    }
+
+    // Do all the work.
+    this.cacheValues_ = this.getValuesInternal_(startTime, stepSize, count);
+    this.cacheStartTime_ = startTime;
+    this.cacheStepSize_ = stepSize;
+
+    return this.cacheValues_;
+  }
+
+  /**
+   * Returns the cached |values| in the specified time period.
+   */
+  getValuesInternal_(startTime, stepSize, count) {
+    var values = [];
+    var nextPoint = 0;
+    var currentValue = 0;
+    var time = startTime;
+    for (var i = 0; i < count; ++i) {
+      while (nextPoint < this.dataPoints_.length &&
+             this.dataPoints_[nextPoint].time < time) {
+        currentValue = this.dataPoints_[nextPoint].value;
+        ++nextPoint;
+      }
+      values[i] = currentValue;
+      time += stepSize;
+    }
+    return values;
+  }
+}
+
+/**
+ * A single point in a data series.  Each point has a time, in the form of
+ * milliseconds since the Unix epoch, and a numeric value.
+ */
+class DataPoint {
+  constructor(time, value) {
     this.time = time;
     this.value = value;
   }
-
-  return TimelineDataSeries;
-})();
+}
