@@ -379,15 +379,6 @@
         android:theme="@style/Theme.Chromium.TabbedMode"
         android:windowSoftInputMode="adjustResize">
     </activity>  # DIFF-ANCHOR: 9023f153
-    <activity  # DIFF-ANCHOR: e86e2b49
-        android:autoRemoveFromRecents="true"
-        android:documentLaunchMode="always"
-        android:excludeFromRecents="true"
-        android:exported="false"
-        android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
-        android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
-    </activity>  # DIFF-ANCHOR: e86e2b49
     <activity  # DIFF-ANCHOR: bec48e1f
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:enabled="false"

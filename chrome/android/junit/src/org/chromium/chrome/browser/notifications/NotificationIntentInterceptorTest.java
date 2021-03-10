@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.notifications;
 
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.notifications.NotificationIntentInterceptor.INTENT_ACTION;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -85,6 +86,8 @@ public class NotificationIntentInterceptorTest {
         ContextUtils.initApplicationContextForTests(mContext);
         mShadowNotificationManager = shadowOf(
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+        mContext.registerReceiver(
+                new NotificationIntentInterceptor.Receiver(), new IntentFilter(INTENT_ACTION));
         mReceiver = new TestReceiver();
         mContext.registerReceiver(mReceiver, new IntentFilter(TestReceiver.TEST_ACTION));
     }
@@ -128,15 +131,6 @@ public class NotificationIntentInterceptorTest {
         return builder.buildNotificationWrapper();
     }
 
-    private void sendPendingIntent(PendingIntent pendingIntent) {
-        // Simulate to send a PendingIntent by manually starting the TrampolineActivity.
-        ShadowPendingIntent shadowPendingIntent = Shadows.shadowOf(pendingIntent);
-        Robolectric
-                .buildActivity(NotificationIntentInterceptor.TrampolineActivity.class,
-                        shadowPendingIntent.getSavedIntent())
-                .create();
-    }
-
     /**
      * Verifies {@link Notification#contentIntent} can be intercepted by {@link
      * NotificationIntentInterceptor}.
@@ -151,7 +145,8 @@ public class NotificationIntentInterceptorTest {
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
         Assert.assertEquals(TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
-        sendPendingIntent(notification.contentIntent);
+        notification.contentIntent.send();
+        Robolectric.flushForegroundThreadScheduler();
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
@@ -177,7 +172,8 @@ public class NotificationIntentInterceptorTest {
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
         Assert.assertEquals(TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
-        sendPendingIntent(notification.deleteIntent);
+        notification.deleteIntent.send();
+        Robolectric.flushForegroundThreadScheduler();
 
         // Verify the histogram.
         Assert.assertEquals(1,
@@ -204,7 +200,9 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(1, notification.actions.length);
         Notification.Action action = notification.actions[0];
         Assert.assertNotNull(action.actionIntent);
-        sendPendingIntent(action.actionIntent);
+        action.actionIntent.send();
+
+        Robolectric.flushForegroundThreadScheduler();
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
