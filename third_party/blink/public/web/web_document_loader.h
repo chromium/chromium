@@ -150,8 +150,9 @@ class BLINK_EXPORT WebDocumentLoader {
   // Returns archive info for the archive.
   virtual WebArchiveInfo GetArchiveInfo() const = 0;
 
-  // Whether this load was started with a user gesture.
-  virtual bool HadUserGesture() const = 0;
+  // Whether the last navigation (cross-document or same-document) that
+  // committed in this WebDocumentLoader had transient activation.
+  virtual bool LastNavigationHadTransientUserActivation() const = 0;
 
   // Returns true when the document is a FTP directory.
   virtual bool IsListingFtpDirectory() const = 0;

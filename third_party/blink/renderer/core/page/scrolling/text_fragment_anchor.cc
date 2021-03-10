@@ -105,11 +105,12 @@ bool TextFragmentAnchor::GenerateNewToken(const DocumentLoader& loader) {
   }
 
   // A new permission to invoke should only be granted if the navigation had a
-  // user gesture attached to it. Browser initiated navigations (e.g. typed
-  // address in the omnibox) don't carry the |had_transient_activation_| bit so
-  // we have to check that separately but we consider that user initiated as
-  // well.
-  return loader.HadTransientActivation() || loader.IsBrowserInitiated();
+  // transient user activation attached to it. Browser initiated navigations
+  // (e.g. typed address in the omnibox) don't carry the transient user
+  // activation bit so we have to check that separately but we consider that
+  // user initiated as well.
+  return loader.LastNavigationHadTransientUserActivation() ||
+         loader.IsBrowserInitiated();
 }
 
 // static

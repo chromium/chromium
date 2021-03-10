@@ -1270,110 +1270,6 @@ class NoNavigationsObserver : public WebContentsObserver {
   }
 };
 
-class FrameNavigateParamsCapturer : public WebContentsObserver {
- public:
-  // Observes navigation for the specified |node|.
-  explicit FrameNavigateParamsCapturer(FrameTreeNode* node)
-      : WebContentsObserver(
-            node->current_frame_host()->delegate()->GetAsWebContents()),
-        frame_tree_node_id_(node->frame_tree_node_id()),
-        navigations_remaining_(1),
-        wait_for_load_(true),
-        message_loop_runner_(new MessageLoopRunner) {}
-
-  void set_navigations_remaining(int count) { navigations_remaining_ = count; }
-  void set_wait_for_load(bool ignore) { wait_for_load_ = ignore; }
-  void Wait() { message_loop_runner_->Run(); }
-
-  ui::PageTransition transition() {
-    EXPECT_EQ(1U, transitions_.size());
-    return transitions_[0];
-  }
-
-  NavigationType navigation_type() {
-    EXPECT_EQ(1U, navigation_types_.size());
-    return navigation_types_[0];
-  }
-
-  bool is_same_document() {
-    EXPECT_EQ(1U, is_same_documents_.size());
-    return is_same_documents_[0];
-  }
-
-  bool is_renderer_initiated() {
-    EXPECT_EQ(1U, is_renderer_initiateds_.size());
-    return is_renderer_initiateds_[0];
-  }
-
-  bool did_replace_entry() {
-    EXPECT_EQ(1U, did_replace_entries_.size());
-    return did_replace_entries_[0];
-  }
-
-  bool has_user_gesture() {
-    EXPECT_EQ(1U, has_user_gestures_.size());
-    return has_user_gestures_[0];
-  }
-
-  const std::vector<ui::PageTransition>& transitions() { return transitions_; }
-  const std::vector<GURL>& urls() { return urls_; }
-  const std::vector<NavigationType>& navigation_types() {
-    return navigation_types_;
-  }
-  const std::vector<bool>& is_same_documents() { return is_same_documents_; }
-  const std::vector<bool>& did_replace_entries() {
-    return did_replace_entries_;
-  }
-  const std::vector<bool>& has_user_gestures() { return has_user_gestures_; }
-
- private:
-  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (!navigation_handle->HasCommitted() ||
-        navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_ ||
-        navigations_remaining_ == 0) {
-      return;
-    }
-
-    --navigations_remaining_;
-    transitions_.push_back(navigation_handle->GetPageTransition());
-    urls_.push_back(navigation_handle->GetURL());
-    navigation_types_.push_back(
-        NavigationRequest::From(navigation_handle)->navigation_type());
-    is_same_documents_.push_back(navigation_handle->IsSameDocument());
-    did_replace_entries_.push_back(navigation_handle->DidReplaceEntry());
-    is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
-    has_user_gestures_.push_back(navigation_handle->HasUserGesture());
-    if (!navigations_remaining_ &&
-        (!web_contents()->IsLoading() || !wait_for_load_))
-      message_loop_runner_->Quit();
-  }
-
-  void DidStopLoading() override {
-    if (!navigations_remaining_)
-      message_loop_runner_->Quit();
-  }
-
-  // The id of the FrameTreeNode whose navigations to observe.
-  int frame_tree_node_id_;
-
-  // How many navigations remain to capture.
-  int navigations_remaining_;
-
-  // Whether to also wait for the load to complete.
-  bool wait_for_load_;
-
-  std::vector<ui::PageTransition> transitions_;
-  std::vector<GURL> urls_;
-  std::vector<NavigationType> navigation_types_;
-  std::vector<bool> is_same_documents_;
-  std::vector<bool> did_replace_entries_;
-  std::vector<bool> is_renderer_initiateds_;
-  std::vector<bool> has_user_gestures_;
-
-  // The MessageLoopRunner used to spin the message loop.
-  scoped_refptr<MessageLoopRunner> message_loop_runner_;
-};
-
 // Test that going back in a subframe on a loadDataWithBaseURL page doesn't
 // crash.  See https://crbug.com/768575.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
@@ -11683,12 +11579,11 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Tests that user activation/gesture returned by DidCommitProvisionalLoadParams
-// stays false on a document if the initial document load was loaded with no
-// user activation/gesture.
-// TODO(https://crbug.com/1172969): This behavior is probably incorrect - we
-// should probably return the value from the latest navigation.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       GestureStaysFalseAfterSameDocumentNavigation) {
+// reflects the latest navigation's gesture on a document when the initial
+// document load was loaded with no user activation/gesture.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    GestureChangesAfterSameDocumentNavOnDocumentLoadedWithoutGesture) {
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url2(embedded_test_server()->GetURL("a.com", "/title1.html#a"));
   GURL url3(embedded_test_server()->GetURL("a.com", "/title1.html#b"));
@@ -11707,21 +11602,19 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   {
-    // Renderer-initiated same-document navigation with user gesture.
+    // Renderer-initiated same-document navigation without user gesture.
     FrameNavigateParamsCapturer url2_capturer(root);
-    EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
+    EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url2));
     url2_capturer.Wait();
-    // Even after doing a navigation with user gesture, since we stay in the
-    // document that was loaded without user gesture, we'll return false here.
     EXPECT_FALSE(url2_capturer.has_user_gesture());
   }
 
   {
-    // Renderer-initiated same-document navigation without user gesture.
+    // Renderer-initiated same-document navigation with user gesture.
     FrameNavigateParamsCapturer url3_capturer(root);
-    EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url3));
+    EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url3));
     url3_capturer.Wait();
-    EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_TRUE(url3_capturer.has_user_gesture());
   }
 
   {
@@ -11744,21 +11637,22 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     navigation_observer.Wait();
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
     url5_capturer.Wait();
-    EXPECT_FALSE(url5_capturer.has_user_gesture());
+    EXPECT_TRUE(url5_capturer.has_user_gesture());
   }
 }
 
 // Tests that user activation/gesture returned by DidCommitProvisionalLoadParams
-// stays true on a document if the initial document load was loaded with
-// user activation/gesture.
-// TODO(https://crbug.com/1172969): This behavior is probably incorrect - we
-// should probably return the value from the latest navigation.
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       GestureStaysTrueAfterSameDocumentNavigation) {
+// reflects the latest navigation's gesture when the initial document load was
+// loaded with user activation/gesture.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    GestureChangesAfterSameDocumentNavOnDocumentLoadedWithGesture) {
   // Initial navigation to allow doing navigation from the renderer after this.
   GURL url0(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url0));
 
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
@@ -11766,6 +11660,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url1(embedded_test_server()->GetURL("a.com", "/title2.html"));
   GURL url2(embedded_test_server()->GetURL("a.com", "/title2.html#foo"));
   GURL url3(embedded_test_server()->GetURL("a.com", "/title2.html#bar"));
+  GURL url4(embedded_test_server()->GetURL("a.com", "/title2.html#baz"));
 
   {
     // Navigation with user gesture.
@@ -11780,9 +11675,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer url2_capturer(root);
     EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url2));
     url2_capturer.Wait();
-    // Even after doing a navigation without user gesture, since we stay in the
-    // document that was loaded with user gesture, we'll return true here.
-    EXPECT_TRUE(url2_capturer.has_user_gesture());
+    EXPECT_FALSE(url2_capturer.has_user_gesture());
   }
 
   {
@@ -11790,7 +11683,22 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer url3_capturer(root);
     EXPECT_TRUE(NavigateToURL(shell(), url3));
     url3_capturer.Wait();
-    EXPECT_TRUE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(url3_capturer.has_user_gesture());
+  }
+
+  {
+    // Browser-initiated same-document navigation with user gesture.
+    FrameNavigateParamsCapturer url4_capturer(root);
+    TestNavigationObserver navigation_observer(contents);
+    NavigationController::LoadURLParams params(url4);
+    params.transition_type = ui::PageTransitionFromInt(
+        ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+    params.has_user_gesture = true;
+    contents->GetController().LoadURLWithParams(params);
+    navigation_observer.Wait();
+    EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+    url4_capturer.Wait();
+    EXPECT_TRUE(url4_capturer.has_user_gesture());
   }
 }
 
