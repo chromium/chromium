@@ -4228,36 +4228,42 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       EvalJs(root, "document.getElementById('child-1').getAttribute('csp');"));
 
   // Run the test over variety of parent/child cases.
-  GURL urls[] = {// Remote to remote.
-                 embedded_test_server()->GetURL("c.com", "/title2.html"),
-                 // Remote to local.
-                 embedded_test_server()->GetURL("a.com", "/title1.html"),
-                 // Local to remote.
-                 embedded_test_server()->GetURL("b.com", "/title2.html")};
-
-  std::vector<std::string> csp_values = {"default-src a.com",
-                                         "default-src b.com", "img-src c.com"};
+  struct {
+    std::string csp_value;
+    GURL url;
+    bool should_block;
+  } testCases[]{
+      // Remote to remote.
+      {"default-src a.com",
+       embedded_test_server()->GetURL("c.com", "/title2.html"), true},
+      // Remote to local.
+      {"default-src b.com",
+       embedded_test_server()->GetURL("a.com", "/title1.html"), false},
+      // Local to remote.
+      {"img-src c.com", embedded_test_server()->GetURL("b.com", "/title2.html"),
+       true},
+  };
 
   // Before each navigation, we change the csp property of the frame.
   // We then check whether that property is applied
   // correctly after the navigation has completed.
-  for (size_t i = 0; i < base::size(urls); ++i) {
+  for (const auto& testCase : testCases) {
     // Change csp before navigating.
     EXPECT_TRUE(ExecuteScript(
         root,
         base::StringPrintf("document.getElementById('child-1').setAttribute("
                            "    'csp', '%s');",
-                           csp_values[i].c_str())));
+                           testCase.csp_value.c_str())));
 
-    NavigateFrameToURL(child, urls[i]);
-    EXPECT_EQ(csp_values[i], child->csp_attribute()->header->header_value);
+    NavigateFrameToURL(child, testCase.url);
+    EXPECT_EQ(testCase.csp_value, child->csp_attribute()->header->header_value);
     // TODO(amalika): add checks that the CSP replication takes effect
 
     const url::Origin child_origin =
         child->current_frame_host()->GetLastCommittedOrigin();
-    // TODO(https://crbug.com/1000804): Enable check once bug is fixed.
-    // EXPECT_TRUE(child_origin.opaque());
-    EXPECT_EQ(url::Origin::Create(urls[i].GetOrigin())
+
+    EXPECT_EQ(testCase.should_block, child_origin.opaque());
+    EXPECT_EQ(url::Origin::Create(testCase.url.GetOrigin())
                   .GetTupleOrPrecursorTupleIfOpaque(),
               child_origin.GetTupleOrPrecursorTupleIfOpaque());
   }
