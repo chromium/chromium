@@ -18,8 +18,8 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
-#include "extensions/common/host_id.h"
 #include "extensions/common/identifiability_metrics.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -57,7 +57,7 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host) {
   IsolatedWorldMap& isolated_worlds = g_isolated_worlds.Get();
 
   int id = 0;
-  const std::string& key = injection_host->id().id();
+  const std::string& key = injection_host->id().id;
   auto iter = isolated_worlds.find(key);
   if (iter != isolated_worlds.end()) {
     id = iter->second;
@@ -239,7 +239,7 @@ void ScriptInjection::RequestPermissionFromBrowser() {
   // invalid request (which is treated like a notification).
   request_id_ = g_next_pending_id++;
   render_frame_->Send(new ExtensionHostMsg_RequestScriptInjectionPermission(
-      render_frame_->GetRoutingID(), host_id().id(), injector_->script_type(),
+      render_frame_->GetRoutingID(), host_id().id, injector_->script_type(),
       run_location_, request_id_));
 }
 
@@ -255,9 +255,9 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   DCHECK(scripts_run_info);
   DCHECK(!complete_);
   bool should_inject_js = injector_->ShouldInjectJs(
-      run_location_, scripts_run_info->executing_scripts[host_id().id()]);
+      run_location_, scripts_run_info->executing_scripts[host_id().id]);
   bool should_inject_or_remove_css = injector_->ShouldInjectOrRemoveCss(
-      run_location_, scripts_run_info->injected_stylesheets[host_id().id()]);
+      run_location_, scripts_run_info->injected_stylesheets[host_id().id]);
 
   // This can happen if the extension specified a script to
   // be run in multiple rules, and the script has already run.
@@ -267,17 +267,17 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   }
 
   if (should_inject_js)
-    InjectJs(&(scripts_run_info->executing_scripts[host_id().id()]),
+    InjectJs(&(scripts_run_info->executing_scripts[host_id().id]),
              &(scripts_run_info->num_js));
   if (should_inject_or_remove_css)
-    InjectOrRemoveCss(&(scripts_run_info->injected_stylesheets[host_id().id()]),
+    InjectOrRemoveCss(&(scripts_run_info->injected_stylesheets[host_id().id]),
                       &(scripts_run_info->num_css));
 
   complete_ = did_inject_js_ || !should_inject_js;
 
   if (complete_) {
-    if (host_id().type() == HostID::EXTENSIONS)
-      RecordContentScriptInjection(ukm_source_id_, host_id().id());
+    if (host_id().type == mojom::HostID::HostType::kExtensions)
+      RecordContentScriptInjection(ukm_source_id_, host_id().id);
     injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
                                    render_frame_);
   } else {
@@ -300,8 +300,10 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
 
   base::ElapsedTimer exec_timer;
-  if (injection_host_->id().type() == HostID::EXTENSIONS && log_activity_)
-    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id());
+  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+      log_activity_) {
+    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+  }
 
   // For content scripts executing during page load, we run them asynchronously
   // in order to reduce UI jank experienced by the user. (We don't do this for
@@ -329,7 +331,8 @@ void ScriptInjection::OnJsInjectionCompleted(
     base::Optional<base::TimeDelta> elapsed) {
   DCHECK(!did_inject_js_);
 
-  if (injection_host_->id().type() == HostID::EXTENSIONS && elapsed) {
+  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+      elapsed) {
     UMA_HISTOGRAM_TIMES("Extensions.InjectedScriptExecutionTime", *elapsed);
     switch (run_location_) {
       case mojom::RunLocation::kDocumentStart:
@@ -366,8 +369,8 @@ void ScriptInjection::OnJsInjectionCompleted(
       execution_result_ = std::make_unique<base::Value>();
   }
   did_inject_js_ = true;
-  if (host_id().type() == HostID::EXTENSIONS)
-    RecordContentScriptInjection(ukm_source_id_, host_id().id());
+  if (host_id().type == mojom::HostID::HostType::kExtensions)
+    RecordContentScriptInjection(ukm_source_id_, host_id().id);
 
   // If |async_completion_callback_| is set, it means the script finished
   // asynchronously, and we should run it.

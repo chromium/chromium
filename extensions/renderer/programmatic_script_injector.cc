@@ -14,6 +14,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
@@ -109,7 +110,7 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
                ? PermissionsData::PageAccess::kAllowed
                : PermissionsData::PageAccess::kDenied;
   }
-  DCHECK_EQ(injection_host->id().type(), HostID::EXTENSIONS);
+  DCHECK_EQ(injection_host->id().type, mojom::HostID::HostType::kExtensions);
 
   return injection_host->CanExecuteOnFrame(
       effective_document_url,
@@ -178,10 +179,10 @@ void ProgrammaticScriptInjector::OnWillNotInject(
 }
 
 bool ProgrammaticScriptInjector::CanShowUrlInError() const {
-  if (params_->host_id.type() != HostID::EXTENSIONS)
+  if (params_->host_id.type != mojom::HostID::HostType::kExtensions)
     return false;
   const Extension* extension =
-      RendererExtensionRegistry::Get()->GetByID(params_->host_id.id());
+      RendererExtensionRegistry::Get()->GetByID(params_->host_id.id);
   if (!extension)
     return false;
   return extension->permissions_data()->active_permissions().HasAPIPermission(

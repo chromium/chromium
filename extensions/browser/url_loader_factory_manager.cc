@@ -20,6 +20,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/user_script.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -264,15 +265,15 @@ void URLLoaderFactoryManager::ReadyToCommitNavigation(
 
 // static
 void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
-                                              const HostID& host_id) {
-  if (host_id.type() != HostID::EXTENSIONS)
+                                              const mojom::HostID& host_id) {
+  if (host_id.type != mojom::HostID::HostType::kExtensions)
     return;
 
   const ExtensionRegistry* registry =
       ExtensionRegistry::Get(frame->GetProcess()->GetBrowserContext());
   DCHECK(registry);  // WillExecuteCode shouldn't happen during shutdown.
   const Extension* extension =
-      registry->enabled_extensions().GetByID(host_id.id());
+      registry->enabled_extensions().GetByID(host_id.id);
   DCHECK(extension);  // Guaranteed by the caller - see the doc comment.
 
   if (!ShouldCreateSeparateFactoryForContentScripts(*extension))

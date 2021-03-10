@@ -6,7 +6,7 @@
 #define EXTENSIONS_RENDERER_INJECTION_HOST_H_
 
 #include "base/macros.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 
@@ -17,7 +17,7 @@ class RenderFrame;
 // An interface for all kinds of hosts who own user scripts.
 class InjectionHost {
  public:
-  InjectionHost(const HostID& host_id);
+  InjectionHost(const extensions::mojom::HostID& host_id);
   virtual ~InjectionHost();
 
   // Returns the CSP to be used for the isolated world. Currently this only
@@ -38,11 +38,11 @@ class InjectionHost {
       int tab_id,
       bool is_declarative) const = 0;
 
-  const HostID& id() const { return id_; }
+  const extensions::mojom::HostID& id() const { return id_; }
 
  private:
   // The ID of the host.
-  HostID id_;
+  extensions::mojom::HostID id_;
 
   DISALLOW_COPY_AND_ASSIGN(InjectionHost);
 };

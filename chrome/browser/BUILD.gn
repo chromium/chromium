@@ -6925,6 +6925,7 @@ static_library("test_support") {
       "//extensions:test_support",
       "//extensions/browser",
       "//extensions/browser:test_support",
+      "//extensions/common:mojom",
       "//google_apis:test_support",
       "//services/data_decoder/public/cpp:test_support",
     ]

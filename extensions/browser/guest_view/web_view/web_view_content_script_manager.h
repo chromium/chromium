@@ -14,8 +14,7 @@
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "extensions/browser/user_script_loader.h"
-
-struct HostID;
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 
 namespace content {
 class BrowserContext;
@@ -41,7 +40,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   void AddContentScripts(int embedder_process_id,
                          content::RenderFrameHost* render_frame_host,
                          int view_instance_id,
-                         const HostID& host_id,
+                         const mojom::HostID& host_id,
                          std::unique_ptr<UserScriptList> user_scripts);
 
   // Removes all content scripts for the WebView identified by
@@ -55,7 +54,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   // for this WebView.
   void RemoveContentScripts(int embedder_process_id,
                             int view_instance_id,
-                            const HostID& host_id,
+                            const mojom::HostID& host_id,
                             const std::vector<std::string>& script_name_list);
 
   // Returns the content script IDs added by the WebView specified by
@@ -87,7 +86,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data,
   // one webview) to that webview's host ID. All webviews that have content
   // scripts registered through this WebViewContentScriptManager will have an
   // entry in this map.
-  std::map<GuestMapKey, HostID> webview_host_id_map_;
+  std::map<GuestMapKey, mojom::HostID> webview_host_id_map_;
 
   GuestContentScriptMap guest_content_script_map_;
 

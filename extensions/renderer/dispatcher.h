@@ -25,6 +25,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
@@ -262,7 +263,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnUpdatePermissions(const ExtensionMsg_UpdatePermissions_Params& params);
 
   // UserScriptSetManager::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts) override;
+  void OnUserScriptsUpdated(
+      const std::set<mojom::HostID>& changed_hosts) override;
 
   void UpdateActiveExtensions();
 

@@ -108,7 +108,7 @@ UserScriptInjector::~UserScriptInjector() {
 }
 
 void UserScriptInjector::OnUserScriptsUpdated(
-    const std::set<HostID>& changed_hosts,
+    const std::set<mojom::HostID>& changed_hosts,
     const UserScriptList& scripts) {
   // When user scripts are updated, all the old script pointers are invalidated.
   script_ = nullptr;

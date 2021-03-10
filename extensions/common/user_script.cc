@@ -212,9 +212,9 @@ void UserScript::PickleGlobs(base::Pickle* pickle,
 }
 
 void UserScript::PickleHostID(base::Pickle* pickle,
-                              const HostID& host_id) const {
-  pickle->WriteInt(host_id.type());
-  pickle->WriteString(host_id.id());
+                              const mojom::HostID& host_id) const {
+  pickle->WriteInt(static_cast<int>(host_id.type));
+  pickle->WriteString(host_id.id);
 }
 
 void UserScript::PickleURLPatternSet(base::Pickle* pickle,
@@ -282,12 +282,12 @@ void UserScript::UnpickleGlobs(const base::Pickle& pickle,
 
 void UserScript::UnpickleHostID(const base::Pickle& pickle,
                                 base::PickleIterator* iter,
-                                HostID* host_id) {
+                                mojom::HostID* host_id) {
   int type = 0;
   std::string id;
   CHECK(iter->ReadInt(&type));
   CHECK(iter->ReadString(&id));
-  *host_id = HostID(static_cast<HostID::HostType>(type), id);
+  *host_id = mojom::HostID(static_cast<mojom::HostID::HostType>(type), id);
 }
 
 void UserScript::UnpickleURLPatternSet(const base::Pickle& pickle,
@@ -328,11 +328,11 @@ void UserScript::UnpickleScripts(const base::Pickle& pickle,
   }
 }
 
-UserScriptIDPair::UserScriptIDPair(std::string id, const HostID& host_id)
+UserScriptIDPair::UserScriptIDPair(std::string id, const mojom::HostID& host_id)
     : id(std::move(id)), host_id(host_id) {}
 
 UserScriptIDPair::UserScriptIDPair(std::string id)
-    : id(std::move(id)), host_id(HostID()) {}
+    : id(std::move(id)), host_id(mojom::HostID()) {}
 
 bool operator<(const UserScriptIDPair& a, const UserScriptIDPair& b) {
   return a.id < b.id;

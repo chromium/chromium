@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -24,9 +25,9 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
   ContentScriptLoadWaiter& operator=(const ContentScriptLoadWaiter& other) =
       delete;
 
-  // Restricts the waiter to wait until scripts from the provided HostID are
-  // loaded.
-  void RestrictToHostID(const HostID& host_id);
+  // Restricts the waiter to wait until scripts from the provided mojom::HostID
+  // are loaded.
+  void RestrictToHostID(const mojom::HostID& host_id);
 
   // Waits until the observed UserScriptLoader completes a script load via the
   // OnScriptsLoaded event.
@@ -38,7 +39,7 @@ class ContentScriptLoadWaiter : public UserScriptLoader::Observer {
                        content::BrowserContext* browser_context) override;
   void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
-  HostID host_id_;
+  mojom::HostID host_id_;
   base::RunLoop run_loop_;
   ScopedObserver<UserScriptLoader, UserScriptLoader::Observer> scoped_observer_;
 };

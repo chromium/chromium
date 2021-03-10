@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -37,8 +38,9 @@ class UserScriptSet {
     // Called when the set of user scripts is updated. |changed_hosts| contains
     // the hosts whose scripts have been altered. Note that *all* script objects
     // are invalidated, even if they aren't in |changed_hosts|.
-    virtual void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts,
-                                      const UserScriptList& scripts) = 0;
+    virtual void OnUserScriptsUpdated(
+        const std::set<mojom::HostID>& changed_hosts,
+        const UserScriptList& scripts) = 0;
   };
 
   UserScriptSet();
@@ -72,7 +74,7 @@ class UserScriptSet {
   // Updates scripts given the shared memory region containing user scripts.
   // Returns true if the scripts were successfully updated.
   bool UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                         const std::set<HostID>& changed_hosts,
+                         const std::set<mojom::HostID>& changed_hosts,
                          bool whitelisted_only);
 
   // Returns the contents of a script file.

@@ -15,7 +15,7 @@
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/web_ui_user_script_loader.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
 
@@ -27,10 +27,10 @@ namespace extensions {
 class UserScriptLoader;
 
 // Manages user scripts for all extensions and webview scripts from WebUI pages.
-// Owns one UserScriptLoader for manifest extension scripts, and a map of HostID
-// to UserScriptLoaders for declarative extension and WebUI scripts. File
-// loading and shared memory management operations are delegated to these
-// UserScriptLoaders.
+// Owns one UserScriptLoader for manifest extension scripts, and a map of
+// mojom::HostID to UserScriptLoaders for declarative extension and WebUI
+// scripts. File loading and shared memory management operations are delegated
+// to these UserScriptLoaders.
 class UserScriptManager : public ExtensionRegistryObserver {
  public:
   explicit UserScriptManager(content::BrowserContext* browser_context);
@@ -42,7 +42,7 @@ class UserScriptManager : public ExtensionRegistryObserver {
     return &manifest_script_loader_;
   }
 
-  UserScriptLoader* GetUserScriptLoaderByID(const HostID& host_id);
+  UserScriptLoader* GetUserScriptLoaderByID(const mojom::HostID& host_id);
 
   ExtensionUserScriptLoader* GetUserScriptLoaderForExtension(
       const ExtensionId& extension_id);

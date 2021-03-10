@@ -17,6 +17,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -47,7 +48,10 @@ struct WebUIUserScriptLoader::UserScriptRenderInfo {
 WebUIUserScriptLoader::WebUIUserScriptLoader(
     content::BrowserContext* browser_context,
     const GURL& url)
-    : UserScriptLoader(browser_context, HostID(HostID::WEBUI, url.spec())),
+    : UserScriptLoader(browser_context,
+                       extensions::mojom::HostID(
+                           extensions::mojom::HostID::HostID::HostType::kWebUi,
+                           url.spec())),
       complete_fetchers_(0) {
   SetReady(true);
 }
@@ -70,7 +74,7 @@ void WebUIUserScriptLoader::AddScripts(
 
 void WebUIUserScriptLoader::LoadScripts(
     std::unique_ptr<extensions::UserScriptList> user_scripts,
-    const std::set<HostID>& changed_hosts,
+    const std::set<extensions::mojom::HostID>& changed_hosts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK(!user_scripts_cache_) << "Loading scripts in flight.";

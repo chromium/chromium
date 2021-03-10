@@ -30,6 +30,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
 #include "extensions/test/test_content_script_load_waiter.h"
@@ -133,7 +134,7 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
       !ContentScriptsInfo::GetContentScripts(&extension).empty()) {
     UserScriptLoader* user_script_loader =
         user_script_manager->manifest_script_loader();
-    HostID host_id(HostID::EXTENSIONS, extension_id_);
+    mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension_id_);
     if (!user_script_loader->HasLoadedScripts(host_id)) {
       ContentScriptLoadWaiter waiter(user_script_loader);
       waiter.RestrictToHostID(host_id);

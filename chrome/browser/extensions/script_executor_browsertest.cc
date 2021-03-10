@@ -22,6 +22,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "net/dns/mock_host_resolver.h"
@@ -127,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
 
   ScriptExecutorHelper helper;
   script_executor.ExecuteScript(
-      HostID(HostID::EXTENSIONS, extension->id()),
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
       mojom::ActionType::kAddJavascript, kCode,
       ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
       ScriptExecutor::DONT_MATCH_ABOUT_BLANK, mojom::RunLocation::kDocumentIdle,
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // get a result.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
@@ -230,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // should result in frame2_child being added to the results.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::INCLUDE_SUB_FRAMES, {frame1_id, frame2_id},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
@@ -260,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // doesn't exist.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES,
         {frame1_id, frame2_id, kNonExistentFrameId},
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
     // Try injecting into a single non-existent frame.
     ScriptExecutorHelper helper;
     script_executor.ExecuteScript(
-        HostID(HostID::EXTENSIONS, extension->id()),
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()),
         mojom::ActionType::kAddJavascript, kCode,
         ScriptExecutor::SPECIFIED_FRAMES, {kNonExistentFrameId},
         ScriptExecutor::DONT_MATCH_ABOUT_BLANK,

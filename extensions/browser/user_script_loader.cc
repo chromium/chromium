@@ -163,14 +163,13 @@ bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
 }
 
 UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
-                                   const HostID& host_id)
+                                   const mojom::HostID& host_id)
     : loaded_scripts_(new UserScriptList()),
       clear_scripts_(false),
       ready_(false),
       queued_load_(false),
       browser_context_(browser_context),
-      host_id_(host_id) {
-}
+      host_id_(host_id) {}
 
 UserScriptLoader::~UserScriptLoader() {
   for (auto& observer : observers_)
@@ -233,7 +232,7 @@ void UserScriptLoader::OnRenderProcessHostCreated(
     return;
   if (initial_load_complete()) {
     SendUpdate(process_host, shared_memory_,
-               std::set<HostID>());  // Include all hosts.
+               std::set<mojom::HostID>());  // Include all hosts.
   }
 }
 
@@ -310,7 +309,7 @@ void UserScriptLoader::StartLoad() {
   removed_script_hosts_.clear();
 }
 
-bool UserScriptLoader::HasLoadedScripts(const HostID& host_id) const {
+bool UserScriptLoader::HasLoadedScripts(const mojom::HostID& host_id) const {
   // If there are no loaded scripts (which can happen if either the initial
   // load hasn't completed or if the loader is currently re-fetching scripts),
   // then the scripts have not been loaded.
@@ -457,10 +456,10 @@ void UserScriptLoader::OnScriptsLoaded(
 void UserScriptLoader::SendUpdate(
     content::RenderProcessHost* process,
     const base::ReadOnlySharedMemoryRegion& shared_memory,
-    const std::set<HostID>& changed_hosts) {
+    const std::set<mojom::HostID>& changed_hosts) {
   // Don't allow injection of non-whitelisted extensions' content scripts
   // into <webview>.
-  bool whitelisted_only = process->IsForGuestsOnly() && host_id().id().empty();
+  bool whitelisted_only = process->IsForGuestsOnly() && host_id().id.empty();
 
   // Make sure we only send user scripts to processes in our browser_context.
   if (!ExtensionsBrowserClient::Get()->IsSameContext(

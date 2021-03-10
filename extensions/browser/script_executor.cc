@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -35,12 +36,12 @@ namespace {
 // "<type><host_id><digest>", where <type> is one of "F" (file) and "C" (code),
 // <host_id> is the host ID, and <digest> is an unspecified hash digest of the
 // file URL or the code string, respectively.
-const std::string GenerateInjectionKey(const HostID& host_id,
+const std::string GenerateInjectionKey(const mojom::HostID& host_id,
                                        const GURL& script_url,
                                        const std::string& code) {
   const std::string& source = script_url.is_valid() ? script_url.spec() : code;
   return base::StringPrintf("%c%s%zu", script_url.is_valid() ? 'F' : 'C',
-                            host_id.id().c_str(), base::FastHash(source));
+                            host_id.id.c_str(), base::FastHash(source));
 }
 
 // A handler for a single injection request. On creation this will send the
@@ -233,8 +234,8 @@ class Handler : public content::WebContentsObserver {
                        });
       DCHECK(root_frame_result != results_.end());
       if (root_frame_result->error.empty() &&
-          host_id_.type() == HostID::EXTENSIONS) {
-        std::move(observer_).Run(web_contents(), {{host_id_.id(), {}}},
+          host_id_.type == mojom::HostID::HostType::kExtensions) {
+        std::move(observer_).Run(web_contents(), {{host_id_.id, {}}},
                                  root_frame_result->url);
       }
     }
@@ -248,7 +249,7 @@ class Handler : public content::WebContentsObserver {
   ScriptsExecutedOnceCallback observer_;
 
   // The id of the host (the extension or the webui) doing the injection.
-  HostID host_id_;
+  mojom::HostID host_id_;
 
   // The request id of the injection.
   int request_id_ = 0;
@@ -289,7 +290,7 @@ ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
 
 ScriptExecutor::~ScriptExecutor() {}
 
-void ScriptExecutor::ExecuteScript(const HostID& host_id,
+void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
                                    mojom::ActionType action_type,
                                    const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
@@ -303,11 +304,12 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    mojom::CSSOrigin css_origin,
                                    ScriptExecutor::ResultType result_type,
                                    ScriptFinishedCallback callback) {
-  if (host_id.type() == HostID::EXTENSIONS) {
+  if (host_id.type == mojom::HostID::HostType::kExtensions) {
     // Don't execute if the extension has been unloaded.
     const Extension* extension =
         ExtensionRegistry::Get(web_contents_->GetBrowserContext())
-            ->enabled_extensions().GetByID(host_id.id());
+            ->enabled_extensions()
+            .GetByID(host_id.id);
     if (!extension)
       return;
   } else {
@@ -330,7 +332,7 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
 
   // Generate the unique key that represents this CSS injection or removal
   // from an extension (i.e. tabs.insertCSS or tabs.removeCSS).
-  if (host_id.type() == HostID::EXTENSIONS &&
+  if (host_id.type == mojom::HostID::HostType::kExtensions &&
       (action_type == mojom::ActionType::kAddCss ||
        action_type == mojom::ActionType::kRemoveCss))
     params.injection_key = GenerateInjectionKey(host_id, script_url, code);

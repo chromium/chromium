@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -52,10 +52,10 @@ class URLLoaderFactoryManager {
   //
   // This method may ask RenderFrameHost to create a separate URLLoaderFactory
   // object for extension identified by |host_id|.  The caller needs to ensure
-  // that if |host_id.type() == HostID::EXTENSIONS|, then the extension with the
-  // given id exists and is enabled.
+  // that if |host_id.type == mojom::HostID::HostType::kExtensions|, then the
+  // extension with the given id exists and is enabled.
   static void WillExecuteCode(content::RenderFrameHost* frame,
-                              const HostID& host_id);
+                              const mojom::HostID& host_id);
 
   // Creates a URLLoaderFactory that should be used for requests initiated from
   // |process| by |origin|.

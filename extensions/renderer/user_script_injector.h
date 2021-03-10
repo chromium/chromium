@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
@@ -35,7 +36,7 @@ class UserScriptInjector : public ScriptInjector,
 
  private:
   // UserScriptSet::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts,
+  void OnUserScriptsUpdated(const std::set<mojom::HostID>& changed_hosts,
                             const UserScriptList& scripts) override;
 
   // ScriptInjector implementation.
@@ -85,7 +86,7 @@ class UserScriptInjector : public ScriptInjector,
   std::string script_id_;
 
   // The associated host id, preserved for the same reason as |script_id|.
-  HostID host_id_;
+  mojom::HostID host_id_;
 
   // Indicates whether or not this script is declarative. This influences which
   // script permissions are checked before injection.

@@ -14,13 +14,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_injector.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-
-struct HostID;
 
 namespace content {
 class RenderFrame;
@@ -83,7 +82,7 @@ class ScriptInjection {
 
   // Accessors.
   content::RenderFrame* render_frame() const { return render_frame_; }
-  const HostID& host_id() const { return injection_host_->id(); }
+  const mojom::HostID& host_id() const { return injection_host_->id(); }
   int64_t request_id() const { return request_id_; }
 
   // Called when JS injection for the given frame has been completed or

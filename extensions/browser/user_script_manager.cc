@@ -8,6 +8,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 
 namespace extensions {
 
@@ -22,12 +23,12 @@ UserScriptManager::UserScriptManager(content::BrowserContext* browser_context)
 UserScriptManager::~UserScriptManager() = default;
 
 UserScriptLoader* UserScriptManager::GetUserScriptLoaderByID(
-    const HostID& host_id) {
-  switch (host_id.type()) {
-    case HostID::EXTENSIONS:
-      return GetUserScriptLoaderForExtension(host_id.id());
-    case HostID::WEBUI:
-      return GetUserScriptLoaderForWebUI(GURL(host_id.id()));
+    const mojom::HostID& host_id) {
+  switch (host_id.type) {
+    case mojom::HostID::HostType::kExtensions:
+      return GetUserScriptLoaderForExtension(host_id.id);
+    case mojom::HostID::HostType::kWebUi:
+      return GetUserScriptLoaderForWebUI(GURL(host_id.id));
   }
 }
 

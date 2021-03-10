@@ -18,6 +18,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 
 using content::BrowserThread;
 
@@ -49,7 +50,7 @@ void WebViewContentScriptManager::AddContentScripts(
     int embedder_process_id,
     content::RenderFrameHost* render_frame_host,
     int view_instance_id,
-    const HostID& host_id,
+    const mojom::HostID& host_id,
     std::unique_ptr<UserScriptList> scripts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -138,7 +139,7 @@ void WebViewContentScriptManager::RemoveAllContentScriptsForWebView(
 void WebViewContentScriptManager::RemoveContentScripts(
     int embedder_process_id,
     int view_instance_id,
-    const HostID& host_id,
+    const mojom::HostID& host_id,
     const std::vector<std::string>& script_name_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

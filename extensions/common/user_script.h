@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/script_constants.h"
 #include "extensions/common/url_pattern.h"
@@ -192,10 +192,10 @@ class UserScript {
   FileList& css_scripts() { return css_scripts_; }
   const FileList& css_scripts() const { return css_scripts_; }
 
-  const std::string& extension_id() const { return host_id_.id(); }
+  const std::string& extension_id() const { return host_id_.id; }
 
-  const HostID& host_id() const { return host_id_; }
-  void set_host_id(const HostID& host_id) { host_id_ = host_id; }
+  const mojom::HostID& host_id() const { return host_id_; }
+  void set_host_id(const mojom::HostID& host_id) { host_id_ = host_id; }
 
   const ConsumerInstanceType& consumer_instance_type() const {
     return consumer_instance_type_;
@@ -238,7 +238,7 @@ class UserScript {
   // components.
   void PickleGlobs(base::Pickle* pickle,
                    const std::vector<std::string>& globs) const;
-  void PickleHostID(base::Pickle* pickle, const HostID& host_id) const;
+  void PickleHostID(base::Pickle* pickle, const mojom::HostID& host_id) const;
   void PickleURLPatternSet(base::Pickle* pickle,
                            const URLPatternSet& pattern_list) const;
   void PickleScripts(base::Pickle* pickle, const FileList& scripts) const;
@@ -249,7 +249,7 @@ class UserScript {
                      std::vector<std::string>* globs);
   void UnpickleHostID(const base::Pickle& pickle,
                       base::PickleIterator* iter,
-                      HostID* host_id);
+                      mojom::HostID* host_id);
   void UnpickleURLPatternSet(const base::Pickle& pickle,
                              base::PickleIterator* iter,
                              URLPatternSet* pattern_list);
@@ -292,7 +292,7 @@ class UserScript {
 
   // The ID of the host this script is a part of. The |ID| of the
   // |host_id| can be empty if the script is a "standlone" user script.
-  HostID host_id_;
+  mojom::HostID host_id_;
 
   // The type of the consumer instance that the script will be injected.
   ConsumerInstanceType consumer_instance_type_ = TAB;
@@ -323,11 +323,11 @@ class UserScript {
 
 // Information we need while removing scripts from a UserScriptLoader.
 struct UserScriptIDPair {
-  UserScriptIDPair(std::string id, const HostID& host_id);
+  UserScriptIDPair(std::string id, const mojom::HostID& host_id);
   explicit UserScriptIDPair(std::string id);
 
   std::string id;
-  HostID host_id;
+  mojom::HostID host_id;
 };
 
 bool operator<(const UserScriptIDPair& a, const UserScriptIDPair& b);

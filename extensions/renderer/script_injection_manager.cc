@@ -21,6 +21,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_injection_host.h"
 #include "extensions/renderer/programmatic_script_injector.h"
@@ -314,7 +315,7 @@ void ScriptInjectionManager::OnExtensionUnloaded(
     const std::string& extension_id) {
   for (auto iter = pending_injections_.begin();
       iter != pending_injections_.end();) {
-    if ((*iter)->host_id().id() == extension_id) {
+    if ((*iter)->host_id().id == extension_id) {
       (*iter)->OnHostRemoved();
       iter = pending_injections_.erase(iter);
     } else {
@@ -335,7 +336,7 @@ void ScriptInjectionManager::OnInjectionFinished(
 }
 
 void ScriptInjectionManager::OnUserScriptsUpdated(
-    const std::set<HostID>& changed_hosts) {
+    const std::set<mojom::HostID>& changed_hosts) {
   for (auto iter = pending_injections_.begin();
        iter != pending_injections_.end();) {
     if (changed_hosts.count((*iter)->host_id()) > 0)
@@ -478,11 +479,11 @@ void ScriptInjectionManager::HandleExecuteCode(
     const ExtensionMsg_ExecuteCode_Params& params,
     content::RenderFrame* render_frame) {
   std::unique_ptr<const InjectionHost> injection_host;
-  if (params.host_id.type() == HostID::EXTENSIONS) {
-    injection_host = ExtensionInjectionHost::Create(params.host_id.id());
+  if (params.host_id.type == mojom::HostID::HostType::kExtensions) {
+    injection_host = ExtensionInjectionHost::Create(params.host_id.id);
     if (!injection_host)
       return;
-  } else if (params.host_id.type() == HostID::WEBUI) {
+  } else if (params.host_id.type == mojom::HostID::HostType::kWebUi) {
     injection_host.reset(
         new WebUIInjectionHost(params.host_id));
   }
@@ -525,7 +526,7 @@ void ScriptInjectionManager::HandlePermitScriptInjection(int64_t request_id) {
   auto iter = pending_injections_.begin();
   for (; iter != pending_injections_.end(); ++iter) {
     if ((*iter)->request_id() == request_id) {
-      DCHECK((*iter)->host_id().type() == HostID::EXTENSIONS);
+      DCHECK((*iter)->host_id().type == mojom::HostID::HostType::kExtensions);
       break;
     }
   }

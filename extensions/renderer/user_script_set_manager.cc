@@ -7,6 +7,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set.h"
@@ -38,8 +39,8 @@ UserScriptSetManager::GetInjectionForDeclarativeScript(
     int tab_id,
     const GURL& url,
     const std::string& extension_id) {
-  UserScriptSet* user_script_set =
-      GetProgrammaticScriptsByHostID(HostID(HostID::EXTENSIONS, extension_id));
+  UserScriptSet* user_script_set = GetProgrammaticScriptsByHostID(
+      mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id));
   if (!user_script_set)
     return std::unique_ptr<ScriptInjection>();
 
@@ -83,31 +84,31 @@ void UserScriptSetManager::GetAllActiveExtensionIds(
 }
 
 UserScriptSet* UserScriptSetManager::GetProgrammaticScriptsByHostID(
-    const HostID& host_id) {
+    const mojom::HostID& host_id) {
   UserScriptSetMap::const_iterator it = programmatic_scripts_.find(host_id);
   return it != programmatic_scripts_.end() ? it->second.get() : NULL;
 }
 
 void UserScriptSetManager::OnUpdateUserScripts(
     base::ReadOnlySharedMemoryRegion shared_memory,
-    const HostID& host_id,
-    const std::set<HostID>& changed_hosts,
+    const mojom::HostID& host_id,
+    const std::set<mojom::HostID>& changed_hosts,
     bool whitelisted_only) {
   if (!shared_memory.IsValid()) {
     NOTREACHED() << "Bad scripts handle";
     return;
   }
 
-  for (const HostID& host_id : changed_hosts) {
-    if (host_id.type() == HostID::EXTENSIONS &&
-        !crx_file::id_util::IdIsValid(host_id.id())) {
-      NOTREACHED() << "Invalid extension id: " << host_id.id();
+  for (const mojom::HostID& host_id : changed_hosts) {
+    if (host_id.type == mojom::HostID::HostType::kExtensions &&
+        !crx_file::id_util::IdIsValid(host_id.id)) {
+      NOTREACHED() << "Invalid extension id: " << host_id.id;
       return;
     }
   }
 
   UserScriptSet* scripts = NULL;
-  if (!host_id.id().empty()) {
+  if (!host_id.id.empty()) {
     // The expectation when there is a host that "owns" this shared
     // memory region is that the |changed_hosts| is either the empty list
     // or just the owner.
@@ -128,18 +129,20 @@ void UserScriptSetManager::OnUpdateUserScripts(
   // If no hosts are included in the set, that indicates that all
   // hosts were updated. Add them all to the set so that observers and
   // individual UserScriptSets don't need to know this detail.
-  const std::set<HostID>* effective_hosts = &changed_hosts;
-  std::set<HostID> all_hosts;
+  const std::set<mojom::HostID>* effective_hosts = &changed_hosts;
+  std::set<mojom::HostID> all_hosts;
   if (changed_hosts.empty()) {
     // The meaning of "all hosts(extensions)" varies, depending on whether some
     // host "owns" this shared memory region.
     // No owner => all known hosts.
     // Owner    => just the owner host.
-    if (host_id.id().empty()) {
+    if (host_id.id.empty()) {
       std::set<std::string> extension_ids =
           RendererExtensionRegistry::Get()->GetIDs();
-      for (const std::string& extension_id : extension_ids)
-        all_hosts.insert(HostID(HostID::EXTENSIONS, extension_id));
+      for (const std::string& extension_id : extension_ids) {
+        all_hosts.insert(
+            mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id));
+      }
     } else {
       all_hosts.insert(host_id);
     }

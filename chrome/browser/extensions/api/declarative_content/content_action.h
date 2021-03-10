@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
 
 namespace base {
@@ -93,7 +94,7 @@ class RequestContentScript : public ContentAction {
   void Revert(const ApplyInfo& apply_info) const override;
 
  private:
-  void InitScript(const HostID& host_id,
+  void InitScript(const mojom::HostID& host_id,
                   const Extension* extension,
                   const ScriptData& script_data);
 

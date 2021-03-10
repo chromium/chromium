@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 
@@ -108,7 +109,7 @@ class ScriptExecutor {
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
   // TODO(devlin): Make |frame_ids| a std::set<> (since they must be unique).
-  void ExecuteScript(const HostID& host_id,
+  void ExecuteScript(const mojom::HostID& host_id,
                      mojom::ActionType action_type,
                      const std::string& code,
                      FrameScope frame_scope,

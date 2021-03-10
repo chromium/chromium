@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
@@ -62,7 +63,8 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void OnInjectionFinished(ScriptInjection* injection);
 
   // UserScriptSetManager::Observer implementation.
-  void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts) override;
+  void OnUserScriptsUpdated(
+      const std::set<mojom::HostID>& changed_hosts) override;
 
   // Notifies that an RFOHelper should be removed.
   void RemoveObserver(RFOHelper* helper);

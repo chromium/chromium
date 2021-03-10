@@ -11,6 +11,7 @@
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -29,7 +30,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
     std::string default_locale;
     extension_l10n_util::GzippedMessagesPermission gzip_permission;
   };
-  using HostsInfo = std::map<HostID, PathAndLocaleInfo>;
+  using HostsInfo = std::map<mojom::HostID, PathAndLocaleInfo>;
 
   // The listen_for_extension_system_loaded is only set true when initializing
   // the Extension System, e.g, when constructs UserScriptManager in
@@ -52,13 +53,13 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
  private:
   // UserScriptLoader:
   void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
-                   const std::set<HostID>& changed_hosts,
+                   const std::set<mojom::HostID>& changed_hosts,
                    const std::set<std::string>& added_script_ids,
                    LoadScriptsCallback callback) override;
 
   // Updates |hosts_info_| to contain info for each element of
   //  |changed_hosts_|.
-  void UpdateHostsInfo(const std::set<HostID>& changed_hosts);
+  void UpdateHostsInfo(const std::set<mojom::HostID>& changed_hosts);
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

@@ -19,7 +19,7 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
-#include "extensions/common/host_id.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
 
 namespace base {
@@ -62,7 +62,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
                                   UserScript* script);
 
   UserScriptLoader(content::BrowserContext* browser_context,
-                   const HostID& host_id);
+                   const mojom::HostID& host_id);
   ~UserScriptLoader() override;
 
   // Add |scripts| to the set of scripts managed by this loader. If provided,
@@ -93,7 +93,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void ClearScripts();
 
   // Returns true if the scripts for the given |host_id| have been loaded.
-  bool HasLoadedScripts(const HostID& host_id) const;
+  bool HasLoadedScripts(const mojom::HostID& host_id) const;
 
   // Returns true if we have any scripts ready.
   bool initial_load_complete() const { return shared_memory_.IsValid(); }
@@ -115,7 +115,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // Allows the derived classes to have different ways to load user scripts.
   // This may not be synchronous with the calls to Add/Remove/Clear scripts.
   virtual void LoadScripts(std::unique_ptr<UserScriptList> user_scripts,
-                           const std::set<HostID>& changed_hosts,
+                           const std::set<mojom::HostID>& changed_hosts,
                            const std::set<std::string>& added_script_ids,
                            LoadScriptsCallback callback) = 0;
 
@@ -124,7 +124,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void SetReady(bool ready);
 
   content::BrowserContext* browser_context() const { return browser_context_; }
-  const HostID& host_id() const { return host_id_; }
+  const mojom::HostID& host_id() const { return host_id_; }
 
  private:
   // content::RenderProcessHostCreationObserver:
@@ -152,7 +152,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // updated.
   void SendUpdate(content::RenderProcessHost* process,
                   const base::ReadOnlySharedMemoryRegion& shared_memory,
-                  const std::set<HostID>& changed_hosts);
+                  const std::set<mojom::HostID>& changed_hosts);
 
   bool is_loading() const {
     // |loaded_scripts_| is reset when loading.
@@ -178,7 +178,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // The IDs of the extensions which changed in the last update sent to the
   // renderer.
-  std::set<HostID> changed_hosts_;
+  std::set<mojom::HostID> changed_hosts_;
 
   // If the initial set of hosts has finished loading.
   bool ready_;
@@ -193,7 +193,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // ID of the host that owns these scripts, if any. This is only set to a
   // non-empty value for declarative user script shared memory regions.
-  HostID host_id_;
+  mojom::HostID host_id_;
 
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;

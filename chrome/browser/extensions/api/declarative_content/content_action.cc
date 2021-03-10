@@ -29,6 +29,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/image_util.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/script_constants.h"
 #include "ui/gfx/image/image.h"
@@ -291,7 +292,7 @@ RequestContentScript::RequestContentScript(
     content::BrowserContext* browser_context,
     const Extension* extension,
     const ScriptData& script_data) {
-  HostID host_id(HostID::EXTENSIONS, extension->id());
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension->id());
   InitScript(host_id, extension, script_data);
 
   script_loader_ = ExtensionSystem::Get(browser_context)
@@ -307,7 +308,7 @@ RequestContentScript::~RequestContentScript() {
       UserScriptLoader::ScriptsLoadedCallback());
 }
 
-void RequestContentScript::InitScript(const HostID& host_id,
+void RequestContentScript::InitScript(const mojom::HostID& host_id,
                                       const Extension* extension,
                                       const ScriptData& script_data) {
   script_.set_id(UserScript::GenerateUserScriptID());

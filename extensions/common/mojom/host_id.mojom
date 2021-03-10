@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+// IDs of hosts who own user scripts. A HostID is immutable after creation.
+struct HostID {
+  enum HostType {
+    kExtensions,
+    kWebUi,
+  };
+
+  HostType type = kExtensions; // The type of the host.
+  string id; // Similar to extension_id, host_id is a unique identifier for a
+             // host, e.g., an Extension or WebUI.
+};

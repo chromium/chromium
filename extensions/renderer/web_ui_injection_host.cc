@@ -4,10 +4,8 @@
 
 #include "extensions/renderer/web_ui_injection_host.h"
 
-WebUIInjectionHost::WebUIInjectionHost(const HostID& host_id)
-  : InjectionHost(host_id),
-    url_(host_id.id()) {
-}
+WebUIInjectionHost::WebUIInjectionHost(const extensions::mojom::HostID& host_id)
+    : InjectionHost(host_id), url_(host_id.id) {}
 
 WebUIInjectionHost::~WebUIInjectionHost() {
 }
@@ -22,7 +20,7 @@ const GURL& WebUIInjectionHost::url() const {
 }
 
 const std::string& WebUIInjectionHost::name() const {
-  return id().id();
+  return id().id;
 }
 
 extensions::PermissionsData::PageAccess WebUIInjectionHost::CanExecuteOnFrame(

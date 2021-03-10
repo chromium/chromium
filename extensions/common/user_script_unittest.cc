@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/pickle.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -221,7 +222,7 @@ TEST(ExtensionUserScriptTest, Pickle) {
   const std::string kId = "_12";
   script1.set_id(kId);
   const std::string kExtensionId = "foo";
-  HostID id(HostID::EXTENSIONS, kExtensionId);
+  mojom::HostID id(mojom::HostID::HostType::kExtensions, kExtensionId);
   script1.set_host_id(id);
 
   base::Pickle pickle;

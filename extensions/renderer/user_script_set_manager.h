@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/user_script_set.h"
@@ -46,7 +47,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
   class Observer {
    public:
     virtual void OnUserScriptsUpdated(
-        const std::set<HostID>& changed_hosts) = 0;
+        const std::set<mojom::HostID>& changed_hosts) = 0;
   };
 
   UserScriptSetManager();
@@ -86,17 +87,18 @@ class UserScriptSetManager : public content::RenderThreadObserver {
 
  private:
   // Map for per-extension sets that may be defined programmatically.
-  using UserScriptSetMap = std::map<HostID, std::unique_ptr<UserScriptSet>>;
+  using UserScriptSetMap =
+      std::map<mojom::HostID, std::unique_ptr<UserScriptSet>>;
 
   // content::RenderThreadObserver implementation.
   bool OnControlMessageReceived(const IPC::Message& message) override;
 
-  UserScriptSet* GetProgrammaticScriptsByHostID(const HostID& host_id);
+  UserScriptSet* GetProgrammaticScriptsByHostID(const mojom::HostID& host_id);
 
   // Handle the UpdateUserScripts extension message.
   void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                           const HostID& host_id,
-                           const std::set<HostID>& changed_hosts,
+                           const mojom::HostID& host_id,
+                           const std::set<mojom::HostID>& changed_hosts,
                            bool whitelisted_only);
 
   // Scripts statically defined in extension manifests.

@@ -21,9 +21,9 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/host_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/script_constants.h"
@@ -301,7 +301,8 @@ bool ContentScriptsHandler::Parse(Extension* extension, base::string16* error) {
     if (!user_script)
       return false;  // Failed to parse script context definition.
 
-    user_script->set_host_id(HostID(HostID::EXTENSIONS, extension->id()));
+    user_script->set_host_id(
+        mojom::HostID(mojom::HostID::HostType::kExtensions, extension->id()));
     if (extension->converted_from_user_script()) {
       user_script->set_emulate_greasemonkey(true);
       // Greasemonkey matches all frames.

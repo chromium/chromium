@@ -32,11 +32,11 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extensions_client.h"
-#include "extensions/common/host_id.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
@@ -71,7 +71,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ActionType,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
                           extensions::MessagingEndpoint::Type::kLast)
 
-IPC_ENUM_TRAITS_MAX_VALUE(HostID::HostType, HostID::HOST_TYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::HostID::HostType,
+                          extensions::mojom::HostID::HostType::kMaxValue)
 
 // Parameters structure for ExtensionHostMsg_AddAPIActionToActivityLog and
 // ExtensionHostMsg_AddEventToActivityLog.
@@ -163,13 +164,18 @@ IPC_STRUCT_BEGIN(ExtensionMsg_DispatchEvent_Params)
   IPC_STRUCT_MEMBER(extensions::EventFilteringInfo, filtering_info)
 IPC_STRUCT_END()
 
+IPC_STRUCT_TRAITS_BEGIN(extensions::mojom::HostID)
+  IPC_STRUCT_TRAITS_MEMBER(type)
+  IPC_STRUCT_TRAITS_MEMBER(id)
+IPC_STRUCT_TRAITS_END()
+
 // Allows an extension to execute code in a tab.
 IPC_STRUCT_BEGIN(ExtensionMsg_ExecuteCode_Params)
   // The extension API request id, for responding.
   IPC_STRUCT_MEMBER(int, request_id)
 
   // The ID of the requesting injection host.
-  IPC_STRUCT_MEMBER(HostID, host_id)
+  IPC_STRUCT_MEMBER(extensions::mojom::HostID, host_id)
 
   // Whether the code is JavaScript or CSS.
   IPC_STRUCT_MEMBER(extensions::mojom::ActionType, action_type)
@@ -478,16 +484,6 @@ struct ParamTraits<extensions::ManifestPermissionSet> {
 };
 
 template <>
-struct ParamTraits<HostID> {
-  typedef HostID param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
 struct ParamTraits<ExtensionMsg_PermissionSetStruct> {
   typedef ExtensionMsg_PermissionSetStruct param_type;
   static void Write(base::Pickle* m, const param_type& p);
@@ -571,8 +567,8 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_ExecuteCode,
 // scripts and not all user scripts.
 IPC_MESSAGE_CONTROL4(ExtensionMsg_UpdateUserScripts,
                      base::ReadOnlySharedMemoryRegion,
-                     HostID /* owner */,
-                     std::set<HostID> /* changed hosts */,
+                     extensions::mojom::HostID /* owner */,
+                     std::set<extensions::mojom::HostID> /* changed hosts */,
                      bool /* whitelisted_only */)
 
 // Trigger to execute declarative content script under browser control.

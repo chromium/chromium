@@ -1268,20 +1268,6 @@ struct FuzzTraits<GURL> {
   }
 };
 
-template <>
-struct FuzzTraits<HostID> {
-  static bool Fuzz(HostID* p, Fuzzer* fuzzer) {
-    HostID::HostType type = p->type();
-    std::string id = p->id();
-    if (!FuzzParam(&type, fuzzer))
-      return false;
-    if (!FuzzParam(&id, fuzzer))
-      return false;
-    *p = HostID(type, id);
-    return true;
-  }
-};
-
 #if defined(OS_WIN)
 template <>
 struct FuzzTraits<HWND> {
