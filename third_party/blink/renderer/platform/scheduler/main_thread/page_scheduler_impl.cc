@@ -341,6 +341,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
   is_stored_in_back_forward_cache_ = is_in_back_forward_cache;
 
   if (!is_stored_in_back_forward_cache_) {
+    TRACE_EVENT_INSTANT("navigation",
+                        "PageSchedulerImpl::SetPageBackForwardCached_Restore");
     set_ipc_posted_handler_task_.Cancel();
     has_ipc_detection_enabled_ = false;
     main_thread_scheduler_->UpdateIpcTracking();
@@ -349,6 +351,8 @@ void PageSchedulerImpl::SetPageBackForwardCached(
     }
     stored_in_back_forward_cache_timestamp_ = base::TimeTicks();
   } else {
+    TRACE_EVENT_INSTANT("navigation",
+                        "PageSchedulerImpl::SetPageBackForwardCached_Store");
     stored_in_back_forward_cache_timestamp_ =
         main_thread_scheduler_->tick_clock()->NowTicks();
 
@@ -379,6 +383,13 @@ void PageSchedulerImpl::SetUpIPCTaskDetection() {
 }
 
 void PageSchedulerImpl::SetKeepActive(bool keep_active) {
+  if (keep_active) {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "PageSchedulerImpl::SetKeepActive_True");
+  } else {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "PageSchedulerImpl::SetKeepActive_False");
+  }
   if (keep_active_ == keep_active)
     return;
   keep_active_ = keep_active;

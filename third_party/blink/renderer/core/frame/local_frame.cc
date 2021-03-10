@@ -943,6 +943,7 @@ bool LocalFrame::IsCaretBrowsingEnabled() const {
 }
 
 void LocalFrame::HookBackForwardCacheEviction() {
+  TRACE_EVENT0("blink", "LocalFrame::HookBackForwardCacheEviction");
   // Register a callback dispatched when JavaScript is executed on the frame.
   // The callback evicts the frame. If a frame is frozen by BackForwardCache,
   // the frame must not be mutated e.g., by JavaScript execution, then the
@@ -963,6 +964,7 @@ void LocalFrame::HookBackForwardCacheEviction() {
 }
 
 void LocalFrame::RemoveBackForwardCacheEviction() {
+  TRACE_EVENT0("blink", "LocalFrame::RemoveBackForwardCacheEviction");
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
   static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
       ->SetAbortScriptExecution(nullptr);
@@ -2471,6 +2473,7 @@ void LocalFrame::OnPageLifecycleStateUpdated() {
 }
 
 void LocalFrame::SetContextPaused(bool is_paused) {
+  TRACE_EVENT0("blink", "LocalFrame::SetContextPaused");
   if (is_paused == paused_)
     return;
   paused_ = is_paused;
@@ -2501,6 +2504,7 @@ WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
 }
 
 void LocalFrame::DidFreeze() {
+  TRACE_EVENT0("blink", "LocalFrame::DidFreeze");
   DCHECK(IsAttached());
   GetDocument()->DispatchFreezeEvent();
   // DispatchFreezeEvent dispatches JS events, which may detach |this|.
@@ -2524,6 +2528,7 @@ void LocalFrame::DidFreeze() {
 }
 
 void LocalFrame::DidResume() {
+  TRACE_EVENT0("blink", "LocalFrame::DidResume");
   DCHECK(IsAttached());
   const base::TimeTicks resume_event_start = base::TimeTicks::Now();
   GetDocument()->DispatchEvent(*Event::Create(event_type_names::kResume));
@@ -3397,6 +3402,7 @@ void LocalFrame::PostMessageEvent(
     const String& source_origin,
     const String& target_origin,
     BlinkTransferableMessage message) {
+  TRACE_EVENT0("blink", "LocalFrame::PostMessageEvent");
   RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
 
   // We must pass in the target_origin to do the security check on this side,

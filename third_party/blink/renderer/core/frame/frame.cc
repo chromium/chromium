@@ -97,6 +97,7 @@ void Frame::Trace(Visitor* visitor) const {
 }
 
 bool Frame::Detach(FrameDetachType type) {
+  TRACE_EVENT0("blink", "Frame::Detach");
   DCHECK(client_);
   // Detach() can be re-entered, so this can't simply DCHECK(IsAttached()).
   DCHECK(!IsDetached());

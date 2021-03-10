@@ -30,6 +30,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -441,6 +442,8 @@ scoped_refptr<base::SingleThreadTaskRunner> LocalDOMWindow::GetTaskRunner(
     TaskType type) {
   if (GetFrame())
     return GetFrame()->GetTaskRunner(type);
+  TRACE_EVENT_INSTANT("blink",
+                      "LocalDOMWindow::GetTaskRunner_ThreadTaskRunner");
   // In most cases, the ExecutionContext will get us to a relevant Frame. In
   // some cases, though, there isn't a good candidate (most commonly when either
   // the passed-in document or the ExecutionContext used to be attached to a

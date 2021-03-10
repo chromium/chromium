@@ -888,6 +888,13 @@ void FrameSchedulerImpl::UpdateQueuePolicy(
   // immediately when their frame becomes invisible get frozen. They will be
   // resumed when the frame becomes visible again.
   queue_disabled |= !frame_visible_ && !queue->CanRunInBackground();
+  if (queue_disabled) {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "FrameSchedulerImpl::UpdateQueuePolicy_QueueDisabled");
+  } else {
+    TRACE_EVENT_INSTANT("renderer.scheduler",
+                        "FrameSchedulerImpl::UpdateQueuePolicy_QueueEnabled");
+  }
   voter->SetVoteToEnable(!queue_disabled);
 }
 
