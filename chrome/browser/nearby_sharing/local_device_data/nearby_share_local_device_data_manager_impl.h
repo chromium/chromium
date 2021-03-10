@@ -18,6 +18,7 @@
 
 class NearbyShareClientFactory;
 class NearbyShareDeviceDataUpdater;
+class NearbyShareProfileInfoProvider;
 class NearbyShareScheduler;
 class PrefService;
 
@@ -34,7 +35,7 @@ class NearbyShareLocalDeviceDataManagerImpl
     static std::unique_ptr<NearbyShareLocalDeviceDataManager> Create(
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        const std::string& default_device_name);
+        NearbyShareProfileInfoProvider* profile_info_provider);
     static void SetFactoryForTesting(Factory* test_factory);
 
    protected:
@@ -42,7 +43,7 @@ class NearbyShareLocalDeviceDataManagerImpl
     virtual std::unique_ptr<NearbyShareLocalDeviceDataManager> CreateInstance(
         PrefService* pref_service,
         NearbyShareClientFactory* http_client_factory,
-        const std::string& default_device_name) = 0;
+        NearbyShareProfileInfoProvider* profile_info_provider) = 0;
 
    private:
     static Factory* test_factory_;
@@ -54,7 +55,7 @@ class NearbyShareLocalDeviceDataManagerImpl
   NearbyShareLocalDeviceDataManagerImpl(
       PrefService* pref_service,
       NearbyShareClientFactory* http_client_factory,
-      const std::string& default_device_name);
+      NearbyShareProfileInfoProvider* profile_info_provider);
 
   // NearbyShareLocalDeviceDataManager:
   std::string GetId() override;
@@ -74,6 +75,12 @@ class NearbyShareLocalDeviceDataManagerImpl
   void OnStart() override;
   void OnStop() override;
 
+  // Creates a default device name of the form "<given name>'s <device type>."
+  // For example, "Josh's Chromebook." If a given name cannot be found, returns
+  // just the device type. If the resulting name is too long the user's name
+  // will be truncated, for example "Mi...'s Chromebook."
+  std::string GetDefaultDeviceName() const;
+
   void OnDownloadDeviceDataRequested();
   void OnDownloadDeviceDataFinished(
       const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
@@ -87,6 +94,7 @@ class NearbyShareLocalDeviceDataManagerImpl
       const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
 
   PrefService* pref_service_ = nullptr;
+  NearbyShareProfileInfoProvider* profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<NearbyShareScheduler> download_device_data_scheduler_;
   std::string default_device_name_;

@@ -33,7 +33,6 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
-#include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
@@ -265,16 +264,18 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           IdentityManagerFactory::GetForProfile(profile),
           profile->GetURLLoaderFactory(),
           &nearby_share_http_notifier_)),
+      profile_info_provider_(
+          std::make_unique<NearbyShareProfileInfoProviderImpl>(profile_)),
       local_device_data_manager_(
           NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
               prefs,
               http_client_factory_.get(),
-              GetNearbyShareDefaultDeviceName(profile_))),
+              profile_info_provider_.get())),
       contact_manager_(NearbyShareContactManagerImpl::Factory::Create(
           prefs,
           http_client_factory_.get(),
           local_device_data_manager_.get(),
-          profile->GetProfileUserName())),
+          profile_info_provider_.get())),
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
           contact_manager_.get(),

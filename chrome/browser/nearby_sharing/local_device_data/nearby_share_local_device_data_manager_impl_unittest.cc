@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/nearby_sharing/client/fake_nearby_share_client.h"
+#include "chrome/browser/nearby_sharing/common/fake_nearby_share_profile_info_provider.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_device_data_updater.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
@@ -18,18 +20,24 @@
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler.h"
 #include "chrome/browser/nearby_sharing/scheduling/fake_nearby_share_scheduler_factory.h"
 #include "chrome/browser/nearby_sharing/scheduling/nearby_share_scheduler_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 
-const char kFakeDefaultDeviceName[] = "Barack's Chromebook";
 const char kFakeDeviceName[] = "My Cool Chromebook";
 const char kFakeEmptyDeviceName[] = "";
-const char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
-const char kFakeInvalidDeviceName[] = {0xC0, 0x00};
 const char kFakeFullName[] = "Barack Obama";
+const char kFakeGivenName[] = "Barack";
 const char kFakeIconUrl[] = "https://www.google.com";
+const char kFakeInvalidDeviceName[] = {0xC0, 0x00};
+const char kFakeTooLongDeviceName[] = "this string is 33 bytes in UTF-8!";
+const char kFakeTooLongGivenName[] = "this is a 33-byte string in utf-8";
+const char kFakeTooLongTruncatedDeviceName[] =
+    "this is a 33-...'s Chrome device";
 
 nearbyshare::proto::UpdateDeviceResponse CreateResponse(
     const base::Optional<std::string>& full_name,
@@ -93,6 +101,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
     NearbyShareSchedulerFactory::SetFactoryForTesting(&scheduler_factory_);
     NearbyShareDeviceDataUpdaterImpl::Factory::SetFactoryForTesting(
         &updater_factory_);
+    profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
   }
 
   void TearDown() override {
@@ -110,7 +119,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
 
   void CreateManager() {
     manager_ = NearbyShareLocalDeviceDataManagerImpl::Factory::Create(
-        &pref_service_, &http_client_factory_, kFakeDefaultDeviceName);
+        &pref_service_, &http_client_factory_, &profile_info_provider_);
     manager_->AddObserver(this);
     ++num_manager_creations_;
     VerifyInitialization();
@@ -199,6 +208,9 @@ class NearbyShareLocalDeviceDataManagerImplTest
   }
 
   NearbyShareLocalDeviceDataManager* manager() { return manager_.get(); }
+  FakeNearbyShareProfileInfoProvider* profile_info_provider() {
+    return &profile_info_provider_;
+  }
   const std::vector<ObserverNotification>& notifications() {
     return notifications_;
   }
@@ -238,6 +250,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
   std::vector<ObserverNotification> notifications_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeNearbyShareClientFactory http_client_factory_;
+  FakeNearbyShareProfileInfoProvider profile_info_provider_;
   FakeNearbyShareSchedulerFactory scheduler_factory_;
   FakeNearbyShareDeviceDataUpdaterFactory updater_factory_;
   std::unique_ptr<NearbyShareLocalDeviceDataManager> manager_;
@@ -259,6 +272,29 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
   EXPECT_EQ(id, manager()->GetId());
 }
 
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DefaultDeviceName) {
+  CreateManager();
+
+  // If given name is null, only return the device type.
+  profile_info_provider()->set_given_name(base::nullopt);
+  EXPECT_EQ(base::UTF16ToUTF8(ui::GetChromeOSDeviceName()),
+            manager()->GetDeviceName());
+
+  // Set given name and expect full default device name of the form
+  // "<given name>'s <device type>."
+  profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
+  EXPECT_EQ(l10n_util::GetStringFUTF8(IDS_NEARBY_DEFAULT_DEVICE_NAME,
+                                      base::UTF8ToUTF16(kFakeGivenName),
+                                      ui::GetChromeOSDeviceName()),
+            manager()->GetDeviceName());
+
+  // Make sure that when we use a given name that is very long we truncate
+  // correctly.
+  profile_info_provider()->set_given_name(
+      base::UTF8ToUTF16(kFakeTooLongGivenName));
+  EXPECT_EQ(kFakeTooLongTruncatedDeviceName, manager()->GetDeviceName());
+}
+
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
   CreateManager();
   EXPECT_EQ(manager()->ValidateDeviceName(kFakeDeviceName),
@@ -275,29 +311,30 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, ValidateDeviceName) {
 TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
 
-  // The default device name is set in the ctor when the device name is empty.
-  // No notification is received because we can't add an observer until the
-  // object is fully constructed.
-  EXPECT_EQ(kFakeDefaultDeviceName, manager()->GetDeviceName());
+  profile_info_provider()->set_given_name(base::UTF8ToUTF16(kFakeGivenName));
+  std::string expected_default_device_name = l10n_util::GetStringFUTF8(
+      IDS_NEARBY_DEFAULT_DEVICE_NAME, base::UTF8ToUTF16(kFakeGivenName),
+      ui::GetChromeOSDeviceName());
+  EXPECT_EQ(expected_default_device_name, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
 
   auto error = manager()->SetDeviceName(kFakeEmptyDeviceName);
   EXPECT_EQ(error,
             nearby_share::mojom::DeviceNameValidationResult::kErrorEmpty);
-  EXPECT_EQ(kFakeDefaultDeviceName, manager()->GetDeviceName());
+  EXPECT_EQ(expected_default_device_name, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
 
   error = manager()->SetDeviceName(kFakeTooLongDeviceName);
   EXPECT_EQ(error,
             nearby_share::mojom::DeviceNameValidationResult::kErrorTooLong);
-  EXPECT_EQ(kFakeDefaultDeviceName, manager()->GetDeviceName());
+  EXPECT_EQ(expected_default_device_name, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
 
   error = manager()->SetDeviceName(kFakeInvalidDeviceName);
   EXPECT_EQ(
       error,
       nearby_share::mojom::DeviceNameValidationResult::kErrorNotValidUtf8);
-  EXPECT_EQ(kFakeDefaultDeviceName, manager()->GetDeviceName());
+  EXPECT_EQ(expected_default_device_name, manager()->GetDeviceName());
   EXPECT_TRUE(notifications().empty());
 
   error = manager()->SetDeviceName(kFakeDeviceName);
