@@ -39,7 +39,7 @@ void DisablePartitionAllocThreadCacheForProcess() {
   if (aligned_allocator != regular_allocator)
     internal::DisableThreadCacheForRootIfEnabled(aligned_allocator);
   internal::DisableThreadCacheForRootIfEnabled(
-      base::internal::PartitionAllocMalloc::AlignedAllocator());
+      base::internal::PartitionAllocMalloc::OriginalAllocator());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
