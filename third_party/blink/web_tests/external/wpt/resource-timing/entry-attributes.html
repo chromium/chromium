@@ -93,6 +93,24 @@ function assert_http_resource(entry) {
   ]);
 }
 
+function assert_same_origin_redirected_resource(entry) {
+  assert_positive(entry, [
+    "redirectStart",
+  ]);
+
+  assert_equals(entry.redirectStart, entry.startTime,
+    "redirectStart should be equal to startTime");
+
+  assert_ordered(entry, [
+    "redirectStart",
+    "redirectEnd",
+    "fetchStart",
+    "domainLookupStart",
+    "domainLookupEnd",
+    "connectStart",
+  ]);
+}
+
 // Given a resource-loader and a PerformanceResourceTiming validator, loads a
 // resource and validates the resulting entry.
 function attribute_test(load_resource, validate, test_label) {
@@ -126,6 +144,10 @@ attribute_test(
   assert_http_resource,
   "Font resources should generate conformant entries");
 
+attribute_test(
+  () => load_image("/common/redirect.py?location=resources/fake_responses.py"),
+  assert_same_origin_redirected_resource,
+  "Same-origin redirects should populate redirectStart/redirectEnd");
 </script>
 </head>
 <body>
