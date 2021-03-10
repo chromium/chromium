@@ -76,7 +76,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.Duration.Failure" units="ms"
-    expires_after="2021-03-05">
+    expires_after="2022-03-05">
 <!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
 
   <owner>hansberry@chromium.org</owner>
@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.Duration.Success" units="ms"
-    expires_after="2021-03-05">
+    expires_after="2022-03-05">
 <!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
 
   <owner>hansberry@chromium.org</owner>
@@ -137,7 +137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.TransportType"
-    enum="BluetoothTransportType" expires_after="2021-03-05">
+    enum="BluetoothTransportType" expires_after="2022-03-05">
   <owner>hansberry@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -167,7 +167,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason"
-    enum="BluetoothConnectionFailureReason" expires_after="2021-03-05">
+    enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
 <!-- Name completed by histogram_suffixes name="BluetoothUISurfaces" -->
 
   <owner>hansberry@chromium.org</owner>
