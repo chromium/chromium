@@ -100,12 +100,9 @@ class TabHoverCardController::CardCounter {
     last_tab_ = nullptr;
   }
 
-  // Notes that a card was shown for |tab|. If the card is being shown right
-  // away (either because the mouse only briefly left the tabstrip, or because
-  // the user is sliding between tabs), |continuation| should be true; if it's
-  // a fresh show after a break, |continuation| should be set to false.
-  void CardShownForTab(const views::View* tab, bool continuation) {
-    if (!continuation) {
+  // Notes that a card was shown for |tab|.
+  void CardShownForTab(const views::View* tab, bool is_initial) {
+    if (is_initial) {
       cards_seen_count_ = 1;
       last_tab_ = tab;
       return;
@@ -114,6 +111,11 @@ class TabHoverCardController::CardCounter {
     if (tab == last_tab_)
       return;
 
+    // Note: actually selecting a tab via keyboard input resets the counter
+    // without tracking metrics, so HoverCardUpdateType::kEvent is processed
+    // here but has no real effect in most cases; however, incrementing the
+    // count here does handle the case where the user user the keyboard to
+    // preview tabs and then uses the mouse or touch to select the tab.
     last_tab_ = tab;
     ++cards_seen_count_;
   }
@@ -251,7 +253,8 @@ bool TabHoverCardController::AreHoverCardImagesEnabled() {
 }
 
 bool TabHoverCardController::IsHoverCardVisible() const {
-  return hover_card_ != nullptr;
+  return hover_card_ != nullptr && hover_card_->GetWidget() &&
+         !hover_card_->GetWidget()->IsClosed();
 }
 
 bool TabHoverCardController::IsHoverCardShowingForTab(Tab* tab) const {
@@ -263,9 +266,12 @@ void TabHoverCardController::UpdateHoverCard(
     Tab* tab,
     TabController::HoverCardUpdateType update_type) {
   // Update this ASAP so that if we try to fade-in and we have the wrong target
-  // then when the fade timer elapses we won't incorrectly try to fade in or
-  // fade in on the wrong tab.
-  target_tab_ = tab;
+  // then when the fade timer elapses we won't incorrectly try to fade in on the
+  // wrong tab.
+  if (target_tab_ != tab) {
+    target_tab_ = tab;
+    delayed_show_timer_.Stop();
+  }
 
   // If there's nothing to attach to then there's no point in creating a card.
   if (!hover_card_ && (!tab || !tab_strip_->GetWidget()))
@@ -294,7 +300,7 @@ void TabHoverCardController::UpdateHoverCard(
   }
 
   if (tab)
-    UpdateOrShowCard(tab);
+    UpdateOrShowCard(tab, update_type);
   else
     HideHoverCard();
 }
@@ -307,7 +313,9 @@ void TabHoverCardController::TabSelectedViaMouse() {
   cards_seen_counter_->TabSelectedViaMouse();
 }
 
-void TabHoverCardController::UpdateOrShowCard(Tab* tab) {
+void TabHoverCardController::UpdateOrShowCard(
+    Tab* tab,
+    TabController::HoverCardUpdateType update_type) {
   RecordTimeSinceLastSeenMetric(base::TimeTicks::Now() -
                                 last_visible_timestamp_);
 
@@ -315,6 +323,14 @@ void TabHoverCardController::UpdateOrShowCard(Tab* tab) {
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && hover_card_->GetWidget()->IsClosed())
     OnViewIsDeleting(hover_card_);
+
+  // If a hover card is being updated because of a data change, the hover card
+  // had better already be showing for the affected tab.
+  if (update_type == TabController::HoverCardUpdateType::kTabDataChanged) {
+    DCHECK(IsHoverCardShowingForTab(tab));
+    UpdateCardContent(tab);
+    return;
+  }
 
   // Cancel any pending fades.
   if (hover_card_ && fade_animator_->IsFadingOut()) {
@@ -329,8 +345,8 @@ void TabHoverCardController::UpdateOrShowCard(Tab* tab) {
     // Card should never exist without an anchor.
     DCHECK(hover_card_->GetAnchorView());
 
-    // We're showing a hover card for a new tab, so increment the count.
-    cards_seen_counter_->CardShownForTab(tab, true);
+    // We may be showing a hover card for a new tab, so notify the counter.
+    cards_seen_counter_->CardShownForTab(tab, false);
 
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
@@ -350,31 +366,31 @@ void TabHoverCardController::UpdateOrShowCard(Tab* tab) {
   // Maybe make hover card visible. Disabling animations for testing also
   // eliminates the show timer, lest the tests have to be significantly more
   // complex and time-consuming.
-  const bool show_immediate = ShouldShowImmediately(tab);
-  if (disable_animations_for_testing_ || show_immediate) {
-    DCHECK_EQ(target_tab_, tab);
-    ShowHoverCard(show_immediate);
-  } else {
+  const bool is_initial = !ShouldShowImmediately(tab);
+  if (is_initial && !disable_animations_for_testing_) {
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
-                       base::Unretained(this), false));
+                       base::Unretained(this), true));
+  } else {
+    DCHECK_EQ(target_tab_, tab);
+    ShowHoverCard(is_initial);
   }
 }
 
-void TabHoverCardController::ShowHoverCard(bool is_immediate) {
+void TabHoverCardController::ShowHoverCard(bool is_initial) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone.
   if (hover_card_ || !target_tab_)
     return;
 
-  // We're showing a hover card for a new tab, so increment the count.
-  cards_seen_counter_->CardShownForTab(target_tab_, is_immediate);
+  // We're showing a hover card for a new tab, set or increment the count.
+  cards_seen_counter_->CardShownForTab(target_tab_, is_initial);
 
   CreateHoverCard(target_tab_);
   UpdateCardContent(target_tab_);
 
-  if (is_immediate || !UseAnimations()) {
+  if (!is_initial || !UseAnimations()) {
     hover_card_->GetWidget()->Show();
     return;
   }
@@ -389,12 +405,13 @@ void TabHoverCardController::ShowHoverCard(bool is_immediate) {
 }
 
 void TabHoverCardController::HideHoverCard() {
-  delayed_show_timer_.Stop();
   if (!hover_card_ || hover_card_->GetWidget()->IsClosed())
     return;
 
-  if (thumbnail_observer_)
+  if (thumbnail_observer_) {
     thumbnail_observer_->Observe(nullptr);
+    waiting_for_preview_ = false;
+  }
   slide_animator_->StopAnimation();
   last_visible_timestamp_ = base::TimeTicks::Now();
   if (!UseAnimations()) {
@@ -481,10 +498,15 @@ void TabHoverCardController::MaybeStartThumbnailObservation(Tab* tab) {
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail) {
     hover_card_->ClearPreviewImage();
-  } else if (thumbnail != thumbnail_observer_->current_image()) {
-    waiting_for_decompress_ = true;
-    thumbnail_observer_->Observe(thumbnail);
+    return;
   }
+
+  if (thumbnail == thumbnail_observer_->current_image())
+    return;
+
+  // We're definitely going to wait for an image at some point.
+  waiting_for_preview_ = true;
+  thumbnail_observer_->Observe(thumbnail);
 }
 
 void TabHoverCardController::RecordTimeSinceLastSeenMetric(
@@ -561,7 +583,7 @@ void TabHoverCardController::OnSlideAnimationComplete(
   // keep showing the old image while hovering on the new tab, so clear it. This
   // shouldn't happen very often for slide animations, but could on slower
   // computers.
-  if (waiting_for_decompress_)
+  if (waiting_for_preview_)
     hover_card_->ClearPreviewImage();
 }
 
@@ -569,7 +591,7 @@ void TabHoverCardController::OnPreviewImageAvaialble(
     TabHoverCardThumbnailObserver* observer,
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
-  waiting_for_decompress_ = false;
+  waiting_for_preview_ = false;
   hover_card_->SetPreviewImage(thumbnail_image);
 }
 

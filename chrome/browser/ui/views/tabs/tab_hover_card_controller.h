@@ -63,8 +63,9 @@ class TabHoverCardController : public views::ViewObserver {
 
   void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 
-  void UpdateOrShowCard(Tab* tab);
-  void ShowHoverCard(bool is_immediate);
+  void UpdateOrShowCard(Tab* tab,
+                        TabController::HoverCardUpdateType update_type);
+  void ShowHoverCard(bool is_initial);
   void HideHoverCard();
 
   bool ShouldShowImmediately(const Tab* tab) const;
@@ -114,7 +115,7 @@ class TabHoverCardController : public views::ViewObserver {
 
   std::unique_ptr<TabHoverCardThumbnailObserver> thumbnail_observer_;
   base::CallbackListSubscription thumbnail_subscription_;
-  bool waiting_for_decompress_ = false;
+  bool waiting_for_preview_ = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Optional<ui::ThroughputTracker> throughput_tracker_;
