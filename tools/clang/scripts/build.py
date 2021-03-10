@@ -582,6 +582,8 @@ def main():
         '-DLLVM_LOCAL_RPATH=' + os.path.join(args.gcc_toolchain, 'lib64')
     ]
 
+  if sys.platform.startswith('linux'):
+    base_cmake_args.append('-DCLANG_DEFAULT_RTLIB=libgcc')
 
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
