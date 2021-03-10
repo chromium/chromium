@@ -233,12 +233,26 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    # TODO(1019938): switch the default to tests.cmx which doesn't request
-    # the deprecated-ambient-replace-as-executable feature.
+    # TODO(1019938): make minimum_capabilities.test-cmx the default and have
+    # everything added via additional_manifests
     if (!defined(invoker.manifest)) {
-      manifest = "//build/config/fuchsia/tests-with-exec.cmx"
+      if (!defined(invoker.additional_manifests)) {
+        manifest = "//build/config/fuchsia/tests-with-exec.cmx"
+      } else {
+        manifest = "//build/config/fuchsia/test/minimum_capabilities.test-cmx"
+      }
     } else {
       manifest = invoker.manifest
+    }
+
+    if (defined(invoker.additional_manifests)) {
+      combined_manifest = "${target_name}.test-cmx"
+      cmc_merge(combined_manifest) {
+        sources = [ manifest ]
+        sources += invoker.additional_manifests
+        output_name = target_name
+      }
+      manifest = "${target_out_dir}/${combined_manifest}"
     }
 
     if (use_clang_coverage) {
@@ -271,8 +285,12 @@ template("test") {
     cr_fuchsia_package(_pkg_target) {
       binary = ":$_exec_target"
       package_name_override = _output_name
+      deps = []
       if (use_clang_coverage) {
-        deps = [ ":$component_with_coverage_manifest" ]
+        deps += [ ":$component_with_coverage_manifest" ]
+      }
+      if (defined(invoker.additional_manifests)) {
+        deps += [ ":$combined_manifest" ]
       }
     }
 

@@ -959,6 +959,8 @@ test("skia_unittests") {
       "//third_party/test_fonts",
     ]
     data_deps = [ "//third_party/test_fonts" ]
+    additional_manifests =
+        [ "//build/config/fuchsia/test/sys_launcher_capabilities.test-cmx" ]
   }
 
   if (skia_support_skottie) {

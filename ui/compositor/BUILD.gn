@@ -275,4 +275,14 @@ test("compositor_unittests") {
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
   }
+
+  if (is_fuchsia) {
+    additional_manifests = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/present_capabilities.test-cmx",
+      "//build/config/fuchsia/test/view_creation_capabilities.test-cmx",
+    ]
+  }
 }

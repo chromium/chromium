@@ -3512,7 +3512,8 @@ if (build_base_unittests) {
         "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       ]
 
-      manifest = "fuchsia/base_unittests.test-cmx"
+      additional_manifests =
+          [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
     }
 
     if (!is_fuchsia && !is_ios) {
