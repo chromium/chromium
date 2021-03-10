@@ -6,8 +6,8 @@
 
 #include <cstddef>
 #include <memory>
-#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
@@ -302,6 +302,25 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
   EXPECT_EQ(1, observer.GetNumOnAccountRemovedCalls());
   EXPECT_EQ(kTestAccountKey, observer.GetLastRemovedAccount().key);
   EXPECT_EQ(kFakeEmail, observer.GetLastRemovedAccount().raw_email);
+}
+
+TEST_F(AccountManagerAshTest, GetAccounts) {
+  ASSERT_TRUE(InitializeAccountManager());
+  {
+    std::vector<mojom::AccountPtr> accounts;
+    account_manager_async_waiter()->GetAccounts(&accounts);
+    EXPECT_TRUE(accounts.empty());
+  }
+
+  const account_manager::AccountKey kTestAccountKey{
+      kFakeGaiaId, account_manager::AccountType::kGaia};
+  account_manager()->UpsertAccount(kTestAccountKey, kFakeEmail, kFakeToken);
+  std::vector<mojom::AccountPtr> accounts;
+  account_manager_async_waiter()->GetAccounts(&accounts);
+  EXPECT_EQ(1UL, accounts.size());
+  EXPECT_EQ(kFakeEmail, accounts[0]->raw_email);
+  EXPECT_EQ(kFakeGaiaId, accounts[0]->key->id);
+  EXPECT_EQ(mojom::AccountType::kGaia, accounts[0]->key->account_type);
 }
 
 TEST_F(AccountManagerAshTest,

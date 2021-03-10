@@ -23,6 +23,7 @@ void MarshalAccounts(
   for (const account_manager::Account& account : accounts_to_marshal) {
     mojo_accounts.emplace_back(account_manager::ToMojoAccount(account));
   }
+  std::move(callback).Run(std::move(mojo_accounts));
 }
 
 void ReportErrorStatusFromHasDummyGaiaToken(
