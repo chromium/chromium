@@ -115,10 +115,10 @@ HRESULT BuildCdmProperties(ComPtr<IPropertyStore>& properties) {
   CHECK(base::DirectoryExists(temp_dir));
 
   base::win::ScopedPropVariant propvar;
-  SetBSTR(temp_dir.value().c_str(), propvar.Receive());
-  // TODO(xhwang): Replace with MF_CONTENTDECRYPTIONMODULE_STOREPATH.
   RETURN_IF_FAILED(
-      temp_properties->SetValue(MF_EME_CDM_STOREPATH, propvar.get()));
+      InitPropVariantFromString(temp_dir.value().c_str(), propvar.Receive()));
+  RETURN_IF_FAILED(temp_properties->SetValue(
+      MF_CONTENTDECRYPTIONMODULE_STOREPATH, propvar.get()));
 
   properties = temp_properties;
   return S_OK;
