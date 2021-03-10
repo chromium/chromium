@@ -68963,6 +68963,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Warning"/>
 </enum>
 
+<enum name="SelectFileDialogContent">
+  <int value="0" label="Photo uploaded by MediaPicker (as per MIME type)"/>
+  <int value="1" label="Video uploaded by MediaPicker (as per MIME type)"/>
+  <int value="2" label="Other type uploaded by MediaPicker (as per MIME type)"/>
+  <int value="3" label="Photo uploaded by MediaPicker (as per extension)"/>
+  <int value="4" label="Video uploaded by MediaPicker (as per extension)"/>
+  <int value="5" label="Other type uploaded by MediaPicker (as per extension)"/>
+  <int value="6" label="Unable to determine type uploaded by MediaPicker"/>
+  <int value="7" label="Photo uploaded by external source (as per MIME type)"/>
+  <int value="8" label="Video uploaded by external source (as per MIME type)"/>
+  <int value="9"
+      label="Other type uploaded by external source (as per MIME type)"/>
+  <int value="10" label="Photo uploaded by external source (as per extension)"/>
+  <int value="11" label="Video uploaded by external source (as per extension)"/>
+  <int value="12"
+      label="Other type uploaded by external source (as per extension)"/>
+  <int value="13" label="Unable to determine type uploaded by external source"/>
+</enum>
+
 <enum name="SelectFileDialogScope">
   <int value="0" label="Generic files"/>
   <int value="1" label="Images"/>
