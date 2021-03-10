@@ -280,9 +280,9 @@ preprocess_if_expr("preprocess_generated") {
     "search_page/search_page.js",
     "search_settings.m.js",
     "settings_main/settings_main.js",
-    "settings_page/settings_animated_pages.m.js",
-    "settings_page/settings_section.m.js",
-    "settings_page/settings_subpage.m.js",
+    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_section.js",
+    "settings_page/settings_subpage.js",
     "settings_ui/settings_ui.js",
     "setting_id_param_util.m.js",
     "settings_page_css.m.js",
@@ -372,7 +372,6 @@ group("closure_compile") {
     "people_page:closure_compile",
     "prefs:closure_compile",
     "privacy_sandbox:closure_compile",
-    "settings_page:closure_compile",
   ]
 
   if (is_chromeos_ash) {
@@ -664,7 +663,7 @@ group("polymer3_elements") {
     "search_page:web_components",
     "settings_main:web_components",
     "settings_menu:web_components",
-    "settings_page:polymer3_elements",
+    "settings_page:web_components",
     "settings_ui:web_components",
     "site_settings:web_components",
     "site_settings_page:web_components",

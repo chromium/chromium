@@ -20,7 +20,7 @@ import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
-import '../settings_page/settings_section.m.js';
+import '../settings_page/settings_section.js';
 import '../settings_page_css.m.js';
 // <if expr="chromeos or lacros">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';

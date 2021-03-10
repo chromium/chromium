@@ -3,62 +3,23 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../settings.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":settings_animated_pages",
-    ":settings_section",
-    ":settings_subpage",
-  ]
-}
-
-js_library("settings_animated_pages") {
-  deps = [
-    ":settings_subpage",
-    "..:router",
-    "..:setting_id_param_util",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-js_library("settings_section") {
-}
-
-js_library("settings_subpage") {
-  deps = [
-    "..:router",
-    "..:setting_id_param_util",
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//ui/webui/resources/cr_elements:find_shortcut_behavior",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
     ":main_page_behavior",
-    ":settings_animated_pages.m",
-    ":settings_section.m",
-    ":settings_subpage.m",
+    ":settings_animated_pages",
+    ":settings_section",
+    ":settings_subpage",
   ]
 }
 
 js_library("main_page_behavior") {
   deps = [
-    ":settings_section.m",
+    ":settings_section",
     "..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
@@ -66,10 +27,9 @@ js_library("main_page_behavior") {
   ]
 }
 
-js_library("settings_animated_pages.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/settings_page/settings_animated_pages.m.js" ]
+js_library("settings_animated_pages") {
   deps = [
-    ":settings_subpage.m",
+    ":settings_subpage",
     "..:router.m",
     "..:setting_id_param_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -77,19 +37,15 @@ js_library("settings_animated_pages.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":settings_animated_pages_module" ]
 }
 
-js_library("settings_section.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/settings_page/settings_section.m.js" ]
+js_library("settings_section") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":settings_section_module" ]
 }
 
-js_library("settings_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/settings_page/settings_subpage.m.js" ]
+js_library("settings_subpage") {
   deps = [
     "..:router.m",
     "..:setting_id_param_util.m",
@@ -103,52 +59,12 @@ js_library("settings_subpage.m") {
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":settings_subpage_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":settings_animated_pages_module",
-    ":settings_section_module",
-    ":settings_subpage_module",
+html_to_js("web_components") {
+  js_files = [
+    "settings_animated_pages.js",
+    "settings_section.js",
+    "settings_subpage.js",
   ]
-}
-
-polymer_modulizer("settings_animated_pages") {
-  js_file = "settings_animated_pages.js"
-  html_file = "settings_animated_pages.html"
-  html_type = "dom-module"
-  auto_imports = [
-    "chrome/browser/resources/settings/router.html|Route, Router, RouteObserverBehavior",
-    "chrome/browser/resources/settings/setting_id_param_util.html|getSettingIdParameter",
-    "ui/webui/resources/html/assert.html|assert",
-    "ui/webui/resources/html/polymer.html|afterNextRender, dom, DomIf, html, Polymer",
-  ]
-  namespace_rewrites = settings_namespace_rewrites + [
-                         "Polymer.dom|dom",
-                         "Polymer.DomIf|DomIf",
-                       ]
-}
-
-polymer_modulizer("settings_section") {
-  js_file = "settings_section.js"
-  html_file = "settings_section.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("settings_subpage") {
-  js_file = "settings_subpage.js"
-  html_file = "settings_subpage.html"
-  html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/router.html|RouteObserverBehavior,Router",
-                   "chrome/browser/resources/settings/setting_id_param_util.html|getSettingIdParameter",
-                   "third_party/polymer/v1_0/components-chromium/iron-resizable-behavior/iron-resizable-behavior.html|IronResizableBehavior",
-                   "ui/webui/resources/html/assert.html|assert",
-                   "ui/webui/resources/html/polymer.html|html, Polymer, afterNextRender",
-                   "ui/webui/resources/html/util.html|listenOnce",
-                 ]
-  namespace_rewrites = settings_namespace_rewrites +
-                       [ "Polymer.IronResizableBehavior|IronResizableBehavior" ]
 }

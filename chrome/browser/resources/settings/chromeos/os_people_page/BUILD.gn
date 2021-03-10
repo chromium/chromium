@@ -133,7 +133,7 @@ js_library("os_people_page.m") {
     "..:os_page_visibility.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../settings_page:settings_animated_pages.m",
+    "../../settings_page:settings_animated_pages",
     "../kerberos_page:kerberos_accounts.m",
     "../localized_link:localized_link.m",
     "../parental_controls_page:parental_controls_page.m",

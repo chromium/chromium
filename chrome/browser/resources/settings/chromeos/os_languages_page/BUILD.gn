@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":add_input_methods_dialog.m",
@@ -171,8 +172,8 @@ js_library("os_languages_section.m") {
     "..:os_route.m",
     "../..:router.m",
     "../../languages_page:languages.m",
-    "../../settings_page:settings_animated_pages.m",
-    "../../settings_page:settings_subpage.m",
+    "../../settings_page:settings_animated_pages",
+    "../../settings_page:settings_subpage",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",

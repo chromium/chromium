@@ -9,7 +9,7 @@
 
 import '../icons.m.js';
 import '../prefs/prefs.m.js';
-import '../settings_page/settings_section.m.js';
+import '../settings_page/settings_section.js';
 import '../settings_page_css.m.js';
 import '../settings_shared_css.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

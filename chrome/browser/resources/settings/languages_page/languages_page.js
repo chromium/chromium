@@ -25,8 +25,8 @@ import '../controls/controlled_radio_button.m.js';
 import '../controls/settings_radio_group.m.js';
 import '../controls/settings_toggle_button.m.js';
 import '../icons.m.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.m.js';
 import '../settings_vars_css.m.js';
 

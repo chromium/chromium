@@ -482,9 +482,9 @@ preprocess_if_expr("preprocess_gen_v3") {
     "router.m.js",
     "search_settings.m.js",
     "setting_id_param_util.m.js",
-    "settings_page/settings_animated_pages.m.js",
-    "settings_page/settings_section.m.js",
-    "settings_page/settings_subpage.m.js",
+    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_section.js",
+    "settings_page/settings_subpage.js",
     "settings_page_css.m.js",
     "settings_shared_css.m.js",
     "settings_vars_css.m.js",
@@ -689,9 +689,7 @@ group("polymer3_elements") {
     "../a11y_page:live_caption_section_module",
     "../prefs:modulize",
     "../prefs:prefs_module",
-    "../settings_page:settings_animated_pages_module",
-    "../settings_page:settings_section_module",
-    "../settings_page:settings_subpage_module",
+    "../settings_page:web_components",
   ]
 }
 

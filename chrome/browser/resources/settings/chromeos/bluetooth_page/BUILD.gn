@@ -7,6 +7,7 @@ import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":bluetooth_device_list_item.m",
@@ -36,7 +37,7 @@ js_library("bluetooth_page.m") {
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs_behavior.m",
-    "../../settings_page:settings_animated_pages.m",
+    "../../settings_page:settings_animated_pages",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

@@ -15,8 +15,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/settings_toggle_button.m.js';
 import '../prefs/prefs.m.js';
 import '../site_settings/settings_category_default_radio_group.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

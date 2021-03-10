@@ -1,18 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="../router.html">
-<link rel="import" href="../setting_id_param_util.html">
-
-<dom-module id="settings-animated-pages">
-  <template>
     <iron-pages id="animatedPages" attr-for-selected="route-path"
         on-iron-select="onIronSelect_">
       <slot></slot>
     </iron-pages>
-  </template>
-  <script src="settings_animated_pages.js"></script>
-</dom-module>

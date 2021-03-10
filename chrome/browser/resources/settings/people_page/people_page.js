@@ -18,8 +18,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/settings_toggle_button.m.js';
 import './sync_account_control.m.js';
 import '../icons.m.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.m.js';
 
 // <if expr="chromeos">

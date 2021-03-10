@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":kerberos_accounts.m",
@@ -67,7 +68,7 @@ js_library("kerberos_page.m") {
   deps = [
     "..:os_route.m",
     "../..:router.m",
-    "../../settings_page:settings_animated_pages.m",
+    "../../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

@@ -7,6 +7,7 @@ import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":os_files_page.m",
@@ -46,6 +47,7 @@ polymer_modulizer("os_files_page") {
   js_file = "os_files_page.js"
   html_file = "os_files_page.html"
   html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports
 }

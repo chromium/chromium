@@ -7,6 +7,7 @@ import("//tools/polymer/polymer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":android_apps_browser_proxy.m",
@@ -46,7 +47,7 @@ js_library("os_apps_page.m") {
     "..:os_route.m",
     "../../:router.m",
     "../../prefs:prefs_behavior.m",
-    "../../settings_page:settings_animated_pages.m",
+    "../../settings_page:settings_animated_pages",
     "../localized_link:localized_link.m",
     "./app_management_page:constants.m",
     "./app_management_page:store_client.m",

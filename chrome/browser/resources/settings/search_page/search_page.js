@@ -13,8 +13,8 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/extension_controlled_indicator.m.js';
 import '../i18n_setup.js';
-import '../settings_page/settings_animated_pages.m.js';
-import '../settings_page/settings_subpage.m.js';
+import '../settings_page/settings_animated_pages.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared_css.m.js';
 import '../settings_vars_css.m.js';
 

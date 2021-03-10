@@ -9,7 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import './reset_profile_dialog.js';
-import '../settings_page/settings_animated_pages.m.js';
+import '../settings_page/settings_animated_pages.js';
 import '../settings_shared_css.m.js';
 
 // <if expr="_google_chrome and is_win">
