@@ -3,12 +3,13 @@
     "fuchsia.test": {
       "injected-services": {
         "fuchsia.accessibility.semantics.SemanticsManager": "fuchsia-pkg://fuchsia.com/a11y-manager#meta/a11y-manager.cmx",
-        "fuchsia.sysmem.Allocator": "fuchsia-pkg://fuchsia.com/sysmem_connector#meta/sysmem_connector.cmx",
         "fuchsia.ui.input.ImeService": "fuchsia-pkg://fuchsia.com/ime_service#meta/ime_service.cmx",
         "fuchsia.ui.input.ImeVisibilityService": "fuchsia-pkg://fuchsia.com/ime_service#meta/ime_service.cmx",
-        "fuchsia.ui.scenic.Scenic": "fuchsia-pkg://fuchsia.com/scenic#meta/scenic.cmx"
       },
-
+      "system-services": [
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.scenic.Scenic"
+      ]
     }
   },
   "sandbox": {

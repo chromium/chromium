@@ -860,7 +860,14 @@ cc_test("cc_unittests") {
   ]
 
   if (is_fuchsia) {
-    manifest = "//build/config/fuchsia/gfx_tests.cmx"
+    additional_manifests = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
   }
 
   if (enable_vulkan) {

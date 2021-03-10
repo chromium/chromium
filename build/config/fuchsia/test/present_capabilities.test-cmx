@@ -1,10 +1,9 @@
 {
   "facets": {
     "fuchsia.test": {
-      "injected-services": {
-        "fuchsia.ui.policy.Presenter": "fuchsia-pkg://fuchsia.com/root_presenter#meta/root_presenter.cmx"
-      },
-
+      "system-services": [
+        "fuchsia.ui.policy.Presenter"
+      ]
     }
   },
   "sandbox": {
