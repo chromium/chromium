@@ -44,6 +44,10 @@ interface MediaPlayer {
   // controls and go fullscreen.
   SetPersistentState(bool persistent);
 
+  // Notify the player that it is now eligible to start recording power
+  // measurements if |state| is true, else it is no longer eligible.
+  SetPowerExperimentState(bool enabled);
+
   // Set the media player sink id to |sink_id|.
   SetAudioSinkId(string sink_id);
 

@@ -2513,6 +2513,11 @@ void WebMediaPlayerImpl::SetPersistentState(bool value) {
   MaybeSendOverlayInfoToDecoder();
 }
 
+void WebMediaPlayerImpl::SetPowerExperimentState(bool state) {
+  if (power_status_helper_)
+    power_status_helper_->UpdatePowerExperimentState(state);
+}
+
 void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
   SetVolumeMultiplier(multiplier);
 }
@@ -2523,8 +2528,7 @@ void WebMediaPlayerImpl::OnBecamePersistentVideo(bool value) {
 }
 
 void WebMediaPlayerImpl::OnPowerExperimentState(bool state) {
-  if (power_status_helper_)
-    power_status_helper_->UpdatePowerExperimentState(state);
+  SetPowerExperimentState(state);
 }
 
 void WebMediaPlayerImpl::ScheduleRestart() {

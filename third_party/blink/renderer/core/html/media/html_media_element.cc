@@ -4541,6 +4541,11 @@ void HTMLMediaElement::SetVolumeMultiplier(double multiplier) {
     web_media_player_->SetVolumeMultiplier(multiplier);
 }
 
+void HTMLMediaElement::SetPowerExperimentState(bool enabled) {
+  if (web_media_player_)
+    web_media_player_->SetPowerExperimentState(enabled);
+}
+
 void HTMLMediaElement::SetAudioSinkId(const String& sink_id) {
   auto* audio_output_controller = AudioOutputDeviceController::From(*this);
   DCHECK(audio_output_controller);

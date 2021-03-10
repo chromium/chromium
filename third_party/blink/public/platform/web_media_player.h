@@ -248,6 +248,10 @@ class WebMediaPlayer {
   // controls and go fullscreen.
   virtual void SetPersistentState(bool persistent) {}
 
+  // Notify the player that it is now eligible to start recording power
+  // measurements if |state| is true, else it is no longer eligible.
+  virtual void SetPowerExperimentState(bool enabled) {}
+
   // Suspends the player for the host frame closed.
   virtual void SuspendForFrameClosed() = 0;
 

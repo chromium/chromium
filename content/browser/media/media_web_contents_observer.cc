@@ -632,11 +632,18 @@ void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {
   use_after_free_checker_.check();
 
-  auto* render_frame_host = RenderFrameHost::FromID(id.frame_routing_id);
-  DCHECK(render_frame_host);
+  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
+    auto* remote = GetMediaPlayerRemote(*fullscreen_player_);
+    DCHECK(remote);
+    remote->SetPowerExperimentState(is_starting);
+  } else {
+    auto* render_frame_host = RenderFrameHost::FromID(id.frame_routing_id);
+    DCHECK(render_frame_host);
 
-  render_frame_host->Send(new MediaPlayerDelegateMsg_NotifyPowerExperimentState(
-      render_frame_host->GetRoutingID(), id.delegate_id, is_starting));
+    render_frame_host->Send(
+        new MediaPlayerDelegateMsg_NotifyPowerExperimentState(
+            render_frame_host->GetRoutingID(), id.delegate_id, is_starting));
+  }
 }
 
 base::WeakPtr<MediaWebContentsObserver>

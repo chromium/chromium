@@ -194,6 +194,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
 
   void SetVolumeMultiplier(double multiplier) override;
   void SetPersistentState(bool persistent) override;
+  void SetPowerExperimentState(bool state) override;
   void SuspendForFrameClosed() override;
 
   bool HasAvailableVideoFrame() const override;
