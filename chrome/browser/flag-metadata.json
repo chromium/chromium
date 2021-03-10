@@ -701,9 +701,9 @@
     "expiry_milestone": 99
   },
   {
-    "name": "contextual-search-definitions",
+    "name": "contextual-search-force-caption",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 82
+    "expiry_milestone": 93
   },
   {
     "name": "contextual-search-literal-search-tap",
