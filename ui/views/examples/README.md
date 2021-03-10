@@ -32,6 +32,7 @@ The current available examples are listed below:
 - Message Box View
 - Multiline RenderText
 - Native Theme Colors
+- Notification
 - Progress Bar
 - Radio Button
 - Scroll View
