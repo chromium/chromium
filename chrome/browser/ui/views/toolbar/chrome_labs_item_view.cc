@@ -20,13 +20,19 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
-void ShowFeedbackPage(Browser* browser, std::string feedback_category_name) {
-  chrome::ShowFeedbackPage(browser,
-                           chrome::FeedbackSource::kFeedbackSourceChromeLabs,
-                           std::string() /* description_template */,
-                           std::string() /* description_placeholder_text */,
-                           feedback_category_name /* category_tag */,
-                           std::string() /* extra_diagnostics */);
+
+void ShowFeedbackPage(Browser* browser,
+                      std::string feedback_category_name,
+                      base::string16 visible_name) {
+  chrome::ShowFeedbackPage(
+      browser, chrome::FeedbackSource::kFeedbackSourceChromeLabs,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringFUTF8(
+          IDS_CHROMELABS_SEND_FEEDBACK_DESCRIPTION_PLACEHOLDER,
+          std::move(visible_name)),
+      /*category_tag=*/std::move(feedback_category_name),
+      /* extra_diagnostics=*/std::string());
 }
 
 }  // namespace
@@ -107,8 +113,10 @@ ChromeLabsItemView::ChromeLabsItemView(
 
                    .SetSizeToLargestLabel(false),
                views::Builder<views::MdTextButton>()
+                   .CopyAddressTo(&feedback_button_)
                    .SetCallback(base::BindRepeating(&ShowFeedbackPage, browser,
-                                                    lab.feedback_category_name))
+                                                    lab.feedback_category_name,
+                                                    lab.visible_name))
                    .SetText(
                        l10n_util::GetStringUTF16(IDS_CHROMELABS_SEND_FEEDBACK))
                    .SetProperty(

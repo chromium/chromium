@@ -12,8 +12,11 @@
 #include "ui/views/view.h"
 
 class Browser;
-
 struct LabInfo;
+
+namespace views {
+class MdTextButton;
+}  // namespace views
 
 class ChromeLabsItemView : public views::View {
  public:
@@ -32,6 +35,10 @@ class ChromeLabsItemView : public views::View {
     return lab_state_combobox_;
   }
 
+  views::MdTextButton* GetFeedbackButtonForTesting() {
+    return feedback_button_;
+  }
+
   const flags_ui::FeatureEntry* GetFeatureEntry();
 
  private:
@@ -39,6 +46,8 @@ class ChromeLabsItemView : public views::View {
   views::Combobox* lab_state_combobox_;
 
   const flags_ui::FeatureEntry* feature_entry_;
+
+  views::MdTextButton* feedback_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_ITEM_VIEW_H_

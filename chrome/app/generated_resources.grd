@@ -11195,6 +11195,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Send feedback
     </message>
     </if>
+    <message name="IDS_CHROMELABS_SEND_FEEDBACK_DESCRIPTION_PLACEHOLDER" desc="The placeholder text for the send feedback dialog to submit feedback for each experiment.">
+      Send feedback for <ph name="EXPERIMENT_NAME">$1<ex>Tab Scrolling</ex></ph>.
+    </message>
   </messages>
 </release>
 </grit>

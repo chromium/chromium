@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
@@ -18,6 +19,8 @@
 #include "components/flags_ui/flags_state.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_utils.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/combobox_test_api.h"
 #include "ui/views/test/widget_test.h"
 
@@ -280,5 +283,21 @@ TEST_F(ChromeLabsBubbleTest, SelectDefaultTwiceNoRestart) {
   lab_item_combobox->SetSelectedRow(0);
   EXPECT_FALSE(bubble_view->IsRestartPromptVisibleForTesting());
 }
+
+// TODO(crbug.com/1128855)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(ChromeLabsBubbleTest, ShowFeedbackPage) {
+  base::HistogramTester histogram_tester;
+
+  views::MdTextButton* feedback_button =
+      first_lab_item()->GetFeedbackButtonForTesting();
+  ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(feedback_button);
+  test_api.NotifyClick(e);
+
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}
+#endif
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
