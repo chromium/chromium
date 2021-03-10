@@ -1188,7 +1188,7 @@ bool ContentBrowserClient::HasErrorPage(int http_status_code) {
 
 std::unique_ptr<IdentityRequestDialogController>
 ContentBrowserClient::CreateIdentityRequestDialogController() {
-  return nullptr;
+  return std::make_unique<IdentityRequestDialogController>();
 }
 
 bool ContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(

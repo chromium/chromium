@@ -50,7 +50,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowInitialPermissionDialog(
       WebContents* rp_web_contents,
       const GURL& idp_url,
-      InitialApprovalCallback approval_callback) = 0;
+      InitialApprovalCallback approval_callback);
 
   // Shows the identity provider sign-in page at the given URL using the
   // |idp_web_contents| inside a modal window. The |on_closed| callback is
@@ -58,14 +58,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // invoking CloseIdProviderWindow().
   //
   // 'IdentityRequestDialogController' is destroyed before either WebContents.
-  virtual void ShowIdProviderWindow(
-      content::WebContents* rp_web_contents,
-      content::WebContents* idp_web_contents,
-      const GURL& idp_signin_url,
-      IdProviderWindowClosedCallback on_closed) = 0;
+  virtual void ShowIdProviderWindow(content::WebContents* rp_web_contents,
+                                    content::WebContents* idp_web_contents,
+                                    const GURL& idp_signin_url,
+                                    IdProviderWindowClosedCallback on_closed);
 
   // Closes the identity provider sign-in window if any.
-  virtual void CloseIdProviderWindow() = 0;
+  virtual void CloseIdProviderWindow();
 
   // Shows the secondary permission dialog to the user.
   // - |rp_web_contents| is the RP web contents that has initiated the
@@ -76,7 +75,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowTokenExchangePermissionDialog(
       content::WebContents* rp_web_contents,
       const GURL& idp_url,
-      TokenExchangeApprovalCallback approval_callback) = 0;
+      TokenExchangeApprovalCallback approval_callback);
 };
 
 }  // namespace content

@@ -185,6 +185,7 @@ source_set("browser_sources") {
     "hid_chooser.h",
     "hid_delegate.h",
     "histogram_fetcher.h",
+    "identity_request_dialog_controller.cc",
     "identity_request_dialog_controller.h",
     "idle_manager.h",
     "installability_error.cc",
