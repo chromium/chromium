@@ -65,7 +65,6 @@ class WebNavigationTabObserver
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
-  void WebContentsDestroyed() override;
 
   // This method dispatches the already created onBeforeNavigate event.
   void DispatchCachedOnBeforeNavigate();

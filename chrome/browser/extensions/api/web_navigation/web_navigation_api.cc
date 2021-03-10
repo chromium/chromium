@@ -35,18 +35,6 @@ namespace extensions {
 
 namespace web_navigation = api::web_navigation;
 
-namespace {
-
-using TabObserverMap =
-    std::map<content::WebContents*, WebNavigationTabObserver*>;
-
-TabObserverMap& GetTabObserverMap() {
-  static base::NoDestructor<TabObserverMap> s;
-  return *s;
-}
-
-}  // namespace
-
 // WebNavigtionEventRouter -------------------------------------------
 
 WebNavigationEventRouter::PendingWebContents::PendingWebContents() = default;
@@ -181,7 +169,6 @@ void WebNavigationEventRouter::PendingWebContentsDestroyed(
 WebNavigationTabObserver::WebNavigationTabObserver(
     content::WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  GetTabObserverMap().insert(TabObserverMap::value_type(web_contents, this));
   navigation_state_.FrameHostCreated(web_contents->GetMainFrame());
 }
 
@@ -190,8 +177,7 @@ WebNavigationTabObserver::~WebNavigationTabObserver() {}
 // static
 WebNavigationTabObserver* WebNavigationTabObserver::Get(
     content::WebContents* web_contents) {
-  auto i = GetTabObserverMap().find(web_contents);
-  return i == GetTabObserverMap().end() ? NULL : i->second;
+  return FromWebContents(web_contents);
 }
 
 void WebNavigationTabObserver::RenderFrameDeleted(
@@ -365,10 +351,6 @@ void WebNavigationTabObserver::DidOpenRequestedURL(
       web_contents(), source_render_frame_host->GetProcess()->GetID(),
       source_render_frame_host->GetRoutingID(), url, new_contents,
       !new_contents_is_present_in_tabstrip);
-}
-
-void WebNavigationTabObserver::WebContentsDestroyed() {
-  GetTabObserverMap().erase(web_contents());
 }
 
 void WebNavigationTabObserver::DispatchCachedOnBeforeNavigate() {
