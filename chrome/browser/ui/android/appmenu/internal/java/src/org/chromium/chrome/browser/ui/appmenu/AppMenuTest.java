@@ -604,7 +604,7 @@ public class AppMenuTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @DisableIf.Device(type = {UiDisableIf.TABLET})
-    public void testDragHelper_ClickItem() throws Exception {
+    public void testDragHelper_ClickItem_Disabled() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
 
