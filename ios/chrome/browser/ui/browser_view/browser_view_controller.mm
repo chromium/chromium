@@ -4429,8 +4429,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           return;
         [self.typingShield setHidden:YES];
       }];
-  [[OmniboxGeolocationController sharedInstance]
-      locationBarDidResignFirstResponder:self.browserState];
 
   [self.primaryToolbarCoordinator transitionToLocationBarFocusedState:NO];
 }

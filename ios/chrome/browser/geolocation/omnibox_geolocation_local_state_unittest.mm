@@ -8,7 +8,6 @@
 #include <string>
 
 #include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/geolocation/location_manager.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/chrome/test/testing_application_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,13 +23,10 @@ namespace {
 class OmniboxGeolocationLocalStateTest : public PlatformTest {
  protected:
   OmniboxGeolocationLocalStateTest() {
-    location_manager_ = [[LocationManager alloc] init];
-    local_state_ = [[OmniboxGeolocationLocalState alloc]
-        initWithLocationManager:location_manager_];
+    local_state_ = [[OmniboxGeolocationLocalState alloc] init];
   }
 
   IOSChromeScopedTestingLocalState scoped_local_state_;
-  LocationManager* location_manager_;
   OmniboxGeolocationLocalState* local_state_;
 };
 
