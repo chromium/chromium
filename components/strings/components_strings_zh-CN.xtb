@@ -865,6 +865,7 @@
 <translation id="4305817255990598646">切换</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
+<translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4318312030194671742">绘图预览合成器服务</translation>
 <translation id="4318566738941496689">您的设备名称和网络地址</translation>
 <translation id="4325863107915753736">找不到文章</translation>
@@ -872,6 +873,7 @@
 <translation id="4329871760342656885">政策解析错误：<ph name="ERROR" /></translation>
 <translation id="4331519897422864041">堆叠出纸器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
+<translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 网上应用店中托管的扩展程序。对应的 Chrome 网上应用店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1411,6 +1413,7 @@
 <translation id="6446608382365791566">添加更多信息</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6451458296329894277">确认重新提交表单</translation>
+<translation id="6456955391422100996">已移除广告。</translation>
 <translation id="6457206614190510200">鞍式装订</translation>
 <translation id="6458606150257356946">仍然粘贴</translation>
 <translation id="6465306955648956876">管理密码…</translation>
@@ -1672,6 +1675,7 @@
 <translation id="7549584377607005141">此网页需要使用您之前输入的数据才能正常显示。您可以重新发送这些数据，不过，这么做会重复执行此网页之前执行过的所有操作。</translation>
 <translation id="7550637293666041147">您的设备用户名和 Chrome 用户名</translation>
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
+<translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7564049878696755256">您可能会无法再访问自己的 <ph name="ORG_NAME" /> 帐号，或者身份信息遭到盗用。Chrome 建议您立即更改密码。</translation>
 <translation id="7567204685887185387">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能是由骗子发出的。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>

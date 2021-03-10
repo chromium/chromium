@@ -2671,7 +2671,6 @@
 <translation id="3943494825379372497">Վերականգնե՞լ հավելվածներն ու էջերը</translation>
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
-<translation id="3944266449990965865">Լիաէկրան</translation>
 <translation id="3948116654032448504">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> կայքը կարող է փոփոխել ֆայլեր հետևյալ պանակներում</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2895,7 +2894,6 @@
 <translation id="4225397296022057997">Բոլոր կայքերում</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> սարքում տեղադրեք հավելվածներ ու խաղեր Google Play-ից։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ի կարգավորում</translation>
-<translation id="4235200303672858594">Ողջ էկրանը</translation>
 <translation id="4235965441080806197">Չեղարկել մուտքը</translation>
 <translation id="4242145785130247982">Սպասառուների բազմակի վկայագրեր չեն աջակցվում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -2978,7 +2976,6 @@
 <translation id="4336434711095810371">Մաքրել բոլոր տվյալները</translation>
 <translation id="4340125850502689798">Օգտանունն անվավեր է</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» հավելվածի հետ</translation>
-<translation id="4340575312453649552">Այս գովազդը չափազանց շատ ռեսուրս է օգտագործել ձեր սարքում, այդ պատճառով Chrome-ը հեռացրել է այն։</translation>
 <translation id="4341577178275615435">Ստեղնային դիտարկումը միացնելու/անջատելու համար օգտագործեք F7 դյուրանցումը</translation>
 <translation id="434198521554309404">Արագ, անվտանգ, հարմար։</translation>
 <translation id="434404122609091467">Իմ ներկայիս մատակարարի միջոցով</translation>
@@ -4808,7 +4805,6 @@
 <translation id="6452961788130242735">Ցանցի կամ տիրույթի հետ կապված խնդիր կա</translation>
 <translation id="6455264371803474013">Որոշակի կայքերում</translation>
 <translation id="6455894534188563617">&amp;Նոր պանակ</translation>
-<translation id="6456955391422100996">Գովազդը հեռացվել է:</translation>
 <translation id="645705751491738698">Շարունակել JavaScript-ի արգելափակումը</translation>
 <translation id="6458701200018867744">Չհաջողվեց վերբեռնել (<ph name="WEBRTC_LOG_UPLOAD_TIME" />):</translation>
 <translation id="6459488832681039634">Use Selection for Find</translation>
@@ -5761,7 +5757,6 @@
 <translation id="7552846755917812628">Փորձեք անել հետևյալը՝</translation>
 <translation id="7553012839257224005">Լինուքսի կոնտեյները ստուգվում է</translation>
 <translation id="7553242001898162573">Մուտքագրեք ձեր գաղտնաբառը</translation>
-<translation id="7554475479213504905">Կրկին բեռնել և ցույց տալ</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
 <translation id="7556033326131260574">Smart Lock գործառույթին չհաջողվեց հաստատել ձեր հաշիվը: Մտնելու համար մուտքագրեք գաղտնաբառը:</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" />-ը չի կարող վերականգնել ձեր կարգավորումները: Սխալն ուղղելու համար <ph name="SHORT_PRODUCT_NAME" />-ը պետք է վերակայի ձեր սարքը Powerwash-ով:</translation>

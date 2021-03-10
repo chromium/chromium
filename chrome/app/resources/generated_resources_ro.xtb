@@ -2670,7 +2670,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3943494825379372497">Restabilești aplicațiile și paginile?</translation>
 <translation id="3943582379552582368">&amp;Înapoi</translation>
 <translation id="3943857333388298514">Inserează</translation>
-<translation id="3944266449990965865">Pe întregul ecran</translation>
 <translation id="3948116654032448504">&amp;Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> poate edita fișierele din următoarele dosare</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2894,7 +2893,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4225397296022057997">Pe toate site-urile</translation>
 <translation id="4231095370974836764">Instalează aplicații și jocuri din Google Play pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurează Kerberos</translation>
-<translation id="4235200303672858594">Întregul ecran</translation>
 <translation id="4235965441080806197">Anulează conectarea</translation>
 <translation id="4242145785130247982">Nu se acceptă mai multe certificate de client</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
@@ -2977,7 +2975,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4336434711095810371">Șterge toate datele</translation>
 <translation id="4340125850502689798">Nume de utilizator nevalid</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> dorește să comunice cu aplicația „<ph name="EXTENSION_NAME" />”</translation>
-<translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4341577178275615435">Pentru a activa sau a dezactiva navigarea cu tastatura, folosește comanda rapidă F7</translation>
 <translation id="434198521554309404">Rapid. Securizat. Fără efort.</translation>
 <translation id="434404122609091467">Cu furnizorul de servicii actual</translation>
@@ -4804,7 +4801,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6452961788130242735">Problemă de rețea sau domeniu greșit</translation>
 <translation id="6455264371803474013">Pe anumite site-uri</translation>
 <translation id="6455894534188563617">Dosar &amp;nou</translation>
-<translation id="6456955391422100996">Anunțul a fost eliminat.</translation>
 <translation id="645705751491738698">Continuă blocarea JavaScript</translation>
 <translation id="6458701200018867744">Încărcarea nu a reușit (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Folosește selecția pentru a găsi</translation>
@@ -5757,7 +5753,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7552846755917812628">Încearcă următoarele sfaturi:</translation>
 <translation id="7553012839257224005">Verificarea containerului Linux este în curs</translation>
 <translation id="7553242001898162573">Introdu parola</translation>
-<translation id="7554475479213504905">Reîncarcă și afișează oricum</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
 <translation id="7556033326131260574">Smart Lock nu a putut verifica contul tău. Pentru acces, introdu parola.</translation>
 <translation id="7556242789364317684">Din păcate, <ph name="SHORT_PRODUCT_NAME" /> nu vă poate recupera setările. Pentru a remedia eroarea, este necesar ca <ph name="SHORT_PRODUCT_NAME" /> să reseteze dispozitivul utilizând Powerwash.</translation>

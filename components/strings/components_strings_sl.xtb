@@ -883,6 +883,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4305817255990598646">Preklopi</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokira (privzeto)</translation>
+<translation id="4314815835985389558">Upravljanje sinhronizacije</translation>
 <translation id="4318312030194671742">Storitev sestavljalnika predogleda barv</translation>
 <translation id="4318566738941496689">Ime naprave in omrežni naslov</translation>
 <translation id="4325863107915753736">Članka ni bilo mogoče najti</translation>
@@ -890,6 +891,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4329871760342656885">Napaka pri razčlenjevanju pravilnika: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Zlagalnik 5</translation>
 <translation id="4331708818696583467">Ni varno</translation>
+<translation id="4340575312453649552">Ta oglas je uporabljal preveč sredstev za napravo, zato ga je Chrome odstranil.</translation>
 <translation id="4340982228985273705">Ta računalnik ni zaznan kot računalnik, ki ga upravlja podjetje, zato lahko pravilnik samodejno namesti samo razširitve, ki gostujejo v Spletni trgovini Chrome. URL za posodobitve v Spletni trgovini Chrome je »<ph name="CWS_UPDATE_URL" />«.</translation>
 <translation id="4346197816712207223">Sprejete kreditne kartice</translation>
 <translation id="4346833872170306413">ROC 16K</translation>
@@ -1431,6 +1433,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6446608382365791566">Dodajanje več podatkov</translation>
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6451458296329894277">Potrdite ponovno pošiljanje obrazca</translation>
+<translation id="6456955391422100996">Oglas je odstranjen.</translation>
 <translation id="6457206614190510200">Knjigoveški šiv</translation>
 <translation id="6458606150257356946">Vseeno prilepi</translation>
 <translation id="6465306955648956876">Upravljanje gesel ...</translation>
@@ -1692,6 +1695,7 @@ Dodatne podrobnosti:
 <translation id="7549584377607005141">Za pravilen prikaz te strani so potrebni podatki, ki ste jih vnesli prej. Podatke lahko pošljete še enkrat, vendar se bodo s tem ponovila vsa prejšnja dejanja strani.</translation>
 <translation id="7550637293666041147">Uporabniško ime v napravi in uporabniško ime v Chromu</translation>
 <translation id="7552846755917812628">Poskusite te nasvete:</translation>
+<translation id="7554475479213504905">Vseeno znova naloži in pokaži</translation>
 <translation id="7554791636758816595">Nov zavihek</translation>
 <translation id="7564049878696755256">Izgubite lahko dostop do računa za <ph name="ORG_NAME" /> ali postanete žrtev kraje identitete. Chrome priporoča, da spremenite geslo.</translation>
 <translation id="7567204685887185387">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda izdano z goljufijo. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>

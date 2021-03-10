@@ -2668,7 +2668,6 @@
 <translation id="3943494825379372497">要還原應用程式和網頁嗎？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
-<translation id="3944266449990965865">整個螢幕</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可編輯以下資料夾中的檔案</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2892,7 +2891,6 @@
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
-<translation id="4235200303672858594">整個螢幕</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4242145785130247982">不支援多個用戶端憑證</translation>
 <translation id="4242533952199664413">開啟設定</translation>
@@ -2975,7 +2973,6 @@
 <translation id="4336434711095810371">清除所有資料</translation>
 <translation id="4340125850502689798">使用者名稱無效</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 想與「<ph name="EXTENSION_NAME" />」應用程式保持通訊</translation>
-<translation id="4340575312453649552">此廣告使用了太多裝置資源，因此已被 Chrome 移除。</translation>
 <translation id="4341577178275615435">如要開啟或關閉「鍵盤瀏覽」功能，請使用快速鍵 F7</translation>
 <translation id="434198521554309404">快捷。安全。輕鬆便利。</translation>
 <translation id="434404122609091467">使用目前的服務供應商</translation>
@@ -4802,7 +4799,6 @@
 <translation id="6452961788130242735">網絡發生問題或領域錯誤</translation>
 <translation id="6455264371803474013">在特定網站上</translation>
 <translation id="6455894534188563617">新增資料夾(&amp;N)</translation>
-<translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="645705751491738698">繼續封鎖 JavaScript</translation>
 <translation id="6458701200018867744">上載失敗 (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)。</translation>
 <translation id="6459488832681039634">使用所選範圍尋找</translation>
@@ -5755,7 +5751,6 @@
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">輸入您的密碼</translation>
-<translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶。請輸入您的密碼以進入。</translation>
 <translation id="7556242789364317684">很抱歉，<ph name="SHORT_PRODUCT_NAME" /> 無法復原您的設定。如要修正錯誤，<ph name="SHORT_PRODUCT_NAME" /> 必須透過 Powerwash 重設您的裝置。</translation>

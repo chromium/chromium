@@ -2670,7 +2670,6 @@
 <translation id="3943494825379372497">Восстановить приложения и страницы?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
-<translation id="3944266449990965865">Полноэкранный режим</translation>
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2894,7 +2893,6 @@
 <translation id="4225397296022057997">На всех сайтах</translation>
 <translation id="4231095370974836764">Устанавливайте приложения и игры из Google Play на устройство <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Настройка Kerberos</translation>
-<translation id="4235200303672858594">Полноэкранный режим</translation>
 <translation id="4235965441080806197">Отменить вход</translation>
 <translation id="4242145785130247982">Использование нескольких сертификатов клиента не поддерживается.</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -2977,7 +2975,6 @@
 <translation id="4336434711095810371">Удалить все данные</translation>
 <translation id="4340125850502689798">Неверное имя пользователя.</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> запрашивает доступ к приложению "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">Это объявление удалено, так как оно использовало слишком много системных ресурсов.</translation>
 <translation id="4341577178275615435">Чтобы включить или отключить режим активного курсора, нажмите F7</translation>
 <translation id="434198521554309404">Быстро. Безопасно. Удобно.</translation>
 <translation id="434404122609091467">Использовать текущего поставщика услуг</translation>
@@ -4804,7 +4801,6 @@
 <translation id="6452961788130242735">Ошибка сети или неверная область.</translation>
 <translation id="6455264371803474013">На выбранных сайтах</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
-<translation id="6456955391422100996">Объявление удалено.</translation>
 <translation id="645705751491738698">Всегда блокировать JavaScript</translation>
 <translation id="6458701200018867744">Ошибка загрузки (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Найти выделенное</translation>
@@ -5757,7 +5753,6 @@
 <translation id="7552846755917812628">Попробуйте сделать следующее:</translation>
 <translation id="7553012839257224005">Проверка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
-<translation id="7554475479213504905">Все равно показать (страница будет обновлена)</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7556033326131260574">Не удается войти в аккаунт с помощью Smart Lock. Введите пароль.</translation>
 <translation id="7556242789364317684">К сожалению, <ph name="SHORT_PRODUCT_NAME" /> не удалось восстановить ваши настройки. Чтобы исправить ошибку, <ph name="SHORT_PRODUCT_NAME" /> должен выполнить сброс данных на устройстве с помощью функции Powerwash.</translation>

@@ -224,7 +224,6 @@
 <translation id="5916084858004523819">ನಿಷೇಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ನಿಮ್ಮ ಫೈಲ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}one{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}other{ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ ಮತ್ತು <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.}}</translation>
 <translation id="5931523347251946569">ಫೈಲ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6040852767465482106">ಅನಾಮಧೇಯ ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="604124094241169006">ಸ್ವಯಂಚಾಲಿತ</translation>

@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6040852767465482106">익명 ID</translation>
 <translation id="604124094241169006">자동</translation>

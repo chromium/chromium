@@ -878,6 +878,7 @@
 <translation id="4305817255990598646">Dəyişin</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blok edin (defolt)</translation>
+<translation id="4314815835985389558">Sinxronizasiyanı idarə edin</translation>
 <translation id="4318312030194671742">Boyama Önbaxış Düzücü Xidməti</translation>
 <translation id="4318566738941496689">Cihaz adı və şəbəkə ünvanı</translation>
 <translation id="4325863107915753736">Məqalə tapılmadı</translation>
@@ -885,6 +886,7 @@
 <translation id="4329871760342656885">Siyasətin parsellənməsi xətası: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Yığıcı 5</translation>
 <translation id="4331708818696583467">Təhlükəsiz deyil</translation>
+<translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4340982228985273705">Bu kompüter korporativ idarə edilmir, ona görə də siyasət yalnız Chrome Veb Mağazasında saxlanılan artırmaları quraşdıra bilər. Chrome Veb Mağaza güncəlləmə linki: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Qəbul edilən Kredit Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1426,6 +1428,7 @@
 <translation id="6446608382365791566">Ətraflı məlumat əlavə edin</translation>
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6451458296329894277">Formanın yenidən təqdim edilməsini təsdiq edin</translation>
+<translation id="6456955391422100996">Reklam silindi.</translation>
 <translation id="6457206614190510200">Yəhər tikişi vurun</translation>
 <translation id="6458606150257356946">İstənilən halda əlavə edin</translation>
 <translation id="6465306955648956876">Parolları İdarə edin...</translation>
@@ -1687,6 +1690,7 @@
 <translation id="7549584377607005141">Bu veb səhifə düzgün görüntülənmək üçün əvvəlcə daxil etdiyiniz datanı tələb edir. Bu datanı yenidən göndərə bilərsiniz, amma bununla, bu səhifənin əvvəllər etdiyi əməliyyatı təkrarlamış olacaqsınız.</translation>
 <translation id="7550637293666041147">Cihazın istifadəçi adı və Chrome istifadəçi adı</translation>
 <translation id="7552846755917812628">Aşağıdakı məsləhətləri sınayın:</translation>
+<translation id="7554475479213504905">İstənilən halda yenidən yükləyin və göstərin</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hesabına girişi itirə və ya kimlik oğurluğu ilə üzləşə bilərsiniz. Chrome parollarınızı indi dəyişməyi məsləhət görür.</translation>
 <translation id="7567204685887185387">Bu server <ph name="DOMAIN" /> olduğunu sübut edə bilmədi; güvənlik sertifikatı saxta ola bilər. Buna yalnış quraşdırma və ya hücumçu bağlantısı səbəb ola bilər.</translation>

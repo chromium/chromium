@@ -2669,7 +2669,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3943494825379372497">Apps en pagina's herstellen?</translation>
 <translation id="3943582379552582368">&amp;Vorige</translation>
 <translation id="3943857333388298514">Plak</translation>
-<translation id="3944266449990965865">Volledig scherm</translation>
 <translation id="3948116654032448504">&amp;Afbeelding zoeken in <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan bestanden bewerken in de volgende mappen</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4225397296022057997">Op alle sites</translation>
 <translation id="4231095370974836764">Installeer apps en games van Google Play op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos configureren</translation>
-<translation id="4235200303672858594">Volledig scherm</translation>
 <translation id="4235965441080806197">Inloggen annuleren</translation>
 <translation id="4242145785130247982">Meerdere clientcertificaten worden niet ondersteund</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
@@ -2976,7 +2974,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4336434711095810371">Alle gegevens wissen</translation>
 <translation id="4340125850502689798">Ongeldige gebruikersnaam</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> wil communiceren met de app '<ph name="EXTENSION_NAME" />'</translation>
-<translation id="4340575312453649552">Deze advertentie gebruikte te veel bronnen voor je apparaat, dus Chrome heeft de advertentie verwijderd.</translation>
 <translation id="4341577178275615435">Gebruik de sneltoets F7 om browsen met navigatietoetsen in of uit te schakelen</translation>
 <translation id="434198521554309404">Snel, beveiligd, makkelijk.</translation>
 <translation id="434404122609091467">Met je huidige serviceprovider</translation>
@@ -4803,7 +4800,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6452961788130242735">Netwerkprobleem of onjuist domein</translation>
 <translation id="6455264371803474013">Op specifieke sites</translation>
 <translation id="6455894534188563617">&amp;Nieuwe map</translation>
-<translation id="6456955391422100996">Advertentie verwijderd.</translation>
 <translation id="645705751491738698">JavaScript blijven blokkeren</translation>
 <translation id="6458701200018867744">Upload mislukt (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik selectie voor zoekactie</translation>
@@ -5756,7 +5752,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7552846755917812628">Probeer de volgende tips:</translation>
 <translation id="7553012839257224005">De Linux-container wordt gecontroleerd</translation>
 <translation id="7553242001898162573">Geef je wachtwoord op</translation>
-<translation id="7554475479213504905">Opnieuw laden en toch weergeven</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
 <translation id="7556033326131260574">Smart Lock kan je account niet verifiëren. Typ je wachtwoord om in te loggen.</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> kan je instellingen niet herstellen. <ph name="SHORT_PRODUCT_NAME" /> moet je apparaat opnieuw instellen met Powerwash om de fout op te lossen.</translation>

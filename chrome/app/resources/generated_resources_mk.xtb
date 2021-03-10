@@ -2670,7 +2670,6 @@
 <translation id="3943494825379372497">Да се вратат апликациите и страниците?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Залепи</translation>
-<translation id="3944266449990965865">Цел екран</translation>
 <translation id="3948116654032448504">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да изменува датотеки во следниве папки</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2894,7 +2893,6 @@
 <translation id="4225397296022057997">На сите сајтови</translation>
 <translation id="4231095370974836764">Инсталирајте апликации и игри од Google Play на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигурирајте го Kerberos</translation>
-<translation id="4235200303672858594">Целиот екран</translation>
 <translation id="4235965441080806197">Откажи најавување</translation>
 <translation id="4242145785130247982">Не се поддржани повеќе клиентски сертификати</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -2977,7 +2975,6 @@
 <translation id="4336434711095810371">Избриши ги сите податоци</translation>
 <translation id="4340125850502689798">Неважечко корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> сака да комуницира со апликацијата „<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">Рекламава користеше премногу ресурси на вашиот уред, па Chrome ја отстрани.</translation>
 <translation id="4341577178275615435">За да вклучите или исклучите „Прелистување со курсор“, користете ја кратенката F7</translation>
 <translation id="434198521554309404">Брз. Безбеден. Едноставен.</translation>
 <translation id="434404122609091467">Со тековниот оператор</translation>
@@ -4804,7 +4801,6 @@
 <translation id="6452961788130242735">Проблем со мрежата или лош домен</translation>
 <translation id="6455264371803474013">На одредени сајтови</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
-<translation id="6456955391422100996">Рекламата е отстранета.</translation>
 <translation id="645705751491738698">Продолжи да блокираш JavaScript</translation>
 <translation id="6458701200018867744">Прикачувањето не успеа (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Користи избор за пребарување</translation>
@@ -5757,7 +5753,6 @@
 <translation id="7552846755917812628">Испробајте ги следните совети:</translation>
 <translation id="7553012839257224005">Се проверува контејнерот за Linux</translation>
 <translation id="7553242001898162573">Внесете ја вашата лозинка</translation>
-<translation id="7554475479213504905">Вчитај повторно и сепак прикажи</translation>
 <translation id="7554791636758816595">Нова картичка</translation>
 <translation id="7556033326131260574">Smart Lock не успеа да ја потврди вашата сметка. Внесете ја лозинката за да влезете.</translation>
 <translation id="7556242789364317684">За жал, <ph name="SHORT_PRODUCT_NAME" /> не е во можност да ги обнови вашите поставки. За да ја поправите грешката, <ph name="SHORT_PRODUCT_NAME" /> мора да го ресетира вашиот уред со Powerwash.</translation>

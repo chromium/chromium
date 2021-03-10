@@ -872,6 +872,7 @@
 <translation id="4305817255990598646">切換</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
+<translation id="4314815835985389558">管理同步功能資料</translation>
 <translation id="4318312030194671742">繪製預覽合成器服務</translation>
 <translation id="4318566738941496689">你的裝置名稱和網路位址</translation>
 <translation id="4325863107915753736">找不到文章</translation>
@@ -879,6 +880,7 @@
 <translation id="4329871760342656885">政策剖析錯誤：<ph name="ERROR" /></translation>
 <translation id="4331519897422864041">堆疊出紙器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
+<translation id="4340575312453649552">這個廣告使用了太多裝置資源，因此 Chrome 已將其移除。</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1420,6 +1422,7 @@
 <translation id="6446608382365791566">新增詳細資訊</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6451458296329894277">確認重新提交表單</translation>
+<translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬訂</translation>
 <translation id="6458606150257356946">仍要貼上</translation>
 <translation id="6465306955648956876">管理密碼...</translation>
@@ -1681,6 +1684,7 @@
 <translation id="7549584377607005141">這個網頁需要使用你先前輸入的資料才能正確顯示。你可以重新傳送這些資料，不過這麼做會重複執行這個網頁先前執行過的任何動作。</translation>
 <translation id="7550637293666041147">你的裝置使用者名稱和 Chrome 使用者名稱</translation>
 <translation id="7552846755917812628">嘗試按照下列提示操作：</translation>
+<translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7564049878696755256">你可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或身分遭到冒用。Chrome 建議你立即變更密碼。</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證是以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>

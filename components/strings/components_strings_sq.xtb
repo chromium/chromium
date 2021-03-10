@@ -878,6 +878,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4305817255990598646">Ndërro</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blloko (parazgjedhja)</translation>
+<translation id="4314815835985389558">Menaxho sinkronizimin</translation>
 <translation id="4318312030194671742">Shërbimi i krijuesit të Versionit paraprak të Paint</translation>
 <translation id="4318566738941496689">Emri i pajisjes dhe adresa e rrjetit</translation>
 <translation id="4325863107915753736">Dështoi në gjetjen e artikullit</translation>
@@ -885,6 +886,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4329871760342656885">Gabim i analizimit të politikës: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Stivuesi 5</translation>
 <translation id="4331708818696583467">Jo e sigurt</translation>
+<translation id="4340575312453649552">Kjo reklamë përdorte shumë burime për pajisjen tënde, prandaj Chrome e hoqi.</translation>
 <translation id="4340982228985273705">Ky kompjuter nuk është zbuluar si i menaxhuar nga ndërmarrja, prandaj politika mund të instalojë automatikisht vetëm shtesat e strehuara në "Dyqanin e uebit të Chrome". URL-ja e përditësimit të "Dyqanit të uebit të Chrome" është "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Kartat e pranuara të kreditit</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1425,6 +1427,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6446608382365791566">Shto më shumë informacion</translation>
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6451458296329894277">Konfirmo ridërgimin e formularit</translation>
+<translation id="6456955391422100996">Reklama u hoq.</translation>
 <translation id="6457206614190510200">Qepje në kurrizin e palosjes</translation>
 <translation id="6458606150257356946">Ngjite gjithsesi</translation>
 <translation id="6465306955648956876">Menaxho fjalëkalimet...</translation>
@@ -1686,6 +1689,7 @@ Detaje shtesë:
 <translation id="7549584377607005141">Që të shfaqet si duhet, kjo faqe uebi kërkon të dhëna që i ke futur më herët. Mund t'i dërgosh përsëri këto të dhëna, por duke bërë këtë, do të përsëritësh çdo veprim që ka kryer më parë kjo faqe.</translation>
 <translation id="7550637293666041147">Emri i përdoruesit të pajisjes dhe emri i përdoruesit të Chrome</translation>
 <translation id="7552846755917812628">Provo këshillat e mëposhtme:</translation>
+<translation id="7554475479213504905">Ringarkoje dhe shfaqe gjithsesi</translation>
 <translation id="7554791636758816595">Skedë e re</translation>
 <translation id="7564049878696755256">Mund të ndodhë që të humbësh qasjen në llogarinë tënde të <ph name="ORG_NAME" /> ose mund të pësosh vjedhje të identitetit. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="7567204685887185387">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë lëshuar në mënyrë mashtruese. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose ndërhyrja e një sulmuesi në lidhjen tënde.</translation>

@@ -2665,7 +2665,6 @@
 <translation id="3943494825379372497">ആപ്പുകളും പേജുകളും പുനഃസ്ഥാപിക്കണോ?</translation>
 <translation id="3943582379552582368">&amp;പിന്നോട്ട്</translation>
 <translation id="3943857333388298514">ഒട്ടിക്കുക</translation>
-<translation id="3944266449990965865">മുഴുവൻ സ്‌ക്രീൻ</translation>
 <translation id="3948116654032448504">&amp;ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> എന്നതിന് ഇനിപ്പറയുന്ന ഫോൾഡറുകളിലെ ഫയലുകൾ എഡിറ്റ് ചെയ്യാനാവും</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2889,7 +2888,6 @@
 <translation id="4225397296022057997">എല്ലാ സൈറ്റുകളിലും</translation>
 <translation id="4231095370974836764">Google Play-യിൽ നിന്ന് നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ൽ ആപ്പുകളും ഗെയിമുകളും ഇൻസ്‌റ്റാൾ ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos കോൺഫിഗർ ചെയ്യുക</translation>
-<translation id="4235200303672858594">പൂർണ്ണ സ്‌ക്രീൻ</translation>
 <translation id="4235965441080806197">സൈൻ ഇൻ റദ്ദാക്കുക</translation>
 <translation id="4242145785130247982">ഒന്നിലധികം ക്ലയന്റ് സർട്ടിഫിക്കറ്റുകൾ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
@@ -2972,7 +2970,6 @@
 <translation id="4336434711095810371">എല്ലാ ഡാറ്റയും മായ്ക്കുക</translation>
 <translation id="4340125850502689798">ഉപയോക്തൃനാമം അസാധുവാണ്</translation>
 <translation id="4340515029017875942">"<ph name="EXTENSION_NAME" />" ആപ്പ് ഉപയോഗിച്ച് <ph name="ORIGIN" /> എന്നത് ആശയവിനിമയം നടത്താൻ താൽപ്പര്യപ്പെടുന്നു</translation>
-<translation id="4340575312453649552">ഈ പരസ്യം നിങ്ങളുടെ ഉപകരണത്തിനുള്ള നിരവധി ഉറവിടങ്ങൾ ഉപയോഗിച്ചതിനാൽ, Chrome അത് നീക്കം ചെയ്‌തു.</translation>
 <translation id="4341577178275615435">കാരറ്റ് ബ്രൗസ് ചെയ്യൽ ഓണാക്കാനോ ഓഫാക്കാനോ, F7 എന്ന കുറുക്കുവഴി ഉപയോഗിക്കുക</translation>
 <translation id="434198521554309404">വേഗമേറിയത്. സുരക്ഷിതം. ആയാസരഹിതം.</translation>
 <translation id="434404122609091467">നിങ്ങളുടെ നിലവിലെ സേവന ദാതാവിനൊപ്പം</translation>
@@ -4801,7 +4798,6 @@
 <translation id="6452961788130242735">നെറ്റ്‌വർക്ക് പ്രശ്‌നം അല്ലെങ്കിൽ മോശം മേഖല</translation>
 <translation id="6455264371803474013">നിർദിഷ്‌ട സൈറ്റുകളിൽ</translation>
 <translation id="6455894534188563617">&amp;പുതിയ ഫോള്‍ഡര്‍</translation>
-<translation id="6456955391422100996">പരസ്യം നീക്കം ചെയ്‌തു.</translation>
 <translation id="645705751491738698">JavaScript തടയുന്നത് തുടരുക</translation>
 <translation id="6458701200018867744">അപ്‌ലോഡ് ചെയ്യാനായില്ല (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">കണ്ടെത്തുന്നതിനായി തിരഞ്ഞെടുപ്പ് ഉപയോഗിക്കുക</translation>
@@ -5754,7 +5750,6 @@
 <translation id="7552846755917812628">ഇനിപ്പറയുന്ന നുറുങ്ങുകൾ പരീക്ഷിക്കൂ:</translation>
 <translation id="7553012839257224005">Linux കണ്ടെയ്‌നർ പരിശോധിക്കുന്നു</translation>
 <translation id="7553242001898162573">നിങ്ങളുടെ പാസ്‌വേഡ് നല്‍‌കുക</translation>
-<translation id="7554475479213504905">റീലോഡ് ചെയ്‌ത്, എന്തായാലും കാണിക്കുക</translation>
 <translation id="7554791636758816595">പുതിയ ടാബ്</translation>
 <translation id="7556033326131260574">Smart Lock-ന് നിങ്ങളുടെ അക്കൗണ്ട് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. പ്രവേശിക്കുന്നതിന് പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="7556242789364317684">നിർഭാഗ്യവശാൽ, <ph name="SHORT_PRODUCT_NAME" />-ന് നിങ്ങളുടെ ക്രമീകരണങ്ങൾ വീണ്ടെടുക്കാനായില്ല. പിശക് പരിഹരിക്കാൻ, പവർവാഷ് ഉപയോഗിച്ച് <ph name="SHORT_PRODUCT_NAME" /> നിങ്ങളുടെ ഉപകരണം വീണ്ടും സജ്ജമാക്കണം.</translation>

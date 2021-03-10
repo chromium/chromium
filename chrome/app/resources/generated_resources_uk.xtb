@@ -2672,7 +2672,6 @@
 <translation id="3943494825379372497">Відновити додатки та сторінки?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
-<translation id="3944266449990965865">Повний екран</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2896,7 +2895,6 @@
 <translation id="4225397296022057997">На всіх сайтах</translation>
 <translation id="4231095370974836764">Установлюйте додатки й ігри з Google Play на пристрої <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Налаштувати Kerberos</translation>
-<translation id="4235200303672858594">Увесь екран</translation>
 <translation id="4235965441080806197">Скасувати вхід</translation>
 <translation id="4242145785130247982">Кілька сертифікатів клієнтів не підтримуються</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -2979,7 +2977,6 @@
 <translation id="4336434711095810371">Видалити всі дані</translation>
 <translation id="4340125850502689798">Неправильне ім'я користувача</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> хоче обмінюватися даними з додатком <ph name="EXTENSION_NAME" /></translation>
-<translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
 <translation id="4341577178275615435">Щоб увімкнути або вимкнути клавішну навігацію, натисніть F7</translation>
 <translation id="434198521554309404">Швидкий. Безпечний. Простий.</translation>
 <translation id="434404122609091467">Через поточного постачальника послуг</translation>
@@ -4806,7 +4803,6 @@
 <translation id="6452961788130242735">Проблема з мережею чи областю</translation>
 <translation id="6455264371803474013">На певних сайтах</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
-<translation id="6456955391422100996">Оголошення вилучено.</translation>
 <translation id="645705751491738698">Продовжити блокування JavaScript</translation>
 <translation id="6458701200018867744">Помилка завантаження (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Використати виділення для пошуку</translation>
@@ -5759,7 +5755,6 @@
 <translation id="7552846755917812628">Виконайте вказівки нижче.</translation>
 <translation id="7553012839257224005">Перевірка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
-<translation id="7554475479213504905">Оновити й усе одно показати</translation>
 <translation id="7554791636758816595">Нова вкладка</translation>
 <translation id="7556033326131260574">Smart Lock не вдалося підтвердити ваш обліковий запис. Щоб увійти, введіть пароль.</translation>
 <translation id="7556242789364317684">На жаль, <ph name="SHORT_PRODUCT_NAME" /> не може відновити ваші налаштування. Щоб виправити помилку, <ph name="SHORT_PRODUCT_NAME" /> має відновити заводські налаштування вашого пристрою за допомогою функції Powerwash.</translation>

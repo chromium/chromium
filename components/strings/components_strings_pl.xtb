@@ -874,6 +874,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4305817255990598646">Przełącz</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokuj (domyślnie)</translation>
+<translation id="4314815835985389558">Zarządzanie synchronizacją</translation>
 <translation id="4318312030194671742">Usługa kompozytora podglądu renderowania</translation>
 <translation id="4318566738941496689">Nazwa i adres sieciowy urządzenia</translation>
 <translation id="4325863107915753736">Nie udało się znaleźć artykułu</translation>
@@ -881,6 +882,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4329871760342656885">Podczas przetwarzania zasady wystąpił błąd: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Układarka 5</translation>
 <translation id="4331708818696583467">Niezabezpieczona</translation>
+<translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4346197816712207223">Akceptowane karty kredytowe</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1422,6 +1424,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6446608382365791566">Dodaj więcej informacji</translation>
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6451458296329894277">Potwierdź ponowne przesłanie formularza</translation>
+<translation id="6456955391422100996">Reklama została usunięta.</translation>
 <translation id="6457206614190510200">Zszywanie grzbietowe</translation>
 <translation id="6458606150257356946">Wklej mimo to</translation>
 <translation id="6465306955648956876">Zarządzaj hasłami…</translation>
@@ -1683,6 +1686,7 @@ Dodatkowe informacje:
 <translation id="7549584377607005141">Do poprawnego wyświetlenia tej strony internetowej wymagane są dane wpisane przez Ciebie wcześniej. Możesz wysłać je ponownie, ale spowoduje to powtórzenie wszystkich działań wykonanych poprzednio przez stronę.</translation>
 <translation id="7550637293666041147">Twoja nazwa użytkownika na urządzeniu i w Chrome</translation>
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
+<translation id="7554475479213504905">Załaduj ponownie i pokaż mimo to</translation>
 <translation id="7554791636758816595">Nowa karta</translation>
 <translation id="7564049878696755256">Możesz stracić dostęp do swojego konta <ph name="ORG_NAME" /> lub paść ofiarą kradzieży tożsamości. Chrome zaleca natychmiastową zmianę hasła.</translation>
 <translation id="7567204685887185387">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać wydany w celu oszustwa. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>

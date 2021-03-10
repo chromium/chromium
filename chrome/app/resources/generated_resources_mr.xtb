@@ -2668,7 +2668,6 @@
 <translation id="3943494825379372497">अ‍ॅप्स आणि पेज रिस्टोअर करायची का?</translation>
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
-<translation id="3944266449990965865">संपूर्ण स्क्रीन</translation>
 <translation id="3948116654032448504">इमेज <ph name="SEARCH_ENGINE" /> वर शोधा</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> खालील फोल्डरमधील फाइल संपादित करू शकते</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2890,7 +2889,6 @@
 <translation id="4225397296022057997">सर्व साइटवर</translation>
 <translation id="4231095370974836764">Google Play वरून तुमच्या <ph name="DEVICE_TYPE" /> वर ॲप्स आणि गेम इंस्टॉल करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कॉंफिगर करा</translation>
-<translation id="4235200303672858594">संपूर्ण स्क्रीन</translation>
 <translation id="4235965441080806197">साइन इन रद्द करा</translation>
 <translation id="4242145785130247982">एकाहून अधिक क्लायंट सर्टिफिकेटना सपोर्ट करत नाही</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -2973,7 +2971,6 @@
 <translation id="4336434711095810371">सर्व डेटा साफ करा</translation>
 <translation id="4340125850502689798">चुकीचे वापरकर्ता नाव</translation>
 <translation id="4340515029017875942">"<ph name="EXTENSION_NAME" />" अ‍ॅपसह <ph name="ORIGIN" /> संवाद प्रस्थापित करू इच्छितो</translation>
-<translation id="4340575312453649552">या जाहिरातीने तुमच्या डिव्हाइससाठी खूप जास्त स्रोत वापरल्यामुळे, Chrome ने ती काढून टाकली.</translation>
 <translation id="4341577178275615435">कॅरेट ब्राउझिंग सुरू किंवा बंद करण्यासाठी F7 हा शॉर्टकट वापरा</translation>
 <translation id="434198521554309404">जलद. सुरक्षित. सोपे.</translation>
 <translation id="434404122609091467">तुमच्या सध्याच्या सेवा पुरवठादारासोबत</translation>
@@ -4801,7 +4798,6 @@
 <translation id="6452961788130242735">नेटवर्क समस्या किंवा वाईट क्षेत्र</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
-<translation id="6456955391422100996">जाहिरात काढून टाकली आहे.</translation>
 <translation id="645705751491738698">JavaScript अवरोधित करणे सुरू ठेवा</translation>
 <translation id="6458701200018867744">अपलोड करता आले नाही (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">शोधण्यासाठी निवड वापरा</translation>
@@ -5754,7 +5750,6 @@
 <translation id="7552846755917812628">खालील टिपा वापरून पहा:</translation>
 <translation id="7553012839257224005">Linux कंटेनर तपासत आहे</translation>
 <translation id="7553242001898162573">तुमचा पासवर्ड एंटर करा</translation>
-<translation id="7554475479213504905">रीलोड करा आणि तरीही दाखवा</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7556033326131260574">Smart Lock तुमचे खाते पडताळणी करू शकले नाही. एंटर करण्यासाठी तुमचा पासवर्ड टाइप करा.</translation>
 <translation id="7556242789364317684">दुर्दैवाने, <ph name="SHORT_PRODUCT_NAME" /> तुमच्या सेटिंग्ज रिकव्हर करणे बंद आहे. एरर निश्चित करण्यासाठी, <ph name="SHORT_PRODUCT_NAME" /> ने Powerwash सह तुमचे डिव्हाइस रीसेट करणे आवश्यक आहे.</translation>

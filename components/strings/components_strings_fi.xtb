@@ -884,6 +884,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4305817255990598646">Vaihda</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Estä (oletus)</translation>
+<translation id="4314815835985389558">Synkronointiasetusten muokkaus</translation>
 <translation id="4318312030194671742">Maalauksen esikatselujen koontipalvelu</translation>
 <translation id="4318566738941496689">Laitteesi nimi ja verkko-osoite</translation>
 <translation id="4325863107915753736">Artikkelia ei löydy</translation>
@@ -891,6 +892,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4329871760342656885">Käytännön jäsennysvirhe: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Pinoaja 5</translation>
 <translation id="4331708818696583467">Ei turvallinen</translation>
+<translation id="4340575312453649552">Chrome poisti tämän mainoksen, koska se käytti liian paljon laitteen resursseja.</translation>
 <translation id="4340982228985273705">Havaintojen mukaan tämä tietokone ei ole yrityksen hallinnoima, joten käytäntö voi asentaa automaattisesti vain Chrome Web Storessa hostattuja laajennuksia. Chrome Web Storen päivitys-URL-osoite on <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Hyväksytyt luottokortit</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1432,6 +1434,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6446608382365791566">Lisää tietoja</translation>
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6451458296329894277">Vahvista lomakkeen uudelleenlähetys</translation>
+<translation id="6456955391422100996">Mainos poistettu</translation>
 <translation id="6457206614190510200">Satulasidonta</translation>
 <translation id="6458606150257356946">Liitä silti</translation>
 <translation id="6465306955648956876">Hallinnoi salasanoja…</translation>
@@ -1693,6 +1696,7 @@ Lisätietoja:
 <translation id="7549584377607005141">Tämän sivun näyttäminen oikein edellyttää aiemmin lähetettyjä tietoja. Voit lähettää tiedot uudelleen, mutta tällöin sivulla mahdollisesti suoritettu toiminto toistetaan.</translation>
 <translation id="7550637293666041147">Käyttäjänimi laitteella ja käyttäjänimi Chromessa</translation>
 <translation id="7552846755917812628">Kokeile seuraavia keinoja:</translation>
+<translation id="7554475479213504905">Päivitä ja näytä siitä huolimatta</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7564049878696755256">Saatat menettää <ph name="ORG_NAME" />-tilisi käyttöoikeuden tai joutua identiteettivarkauden uhriksi. Chrome suosittelee salasanan vaihtamista välittömästi.</translation>
 <translation id="7567204685887185387">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne on ehkä luotu vilpillisesti. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>

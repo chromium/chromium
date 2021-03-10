@@ -225,7 +225,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File not found</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6040852767465482106">Anonymous Identity</translation>
 <translation id="604124094241169006">Automatic</translation>

@@ -2672,7 +2672,6 @@
 <translation id="3943494825379372497">هل تريد استعادة التطبيقات والصفحات؟</translation>
 <translation id="3943582379552582368">&amp;إلى الوراء</translation>
 <translation id="3943857333388298514">لصق</translation>
-<translation id="3944266449990965865">الشاشة بالكامل</translation>
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2896,7 +2895,6 @@
 <translation id="4225397296022057997">على جميع المواقع</translation>
 <translation id="4231095370974836764">‏يمكنك تثبيت التطبيقات والألعاب من Google Play على جهاز <ph name="DEVICE_TYPE" /> الخاص بك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">‏ضبط Kerberos</translation>
-<translation id="4235200303672858594">الشاشة بالكامل</translation>
 <translation id="4235965441080806197">إلغاء تسجيل الدخول</translation>
 <translation id="4242145785130247982">شهادات العميل المتعددة غير متاحة</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
@@ -2979,7 +2977,6 @@
 <translation id="4336434711095810371">محو جميع البيانات</translation>
 <translation id="4340125850502689798">اسم المستخدم غير صالح</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> يريد التواصل مع التطبيق "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">‏يستخدم هذا الإعلان العديد من الموارد لجهازك، لذلك أزاله متصفِّح Chrome.</translation>
 <translation id="4341577178275615435">‏يمكنك استخدام الاختصار F7 لتفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها.</translation>
 <translation id="434198521554309404">سريع وآمن وسهل الاستخدام</translation>
 <translation id="434404122609091467">من خلال مقدِّم الخدمة الحالي</translation>
@@ -4806,7 +4803,6 @@
 <translation id="6452961788130242735">مشكلة في الشبكة أو نطاق غير صالح</translation>
 <translation id="6455264371803474013">على مواقع إلكترونية محددة</translation>
 <translation id="6455894534188563617">&amp;مجلد جديد</translation>
-<translation id="6456955391422100996">تمت إزالة الإعلان.</translation>
 <translation id="645705751491738698">‏متابعة منع تشغيل JavaScript</translation>
 <translation id="6458701200018867744">تعذَّر التحميل (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">استخدام التحديد للبحث</translation>
@@ -5759,7 +5755,6 @@
 <translation id="7552846755917812628">جرّب النصائح التالية:</translation>
 <translation id="7553012839257224005">‏جارٍ التحقُّق من حاوية نظام التشغيل Linux</translation>
 <translation id="7553242001898162573">إدخال كلمة المرور</translation>
-<translation id="7554475479213504905">إعادة التحميل والعرض على أيّ حال</translation>
 <translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7556033326131260574">‏لم يتمكن Smart Lock من التحقق من حسابك. اكتب كلمة المرور للدخول.</translation>
 <translation id="7556242789364317684">‏للأسف، يتعذّر على <ph name="SHORT_PRODUCT_NAME" /> استعادة إعداداتك. ولإصلاح الخطأ، على <ph name="SHORT_PRODUCT_NAME" /> إعادة ضبط جهازك باستخدام Powerwash.</translation>

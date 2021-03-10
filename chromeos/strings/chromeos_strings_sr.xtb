@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">Забрањено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Фајл је скениран и сачуван у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Фајлови су скенирани и сачувани у фолдеру <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Фајл није пронађен</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6040852767465482106">Непознати идентитет</translation>
 <translation id="604124094241169006">Аутоматски</translation>

@@ -881,6 +881,7 @@
 <translation id="4305817255990598646">Comută</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blochează (în mod prestabilit)</translation>
+<translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4318312030194671742">Serviciul Paint Preview Compositor</translation>
 <translation id="4318566738941496689">Numele și adresa de rețea ale dispozitivului tău</translation>
 <translation id="4325863107915753736">Articolul nu a fost găsit</translation>
@@ -888,6 +889,7 @@
 <translation id="4329871760342656885">Eroare la analizarea politicii: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Receptorul de hârtie 5</translation>
 <translation id="4331708818696583467">Nesecurizat</translation>
+<translation id="4340575312453649552">Anunțul folosea prea multe resurse pentru dispozitivul tău, așa că Chrome l-a eliminat.</translation>
 <translation id="4340982228985273705">Acest computer nu este detectat ca fiind gestionat de companie, deci politica poate instala automat doar extensiile găzduite în Magazinul web Chrome. Adresa URL pentru actualizare din Magazinul web Chrome este „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4346197816712207223">Carduri de credit acceptate</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1429,6 +1431,7 @@
 <translation id="6446608382365791566">Adaugă mai multe informații</translation>
 <translation id="6447842834002726250">Cookie-uri</translation>
 <translation id="6451458296329894277">Confirmă retrimiterea formularului</translation>
+<translation id="6456955391422100996">Anunțul a fost eliminat.</translation>
 <translation id="6457206614190510200">Broșare pe mijloc</translation>
 <translation id="6458606150257356946">Inserează oricum</translation>
 <translation id="6465306955648956876">Gestionează parolele...</translation>
@@ -1690,6 +1693,7 @@ Detalii suplimentare:
 <translation id="7549584377607005141">Pentru a fi afișată corespunzător, această pagină web necesită date pe care le-ați introdus anterior. Puteți trimite aceste date din nou, dar astfel veți repeta orice acțiuni realizate anterior de această pagină.</translation>
 <translation id="7550637293666041147">Numele de utilizator al dispozitivului și numele de utilizator Chrome</translation>
 <translation id="7552846755917812628">Încearcă următoarele sfaturi:</translation>
+<translation id="7554475479213504905">Reîncarcă și afișează oricum</translation>
 <translation id="7554791636758816595">Filă nouă</translation>
 <translation id="7564049878696755256">Este posibil să pierzi accesul la contul <ph name="ORG_NAME" /> sau să fii victima unui furt de identitate. Chrome îți recomandă să îți schimbi acum parola.</translation>
 <translation id="7567204685887185387">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fi fost emis fraudulos. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>

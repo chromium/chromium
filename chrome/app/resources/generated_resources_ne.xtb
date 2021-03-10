@@ -2665,7 +2665,6 @@
 <translation id="3943494825379372497">एप र पेजहरू रिस्टोर गर्ने हो?</translation>
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
-<translation id="3944266449990965865">फुल स्क्रिन</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2889,7 +2888,6 @@
 <translation id="4225397296022057997">सबै साइटहरूमा</translation>
 <translation id="4231095370974836764">आफ्नो <ph name="DEVICE_TYPE" /> मा Google Play बाट एप र गेमहरू इन्स्टल गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos कन्फिगर गर्नुहोस्</translation>
-<translation id="4235200303672858594">सम्पूर्ण स्क्रिन</translation>
 <translation id="4235965441080806197">साइन इन रद्द गर्नुहोस्</translation>
 <translation id="4242145785130247982">एकभन्दा बढी क्लाइन्टका प्रमाणपत्रहरू समर्थित छैनन्</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
@@ -2972,7 +2970,6 @@
 <translation id="4336434711095810371">सबै डेटा खाली गर्नुहोस्</translation>
 <translation id="4340125850502689798">युजरनेम अवैध छ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> एपलाई "<ph name="EXTENSION_NAME" />" सँग सञ्चार गर्न चाहन्छ</translation>
-<translation id="4340575312453649552">यो विज्ञापनले तपाईंको यन्त्रका अत्यधिक धेरै स्रोतहरू प्रयोग गरेको हुनाले Chrome ले यसलाई हटायो।</translation>
 <translation id="4341577178275615435">सर्टकट तरिकाले क्यारेट ब्राउजिङ अन वा अफ गर्न F7 थिच्नुहोस्</translation>
 <translation id="434198521554309404">छिटो। सुरक्षित। सजिलो।</translation>
 <translation id="434404122609091467">तपाईंको हालको सेवा प्रदायकमार्फत</translation>
@@ -4798,7 +4795,6 @@
 <translation id="6452961788130242735">नेटवर्कको समस्या वा अनुपयुक्त क्षेत्र</translation>
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455894534188563617">&amp;नयाँ फोल्डर</translation>
-<translation id="6456955391422100996">विज्ञापन हटाइयो।</translation>
 <translation id="645705751491738698">जाभास्क्रिप्ट रोक्न जारी राख्नुहोस्</translation>
 <translation id="6458701200018867744">अपलोड गर्न सकिएन (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">पत्ता लगाउन छनोट प्रयोग गर्नुहोस्</translation>
@@ -5751,7 +5747,6 @@
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7553012839257224005">Linux कन्टेनर जाँच गरिँदै छ</translation>
 <translation id="7553242001898162573">तपाईँको पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
-<translation id="7554475479213504905">जे भए पनि पुनः लोड गर्नुहोस् र देखाउनुहोस्</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7556033326131260574">Smart Lock ले तपाईँको खाता प्रमाणीकरण गर्न सकेन। प्रविष्ट गर्न आफ्नो पासवर्ड टाइप गर्नुहोस्।</translation>
 <translation id="7556242789364317684">दुर्भाग्यवश, <ph name="SHORT_PRODUCT_NAME" /> ले तपाईंका सेटिङहरू पुन: प्राप्त गर्न सकेन। त्रुटि सच्याउनका लागि, <ph name="SHORT_PRODUCT_NAME" /> ले तपाईंको यन्त्रलाई पावरवाश मार्फत रिसेट गर्नुपर्छ।</translation>

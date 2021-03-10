@@ -878,6 +878,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4305817255990598646">Almashtirish</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloklansin (standart parametr)</translation>
+<translation id="4314815835985389558">Sinxronizatsiyani boshqarish</translation>
 <translation id="4318312030194671742">Paint Preview bastalash xizmati</translation>
 <translation id="4318566738941496689">Qurilma nomi va tarmoq manzili</translation>
 <translation id="4325863107915753736">Maqola topilmadi</translation>
@@ -885,6 +886,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4329871760342656885">Qoida tahlil qilinmadi: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Taxlovchi 5</translation>
 <translation id="4331708818696583467">Xavfsiz emas</translation>
+<translation id="4340575312453649552">Bu reklama qurilamangizdan koʻp tizim manbalarini ishlatdi, shuning uchun uni Chrome olib tashladi.</translation>
 <translation id="4340982228985273705">Bu kompyuter korporativ boshqaruv ostida ekanligi aniqlanmadi, shuning uchun faqat Chrome internet-do‘konidagi kengaytmalar avtomatik tarzda o‘rnatilishi mumkin. Yangilash uchun URL manzili: “<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4346197816712207223">Qabul qilinadigan kredit kartalar</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1425,6 +1427,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6446608382365791566">Batafsil qo‘shing</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6451458296329894277">Forma qayta jo‘natilishini tasdiqlang</translation>
+<translation id="6456955391422100996">Reklama olib tashlandi.</translation>
 <translation id="6457206614190510200">Ikkala chekkasini tikish</translation>
 <translation id="6458606150257356946">Baribir joylash</translation>
 <translation id="6465306955648956876">Parollarni boshqarish...</translation>
@@ -1686,6 +1689,7 @@ Batafsil axborot:
 <translation id="7549584377607005141">Veb-sahifaning to‘g‘ri ko‘rsatilishi uchun avval kiritilgan ma’lumotlar kerak bo‘ladi. Ularni qayta jo‘natish mumkin, lekin bu holatda sahifada bajarilgan barcha amallarni qaytadan bajarish kerak bo‘ladi.</translation>
 <translation id="7550637293666041147">Qurilmangiz va Chrome foydalanuvchilari nomi</translation>
 <translation id="7552846755917812628">Quyidagi amallarni bajarib ko‘ring:</translation>
+<translation id="7554475479213504905">Yangilash va baribir ochish</translation>
 <translation id="7554791636758816595">Yangi varaq</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hisobingiz xavf ostida va shaxsiy ma’lumotlaringizni kimdir ko‘rishi mumkin. Parolingizni hoziroq o‘zgartirishni tavsiya etamiz.</translation>
 <translation id="7567204685887185387">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati ishonchli tuyulmayapti. Server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>

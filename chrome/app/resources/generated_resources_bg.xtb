@@ -2667,7 +2667,6 @@
 <translation id="3943494825379372497">Да бъдат ли възстановени приложенията и страниците?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Поставяне</translation>
-<translation id="3944266449990965865">Цял екран</translation>
 <translation id="3948116654032448504">&amp;Търсене на изображението чрез <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да редактира файловете в следните папки</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2891,7 +2890,6 @@
 <translation id="4225397296022057997">На всички сайтове</translation>
 <translation id="4231095370974836764">Инсталирайте приложения и игри от Google Play на своя <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
-<translation id="4235200303672858594">Цял екран</translation>
 <translation id="4235965441080806197">Анулиране на влизането</translation>
 <translation id="4242145785130247982">Не се поддържа използването на няколко клиентски сертификата</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
@@ -2974,7 +2972,6 @@
 <translation id="4336434711095810371">Изчистване на всички данни</translation>
 <translation id="4340125850502689798">Невалидно потребителско име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> иска да комуникира с приложението „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="4340575312453649552">Тази реклама бе премахната от Chrome, защото използваше твърде много от ресурсите на устройството ви.</translation>
 <translation id="4341577178275615435">За да включите или изключите Caret Browsing, използвайте клавиша F7.</translation>
 <translation id="434198521554309404">Бързо. Сигурно. Лесно.</translation>
 <translation id="434404122609091467">Посредством текущия ви доставчик на услуги</translation>
@@ -4802,7 +4799,6 @@
 <translation id="6452961788130242735">Проблем с мрежата или неправилна област</translation>
 <translation id="6455264371803474013">На конкретни сайтове</translation>
 <translation id="6455894534188563617">&amp;Нова папка</translation>
-<translation id="6456955391422100996">Рекламата бе премахната.</translation>
 <translation id="645705751491738698">Блокирането на JavaScript да продължи</translation>
 <translation id="6458701200018867744">Качването не бе успешно (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Използване на избраното за търсене</translation>
@@ -5755,7 +5751,6 @@
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
 <translation id="7553012839257224005">Контейнерът за Linux се проверява</translation>
 <translation id="7553242001898162573">Въведете паролата си</translation>
-<translation id="7554475479213504905">Презареждане и показване въпреки това</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7556033326131260574">Smart Lock не можа да потвърди профила ви. Въведете паролата си, за да влезете.</translation>
 <translation id="7556242789364317684">За съжаление <ph name="SHORT_PRODUCT_NAME" /> не може да възстанови настройките ви. За да поправи грешката, <ph name="SHORT_PRODUCT_NAME" /> трябва да нулира устройството ви с Powerwash.</translation>

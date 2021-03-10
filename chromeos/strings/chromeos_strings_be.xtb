@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знойдзены</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6040852767465482106">Ананімны ідэнтыфікатар</translation>
 <translation id="604124094241169006">Аўтаматычна</translation>

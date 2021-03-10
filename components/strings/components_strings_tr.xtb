@@ -874,6 +874,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4305817255990598646">Anahtar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Engelle (varsayılan)</translation>
+<translation id="4314815835985389558">Senkronizasyonu yönetin</translation>
 <translation id="4318312030194671742">Paint Önizleme Birleştirme Hizmeti</translation>
 <translation id="4318566738941496689">Cihazınızın adı ve ağ adresi</translation>
 <translation id="4325863107915753736">Makale bulunamadı</translation>
@@ -881,6 +882,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4329871760342656885">Politika ayrıştırma hatası: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Yığınlayıcı 5</translation>
 <translation id="4331708818696583467">Güvenli Değil</translation>
+<translation id="4340575312453649552">Bu reklam, cihazınız için çok fazla kaynak kullandığından Chrome tarafından kaldırıldı.</translation>
 <translation id="4340982228985273705">Bu bilgisayarın kurumsal olarak yönetilmediği algılandığı için politika yalnızca Chrome Web Mağazası'nda barındırılan uzantıları otomatik olarak yükleyebilir. Chrome Web Mağazası'nın güncelleme URL'si "<ph name="CWS_UPDATE_URL" />" şeklindedir.</translation>
 <translation id="4346197816712207223">Kabul Edilen Kredi Kartları</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1422,6 +1424,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6446608382365791566">Daha fazla bilgi ekleyin</translation>
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6451458296329894277">Yeniden Form Gönderme İşlemini Onayla</translation>
+<translation id="6456955391422100996">Reklam kaldırıldı.</translation>
 <translation id="6457206614190510200">Ortada tel zımba</translation>
 <translation id="6458606150257356946">Yine de yapıştır</translation>
 <translation id="6465306955648956876">Şifreleri yönet...</translation>
@@ -1683,6 +1686,7 @@ Ek ayrıntılar:
 <translation id="7549584377607005141">Bu Web sayfasının düzgün şekilde görüntülenmesi için, önceden girdiğiniz veriler gerekiyor. Bu verileri tekrar gönderebilirsiniz, ancak bunu yaptığınızda bu sayfanın daha önce gerçekleştirdiği işlemler de tekrar edilir.</translation>
 <translation id="7550637293666041147">Cihaz kullanıcı adınız ve Chrome kullanıcı adınız</translation>
 <translation id="7552846755917812628">Aşağıdaki ipuçlarını deneyin:</translation>
+<translation id="7554475479213504905">Yine de yeniden yükle ve göster</translation>
 <translation id="7554791636758816595">Yeni Sekme</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> hesabınıza erişimi kaybedebilir veya kimlik hırsızlığına maruz kalabilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir.</translation>
 <translation id="7567204685887185387">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası hileli bir şekilde yayınlanmış olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>

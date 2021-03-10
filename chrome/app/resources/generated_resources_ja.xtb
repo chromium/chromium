@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">アプリとページを復元しますか？</translation>
 <translation id="3943582379552582368">戻る(&amp;B)</translation>
 <translation id="3943857333388298514">貼り付け</translation>
-<translation id="3944266449990965865">全画面</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />（<ph name="DEVICE_ID" />）</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">すべてのサイト</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
-<translation id="4235200303672858594">画面全体</translation>
 <translation id="4235965441080806197">ログインをキャンセル</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">データをすべて消去</translation>
 <translation id="4340125850502689798">ユーザー名が無効です</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> がアプリ「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
-<translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4341577178275615435">カーソル ブラウジングをオンまたはオフにするには、F7 ショートカット キーを使用します</translation>
 <translation id="434198521554309404">高速。安全。簡単。</translation>
 <translation id="434404122609091467">現在のサービス プロバイダを使用する</translation>
@@ -4803,7 +4800,6 @@
 <translation id="6452961788130242735">ネットワークに問題があるか、レルムが正しくありません</translation>
 <translation id="6455264371803474013">特定のサイト</translation>
 <translation id="6455894534188563617">新しいフォルダ(&amp;N)</translation>
-<translation id="6456955391422100996">広告を削除しました。</translation>
 <translation id="645705751491738698">JavaScript を引き続きブロックする</translation>
 <translation id="6458701200018867744">アップロードできませんでした（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">選択部分を検索に使用</translation>
@@ -5756,7 +5752,6 @@
 <translation id="7552846755917812628">次のことをお試しください。</translation>
 <translation id="7553012839257224005">Linux コンテナを確認しています</translation>
 <translation id="7553242001898162573">パスワードを入力してください</translation>
-<translation id="7554475479213504905">再読み込みして表示</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7556033326131260574">Smart Lock でアカウントを確認できませんでした。ログインするにはパスワードを入力してください。</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> ではユーザーの設定を回復することができません。エラーを修正するには、<ph name="SHORT_PRODUCT_NAME" /> が Powerwash でデバイスをリセットする必要があります。</translation>

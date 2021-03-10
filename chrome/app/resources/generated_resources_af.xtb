@@ -2669,7 +2669,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3943494825379372497">Stel programme en bladsye terug?</translation>
 <translation id="3943582379552582368">Terug</translation>
 <translation id="3943857333388298514">Plak</translation>
-<translation id="3944266449990965865">Hele skerm</translation>
 <translation id="3948116654032448504">Deursoek <ph name="SEARCH_ENGINE" /> vir prent</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan jou lêers in die volgende vouers wysig</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4225397296022057997">Op alle werwe</translation>
 <translation id="4231095370974836764">Installeer programme en speletjies van Google Play af op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Stel Kerberos op</translation>
-<translation id="4235200303672858594">Hele skerm</translation>
 <translation id="4235965441080806197">Kanselleer aanmelding</translation>
 <translation id="4242145785130247982">Veelvuldige kliëntesertifikate word nie gesteun nie</translation>
 <translation id="4242533952199664413">Maak instellings oop</translation>
@@ -2976,7 +2974,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4336434711095810371">Vee alle data uit</translation>
 <translation id="4340125850502689798">Ongeldige gebruikernaam</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> wil met die program "<ph name="EXTENSION_NAME" />" kommunikeer</translation>
-<translation id="4340575312453649552">Chrome het hierdie advertensie verwyder omdat dit te veel van jou toestel se hulpbronne gebruik het.</translation>
 <translation id="4341577178275615435">Gebruik die kortpad F7 om karetblaai aan of af te skakel</translation>
 <translation id="434198521554309404">Vinnig. Veilig. Moeiteloos.</translation>
 <translation id="434404122609091467">Met jou huidige diensverskaffer</translation>
@@ -4804,7 +4801,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6452961788130242735">Netwerkprobleem of slegte domein</translation>
 <translation id="6455264371803474013">Op spesifieke werwe</translation>
 <translation id="6455894534188563617">&amp;Nuwe vouer</translation>
-<translation id="6456955391422100996">Advertensie is verwyder.</translation>
 <translation id="645705751491738698">Hou aan om JavaScript te blokkeer</translation>
 <translation id="6458701200018867744">Kon nie oplaai nie (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Gebruik Selection for Find</translation>
@@ -5757,7 +5753,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7552846755917812628">Probeer die volgende wenke:</translation>
 <translation id="7553012839257224005">Gaan tans die Linux-houer na</translation>
 <translation id="7553242001898162573">Voer jou wagwoord in</translation>
-<translation id="7554475479213504905">Herlaai en wys in elk geval</translation>
 <translation id="7554791636758816595">Nuwe oortjie</translation>
 <translation id="7556033326131260574">Smart Lock kon nie jou rekening verifieer nie. Voer jou wagwoord in om in te gaan.</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> kan ongelukkig nie jou instellings terugstel nie. Om die fout reg te stel, moet <ph name="SHORT_PRODUCT_NAME" /> jou toestel met Kragwas terugstel.</translation>

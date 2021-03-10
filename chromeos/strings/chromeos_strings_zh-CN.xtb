@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">已禁止</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
 <translation id="5931523347251946569">未找到文件</translation>
-<translation id="5982592372228113572">（<ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" />）</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6040852767465482106">匿名身份</translation>
 <translation id="604124094241169006">自动</translation>

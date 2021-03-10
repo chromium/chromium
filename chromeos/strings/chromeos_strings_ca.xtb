@@ -225,7 +225,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040852767465482106">Identitat anònima</translation>
 <translation id="604124094241169006">Automàtic</translation>

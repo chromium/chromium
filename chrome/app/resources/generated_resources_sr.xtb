@@ -2668,7 +2668,6 @@
 <translation id="3943494825379372497">Желите да вратите апликације и странице?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Налепи</translation>
-<translation id="3944266449990965865">Цео екран</translation>
 <translation id="3948116654032448504">&amp;Потражи слику у претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да мења датотеке у директоријумима у наставку</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2892,7 +2891,6 @@
 <translation id="4225397296022057997">На свим сајтовима</translation>
 <translation id="4231095370974836764">Инсталирајте апликације и игре са Google Play-а на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Конфигуришите Kerberos</translation>
-<translation id="4235200303672858594">Цео екран</translation>
 <translation id="4235965441080806197">Откажи пријављивање</translation>
 <translation id="4242145785130247982">Није подржано више сертификата клијента</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
@@ -2975,7 +2973,6 @@
 <translation id="4336434711095810371">Обриши све податке</translation>
 <translation id="4340125850502689798">Неважеће корисничко име</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> жели да комуницира са апликацијом „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="4340575312453649552">Овај оглас је користио превише ресурса за уређај, па га је Chrome уклонио.</translation>
 <translation id="4341577178275615435">Да бисте укључили или искључили навигацију курсором, користите F7</translation>
 <translation id="434198521554309404">Брзо. Безбедно. Једноставно.</translation>
 <translation id="434404122609091467">Помоћу актуелног добављача услуге</translation>
@@ -4803,7 +4800,6 @@
 <translation id="6452961788130242735">Проблем са мрежом или погрешан домен</translation>
 <translation id="6455264371803474013">На одређеним сајтовима</translation>
 <translation id="6455894534188563617">&amp;Нови директоријум</translation>
-<translation id="6456955391422100996">Оглас је уклоњен.</translation>
 <translation id="645705751491738698">Настави блокирање JavaScript-а</translation>
 <translation id="6458701200018867744">Отпремање није успело (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Користи избор за проналажење</translation>
@@ -5756,7 +5752,6 @@
 <translation id="7552846755917812628">Испробајте следеће савете:</translation>
 <translation id="7553012839257224005">Проверава се Linux контејнер</translation>
 <translation id="7553242001898162573">Унесите лозинку</translation>
-<translation id="7554475479213504905">Ипак поново учитај и прикажи</translation>
 <translation id="7554791636758816595">Нова картица</translation>
 <translation id="7556033326131260574">Smart Lock није успео да верификује налог. Унесете лозинку да бисте приступили.</translation>
 <translation id="7556242789364317684">Нажалост, <ph name="SHORT_PRODUCT_NAME" /> не може да поврати подешавања. Да би отклонио грешку, <ph name="SHORT_PRODUCT_NAME" /> мора да врати уређај на почетна подешавања помоћу Powerwash-а.</translation>

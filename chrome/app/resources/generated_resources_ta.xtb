@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">ஆப்ஸையும் பக்கங்களையும் மீட்டெடுக்க வேண்டுமா?</translation>
 <translation id="3943582379552582368">&amp;முந்தைய பக்கம்</translation>
 <translation id="3943857333388298514">ஒட்டு</translation>
-<translation id="3944266449990965865">திரை முழுவதும்</translation>
 <translation id="3948116654032448504">படத்தைத் &amp;தேடு <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">பின்வரும் கோப்புறைகளில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">எல்லாத் தளங்களிலும்</translation>
 <translation id="4231095370974836764">Google Playயிலிருந்து உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஆப்ஸையும் கேம்களையும் நிறுவலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosஸை உள்ளமைத்தல்</translation>
-<translation id="4235200303672858594">திரை முழுவதும்</translation>
 <translation id="4235965441080806197">உள்நுழைவை ரத்துசெய்</translation>
 <translation id="4242145785130247982">பல்வேறு கிளையண்ட் சான்றிதழ்களைப் பயன்படுத்த இயலாது</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">அனைத்துத் தரவையும் அழி</translation>
 <translation id="4340125850502689798">தவறான பயனர்பெயர்</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" பயன்பாட்டுடன் தொடர்புகொள்ள விழைகிறது</translation>
-<translation id="4340575312453649552">இந்த விளம்பரம் உங்கள் சாதனத்தின் செயல்திறனை பாதிப்பதால் அதனை Chrome அகற்றிவிட்டது.</translation>
 <translation id="4341577178275615435">சுட்டி உலாவலை இயக்கவோ முடக்கவோ ‘F7’ என்ற ஷார்ட்கட் விசையைப் பயன்படுத்தவும்</translation>
 <translation id="434198521554309404">வேகமானது. பாதுகாப்பானது. எளிதானது.</translation>
 <translation id="434404122609091467">உங்களின் தற்போதைய சேவை வழங்குநருடன்</translation>
@@ -4804,7 +4801,6 @@
 <translation id="6452961788130242735">நெட்வொர்க் சிக்கல் அல்லது மோசமான டொமைன்</translation>
 <translation id="6455264371803474013">குறிப்பிட்ட தளங்களில் மட்டும்</translation>
 <translation id="6455894534188563617">&amp;புதிய கோப்புறை</translation>
-<translation id="6456955391422100996">விளம்பரம் அகற்றப்பட்டது.</translation>
 <translation id="645705751491738698">JavaScript ஐத் தடுப்பதைத் தொடர்க</translation>
 <translation id="6458701200018867744">பதிவேற்ற முடியவில்லை (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">தேடுவதற்கு தேர்ந்தெடுத்ததைப் பயன்படுத்து</translation>
@@ -5757,7 +5753,6 @@
 <translation id="7552846755917812628">பின்வரும் உதவிக் குறிப்புகளைச் செய்து பார்க்கவும்:</translation>
 <translation id="7553012839257224005">Linux கண்டெய்னரைச் சரிபார்க்கிறது</translation>
 <translation id="7553242001898162573">கடவுச்சொல்லை உள்ளிடவும்</translation>
-<translation id="7554475479213504905">பரவாயில்லை, ரெஃப்ரெஷ் செய்து காட்டு</translation>
 <translation id="7554791636758816595">புதிய தாவல்</translation>
 <translation id="7556033326131260574">Smart Lockகால் உங்கள் கணக்கைச் சரிபார்க்க முடியவில்லை. நுழைவதற்கு உங்கள் கடவுச்சொல்லை உள்ளிடவும்.</translation>
 <translation id="7556242789364317684">துரதிருஷ்டவசமாக, <ph name="SHORT_PRODUCT_NAME" /> ஆல் உங்கள் அமைப்புகளை மீட்க முடியவில்லை. பிழையைச் சரிசெய்வதற்கு, உங்கள் சாதனத்தை <ph name="SHORT_PRODUCT_NAME" /> பவர்வாஷ் மூலம் மீட்டமைக்க வேண்டும்.</translation>

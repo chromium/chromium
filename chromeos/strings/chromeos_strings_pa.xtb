@@ -224,7 +224,6 @@
 <translation id="5916084858004523819">ਪਾਬੰਦੀ ਲਗਾਈ ਗਈ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}one{ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀ ਗਈ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ।}other{ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਫਲਤਾਪੂਰਕ ਸਕੈਨ ਕੀਤੀਆਂ ਗਈਆਂ ਅਤੇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਗਈਆਂ।}}</translation>
 <translation id="5931523347251946569">ਫ਼ਾਈਲ ਨਹੀਂ ਮਿਲੀ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ਵਰਜਨ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6040852767465482106">ਅਨਾਮ ਪਛਾਣ</translation>
 <translation id="604124094241169006">ਆਟੋਮੈਟਿਕ</translation>

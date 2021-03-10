@@ -225,7 +225,6 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaš fajl je uspješno skeniran i sačuvan u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaši fajlovi su uspješno skenirani i sačuvani u folder <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Anonimni identitet</translation>
 <translation id="604124094241169006">Automatski</translation>

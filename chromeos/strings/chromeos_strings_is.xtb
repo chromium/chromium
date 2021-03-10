@@ -225,7 +225,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6040852767465482106">Nafnlaust auðkenni</translation>
 <translation id="604124094241169006">Sjálfvirkt</translation>

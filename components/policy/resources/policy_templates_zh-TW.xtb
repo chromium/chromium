@@ -2927,13 +2927,6 @@
 
       如果將這項政策設為 False 或不予設定，系統將不會回報這項資訊。
       如果設為 True，則系統會回報每個 CPU 的型號名稱、架構和最高時脈速度。</translation>
-<translation id="5119324103901618897">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目皆可包含 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果略過 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有裝置。如果略過 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，將無法生效。
-
-      USB 權限模型會使用要求網址和嵌入網址，授予要求網址存取 USB 裝置的權限。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，<ph name="URLS_FIELD_NAME" /> 欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。網址必須是有效網址，否則系統會忽略這項政策。
-
-      如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
-
-      這項政策中的網址模式不得與透過 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址模式產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
 <translation id="5142301680741828703">一律算繪下列 <ph name="PRODUCT_FRAME_NAME" /> 中的網址模式</translation>
@@ -3098,11 +3091,6 @@
 <translation id="5307432759655324440">無痕模式適用性</translation>
 <translation id="5311275381462687162">預設的舊版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行為設定</translation>
 <translation id="5312253627576569499">如果系統在螢幕調暗時或畫面關閉後不久便偵測到使用者活動，要將螢幕調暗延遲時間延長的百分比</translation>
-<translation id="5315367501385698459">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備登入畫面中所指定廠商和產品 ID 的 USB 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目皆可包含 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果略過 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有裝置。如果略過 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統建立的政策將涵蓋所有具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，將無法生效。
-
-      USB 權限模型會使用要求網址和嵌入網址，授予要求網址存取 USB 裝置的權限。如果要求網站是透過 iframe 載入，要求網址可能會與嵌入網址有所不同。因此，<ph name="URLS_FIELD_NAME" /> 欄位最多可包含兩個網址字串 (以半形逗號分隔)，以分別指定要求網址和嵌入網址。如果只指定一個網址，當要求網站的網址與這個網址相符時，不論其是否為嵌入網址，系統都會授予相應 USB 裝置的存取權。網址必須是有效網址，否則系統會忽略這項政策。
-
-      如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="5318185076587284965">啟用遠端存取主機所使用的轉送伺服器</translation>
 <translation id="5323128137188992869">允許透過「<ph name="PRODUCT_NAME" />」將內容投放至裝置。
 

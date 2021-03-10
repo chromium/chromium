@@ -225,7 +225,6 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5916084858004523819">Keelatud</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Faili ei leitud</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="6040852767465482106">Anonüümne identiteet</translation>
 <translation id="604124094241169006">Automaatne</translation>

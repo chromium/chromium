@@ -872,6 +872,7 @@
 <translation id="4305817255990598646">切り替え</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
+<translation id="4314815835985389558">同期の管理</translation>
 <translation id="4318312030194671742">Paint Preview Compositor サービス</translation>
 <translation id="4318566738941496689">デバイスの名前とネットワーク アドレス</translation>
 <translation id="4325863107915753736">記事が見つかりませんでした</translation>
@@ -879,6 +880,7 @@
 <translation id="4329871760342656885">ポリシー解析エラー: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">スタッカー 5</translation>
 <translation id="4331708818696583467">保護されていない通信</translation>
+<translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4346197816712207223">利用可能なクレジット カード</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1420,6 +1422,7 @@
 <translation id="6446608382365791566">他の情報を追加</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6451458296329894277">フォーム再送信の確認</translation>
+<translation id="6456955391422100996">広告を削除しました。</translation>
 <translation id="6457206614190510200">中綴じ</translation>
 <translation id="6458606150257356946">このまま貼り付け</translation>
 <translation id="6465306955648956876">パスワードを管理...</translation>
@@ -1681,6 +1684,7 @@
 <translation id="7549584377607005141">このウェブページを正しく表示するには、先ほど入力したデータが必要です。データは再送信できますが、このページで先ほど行った操作を繰り返すことになります。</translation>
 <translation id="7550637293666041147">お客様のデバイスのユーザー名と Chrome のユーザー名</translation>
 <translation id="7552846755917812628">次のことをお試しください。</translation>
+<translation id="7554475479213504905">再読み込みして表示</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> アカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="7567204685887185387">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は不正に発行されたものである可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>

@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">ស្ដារកម្មវិធី និងទំព័រឬ?</translation>
 <translation id="3943582379552582368">ត្រលប់</translation>
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
-<translation id="3944266449990965865">អេក្រង់ទាំងមូល</translation>
 <translation id="3948116654032448504">&amp;ស្វែងរករូបភាពតាម <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> អាចកែ​ឯកសារ​នៅក្នុង​ថត​ខាងក្រោម</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">នៅលើ​ទំព័រ​ទាំងអស់</translation>
 <translation id="4231095370974836764">ដំឡើង​កម្មវិធី និង​ហ្គេមពី Google Play នៅលើ <ph name="DEVICE_TYPE" /> របស់អ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">កំណត់​រចនាសម្ព័ន្ធ Kerberos</translation>
-<translation id="4235200303672858594">អេក្រង់ទាំងមូល</translation>
 <translation id="4235965441080806197">បោះបង់ការចូលគណនី</translation>
 <translation id="4242145785130247982">មិនអាចប្រើ​វិញ្ញាបនបត្រ​កម្មវិធីភ្ញៀវ​ច្រើនបានទេ</translation>
 <translation id="4242533952199664413">បើកការកំណត់</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">សម្អាត​ទិន្នន័យ​ទាំងអស់</translation>
 <translation id="4340125850502689798">ឈ្មោះអ្នក​ប្រើប្រាស់​មិនត្រឹមត្រូវទេ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ចង់ទាក់ទងជាមួយកម្មវិធី "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">ការផ្សាយពាណិជ្ជកម្មនេះបាន​ប្រើធនធានច្រើនពេកសម្រាប់​ឧបករណ៍របស់អ្នក ដូច្នេះ Chrome បានលុបវា​ចេញ។</translation>
 <translation id="4341577178275615435">ដើម្បីបើក ឬបិទមុខងារ caret browsing សូមប្រើផ្លូវកាត់ F7</translation>
 <translation id="434198521554309404">លឿន សុវត្ថិភាព ងាយស្រួលប្រើបំផុត</translation>
 <translation id="434404122609091467">ជាមួយ​ក្រុមហ៊ុនផ្ដល់សេវា​បច្ចុប្បន្នរបស់អ្នក</translation>
@@ -4804,7 +4801,6 @@
 <translation id="6452961788130242735">បញ្ហាបណ្ដាញ ឬដែនមិនល្អ</translation>
 <translation id="6455264371803474013">នៅលើគេហទំព័រជាក់លាក់</translation>
 <translation id="6455894534188563617">&amp;ថតថ្មី</translation>
-<translation id="6456955391422100996">បានលុបការផ្សាយពាណិជ្ជកម្ម។</translation>
 <translation id="645705751491738698">បន្តការរារាំង JavaScript</translation>
 <translation id="6458701200018867744">មិន​អាច​បង្ហោះបានទេ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)។</translation>
 <translation id="6459488832681039634">ប្រើការជ្រើសរើសសម្រាប់ស្វែងរក</translation>
@@ -5757,7 +5753,6 @@
 <translation id="7552846755917812628">សាកល្បងធ្វើតាមគន្លឹះខាងក្រោម៖</translation>
 <translation id="7553012839257224005">កំពុងពិនិត្យមើល​ទម្រង់ផ្ទុក Linux</translation>
 <translation id="7553242001898162573">បញ្ចូលពាក្យសម្ងាត់របស់អ្នក។</translation>
-<translation id="7554475479213504905">មិនអីទេ ផ្ទុកឡើងវិញ រួច​បង្ហាញចុះ</translation>
 <translation id="7554791636758816595">ផ្ទាំងថ្មី</translation>
 <translation id="7556033326131260574">Smart Lock មិនអាចផ្ទៀងផ្ទាត់គណនីរបស់អ្នកបានទេ។ វាយបញ្ចូលពាក្យសម្ងាត់របស់អ្នកដើម្បីចូល។</translation>
 <translation id="7556242789364317684">ជាអកុសល្យ <ph name="SHORT_PRODUCT_NAME" /> មិនអាចសង្គ្រោះការកំណត់របស់អ្នកទេ។ ដើម្បីដោះស្រាយកំហុសឆ្គងនេះ <ph name="SHORT_PRODUCT_NAME" /> ត្រូវកំណត់ឧបករណ៍របស់អ្នកឡើងវិញជាមួយ Powerwash។</translation>

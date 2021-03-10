@@ -225,7 +225,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ihre Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Ihre Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6040852767465482106">Anonyme Identität</translation>
 <translation id="604124094241169006">Automatisch</translation>

@@ -883,6 +883,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4305817255990598646">Prebaci</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokiraj (zadano)</translation>
+<translation id="4314815835985389558">Upravljanje sinhronizacijom</translation>
 <translation id="4318312030194671742">Usluga izrade prikaza u aplikaciji Paint</translation>
 <translation id="4318566738941496689">Naziv vašeg uređaja i mrežna adresa</translation>
 <translation id="4325863107915753736">Članak nije pronađen</translation>
@@ -890,6 +891,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4329871760342656885">Greška prilikom raščlanjivanja pravila: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Slagač 5</translation>
 <translation id="4331708818696583467">Nije sigurno</translation>
+<translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za vaš uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340982228985273705">Ovaj računar nije prepoznat kao računar kojim upravlja preduzeće stoga pravilo može automatski instalirati ekstenzije koje su hostirane na Chrome web trgovini. URL za ažuriranje Chrome web trgovine je "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Prihvaćene kreditne kartice</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1431,6 +1433,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6446608382365791566">Dodajte više informacija</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6451458296329894277">Potvrdite ponovno slanje obrasca</translation>
+<translation id="6456955391422100996">Oglas je uklonjen.</translation>
 <translation id="6457206614190510200">Uvez kroz sredinu</translation>
 <translation id="6458606150257356946">Ipak zalijepi</translation>
 <translation id="6465306955648956876">Upravljajte lozinkama…</translation>
@@ -1692,6 +1695,7 @@ Dodatni detalji:
 <translation id="7549584377607005141">Za ispravan prikaz ove web lokacije potrebni su podaci koje ste ranije unijeli. Možete ponovo poslati te podatke, ali ćete time ponoviti sve radnje koje je ova web lokacija prethodno izvršila.</translation>
 <translation id="7550637293666041147">Korisničko ime na vašem uređaju i korisničko ime na Chromeu</translation>
 <translation id="7552846755917812628">Isprobajte sljedeće savjete:</translation>
+<translation id="7554475479213504905">Ponovo učitaj i ipak prikaži</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7564049878696755256">Možete izgubiti pristup svom <ph name="ORG_NAME" /> računu ili doživjeti krađu identiteta. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7567204685887185387">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; njegova potvrda sigurnosti je možda izdana lažno. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>

@@ -2664,7 +2664,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3943494825379372497">Tətbiq və səhifələr bərpa edilsin?</translation>
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
-<translation id="3944266449990965865">Bütün Ekran</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2886,7 +2885,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4225397296022057997">Bütün saytlarda</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazında Google Play'dən tətbiq və oyunlar quraşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos'u konfiqurasiya edin</translation>
-<translation id="4235200303672858594">Bütün ekran</translation>
 <translation id="4235965441080806197">Daxilolmanı ləğv edin</translation>
 <translation id="4242145785130247982">Çoxsaylı klient sertifikatları dəstəklənmir</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
@@ -2969,7 +2967,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4336434711095810371">Bütün datanı silin</translation>
 <translation id="4340125850502689798">Yanlış istifadəçi adı</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" tətbiqi ilə bağlantı yaratmaq istəyir</translation>
-<translation id="4340575312453649552">Bu reklam cihazınız üçün həddindən çox mənbədən istifadə etdiyinə görə Chrome onu sildi.</translation>
 <translation id="4341577178275615435">Klaviatura ilə baxışı aktiv və ya deaktiv etmək üçün F7 qısayolunu istifadə edin</translation>
 <translation id="434198521554309404">Sürətli. Güvənli. Asan.</translation>
 <translation id="434404122609091467">Cari xidmət təminatçınız ilə</translation>
@@ -4795,7 +4792,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6452961788130242735">Şəbəkə problemi və ya uyğunsuz sahə</translation>
 <translation id="6455264371803474013">Xüsusi saytlarda</translation>
 <translation id="6455894534188563617">&amp;Yeni Qovluq</translation>
-<translation id="6456955391422100996">Reklam silindi.</translation>
 <translation id="645705751491738698">JavaScripti blok etməyə davam edin</translation>
 <translation id="6458701200018867744">Yükləmək alınmadı (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Tapmaq üçün Seçimi istifadə edin</translation>
@@ -5748,7 +5744,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7552846755917812628">Aşağıdakı məsləhətləri sınayın:</translation>
 <translation id="7553012839257224005">Linux konteyneri yoxlanılır</translation>
 <translation id="7553242001898162573">Şifrənizi daxil edin</translation>
-<translation id="7554475479213504905">İstənilən halda yenidən yükləyin və göstərin</translation>
 <translation id="7554791636758816595">Yeni Panel</translation>
 <translation id="7556033326131260574">Smart Kilid hesabınızı doğrulaya bilmədi. Daxil olmaq üçün parolunuzu yazın.</translation>
 <translation id="7556242789364317684">Təəssüf ki, <ph name="SHORT_PRODUCT_NAME" /> ayarlarınızı bərpa edə bilmir. Xətanı ləğv edin, <ph name="SHORT_PRODUCT_NAME" /> cihazınızı Powerwash ilə sıfırlamalıdır.</translation>

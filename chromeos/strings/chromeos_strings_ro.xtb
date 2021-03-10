@@ -225,7 +225,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5916084858004523819">Interzis</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fișierul a fost scanat și salvat în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fișierele au fost scanate și salvate în <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fișierul nu a fost găsit</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6040852767465482106">Identitate anonimă</translation>
 <translation id="604124094241169006">Automat</translation>

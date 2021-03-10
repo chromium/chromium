@@ -882,6 +882,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4305817255990598646">Switch</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Block (default)</translation>
+<translation id="4314815835985389558">Manage sync</translation>
 <translation id="4318312030194671742">Paint preview compositor service</translation>
 <translation id="4318566738941496689">Your device name and network address</translation>
 <translation id="4325863107915753736">Failed to find article</translation>
@@ -889,6 +890,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4329871760342656885">Policy parsing error: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Stacker 5</translation>
 <translation id="4331708818696583467">Not Secure</translation>
+<translation id="4340575312453649552">This ad used too many resources for your device, so Chrome removed it.</translation>
 <translation id="4340982228985273705">This computer is not detected as enterprise managed, so policy can only automatically install extensions hosted on the Chrome Web Store. The Chrome Web Store update URL is '<ph name="CWS_UPDATE_URL" />'.</translation>
 <translation id="4346197816712207223">Accepted Credit Cards</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1430,6 +1432,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6446608382365791566">Add more information</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Confirm Form Resubmission</translation>
+<translation id="6456955391422100996">Ad removed.</translation>
 <translation id="6457206614190510200">Saddle stitch</translation>
 <translation id="6458606150257356946">Paste anyway</translation>
 <translation id="6465306955648956876">Manage passwords...</translation>
@@ -1691,6 +1694,7 @@ Additional details:
 <translation id="7549584377607005141">This web page requires data that you entered earlier in order to be properly displayed. You can send this data again, but by doing so you will repeat any action this page previously performed.</translation>
 <translation id="7550637293666041147">Your device username and Chrome username</translation>
 <translation id="7552846755917812628">Try the following tips:</translation>
+<translation id="7554475479213504905">Reload and show anyway</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7564049878696755256">You could lose access to your <ph name="ORG_NAME" /> account or experience identity theft. Chrome recommends changing your password now.</translation>
 <translation id="7567204685887185387">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might have been issued fraudulently. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>

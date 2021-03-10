@@ -2671,7 +2671,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3943494825379372497">Restaurar apps e páginas?</translation>
 <translation id="3943582379552582368">&amp;Voltar</translation>
 <translation id="3943857333388298514">Colar</translation>
-<translation id="3944266449990965865">Tela cheia</translation>
 <translation id="3948116654032448504">&amp;Procurar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar arquivos nas seguintes pastas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2895,7 +2894,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4225397296022057997">Em todos os sites</translation>
 <translation id="4231095370974836764">Instale apps e jogos do Google Play no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar o Kerberos</translation>
-<translation id="4235200303672858594">Tela cheia</translation>
 <translation id="4235965441080806197">Cancelar login</translation>
 <translation id="4242145785130247982">Múltiplos certificados de clientes não são aceitos.</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
@@ -2978,7 +2976,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4336434711095810371">Limpar todos os dados</translation>
 <translation id="4340125850502689798">Nome de usuário inválido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> deseja se comunicar com o aplicativo "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4341577178275615435">Para ativar ou desativar a Caret Browsing, use o atalho F7</translation>
 <translation id="434198521554309404">Rápido. Seguro. Fácil de usar.</translation>
 <translation id="434404122609091467">Com seu provedor de serviços atual</translation>
@@ -4806,7 +4803,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6452961788130242735">Problema de rede ou domínio incorreto</translation>
 <translation id="6455264371803474013">Em sites específicos</translation>
 <translation id="6455894534188563617">&amp;Nova pasta</translation>
-<translation id="6456955391422100996">Anúncio removido.</translation>
 <translation id="645705751491738698">Continuar bloqueando JavaScript</translation>
 <translation id="6458701200018867744">Falha no upload (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar seleção para buscar</translation>
@@ -5759,7 +5755,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7552846755917812628">Tente seguir estas dicas:</translation>
 <translation id="7553012839257224005">Verificando o contêiner Linux</translation>
 <translation id="7553242001898162573">Digite sua senha</translation>
-<translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7556033326131260574">O Smart Lock não conseguiu verificar sua conta. Digite sua senha para entrar.</translation>
 <translation id="7556242789364317684">O <ph name="SHORT_PRODUCT_NAME" /> não conseguiu recuperar suas configurações. Para corrigir o erro, o <ph name="SHORT_PRODUCT_NAME" /> deve redefinir seu dispositivo com o PowerWash.</translation>

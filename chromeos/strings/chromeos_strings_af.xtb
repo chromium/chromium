@@ -225,7 +225,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5916084858004523819">Verbode</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Jou lêer is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}other{Jou lêers is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}}</translation>
 <translation id="5931523347251946569">Lêer nie gekry nie</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, weergawe <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6040852767465482106">Anonieme identiteit</translation>
 <translation id="604124094241169006">Outomaties</translation>

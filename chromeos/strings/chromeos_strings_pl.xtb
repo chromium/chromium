@@ -225,7 +225,6 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5916084858004523819">Niedozwolone</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Plik został zeskanowany i zapisany w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Pliki zostały zeskanowane i zapisane w folderze <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6040852767465482106">Tożsamość anonimowa</translation>
 <translation id="604124094241169006">Automatyczne</translation>

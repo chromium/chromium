@@ -871,6 +871,7 @@
 <translation id="4305817255990598646">切換</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">封鎖 (預設)</translation>
+<translation id="4314815835985389558">管理同步資料</translation>
 <translation id="4318312030194671742">繪圖預覽建立服務</translation>
 <translation id="4318566738941496689">您的裝置名稱和網絡地址</translation>
 <translation id="4325863107915753736">無法找到文章</translation>
@@ -878,6 +879,7 @@
 <translation id="4329871760342656885">政策剖析錯誤：<ph name="ERROR" /></translation>
 <translation id="4331519897422864041">堆疊器 5</translation>
 <translation id="4331708818696583467">不安全</translation>
+<translation id="4340575312453649552">此廣告使用了太多裝置資源，因此已被 Chrome 移除。</translation>
 <translation id="4340982228985273705">系統偵測到此電腦並非由企業管理，因此政策只容許自動安裝來自「Chrome 網上應用程式商店」的擴充程式。「Chrome 網上應用程式商店」的更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4346197816712207223">接受的信用卡</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1419,6 +1421,7 @@
 <translation id="6446608382365791566">新增更多資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6451458296329894277">確認重新提交表格</translation>
+<translation id="6456955391422100996">已移除廣告。</translation>
 <translation id="6457206614190510200">騎馬釘</translation>
 <translation id="6458606150257356946">仍要貼上</translation>
 <translation id="6465306955648956876">管理密碼…</translation>
@@ -1680,6 +1683,7 @@
 <translation id="7549584377607005141">這個網頁需要使用您先前輸入的數據才能正確顯示。您可以重新傳送這些數據，但這樣做會重複這個網頁先前已執行的動作。</translation>
 <translation id="7550637293666041147">您的裝置使用者名稱和 Chrome 使用者名稱</translation>
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
+<translation id="7554475479213504905">仍要重新載入及顯示內容</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7564049878696755256">您有可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或會遭身份盜用。Chrome 建議您立即變更密碼。</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證或許曾以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>

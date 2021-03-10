@@ -2668,7 +2668,6 @@
 <translation id="3943494825379372497">অ্যাপ ও পৃষ্ঠা ফিরিয়ে আনতে চান?</translation>
 <translation id="3943582379552582368">&amp;ফিরুন</translation>
 <translation id="3943857333388298514">পেস্ট করুন</translation>
-<translation id="3944266449990965865">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="3948116654032448504">&amp;ইমেজের জন্য <ph name="SEARCH_ENGINE" /> সার্চ করুন</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2892,7 +2891,6 @@
 <translation id="4225397296022057997">সমস্ত সাইটে</translation>
 <translation id="4231095370974836764">আপনার <ph name="DEVICE_TYPE" />-এ Google Play থেকে অ্যাপ ও গেম ইনস্টল করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos কনফিগার করুন</translation>
-<translation id="4235200303672858594">সম্পূর্ণ স্ক্রিন</translation>
 <translation id="4235965441080806197">সাইন-ইন বাতিল করুন</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েন্ট সার্টিফিকেট কাজ করে না</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
@@ -2975,7 +2973,6 @@
 <translation id="4336434711095810371">সব ডেটা মুছে ফেলুন</translation>
 <translation id="4340125850502689798">অননুমোদিত ইউজারনেম</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" অ্যাপ্লিকেশানটির সাথে যোগাযোগ করতে চায়</translation>
-<translation id="4340575312453649552">এই বিজ্ঞাপন আপনার ডিভাইসের অনেক রিসোর্স ব্যবহার করেছে, তাই Chrome সেটি মুছে দিয়েছে।</translation>
 <translation id="4341577178275615435">ক্যারেট ব্রাউজিং চালু বা বন্ধ করার জন্য, F7 শর্টকাটটি ব্যবহার করুন</translation>
 <translation id="434198521554309404">দ্রুত। নিরাপদ। সহজ।</translation>
 <translation id="434404122609091467">আপনার বর্তমান পরিষেবা প্রদানকারীর সাথে</translation>
@@ -4803,7 +4800,6 @@
 <translation id="6452961788130242735">নেটওয়ার্কের সমস্যা বা ভুল রিলম</translation>
 <translation id="6455264371803474013">নির্দিষ্ট সাইটগুলিতে</translation>
 <translation id="6455894534188563617">&amp;নতুন ফোল্ডার</translation>
-<translation id="6456955391422100996">বিজ্ঞাপন সরানো হয়েছে।</translation>
 <translation id="645705751491738698">জাভাস্ক্রিপ্ট ব্লক করা চালিয়ে যান</translation>
 <translation id="6458701200018867744">আপলোড করা যায়নি (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">খোঁজার জন্য নির্বাচন ব্যবহার করুন</translation>
@@ -5756,7 +5752,6 @@
 <translation id="7552846755917812628">নিম্নোল্লিখিত টিপ্স ব্যবহার করে দেখুন:</translation>
 <translation id="7553012839257224005">Linux কন্টেনার চেক করে দেখা হচ্ছে</translation>
 <translation id="7553242001898162573">আপনার পাসওয়ার্ডটি লিখুন</translation>
-<translation id="7554475479213504905">ঠিক আছে, আবার লোড করে দেখান</translation>
 <translation id="7554791636758816595">নতুন ট্যাব</translation>
 <translation id="7556033326131260574">Smart Lock আপনার অ্যাকাউন্ট যাচাই করতে পারেনি৷ সাইন-ইন করতে আপনার পাসওয়ার্ড লিখুন৷</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" /> আপনার সেটিংস পুনরুদ্ধার করা যায়নি। ত্রুটি ঠিক করতে, <ph name="SHORT_PRODUCT_NAME" /> অবশ্যই পাওয়ারওয়াশের সাথে আপনার ডিভাইস রিসেট করবে৷</translation>

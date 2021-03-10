@@ -2665,7 +2665,6 @@
 <translation id="3942420633017001071">ডায়েগনষ্টিক্স</translation>
 <translation id="3943494825379372497">এপ্‌ আৰু পৃষ্ঠা পুনঃস্থাপন কৰিবনে?</translation>
 <translation id="3943582379552582368">&amp;উভতি যাওক</translation>
-<translation id="3944266449990965865">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />ত প্ৰতিচ্ছবিৰ &amp;সন্ধান কৰক</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />এ তলৰ ফ’ল্ডাৰসমূহত থকা ফাইলসমূহ সম্পাদনা কৰিব পাৰে</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2888,7 +2887,6 @@
 <translation id="4225397296022057997">সকলো ছাইটত</translation>
 <translation id="4231095370974836764">আপোনাৰ <ph name="DEVICE_TYPE" />ত Google Playৰ পৰা এপ্‌ আৰু গে’মসমূহ ইনষ্টল কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos কনফিগাৰ কৰক</translation>
-<translation id="4235200303672858594">সম্পূৰ্ণ স্ক্ৰীণ</translation>
 <translation id="4235965441080806197">ছাইন ইন বাতিল কৰক</translation>
 <translation id="4242145785130247982">একাধিক ক্লায়েণ্টৰ প্ৰমাণপত্ৰ সমৰ্থিত নহয়</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
@@ -2971,7 +2969,6 @@
 <translation id="4336434711095810371">সকলো ডেটা মচক</translation>
 <translation id="4340125850502689798">ব্যৱহাৰকাৰীৰ নামটো অমান্য</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />এ "<ph name="EXTENSION_NAME" />" এপ্‌টোৰ সৈতে যোগাযোগ কৰিব বিচাৰিছে</translation>
-<translation id="4340575312453649552">এই বিজ্ঞাপনটোৱে আপোনাৰ ডিভাইচৰ অতি বেছি সমল ব্যৱহাৰ কৰাৰ কাৰণে Chromeএ এইটো আঁতৰাইছে।</translation>
 <translation id="4341577178275615435">কেৰেট ব্ৰাউজিং অন অথবা অফ কৰিবলৈ শ্বৰ্টকাট F7 ব্যৱহাৰ কৰক</translation>
 <translation id="434198521554309404">দ্ৰুত। সুৰক্ষিত। সহজ।</translation>
 <translation id="434404122609091467">আপোনাৰ বর্তমানৰ সেৱা প্ৰদানকাৰীৰ জৰিয়তে</translation>
@@ -4794,7 +4791,6 @@
 <translation id="6452961788130242735">নেটৱর্ক সম্পর্কীয় সমস্যা বা ক্ষেত্ৰ বেয়া</translation>
 <translation id="6455264371803474013">বিশেষ ছাইটসমূহত</translation>
 <translation id="6455894534188563617">&amp;নতুন ফ’ল্ডাৰ</translation>
-<translation id="6456955391422100996">বিজ্ঞাপন আঁতৰোৱা হ’ল।</translation>
 <translation id="645705751491738698">JavaScript অৱৰোধ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="6458701200018867744">আপল’ড কৰিব পৰা নগ’ল (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">বিচাৰিবলৈ বাছনি কৰাবোৰ ব্যৱহাৰ কৰক</translation>
@@ -5743,7 +5739,6 @@
 <translation id="7551643184018910560">শ্বেল্‌ফত পিন কৰক</translation>
 <translation id="7553012839257224005">Linux কণ্টেইনাৰটো পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="7553242001898162573">আপোনাৰ পাছৱৰ্ড দিয়ক</translation>
-<translation id="7554475479213504905">পুনৰ ল’ড কৰক আৰু তথাপিও দেখুৱাওক</translation>
 <translation id="7554791636758816595">নতুন টেব</translation>
 <translation id="7556033326131260574">স্মার্ট লকে আপোনাৰ একাউণ্টটো সত্যাপন কৰিব নোৱাৰিলে। লক খুলিবলৈ আপোনাৰ পাছৱর্ডটো টাইপ কৰক।</translation>
 <translation id="7556242789364317684">দুৰ্ভাগ্যবশতঃ, <ph name="SHORT_PRODUCT_NAME" />এ আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিব নোৱাৰিলে। আসোঁৱাহ সমাধান কৰিবলৈ <ph name="SHORT_PRODUCT_NAME" />এ আপোনাৰ ডিভাইচটো পাৱাৰৱাশ্বৰ দ্বাৰা ৰিছেট কৰিবই লাগিব।</translation>

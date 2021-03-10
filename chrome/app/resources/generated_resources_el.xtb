@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">Επαναφορά εφαρμογών και σελίδων;</translation>
 <translation id="3943582379552582368">&amp;Πίσω</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
-<translation id="3944266449990965865">Πλήρης οθόνη</translation>
 <translation id="3948116654032448504">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για εικόνα</translation>
 <translation id="3948507072814225786">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα αρχεία στους παρακάτω φακέλους</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">Σε όλους τους ιστοτόπους</translation>
 <translation id="4231095370974836764">Εγκαταστήστε εφαρμογές και παιχνίδια από το Google Play στη συσκευή <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Διαμόρφωση του Kerberos</translation>
-<translation id="4235200303672858594">Πλήρης οθόνη</translation>
 <translation id="4235965441080806197">Ακύρωση σύνδεσης</translation>
 <translation id="4242145785130247982">Δεν υποστηρίζονται πολλά πιστοποιητικά πελάτη.</translation>
 <translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">Διαγραφή όλων των δεδομένων</translation>
 <translation id="4340125850502689798">Μη έγκυρο όνομα χρήστη</translation>
 <translation id="4340515029017875942">Το <ph name="ORIGIN" /> θέλει να επικοινωνήσει με την εφαρμογή "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">Αυτή η διαφήμιση καταργήθηκε από το Chrome επειδή χρησιμοποιεί υπερβολικά πολλούς πόρους στη συσκευή σας.</translation>
 <translation id="4341577178275615435">Για την ενεργοποίηση ή την απενεργοποίηση της περιήγησης με σύμβολα προσθήκης, χρησιμοποιήστε τη συντόμευση F7</translation>
 <translation id="434198521554309404">Ταχύτητα. Ασφάλεια. Ευκολία.</translation>
 <translation id="434404122609091467">Με τον τρέχοντα πάροχο υπηρεσιών σας</translation>
@@ -4804,7 +4801,6 @@
 <translation id="6452961788130242735">Πρόβλημα δικτύου ή σφάλμα realm</translation>
 <translation id="6455264371803474013">Σε συγκεκριμένους ιστοτόπους</translation>
 <translation id="6455894534188563617">&amp;Νέος φάκελος</translation>
-<translation id="6456955391422100996">Η διαφήμιση καταργήθηκε.</translation>
 <translation id="645705751491738698">Συνέχιση αποκλεισμού JavaScript</translation>
 <translation id="6458701200018867744">Η μεταφόρτωση απέτυχε (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Χρήση Επιλογής για Εύρεση</translation>
@@ -5757,7 +5753,6 @@
 <translation id="7552846755917812628">Δοκιμάστε τις παρακάτω συμβουλές:</translation>
 <translation id="7553012839257224005">Έλεγχος του κοντέινερ Linux</translation>
 <translation id="7553242001898162573">Εισαγάγετε τον κωδικό πρόσβασής σας</translation>
-<translation id="7554475479213504905">Επανάληψη φόρτωσης και εμφάνιση ούτως ή άλλως</translation>
 <translation id="7554791636758816595">Νέα καρτέλα</translation>
 <translation id="7556033326131260574">Δεν ήταν δυνατή η επαλήθευση του λογαριασμού σας από τη λειτουργία Smart Lock. Πληκτρολογήστε τον κωδικό πρόσβασής σας για να εισέλθετε.</translation>
 <translation id="7556242789364317684">Δυστυχώς, το <ph name="SHORT_PRODUCT_NAME" /> δεν μπορεί να ανακτήσει τις ρυθμίσεις σας. Για την επιδιόρθωση του σφάλματος, το <ph name="SHORT_PRODUCT_NAME" /> θα πρέπει να επαναφέρει της συσκευή σας με το Powerwash.</translation>

@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">యాప్‌లు, పేజీలను రీస్టోర్ చేయాలా?</translation>
 <translation id="3943582379552582368">&amp;వెనుకకు</translation>
 <translation id="3943857333388298514">అతికించు</translation>
-<translation id="3944266449990965865">పూర్తి స్క్రీన్</translation>
 <translation id="3948116654032448504">చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3948507072814225786">కింది ఫోల్డర్‌లలోని ఫైల్‌లను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">అన్ని సైట్‌లలో</translation>
 <translation id="4231095370974836764">మీ <ph name="DEVICE_TYPE" />లో Google Play నుండి యాప్‌లు, గేమ్‌లను ఇన్‌స్టాల్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberosను కాన్ఫిగర్ చేయండి</translation>
-<translation id="4235200303672858594">పూర్తి స్క్రీన్</translation>
 <translation id="4235965441080806197">సైన్ ఇన్‌ను రద్దు చేయి</translation>
 <translation id="4242145785130247982">బహుళ క్లయింట్ సర్టిఫికెట్‌లకు మద్దతు లేదు</translation>
 <translation id="4242533952199664413">సెట్టింగ్‌లను తెరువు</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">మొత్తం డేటాను క్లియర్ చేయి</translation>
 <translation id="4340125850502689798">చెల్లని యూజర్‌నేమ్</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, <ph name="EXTENSION_NAME" />యాప్‌తో కమ్యూనికేట్ చేయాలనుకుంటోంది</translation>
-<translation id="4340575312453649552">ఈ యాడ్, మీ పరికరంలోని చాలా రిసోర్స్‌లను వినియోగించింది. కనుక, Chrome దీనిని తీసివేసింది.</translation>
 <translation id="4341577178275615435">క్యారెట్ బ్రౌజింగ్‌ను ఆన్ లేదా ఆఫ్ చేయడానికి, షార్ట్‌కట్ F7ను ఉపయోగించండి</translation>
 <translation id="434198521554309404">వేగవంతమైనది. సురక్షితమైనది. శ్రమ లేనిది.</translation>
 <translation id="434404122609091467">మీ ప్రస్తుత సర్వీస్ ప్రొవైడర్‌తో</translation>
@@ -4803,7 +4800,6 @@
 <translation id="6452961788130242735">నెట్‌వర్క్ సమస్య ఉంది లేదా నెట్‌వర్క్ పరిధిలో లేదు</translation>
 <translation id="6455264371803474013">కొన్ని నిర్దిష్ట సైట్‌లలో మాత్రమే</translation>
 <translation id="6455894534188563617">&amp;కొత్త ఫోల్డర్</translation>
-<translation id="6456955391422100996">ప్రకటన తీసివేయబడింది.</translation>
 <translation id="645705751491738698">JavaScriptను నిరోధించడాన్ని కొనసాగించు</translation>
 <translation id="6458701200018867744">అప్‌లోడ్ విఫలమైంది (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">కనుగొనడానికి ఎంపికను ఉపయోగించండి</translation>
@@ -5756,7 +5752,6 @@
 <translation id="7552846755917812628">క్రింది చిట్కాలను ప్రయత్నించండి:</translation>
 <translation id="7553012839257224005">Linux కంటెయినర్‌ను తనిఖీ చేస్తోంది</translation>
 <translation id="7553242001898162573">మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
-<translation id="7554475479213504905">ఏదేమైనా రీలోడ్ చేసి, చూపు</translation>
 <translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
 <translation id="7556033326131260574">Smart Lock మీ ఖాతాను ధృవీకరించలేకపోయింది. ప్రవేశించడానికి మీ పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
 <translation id="7556242789364317684">దురదృష్టవశాత్తూ, <ph name="SHORT_PRODUCT_NAME" /> మీ సెట్టింగ్‌లను పునరుద్ధరించలేకపోయింది. ఎర్రర్‌ను పరిష్కరించడానికి, <ph name="SHORT_PRODUCT_NAME" /> మీ పరికరాన్ని తప్పనిసరిగా పవర్‌వాష్‌తో రీసెట్ చేయాలి.</translation>

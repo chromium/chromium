@@ -2668,7 +2668,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943494825379372497">¿Restaurar aplicaciones y páginas?</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
-<translation id="3944266449990965865">Toda la pantalla</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2892,7 +2891,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4225397296022057997">En todos los sitios</translation>
 <translation id="4231095370974836764">Instala aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
-<translation id="4235200303672858594">Toda la pantalla</translation>
 <translation id="4235965441080806197">Cancelar inicio de sesión</translation>
 <translation id="4242145785130247982">No se admite el uso de varios certificados de cliente.</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -2975,7 +2973,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4336434711095810371">Borrar todos los datos</translation>
 <translation id="4340125850502689798">Nombre de usuario no válido</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> quiere comunicarse con la aplicación <ph name="EXTENSION_NAME" /></translation>
-<translation id="4340575312453649552">Chrome ha retirado este anuncio porque consumía demasiados recursos de tu dispositivo.</translation>
 <translation id="4341577178275615435">Para activar o desactivar la navegación por cursor de texto, usa la tecla F7</translation>
 <translation id="434198521554309404">Rápido. Seguro. Sencillo.</translation>
 <translation id="434404122609091467">Con tu proveedor de servicios actual</translation>
@@ -4802,7 +4799,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6452961788130242735">Problema de red o dominio erróneo</translation>
 <translation id="6455264371803474013">En sitios específicos</translation>
 <translation id="6455894534188563617">&amp;Nueva carpeta</translation>
-<translation id="6456955391422100996">Se ha retirado el anuncio.</translation>
 <translation id="645705751491738698">Seguir bloqueando JavaScript</translation>
 <translation id="6458701200018867744">No se ha podido subir (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Usar selección para buscar</translation>
@@ -5755,7 +5751,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7552846755917812628">Prueba los siguientes consejos:</translation>
 <translation id="7553012839257224005">Comprobando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Introduce tu contraseña</translation>
-<translation id="7554475479213504905">Volver a cargar y mostrar de todos modos</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7556033326131260574">Smart Lock no ha podido verificar tu cuenta. Introduce la contraseña para acceder.</translation>
 <translation id="7556242789364317684">Lamentablemente, <ph name="SHORT_PRODUCT_NAME" /> no puede recuperar tu configuración. Para solucionar el error, <ph name="SHORT_PRODUCT_NAME" /> debe restablecer tu dispositivo con Powerwash.</translation>

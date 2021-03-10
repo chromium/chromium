@@ -225,7 +225,6 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6040852767465482106">Anonymní identita</translation>
 <translation id="604124094241169006">Automaticky</translation>

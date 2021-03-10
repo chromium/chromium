@@ -2657,7 +2657,6 @@
 <translation id="3943494825379372497">恢复应用和网页？</translation>
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
-<translation id="3944266449990965865">全屏</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2881,7 +2880,6 @@
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
-<translation id="4235200303672858594">整个屏幕</translation>
 <translation id="4235965441080806197">取消登录</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -2963,7 +2961,6 @@
 <translation id="4333854382783149454">PKCS #1，带有 RSA 加密的 SHA-1</translation>
 <translation id="4336434711095810371">清除所有数据</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”应用通信</translation>
-<translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
 <translation id="4341577178275615435">如需开启或关闭光标浏览模式，请使用快捷键 F7</translation>
 <translation id="434198521554309404">快速、安全、易用。</translation>
 <translation id="434404122609091467">使用您当前的服务提供商</translation>
@@ -4783,7 +4780,6 @@
 <translation id="6452961788130242735">网络问题或领域有误</translation>
 <translation id="6455264371803474013">在特定网站上</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
-<translation id="6456955391422100996">已移除广告。</translation>
 <translation id="645705751491738698">继续拦截 JavaScript</translation>
 <translation id="6458701200018867744">上传失败（<ph name="WEBRTC_LOG_UPLOAD_TIME" />）。</translation>
 <translation id="6459488832681039634">使用所选内容查找</translation>
@@ -5731,7 +5727,6 @@
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7553012839257224005">正在检查 Linux 容器</translation>
 <translation id="7553242001898162573">输入您的密码</translation>
-<translation id="7554475479213504905">仍然重新加载并显示</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7556033326131260574">Smart Lock 无法验证您的帐号，您需要输入密码才能进入。</translation>
 <translation id="7556242789364317684">抱歉，“<ph name="SHORT_PRODUCT_NAME" />”无法恢复您的设置。要更正此错误，“<ph name="SHORT_PRODUCT_NAME" />”必须使用 Powerwash 重置您的设备。</translation>

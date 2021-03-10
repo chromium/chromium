@@ -225,7 +225,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, različica <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6040852767465482106">Anonimna identiteta</translation>
 <translation id="604124094241169006">Samodejno</translation>

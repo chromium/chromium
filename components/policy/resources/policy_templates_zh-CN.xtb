@@ -2922,13 +2922,6 @@
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告每个 CPU 的型号名称、架构和最快时钟速度。</translation>
-<translation id="5119324103901618897">通过设置此政策，您可以罗列一些网址格式，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段，此政策才有效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每项内容都可以包含“<ph name="VENDOR_ID_FIELD_NAME" />”和“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="VENDOR_ID_FIELD_NAME" />”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的政策无效。
-
-      USB 权限模型会使用请求网址和嵌入网址来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“<ph name="URLS_FIELD_NAME" />”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在发出请求的网站的网址与这个网址相符时授权该网站访问相应 USB 设备。这些网址必须有效，否则系统会忽略此政策。
-
-      如果您未设置此政策，系统会采用 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />（若已设置）或用户的个人设置（若前者未设置）。
-
-      此政策中的网址格式不应与通过 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址格式冲突。如果它们存在冲突，此政策优先于 <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
@@ -3095,11 +3088,6 @@
 <translation id="5307432759655324440">无痕模式的可用性</translation>
 <translation id="5311275381462687162">默认旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
 <translation id="5312253627576569499">在屏幕变暗后或在屏幕关闭不久后察觉到用户活动时，系统会对屏幕变暗延迟时间采取的调整幅度（百分比）</translation>
-<translation id="5315367501385698459">通过设置此政策，您可以罗列一些网址格式，从而指定自动授权哪些网站在登录屏幕上访问具有给定供应商 ID 和产品 ID 的 USB 设备。列表中的每项内容都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段，此政策才有效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每项内容都可以包含“<ph name="VENDOR_ID_FIELD_NAME" />”和“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="VENDOR_ID_FIELD_NAME" />”字段，系统将会创建一项与所有设备都匹配的政策。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的政策无效。
-
-      USB 权限模型会使用请求网址和嵌入网址来授权请求网址访问相应 USB 设备。如果发出请求的网站是在 iframe 中加载的，请求网址可能会与嵌入网址不同。因此，“<ph name="URLS_FIELD_NAME" />”字段最多可包含 2 个以英文逗号分隔的网址字符串，以分别指定请求网址和嵌入网址。如果仅指定了 1 个网址，那么无论嵌入状态为何，系统都会在发出请求的网站的网址与这个网址相符时授权该网站访问相应 USB 设备。这些网址必须有效，否则系统会忽略此政策。
-
-      如果您未设置此政策，系统会对所有网站使用全局默认值（不自动授予访问权限）。</translation>
 <translation id="5318185076587284965">允许远程访问主机使用中继服务器</translation>
 <translation id="5323128137188992869">允许使用 <ph name="PRODUCT_NAME" /> 向设备投射内容。
 

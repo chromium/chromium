@@ -225,7 +225,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été scannés et enregistrés dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
 <translation id="604124094241169006">Automatique</translation>

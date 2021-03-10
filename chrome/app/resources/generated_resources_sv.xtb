@@ -2669,7 +2669,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3943494825379372497">Vill du återställa appar och sidor?</translation>
 <translation id="3943582379552582368">&amp;Bakåt</translation>
 <translation id="3943857333388298514">Klistra in</translation>
-<translation id="3944266449990965865">Helskärm</translation>
 <translation id="3948116654032448504">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> har redigeringsbehörighet till filer i följande mappar</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4225397296022057997">På alla webbplatser</translation>
 <translation id="4231095370974836764">Installera appar och spel från Google Play på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurera Kerberos</translation>
-<translation id="4235200303672858594">Helskärm</translation>
 <translation id="4235965441080806197">Avbryt inloggningen</translation>
 <translation id="4242145785130247982">Flera klientcertifikat stöds inte</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
@@ -2976,7 +2974,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4336434711095810371">Rensa all data</translation>
 <translation id="4340125850502689798">Ogiltigt användarnamn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> vill kommunicera med appen <ph name="EXTENSION_NAME" /></translation>
-<translation id="4340575312453649552">Den här annonsen använde för många resurser för enheten, så den togs bort i Chrome.</translation>
 <translation id="4341577178275615435">Aktivera eller inaktivera textmarkörläge med kortkommandot F7</translation>
 <translation id="434198521554309404">Snabb. Säker. Smidig.</translation>
 <translation id="434404122609091467">Med den aktuella leverantören</translation>
@@ -4803,7 +4800,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6452961788130242735">Nätverksproblem eller felaktig sfär</translation>
 <translation id="6455264371803474013">På valda webbplatser</translation>
 <translation id="6455894534188563617">&amp;Ny mapp</translation>
-<translation id="6456955391422100996">Annonsen har tagits bort.</translation>
 <translation id="645705751491738698">Fortsätt blockera JavaScript</translation>
 <translation id="6458701200018867744">Uppladdningen misslyckades (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Använd markering för sökning</translation>
@@ -5756,7 +5752,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7552846755917812628">Testa följande tips:</translation>
 <translation id="7553012839257224005">Linux-behållaren kontrolleras</translation>
 <translation id="7553242001898162573">Ange ditt lösenord</translation>
-<translation id="7554475479213504905">Läs in igen och visa ändå</translation>
 <translation id="7554791636758816595">Ny flik</translation>
 <translation id="7556033326131260574">Smart Lock kunde inte verifiera ditt konto. Ange ditt lösenord.</translation>
 <translation id="7556242789364317684">Tyvärr kan inte <ph name="SHORT_PRODUCT_NAME" /> återställa dina inställningar. <ph name="SHORT_PRODUCT_NAME" /> måste återställa enheten med en Powerwash för att åtgärda felet.</translation>

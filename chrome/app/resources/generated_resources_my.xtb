@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">အက်ပ်နှင့် စာမျက်နှာများ ပြန်ယူမလား။</translation>
 <translation id="3943582379552582368">&amp;နောက်သို့</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
-<translation id="3944266449990965865">မျက်နှာပြင် တစ်ခုလုံး</translation>
 <translation id="3948116654032448504">ပုံကို <ph name="SEARCH_ENGINE" />ဖြင့် ရှာရန်</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> က အောက်ပါဖိုင်တွဲများ အတွင်းရှိ ဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@
 <translation id="4225397296022057997">ဝဘ်ဆိုက်များ အားလုံးတွင်</translation>
 <translation id="4231095370974836764">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Google Play မှ အက်ပ်နှင့် ဂိမ်းများ ထည့်သွင်းပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ကို စီစဉ်သတ်မှတ်ပါ</translation>
-<translation id="4235200303672858594">မျက်နှာပြင် တစ်ခုလုံး</translation>
 <translation id="4235965441080806197">လက်မှတ်ထိုးဝင်ခြင်းကို ပယ်ဖျက်ရန်</translation>
 <translation id="4242145785130247982">ကလိုင်းယင့် အသိအမှတ်ပြုလက်မှတ် အများအပြားကို ပံ့ပိုးမပေးပါ</translation>
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -2976,7 +2974,6 @@
 <translation id="4336434711095810371">ဒေတာအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="4340125850502689798">အသုံးပြုသူအမည် မမှန်ပါ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> သည် "<ph name="EXTENSION_NAME" />" အက်ပ် နှင့် ဆက်သွယ် လိုသည်</translation>
-<translation id="4340575312453649552">ဤကြော်ငြာသည် သင့်စက်ပစ္စည်းမှ အရင်းအမြစ်များစွာကို အသုံးပြုထားသည့်အတွက် Chrome က ၎င်းကို ဖယ်ရှားထားသည်။</translation>
 <translation id="4341577178275615435">Caret ဖြင့် ရှာကြည့်ခြင်းကို ဖွင့်ရန် သို့မဟုတ် ပိတ်ရန် ဖြတ်လမ်းလင့်ခ် F7 သုံးပါ</translation>
 <translation id="434198521554309404">မြန်ဆန်။ လုံခြုံ။ လွယ်ကူသည်။</translation>
 <translation id="434404122609091467">သင်၏လက်ရှိ ဝန်ဆောင်မှုပေးသူဖြင့်</translation>
@@ -4803,7 +4800,6 @@
 <translation id="6452961788130242735">ကွန်ရက် ပြဿနာ သို့မဟုတ် မကောင်းသည့် အခြေအနေ</translation>
 <translation id="6455264371803474013">ရွေးထားသည့် ဝဘ်ဆိုက်များတွင်</translation>
 <translation id="6455894534188563617">&amp;ဖိုင်တွဲအသစ်</translation>
-<translation id="6456955391422100996">ကြော်ငြာကို ဖယ်ရှားလိုက်ပါပြီ။</translation>
 <translation id="645705751491738698">JavaScript အား ဆက်လက် ပိတ်ဆို့ထားရန်</translation>
 <translation id="6458701200018867744">အပ်လုဒ်လုပ်ခြင်း မအောင်မြင်ပါ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)။</translation>
 <translation id="6459488832681039634">ရှာဖွေမှု အတွက် ရွေးချယ်ခြင်းအသုံးပြုရန်</translation>
@@ -5754,7 +5750,6 @@
 <translation id="7552846755917812628">အောက်ပါ နည်းလမ်းများကို စမ်းကြည့်ပါ−</translation>
 <translation id="7553012839257224005">Linux ကွန်တိန်နာ စစ်ဆေးနေသည်</translation>
 <translation id="7553242001898162573">သင့်စကားဝှက်အား ရိုက်ထည့်ရန်</translation>
-<translation id="7554475479213504905">မည်သို့ပင်ဖြစ်စေ ပြန်လည်စတင်ပြီး ပြရန်</translation>
 <translation id="7554791636758816595">တဘ် အသစ်</translation>
 <translation id="7556033326131260574">Smart Lock က သင်၏ အကောင့်ကို မစိစစ်နိုင်ခဲ့ပါ။ ဝင်ရန် သင်၏ စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
 <translation id="7556242789364317684"><ph name="SHORT_PRODUCT_NAME" />က သင်၏ ဆက်တင်များကို ပြန်လည်ဖေါ်ထုတ် မပေးနိုင်ခဲ့တာ ကံဆိုးပါသည်။ အမှားကို ပြင်ရန် အတွက်၊ <ph name="SHORT_PRODUCT_NAME" /> သည် သင်၏ ကိရိယာ တအားဆေးကြောမှုဖြင့် ပြန်ညှိပေးရန် လိုသည်။</translation>

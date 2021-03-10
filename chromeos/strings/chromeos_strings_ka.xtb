@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">აკრძალული</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{თქვენი ფაილი წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{თქვენი ფაილები წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ვერსია <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6040852767465482106">ანონიმური იდენტობა</translation>
 <translation id="604124094241169006">ავტომატური</translation>

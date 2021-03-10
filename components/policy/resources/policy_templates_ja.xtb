@@ -2896,13 +2896,6 @@
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       true に設定した場合は、各 CPU のモデル名、アーキテクチャ、
       最大クロック速度が報告されます。</translation>
-<translation id="5119324103901618897">このポリシーでは、特定のベンダー ID と製品 ID の USB デバイスへのアクセスを自動的に許可するサイトの URL パターンリストを指定できます。リストの各項目では、「<ph name="DEVICES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="DEVICES_FIELD_NAME" />」フィールドの各項目には、「<ph name="VENDOR_ID_FIELD_NAME" />」と「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定できます。「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドを省略した場合、あらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを省略した場合、指定したベンダー ID のあらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定して「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドは指定しなかった場合、ポリシーは無効になります。
-
-      USB のアクセス許可モデルでは、リクエスト元 URL と埋め込み元 URL を使用して、リクエスト元 URL に USB デバイスへのアクセスを許可します。リクエスト元のサイトが iframe 内で読み込まれている場合、リクエスト元 URL と埋め込み元 URL は異なる可能性があります。このため、「<ph name="URLS_FIELD_NAME" />」フィールドには、最大 2 つの URL 文字列をカンマ区切りで含めて、リクエスト元 URL と埋め込み元 URL の両方を指定できます。URL を 1 つだけ指定した場合、対応する USB デバイスへのアクセスは、リクエスト元のサイトの URL がこの URL と一致した場合に、埋め込みの状態にかかわらず許可されます。このフィールドには、必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定が使用され、設定されていなければユーザーの個人設定が適用されます。
-
-      このポリシーで指定する URL パターンは、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> で指定する URL パターンと競合しないようにする必要があります。競合する場合、このポリシーは <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> より優先されます。</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
 <translation id="5141670636904227950">ログイン画面で有効にする画面拡大鏡のデフォルトのタイプを設定する</translation>
 <translation id="5142301680741828703"><ph name="PRODUCT_FRAME_NAME" /> で次の URL パターンを常に表示する</translation>
@@ -3058,11 +3051,6 @@
 <translation id="5307432759655324440">シークレット モードが利用可能かどうかを設定する</translation>
 <translation id="5311275381462687162">Cookie に関する以前の <ph name="ATTRIBUTE_SAMESITE_NAME" /> 動作のデフォルト設定</translation>
 <translation id="5312253627576569499">画面が暗くなっているか、オフになった直後にユーザーの操作が検出されたときに、画面を暗くするまでの時間を調整する比率</translation>
-<translation id="5315367501385698459">ログイン画面で特定のベンダー ID と製品 ID の USB デバイスへのアクセスを自動的に許可するサイトの URL パターンリストを設定できます。リストの各項目では、「<ph name="DEVICES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="DEVICES_FIELD_NAME" />」フィールドの各項目には、「<ph name="VENDOR_ID_FIELD_NAME" />」と「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定できます。「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドを省略した場合、あらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを省略した場合、指定したベンダー ID のあらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定して「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドは指定しなかった場合、ポリシーは無効になります。
-
-      USB のアクセス許可モデルでは、リクエスト元 URL と埋め込み元 URL を使用して、リクエスト元 URL に USB デバイスへのアクセスを許可します。リクエスト元のサイトが iframe 内で読み込まれている場合、リクエスト元 URL と埋め込み元 URL は異なる可能性があります。このため、「<ph name="URLS_FIELD_NAME" />」フィールドには、最大 2 つの URL 文字列をカンマ区切りで含めて、リクエスト元 URL と埋め込み元 URL の両方を指定できます。URL を 1 つだけ指定した場合、対応する USB デバイスへのアクセスは、リクエスト元のサイトの URL がこの URL と一致した場合に、埋め込みの状態にかかわらず許可されます。このフィールドには、必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。
-
-      このポリシーを未設定のままにした場合、すべてのサイトでグローバルなデフォルト値（自動アクセスなし）が使用されます。</translation>
 <translation id="5318185076587284965">リモート アクセス ホストで中継サーバーを使用できるようにする</translation>
 <translation id="5323128137188992869"><ph name="PRODUCT_NAME" /> を使用してデバイスにコンテンツをキャストすることを許可します。
 

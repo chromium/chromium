@@ -2661,7 +2661,6 @@
 <translation id="3943494825379372497">ਕੀ ਐਪਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3943582379552582368">&amp;ਪਿੱਛੇ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
-<translation id="3944266449990965865">ਸਮੁੱਚੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="3948116654032448504">ਚਿੱਤਰ ਨੂੰ <ph name="SEARCH_ENGINE" /> 'ਤੇ &amp;ਖੋਜੋ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ਸਾਈਟ ਅੱਗੇ ਦਿੱਤੇ ਫੋਲਡਰਾਂ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2885,7 +2884,6 @@
 <translation id="4225397296022057997">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ</translation>
 <translation id="4231095370974836764">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Google Play ਤੋਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਸਥਾਪਤ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
-<translation id="4235200303672858594">ਸਮੁੱਚੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="4235965441080806197">ਸਾਈਨ-ਇਨ ਰੱਦ ਕਰੋ</translation>
 <translation id="4242145785130247982">ਇੱਕ ਤੋਂ ਵੱਧ ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਦੀ ਸੁਵਿਧਾ ਨਹੀਂ ਹੈ</translation>
 <translation id="4242533952199664413">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -2967,7 +2965,6 @@
 <translation id="4333854382783149454">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-1</translation>
 <translation id="4336434711095810371">ਸਾਰਾ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" ਐਪ ਨਾਲ ਸੰਚਾਰ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
-<translation id="4340575312453649552">ਇਸ ਵਿਗਿਆਪਨ ਨੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸਰੋਤਾਂ ਨੂੰ ਵਰਤਿਆ, ਇਸ ਲਈ Chrome ਨੇ ਇਸਨੂੰ ਹਟਾ ਦਿੱਤਾ।</translation>
 <translation id="4341577178275615435">ਕੈਰਟ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ, F7 ਸ਼ਾਰਟਕੱਟ ਵਰਤੋ</translation>
 <translation id="434198521554309404">ਤੇਜ਼। ਸੁਰੱਖਿਅਤ। ਵਰਤੋਂ ਕਰਨ ਵਿੱਚ ਆਸਾਨ।</translation>
 <translation id="434404122609091467">ਤੁਹਾਡੇ ਮੌਜੂਦਾ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਨਾਲ</translation>
@@ -4787,7 +4784,6 @@
 <translation id="6452961788130242735">ਨੈੱਟਵਰਕ ਸਮੱਸਿਆ ਜਾਂ ਖਰਾਬ ਖੇਤਰ</translation>
 <translation id="6455264371803474013">ਕੁਝ ਖਾਸ ਸਾਈਟਾਂ 'ਤੇ</translation>
 <translation id="6455894534188563617">&amp;ਨਵਾਂ ਫੋਲਡਰ</translation>
-<translation id="6456955391422100996">ਵਿਗਿਆਪਨ ਹਟਾਇਆ ਗਿਆ।</translation>
 <translation id="645705751491738698">JavaScript ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="6458701200018867744">ਅੱਪਲੋਡ ਅਸਫਲ ਰਿਹਾ (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">ਲੱਭਣ ਲਈ ਚੋਣ ਵਰਤੋ</translation>
@@ -5735,7 +5731,6 @@
 <translation id="7552846755917812628">ਅੱਗੇ ਦਿੱਤੇ ਨੁਕਤਿਆਂ ਨੂੰ ਅਜ਼ਮਾਓ:</translation>
 <translation id="7553012839257224005">Linux ਕੰਟੇਨਰ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="7553242001898162573">ਆਪਣਾ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ</translation>
-<translation id="7554475479213504905">ਰੀਲੋਡ ਕਰੋ ਅਤੇ ਫਿਰ ਵੀ ਦਿਖਾਓ</translation>
 <translation id="7554791636758816595">ਨਵੀਂ ਟੈਬ</translation>
 <translation id="7556033326131260574">ਸਮਾਰਟ ਲਾਕ ਤੁਹਾਡੇ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰਨ ਲਈ ਟਾਈਪ ਕਰੋ।</translation>
 <translation id="7556242789364317684">ਅਫ਼ਸੋਸ ਨਾਲ, <ph name="SHORT_PRODUCT_NAME" /> ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਰਿਕਵਰ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਹੈ। ਅਸ਼ੁੱਧੀ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ, <ph name="SHORT_PRODUCT_NAME" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਨਾਲ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਨੂੰ ਰੀਸੈਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>

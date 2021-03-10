@@ -2672,7 +2672,6 @@
 <translation id="3943494825379372497">Аднавіць праграмы і старонкі?</translation>
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
-<translation id="3944266449990965865">Увесь экран</translation>
 <translation id="3948116654032448504">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў наступных папках</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2896,7 +2895,6 @@
 <translation id="4225397296022057997">На ўсіх сайтах</translation>
 <translation id="4231095370974836764">Усталёўвайце праграмы і гульні з Google Play на сваёй прыладзе "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Канфігурацыя Kerberos</translation>
-<translation id="4235200303672858594">Увесь экран</translation>
 <translation id="4235965441080806197">Скасаваць уваход</translation>
 <translation id="4242145785130247982">Выкарыстанне некалькі кліенцкіх сертыфікатаў не падтрымліваецца</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -2979,7 +2977,6 @@
 <translation id="4336434711095810371">Выдаліць усе даныя</translation>
 <translation id="4340125850502689798">Несапраўднае імя карыстальніка</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> запытвае абмен данымі з праграмай "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="4340575312453649552">Гэта рэклама выкарыстоўвала занадта многа рэсурсаў прылады, таму Chrome выдаліў яе.</translation>
 <translation id="4341577178275615435">Каб уключыць або выключыць навігацыю клавішамі, выкарыстоўвайце клавішу F7.</translation>
 <translation id="434198521554309404">Хуткасць. Бяспека. Зручнасць.</translation>
 <translation id="434404122609091467">З дапамогай бягучага пастаўшчыка паслуг</translation>
@@ -4806,7 +4803,6 @@
 <translation id="6452961788130242735">Праблема з сеткай або няправільная вобласць</translation>
 <translation id="6455264371803474013">На канкрэтных сайтах</translation>
 <translation id="6455894534188563617">&amp;Новая папка</translation>
-<translation id="6456955391422100996">Рэклама выдалена.</translation>
 <translation id="645705751491738698">Працягнуць блакіраваць JavaScript</translation>
 <translation id="6458701200018867744">Збой запампоўвання (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Выкарыстаць вылучанае для пошуку</translation>
@@ -5759,7 +5755,6 @@
 <translation id="7552846755917812628">Паспрабуйце наступнае:</translation>
 <translation id="7553012839257224005">Ідзе праверка наяўнасці кантэйнера Linux</translation>
 <translation id="7553242001898162573">Увядзіце пароль</translation>
-<translation id="7554475479213504905">Перазагрузіць і ўсё роўна паказаць</translation>
 <translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7556033326131260574">Функцыі Smart Lock не ўдалося спраўдзіць ваш уліковы запіс. Каб увайсці, увядзіце пароль.</translation>
 <translation id="7556242789364317684">На жаль, аднавіць налады ў браўзеры <ph name="SHORT_PRODUCT_NAME" /> не ўдалося. Каб выправіць памылку, браўзеру <ph name="SHORT_PRODUCT_NAME" /> трэба скінуць налады прылады з дапамогай Powerwash.</translation>

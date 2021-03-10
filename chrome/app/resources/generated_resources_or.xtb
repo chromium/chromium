@@ -2661,7 +2661,6 @@
 <translation id="3943494825379372497">ଆପ୍ ଓ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ରିଷ୍ଟୋର୍ କରିବେ?</translation>
 <translation id="3943582379552582368">&amp;ପଛକୁ</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
-<translation id="3944266449990965865">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
 <translation id="3948116654032448504">&amp;ଛବି ପାଇଁ <ph name="SEARCH_ENGINE" /> ଖୋଜନ୍ତୁ</translation>
 <translation id="3948507072814225786">ନିମ୍ନୋକ୍ତ ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକରେ <ph name="ORIGIN" /> ଫାଇଲ୍‌ଗୁଡ଼ିକୁ ଏଡିଟ୍ କରିପାରିବ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2885,7 +2884,6 @@
 <translation id="4225397296022057997">ସମସ୍ତ ସାଇଟ୍‌ରେ</translation>
 <translation id="4231095370974836764">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Google Playରୁ ଆପ୍ ଏବଂ ଗେମଗୁଡ଼ିକ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos କନ୍‍ଫିଗର୍ କରନ୍ତୁ</translation>
-<translation id="4235200303672858594">ସମଗ୍ର ସ୍କ୍ରିନ୍</translation>
 <translation id="4235965441080806197">ସାଇନ୍ ଇନ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="4242145785130247982">ଏକାଧିକ କ୍ଲାଏଣ୍ଟ ସାର୍ଟିଫିକେଟ୍ ସମର୍ଥନ କରେ ନାହିଁ</translation>
 <translation id="4242533952199664413">ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
@@ -2968,7 +2966,6 @@
 <translation id="4336434711095810371">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4340125850502689798">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ନାମ ଅବୈଧ ଅଟେ</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" ଆପ୍ ସହିତ ବାର୍ତ୍ତାଳାପ କରିବାକୁ ଚାହୁଁଛନ୍ତି</translation>
-<translation id="4340575312453649552">ଏହି ବିଜ୍ଞାପନ ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ଅନେକଗୁଡ଼ିଏ ରିସୋର୍ସ୍ ବ୍ୟବହାର କରିଛି, ଯାହା ଫଳରେ Chrome ଏହାକୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="4341577178275615435">କ୍ୟାରେଟ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିବାକୁ, F7 ସର୍ଟକଟ୍ କୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="434198521554309404">ଦ୍ରୁତ। ସୁରକ୍ଷିତ। ସହଜ।</translation>
 <translation id="434404122609091467">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସେବା ପ୍ରଦାନକାରୀ ସହିତ</translation>
@@ -4795,7 +4792,6 @@
 <translation id="6452961788130242735">ନେଟ୍‍ୱାର୍କ ସମସ୍ୟା ବା ଖରାପ କ୍ଷେତ୍ର</translation>
 <translation id="6455264371803474013">ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍‌ଗୁଡ଼ିକରେ</translation>
 <translation id="6455894534188563617">&amp;ନୂଆ ଫୋଲ୍ଡର୍‌</translation>
-<translation id="6456955391422100996">ବିଜ୍ଞାପନକୁ କାଢ଼ି ଦିଆଯାଇଛି।</translation>
 <translation id="645705751491738698">JavaScript ଅବରୋଧ କରିବା ପ୍ରକ୍ରିୟା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6458701200018867744">ଅପ୍‌ଲୋଡ୍‌ ବିଫଳ ହେଲା (<ph name="WEBRTC_LOG_UPLOAD_TIME" />)।</translation>
 <translation id="6459488832681039634">ଖୋଜିବା ପାଇଁ ଚୟନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -5750,7 +5746,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7552846755917812628">ନିମ୍ନୋକ୍ତ ପରାମର୍ଶଗୁଡ଼ିକ ଚେଷ୍ଟା କରିଦେଖନ୍ତୁ:</translation>
 <translation id="7553012839257224005">Linux କଣ୍ଟେନର୍ ଯାଞ୍ଚ କରାଯାଉଛି</translation>
 <translation id="7553242001898162573">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ଲେଖନ୍ତୁ</translation>
-<translation id="7554475479213504905">ପୁଣି ଲୋଡ୍ କରି ଯେ କୌଣସି ମତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="7554791636758816595">ନୂତନ ଟ୍ୟାବ୍</translation>
 <translation id="7556033326131260574">ସ୍ମାର୍ଟ ଲକ୍ ଆପଣଙ୍କର ଆକାଉଣ୍ଟକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଭିତରକୁ ପ୍ରବେଶ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାସ୍‌ୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="7556242789364317684">ଦୁର୍ଭାଗ୍ୟବଶତଃ,<ph name="SHORT_PRODUCT_NAME" /> ଆପଣଙ୍କର ସେଟିଂସ୍‌ ପୁନରୁଦ୍ଧାର କରିବାକୁ ଅକ୍ଷମ ଅଟେ। ତ୍ରୁଟି ସମାଧାନ କରିବାକୁ<ph name="SHORT_PRODUCT_NAME" />କୁ ଆପଣଙ୍କର ଡିଭାଇସ୍‌କୁ ନିଶ୍ଚିତରୂପେ ପାୱାର୍‍ୱାସ୍ ସହ ସେଟ୍‍ କରିବାକୁ ହେବ।</translation>

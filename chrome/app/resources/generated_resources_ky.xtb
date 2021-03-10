@@ -2669,7 +2669,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3943494825379372497">Колдонмолор менен барактар калыбына келтирилсинби?</translation>
 <translation id="3943582379552582368">&amp;Артка</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
-<translation id="3944266449990965865">Бүтүндөй экран</translation>
 <translation id="3948116654032448504">&amp;Сүрөт <ph name="SEARCH_ENGINE" /> издөө</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> төмөнкү папкалардагы файлдарды түзөтө алат</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2893,7 +2892,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4225397296022057997">Бардык сайттарда</translation>
 <translation id="4231095370974836764">Google Play'ден колдонмолор менен оюндарды <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотуп аласыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos’ту конфигурациялоо</translation>
-<translation id="4235200303672858594">Бүтүндөй экран</translation>
 <translation id="4235965441080806197">Аккаунтка кирүүнү жокко чыгаруу</translation>
 <translation id="4242145785130247982">Бир нече кардарлардын сертификаттарын пайдалануу колдоого алынбайт</translation>
 <translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
@@ -2976,7 +2974,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4336434711095810371">Бардык маалыматты өчүрүү</translation>
 <translation id="4340125850502689798">Колдонуучунун аты жараксыз</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" колдонмосу менен байланышкысы келет</translation>
-<translation id="4340575312453649552">Бул жарнама түзмөгүңүздүн ресурстарын ашыкча колдонуп жаткандыктан Chrome аны өчүрүп койду.</translation>
 <translation id="4341577178275615435">Caret серептөөсүн күйгүзүү же өчүрүү үчүн F7 ыкчам баскычын колдонуңуз</translation>
 <translation id="434198521554309404">Ылдам. Коопсуз. Оңой.</translation>
 <translation id="434404122609091467">Учурдагы кызмат көрсөтүүчү менен</translation>
@@ -4803,7 +4800,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6452961788130242735">Тармакта маселе бар же чөйрө начар</translation>
 <translation id="6455264371803474013">Белгилүү бир сайттарда</translation>
 <translation id="6455894534188563617">&amp;Жаңы папка</translation>
-<translation id="6456955391422100996">Жарнама өчүрүлдү.</translation>
 <translation id="645705751491738698">JavaScript бөгөттөлө берсин</translation>
 <translation id="6458701200018867744">Жүктөлүп берилбей калды (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Издөө аракетине Тандоону колдонуу</translation>
@@ -5756,7 +5752,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7552846755917812628">Төмөнкү кеңештерди пайдаланып көрүңүз:</translation>
 <translation id="7553012839257224005">Linux контейнери текшерилүүдө</translation>
 <translation id="7553242001898162573">Сырсөзүңүздү киргизиңиз</translation>
-<translation id="7554475479213504905">Баары бир кайра жүктөп, көрсөтүү</translation>
 <translation id="7554791636758816595">Жаңы өтмөк</translation>
 <translation id="7556033326131260574">Smart Lock аккаунтуңузду текшере алган жок. Кирүү үчүн сырсөзүңүздү териңиз.</translation>
 <translation id="7556242789364317684">Тилекке каршы, <ph name="SHORT_PRODUCT_NAME" /> жөндөөлөрүңүздү калыбына келтире албайт. Катаны оңдоо үчүн, <ph name="SHORT_PRODUCT_NAME" /> түзмөгүңүздүн ичиндегилерди "жууп салып", баштапкы абалга кайтарыңыз.</translation>

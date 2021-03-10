@@ -880,6 +880,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4305817255990598646">Cambia</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blocca (predefinita)</translation>
+<translation id="4314815835985389558">Gestisci sincronizzazione</translation>
 <translation id="4318312030194671742">Servizio compositore dell'anteprima</translation>
 <translation id="4318566738941496689">Il nome e l'indirizzo di rete del dispositivo</translation>
 <translation id="4325863107915753736">Impossibile trovare l'articolo</translation>
@@ -887,6 +888,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4329871760342656885">Errore durante l'analisi delle norme: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Fascicolatore 5</translation>
 <translation id="4331708818696583467">Non sicuro</translation>
+<translation id="4340575312453649552">Questo annuncio usava troppe risorse per il tuo dispositivo, pertanto Chrome l'ha rimosso.</translation>
 <translation id="4340982228985273705">Questo computer sembra non essere gestito dall'azienda, pertanto la norma consente di installare automaticamente soltanto le estensioni ospitate sul Chrome Web Store. L'URL di aggiornamento del Chrome Web Store è "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Carte di credito accettate</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1427,6 +1429,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6446608382365791566">Aggiungi altre informazioni</translation>
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6451458296329894277">Conferma reinvio modulo</translation>
+<translation id="6456955391422100996">Annuncio rimosso.</translation>
 <translation id="6457206614190510200">Pinzatura centrale</translation>
 <translation id="6458606150257356946">Incolla comunque</translation>
 <translation id="6465306955648956876">Gestisci password…</translation>
@@ -1688,6 +1691,7 @@ Ulteriori dettagli:
 <translation id="7549584377607005141">Questa pagina web richiede dati che hai inserito in precedenza per poter essere visualizzata correttamente. Puoi inviare di nuovo i dati, ma in questo caso ripeterai l'azione precedentemente eseguita nella pagina.</translation>
 <translation id="7550637293666041147">Nome utente del dispositivo e nome utente di Chrome</translation>
 <translation id="7552846755917812628">Prova i seguenti suggerimenti:</translation>
+<translation id="7554475479213504905">Ricarica e mostra comunque</translation>
 <translation id="7554791636758816595">Nuova scheda</translation>
 <translation id="7564049878696755256">Potresti non riuscire più ad accedere al tuo account <ph name="ORG_NAME" /> o subire un furto d'identità. Chrome ti consiglia di cambiare subito la password.</translation>
 <translation id="7567204685887185387">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere stato emesso in modo fraudolento. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>

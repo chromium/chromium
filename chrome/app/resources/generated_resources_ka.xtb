@@ -2668,7 +2668,6 @@
 <translation id="3943494825379372497">გსურთ აპებისა და გვერდების აღდგენა?</translation>
 <translation id="3943582379552582368">&amp;უკან</translation>
 <translation id="3943857333388298514">ჩასმა</translation>
-<translation id="3944266449990965865">მთლიანი ეკრანი</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />-ში სურათის ძ&amp;იება</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />-ს შეუძლია მითითებულ საქაღალდეებში ფაილების რედაქტირება</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2892,7 +2891,6 @@
 <translation id="4225397296022057997">ყველა საიტზე</translation>
 <translation id="4231095370974836764">დააინსტალირეთ აპები და თამაშები Google Play-დან თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos-ის კონფიგურაცია</translation>
-<translation id="4235200303672858594">მთელ ეკრანზე</translation>
 <translation id="4235965441080806197">შესვლის გაუქმება</translation>
 <translation id="4242145785130247982">კლიენტთა რამდენიმე სერტიფიკატის გამოყენება მხარდაუჭერელია</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
@@ -2975,7 +2973,6 @@
 <translation id="4336434711095810371">ყველა მონაცემის გასუფთავება</translation>
 <translation id="4340125850502689798">მომხმარებლის სახელი არასწორია</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> სურს კომუნიკაცია აპლიკაციასთან „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="4340575312453649552">ეს რეკლამა იყენებდა თქვენი მოწყობილობის მეტისმეტად ბევრ რესურს, ამიტომ Chrome-მა ამოშალა ის.</translation>
 <translation id="4341577178275615435">კურსორით დათვალიერების ჩასართავად ან გამოსართავად გამოიყენეთ F7 მალსახმობი</translation>
 <translation id="434198521554309404">სწრაფი. დაცული. მარტივი.</translation>
 <translation id="434404122609091467">სერვისის ამჟამინდელი პროვაიდერის მეშვეობით</translation>
@@ -4802,7 +4799,6 @@
 <translation id="6452961788130242735">ქსელის შეცდომა ან არასწორი არე</translation>
 <translation id="6455264371803474013">კონკრეტულ საიტებზე</translation>
 <translation id="6455894534188563617">&amp;ახალი საქაღალდე</translation>
-<translation id="6456955391422100996">რეკლამა ამოიშალა.</translation>
 <translation id="645705751491738698">JavaScript-ის დაბლოკვის გაგრძელება</translation>
 <translation id="6458701200018867744">ატვირთვა ვერ მოხერხდა (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">მონიშნულის ძებნისთვის გამოყენება</translation>
@@ -5755,7 +5751,6 @@
 <translation id="7552846755917812628">ცადეთ შემდეგი:</translation>
 <translation id="7553012839257224005">მიმდინარეობს Linux-ის კონტეინერის შემოწმება</translation>
 <translation id="7553242001898162573">შეიყვანეთ თქვენი პაროლი</translation>
-<translation id="7554475479213504905">გადატვირთვა და მაინც ჩვენება</translation>
 <translation id="7554791636758816595">ახალი ჩანართი</translation>
 <translation id="7556033326131260574">Smart Lock-მა ვერ დაადასტურა თქვენი ანგარიში. შესასვლელად, შეიყვანეთ პაროლი.</translation>
 <translation id="7556242789364317684">სამწუხაროდ, <ph name="SHORT_PRODUCT_NAME" /> ვერ ახერხებს თქვენი პარამეტრების აღდგენას. შეცდომის გამოსასწორებლად, <ph name="SHORT_PRODUCT_NAME" />-მა უნდა გადატვირთიოს თქვენი მოწყობილობა Powerwash-ით.</translation>

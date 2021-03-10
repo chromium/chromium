@@ -2669,7 +2669,6 @@
 <translation id="3943494825379372497">앱과 페이지를 복원하시겠습니까?</translation>
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
-<translation id="3944266449990965865">전체 화면</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" />(<ph name="DEVICE_ID" />)</translation>
@@ -2891,7 +2890,6 @@
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
-<translation id="4235200303672858594">전체 화면</translation>
 <translation id="4235965441080806197">로그인 취소</translation>
 <translation id="4242145785130247982">여러 개의 클라이언트 인증서는 지원되지 않습니다.</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -2974,7 +2972,6 @@
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
 <translation id="4340125850502689798">잘못된 사용자 이름</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />에서 '<ph name="EXTENSION_NAME" />' 앱과 통신하려고 합니다.</translation>
-<translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
 <translation id="434404122609091467">현재 서비스 제공업체 이용</translation>
@@ -4801,7 +4798,6 @@
 <translation id="6452961788130242735">네트워크 문제 또는 잘못된 영역</translation>
 <translation id="6455264371803474013">특정 사이트에서</translation>
 <translation id="6455894534188563617">새 폴더(&amp;N)</translation>
-<translation id="6456955391422100996">광고가 삭제되었습니다.</translation>
 <translation id="645705751491738698">자바스크립트 계속 차단</translation>
 <translation id="6458701200018867744">업로드 실패(<ph name="WEBRTC_LOG_UPLOAD_TIME" />)</translation>
 <translation id="6459488832681039634">선택 부분으로 찾기</translation>
@@ -5754,7 +5750,6 @@
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
 <translation id="7553242001898162573">비밀번호를 입력해 주세요.</translation>
-<translation id="7554475479213504905">무시하고 새로고침 및 표시</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7556033326131260574">Smart Lock이 계정을 인증하지 못했습니다. 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="7556242789364317684">안타깝게도 <ph name="SHORT_PRODUCT_NAME" />에서 설정을 복구할 수 없습니다. 오류를 해결하려면 <ph name="SHORT_PRODUCT_NAME" />에서 Powerwash를 사용하여 기기를 재설정해야 합니다.</translation>

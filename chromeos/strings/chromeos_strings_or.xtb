@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">ନିଷିଦ୍ଧ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ଆପଣଙ୍କ ଫାଇଲକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}other{ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାପୂର୍ବକ ସ୍କାନ୍ କରାଯାଇ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />ରେ ସେଭ୍ କରାଯାଇଛି।}}</translation>
 <translation id="5931523347251946569">ଫାଇଲ୍ ମିଳିଲା ନାହିଁ</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6040852767465482106">ବେନାମୀ ପରିଚୟ</translation>
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>

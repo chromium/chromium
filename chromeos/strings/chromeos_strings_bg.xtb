@@ -225,7 +225,6 @@
 <translation id="5916084858004523819">Забранено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6040852767465482106">Анонимна самоличност</translation>
 <translation id="604124094241169006">Автоматично</translation>

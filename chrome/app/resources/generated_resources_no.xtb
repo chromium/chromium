@@ -2664,7 +2664,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3943494825379372497">Vil du gjenopprette apper og sider?</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
-<translation id="3944266449990965865">Hele skjermen</translation>
 <translation id="3948116654032448504">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i disse mappene</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2888,7 +2887,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4225397296022057997">På alle nettsteder</translation>
 <translation id="4231095370974836764">Installer apper og spill fra Google Play på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4232375817808480934">Konfigurer Kerberos</translation>
-<translation id="4235200303672858594">Hele skjermen</translation>
 <translation id="4235965441080806197">Avbryt påloggingen</translation>
 <translation id="4242145785130247982">Flere klientsertifikater støttes ikke</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
@@ -2971,7 +2969,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4336434711095810371">Slett alle data</translation>
 <translation id="4340125850502689798">Ugyldig brukernavn</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> ønsker å kommunisere med «<ph name="EXTENSION_NAME" />»-appen</translation>
-<translation id="4340575312453649552">Denne annonsen brukte for mange ressurser for enheten din, så Chrome har fjernet den.</translation>
 <translation id="4341577178275615435">For å slå markørsurfing på eller av, bruk hurtigtasten F7</translation>
 <translation id="434198521554309404">Rask. Sikker. Enkel.</translation>
 <translation id="434404122609091467">Med den nåværende tjenesteleverandøren din</translation>
@@ -4798,7 +4795,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6452961788130242735">Nettverksproblem eller ugyldig område</translation>
 <translation id="6455264371803474013">På bestemte nettsteder</translation>
 <translation id="6455894534188563617">&amp;Ny mappe</translation>
-<translation id="6456955391422100996">Annonsen er fjernet.</translation>
 <translation id="645705751491738698">Fortsett blokkering av JavaScript</translation>
 <translation id="6458701200018867744">Opplastingen mislyktes (<ph name="WEBRTC_LOG_UPLOAD_TIME" />).</translation>
 <translation id="6459488832681039634">Bruk markering for Finn</translation>
@@ -5751,7 +5747,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7552846755917812628">Prøv følgende tips:</translation>
 <translation id="7553012839257224005">Kontrollerer Linux-beholderen</translation>
 <translation id="7553242001898162573">Skriv inn passordet ditt</translation>
-<translation id="7554475479213504905">Last inn på nytt og vis likevel</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7556033326131260574">Smart Lock kunne ikke bekrefte kontoen din. Skriv inn passordet for å få tilgang.</translation>
 <translation id="7556242789364317684">Dessverre kan ikke <ph name="SHORT_PRODUCT_NAME" /> gjenopprette innstillingene dine. For å reparere feilen må <ph name="SHORT_PRODUCT_NAME" /> tilbakestille enheten med Powerwash.</translation>

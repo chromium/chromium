@@ -880,6 +880,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4305817255990598646">Pāriet</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloķēt (pēc noklusējuma)</translation>
+<translation id="4314815835985389558">Sinhronizācijas pārvaldība</translation>
 <translation id="4318312030194671742">Paint priekšskatījuma burtliča pakalpojums</translation>
 <translation id="4318566738941496689">Jūsu ierīces nosaukums un tīkla adrese</translation>
 <translation id="4325863107915753736">Rakstu neizdevās atrast.</translation>
@@ -887,6 +888,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4329871760342656885">Politikas parsēšanas kļūda: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5. izvades vieta</translation>
 <translation id="4331708818696583467">Nav droši</translation>
+<translation id="4340575312453649552">Šī reklāma izmantoja pārāk daudz resursu jūsu ierīcē, tādēļ Chrome to noņēma.</translation>
 <translation id="4340982228985273705">Šo datoru nepārvalda uzņēmums, tāpēc politika var automātiski instalēt tikai tos paplašinājumus, kas tiek mitināti Chrome interneta veikalā. Chrome interneta veikala atjauninājumu URL: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Pieņemtās kredītkartes</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1428,6 +1430,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6446608382365791566">Papildu informācijas pievienošana</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6451458296329894277">Apstiprināt veidlapas atkārtotu iesniegšanu</translation>
+<translation id="6456955391422100996">Reklāma ir noņemta.</translation>
 <translation id="6457206614190510200">Sašuvums iekšlocījumā</translation>
 <translation id="6458606150257356946">Tik un tā ielīmēt</translation>
 <translation id="6465306955648956876">Pārvaldīt paroles...</translation>
@@ -1689,6 +1692,7 @@ Papildu informācija:
 <translation id="7549584377607005141">Lai tīmekļa lapu varētu attēlot pareizi, tai nepieciešami jūsu iepriekš ievadītie dati. Varat atkārtoti nosūtīt šos datus, taču tādā gadījumā tiks atkārtota ikviena darbība, ko pirms tam veica lapa.</translation>
 <translation id="7550637293666041147">Jūsu lietotājvārds ierīcē un pārlūkā Chrome</translation>
 <translation id="7552846755917812628">Izmantojiet tālāk sniegtos padomus.</translation>
+<translation id="7554475479213504905">Tik un tā atkārtoti ielādēt un parādīt</translation>
 <translation id="7554791636758816595">Jauna cilne</translation>
 <translation id="7564049878696755256">Varat zaudēt piekļuvi savam <ph name="ORG_NAME" /> kontam, vai jūsu identitāte var tikt nozagta. Chrome iesaka nekavējoties nomainīt paroli.</translation>
 <translation id="7567204685887185387">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir izveidots krāpnieciski. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>

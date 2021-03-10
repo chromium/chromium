@@ -883,6 +883,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4305817255990598646">Cambiar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>
+<translation id="4314815835985389558">Gestionar sincronización</translation>
 <translation id="4318312030194671742">Servicio de composición de vista previa de pintura</translation>
 <translation id="4318566738941496689">El nombre de tu dispositivo y la dirección de red</translation>
 <translation id="4325863107915753736">Error al buscar el artículo</translation>
@@ -890,6 +891,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4329871760342656885">Error de análisis de política: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Apilador 5</translation>
 <translation id="4331708818696583467">No es seguro</translation>
+<translation id="4340575312453649552">Chrome ha retirado este anuncio porque consumía demasiados recursos de tu dispositivo.</translation>
 <translation id="4340982228985273705">No se ha detectado que este ordenador esté administrado por la empresa, por lo que la política solo puede instalar automáticamente extensiones alojadas en Chrome Webstore. La URL de actualización de Chrome Webstore es "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Tarjetas de crédito aceptadas</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1431,6 +1433,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6446608382365791566">Añadir más información</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Confirmar reenvío del formulario</translation>
+<translation id="6456955391422100996">Se ha retirado el anuncio.</translation>
 <translation id="6457206614190510200">Grapado en el pliegue central</translation>
 <translation id="6458606150257356946">Pegar de todos modos</translation>
 <translation id="6465306955648956876">Gestiona tus contraseñas...</translation>
@@ -1692,6 +1695,7 @@ Más información:
 <translation id="7549584377607005141">Esta página web necesita los datos introducidos anteriormente para mostrarse correctamente. Puedes volver a enviar los datos, pero se repetirán las acciones que haya realizado la página.</translation>
 <translation id="7550637293666041147">Tu nombre de usuario en el dispositivo y en Chrome</translation>
 <translation id="7552846755917812628">Prueba los siguientes consejos:</translation>
+<translation id="7554475479213504905">Volver a cargar y mostrar de todos modos</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7564049878696755256">Podrías perder el acceso a tu cuenta de <ph name="ORG_NAME" /> o tener problemas de suplantación de identidad. Chrome te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="7567204685887185387">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, su certificado de seguridad podría haberse emitido de forma fraudulenta. El problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>

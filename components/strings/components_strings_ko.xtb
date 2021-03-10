@@ -872,6 +872,7 @@
 <translation id="4305817255990598646">전환</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">차단(기본값)</translation>
+<translation id="4314815835985389558">동기화 관리</translation>
 <translation id="4318312030194671742">페인트 미리보기 합성 서비스</translation>
 <translation id="4318566738941496689">기기 이름 및 네트워크 주소</translation>
 <translation id="4325863107915753736">도움말을 찾지 못했습니다.</translation>
@@ -879,6 +880,7 @@
 <translation id="4329871760342656885">정책 파싱 오류: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">스태커 5</translation>
 <translation id="4331708818696583467">주의 요함</translation>
+<translation id="4340575312453649552">이 광고는 기기에서 너무 많은 리소스를 사용했기 때문에 Chrome에서 삭제했습니다.</translation>
 <translation id="4340982228985273705">이 컴퓨터는 기업에서 관리하는 기기가 아닌 것으로 파악되므로, Chrome 웹 스토어에 호스팅된 확장 프로그램만 정책을 통해 자동으로 설치할 수 있습니다. Chrome 웹 스토어의 업데이트 URL은 '<ph name="CWS_UPDATE_URL" />'입니다.</translation>
 <translation id="4346197816712207223">사용 가능한 신용카드</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1420,6 +1422,7 @@
 <translation id="6446608382365791566">자세한 정보 추가</translation>
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6451458296329894277">양식 다시 제출 확인</translation>
+<translation id="6456955391422100996">광고가 삭제되었습니다.</translation>
 <translation id="6457206614190510200">새들 스티치</translation>
 <translation id="6458606150257356946">무시하고 붙여넣기</translation>
 <translation id="6465306955648956876">비밀번호 관리...</translation>
@@ -1680,6 +1683,7 @@
 <translation id="7549584377607005141">이 웹페이지를 제대로 표시하려면 이전에 입력한 데이터가 필요합니다. 이 데이터를 다시 보낼 수 있지만 이 경우 해당 페이지에서 이전에 수행한 작업이 반복됩니다.</translation>
 <translation id="7550637293666041147">기기 사용자 이름 및 Chrome 사용자 이름</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
+<translation id="7554475479213504905">무시하고 새로고침 및 표시</translation>
 <translation id="7554791636758816595">새 탭</translation>
 <translation id="7564049878696755256"><ph name="ORG_NAME" /> 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="7567204685887185387">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 부정한 방식으로 발행되었을 수 있습니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>

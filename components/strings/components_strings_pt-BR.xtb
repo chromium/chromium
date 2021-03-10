@@ -872,6 +872,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (padrão)</translation>
+<translation id="4314815835985389558">Gerenciar sincronização</translation>
 <translation id="4318312030194671742">Serviço de criação de prévias de visualização</translation>
 <translation id="4318566738941496689">O nome do seu dispositivo e o endereço da rede</translation>
 <translation id="4325863107915753736">Falha ao encontrar artigo</translation>
@@ -879,6 +880,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4329871760342656885">Erro de análise da política: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Empilhador 5</translation>
 <translation id="4331708818696583467">Não seguro</translation>
+<translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340982228985273705">Este computador não foi detectado como gerenciado por empresa, portanto, a política só pode instalar automaticamente as extensões hospedadas na Chrome Web Store. O URL de atualização da Chrome Web Store é o seguinte: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Cartões de crédito aceitos</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1420,6 +1422,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6446608382365791566">Adicionar mais informações</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Confirmar reenvio do formulário</translation>
+<translation id="6456955391422100996">Anúncio removido.</translation>
 <translation id="6457206614190510200">Grampo canoa</translation>
 <translation id="6458606150257356946">Colar mesmo assim</translation>
 <translation id="6465306955648956876">Gerenciar senhas…</translation>
@@ -1681,6 +1684,7 @@ Mais detalhes:
 <translation id="7549584377607005141">Esta página da Web requer os dados inseridos anteriormente para ser exibida de modo correto. É possível enviá-los novamente mas, ao fazer isso, você repete qualquer ação realizada anteriormente na página.</translation>
 <translation id="7550637293666041147">O nome de usuário no dispositivo e seu nome de usuário do Chrome</translation>
 <translation id="7552846755917812628">Tente seguir estas dicas:</translation>
+<translation id="7554475479213504905">Atualizar e mostrar mesmo assim</translation>
 <translation id="7554791636758816595">Nova guia</translation>
 <translation id="7564049878696755256">Você pode perder o acesso à sua conta de <ph name="ORG_NAME" /> ou ter sua identidade roubada. O Chrome recomenda que sua senha seja alterada agora.</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido emitido de forma fraudulenta. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>

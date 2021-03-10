@@ -883,6 +883,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4305817255990598646">Skakel oor</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeer (verstek)</translation>
+<translation id="4314815835985389558">Bestuur sinkronisering</translation>
 <translation id="4318312030194671742">Verfvoorskou-samestellerdiens</translation>
 <translation id="4318566738941496689">Jou toestelnaam en netwerkadres</translation>
 <translation id="4325863107915753736">Kon nie artikel vind nie</translation>
@@ -890,6 +891,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4329871760342656885">Beleidontledingfout: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">Stapelaar 5</translation>
 <translation id="4331708818696583467">Nie veilig nie</translation>
+<translation id="4340575312453649552">Chrome het hierdie advertensie verwyder omdat dit te veel van jou toestel se hulpbronne gebruik het.</translation>
 <translation id="4340982228985273705">Hierdie rekenaar word nie bespeur as een wat deur 'n onderneming bestuur word nie en beleid kan dus net uitbreidings wat in die Chrome Webwinkel gehuisves word, outomaties installeer. Die Chrome Webwinkel se opdatering-URL is "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Aanvaarde kredietkaarte</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1431,6 +1433,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6446608382365791566">Voeg meer inligting by</translation>
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6451458296329894277">Bevestig vormherindiening</translation>
+<translation id="6456955391422100996">Advertensie is verwyder.</translation>
 <translation id="6457206614190510200">Saalhegting</translation>
 <translation id="6458606150257356946">Plak in elk geval</translation>
 <translation id="6465306955648956876">Bestuur wagwoorde …</translation>
@@ -1692,6 +1695,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7549584377607005141">Hierdie webbladsy vereis data wat jy vroeër ingevoer het om behoorlik gewys te word. Jy kan hierdie data weer stuur, maar deur dit te doen, herhaal jy enige handeling wat hierdie bladsy voorheen uitgevoer het.</translation>
 <translation id="7550637293666041147">Jou toestelgebruikernaam en Chrome-gebruikernaam</translation>
 <translation id="7552846755917812628">Probeer die volgende wenke:</translation>
+<translation id="7554475479213504905">Herlaai en wys in elk geval</translation>
 <translation id="7554791636758816595">Nuwe oortjie</translation>
 <translation id="7564049878696755256">Jy kan toegang tot jou <ph name="ORG_NAME" />-rekening verloor of identiteitdiefstal ervaar. Chrome beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7567204685887185387">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk valslik uitgereik. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>

@@ -224,7 +224,6 @@
 <translation id="5916084858004523819">प्रतिबन्धित</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{तपाईंको फाइल स्क्यान गर्ने काम पूरा भएको छ र उक्त फाइल <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएको छ।}other{तपाईंका फाइलहरू स्क्यान गर्ने काम पूरा भएको छ र ती फाइलहरू <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> मा सुरक्षित गरिएका छन्।}}</translation>
 <translation id="5931523347251946569">फाइल भेट्टिएन</translation>
-<translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> औँ संस्करण)</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6040852767465482106">अज्ञात पहिचान</translation>
 <translation id="604124094241169006">स्वचालित</translation>

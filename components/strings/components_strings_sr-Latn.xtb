@@ -883,6 +883,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4305817255990598646">Pređi</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokiraj (podrazumevano)</translation>
+<translation id="4314815835985389558">Upravljajte sinhronizacijom</translation>
 <translation id="4318312030194671742">Usluga slaganja za prikaz u Paint-u</translation>
 <translation id="4318566738941496689">Naziv i mrežna adresa uređaja</translation>
 <translation id="4325863107915753736">Nismo uspeli da pronađemo članak</translation>
@@ -890,6 +891,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4329871760342656885">Greška pri raščlanjivanju smernica: <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">5. pregrada za slaganje</translation>
 <translation id="4331708818696583467">Nije bezbedan</translation>
+<translation id="4340575312453649552">Ovaj oglas je koristio previše resursa za uređaj, pa ga je Chrome uklonio.</translation>
 <translation id="4340982228985273705">Otkriveno je da ovim računarom ne upravlja preduzeće, pa smernice mogu automatski da instaliraju samo dodatke koji se hostuju u Chrome veb-prodavnici. URL ažuriranja u Chrome veb-prodavnici je „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Kreditne kartice koje se prihvataju</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
@@ -1430,6 +1432,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6446608382365791566">Dodajte još informacija</translation>
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6451458296329894277">Potvrđivanje ponovnog slanja obrasca</translation>
+<translation id="6456955391422100996">Oglas je uklonjen.</translation>
 <translation id="6457206614190510200">Spajanje po sredini</translation>
 <translation id="6458606150257356946">Ipak nalepi</translation>
 <translation id="6465306955648956876">Upravljajte lozinkama...</translation>
@@ -1691,6 +1694,7 @@ Dodatni detalji:
 <translation id="7549584377607005141">Ova veb-stranica zahteva podatke koje ste uneli ranije da bi se pravilno prikazala. Možete ponovo da pošaljete te podatke, ali ako to uradite, ponovićete bilo koju radnju koju je ova stranica prethodno obavila.</translation>
 <translation id="7550637293666041147">Korisničko ime uređaja i korisničko ime za Chrome</translation>
 <translation id="7552846755917812628">Isprobajte sledeće savete:</translation>
+<translation id="7554475479213504905">Ipak ponovo učitaj i prikaži</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7564049878696755256">Možete da izgubite pristup nalogu za <ph name="ORG_NAME" /> ili bi moglo da dođe do krađe identiteta. Chrome vam preporučuje da odmah promenite lozinku.</translation>
 <translation id="7567204685887185387">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat je možda lažno izdat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
