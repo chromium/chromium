@@ -298,6 +298,12 @@
   self.contentSuggestionsCoordinator = nil;
   self.incognitoViewController = nil;
   self.ntpViewController = nil;
+  if (IsRefactoredNTP()) {
+    ios::GetChromeBrowserProvider()
+        ->GetDiscoverFeedProvider()
+        ->RemoveFeedViewController(
+            self.discoverFeedWrapperViewController.discoverFeed);
+  }
   self.discoverFeedWrapperViewController = nil;
 
   [self.ntpMediator shutdown];
