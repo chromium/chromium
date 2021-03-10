@@ -535,6 +535,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // here.
 - (void)shareButtonPressed {
   RecordAction(UserMetricsAction("MobileToolbarShareMenu"));
+  [self.delegate recordShareButtonPressed];
 }
 
 // Updates the cached clipboard content type and calls |completion| when the
