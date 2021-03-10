@@ -89,9 +89,6 @@ class ASH_EXPORT ToplevelWindowEventHandler
   // If there is a drag in progress it is reverted, otherwise does nothing.
   void RevertDrag();
 
-  // Returns true if there is a drag in progress.
-  bool is_drag_in_progress() const { return window_resizer_.get() != nullptr; }
-
   // Returns the toplevel window that should be dragged for a gesture event that
   // occurs in the HTCLIENT area of a window. Returns null if there shouldn't be
   // special casing for this HTCLIENT area gesture. This is used to drag app
