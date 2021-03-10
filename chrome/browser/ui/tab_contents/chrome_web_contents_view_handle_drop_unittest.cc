@@ -240,11 +240,14 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Files) {
   base::FilePath path_1 = temp_dir.GetPath().AppendASCII("Foo.doc");
   base::FilePath path_2 = temp_dir.GetPath().AppendASCII("Bar.doc");
 
-  base::File file_1(path_1, base::File::FLAG_CREATE | base::File::FLAG_READ);
-  base::File file_2(path_2, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  base::File file_1(path_1, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  base::File file_2(path_2, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
 
   ASSERT_TRUE(file_1.IsValid());
   ASSERT_TRUE(file_2.IsValid());
+
+  file_1.WriteAtCurrentPos("foo content", 11);
+  file_2.WriteAtCurrentPos("bar content", 11);
 
   content::DropData data;
   data.filenames.emplace_back(path_1, path_1);
@@ -267,13 +270,17 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformDrop, Directories) {
   base::FilePath path_2 = temp_dir.GetPath().AppendASCII("Bar.doc");
   base::FilePath path_3 = temp_dir.GetPath().AppendASCII("Baz.doc");
 
-  base::File file_1(path_1, base::File::FLAG_CREATE | base::File::FLAG_READ);
-  base::File file_2(path_2, base::File::FLAG_CREATE | base::File::FLAG_READ);
-  base::File file_3(path_3, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  base::File file_1(path_1, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  base::File file_2(path_2, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  base::File file_3(path_3, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
 
   ASSERT_TRUE(file_1.IsValid());
   ASSERT_TRUE(file_2.IsValid());
   ASSERT_TRUE(file_3.IsValid());
+
+  file_1.WriteAtCurrentPos("foo content", 11);
+  file_2.WriteAtCurrentPos("bar content", 11);
+  file_3.WriteAtCurrentPos("baz content", 11);
 
   content::DropData data;
   data.filenames.emplace_back(temp_dir.GetPath(), temp_dir.GetPath());

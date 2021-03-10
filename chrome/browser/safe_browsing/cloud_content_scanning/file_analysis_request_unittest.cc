@@ -131,6 +131,31 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
 
     EXPECT_TRUE(called);
   }
+
+  {
+    // Empty files should return SUCCESS as they have no content to scan.
+    base::FilePath path = temp_dir.GetPath().AppendASCII("empty.doc");
+    base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    auto request =
+        MakeRequest(/*block_unsupported_types=*/false, path, path.BaseName());
+
+    bool called = false;
+    base::RunLoop run_loop;
+    request->GetRequestData(base::BindLambdaForTesting(
+        [&run_loop, &called](BinaryUploadService::Result result,
+                             const BinaryUploadService::Request::Data& data) {
+          called = true;
+          run_loop.Quit();
+
+          EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
+          EXPECT_EQ(data.size, 0u);
+          EXPECT_TRUE(data.contents.empty());
+          EXPECT_TRUE(data.hash.empty());
+        }));
+    run_loop.Run();
+
+    EXPECT_TRUE(called);
+  }
 }
 
 TEST_F(FileAnalysisRequestTest, NormalFiles) {
