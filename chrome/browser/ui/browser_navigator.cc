@@ -635,12 +635,7 @@ void Navigate(NavigateParams* params) {
   // singleton), we need to construct one if we are supposed to target a new
   // tab.
   if (!contents_to_navigate_or_insert) {
-// TODO(crbug.com/1171737): Revert https://crrev.com/c/2676315 to re-enable this
-// DCHECK on CrOS. See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for
-// more details.
-#if !(defined(OS_CHROMEOS) && DCHECK_IS_ON())
     DCHECK(!params->url.is_empty());
-#endif
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB) {
       contents_to_insert = CreateTargetContents(*params, params->url);
       contents_to_navigate_or_insert = contents_to_insert.get();

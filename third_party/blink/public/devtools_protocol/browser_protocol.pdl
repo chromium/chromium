@@ -8168,7 +8168,7 @@ domain Target
   # Creates a new page.
   command createTarget
     parameters
-      # The initial URL the page will be navigated to.
+      # The initial URL the page will be navigated to. An empty string indicates about:blank.
       string url
       # Frame width in DIP (headless chrome only).
       optional integer width

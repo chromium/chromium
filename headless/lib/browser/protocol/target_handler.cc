@@ -56,9 +56,14 @@ Response TargetHandler::CreateTarget(const std::string& url,
     }
   }
 
+  GURL gurl(url);
+  if (gurl.is_empty()) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
   HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
       context->CreateWebContentsBuilder()
-          .SetInitialURL(GURL(url))
+          .SetInitialURL(gurl)
           .SetWindowSize(gfx::Size(
               width.fromMaybe(browser_->options()->window_size.width()),
               height.fromMaybe(browser_->options()->window_size.height())))
