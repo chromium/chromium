@@ -43,10 +43,7 @@ class FileManagerApp {
    * true per crbug.com/496525.
    */
   async run() {
-    await Promise.all([
-      new ScriptLoader('file_manager_private_fakes.js').load(),
-      new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load(),
-    ]);
+    await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
 
     // Temporarily remove window.cr while the foreground script bundle loads.
     const origCr = window.cr;
@@ -54,9 +51,7 @@ class FileManagerApp {
     // Avoid double loading the LoadTimeData strings.
     window.loadTimeData.data_ = null;
 
-    await Promise.all([
-      new ScriptLoader('foreground/js/main.m.js', {type: 'module'}).load(),
-    ]);
+    await new ScriptLoader('foreground/js/main.m.js', {type: 'module'}).load();
     // Restore the window.cr object.
     Object.assign(window.cr, origCr);
     console.debug('Files app UI loaded');
