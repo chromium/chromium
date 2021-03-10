@@ -19,7 +19,6 @@
 #include "ui/views/widget/widget_utils.h"
 
 class Browser;
-class WebUIBubbleDialogView;
 
 namespace views {
 class DotIndicator;
@@ -102,8 +101,7 @@ class ReadLaterButton : public views::LabelButton,
 
   Browser* const browser_;
 
-  // TODO(pbos): Figure out a better way to handle this.
-  WebUIBubbleDialogView* read_later_side_panel_bubble_ = nullptr;
+  views::View* side_panel_webview_ = nullptr;
 
   views::DotIndicator* dot_indicator_ = nullptr;
 

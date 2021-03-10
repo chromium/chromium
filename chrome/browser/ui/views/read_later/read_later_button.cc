@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
@@ -90,17 +90,30 @@ constexpr base::TimeDelta kHighlightHideDuration =
 constexpr base::TimeDelta kHighlightDuration =
     base::TimeDelta::FromMilliseconds(2250);
 
-// TODO(pbos): We shouldn't be using a subclass of BubbleDialogDelegateView to
-// host the WebContents for the side panel due to issues with the bubble frame.
-class WebUIBubbleSidePanelView : public WebUIBubbleDialogView {
+class ReadLaterSidePanelWebView : public views::WebView,
+                                  public BubbleContentsWrapper::Host {
  public:
-  using WebUIBubbleDialogView::WebUIBubbleDialogView;
+  ReadLaterSidePanelWebView(Profile* profile, base::RepeatingClosure close_cb)
+      : close_cb_(std::move(close_cb)),
+        contents_wrapper_(std::make_unique<BubbleContentsWrapperT<ReadLaterUI>>(
+            GURL(chrome::kChromeUIReadLaterURL),
+            profile,
+            IDS_READ_LATER_TITLE,
+            /*enable_extension_apis=*/true,
+            /*webui_resizes_host=*/false)) {
+    contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
+    contents_wrapper_->ReloadWebContents();
+    SetWebContents(contents_wrapper_->web_contents());
+  }
 
-  // WebUIBubbleDialogView:
-  // Override this to prevent the bubble dialog view resizing and causing
-  // crashes due to incorrect casting of its frame view.
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override {}
+  // BubbleContentsWrapper::Host:
+  void ShowUI() override {}
+  void CloseUI() override { close_cb_.Run(); }
+
+ private:
+  base::RepeatingClosure close_cb_;
+  std::unique_ptr<BubbleContentsWrapperT<ReadLaterUI>> contents_wrapper_;
+  base::WeakPtrFactory<ReadLaterSidePanelWebView> weak_factory_{this};
 };
 
 }  // namespace
@@ -245,19 +258,20 @@ void ReadLaterButton::ButtonPressed() {
   highlight_color_animation_->Hide();
 
   if (browser_view->side_panel()) {
-    if (read_later_side_panel_bubble_) {
-      browser_view->side_panel()->RemoveContent(read_later_side_panel_bubble_);
-      read_later_side_panel_bubble_ = nullptr;
+    if (!side_panel_webview_) {
+      auto webview = std::make_unique<ReadLaterSidePanelWebView>(
+          browser_->profile(),
+          base::BindRepeating(&ReadLaterButton::ButtonPressed,
+                              base::Unretained(this)));
+      side_panel_webview_ =
+          browser_view->side_panel()->AddChildView(std::move(webview));
+      SetHighlighted(true);
+    } else {
+      browser_view->side_panel()->RemoveChildViewT(side_panel_webview_);
+      side_panel_webview_ = nullptr;
       // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
       // SetHighlighted(false) here.
       SetHighlighted(false);
-    } else {
-      DCHECK(contents_wrapper_);
-      auto bubble_view = std::make_unique<WebUIBubbleSidePanelView>(
-          this, contents_wrapper_.get());
-      read_later_side_panel_bubble_ = bubble_view.get();
-      browser_view->side_panel()->AddContent(std::move(bubble_view));
-      SetHighlighted(true);
     }
   } else {
     if (webui_bubble_manager_->GetBubbleWidget()) {

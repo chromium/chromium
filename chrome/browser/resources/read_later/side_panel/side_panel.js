@@ -23,7 +23,7 @@ class SidePanel extends PolymerElement {
         #header {
           align-items: center;
           display: flex;
-          margin: 16px 0 4px 8px;
+          padding: 16px 0 4px 8px;
         }
 
         #searchContainer {

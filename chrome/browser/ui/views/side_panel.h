@@ -20,9 +20,7 @@ class SidePanel : public views::View, public views::ViewObserver {
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
 
-  // TODO(pbos): Remove need for this when BDDV is not set_owned_by_client().
-  void AddContent(std::unique_ptr<views::BubbleDialogDelegateView> view);
-  void RemoveContent(views::BubbleDialogDelegateView* view);
+  void SetPanelWidth(int width);
 
  private:
   void UpdateVisibility();

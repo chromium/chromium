@@ -43,7 +43,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
 
   BubbleContentsWrapper(content::BrowserContext* browser_context,
                         int task_manager_string_id,
-                        bool enable_extension_apis);
+                        bool enable_extension_apis,
+                        bool webui_resizes_host);
   ~BubbleContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -79,6 +80,9 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
       std::unique_ptr<content::WebContents> web_contents);
 
  private:
+  // If true will allow the wrapped WebContents to automatically resize its
+  // RenderWidgetHostView and send back updates to `Host` for the new size.
+  const bool webui_resizes_host_;
   base::WeakPtr<BubbleContentsWrapper::Host> host_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
@@ -93,10 +97,12 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
   BubbleContentsWrapperT(const GURL& webui_url,
                          content::BrowserContext* browser_context,
                          int task_manager_string_id,
-                         bool enable_extension_apis = false)
+                         bool enable_extension_apis = false,
+                         bool webui_resizes_host = true)
       : BubbleContentsWrapper(browser_context,
                               task_manager_string_id,
-                              enable_extension_apis),
+                              enable_extension_apis,
+                              webui_resizes_host),
         webui_url_(webui_url) {}
 
   void ReloadWebContents() override {
