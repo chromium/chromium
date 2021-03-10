@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/infobars/autofill_credit_card_filling_infobar.h"
 #include "chrome/browser/ui/android/infobars/autofill_offer_notification_infobar.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_infobar_controller_impl.h"
 #include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -649,12 +650,9 @@ void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
     const std::vector<GURL>& domains_to_display_bubble,
     const CreditCard* card) {
 #if defined(OS_ANDROID)
-  if (card) {
-    InfoBarService::FromWebContents(web_contents())
-        ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
-            std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
-                *card)));
-  }
+  std::unique_ptr<OfferNotificationInfoBarControllerImpl> controller =
+      std::make_unique<OfferNotificationInfoBarControllerImpl>(web_contents());
+  controller->ShowIfNecessary(domains_to_display_bubble, card);
 #else
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
