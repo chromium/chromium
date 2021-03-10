@@ -205,6 +205,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:support",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/dbus/power",

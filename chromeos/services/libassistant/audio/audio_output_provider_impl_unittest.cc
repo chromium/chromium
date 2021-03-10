@@ -53,7 +53,15 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
 
   void FillBufferDone(assistant_client::Callback1<int> cb, int num_bytes) {
     cb(num_bytes);
-    quit_closure_.Run();
+
+    // AudioDeviceOwner::ScheduleFillLocked() will be called repeatedlly until
+    // the |num_bytes| is 0. Only call QuitClosure() at the last call to unblock
+    // in the test.
+    // Otherwise, the |run_loop_| may not block because the QuitClosure() is
+    // called before Run(), right after it is created in Reset(), which will
+    // cause timing issue in the test.
+    if (num_bytes == 0)
+      quit_closure_.Run();
   }
 
   bool end_of_stream() { return end_of_stream_; }
@@ -124,15 +132,15 @@ TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   audio_output_delegate.Reset();
 
   auto owner = std::make_unique<AudioDeviceOwner>("test device");
-  // Upon start, it will start to fill the buffer.
+  // Upon start, it will start to fill the buffer. The fill should stop after
+  // Wait().
   owner->Start(&audio_output_delegate_mojom, &audio_output_delegate,
                mojo::NullRemote(), format);
   audio_output_delegate.Wait();
 
   audio_output_delegate.Reset();
   audio_bus->Zero();
-  // On first render, it will push the data to |audio_bus|. The fill should
-  // stop by now.
+  // On first render, it will push the data to |audio_bus|.
   owner->Render(base::TimeDelta::FromMicroseconds(0), base::TimeTicks::Now(), 0,
                 audio_bus.get());
   audio_output_delegate.Wait();
