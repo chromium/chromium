@@ -89,8 +89,6 @@ const int kButtonHorizontalPadding = 16;   // In DIPs.
 const int kButtonIconTopPadding = 11;      // In DIPs.
 const int kButtonIconToTitlePadding = 16;  // In DIPs.
 
-constexpr SkColor kHoveredButtonBackgroundColor = SkColorSetRGB(243, 243, 243);
-
 // Progress bar.
 const int kProgressBarTopPadding = 16;
 #if defined(OS_APPLE)

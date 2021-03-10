@@ -321,7 +321,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     }
 
     // Notification
-    case NativeTheme::kColorId_NotificationDefaultBackground:
+    case NativeTheme::kColorId_NotificationBackground:
     case NativeTheme::kColorId_NotificationColor:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
@@ -332,7 +332,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_NotificationPlaceholderColor:
       return SkColorSetA(SK_ColorWHITE, gfx::kDisabledControlAlpha);
     case NativeTheme::kColorId_NotificationActionsRowBackground:
-    case NativeTheme::kColorId_NotificationInlineSettingsBackground: {
+    case NativeTheme::kColorId_NotificationBackgroundActive: {
       const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
       return color_utils::BlendTowardMaxContrast(bg, 0x14);

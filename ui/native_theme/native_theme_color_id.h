@@ -88,9 +88,9 @@
   OP(kColorId_OverlayScrollbarThumbHoveredStroke),                             \
   OP(kColorId_OverlayScrollbarThumbStroke),                                    \
   /* Notification view */                                                      \
-  OP(kColorId_NotificationDefaultBackground),                                  \
+  OP(kColorId_NotificationBackground),                                         \
+  OP(kColorId_NotificationBackgroundActive),                                   \
   OP(kColorId_NotificationActionsRowBackground),                               \
-  OP(kColorId_NotificationInlineSettingsBackground),                           \
   OP(kColorId_NotificationLargeImageBackground),                               \
   OP(kColorId_NotificationColor),                                              \
   OP(kColorId_NotificationPlaceholderColor),                                   \

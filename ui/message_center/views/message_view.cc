@@ -473,8 +473,11 @@ bool MessageView::ShouldShowControlButtons() const {
 }
 
 void MessageView::UpdateBackgroundPainter() {
-  SkColor background_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationDefaultBackground);
+  auto* theme = GetNativeTheme();
+  SkColor background_color = theme->GetSystemColor(
+      is_active_ ? ui::NativeTheme::kColorId_NotificationBackgroundActive
+                 : ui::NativeTheme::kColorId_NotificationBackground);
+
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color)));
@@ -487,9 +490,8 @@ void MessageView::UpdateControlButtonsVisibility() {
 }
 
 void MessageView::SetDrawBackgroundAsActive(bool active) {
-  background()->SetNativeControlColor(active ? kHoveredButtonBackgroundColor
-                                             : kNotificationBackgroundColor);
-  SchedulePaint();
+  is_active_ = active;
+  UpdateBackgroundPainter();
 }
 
 }  // namespace message_center

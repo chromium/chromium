@@ -73,13 +73,10 @@ base::Optional<SkColor> SkColorFromColorId(
     const ui::NativeTheme* base_theme,
     ui::NativeTheme::ColorScheme color_scheme) {
   switch (color_id) {
-    // Windows
     case ui::NativeTheme::kColorId_WindowBackground:
-    // Dialogs
     case ui::NativeTheme::kColorId_DialogBackground:
     case ui::NativeTheme::kColorId_BubbleBackground:
-    // Notifications
-    case ui::NativeTheme::kColorId_NotificationDefaultBackground:
+    case ui::NativeTheme::kColorId_NotificationBackground:
       return GetBgColor("");
     case ui::NativeTheme::kColorId_DialogForeground:
     case ui::NativeTheme::kColorId_AvatarIconIncognito:

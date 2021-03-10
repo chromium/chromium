@@ -213,6 +213,10 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   base::string16 accessible_name_;
 
+  // Tracks whether background should be drawn as active based on gesture
+  // events.
+  bool is_active_ = false;
+
   // Flag if the notification is set to pinned or not. See the comment in
   // MessageView::Mode for detail.
   bool pinned_ = false;

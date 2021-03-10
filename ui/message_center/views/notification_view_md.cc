@@ -476,7 +476,7 @@ class InlineSettingsRadioButton : public views::RadioButton {
     SetEnabledTextColors(GetTextColor());
     label()->SetAutoColorReadabilityEnabled(true);
     label()->SetBackgroundColor(GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_NotificationInlineSettingsBackground));
+        ui::NativeTheme::kColorId_NotificationBackgroundActive));
   }
 
  private:
@@ -1379,8 +1379,8 @@ SkColor NotificationViewMD::GetNotificationHeaderViewBackgroundColor() const {
   bool inline_settings_visible = settings_row_ && settings_row_->GetVisible();
   return GetNativeTheme()->GetSystemColor(
       inline_settings_visible
-          ? ui::NativeTheme::kColorId_NotificationInlineSettingsBackground
-          : ui::NativeTheme::kColorId_NotificationDefaultBackground);
+          ? ui::NativeTheme::kColorId_NotificationBackgroundActive
+          : ui::NativeTheme::kColorId_NotificationBackground);
 }
 
 void NotificationViewMD::UpdateActionButtonsRowBackground() {
@@ -1477,7 +1477,7 @@ std::vector<views::View*> NotificationViewMD::GetChildrenForLayerAdjustment()
 
 SkColor NotificationViewMD::GetInkDropBaseColor() const {
   return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationInlineSettingsBackground);
+      ui::NativeTheme::kColorId_NotificationBackgroundActive);
 }
 
 void NotificationViewMD::InkDropAnimationStarted() {
