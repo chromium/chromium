@@ -133,7 +133,8 @@ bool VerifyMacNotificationData(NSDictionary* response) {
       ![response objectForKey:notification_constants::kNotificationIncognito] ||
       ![response
           objectForKey:notification_constants::kNotificationCreatorPid] ||
-      ![response objectForKey:notification_constants::kNotificationType]) {
+      ![response objectForKey:notification_constants::kNotificationType] ||
+      ![response objectForKey:notification_constants::kNotificationIsAlert]) {
     LOG(ERROR) << "Missing required key";
     return false;
   }

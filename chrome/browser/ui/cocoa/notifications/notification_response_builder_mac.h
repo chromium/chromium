@@ -13,8 +13,10 @@
 // notification response action, clicking on it, clicking on a button etc.
 @interface NotificationResponseBuilder : NSObject
 
-+ (NSDictionary*)buildActivatedDictionary:(NSUserNotification*)notification;
-+ (NSDictionary*)buildDismissedDictionary:(NSUserNotification*)notification;
++ (NSDictionary*)buildActivatedDictionary:(NSUserNotification*)notification
+                                fromAlert:(BOOL)fromAlert;
++ (NSDictionary*)buildDismissedDictionary:(NSUserNotification*)notification
+                                fromAlert:(BOOL)fromAlert;
 
 @end
 

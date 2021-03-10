@@ -44,6 +44,9 @@
 - (void)setShowSettingsButton:(BOOL)showSettingsButton;
 - (void)setIcon:(NSImage*)icon;
 
+// Treat this as a closed notification in ProcessMacNotificationResponse().
+- (void)setClosedFromAlert:(BOOL)fromAlert;
+
 // Returns a representation of a notification that can be serialized.
 // Another instance of NotificationBuilder can read this directly and generate
 // a notification out of it via the |buildbuildUserNotification| method.

@@ -65,6 +65,7 @@ API_AVAILABLE(macosx(10.14))
 - (FakeUNNotificationSettings* _Nonnull)settings;
 - (NSArray<UNNotification*>* _Nonnull)notifications;
 - (NSSet<UNNotificationCategory*>* _Nonnull)categories;
+- (id<UNUserNotificationCenterDelegate> _Nullable)delegate;
 
 @end
 

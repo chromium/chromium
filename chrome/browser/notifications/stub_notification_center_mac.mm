@@ -10,11 +10,13 @@
 
 @implementation StubNotificationCenter {
   base::scoped_nsobject<NSMutableArray> _banners;
+  id<NSUserNotificationCenterDelegate> _delegate;
 }
 
 - (instancetype)init {
   if ((self = [super init])) {
     _banners.reset([[NSMutableArray alloc] init]);
+    _delegate = nil;
   }
   return self;
 }
@@ -65,9 +67,12 @@
   [_banners removeAllObjects];
 }
 
-// Need to provide a nop implementation of setDelegate as it is
-// used during the setup of the bridge.
-- (void)setDelegate:(id<NSUserNotificationCenterDelegate>)delegate {
+- (void)setDelegate:(id<NSUserNotificationCenterDelegate> _Nullable)delegate {
+  _delegate = delegate;
+}
+
+- (id<NSUserNotificationCenterDelegate> _Nullable)delegate {
+  return _delegate;
 }
 
 @end

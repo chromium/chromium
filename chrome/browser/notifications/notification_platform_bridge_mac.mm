@@ -301,7 +301,8 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
 - (void)userNotificationCenter:(NSUserNotificationCenter*)center
        didActivateNotification:(NSUserNotification*)notification {
   NSDictionary* notificationResponse =
-      [NotificationResponseBuilder buildActivatedDictionary:notification];
+      [NotificationResponseBuilder buildActivatedDictionary:notification
+                                                  fromAlert:NO];
   ProcessMacNotificationResponse(notificationResponse);
 }
 
@@ -314,7 +315,8 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
 - (void)userNotificationCenter:(NSUserNotificationCenter*)center
                didDismissAlert:(NSUserNotification*)notification {
   NSDictionary* notificationResponse =
-      [NotificationResponseBuilder buildDismissedDictionary:notification];
+      [NotificationResponseBuilder buildDismissedDictionary:notification
+                                                  fromAlert:NO];
   ProcessMacNotificationResponse(notificationResponse);
 }
 
@@ -326,7 +328,8 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
     didRemoveDeliveredNotifications:(NSArray*)notifications {
   for (NSUserNotification* notification in notifications) {
     NSDictionary* notificationResponse =
-        [NotificationResponseBuilder buildDismissedDictionary:notification];
+        [NotificationResponseBuilder buildDismissedDictionary:notification
+                                                    fromAlert:NO];
     ProcessMacNotificationResponse(notificationResponse);
   }
 }

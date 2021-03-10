@@ -163,6 +163,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   if (is_alert) {
     NSDictionary* dict = [builder buildDictionary];
     [alert_dispatcher_ dispatchNotification:dict];
+    [builder setClosedFromAlert:YES];
     DeliveredSuccessfully(system_notification_id, std::move(builder));
     return;
   }
@@ -187,6 +188,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
       DVLOG(1) << "Notification request did not succeed";
       return;
     }
+    [builder setClosedFromAlert:NO];
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -378,22 +380,9 @@ void NotificationPlatformBridgeMacUNNotification::DoSynchronizeNotifications(
   }
 
   for (NSString* notification_id in delivered_notifications_.get()) {
-    base::scoped_nsobject<NSMutableDictionary> dict(
-        [[delivered_notifications_ objectForKey:notification_id] mutableCopy]);
-
     OnNotificationClosed(base::SysNSStringToUTF8(notification_id));
-
-    // Closed notifications need to carry
-    // NotificationOperation::NOTIFICATION_CLOSE and an invalid button index.
-    // TODO(crbug/1141869): Modify the builder so that it sets these values by
-    // default.
-    [dict
-        setObject:@(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE))
-           forKey:notification_constants::kNotificationOperation];
-    [dict setObject:@(notification_constants::kNotificationInvalidButtonIndex)
-             forKey:notification_constants::kNotificationButtonIndex];
-
-    ProcessMacNotificationResponse(dict.autorelease());
+    ProcessMacNotificationResponse(
+        [delivered_notifications_ objectForKey:notification_id]);
   }
 
   delivered_notifications_.reset(remaining_notifications);
@@ -549,7 +538,7 @@ void NotificationPlatformBridgeMacUNNotification::
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
   NSDictionary* notificationResponse =
-      [UNNotificationResponseBuilder buildDictionary:response];
+      [UNNotificationResponseBuilder buildDictionary:response fromAlert:NO];
 
   // Notify platform bridge about closed notifications for cleanup tasks.
   int operation = [[notificationResponse

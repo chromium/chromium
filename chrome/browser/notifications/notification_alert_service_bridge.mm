@@ -47,6 +47,7 @@ class MacNotificationActionHandlerImpl
       notification_constants::kNotificationOperation :
           [NSNumber numberWithInt:static_cast<int>(info->operation)],
       notification_constants::kNotificationButtonIndex : @(info->button_index),
+      notification_constants::kNotificationIsAlert : @YES,
     };
     ProcessMacNotificationResponse(dict);
     on_action_.Run();

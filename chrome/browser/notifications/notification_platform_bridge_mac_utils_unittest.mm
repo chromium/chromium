@@ -31,7 +31,8 @@ class NotificationPlatformBridgeMacUtilsTest : public testing::Test {
     return [NSMutableDictionary
         dictionaryWithDictionary:
             [NotificationResponseBuilder
-                buildActivatedDictionary:BuildNotification()]];
+                buildActivatedDictionary:BuildNotification()
+                               fromAlert:NO]];
   }
 
   Notification CreateNotification(
@@ -252,4 +253,10 @@ TEST_F(NotificationPlatformBridgeMacUtilsTest, TestNotificationVerifyOrigin) {
   // Empty origin should be fine.
   [response_ setValue:@"" forKey:notification_constants::kNotificationOrigin];
   EXPECT_TRUE(VerifyMacNotificationData(response_));
+}
+
+TEST_F(NotificationPlatformBridgeMacUtilsTest,
+       TestNotificationVerifyMissingIsAlert) {
+  [response_ removeObjectForKey:notification_constants::kNotificationIsAlert];
+  EXPECT_FALSE(VerifyMacNotificationData(response_));
 }

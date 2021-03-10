@@ -31,6 +31,7 @@
   base::scoped_nsobject<FakeUNNotificationSettings> _settings;
   base::scoped_nsobject<NSMutableDictionary> _notifications;
   base::scoped_nsobject<NSSet<UNNotificationCategory*>> _categories;
+  id<UNUserNotificationCenterDelegate> _delegate;
 }
 
 - (instancetype)init {
@@ -38,11 +39,13 @@
     _settings.reset([[FakeUNNotificationSettings alloc] init]);
     _notifications.reset([[NSMutableDictionary alloc] init]);
     _categories.reset([[NSSet alloc] init]);
+    _delegate = nil;
   }
   return self;
 }
 
 - (void)setDelegate:(id<UNUserNotificationCenterDelegate>)delegate {
+  _delegate = delegate;
 }
 
 - (void)removeAllDeliveredNotifications {
@@ -115,6 +118,10 @@
 
 - (NSSet<UNNotificationCategory*>* _Nonnull)categories {
   return _categories.get();
+}
+
+- (id<UNUserNotificationCenterDelegate> _Nullable)delegate {
+  return _delegate;
 }
 
 @end

@@ -30,6 +30,7 @@ NSString* const kNotificationRenotify = @"notificationRenotify";
 NSString* const kNotificationHasSettingsButton =
     @"notificationHasSettingsButton";
 NSString* const kNotificationCreatorPid = @"notificationCreatorPid";
+NSString* const kNotificationIsAlert = @"notificationIsAlert";
 
 // Only applicable to the NotificationResponseBuilder
 NSString* const kNotificationOperation = @"notificationOperation";

@@ -31,6 +31,7 @@ extern NSString* const kNotificationButtonIndex;
 extern NSString* const kNotificationRenotify;
 extern NSString* const kNotificationHasSettingsButton;
 extern NSString* const kNotificationCreatorPid;
+extern NSString* const kNotificationIsAlert;
 
 extern NSString* const kAlertXPCServiceName;
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/test/mock_callback.h"
@@ -13,6 +15,8 @@
 #include "chrome/services/mac_notifications/public/cpp/notification_constants_mac.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_operation.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,10 +90,22 @@ class NotificationAlertServiceBridgeTest : public testing::Test {
     run_loop.Run();
   }
 
-  ~NotificationAlertServiceBridgeTest() override = default;
+  ~NotificationAlertServiceBridgeTest() override {
+    // Make sure we run all remaining posted tasks that may use
+    // |profile_manager_| before we destroy it.
+    task_environment_.RunUntilIdle();
+  }
+
+  // testing::Test:
+  void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   base::MockOnceClosure on_disconnect_;
   base::MockRepeatingClosure on_action_;
   MockNotificationService mock_service_;
@@ -250,7 +266,7 @@ TEST_F(NotificationAlertServiceBridgeTest, OnNotificationAction) {
           "notificationId", std::move(profile_identifier));
   auto meta = mac_notifications::mojom::NotificationMetadata::New(
       std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
-      /*creator_pid=*/0);
+      base::GetCurrentProcId());
 
   base::RunLoop run_loop;
   EXPECT_CALL(on_action_, Run).WillOnce([&]() { run_loop.Quit(); });

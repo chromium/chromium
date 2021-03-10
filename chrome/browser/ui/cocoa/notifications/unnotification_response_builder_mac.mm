@@ -13,7 +13,8 @@
 
 @implementation UNNotificationResponseBuilder
 
-+ (NSDictionary*)buildDictionary:(UNNotificationResponse*)response {
++ (NSDictionary*)buildDictionary:(UNNotificationResponse*)response
+                       fromAlert:(BOOL)fromAlert {
   NSDictionary* userInfo =
       [[[[response notification] request] content] userInfo];
 
@@ -80,10 +81,10 @@
     notification_constants::kNotificationCreatorPid : creatorPid ? creatorPid
                                                                  : @0,
     notification_constants::kNotificationType : notificationType,
-    notification_constants::kNotificationOperation :
-        [NSNumber numberWithInt:static_cast<int>(operation)],
     notification_constants::
-    kNotificationButtonIndex : [NSNumber numberWithInt:buttonIndex],
+    kNotificationOperation : @(static_cast<int>(operation)),
+    notification_constants::kNotificationButtonIndex : @(buttonIndex),
+    notification_constants::kNotificationIsAlert : @(fromAlert),
   };
 }
 

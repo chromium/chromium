@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -708,3 +709,29 @@ INSTANTIATE_TEST_SUITE_P(UNNotificationPlatformBridgeMacBannerStyleTest,
                          testing::Values(UNNotificationStyle::kNone,
                                          UNNotificationStyle::kBanners,
                                          UNNotificationStyle::kAlerts));
+
+TEST_F(UNNotificationPlatformBridgeMacTest, NotificationResponse) {
+  if (@available(macOS 10.14, *)) {
+    base::scoped_nsobject<FakeUNNotificationResponse> fakeResponse =
+        CreateFakeUNNotificationResponse(@{
+          notification_constants::kNotificationOrigin : @"https://google.com",
+          notification_constants::kNotificationId : @"notificationId",
+          notification_constants::kNotificationProfileId : @"profileId",
+          notification_constants::kNotificationIncognito : @YES,
+          notification_constants::kNotificationType : @0,
+          notification_constants::
+          kNotificationCreatorPid : @(base::GetCurrentProcId()),
+        });
+
+    [[center_ delegate]
+                userNotificationCenter:static_cast<UNUserNotificationCenter*>(
+                                           center_.get())
+        didReceiveNotificationResponse:static_cast<UNNotificationResponse*>(
+                                           fakeResponse.get())
+                 withCompletionHandler:^{
+                 }];
+
+    // Handling responses is async, make sure we wait for all tasks to complete.
+    task_environment_.RunUntilIdle();
+  }
+}

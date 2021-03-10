@@ -14,7 +14,8 @@
 API_AVAILABLE(macosx(10.14))
 @interface UNNotificationResponseBuilder : NSObject
 
-+ (NSDictionary*)buildDictionary:(UNNotificationResponse*)response;
++ (NSDictionary*)buildDictionary:(UNNotificationResponse*)response
+                       fromAlert:(BOOL)fromAlert;
 
 @end
 

@@ -10,6 +10,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,7 +124,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
- private:
+ protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_ = nullptr;
@@ -489,4 +490,27 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayETLDPlusOne) {
   EXPECT_NSEQ(@"localhost:8080", [delivered_notification subtitle]);
   delivered_notification = [notifications objectAtIndex:5];
   EXPECT_NSEQ(@"93.186.186.172", [delivered_notification subtitle]);
+}
+
+TEST_F(NotificationPlatformBridgeMacTest, DidActivateNotification) {
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      notification_center(), alert_dispatcher());
+
+  base::scoped_nsobject<NSUserNotification> toast(
+      [[NSUserNotification alloc] init]);
+  toast.get().userInfo = @{
+    notification_constants::kNotificationOrigin : @"https://google.com",
+    notification_constants::kNotificationId : @"notificationId",
+    notification_constants::kNotificationProfileId : @"profileId",
+    notification_constants::kNotificationIncognito : @YES,
+    notification_constants::kNotificationType : @0,
+    notification_constants::
+    kNotificationCreatorPid : @(base::GetCurrentProcId()),
+  };
+
+  [[notification_center() delegate] userNotificationCenter:notification_center()
+                                   didActivateNotification:toast.get()];
+
+  // Handling responses is async, make sure we wait for all tasks to complete.
+  task_environment_.RunUntilIdle();
 }

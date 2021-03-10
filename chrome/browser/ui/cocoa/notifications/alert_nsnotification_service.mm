@@ -152,7 +152,8 @@
 - (void)userNotificationCenter:(NSUserNotificationCenter*)center
        didActivateNotification:(NSUserNotification*)notification {
   NSDictionary* response =
-      [NotificationResponseBuilder buildActivatedDictionary:notification];
+      [NotificationResponseBuilder buildActivatedDictionary:notification
+                                                  fromAlert:YES];
   [[_connection remoteObjectProxy] notificationClick:response];
 }
 
@@ -160,7 +161,8 @@
 - (void)userNotificationCenter:(NSUserNotificationCenter*)center
                didDismissAlert:(NSUserNotification*)notification {
   NSDictionary* response =
-      [NotificationResponseBuilder buildDismissedDictionary:notification];
+      [NotificationResponseBuilder buildDismissedDictionary:notification
+                                                  fromAlert:YES];
   [[_connection remoteObjectProxy] notificationClick:response];
   [_transactionHandler closeTransactionIfNeeded];
 }
@@ -170,7 +172,8 @@
     didRemoveDeliveredNotifications:(NSArray*)notifications {
   for (NSUserNotification* notification in notifications) {
     NSDictionary* response =
-        [NotificationResponseBuilder buildDismissedDictionary:notification];
+        [NotificationResponseBuilder buildDismissedDictionary:notification
+                                                    fromAlert:YES];
     [[_connection remoteObjectProxy] notificationClick:response];
   }
   [_transactionHandler closeTransactionIfNeeded];
