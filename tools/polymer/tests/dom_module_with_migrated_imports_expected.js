@@ -1,7 +1,7 @@
 import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import '//resources/js/ignore_me.m.js';
+import '//resources/js/ignore_me.js';
 import '../shared_vars_css.m.js';
 import './foo.js';
 
