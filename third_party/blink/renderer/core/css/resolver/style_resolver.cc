@@ -734,8 +734,7 @@ scoped_refptr<ComputedStyle> StyleResolver::ResolveStyle(
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade,
-                 cascade.MutableMatchResult());
+  ApplyBaseStyle(element, style_recalc_context, style_request, state, cascade);
 
   if (style_request.IsPseudoStyleRequest() && state.HadNoMatchedProperties())
     return state.TakeStyle();
@@ -872,8 +871,7 @@ void StyleResolver::ApplyBaseStyle(
     const StyleRecalcContext& style_recalc_context,
     const StyleRequest& style_request,
     StyleResolverState& state,
-    StyleCascade& cascade,
-    MatchResult& match_result) {
+    StyleCascade& cascade) {
   DCHECK(style_request.pseudo_id != kPseudoIdFirstLineInherited);
 
   bool base_is_usable =
@@ -899,8 +897,9 @@ void StyleResolver::ApplyBaseStyle(
     }
 
     ElementRuleCollector collector(state.ElementContext(), style_recalc_context,
-                                   selector_filter_, match_result,
-                                   state.Style(), state.Style()->InsideLink());
+                                   selector_filter_,
+                                   cascade.MutableMatchResult(), state.Style(),
+                                   state.Style()->InsideLink());
 
     if (style_request.IsPseudoStyleRequest()) {
       collector.SetPseudoElementStyleRequest(style_request);
@@ -1485,8 +1484,7 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForInterpolations(
 
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
   StyleRecalcContext style_recalc_context;
-  ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade,
-                 cascade.MutableMatchResult());
+  ApplyBaseStyle(&element, style_recalc_context, style_request, state, cascade);
   ApplyInterpolations(state, cascade, interpolations);
 
   return state.TakeStyle();
