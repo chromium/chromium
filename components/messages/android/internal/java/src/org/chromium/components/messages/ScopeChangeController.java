@@ -53,7 +53,7 @@ class ScopeChangeController {
 
     void stopObservation(Object messageKey) {
         WebContents webContents = mMessageToWebContentsMap.get(messageKey);
-        assert webContents != null;
+        if (webContents == null) return;
         mMessageToWebContentsMap.remove(messageKey);
         RefCountWebContentsObserver webObserver =
                 mRefCountedWebContentsObserverMap.get(webContents);
