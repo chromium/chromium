@@ -1843,6 +1843,8 @@ source_set("browser") {
     "web_package/signed_exchange_utils.h",
     "web_package/signed_exchange_validity_pinger.cc",
     "web_package/signed_exchange_validity_pinger.h",
+    "web_package/subresource_web_bundle_navigation_info.cc",
+    "web_package/subresource_web_bundle_navigation_info.h",
     "web_package/web_bundle_blob_data_source.cc",
     "web_package/web_bundle_blob_data_source.h",
     "web_package/web_bundle_handle.cc",

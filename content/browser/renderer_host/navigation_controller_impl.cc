@@ -65,6 +65,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/frame_messages.h"
@@ -229,11 +230,20 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
 
 bool DoesURLMatchOriginForNavigation(
     const GURL& url,
-    const base::Optional<url::Origin>& origin) {
+    const base::Optional<url::Origin>& origin,
+    SubresourceWebBundleNavigationInfo*
+        subresource_web_bundle_navigation_info) {
   // If there is no origin supplied there is nothing to match. This can happen
   // for navigations to a pending entry and therefore it should be allowed.
   if (!origin)
     return true;
+
+  if (url.SchemeIs(url::kUrnScheme) && subresource_web_bundle_navigation_info) {
+    // Urn: subframe from WebBundle has an opaque origin derived from the
+    // Bundle's origin.
+    return origin->CanBeDerivedFrom(
+        subresource_web_bundle_navigation_info->bundle_url());
+  }
 
   return origin->CanBeDerivedFrom(url);
 }
@@ -1471,6 +1481,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         params.page_state, params.method, params.post_id,
         nullptr /* blob_url_loader_factory */,
         nullptr /* web_bundle_navigation_info */,
+        request->GetSubresourceWebBundleNavigationInfo(),
         // We will set the document policies later in this function.
         nullptr /* policy_container_policies */);
 
@@ -1834,6 +1845,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
+      request->GetSubresourceWebBundleNavigationInfo(),
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request));
 
@@ -1894,6 +1906,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
+      request->GetSubresourceWebBundleNavigationInfo(),
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request));
 
@@ -1979,6 +1992,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       request->web_bundle_navigation_info()
           ? request->web_bundle_navigation_info()->Clone()
           : nullptr,
+      request->GetSubresourceWebBundleNavigationInfo(),
       ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
                                                   request));
 
@@ -2382,6 +2396,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         base::nullopt /* commit_origin */, referrer, initiator_origin,
         std::vector<GURL>(), blink::PageState(), method, -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
+        nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */);
   } else {
     // Main frame case.
@@ -2418,6 +2433,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
         nullptr /* origin */, referrer, initiator_origin, std::vector<GURL>(),
         blink::PageState(), method, -1, blob_url_loader_factory,
         nullptr /* web_bundle_navigation_info */,
+        nullptr /* subresource_web_bundle_navigation_info */,
         nullptr /* policy_container_policies */);
   }
 
@@ -3239,6 +3255,7 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         params.url, base::nullopt, params.referrer, params.initiator_origin,
         params.redirect_chain, blink::PageState(), "GET", -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
+        nullptr /* subresource_web_bundle_navigation_info */,
         // If in NavigateWithoutEntry we later determine that this navigation is
         // a conversion of a new navigation into a reload, we will set the right
         // document policies there.
@@ -3355,7 +3372,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   if (!IsValidURLForNavigation(node->IsMainFrame(), virtual_url, url_to_load))
     return nullptr;
 
-  if (!DoesURLMatchOriginForNavigation(url_to_load, origin_to_commit)) {
+  if (!DoesURLMatchOriginForNavigation(
+          url_to_load, origin_to_commit,
+          frame_entry->subresource_web_bundle_navigation_info())) {
     DCHECK(false) << " url:" << url_to_load
                   << " origin:" << origin_to_commit.value();
     return nullptr;
@@ -3525,15 +3544,11 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     return nullptr;
   }
 
-  if (!DoesURLMatchOriginForNavigation(dest_url, origin_to_commit)) {
-    if (!frame_tree_node->IsMainFrame() && dest_url.SchemeIs(url::kUrnScheme)) {
-      NOTIMPLEMENTED()
-          << "History navigation to urn:uuid resource in WebBundle is not"
-             "implemented. See crbug.com/1180697";
-    } else {
-      DCHECK(false) << " url:" << dest_url
-                    << " origin:" << origin_to_commit.value();
-    }
+  if (!DoesURLMatchOriginForNavigation(
+          dest_url, origin_to_commit,
+          frame_entry->subresource_web_bundle_navigation_info())) {
+    DCHECK(false) << " url:" << dest_url
+                  << " origin:" << origin_to_commit.value();
     return nullptr;
   }
 

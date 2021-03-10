@@ -123,6 +123,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
@@ -6383,12 +6384,20 @@ void RenderFrameHostImpl::CommitNavigation(
   const bool is_first_navigation = !has_committed_any_navigation_;
   has_committed_any_navigation_ = true;
 
-  // If this is NOT for same-document navigation, existing |web_bundle_handle_|
-  // should be reset to the new one. Otherwise the existing one should be kept
-  // around so that the subresource requests keep being served from the
-  // WebBundleURLLoaderFactory held by the handle.
-  if (!is_same_document)
+  if (!is_same_document) {
+    // If this is NOT for same-document navigation, existing
+    // |web_bundle_handle_| should be reset to the new one. Otherwise the
+    // existing one should be kept around so that the subresource requests keep
+    // being served from the WebBundleURLLoaderFactory held by the handle.
     web_bundle_handle_ = std::move(web_bundle_handle);
+
+    // Similarly, reset |subresource_web_bundle_navigation_info_| to the new one
+    // if this is NOT for same-document navigation. For same-document
+    // navigation, |navigation_request| doesn't have bundle information so
+    // existing one should be kept around.
+    subresource_web_bundle_navigation_info_ =
+        navigation_request->GetSubresourceWebBundleNavigationInfo();
+  }
 
   UpdatePermissionsForNavigation(*common_params, *commit_params);
 
@@ -8362,6 +8371,17 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
     web_bundle_navigation_info = web_bundle_handle_->navigation_info()->Clone();
   }
 
+  std::unique_ptr<SubresourceWebBundleNavigationInfo>
+      subresource_web_bundle_navigation_info;
+  if (is_same_document && subresource_web_bundle_navigation_info_) {
+    // Propagate |subresource_web_bundle_navigation_info_| to NavigationRequest
+    // for same-document navigation. This will be passed to
+    // FrameNavigationEntry, and will be used for subsequent history
+    // navigations.
+    subresource_web_bundle_navigation_info =
+        subresource_web_bundle_navigation_info_->Clone();
+  }
+
   std::string method = "GET";
   if (is_same_document && !is_same_document_history_api_navigation) {
     // Preserve the HTTP method used by the last navigation if this is a
@@ -8386,7 +8406,8 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
       std::move(referrer), transition, should_replace_current_entry, method,
       gesture, is_overriding_user_agent, redirects, original_request_url,
       page_state, std::move(coep_reporter),
-      std::move(web_bundle_navigation_info), http_status_code);
+      std::move(web_bundle_navigation_info),
+      std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 
 void RenderFrameHostImpl::BeforeUnloadTimeout() {

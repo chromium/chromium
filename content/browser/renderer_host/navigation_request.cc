@@ -63,6 +63,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_source.h"
@@ -818,6 +819,16 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
   network::mojom::RequestDestination destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
+  base::Optional<network::ResourceRequest::WebBundleTokenParams>
+      web_bundle_token_params;
+  if (frame_entry && frame_entry->subresource_web_bundle_navigation_info()) {
+    auto* bundle_info = frame_entry->subresource_web_bundle_navigation_info();
+    web_bundle_token_params =
+        base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+            bundle_info->bundle_url(), bundle_info->token(),
+            bundle_info->render_process_id()));
+  }
+
   auto navigation_params = mojom::BeginNavigationParams::New(
       base::OptionalFromPtr(initiator_frame_token), extra_headers,
       net::LOAD_NORMAL, false /* skip_service_worker */,
@@ -830,7 +841,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
-      base::nullopt /* web_bundle_token */);
+      std::move(web_bundle_token_params));
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -1008,6 +1019,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
     const blink::PageState& page_state,
     std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+    std::unique_ptr<SubresourceWebBundleNavigationInfo>
+        subresource_web_bundle_navigation_info,
     int http_response_code) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateForCommit");
   // TODO(clamy): Improve the *NavigationParams and *CommitParams to avoid
@@ -1081,6 +1094,13 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateForCommit(
 
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
+  if (subresource_web_bundle_navigation_info) {
+    navigation_request->begin_params_->web_bundle_token =
+        base::make_optional(network::ResourceRequest::WebBundleTokenParams(
+            subresource_web_bundle_navigation_info->bundle_url(),
+            subresource_web_bundle_navigation_info->token(),
+            subresource_web_bundle_navigation_info->render_process_id()));
+  }
   navigation_request->render_frame_host_ = render_frame_host;
   navigation_request->coep_reporter_ = std::move(coep_reporter);
   navigation_request->isolation_info_for_subresources_ =
@@ -2314,6 +2334,16 @@ GURL NavigationRequest::GetWebBundleURL() {
   return begin_params_->web_bundle_token->bundle_url;
 }
 
+std::unique_ptr<SubresourceWebBundleNavigationInfo>
+NavigationRequest::GetSubresourceWebBundleNavigationInfo() {
+  if (!begin_params_->web_bundle_token)
+    return nullptr;
+  return std::make_unique<SubresourceWebBundleNavigationInfo>(
+      begin_params_->web_bundle_token->bundle_url,
+      begin_params_->web_bundle_token->token,
+      begin_params_->web_bundle_token->render_process_id);
+}
+
 void NavigationRequest::OnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     network::mojom::URLResponseHeadPtr response_head,
@@ -2700,6 +2730,9 @@ void NavigationRequest::OnResponseStarted(
           frame_entry->post_id(), frame_entry->blob_url_loader_factory(),
           frame_entry->web_bundle_navigation_info()
               ? frame_entry->web_bundle_navigation_info()->Clone()
+              : nullptr,
+          frame_entry->subresource_web_bundle_navigation_info()
+              ? frame_entry->subresource_web_bundle_navigation_info()->Clone()
               : nullptr,
           frame_entry->policy_container_policies()
               ? frame_entry->policy_container_policies()->Clone()

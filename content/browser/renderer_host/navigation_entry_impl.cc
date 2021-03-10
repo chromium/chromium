@@ -22,6 +22,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
+#include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/navigation_params.h"
@@ -83,6 +84,7 @@ void RecursivelyGenerateFrameEntries(
       blink::PageState::CreateFromEncodedData(data), "GET", -1,
       nullptr /* blob_url_loader_factory */,
       nullptr /* web_bundle_navigation_info */,
+      nullptr /* subresource_web_bundle_navigation_info */,
       // TODO(https://crbug.com/1140393): We should restore the policy
       // container.
       nullptr /* policy_container_policies */);
@@ -340,6 +342,7 @@ NavigationEntryImpl::NavigationEntryImpl(
               -1,
               std::move(blob_url_loader_factory),
               nullptr /* web_bundle_navigation_info */,
+              nullptr /* subresource_web_bundle_navigation_info */,
               nullptr /* policy_container_policies */))),
       unique_id_(CreateUniqueEntryID()),
       page_type_(PAGE_TYPE_NORMAL),
@@ -863,6 +866,8 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
     int64_t post_id,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+    std::unique_ptr<SubresourceWebBundleNavigationInfo>
+        subresource_web_bundle_navigation_info,
     std::unique_ptr<PolicyContainerPolicies> policy_container_policies) {
   // If this is called for the main frame, the FrameNavigationEntry is
   // guaranteed to exist, so just update it directly and return.
@@ -880,6 +885,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
         initiator_origin, redirect_chain, page_state, method, post_id,
         std::move(blob_url_loader_factory),
         std::move(web_bundle_navigation_info),
+        std::move(subresource_web_bundle_navigation_info),
         std::move(policy_container_policies));
     return;
   }
@@ -911,6 +917,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
           initiator_origin, redirect_chain, page_state, method, post_id,
           std::move(blob_url_loader_factory),
           std::move(web_bundle_navigation_info),
+          std::move(subresource_web_bundle_navigation_info),
           std::move(policy_container_policies));
       return;
     }
@@ -925,6 +932,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       base::OptionalOrNullptr(origin), referrer, initiator_origin,
       redirect_chain, page_state, method, post_id,
       std::move(blob_url_loader_factory), std::move(web_bundle_navigation_info),
+      std::move(subresource_web_bundle_navigation_info),
       std::move(policy_container_policies));
   parent_node->children.push_back(
       std::make_unique<NavigationEntryImpl::TreeNode>(parent_node,

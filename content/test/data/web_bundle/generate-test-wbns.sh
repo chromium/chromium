@@ -75,6 +75,6 @@ gen-bundle \
   -o urn-uuid.wbn
 
 # Update Content-Length header in urn-uuid.wbn.mock-http-headers.
-(cat web_bundle_browsertest.wbn.mock-http-headers; \
+(cat cross_origin.wbn.mock-http-headers; \
  echo Content-Length: `wc -c <urn-uuid.wbn`) \
     > urn-uuid.wbn.mock-http-headers

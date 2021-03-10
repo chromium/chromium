@@ -22,6 +22,7 @@
 namespace content {
 
 class WebBundleNavigationInfo;
+class SubresourceWebBundleNavigationInfo;
 
 // Represents a session history item for a particular frame.  It is matched with
 // corresponding FrameTreeNodes using unique name (or by the root position).
@@ -57,6 +58,8 @@ class CONTENT_EXPORT FrameNavigationEntry
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // Creates a copy of this FrameNavigationEntry that can be modified
@@ -80,6 +83,8 @@ class CONTENT_EXPORT FrameNavigationEntry
       int64_t post_id,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info,
+      std::unique_ptr<SubresourceWebBundleNavigationInfo>
+          subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
   // The unique name of the frame this entry is for.  This is a stable name for
@@ -215,6 +220,9 @@ class CONTENT_EXPORT FrameNavigationEntry
       std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info);
   WebBundleNavigationInfo* web_bundle_navigation_info() const;
 
+  SubresourceWebBundleNavigationInfo* subresource_web_bundle_navigation_info()
+      const;
+
  private:
   friend class base::RefCounted<FrameNavigationEntry>;
   virtual ~FrameNavigationEntry();
@@ -258,6 +266,10 @@ class CONTENT_EXPORT FrameNavigationEntry
   // switch is set.
   // TODO(995177): Support Session/Tab restore.
   std::unique_ptr<WebBundleNavigationInfo> web_bundle_navigation_info_;
+  // Used when |this| is for a subframe navigation to a resource from the parent
+  // frame's subresource web bundle.
+  std::unique_ptr<SubresourceWebBundleNavigationInfo>
+      subresource_web_bundle_navigation_info_;
 
   // TODO(https://crbug.com/1140393): Persist these policies.
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;

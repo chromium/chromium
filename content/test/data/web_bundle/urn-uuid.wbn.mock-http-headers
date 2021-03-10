@@ -2,4 +2,4 @@ HTTP/1.1 200 OK
 Content-Type: application/webbundle
 X-Content-Type-Options: nosniff
 Access-Control-Allow-Origin: *
-Content-Length: 412
+Content-Length: 567
