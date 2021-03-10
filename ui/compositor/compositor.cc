@@ -750,7 +750,11 @@ void Compositor::StartThroughputTracker(
 }
 
 void Compositor::StopThroughtputTracker(TrackerId tracker_id) {
-  DCHECK(base::Contains(throughput_tracker_map_, tracker_id));
+  // TODO(crbug.com/1183374): DCHECKs are disabled during automated testing on
+  // CrOS and this check failed when tested on an experimental builder. Revert
+  // https://crrev.com/c/2727841 (or uncomment) to enable it. See
+  // go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
+  // DCHECK(base::Contains(throughput_tracker_map_, tracker_id));
   animation_host_->StopThroughputTracking(tracker_id);
 }
 
