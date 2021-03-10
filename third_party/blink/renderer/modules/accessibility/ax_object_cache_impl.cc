@@ -2279,21 +2279,21 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
 
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
 
-  // Invalidate the current object and make the parent reconsider its children.
+  // Remove the current object and make the parent reconsider its children.
   if (AXObject* obj = GetOrCreate(node)) {
-    // If role changes on a table, invalidate the entire table subtree as many
-    // objects may suddenly need to change, because presentation is inherited
-    // from the table to rows and cells.
+    // When the role of `obj` is changed, its AXObject needs to be destroyed and
+    // a new one needs to be created in its place. We destroy the current
+    // AXObject in this method and call ChildrenChangeWithCleanLayout() on the
+    // parent so that future updates to its children will create the alert.
+    ChildrenChangedWithCleanLayout(nullptr, obj->CachedParentObject());
     LayoutObject* layout_object = node->GetLayoutObject();
     if (layout_object && layout_object->IsTable()) {
-      AXObject* parent = obj->ParentObject();
+      // If role changes on a table, invalidate the entire table subtree as many
+      // objects may suddenly need to change, because presentation is inherited
+      // from the table to rows and cells.
       RemoveAXObjectsInLayoutSubtree(obj);
-      // Parent object changed children, as the previous AXObject for this node
-      // was destroyed and a different one was created in its place.
-      ChildrenChangedWithCleanLayout(nullptr, parent);
     } else {
-      // Will both refresh the object and call ChildrenChanged() on the parent.
-      Invalidate(obj->AXObjectID());
+      Remove(node);
     }
   }
 }
