@@ -1383,8 +1383,8 @@ void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
 
   UpdateBottomStatusIndicatorVisibility();
 
-  if (!oobe_dialog_visible_ && primary_big_view_)
-    primary_big_view_->RequestFocus();
+  if (!oobe_dialog_visible_ && CurrentBigUserView())
+    CurrentBigUserView()->RequestFocus();
 }
 
 void LockContentsView::MaybeUpdateExpandedView(const AccountId& account_id,
