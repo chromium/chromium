@@ -8355,7 +8355,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Sign-in error
       </message>
       <message name="IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE" desc="Title in the sync error bubble view/notification.">
-        Sync error
+        Sync isn't working
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu.">
         Sync isn't working
@@ -8376,10 +8376,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Enter passphrase
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON" desc="Button in the header of desktop user menu that prompts the user to reauthentication to fix the sync error affecting encrypted datatypes.">
-        Fix now
+        Verify it's you
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON" desc="Button in the header of desktop user menu that prompts the user to reauthentication to fix the sync error affecting encrypted datatypes.">
-        Fix now
+        Verify it's you
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_SIGNIN_AGAIN_BUTTON" desc="Button in the header of desktop user menu that signs out and signs back in in an attempt to resolve an unrecoverable error.">
         Sign in again
@@ -8390,6 +8390,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON" desc="Button in the header of desktop user menu prompting users to confirm their sync settings.">
         Open settings
       </message>
+
+      <if expr="chromeos">
+        <message name="IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error bubble view when the user needs to enter their sync passphrase.">
+          To start sync, enter your passphrase
+        </message>
+        <message name="IDS_SYNC_NEEDS_KEYS_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys, required to resume syncing of passwords specifically (other sync data works normally).">
+          To sync your passwords, verify it's you
+        </message>
+        <message name="IDS_SYNC_NEEDS_KEYS_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sync error notification when the user needs to reauth to retrieve the sync encryption keys and resume sync.">
+          To start sync, verify it's you
+        </message>
+      </if>
 
       <if expr="not use_titlecase">
         <message name="IDS_SYNC_UNAVAILABLE_ERROR_BUBBLE_VIEW_ACCEPT" desc="The accept button in the sync error bubble view when sync is not available for their domain.">
@@ -8460,7 +8472,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Enter passphrase
         </message>
         <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
-          Fix now
+          Verify it's you
         </message>
 
         <message name="IDS_SYNC_SERVER_IS_UNREACHABLE" desc="The message to display in the New Tab Page and Settings Page sync section when the server is unreachable.">

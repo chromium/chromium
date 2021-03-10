@@ -344,7 +344,7 @@ suite('SyncAccountControl', function() {
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertFalse(displayedText.includes('Sync isn\'t working'));
-    assertTrue(displayedText.includes('Error syncing passwords'));
+    assertTrue(displayedText.includes('Password sync isn\'t working'));
     // The sync error button is shown to resolve the error.
     assertTrue(isChildVisible(testElement, '#sync-error-button'));
     assertTrue(isChildVisible(testElement, '#turn-off'));

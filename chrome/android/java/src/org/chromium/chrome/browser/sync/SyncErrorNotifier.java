@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.sync;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -102,7 +101,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
                 case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
                 case PassphraseType.CUSTOM_PASSPHRASE:
                     showNotification(
-                            getString(R.string.sync_need_passphrase), createPassphraseIntent());
+                            getString(R.string.hint_passphrase_required), createPassphraseIntent());
                     break;
                 case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
                     assert false : "Passphrase cannot be required with trusted vault passphrase";
@@ -128,20 +127,10 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
     }
 
     /**
-     * Displays the error notification. Its title is fixed and its body is customized by the caller
-     * via errorMessage. The exact strings may depend on the Android version, to account for
-     * differences in the notification system.
+     * Displays the error notification with content |textBody|. The title of the notification is
+     * fixed.
      */
-    private void showNotification(String errorMessage, Intent intentTriggeredOnClick) {
-        String title = getString(R.string.sign_in_sync);
-        String textBody = errorMessage;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            // For versions older than Android N, the notification doesn't show the app name by
-            // default, so use the app name as title.
-            title = getString(R.string.app_name);
-            textBody = getString(R.string.sign_in_sync) + ": " + errorMessage;
-        }
-
+    private void showNotification(String textBody, Intent intentTriggeredOnClick) {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
         // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
@@ -164,7 +153,7 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
                                         NotificationConstants.NOTIFICATION_ID_SYNC))
                         .setAutoCancel(true)
                         .setContentIntent(pendingIntent)
-                        .setContentTitle(title)
+                        .setContentTitle(getString(R.string.sync_error_card_title))
                         .setContentText(textBody)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .setTicker(textBody)
@@ -243,8 +232,8 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
         mTrustedVaultNotificationShownOrCreating = true;
 
         String notificationTextBody = getString(mProfileSyncService.isEncryptEverythingEnabled()
-                        ? R.string.sync_error_card_title
-                        : R.string.password_sync_error_summary);
+                        ? R.string.hint_sync_retrieve_keys_for_everything
+                        : R.string.hint_sync_retrieve_keys_for_passwords);
 
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)

@@ -1674,9 +1674,6 @@ Your Google account may have other forms of browsing history like searches and a
         Tabs that you've opened in Chrome on your other devices will appear here.
       </message>
 
-      <message name="IDS_SIGN_IN_SYNC" desc="Sync preference title in signed-in prefs and prefix for notification related to sync [CHAR-LIMIT=32]">
-        Sync
-      </message>
       <message name="IDS_SEARCH_AND_BROWSE_CATEGORY" desc="Category to show the search and browse improvement toggle. [CHAR-LIMT=32]">
         Search and browse
       </message>
@@ -1687,7 +1684,7 @@ Your Google account may have other forms of browsing history like searches and a
         Sync everything
       </message>
       <message name="IDS_SYNC_AUTOFILL" desc="Title for preference which enables sync'ing of autofill. [CHAR-LIMT=32]">
-        Autofill
+        Addresses and more
       </message>
       <message name="IDS_SYNC_BOOKMARKS" desc="Title for preference which enables sync'ing of bookmarks. [CHAR-LIMT=32]">
         Bookmarks
@@ -1705,7 +1702,7 @@ Your Google account may have other forms of browsing history like searches and a
         Settings
       </message>
       <message name="IDS_SYNC_PAYMENTS_INTEGRATION" desc="Title for preference which enables import of Google Pay data for Autofill. 'Google Pay' should not be translated as it is the product name.">
-        Credit cards and addresses using Google Pay
+        Payment methods and addresses using Google Pay
       </message>
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR-LIMT=32]">
         Encryption
@@ -1717,7 +1714,7 @@ Your Google account may have other forms of browsing history like searches and a
         Encryption
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_KEYSTORE" desc="Option to encrypt only passwords, using your Google credentials.">
-        Encrypt passwords with Google credentials
+        Encrypt synced passwords with your Google Account
       </message>
       <message name="IDS_SYNC_PASSPHRASE_TYPE_FROZEN" desc="Option to encrypt sync data, using your Google password frozen on the substituted date.">
         Encrypt synced data with Google password as of <ph name="TIME">%1$s<ex>Oct 3, 2014</ex></ph>
@@ -1837,7 +1834,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Sync isn't working
       </message>
       <message name="IDS_PASSWORD_SYNC_ERROR_SUMMARY" desc="Short message shown in various UIs (e.g. Sync Error Card body) to inform that passwords can't be synced (due to missing trusted vault keys). [CHAR-LIMIT=32]">
-        Error syncing passwords
+        Password sync isn't working
       </message>
       <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED_TITLE" desc="Title of the error message shown when sync setup was not complete. [CHAR-LIMIT=60]">
         Initial sync setup not finished
@@ -1848,11 +1845,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_HINT_SYNC_AUTH_ERROR" desc="Hint message to resolve sync auth error.">
         Sign in again to start sync
       </message>
-      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS" desc="Hint message to resolve sync encryption error.">
-        Fix now
+      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_EVERYTHING" desc="Hint message to resolve sync encryption error, required to resume sync.">
+        To start sync, verify it's you
+      </message>
+      <message name="IDS_HINT_SYNC_RETRIEVE_KEYS_FOR_PASSWORDS" desc="Hint message to resolve sync encryption error, required to resume syncing passwords.">
+        To sync your passwords, verify it's you
       </message>
       <message name="IDS_HINT_PASSPHRASE_REQUIRED" desc="Hint message to resolve passphrase required error.">
-        Enter your passphrase to start sync
+        To start sync, enter your passphrase
       </message>
       <message name="IDS_HINT_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
         Choose what to sync below
@@ -1879,6 +1879,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_AUTH_ERROR_CARD_BUTTON" desc="Button text for auth error in sync error cards.">
         Sign in again
+      </message>
+      <message name="IDS_TRUSTED_VAULT_ERROR_CARD_BUTTON" desc="Button text for trusted vault error in sync error cards.">
+        Verify it's you
       </message>
 
       <!-- Sync error strings -->
