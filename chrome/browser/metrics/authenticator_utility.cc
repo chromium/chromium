@@ -20,11 +20,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/is_uvpaa.h"
 
-#if defined(OS_ANDROID)
-#include "base/android/jni_android.h"
-#include "chrome/android/chrome_jni_headers/IsUvpaaHelper_jni.h"
-#endif
-
 #if defined(OS_MAC)
 #include "device/fido/mac/authenticator.h"
 #endif
@@ -79,9 +74,12 @@ void ReportUVPlatformAuthenticatorAvailabilityMainThreadMac() {
                      ChromeAuthenticatorRequestDelegate::
                          TouchIdAuthenticatorConfigForProfile(profile)));
 }
-#endif  // defined(OS_MAC)
+#endif
 
 void ReportUVPlatformAuthenticatorAvailability() {
+  // This only reports metrics for desktop platforms. For mobile devices, the
+  // platform version is an exact proxy for whether a platform authenticator
+  // can be used.
 #if defined(OS_MAC)
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // IsUVPAA() is prone to crashes/hangs on macOS. Downsample metric collection
@@ -102,24 +100,7 @@ void ReportUVPlatformAuthenticatorAvailability() {
       base::BindOnce(&ReportAvailability));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1181426): Reenable the IsUVPAA() startup metric on CrOS.
-#elif defined(OS_ANDROID)
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  ::webauth::Java_IsUvpaaHelper_isUserVerifyingPlatformAuthenticatorAvailable(
-      env);
 #endif
 }
 
 }  // namespace authenticator_utility
-
-#if defined(OS_ANDROID)
-
-namespace webauth {
-
-void JNI_IsUvpaaHelper_OnIsUvpaaComplete(JNIEnv* env, jboolean available) {
-  authenticator_utility::ReportAvailability(static_cast<bool>(available));
-}
-
-}  // namespace webauth
-
-#endif  // defined(OS_ANDROID)
