@@ -88,6 +88,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "encryption_module_unittest.cc",
+    "encryption_unittest.cc",
     "verification_unittest.cc",
   ]
   deps = [
