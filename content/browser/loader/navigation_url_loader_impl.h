@@ -23,6 +23,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/navigation/navigation_policy.h"
 
 namespace net {
 struct RedirectInfo;

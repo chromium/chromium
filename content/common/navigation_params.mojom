@@ -17,6 +17,7 @@ import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
@@ -29,9 +30,6 @@ import "third_party/blink/public/mojom/page/page.mojom";
 
 [Native]
 struct Impression;
-
-[Native]
-struct NavigationDownloadPolicy;
 
 [Native]
 struct PageState;
@@ -171,7 +169,7 @@ struct CommonNavigationParams {
   NavigationType navigation_type = DIFFERENT_DOCUMENT;
 
   // Governs how downloads are handled by this navigation.
-  NavigationDownloadPolicy download_policy;
+  blink.mojom.NavigationDownloadPolicy download_policy;
 
   // Informs the RenderView the pending navigation should replace the current
   // history entry when it commits.  This is used by client-side redirects to

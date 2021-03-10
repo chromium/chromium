@@ -95,12 +95,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::FrameVisibility,
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::WebFeature,
                           blink::mojom::WebFeature::kMaxValue)
 
-IPC_STRUCT_TRAITS_BEGIN(blink::NavigationDownloadPolicy)
-  IPC_STRUCT_TRAITS_MEMBER(observed_types)
-  IPC_STRUCT_TRAITS_MEMBER(disallowed_types)
-  IPC_STRUCT_TRAITS_MEMBER(blocking_downloads_in_sandbox_enabled)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::Impression)
   IPC_STRUCT_TRAITS_MEMBER(conversion_destination)
   IPC_STRUCT_TRAITS_MEMBER(reporting_origin)

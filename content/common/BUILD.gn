@@ -483,10 +483,6 @@ mojom("mojo_bindings") {
           cpp = "::content::ContentSecurityPolicy"
         },
         {
-          mojom = "content.mojom.NavigationDownloadPolicy"
-          cpp = "::blink::NavigationDownloadPolicy"
-        },
-        {
           mojom = "content.mojom.NavigationGesture"
           cpp = "::content::NavigationGesture"
         },
@@ -595,10 +591,6 @@ mojom("mojo_bindings") {
           cpp = "::blink::Impression"
         },
         {
-          mojom = "content.mojom.NavigationDownloadPolicy"
-          cpp = "::blink::NavigationDownloadPolicy"
-        },
-        {
           mojom = "content.mojom.PageState"
           cpp = "::blink::PageState"
         },
@@ -615,7 +607,6 @@ mojom("mojo_bindings") {
         "//content/common/content_param_traits.h",
         "//content/common/navigation_params.h",
         "//third_party/blink/public/common/navigation/impression.h",
-        "//third_party/blink/public/common/navigation/navigation_policy.h",
         "//third_party/blink/public/common/page_state/page_state.h",
         "//ui/base/page_transition_types.h",
       ]
