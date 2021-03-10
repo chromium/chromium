@@ -141,7 +141,8 @@ base::FilePath GetLaunchDirectory(
 
 void LaunchSystemWebAppAsync(Profile* profile,
                              const SystemAppType type,
-                             const SystemAppLaunchParams& params) {
+                             const SystemAppLaunchParams& params,
+                             apps::mojom::WindowInfoPtr window_info) {
   // Terminal should be launched with crostini::LaunchTerminal*.
   DCHECK(type != SystemAppType::TERMINAL);
 
@@ -190,11 +191,12 @@ void LaunchSystemWebAppAsync(Profile* profile,
       WindowOpenDisposition::NEW_WINDOW, /* prefer_container */ false);
 
   if (params.url.is_empty()) {
-    app_service->Launch(app_id.value(), event_flags, params.launch_source);
+    app_service->Launch(app_id.value(), event_flags, params.launch_source,
+                        std::move(window_info));
   } else {
     DCHECK(params.url.is_valid());
     app_service->LaunchAppWithUrl(app_id.value(), event_flags, params.url,
-                                  params.launch_source);
+                                  params.launch_source, std::move(window_info));
   }
 }
 

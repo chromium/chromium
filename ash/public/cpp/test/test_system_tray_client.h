@@ -18,7 +18,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   ~TestSystemTrayClient() override;
 
   // SystemTrayClient:
-  void ShowSettings() override;
+  void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
   void ShowBluetoothPairingDialog(const std::string& address,
                                   const base::string16& name_for_display,

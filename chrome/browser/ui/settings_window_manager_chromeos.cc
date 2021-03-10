@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,7 +73,8 @@ void SettingsWindowManager::RemoveObserver(
 }
 
 void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
-                                                     const GURL& gurl) {
+                                                     const GURL& gurl,
+                                                     int64_t display_id) {
   // Use the original (non off-the-record) profile for settings unless
   // this is a guest session.
   if (!profile->IsGuestSession() && profile->IsOffTheRecord())
@@ -91,7 +93,8 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
   // TODO(crbug.com/1067073): Remove legacy Settings Window.
   if (!UseDeprecatedSettingsWindow(profile)) {
     web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::SETTINGS,
-                                     {.url = gurl});
+                                     {.url = gurl},
+                                     apps::MakeWindowInfo(display_id));
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
     return;
@@ -140,13 +143,16 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
     observer.OnNewSettingsWindow(browser);
 }
 
-void SettingsWindowManager::ShowOSSettings(Profile* profile) {
-  ShowOSSettings(profile, std::string());
+void SettingsWindowManager::ShowOSSettings(Profile* profile,
+                                           int64_t display_id) {
+  ShowOSSettings(profile, std::string(), display_id);
 }
 
 void SettingsWindowManager::ShowOSSettings(Profile* profile,
-                                           const std::string& sub_page) {
-  ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page));
+                                           const std::string& sub_page,
+                                           int64_t display_id) {
+  ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page),
+                           display_id);
 }
 
 Browser* SettingsWindowManager::FindBrowserForProfile(Profile* profile) {

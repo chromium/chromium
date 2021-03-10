@@ -290,11 +290,11 @@ void SystemTrayClient::SetLocaleList(
 ////////////////////////////////////////////////////////////////////////////////
 // ash::mojom::SystemTrayClient:
 
-void SystemTrayClient::ShowSettings() {
+void SystemTrayClient::ShowSettings(int64_t display_id) {
   // TODO(jamescook): Use different metric for OS settings.
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile());
+      ProfileManager::GetActiveUserProfile(), display_id);
 }
 
 void SystemTrayClient::ShowBluetoothSettings() {

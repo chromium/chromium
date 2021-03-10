@@ -118,6 +118,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -2263,7 +2264,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   // Open a settings window. Number of browser items should remain unchanged,
   // number of shelf items should increase.
   settings_manager->ShowChromePageForProfile(
-      browser()->profile(), chrome::GetOSSettingsUrl(std::string()));
+      browser()->profile(), chrome::GetOSSettingsUrl(std::string()),
+      display::kInvalidDisplayId);
   // Spin a run loop to sync Ash's ShelfModel change for the settings window.
   base::RunLoop().RunUntilIdle();
   Browser* settings_browser =

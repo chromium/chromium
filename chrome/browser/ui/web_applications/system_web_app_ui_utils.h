@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -52,7 +53,8 @@ struct SystemAppLaunchParams {
 void LaunchSystemWebAppAsync(
     Profile* profile,
     const SystemAppType type,
-    const SystemAppLaunchParams& params = SystemAppLaunchParams());
+    const SystemAppLaunchParams& params = SystemAppLaunchParams(),
+    apps::mojom::WindowInfoPtr window_info = nullptr);
 
 // When this method returns, it makes sure all previous LaunchSystemWebAppAsync
 // calls on |profile| are processed (i.e. LaunchSystemWebAppImpl finishes

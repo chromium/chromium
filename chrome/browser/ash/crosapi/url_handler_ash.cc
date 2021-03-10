@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/display/types/display_constants.h"
 
 namespace crosapi {
 
@@ -28,7 +29,7 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
   chrome::SettingsWindowManager* settings_window_manager =
       chrome::SettingsWindowManager::GetInstance();
   settings_window_manager->ShowChromePageForProfile(
-      ProfileManager::GetPrimaryUserProfile(), url);
+      ProfileManager::GetPrimaryUserProfile(), url, display::kInvalidDisplayId);
 }
 
 }  // namespace crosapi

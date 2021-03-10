@@ -29,6 +29,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 namespace {
@@ -61,7 +62,8 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
 
   void ShowSettingsForProfile(Profile* profile) {
     settings_manager_->ShowChromePageForProfile(
-        profile, GURL(chrome::kChromeUISettingsURL));
+        profile, GURL(chrome::kChromeUISettingsURL),
+        display::kInvalidDisplayId);
   }
 
   void CloseNonDefaultBrowsers() {
