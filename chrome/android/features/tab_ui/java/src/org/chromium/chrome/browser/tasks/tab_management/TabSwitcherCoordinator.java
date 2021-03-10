@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -324,8 +325,10 @@ public class TabSwitcherCoordinator
             }
 
             if (TabUiFeatureUtilities.isPriceTrackingEnabled()) {
+                PriceDropNotificationManager notificationManager =
+                        new PriceDropNotificationManager();
                 mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
-                        context, modalDialogManager, this, mTabModelSelector);
+                        context, modalDialogManager, this, mTabModelSelector, notificationManager);
                 if (!PriceTrackingUtilities.isPriceWelcomeMessageCardDisabled()) {
                     mPriceWelcomeMessageService =
                             new PriceWelcomeMessageService(mTabListCoordinator, mMediator);

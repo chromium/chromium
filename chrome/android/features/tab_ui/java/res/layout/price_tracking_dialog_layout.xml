@@ -103,11 +103,17 @@
                 android:text="@string/price_drop_alerts_description"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
         </LinearLayout>
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/price_alerts_switch"
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/price_alerts_arrow"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:layout_gravity="center" />
+            android:paddingStart="@dimen/price_tracking_dialog_text_side_margin"
+            android:paddingEnd="0dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/price_drop_alerts_card_go_to_settings"
+            android:src="@drawable/ic_expand_more_horizontal_black_24dp"
+            android:background="@drawable/tab_grid_dialog_background"
+            app:tint="@color/default_icon_color_tint_list" />
     </LinearLayout>
 </org.chromium.chrome.browser.tasks.tab_management.PriceTrackingDialogView>

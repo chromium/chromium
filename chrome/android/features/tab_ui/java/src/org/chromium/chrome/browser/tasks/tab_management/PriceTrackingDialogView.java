@@ -12,13 +12,14 @@ import android.widget.LinearLayout;
 import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * The view for PriceTrackingSettings dialog related UIs.
  */
 public class PriceTrackingDialogView extends LinearLayout {
     private SwitchCompat mTrackPricesSwitch;
-    private SwitchCompat mPriceAlertsSwitch;
+    private ChromeImageButton mPriceAlertsArrow;
 
     public PriceTrackingDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -28,23 +29,29 @@ public class PriceTrackingDialogView extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mTrackPricesSwitch = (SwitchCompat) findViewById(R.id.track_prices_switch);
-        mPriceAlertsSwitch = (SwitchCompat) findViewById(R.id.price_alerts_switch);
+        mPriceAlertsArrow = (ChromeImageButton) findViewById(R.id.price_alerts_arrow);
     }
 
     /**
-     * Update the checked/unchecked status of two switches. This is called every time before the
-     * dialog shows.
+     * Update the checked/unchecked status of the track prices switch. This is called every time
+     * before the dialog shows.
      */
     void updateSwitch() {
         mTrackPricesSwitch.setChecked(PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
-        mPriceAlertsSwitch.setChecked(PriceTrackingUtilities.isPriceDropAlertsEnabled());
     }
 
     /**
-     * Set the OnCheckedChangeListener of two switches.
+     * Set OnCheckedChangeListener of the track prices switch.
      */
-    void setupOnCheckedChangeListener(OnCheckedChangeListener onCheckedChangeListener) {
+    void setupTrackPricesSwitchOnCheckedChangeListener(
+            OnCheckedChangeListener onCheckedChangeListener) {
         mTrackPricesSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
-        mPriceAlertsSwitch.setOnCheckedChangeListener(onCheckedChangeListener);
+    }
+
+    /**
+     * Set OnClickListener of the price alerts arrow button.
+     */
+    void setupPriceAlertsArrowOnClickListener(OnClickListener onClickListener) {
+        mPriceAlertsArrow.setOnClickListener(onClickListener);
     }
 }
