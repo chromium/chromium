@@ -234,7 +234,8 @@ if (target_os == "android") {
 } else if (target_os == "ios") {
   _default_toolchain = "//build/toolchain/mac:ios_clang_$target_cpu"
 } else if (target_os == "mac") {
-  assert(host_os == "mac", "Mac cross-compiles are unsupported.")
+  assert(host_os == "mac" || host_os == "linux",
+         "Mac cross-compiles are unsupported.")
   _default_toolchain = "//build/toolchain/mac:clang_$target_cpu"
 } else if (target_os == "win") {
   # On Windows, we use the same toolchain for host and target by default.
