@@ -430,6 +430,9 @@ const char kNearbyShareLearnMoreURL[] =
 extern const char kNearbyShareManageContactsURL[] =
     "https://contacts.google.com";
 
+extern const char kFingerprintLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_fingerprint";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)

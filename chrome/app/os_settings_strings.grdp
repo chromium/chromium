@@ -3212,6 +3212,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_LESS_SECURE" desc="Text telling users that fingerprints might be less secure than strong PINs or passwords.">
     Note: Your fingerprint may be less secure than a strong password or PIN.
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_NOTICE" desc="Tooltip text telling users that fingerprint data never leaves their device.">
+    Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
 
   <!-- Setup Pin dialog (OS settings) -->
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_CHOOSE_PIN_TITLE" desc="Message shown below the title that tells the user to enter the initial PIN.">

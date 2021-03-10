@@ -483,6 +483,13 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       "lockScreenHideSensitiveNotificationsSupported",
       ash::features::IsLockScreenHideSensitiveNotificationsSupported());
 
+  html_source->AddString("lockScreenFingerprintNotice",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_NOTICE,
+                             ui::GetChromeOSDeviceName()));
+  html_source->AddString("fingerprintLearnMoreLink",
+                         chrome::kFingerprintLearnMoreURL);
+
   if (chromeos::features::IsAccountManagementFlowsV2Enabled()) {
     html_source->AddLocalizedString(
         "lockScreenTitleLoginLock",

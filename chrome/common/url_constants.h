@@ -392,6 +392,9 @@ extern const char kWifiSyncLearnMoreURL[];
 
 // The URL for contacts management in Nearby Share feature.
 extern const char kNearbyShareManageContactsURL[];
+
+// The URL for the help center article about fingerprint on Chrome OS devices.
+extern const char kFingerprintLearnMoreURL[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_MAC)
