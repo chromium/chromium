@@ -391,6 +391,9 @@ void WebAppInstallManager::
   auto task = std::make_unique<WebAppInstallTask>(
       profile(), os_integration_manager(), finalizer(),
       data_retriever_factory_.Run(), registrar());
+  // Set the expect app id for fallback install too. This can avoid duplicate
+  // installs.
+  task->ExpectAppId(sync_app_id);
 
   InstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = webapps::WebappInstallSource::SYNC;
