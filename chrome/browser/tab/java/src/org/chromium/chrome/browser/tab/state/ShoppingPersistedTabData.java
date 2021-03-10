@@ -88,6 +88,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private long mPreviousPriceMicros = NO_PRICE_KNOWN;
 
     private String mCurrencyCode;
+    private String mOfferId;
 
     @VisibleForTesting
     protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
@@ -362,6 +363,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public void setPreviousPriceMicrosForTesting(long previousPriceMicros) {
         mPreviousPriceMicros = previousPriceMicros;
+    }
+
+    public void setOfferID(String offerID) {
+        mOfferId = offerID;
+    }
+
+    public String getOfferId() {
+        return mOfferId;
     }
 
     /**
