@@ -534,6 +534,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.PersistentWebNotificationClickEventResult"
+    enum="ServiceWorkerStatusCode" expires_after="2021-08-22">
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Recorded delivery status for persistent notification clicks to a Service
+    Worker when handling a click on a persistent WebNotification has finished.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.PersistentWebNotificationClickResult"
     enum="PlatformNotificationStatus" expires_after="2021-08-22">
   <owner>peter@chromium.org</owner>
@@ -541,6 +551,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Recorded delivery status for persistent notification clicks to a Service
     Worker when handling a click on a persistent WebNotification has finished.
+  </summary>
+</histogram>
+
+<histogram name="Notifications.PersistentWebNotificationCloseEventResult"
+    enum="ServiceWorkerStatusCode" expires_after="2021-08-22">
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Records delivery status for persistent notification close events sent to a
+    Service Worker when the event has been handled.
   </summary>
 </histogram>
 

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "content/browser/notifications/devtools_event_logging.h"
@@ -25,6 +26,9 @@ namespace content {
 namespace {
 
 using NotificationDispatchCompleteCallback =
+    base::OnceCallback<void(PersistentNotificationStatus,
+                            blink::ServiceWorkerStatusCode)>;
+using PersistentNotificationDispatchCompleteCallback =
     base::OnceCallback<void(PersistentNotificationStatus)>;
 using NotificationOperationCallback =
     base::OnceCallback<void(const ServiceWorkerRegistration*,
@@ -88,7 +92,8 @@ void ServiceWorkerNotificationEventFinished(
   RunOrPostTaskOnThread(
       FROM_HERE, BrowserThread::UI,
       base::BindOnce(std::move(dispatch_complete_callback),
-                     ConvertServiceWorkerStatus(service_worker_status)));
+                     ConvertServiceWorkerStatus(service_worker_status),
+                     service_worker_status));
 }
 
 // Dispatches the given notification action event on
@@ -149,7 +154,8 @@ void DispatchNotificationEventOnRegistration(
   }
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(dispatch_complete_callback), status));
+      FROM_HERE, base::BindOnce(std::move(dispatch_complete_callback), status,
+                                service_worker_status));
 }
 
 // Finds the ServiceWorkerRegistration associated with the |origin| and
@@ -170,7 +176,8 @@ void FindServiceWorkerRegistration(
 #endif
   if (!success) {
     std::move(dispatch_complete_callback)
-        .Run(PersistentNotificationStatus::kDatabaseError);
+        .Run(PersistentNotificationStatus::kDatabaseError,
+             blink::ServiceWorkerStatusCode::kOk);
     return;
   }
 
@@ -276,7 +283,7 @@ void OnPersistentNotificationDataDeleted(
               : PersistentNotificationStatus::kDatabaseError;
   if (service_worker_status != blink::ServiceWorkerStatusCode::kOk)
     status = ConvertServiceWorkerStatus(service_worker_status);
-  std::move(dispatch_complete_callback).Run(status);
+  std::move(dispatch_complete_callback).Run(status, service_worker_status);
 }
 
 // Called when the persistent notification close event has been handled
@@ -379,6 +386,28 @@ void DispatchNotificationEvent(
       std::move(dispatch_complete_callback));
 }
 
+void OnDispatchNotificationClickEventComplete(
+    PersistentNotificationDispatchCompleteCallback dispatch_complete_callback,
+    PersistentNotificationStatus status,
+    blink::ServiceWorkerStatusCode service_worker_status) {
+  base::UmaHistogramEnumeration(
+      "Notifications.PersistentWebNotificationClickEventResult",
+      service_worker_status);
+
+  std::move(dispatch_complete_callback).Run(status);
+}
+
+void OnDispatchNotificationCloseEventComplete(
+    PersistentNotificationDispatchCompleteCallback dispatch_complete_callback,
+    PersistentNotificationStatus status,
+    blink::ServiceWorkerStatusCode service_worker_status) {
+  base::UmaHistogramEnumeration(
+      "Notifications.PersistentWebNotificationCloseEventResult",
+      service_worker_status);
+
+  std::move(dispatch_complete_callback).Run(status);
+}
+
 }  // namespace
 
 // static
@@ -412,7 +441,8 @@ void NotificationEventDispatcherImpl::DispatchNotificationClickEvent(
   DispatchNotificationEvent(
       browser_context, notification_id, origin, interaction,
       base::BindOnce(&DoDispatchNotificationClickEvent, action_index, reply),
-      std::move(dispatch_complete_callback));
+      base::BindOnce(&OnDispatchNotificationClickEventComplete,
+                     std::move(dispatch_complete_callback)));
 }
 
 void NotificationEventDispatcherImpl::DispatchNotificationCloseEvent(
@@ -423,11 +453,13 @@ void NotificationEventDispatcherImpl::DispatchNotificationCloseEvent(
     NotificationDispatchCompleteCallback dispatch_complete_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DispatchNotificationEvent(browser_context, notification_id, origin,
-                            PlatformNotificationContext::Interaction::CLOSED,
-                            base::BindOnce(&DoDispatchNotificationCloseEvent,
-                                           notification_id, by_user),
-                            std::move(dispatch_complete_callback));
+  DispatchNotificationEvent(
+      browser_context, notification_id, origin,
+      PlatformNotificationContext::Interaction::CLOSED,
+      base::BindOnce(&DoDispatchNotificationCloseEvent, notification_id,
+                     by_user),
+      base::BindOnce(&OnDispatchNotificationCloseEventComplete,
+                     std::move(dispatch_complete_callback)));
 }
 
 void NotificationEventDispatcherImpl::RegisterNonPersistentNotificationListener(
