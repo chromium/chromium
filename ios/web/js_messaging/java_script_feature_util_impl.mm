@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
@@ -100,6 +101,7 @@ namespace java_script_features {
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
+          FindInPageJavaScriptFeature::GetInstance(),
           GetPluginPlaceholderJavaScriptFeature(),
           GetScrollHelperJavaScriptFeature(),
           GetWindowErrorJavaScriptFeature()};

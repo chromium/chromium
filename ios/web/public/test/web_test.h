@@ -28,6 +28,13 @@ class WebTest : public PlatformTest {
           WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
   ~WebTest() override;
 
+  // Manually configures JavaScriptFeatures from |GetWebClient()|. This needs to
+  // called from |SetUp| when features are manually set on a FakeWebClient.
+  // NOTE: Do not call this when using a ChromeWebClient as this will override
+  // built in features features with only the features returned by the web
+  // client.
+  void ConfigureJavaScriptFeatures();
+
   // Returns the WebClient that is used for testing.
   virtual web::WebClient* GetWebClient();
 

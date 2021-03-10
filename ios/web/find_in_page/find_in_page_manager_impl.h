@@ -55,7 +55,7 @@ class FindInPageManagerImpl : public FindInPageManager,
   // null, then does nothing more.
   void ProcessFindInPageResult(const std::string& frame_id,
                                const int request_id,
-                               const base::Value* result);
+                               base::Optional<int> result);
   // Calls delegate DidHighlightMatches() method if |delegate_| is set and
   // starts a FindInPageNext find. Called when the last frame returns results
   // from a Find request.
@@ -75,6 +75,7 @@ class FindInPageManagerImpl : public FindInPageManager,
                                      WebFrame* web_frame) override;
   void WebStateDestroyed(WebState* web_state) override;
 
+ protected:
   // Holds the state of the most recent find in page request.
   FindInPageRequest last_find_request_;
   FindInPageManagerDelegate* delegate_ = nullptr;

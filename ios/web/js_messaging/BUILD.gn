@@ -91,6 +91,7 @@ source_set("java_script_feature_util") {
 
   deps = [
     "//base",
+    "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/scroll_helper",
     "//ios/web/js_features/window_error",

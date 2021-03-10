@@ -438,7 +438,6 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/net",
     "//ios/testing:ocmock_support",
     "//ios/web/common:web_view_creation_util",
-    "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
@@ -459,7 +458,6 @@ source_set("ios_web_web_state_js_unittests") {
 
   sources = [
     "web_state/js/common_js_unittest.mm",
-    "web_state/js/find_in_page_js_unittest.mm",
     "web_state/js/message_js_unittest.mm",
   ]
 }
@@ -559,8 +557,10 @@ test("ios_web_inttests") {
     "//ios/web/common:web_view_creation_util",
     "//ios/web/download:download_inttests",
     "//ios/web/favicon:inttests",
+    "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging:inttests",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/js_messaging:java_script_feature_util",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
@@ -636,7 +636,6 @@ js_compile_bundle("all_frames_web_bundle") {
   sources = [
     "web_state/js/resources/all_frames_web_bundle.js",
     "web_state/js/resources/cookie.js",
-    "web_state/js/resources/find_in_page.js",
     "web_state/js/resources/share_workaround.js",
   ]
 }

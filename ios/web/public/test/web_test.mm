@@ -5,6 +5,7 @@
 #include "ios/web/public/test/web_test.h"
 
 #include "base/memory/ptr_util.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 
@@ -34,6 +35,12 @@ WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
       crash_observer_(std::make_unique<WebTestRenderProcessCrashObserver>()) {}
 
 WebTest::~WebTest() {}
+
+void WebTest::ConfigureJavaScriptFeatures() {
+  JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+      ->ConfigureFeatures(
+          GetWebClient()->GetJavaScriptFeatures(GetBrowserState()));
+}
 
 web::WebClient* WebTest::GetWebClient() {
   return web_client_.Get();

@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
@@ -102,25 +102,20 @@ bool IsWebViewContainingText(web::WebState* web_state,
 
 bool IsWebViewContainingTextInFrame(web::WebState* web_state,
                                     const std::string& text) {
-  WebFramesManager* frames_manager = web_state->GetWebFramesManager();
-  const base::TimeDelta kCallJavascriptFunctionTimeout =
-      base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
   __block NSInteger number_frames_processing = 0;
   __block bool text_found = false;
-  for (WebFrame* frame : frames_manager->GetAllWebFrames()) {
+  for (WebFrame* frame : web_state->GetWebFramesManager()->GetAllWebFrames()) {
     number_frames_processing++;
-    std::vector<base::Value> parameters;
-    parameters.push_back(base::Value(text));
-    parameters.push_back(base::Value(100.0));
-    frame->CallJavaScriptFunction("findInPage.findString", parameters,
-                                  base::BindOnce(^(const base::Value* value) {
-                                    if (value) {
-                                      text_found =
-                                          text_found || value->GetDouble() != 0;
-                                    }
-                                    number_frames_processing--;
-                                  }),
-                                  kCallJavascriptFunctionTimeout);
+
+    FindInPageJavaScriptFeature* find_in_page_feature =
+        FindInPageJavaScriptFeature::GetInstance();
+    find_in_page_feature->Search(
+        frame, text, base::BindOnce(^(base::Optional<int> result_matches) {
+          if (result_matches && result_matches.value() >= 1) {
+            text_found = true;
+          }
+          number_frames_processing--;
+        }));
   }
   bool success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     if (text_found)

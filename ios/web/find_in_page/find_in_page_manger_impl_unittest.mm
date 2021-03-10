@@ -9,12 +9,15 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_test.h"
+#include "ios/web/test/fakes/fake_web_frame_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,11 +33,19 @@ namespace web {
 // FindInPageManagerDelegate is correct depending on what web frames return.
 class FindInPageManagerImplTest : public WebTest {
  protected:
-  FindInPageManagerImplTest() {
+  FindInPageManagerImplTest() : WebTest(std::make_unique<FakeWebClient>()) {
     fake_web_state_ = std::make_unique<FakeWebState>();
+    fake_web_state_->SetBrowserState(GetBrowserState());
     auto frames_manager = std::make_unique<FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
     fake_web_state_->SetWebFramesManager(std::move(frames_manager));
+  }
+
+  void SetUp() override {
+    WebTest::SetUp();
+
+    JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+        ->ConfigureFeatures({FindInPageJavaScriptFeature::GetInstance()});
     FindInPageManagerImpl::CreateForWebState(fake_web_state_.get());
     GetFindInPageManager()->SetDelegate(&fake_delegate_);
   }
@@ -43,26 +54,28 @@ class FindInPageManagerImplTest : public WebTest {
   FindInPageManager* GetFindInPageManager() {
     return FindInPageManager::FromWebState(fake_web_state_.get());
   }
-  // Returns a FakeWebFrame that is the main frame with id |frame_id| that will
-  // return |js_result| for the JavaScript function call
-  // "findInString.findString".
-  std::unique_ptr<FakeWebFrame> CreateMainWebFrameWithJsResultForFind(
+
+  // Returns a fake WebFrame that represents the main frame which will return
+  // |js_result| for the JavaScript function call "findInString.findString".
+  std::unique_ptr<FakeWebFrameInternal> CreateMainWebFrameWithJsResultForFind(
       std::unique_ptr<base::Value> js_result) {
-    auto frame = std::make_unique<FakeMainWebFrame>(GURL());
+    auto frame = std::make_unique<FakeMainWebFrameInternal>(GURL());
     frame->AddJsResultForFunctionCall(std::move(js_result), kFindInPageSearch);
-    return frame;
-  }
-  // Returns a FakeWebFrame child frame with id |frame_id| that
-  // will return |js_result| for the JavaScript function call
-  // "findInString.findString".
-  std::unique_ptr<FakeWebFrame> CreateChildWebFrameWithJsResultForFind(
-      std::unique_ptr<base::Value> js_result) {
-    auto frame = std::make_unique<FakeChildWebFrame>(GURL());
-    frame->AddJsResultForFunctionCall(std::move(js_result), kFindInPageSearch);
+    frame->set_browser_state(GetBrowserState());
     return frame;
   }
 
-  void AddWebFrame(std::unique_ptr<WebFrame> frame) {
+  // Returns a fake WebFrame that represents a child frame which will return
+  // |js_result| for the JavaScript function call "findInString.findString".
+  std::unique_ptr<FakeWebFrameInternal> CreateChildWebFrameWithJsResultForFind(
+      std::unique_ptr<base::Value> js_result) {
+    auto frame = std::make_unique<FakeChildWebFrameInternal>(GURL());
+    frame->AddJsResultForFunctionCall(std::move(js_result), kFindInPageSearch);
+    frame->set_browser_state(GetBrowserState());
+    return frame;
+  }
+
+  void AddWebFrame(std::unique_ptr<FakeWebFrame> frame) {
     WebFrame* frame_ptr = frame.get();
     fake_web_frames_manager_->AddWebFrame(std::move(frame));
     fake_web_state_->OnWebFrameDidBecomeAvailable(frame_ptr);

@@ -21,8 +21,8 @@ goog.provide('__crWeb.findInPage');
  */
 __gCrWeb.findInPage = {};
 
- // Store common namespace object in a global __gCrWeb object referenced by a
- // string, so it does not get renamed by closure compiler during the
+ // Store findInPage namespace object in a global __gCrWeb object referenced by
+ // a string, so it does not get renamed by closure compiler during the
  // minification.
 __gCrWeb['findInPage'] = __gCrWeb.findInPage;
 
@@ -912,7 +912,5 @@ function escapeHTML_(text) {
 function escapeRegex_(text) {
   return text.replace(REGEX_ESCAPER, '\\$1');
 };
-
-window.addEventListener('pagehide', __gCrWeb.findInPage.stop);
 
 })();

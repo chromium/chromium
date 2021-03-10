@@ -4,9 +4,11 @@
 
 #import "base/test/ios/wait_util.h"
 #include "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_find_in_page_manager_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #include "net/base/escape.h"
@@ -36,8 +38,16 @@ namespace web {
 // FindInPageManagerDelegate are correct.
 class FindInPageManagerTest : public WebTestWithWebState {
  protected:
+  FindInPageManagerTest()
+      : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
+    static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
+        ->SetJavaScriptFeatures({FindInPageJavaScriptFeature::GetInstance()});
+  }
+
   void SetUp() override {
     WebTestWithWebState::SetUp();
+    ConfigureJavaScriptFeatures();
+
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/echo-query",
         base::BindRepeating(&testing::HandlePageWithContents)));

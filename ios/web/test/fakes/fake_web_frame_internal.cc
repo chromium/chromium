@@ -6,6 +6,41 @@
 
 namespace web {
 
+std::string FakeWebFrameInternal::GetFrameId() const {
+  return FakeWebFrame::GetFrameId();
+}
+
+bool FakeWebFrameInternal::IsMainFrame() const {
+  return FakeWebFrame::IsMainFrame();
+}
+
+GURL FakeWebFrameInternal::GetSecurityOrigin() const {
+  return FakeWebFrame::GetSecurityOrigin();
+}
+
+bool FakeWebFrameInternal::CanCallJavaScriptFunction() const {
+  return FakeWebFrame::CanCallJavaScriptFunction();
+}
+
+BrowserState* FakeWebFrameInternal::GetBrowserState() {
+  return FakeWebFrame::GetBrowserState();
+}
+
+bool FakeWebFrameInternal::CallJavaScriptFunction(
+    const std::string& name,
+    const std::vector<base::Value>& parameters) {
+  return FakeWebFrame::CallJavaScriptFunction(name, parameters);
+}
+
+bool FakeWebFrameInternal::CallJavaScriptFunction(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    base::OnceCallback<void(const base::Value*)> callback,
+    base::TimeDelta timeout) {
+  return FakeWebFrame::CallJavaScriptFunction(name, parameters,
+                                              std::move(callback), timeout);
+}
+
 bool FakeWebFrameInternal::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
     const std::vector<base::Value>& parameters,

@@ -3,18 +3,25 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
+#include "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #include "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,7 +40,7 @@ const char kFindString12345[] = "12345";
 
 // Pump search timeout in milliseconds.
 const double kPumpSearchTimeout = 100.0;
-}
+}  // namespace
 
 namespace web {
 
@@ -41,32 +48,66 @@ namespace web {
 // correct.
 class FindInPageJsTest : public WebTestWithWebState {
  protected:
+  FindInPageJsTest() : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
+    GetWebClient()->SetJavaScriptFeatures(
+        {FindInPageJavaScriptFeature::GetInstance()});
+  }
+
+  web::FakeWebClient* GetWebClient() override {
+    return static_cast<web::FakeWebClient*>(
+        WebTestWithWebState::GetWebClient());
+  }
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+
+    ConfigureJavaScriptFeatures();
+
+    content_world_ =
+        JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+            ->GetContentWorldForFeature(
+                FindInPageJavaScriptFeature::GetInstance());
+  }
+
+  bool WaitForWebFramesCount(unsigned long web_frames_count) {
+    return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+      return all_web_frames().size() == web_frames_count;
+    });
+  }
+
   // Returns WebFramesManager instance.
-  std::set<WebFrame*> all_web_frames() {
-    return web_state()->GetWebFramesManager()->GetAllWebFrames();
+  std::set<WebFrameImpl*> all_web_frames() {
+    std::set<WebFrameImpl*> frames;
+    for (WebFrame* frame :
+         web_state()->GetWebFramesManager()->GetAllWebFrames()) {
+      frames.insert(static_cast<WebFrameImpl*>(frame));
+    }
+    return frames;
   }
   // Returns main frame for |web_state_|.
-  WebFrame* main_web_frame() {
-    return web_state()->GetWebFramesManager()->GetMainWebFrame();
+  WebFrameImpl* main_web_frame() {
+    return static_cast<WebFrameImpl*>(
+        web_state()->GetWebFramesManager()->GetMainWebFrame());
   }
+
+  JavaScriptContentWorld* content_world_;
 };
 
 // Tests that FindInPage searches in main frame containing a match and responds
 // with 1 match.
 TEST_F(FindInPageJsTest, FindText) {
   ASSERT_TRUE(LoadHtml("<span>foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -84,17 +125,17 @@ TEST_F(FindInPageJsTest, FindText) {
 // hidden and responds with 0 matches.
 TEST_F(FindInPageJsTest, FindTextNoResults) {
   ASSERT_TRUE(LoadHtml("<span style='display:none'>foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -110,17 +151,16 @@ TEST_F(FindInPageJsTest, FindTextNoResults) {
 // Tests that FindInPage searches in child iframe and asserts that a result was
 // found.
 TEST_F(FindInPageJsTest, FindIFrameText) {
-  ASSERT_TRUE(LoadHtml(
+  ASSERT_TRUE(WebTestWithWebState::LoadHtml(
       "<iframe "
       "srcdoc='<html><body><span>foo</span></body></html>'></iframe>"));
+  ASSERT_TRUE(WaitForWebFramesCount(2));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 2;
-  }));
-  std::set<WebFrame*> all_frames = all_web_frames();
+  std::set<WebFrameImpl*> all_frames = all_web_frames();
   __block bool message_received = false;
-  WebFrame* child_frame = nullptr;
+  WebFrameImpl* child_frame = nullptr;
   for (auto* frame : all_frames) {
     if (frame->IsMainFrame()) {
       continue;
@@ -131,8 +171,9 @@ TEST_F(FindInPageJsTest, FindIFrameText) {
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  child_frame->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  child_frame->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -148,17 +189,17 @@ TEST_F(FindInPageJsTest, FindIFrameText) {
 // Tests that FindInPage works when searching for white space.
 TEST_F(FindInPageJsTest, FindWhiteSpace) {
   ASSERT_TRUE(LoadHtml("<span> </span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(" "));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -175,17 +216,17 @@ TEST_F(FindInPageJsTest, FindWhiteSpace) {
 TEST_F(FindInPageJsTest, FindAcrossMultipleNodes) {
   ASSERT_TRUE(
       LoadHtml("<p>xx1<span>2</span>3<a>4512345xxx12</a>34<a>5xxx12345xx</p>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindString12345));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -202,18 +243,17 @@ TEST_F(FindInPageJsTest, FindAcrossMultipleNodes) {
 // accessibility string is returned.
 TEST_F(FindInPageJsTest, FindHighlightMatch) {
   ASSERT_TRUE(LoadHtml("<span>some foo match</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -229,8 +269,8 @@ TEST_F(FindInPageJsTest, FindHighlightMatch) {
   __block std::string context_string;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
@@ -251,18 +291,17 @@ TEST_F(FindInPageJsTest, FindHighlightMatch) {
 // highlight is removed when another match is highlighted.
 TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
   ASSERT_TRUE(LoadHtml("<span>foo foo match</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -278,8 +317,8 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
   __block std::string context_string;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
@@ -298,9 +337,9 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
   highlight_done = false;
   std::vector<base::Value> highlight_second_params;
   highlight_second_params.push_back(base::Value(1));
-  main_web_frame()->CallJavaScriptFunction(
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
       kFindInPageSelectAndScrollToMatch, highlight_second_params,
-      base::BindOnce(^(const base::Value* result) {
+      content_world_, base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
             result->FindKey(kSelectAndScrollResultContextString)->GetString();
@@ -324,18 +363,17 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
 // Tests that FindInPage does not highlight any matches given an invalid index.
 TEST_F(FindInPageJsTest, FindHighlightMatchAtInvalidIndex) {
   ASSERT_TRUE(LoadHtml("<span>invalid </span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -350,8 +388,8 @@ TEST_F(FindInPageJsTest, FindHighlightMatchAtInvalidIndex) {
   __block bool highlight_done = false;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
       }),
@@ -369,17 +407,17 @@ TEST_F(FindInPageJsTest, FindHighlightMatchAtInvalidIndex) {
 // characters.
 TEST_F(FindInPageJsTest, SearchForNonAscii) {
   ASSERT_TRUE(LoadHtml("<span>école francais</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value("école"));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -402,18 +440,17 @@ TEST_F(FindInPageJsTest, CheckFindInPageScrollsToMatch) {
   // on all devices.
   ASSERT_TRUE(
       LoadHtml("<div style=\"height: 4000px;\"></div><span>foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value("foo"));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         ASSERT_EQ(1.0, result->GetDouble());
@@ -427,8 +464,8 @@ TEST_F(FindInPageJsTest, CheckFindInPageScrollsToMatch) {
   __block bool highlight_done = false;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
       }),
@@ -452,19 +489,18 @@ TEST_F(FindInPageJsTest, CheckFindInPageScrollsToMatch) {
 // Tests that FindInPage is able to clear CSS and match highlighting.
 TEST_F(FindInPageJsTest, StopFindInPage) {
   ASSERT_TRUE(LoadHtml("<span>foo foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
-
   // Do a search to ensure match highlighting is cleared properly.
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value("foo"));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         message_received = true;
       }),
       kCallJavascriptFunctionTimeout);
@@ -476,8 +512,8 @@ TEST_F(FindInPageJsTest, StopFindInPage) {
   message_received = false;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         message_received = true;
       }),
@@ -488,8 +524,8 @@ TEST_F(FindInPageJsTest, StopFindInPage) {
   }));
 
   message_received = false;
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageStop, std::vector<base::Value>(),
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageStop, std::vector<base::Value>(), content_world_,
       base::BindOnce(^(const base::Value* result) {
         message_received = true;
       }),
@@ -511,17 +547,17 @@ TEST_F(FindInPageJsTest, StopFindInPage) {
 TEST_F(FindInPageJsTest, HiddenMatch) {
   ASSERT_TRUE(
       LoadHtml("<span style='display:none'>foo</span><span>foo bar</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -536,8 +572,8 @@ TEST_F(FindInPageJsTest, HiddenMatch) {
   message_received = false;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         message_received = true;
       }),
@@ -562,17 +598,17 @@ TEST_F(FindInPageJsTest, HiddenMatch) {
 TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
   ASSERT_TRUE(LoadHtml("<span>foo</span><span id=\"hidden_match\" "
                        "style='display:none'>foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -589,8 +625,8 @@ TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
   message_received = false;
   std::vector<base::Value> highlight_params;
   highlight_params.push_back(base::Value(0));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, highlight_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, highlight_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
@@ -615,17 +651,17 @@ TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
 TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
   ASSERT_TRUE(LoadHtml(
       "<span>foo foo </span> <span id=\"matches_to_hide\">foo foo</span>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
   const base::TimeDelta kCallJavascriptFunctionTimeout =
       base::TimeDelta::FromSeconds(kWaitForJSCompletionTimeout);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return all_web_frames().size() == 1;
-  }));
   __block bool message_received = false;
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindStringFoo));
   params.push_back(base::Value(kPumpSearchTimeout));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSearch, params, base::BindOnce(^(const base::Value* result) {
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_double());
         double count = result->GetDouble();
@@ -640,8 +676,8 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
   __block bool select_last_match_message_received = false;
   std::vector<base::Value> select_params;
   select_params.push_back(base::Value(3));
-  main_web_frame()->CallJavaScriptFunction(
-      kFindInPageSelectAndScrollToMatch, select_params,
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSelectAndScrollToMatch, select_params, content_world_,
       base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
@@ -662,9 +698,9 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
   __block bool select_third_match_message_received = false;
   std::vector<base::Value> select_third_match_params;
   select_third_match_params.push_back(base::Value(2));
-  main_web_frame()->CallJavaScriptFunction(
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
       kFindInPageSelectAndScrollToMatch, select_third_match_params,
-      base::BindOnce(^(const base::Value* result) {
+      content_world_, base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
         const base::Value* index = result->FindKey(kSelectAndScrollResultIndex);

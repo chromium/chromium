@@ -21,6 +21,8 @@
 #import "ios/net/protocol_handler_util.h"
 #include "ios/testing/embedded_test_server_handlers.h"
 #include "ios/web/common/features.h"
+#import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -30,6 +32,7 @@
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/fakes/fake_web_state_observer.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
@@ -781,6 +784,10 @@ class WebStateObserverTest : public WebIntTest {
 
   void SetUp() override {
     WebIntTest::SetUp();
+
+    JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
+        ->ConfigureFeatures({FindInPageJavaScriptFeature::GetInstance()});
+
     decider_ = std::make_unique<StrictMock<PolicyDeciderMock>>(web_state());
     scoped_observer_.Add(web_state());
 
