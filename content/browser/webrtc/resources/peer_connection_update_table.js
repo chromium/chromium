@@ -117,7 +117,8 @@ export class PeerConnectionUpdateTable {
       }
     }
     const summaryItem = $('summary-template').content.cloneNode(true);
-    summaryItem.querySelector('summary').textContent = type;
+    const summary = summaryItem.querySelector('summary');
+    summary.textContent = type;
     row.appendChild(summaryItem);
 
     var valueContainer = document.createElement('pre');
@@ -166,7 +167,30 @@ export class PeerConnectionUpdateTable {
           value;
     }
 
-    valueContainer.textContent = value;
+    // RTCSessionDescription is serialized as 'type: <type>, sdp:'
+    if (update.value.indexOf(', sdp:') !== -1) {
+      const [type, sdp] = update.value.substr(6).split(', sdp: ');
+      const sections = sdp.split('\nm=')
+        .map((part, index) => (index > 0 ?
+          'm=' + part : part).trim() + '\r\n');
+      summary.textContent +=
+        ' (type: "' + type + '", ' + sections.length + ' sections)';
+      sections.forEach(section => {
+        const lines = section.trim().split('\n');
+        const sectionDetails = document.createElement('details');
+        sectionDetails.open = true;
+        sectionDetails.textContent = lines.slice(1).join('\n');
+
+        const sectionSummary = document.createElement('summary');
+        sectionSummary.innerText =
+          lines[0].trim() + ' (' + (lines.length - 1) + ' more lines)';
+        sectionDetails.appendChild(sectionSummary);
+
+        valueContainer.appendChild(sectionDetails);
+      });
+    } else {
+      valueContainer.textContent = value;
+    }
   }
 
   /**
