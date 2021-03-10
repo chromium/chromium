@@ -35,6 +35,11 @@ interface MediaPlayer {
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
 
+  // Set the volume multiplier to control audio ducking.
+  // Output volume should be set to |player_volume| * |multiplier|. The range
+  // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
+  SetVolumeMultiplier(double multiplier);
+
   // Set the media player sink id to |sink_id|.
   SetAudioSinkId(string sink_id);
 

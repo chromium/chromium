@@ -516,6 +516,7 @@ class CORE_EXPORT HTMLMediaElement
   void RequestSeekBackward(base::TimeDelta seek_time) override;
   void RequestEnterPictureInPicture() override {}
   void RequestExitPictureInPicture() override {}
+  void SetVolumeMultiplier(double multiplier) override;
   void SetAudioSinkId(const String&) override;
   void SuspendForFrameClosed() override;
 

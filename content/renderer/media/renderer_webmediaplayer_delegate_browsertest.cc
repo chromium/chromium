@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/common/media/media_player_delegate_messages.h"
@@ -18,6 +19,7 @@
 #include "content/renderer/media/renderer_webmediaplayer_delegate.h"
 #include "content/renderer/render_process.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -96,7 +98,13 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
   DISALLOW_COPY_AND_ASSIGN(RendererWebMediaPlayerDelegateTest);
 };
 
+// TODO(crbug.com/1039252) : Remove TC after a period of stability of the mojo
+// migration.
 TEST_F(RendererWebMediaPlayerDelegateTest, DeliversObserverNotifications) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      media::kUseMediaPlayerMojoInterface);
+
   const int delegate_id = delegate_manager_->AddObserver(&observer_1_);
 
   EXPECT_CALL(observer_1_, OnFrameHidden());

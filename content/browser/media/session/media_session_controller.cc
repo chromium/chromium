@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "media/base/media_content_type.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 
@@ -112,12 +113,22 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
                                                    double volume_multiplier) {
   DCHECK_EQ(player_id_, player_id);
 
-  auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
-  if (!render_frame_host)
-    return;
+  if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
+    auto* remote =
+        web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
+    // |remote| may be null in tests.
+    if (!remote)
+      return;
 
-  render_frame_host->Send(new MediaPlayerDelegateMsg_UpdateVolumeMultiplier(
-      render_frame_host->GetRoutingID(), id_.delegate_id, volume_multiplier));
+    remote->SetVolumeMultiplier(volume_multiplier);
+  } else {
+    auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
+    if (!render_frame_host)
+      return;
+
+    render_frame_host->Send(new MediaPlayerDelegateMsg_UpdateVolumeMultiplier(
+        render_frame_host->GetRoutingID(), id_.delegate_id, volume_multiplier));
+  }
 }
 
 void MediaSessionController::OnEnterPictureInPicture(int player_id) {

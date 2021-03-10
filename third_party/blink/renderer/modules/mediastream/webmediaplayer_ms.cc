@@ -1118,8 +1118,12 @@ void WebMediaPlayerMS::OnFrameShown() {
 
 void WebMediaPlayerMS::OnIdleTimeout() {}
 
-void WebMediaPlayerMS::OnVolumeMultiplierUpdate(double multiplier) {
+void WebMediaPlayerMS::SetVolumeMultiplier(double multiplier) {
   // TODO(perkj, magjed): See TODO in OnPlay().
+}
+
+void WebMediaPlayerMS::OnVolumeMultiplierUpdate(double multiplier) {
+  SetVolumeMultiplier(multiplier);
 }
 
 void WebMediaPlayerMS::OnBecamePersistentVideo(bool value) {

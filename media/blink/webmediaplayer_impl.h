@@ -192,6 +192,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
+  void SetVolumeMultiplier(double multiplier) override;
   void SuspendForFrameClosed() override;
 
   bool HasAvailableVideoFrame() const override;
@@ -800,7 +801,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerImpl
   bool is_remote_rendering_ = false;
 
   // The last volume received by setVolume() and the last volume multiplier from
-  // OnVolumeMultiplierUpdate().  The multiplier is typical 1.0, but may be less
+  // SetVolumeMultiplier().  The multiplier is typical 1.0, but may be less
   // if the WebMediaPlayerDelegate has requested a volume reduction (ducking)
   // for a transient sound.  Playout volume is derived by volume * multiplier.
   double volume_ = 1.0;

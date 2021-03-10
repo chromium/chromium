@@ -4536,6 +4536,11 @@ void HTMLMediaElement::RequestSeekBackward(base::TimeDelta seek_time) {
   setCurrentTime(currentTime() - seconds);
 }
 
+void HTMLMediaElement::SetVolumeMultiplier(double multiplier) {
+  if (web_media_player_)
+    web_media_player_->SetVolumeMultiplier(multiplier);
+}
+
 void HTMLMediaElement::SetAudioSinkId(const String& sink_id) {
   auto* audio_output_controller = AudioOutputDeviceController::From(*this);
   DCHECK(audio_output_controller);

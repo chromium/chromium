@@ -2503,9 +2503,13 @@ void WebMediaPlayerImpl::OnIdleTimeout() {
   UpdatePlayState();
 }
 
-void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
+void WebMediaPlayerImpl::SetVolumeMultiplier(double multiplier) {
   volume_multiplier_ = multiplier;
   SetVolume(volume_);
+}
+
+void WebMediaPlayerImpl::OnVolumeMultiplierUpdate(double multiplier) {
+  SetVolumeMultiplier(multiplier);
 }
 
 void WebMediaPlayerImpl::OnBecamePersistentVideo(bool value) {
