@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "chrome/browser/profiles/profile.h"
 
 class PrefService;
 
@@ -39,10 +40,10 @@ class SodaInstaller {
   // instance.
   static SodaInstaller* GetInstance();
 
-  // Initialize SODA. Called by ChromeBrowserMainParts during browser startup.
-  // Checks whether SODA is due for uninstallation, and if so, triggers
-  // uninstallation.
-  void Init(PrefService* prefs);
+  // Initialize SODA if appropriate for profile type. Called by
+  // ChromeBrowserMainParts during browser startup. Checks whether SODA is due
+  // for uninstallation, and if so, triggers uninstallation.
+  void InitForProfileIfAppropriate(Profile* profile);
 
   // Gets the directory path of the installed SODA lib bundle, or an empty path
   // if not installed. Currently Chrome OS only, returns empty path on other

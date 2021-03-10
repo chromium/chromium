@@ -185,6 +185,7 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_client.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #else
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -195,10 +196,8 @@
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "media/base/media_switches.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1608,12 +1607,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     // Exclude Android: SODA is not supported.
     // Exclude ChromeOS: SODA is independent of Component Updater.
-    if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
-        base::FeatureList::IsEnabled(media::kLiveCaption)) {
-      speech::SodaInstaller::GetInstance()->Init(profile_->GetPrefs());
-    }
+    speech::SodaInstaller::GetInstance()->InitForProfileIfAppropriate(profile_);
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  speech::SodaInstaller::GetInstance()->InitForProfileIfAppropriate(profile_);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   variations::VariationsService* variations_service =
       browser_process_->variations_service();

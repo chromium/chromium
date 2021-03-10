@@ -4,9 +4,12 @@
 
 #include "chrome/browser/accessibility/soda_installer.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 
 namespace speech {
 
@@ -14,7 +17,19 @@ SodaInstaller::SodaInstaller() = default;
 
 SodaInstaller::~SodaInstaller() = default;
 
-void SodaInstaller::Init(PrefService* prefs) {
+void SodaInstaller::InitForProfileIfAppropriate(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaption) ||
+      !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
+    return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Exclude signin profile because Live Captions can only be used when
+  // signed in with a regular profile.
+  if (ash::ProfileHelper::IsSigninProfile(profile))
+    return;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  PrefService* prefs = profile->GetPrefs();
   if (prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
     g_browser_process->local_state()->SetTime(prefs::kSodaScheduledDeletionTime,
                                               base::Time());
