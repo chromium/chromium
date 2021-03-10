@@ -100,6 +100,20 @@
       },
     },
   },
+  'angle_gles1_conformance_tests': {
+    'replacements': {
+      'Win10 FYI x64 Debug (NVIDIA)': {
+        'args': {
+          '--test-timeout': '60',
+        },
+      },
+      'Win7 FYI Debug (AMD)': {
+        'args': {
+          '--test-timeout': '60',
+        },
+      },
+    },
+  },
   'angle_perftests': {
     'remove_from': [
       'Android FYI Release (Nexus 5)',  # crbug.com/915429
