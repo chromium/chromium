@@ -61,21 +61,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   ~RestrictedCookieManager() override;
 
-  void OverrideSiteForCookiesForTesting(
-      const net::SiteForCookies& new_site_for_cookies) {
-    site_for_cookies_ = new_site_for_cookies;
-  }
   void OverrideOriginForTesting(const url::Origin& new_origin) {
     origin_ = new_origin;
   }
-  void OverrideTopFrameOriginForTesting(
-      const url::Origin& new_top_frame_origin) {
-    top_frame_origin_ = new_top_frame_origin;
-  }
   void OverrideIsolationInfoForTesting(
       const net::IsolationInfo& new_isolation_info) {
-    site_for_cookies_ = new_isolation_info.site_for_cookies();
-    top_frame_origin_ = new_isolation_info.top_frame_origin().value();
     isolation_info_ = new_isolation_info;
   }
 
@@ -158,17 +148,25 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& top_frame_origin,
       const net::CanonicalCookie* cookie_being_set = nullptr);
 
+  const net::SiteForCookies& BoundSiteForCookies() const {
+    return isolation_info_.site_for_cookies();
+  }
+
+  const url::Origin& BoundTopFrameOrigin() const {
+    return isolation_info_.top_frame_origin().value();
+  }
+
   const mojom::RestrictedCookieManagerRole role_;
   net::CookieStore* const cookie_store_;
   const CookieSettings* const cookie_settings_;
 
-  // TODO(https://crbug/1166215): Consolidate these three fields since
-  // `isolation_info_` holds copy of those values.
   url::Origin origin_;
-  net::SiteForCookies site_for_cookies_;
-  url::Origin top_frame_origin_;
 
+  // Holds the browser-provided site_for_cookies and top_frame_origin to which
+  // this RestrictedCookieManager is bound. (The frame_origin field is not used
+  // directly, but must match the `origin_` if the RCM role is SCRIPT.)
   net::IsolationInfo isolation_info_;
+
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
 
   base::LinkedList<Listener> listeners_;

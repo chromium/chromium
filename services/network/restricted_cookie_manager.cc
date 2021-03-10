@@ -238,8 +238,6 @@ RestrictedCookieManager::RestrictedCookieManager(
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
       origin_(origin),
-      site_for_cookies_(isolation_info.site_for_cookies()),
-      top_frame_origin_(isolation_info.top_frame_origin().value()),
       isolation_info_(isolation_info),
       cookie_observer_(std::move(cookie_observer)) {
   DCHECK(cookie_store);
@@ -586,15 +584,16 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     return false;
   }
 
-  bool site_for_cookies_ok = site_for_cookies_.IsEquivalent(site_for_cookies);
+  bool site_for_cookies_ok =
+      BoundSiteForCookies().IsEquivalent(site_for_cookies);
   DCHECK(site_for_cookies_ok)
       << "site_for_cookies from renderer='" << site_for_cookies.ToDebugString()
-      << "' from browser='" << site_for_cookies_.ToDebugString() << "';";
+      << "' from browser='" << BoundSiteForCookies().ToDebugString() << "';";
 
-  bool top_frame_origin_ok = (top_frame_origin == top_frame_origin_);
+  bool top_frame_origin_ok = (top_frame_origin == BoundTopFrameOrigin());
   DCHECK(top_frame_origin_ok)
       << "top_frame_origin from renderer='" << top_frame_origin
-      << "' from browser='" << top_frame_origin_ << "';";
+      << "' from browser='" << BoundTopFrameOrigin() << "';";
 
   UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.SiteForCookiesOK",
                         site_for_cookies_ok);
