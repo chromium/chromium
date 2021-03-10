@@ -773,6 +773,7 @@ test("gfx_unittests") {
       "geometry/vector3d_unittest.cc",
       "half_float_unittest.cc",
       "icc_profile_unittest.cc",
+      "image/image_skia_operations_unittest.cc",
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
       "nine_image_painter_unittest.cc",
