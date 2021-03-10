@@ -1393,7 +1393,7 @@
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_static_angle': [
-      'android', 'release_bot', 'minimal_symbols', 'strip_debug_info',
+      'android', 'release_bot', 'minimal_symbols',
       'android_fastbuild', 'x86', 'resource_allowlisting', 'static_angle'
     ],
 
