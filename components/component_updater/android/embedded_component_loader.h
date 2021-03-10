@@ -35,6 +35,8 @@ namespace component_updater {
 //
 // Ideally, the implementation of this class should share implementation with
 // its component `ComponentInstallerPolicy` counterpart.
+//
+// Can be used on a thread that is different from the thread it is created on.
 class ComponentLoaderPolicy {
  public:
   virtual ~ComponentLoaderPolicy();
@@ -71,7 +73,8 @@ class ComponentLoaderPolicy {
 // Provides a bridge from Java to native to receive callbacks from the Java
 // loader and pass it to the wrapped ComponentLoaderPolicy instance.
 //
-// Must only be created and used on the same thread.
+// Can be called on a thread that is different from the thread the object is
+// created on.
 class EmbeddedComponentLoader {
  public:
   explicit EmbeddedComponentLoader(

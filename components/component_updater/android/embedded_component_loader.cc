@@ -33,6 +33,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
 #include "components/update_client/utils.h"
 
 namespace component_updater {
@@ -73,7 +74,9 @@ ComponentLoaderPolicy::~ComponentLoaderPolicy() = default;
 
 EmbeddedComponentLoader::EmbeddedComponentLoader(
     std::unique_ptr<ComponentLoaderPolicy> loader_policy)
-    : loader_policy_(std::move(loader_policy)) {}
+    : loader_policy_(std::move(loader_policy)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
 
 EmbeddedComponentLoader::~EmbeddedComponentLoader() = default;
 

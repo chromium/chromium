@@ -87,6 +87,8 @@
     <service android:name="org.chromium.android_webview.services.ComponentsProviderService"
              android:exported="true"
              android:process=":webview_service" />
+    <service android:name="org.chromium.android_webview.test.component_updater.MockComponentsProviderService"
+             android:process=":webview_service"/>
     <!-- Components for Developer UI, make sure that any changes in these components reflect
          the corresponding original components in nonembedded/java/AndroidManifest.xml -->
     <activity android:name="org.chromium.android_webview.devui.MainActivity"

@@ -48,12 +48,31 @@ android_library("component_provider_service_aidl_java") {
   srcjar_deps = [ ":component_provider_service_aidl" ]
 }
 
+android_library("embedded_component_loader_java") {
+  sources = [
+    "java/src/org/chromium/components/component_updater/ComponentLoaderPolicyBridge.java",
+    "java/src/org/chromium/components/component_updater/EmbeddedComponentLoader.java",
+  ]
+  deps = [
+    ":component_provider_service_aidl_java",
+    ":embedded_component_loader_jni_headers",
+    "//base:base_java",
+    "//base:jni_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("embedded_component_loader_jni_headers") {
+  sources = [ "java/src/org/chromium/components/component_updater/ComponentLoaderPolicyBridge.java" ]
+}
+
 static_library("embedded_component_loader") {
   sources = [
     "embedded_component_loader.cc",
     "embedded_component_loader.h",
   ]
   deps = [
+    ":embedded_component_loader_jni_headers",
     "//base",
     "//components/component_updater",
     "//components/update_client",

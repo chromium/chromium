@@ -47,6 +47,7 @@ android_apk("webview_instrumentation_apk") {
   deps = [
     ":webview_instrumentation_apk_assets",
     ":webview_instrumentation_apk_resources",
+    ":webview_instrumentation_test_mock_services_java",
     ":webview_instrumentation_test_utils_java",
     "//android_webview:android_webview_java",
     "//android_webview:android_webview_product_config_java",
@@ -181,6 +182,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
   min_sdk_version = 21
 
   deps = [
+    ":webview_instrumentation_test_mock_services_java",
     ":webview_instrumentation_test_utils_java",
     "//android_webview:android_webview_java",
     "//android_webview:common_aidl_java",
@@ -194,12 +196,14 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test/embedded_test_server:aw_net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android/provider:java",
     "//components/autofill/android/provider/test_support:component_autofill_provider_java_test_support",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/component_updater/android:component_provider_service_aidl_java",
+    "//components/component_updater/android:embedded_component_loader_java",
     "//components/content_capture/android:java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
@@ -345,6 +349,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoEqualityMatcher.java",
     "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoTest.java",
     "../javatests/src/org/chromium/android_webview/test/common/variations/VariationsUtilsTest.java",
+    "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/AwNonembeddedUmaRecorderTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/CrashesListFragmentTest.java",
     "../javatests/src/org/chromium/android_webview/test/devui/DeveloperUiTest.java",
@@ -361,8 +366,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/services/MetricsBridgeServiceTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/MetricsBridgeServiceUnitTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/MinidumpUploadJobTest.java",
-    "../javatests/src/org/chromium/android_webview/test/services/MockMetricsBridgeService.java",
-    "../javatests/src/org/chromium/android_webview/test/services/MockVariationsSeedServer.java",
     "../javatests/src/org/chromium/android_webview/test/services/ServiceConnectionHelper.java",
     "../javatests/src/org/chromium/android_webview/test/services/VariationsSeedServerTest.java",
     "../javatests/src/org/chromium/android_webview/test/services/VisualStateCallbackTest.java",
@@ -405,9 +408,27 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
   ]
 }
 
+android_library("webview_instrumentation_test_mock_services_java") {
+  testonly = true
+  sources = [
+    "../javatests/src/org/chromium/android_webview/test/component_updater/MockComponentsProviderService.java",
+    "../javatests/src/org/chromium/android_webview/test/services/MockMetricsBridgeService.java",
+    "../javatests/src/org/chromium/android_webview/test/services/MockVariationsSeedServer.java",
+  ]
+  deps = [
+    "//android_webview:common_aidl_java",
+    "//android_webview/nonembedded:services_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/component_updater/android:component_provider_service_aidl_java",
+    "//third_party/junit",
+  ]
+}
+
 android_library("webview_instrumentation_test_utils_java") {
   testonly = true
   sources = [
+    "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
@@ -416,6 +437,7 @@ android_library("webview_instrumentation_test_utils_java") {
     "//android_webview:common_variations_java",
     "//base:base_java",
     "//base:jni_java",
+    "//components/component_updater/android:embedded_component_loader_java",
     "//components/variations/android:variations_java",
     "//third_party/junit",
   ]
@@ -425,6 +447,8 @@ android_library("webview_instrumentation_test_utils_java") {
 generate_jni("webview_instrumentation_test_native_jni") {
   testonly = true
   sources = [
+    "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java",
+    "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
@@ -433,6 +457,7 @@ generate_jni("webview_instrumentation_test_native_jni") {
 
 source_set("webview_instrumentation_test_native_jni_impl") {
   sources = [
+    "browser/embedded_component_loader_test_helper.cc",
     "browser/renderer_process_metrics_provider_utils.cc",
     "browser/variations_test_utils.cc",
     "shell/memory_metrics_logger_utils.cc",
@@ -444,6 +469,8 @@ source_set("webview_instrumentation_test_native_jni_impl") {
     "//android_webview/browser/metrics",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater/android:embedded_component_loader",
+    "//components/component_updater/android:embedded_component_loader_jni_headers",
     "//components/embedder_support/android/metrics",
     "//third_party/protobuf:protobuf_lite",
   ]
