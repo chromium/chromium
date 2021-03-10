@@ -39,19 +39,21 @@
 
       <div route-path="default">
         <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-          <cr-link-row id="lockScreenSubpageTrigger"
-              on-click="onConfigureLockTap_"
-              label="[[selectLockScreenTitleString_(hasPinLogin)]]"
-              sub-label="[[getPasswordState_(hasPin,
-                  prefs.settings.enable_screen_lock.value)]]"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
-              label="$i18n{manageOtherPeople}"
-              on-click="onManageOtherPeople_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <div class="hr"></div>
+          <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+            <cr-link-row id="lockScreenSubpageTrigger"
+                on-click="onConfigureLockTap_"
+                label="[[selectLockScreenTitleString_(hasPinLogin)]]"
+                sub-label="[[getPasswordState_(hasPin,
+                    prefs.settings.enable_screen_lock.value)]]"
+                role-description="$i18n{subpageArrowRoleDescription}">
+            </cr-link-row>
+            <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
+                label="$i18n{manageOtherPeople}"
+                on-click="onManageOtherPeople_"
+                role-description="$i18n{subpageArrowRoleDescription}">
+            </cr-link-row>
+            <div class="hr"></div>
+          </template>
         </template>
 
 <if expr="_google_chrome">
@@ -108,36 +110,38 @@
       </div>
 
       <template is="dom-if" if="[[isAccountManagementFlowsV2Enabled_]]">
-        <template is="dom-if" route-path="/osPrivacy/lockScreen">
-          <settings-subpage
-              page-title="[[selectLockScreenTitleString_(hasPinLogin)]]"
-              associated-control="[[$$('#lockScreenSubpageTrigger')]]">
-            <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
-                prefs="{{prefs}}" auth-token="[[authToken_]]"
-                on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
-                on-password-requested="onPasswordRequested_">
-            </settings-lock-screen>
-          </settings-subpage>
-        </template>
-        <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-          <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint"
-              no-search>
-            <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
-              <settings-fingerprint-list id="fingerprint-list"
-                  auth-token="[[authToken_.token]]"
-                  set-modes="[[setModes_]]"
+        <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+          <template is="dom-if" route-path="/osPrivacy/lockScreen">
+            <settings-subpage
+                page-title="[[selectLockScreenTitleString_(hasPinLogin)]]"
+                associated-control="[[$$('#lockScreenSubpageTrigger')]]">
+              <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
+                  prefs="{{prefs}}" auth-token="[[authToken_]]"
+                  on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
                   on-password-requested="onPasswordRequested_">
-              </settings-fingerprint-list>
+              </settings-lock-screen>
             </settings-subpage>
           </template>
-        </template>
-        <template is="dom-if" route-path="/osPrivacy/accounts">
-          <settings-subpage
-              associated-control="[[$$('#manageOtherPeopleSubpageTrigger')]]"
-              page-title="$i18n{manageOtherPeople}">
-            <settings-users-page prefs="{{prefs}}">
-            </settings-users-page>
-          </settings-subpage>
+          <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
+            <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint"
+                no-search>
+              <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
+                <settings-fingerprint-list id="fingerprint-list"
+                    auth-token="[[authToken_.token]]"
+                    set-modes="[[setModes_]]"
+                    on-password-requested="onPasswordRequested_">
+                </settings-fingerprint-list>
+              </settings-subpage>
+            </template>
+          </template>
+          <template is="dom-if" route-path="/osPrivacy/accounts">
+            <settings-subpage
+                associated-control="[[$$('#manageOtherPeopleSubpageTrigger')]]"
+                page-title="$i18n{manageOtherPeople}">
+              <settings-users-page prefs="{{prefs}}">
+              </settings-users-page>
+            </settings-subpage>
+          </template>
         </template>
       </template>
 

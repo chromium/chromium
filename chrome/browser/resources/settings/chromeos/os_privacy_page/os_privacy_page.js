@@ -118,6 +118,18 @@ Polymer({
       readOnly: true,
     },
 
+    /**
+     * Whether the user is in guest mode.
+     * @private {boolean}
+     */
+    isGuestMode_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isGuest');
+      },
+      readOnly: true,
+    },
+
     /** @private */
     showDisableProtectionDialog_: {
       type: Boolean,
