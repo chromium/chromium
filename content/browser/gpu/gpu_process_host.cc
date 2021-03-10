@@ -582,10 +582,10 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind, bool force_create) {
 
   // TODO(sievers): Revisit this behavior. It's not really a crash, but we also
   // want the fallback-to-sw behavior if we cannot initialize the GPU.
+  LOG(ERROR) << "GPU process failed to initialize.";
   host->RecordProcessCrash();
 
   delete host;
-  DLOG(ERROR) << "GpuProcessHost::Init() failed";
   return nullptr;
 }
 
@@ -980,11 +980,13 @@ void GpuProcessHost::OnProcessLaunchFailed(int error_code) {
   if (kind_ == GPU_PROCESS_KIND_SANDBOXED)
     RecordAppContainerStatus(error_code, crashed_before_);
 #endif  // defined(OS_WIN)
+  LOG(ERROR) << "GPU process launch failed: error_code=" << error_code;
   RecordProcessCrash();
 }
 
 void GpuProcessHost::OnProcessCrashed(int exit_code) {
   // Record crash before doing anything that could start a new GPU process.
+  LOG(ERROR) << "GPU process exited unexpectedly: exit_code=" << exit_code;
   RecordProcessCrash();
 
   gpu_host_->OnProcessCrashed();
