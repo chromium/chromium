@@ -368,9 +368,10 @@ bool PaintInvalidator::InvalidatePaint(
         UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
         UpdateLayoutShiftTracking(object, fragment_tree_builder_context,
                                   context);
-        object.GetFrameView()
-            ->GetMobileFriendlinessChecker()
-            .NotifyInvalidatePaint(object);
+
+        if (auto* mf_checker =
+                object.GetFrameView()->GetMobileFriendlinessChecker())
+          mf_checker->NotifyInvalidatePaint(object);
       } else {
         context.old_paint_offset = fragment_data->PaintOffset();
       }

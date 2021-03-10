@@ -13,7 +13,8 @@ bool MobileFriendliness::operator==(const MobileFriendliness& other) const {
          allow_user_zoom == other.allow_user_zoom &&
          small_text_ratio == other.small_text_ratio &&
          text_content_outside_viewport_percentage ==
-             other.text_content_outside_viewport_percentage;
+             other.text_content_outside_viewport_percentage &&
+         bad_tap_targets_ratio == other.bad_tap_targets_ratio;
 }
 
 }  // namespace blink

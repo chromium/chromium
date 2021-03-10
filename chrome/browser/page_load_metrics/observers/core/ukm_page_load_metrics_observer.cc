@@ -1219,25 +1219,23 @@ void UkmPageLoadMetricsObserver::RecordMobileFriendlinessMetrics() {
   else if (mf.allow_user_zoom == blink::mojom::ViewportStatus::kNo)
     builder.SetAllowUserZoom(false);
 
-  if (mf.small_text_ratio != -1) {
+  if (mf.small_text_ratio != -1)
     builder.SetSmallTextRatio(mf.small_text_ratio);
-  }
 
   if (mf.viewport_initial_scale_x10 != -1) {
     builder.SetViewportInitialScaleX10(
         ukm::GetExponentialBucketMin(mf.viewport_initial_scale_x10, 1.2));
   }
-
-  const int hardcoded_width = mf.viewport_hardcoded_width;
-  if (hardcoded_width > 0) {
+  if (mf.viewport_hardcoded_width != -1) {
     builder.SetViewportHardcodedWidth(
-        BucketWithOffsetAndUnit(hardcoded_width, 500, 10));
+        BucketWithOffsetAndUnit(mf.viewport_hardcoded_width, 500, 10));
   }
-
   if (mf.text_content_outside_viewport_percentage != -1) {
     builder.SetTextContentOutsideViewportPercentage(
         mf.text_content_outside_viewport_percentage);
   }
+  if (mf.bad_tap_targets_ratio != -1)
+    builder.SetBadTapTargetsRatio(mf.bad_tap_targets_ratio);
 
   builder.Record(ukm::UkmRecorder::Get());
 }

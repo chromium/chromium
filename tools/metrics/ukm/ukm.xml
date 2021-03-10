@@ -9473,6 +9473,14 @@ be describing additional metrics about the same event.
       Whether the page allows the user to zoom in/out.
     </summary>
   </metric>
+  <metric name="BadTapTargetsRatio">
+    <summary>
+      Percentage of tap targets whose center position is within another tap
+      target (expanded by a margin). The detail of the algorithm is
+      go/bad-tap-target-ukm. If evaluation time budget exceeded, this will be is
+      -2.
+    </summary>
+  </metric>
   <metric name="SmallTextRatio">
     <summary>
       Percentage of small font text area in total text area.

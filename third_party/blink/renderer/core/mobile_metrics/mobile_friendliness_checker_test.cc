@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
+#include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-shared.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -14,11 +15,17 @@
 
 namespace blink {
 
+using mojom::ViewportStatus;
+
 static constexpr char kBaseUrl[] = "http://www.test.com/";
 class MobileFriendlinessCheckerTest : public testing::Test {
  public:
   ~MobileFriendlinessCheckerTest() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({kBadTapTargetsRatio}, {});
   }
 
   static void ConfigureAndroidSettings(WebSettings* settings) {
@@ -43,6 +50,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
       LocalFrameView& frame_view =
           *helper.GetWebView()->MainFrameImpl()->GetFrameView();
       frame_view.UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kTest);
+      frame_view.GetMobileFriendlinessChecker()->NotifyFirstContentfulPaint();
     }
     return web_frame_client.GetMobileFriendliness();
   }
@@ -66,6 +74,7 @@ class MobileFriendlinessCheckerTest : public testing::Test {
       LocalFrameView& frame_view =
           *helper.GetWebView()->MainFrameImpl()->GetFrameView();
       frame_view.UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kTest);
+      frame_view.GetMobileFriendlinessChecker()->NotifyFirstContentfulPaint();
     }
     return web_frame_client.GetMobileFriendliness();
   }
@@ -121,7 +130,8 @@ TEST_F(MobileFriendlinessCheckerTest, NoText) {
       CalculateMetricsForHTMLString(R"(<body></body>)");
   EXPECT_EQ(actual_mf.viewport_device_width, mojom::ViewportStatus::kNo);
   EXPECT_EQ(actual_mf.allow_user_zoom, mojom::ViewportStatus::kYes);
-  EXPECT_EQ(actual_mf.small_text_ratio, -1);
+  EXPECT_EQ(actual_mf.small_text_ratio, 0);
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, NoSmallFonts) {
@@ -329,7 +339,7 @@ TEST_F(MobileFriendlinessCheckerTest, TextTooWideInvisible) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, -1);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ImageNarrow) {
@@ -362,7 +372,7 @@ TEST_F(MobileFriendlinessCheckerTest, ImageTooWideDisplayNone) {
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, -1);
+  EXPECT_EQ(actual_mf.text_content_outside_viewport_percentage, 0);
 }
 
 TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
@@ -387,6 +397,304 @@ TEST_F(MobileFriendlinessCheckerTest, ScaleTextOutsideViewport) {
 )");
   EXPECT_EQ(actual_mf.viewport_initial_scale_x10, 30);
   EXPECT_GE(actual_mf.text_content_outside_viewport_percentage, 100.0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, SingleTapTarget) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a onclick="alert('clicked');">
+      link
+    </a>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, NoBadTapTarget) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <button style="width:30px; height:30px">
+      a
+    </button>
+    <button style="width:30px; height:30px">
+      b
+    </button>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a href="about:blank">
+      <div style="width: 400px;height: 400px; margin: 0px">
+        A
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 10px;height: 10px; margin: 0px">
+        B
+      </div>
+    </a>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsVerticalSamePoint) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a href="about:blank">
+      <div style="width: 400px;height: 400px; margin: 0px">
+        A
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 10px;height: 10px; margin: 0px">
+        B
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 400px;height: 400px; margin: 0px">
+        C
+      </div>
+    </a>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 33);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontal) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a href="about:blank">
+      <div style="width: 300px;height: 300px; margin: 0px; display:inline-block">
+        A
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 10px;height: 10px; margin: 0px; display:inline-block">
+        B
+      </div>
+    </a>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontalSamePoint) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <a href="about:blank">
+      <div style="width: 200px;height: 200px; margin: 0px; display:inline-block">
+        A
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 10px;height: 10px; margin: 0px; display:inline-block">
+        B
+      </div>
+    </a>
+    <a href="about:blank">
+      <div style="width: 200px;height: 200px; margin: 0px; display:inline-block">
+        C
+      </div>
+    </a>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 33);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, GridGoodTargets3X3) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <div>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          1-1
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          2-1
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          3-1
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          1-2
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          2-2
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          3-2
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          1-3
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          2-3
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
+          3-3
+        </div>
+      </a>
+    </div>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, GridBadTargets3X3) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <div>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          1-1
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          2-1
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          3-1
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          1-2
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          2-2
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          3-2
+        </div>
+      </a>
+    </div>
+    <div>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          1-3
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          2-3
+        </div>
+      </a>
+      <a href="about:blank">
+        <div style="width: 10px;height: 10px; margin: 10px; display:inline-block">
+          3-3
+        </div>
+      </a>
+    </div>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, FormTapTargets) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <form>
+      <input style="height: 400px; margin: 0px"><br>
+      <input style="height: 10px; margin: 0px">
+    </form>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, InvisibleTapTargetWillBeIgnored) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <form>
+      <input style="height: 400px; margin: 0px"><br>
+      <div style="display:none">
+        <input style="height: 10px; margin: 0px">
+      </div>
+    </form>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(MobileFriendlinessCheckerTest, BadTapTargetWithPositionAbsolute) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <button style="position:absolute; width:50px; height:50px">
+      a
+    </button>
+    <button style="position:relative; width:50px; height:50px">
+      b
+    </button>
+  </body>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
 }  // namespace blink
