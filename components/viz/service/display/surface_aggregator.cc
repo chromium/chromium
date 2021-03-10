@@ -240,15 +240,14 @@ bool SurfaceAggregator::IsSurfaceFrameIndexSameAsPrevious(
 
 gfx::Rect SurfaceAggregator::DamageRectForSurface(
     const Surface* surface,
-    const CompositorRenderPass& source,
-    const gfx::Rect& full_rect) const {
+    const CompositorRenderPass& source) const {
   // If we have damage because of surface animation, return the source damage
   // since we trust the source damage to have correctly computed damage, and we
   // can't skip it.
   // TODO(vmpstr): This damage may be too large, but I think it's hard to figure
   // out a small bounds on the damage given an animation that happens in
   // SurfaceAnimationManager.
-  if (surface->HasSurfaceAnimationDamange())
+  if (surface->HasSurfaceAnimationDamage())
     return source.damage_rect;
 
   if (IsSurfaceFrameIndexSameAsPrevious(surface))
@@ -266,7 +265,7 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
       return source.damage_rect;
   }
 
-  return full_rect;
+  return source.output_rect;
 }
 
 // This function is called at each render pass - CopyQuadsToPass().
@@ -328,8 +327,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
                                   dest_pass->cache_render_pass)) {
       damage_rect = source_pass->output_rect;
     } else {
-      damage_rect =
-          DamageRectForSurface(surface, *source_pass, source_pass->output_rect);
+      damage_rect = DamageRectForSurface(surface, *source_pass);
     }
   }
 
@@ -364,15 +362,13 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     const CompositorRenderPass& source_pass,
     AggregatedRenderPass* dest_pass,
     const gfx::Transform& parent_target_transform,
-    const SurfaceId& surface_id,
+    const Surface* surface,
     const ClipData& clip_rect,
     size_t* overlay_damage_index) {
-  Surface* surface = manager_->GetSurfaceForId(surface_id);
-
   // If we have damage from a surface animation, then we shouldn't have an
   // overlay candidate from the root render pass, since that's an interpolated
   // pass with "artificial" damage.
-  if (surface->HasSurfaceAnimationDamange())
+  if (surface->HasSurfaceAnimationDamage())
     return nullptr;
 
   // Only process the damage rect at the root render pass, once per surface.
@@ -686,7 +682,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         dest_pass->transform_to_root_target);
 
     CopyQuadsToPass(source, copy_pass.get(), frame.device_scale_factor(),
-                    child_to_parent_map, gfx::Transform(), {}, surface_id,
+                    child_to_parent_map, gfx::Transform(), {}, surface,
                     MaskFilterInfoExt());
 
     // If the render pass has copy requests, or should be cached, or has
@@ -715,13 +711,12 @@ void SurfaceAggregator::EmitSurfaceContent(
   // damage because HandleSurfaceQuad is a recursive call by calling
   // CopyQuadsToPass in it.
   dest_pass->has_damage_from_contributing_content |=
-      !DamageRectForSurface(surface, last_pass, last_pass.output_rect)
-           .IsEmpty();
+      !DamageRectForSurface(surface, last_pass).IsEmpty();
 
   if (merge_pass) {
     CopyQuadsToPass(last_pass, dest_pass, frame.device_scale_factor(),
                     child_to_parent_map, combined_transform, quads_clip,
-                    surface_id, mask_filter_info);
+                    surface, mask_filter_info);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
         source_sqs, scaled_quad_to_target_transform, target_transform,
@@ -1032,7 +1027,7 @@ void SurfaceAggregator::CopyQuadsToPass(
         child_to_parent_map,
     const gfx::Transform& target_transform,
     const ClipData& clip_rect,
-    const SurfaceId& surface_id,
+    const Surface* surface,
     const MaskFilterInfoExt& parent_mask_filter_info_ext) {
   const QuadList& source_quad_list = source_pass.quad_list;
   const SharedQuadState* last_copied_source_shared_quad_state = nullptr;
@@ -1075,7 +1070,7 @@ void SurfaceAggregator::CopyQuadsToPass(
                                           dest_pass);
     quad_with_overlay_damage_index =
         FindQuadWithOverlayDamage(source_pass, dest_pass, target_transform,
-                                  surface_id, clip_rect, &overlay_damage_index);
+                                  surface, clip_rect, &overlay_damage_index);
   }
 
   MaskFilterInfoExt new_mask_filter_info_ext = parent_mask_filter_info_ext;
@@ -1123,7 +1118,7 @@ void SurfaceAggregator::CopyQuadsToPass(
           // If a surface is being drawn for a second time, clear our
           // |de_jelly_delta_y|, as de-jelly is only needed the first time
           // a surface draws.
-          if (!new_surfaces_.count(surface_id))
+          if (!new_surfaces_.count(surface->surface_id()))
             dest_shared_quad_state->de_jelly_delta_y = 0.0f;
         }
 
@@ -1148,7 +1143,7 @@ void SurfaceAggregator::CopyQuadsToPass(
             CompositorRenderPassDrawQuad::MaterialCast(quad);
         CompositorRenderPassId original_pass_id = pass_quad->render_pass_id;
         AggregatedRenderPassId remapped_pass_id =
-            pass_id_remapper_.Remap(original_pass_id, surface_id);
+            pass_id_remapper_.Remap(original_pass_id, surface->surface_id());
 
         // If the CompositorRenderPassDrawQuad is referring to other render pass
         // with the |has_damage_from_contributing_content| set on it, then the
@@ -1278,7 +1273,7 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
                     child_to_parent_map,
                     apply_surface_transform_to_root_pass ? surface_transform
                                                          : gfx::Transform(),
-                    {}, surface->surface_id(), MaskFilterInfoExt());
+                    {}, surface, MaskFilterInfoExt());
 
     // If the render pass has copy requests, or should be cached, or has
     // moving-pixel filters, or in a moving-pixel surface, we should damage the
@@ -1346,14 +1341,12 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
 
   const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
-  gfx::Rect full_damage = last_pass->output_rect;
 
   // The damage on the root render pass of the surface comes from damage
   // accumulated from all quads in the surface, and needs to be expanded by any
   // pixel-moving backdrop filter in the render pass if intersecting. Transform
   // this damage into the local space of the render pass for this purpose.
-  gfx::Rect surface_root_rp_damage =
-      DamageRectForSurface(surface, *last_pass, full_damage);
+  gfx::Rect surface_root_rp_damage = DamageRectForSurface(surface, *last_pass);
   if (!surface_root_rp_damage.IsEmpty()) {
     gfx::Transform root_to_target_transform(
         gfx::Transform::kSkipInitialization);
@@ -1432,9 +1425,6 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
         child_rect = gfx::ScaleToEnclosingRect(child_rect, x_scale, y_scale);
         quad_damage_rect.Union(child_rect);
       }
-
-      if (quad_damage_rect.IsEmpty())
-        continue;
     } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       auto* render_pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
 
@@ -1523,22 +1513,22 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       quad_damage_rect = PrewalkRenderPass(
           &child_render_pass_entry, surface, render_pass_map, will_draw,
           gfx::Rect(), child_to_root_transform, in_moved_pixel_rp, result);
+    }
 
-    } else {
-      continue;
+    if (!quad_damage_rect.IsEmpty()) {
+      // Convert the quad damage rect into its target space and clip it if
+      // needed. Ignore tiny errors to avoid artificially inflating the
+      // damage due to floating point math.
+      constexpr float kEpsilon = 0.001f;
+      gfx::Rect rect_in_target_space =
+          cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+              quad->shared_quad_state->quad_to_target_transform,
+              quad_damage_rect, kEpsilon);
+      if (quad->shared_quad_state->is_clipped) {
+        rect_in_target_space.Intersect(quad->shared_quad_state->clip_rect);
+      }
+      damage_rect.Union(rect_in_target_space);
     }
-    // Convert the quad damage rect into its target space and clip it if
-    // needed. Ignore tiny errors to avoid artificially inflating the
-    // damage due to floating point math.
-    constexpr float kEpsilon = 0.001f;
-    gfx::Rect rect_in_target_space =
-        cc::MathUtil::MapEnclosingClippedRectIgnoringError(
-            quad->shared_quad_state->quad_to_target_transform, quad_damage_rect,
-            kEpsilon);
-    if (quad->shared_quad_state->is_clipped) {
-      rect_in_target_space.Intersect(quad->shared_quad_state->clip_rect);
-    }
-    damage_rect.Union(rect_in_target_space);
   }
 
   // Expand the damage to cover entire |output_rect| if the |render_pass| has
@@ -1592,6 +1582,17 @@ bool SurfaceAggregator::DeclareResourcesToProvider(
   return true;
 }
 
+bool SurfaceAggregator::CheckFrameSinksChanged(const Surface* surface) {
+  contained_surfaces_[surface->surface_id()] = surface->GetActiveFrameIndex();
+  LocalSurfaceId& local_surface_id =
+      contained_frame_sinks_[surface->surface_id().frame_sink_id()];
+  bool frame_sinks_changed = (!previous_contained_frame_sinks_.contains(
+      surface->surface_id().frame_sink_id()));
+  local_surface_id =
+      std::max(surface->surface_id().local_surface_id(), local_surface_id);
+  return frame_sinks_changed;
+}
+
 gfx::Rect SurfaceAggregator::PrewalkSurface(
     Surface* surface,
     bool in_moved_pixel_rp,
@@ -1602,13 +1603,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   if (referenced_surfaces_.count(surface->surface_id()))
     return gfx::Rect();
 
-  contained_surfaces_[surface->surface_id()] = surface->GetActiveFrameIndex();
-  LocalSurfaceId& local_surface_id =
-      contained_frame_sinks_[surface->surface_id().frame_sink_id()];
-  result->frame_sinks_changed |= (!previous_contained_frame_sinks_.contains(
-      surface->surface_id().frame_sink_id()));
-  local_surface_id =
-      std::max(surface->surface_id().local_surface_id(), local_surface_id);
+  result->frame_sinks_changed |= CheckFrameSinksChanged(surface);
 
   if (!surface->HasActiveFrame())
     return gfx::Rect();
@@ -1618,9 +1613,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
       frame.render_pass_list.back()->id, surface->surface_id());
   if (parent_pass_id)
     render_pass_dependencies_[parent_pass_id].insert(remapped_pass_id);
-
-  const gfx::Transform& root_pass_transform =
-      IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
   base::flat_map<CompositorRenderPassId, RenderPassMapEntry> render_pass_map =
       GenerateRenderPassMap(frame.render_pass_list, IsRootSurface(surface));
@@ -1632,9 +1624,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   valid_surfaces_.insert(surface->surface_id());
 
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
-  gfx::Rect full_damage = last_pass->output_rect;
-  gfx::Rect damage_rect =
-      DamageRectForSurface(surface, *last_pass, full_damage);
+  gfx::Rect damage_rect = DamageRectForSurface(surface, *last_pass);
 
   // Avoid infinite recursion by adding current surface to
   // |referenced_surfaces_|.
@@ -1647,23 +1637,28 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   damage_rect.Union(PrewalkRenderPass(
       &entry, surface, &render_pass_map, will_draw, damage_from_parent,
       gfx::Transform(), in_moved_pixel_rp, result));
-  damage_rect = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
-      root_pass_transform, damage_rect);
 
   if (!damage_rect.IsEmpty()) {
+    auto damage_rect_surface_space = damage_rect;
+    if (IsRootSurface(surface)) {
+      // The damage reported to the surface is in pre-display transform space
+      // since it is used by clients which are not aware of the display
+      // transform.
+      damage_rect = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
+          root_surface_transform_, damage_rect);
+      gfx::Transform inverse(gfx::Transform::kSkipInitialization);
+      bool inverted = root_surface_transform_.GetInverse(&inverse);
+      DCHECK(inverted);
+      damage_rect_surface_space =
+          cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(inverse,
+                                                                  damage_rect);
+    }
+
     // The following call can cause one or more copy requests to be added to the
     // Surface. Therefore, no code before this point should have assumed
     // anything about the presence or absence of copy requests after this point.
-
-    // The damage reported to the surface is in pre-display transform space
-    // since it is used by clients which are not aware of the display transform.
-    gfx::Transform inverse(gfx::Transform::kSkipInitialization);
-    bool inverted = root_pass_transform.GetInverse(&inverse);
-    DCHECK(inverted);
-    surface->NotifyAggregatedDamage(
-        cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(inverse,
-                                                                damage_rect),
-        expected_display_time_);
+    surface->NotifyAggregatedDamage(damage_rect_surface_space,
+                                    expected_display_time_);
   }
 
   // If any CopyOutputRequests were made at FrameSink level, make sure we grab
@@ -1807,12 +1802,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   Surface* surface = manager_->GetSurfaceForId(surface_id);
   DCHECK(surface);
   DCHECK(contained_surfaces_.empty());
-  contained_surfaces_[surface_id] = surface->GetActiveFrameIndex();
 
-  LocalSurfaceId& local_surface_id =
-      contained_frame_sinks_[surface_id.frame_sink_id()];
-  local_surface_id =
-      std::max(surface->surface_id().local_surface_id(), local_surface_id);
+  CheckFrameSinksChanged(surface);
 
   if (!surface->HasActiveFrame())
     return {};
@@ -1864,9 +1855,8 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     root_damage_rect_ = cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
         root_surface_transform_,
         gfx::Rect(root_surface_frame.size_in_pixels()));
+    root_content_color_usage_ = prewalk_result.content_color_usage;
   }
-
-  root_content_color_usage_ = prewalk_result.content_color_usage;
 
   if (prewalk_result.frame_sinks_changed)
     manager_->AggregatedFrameSinksChanged();

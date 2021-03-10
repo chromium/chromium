@@ -173,7 +173,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // Returns true if the active or interpolated frame has damage due to a
   // surface animation. This means that the damage should be respected even if
   // the active frame index has not changed.
-  bool HasSurfaceAnimationDamange() const;
+  bool HasSurfaceAnimationDamage() const;
 
   // Returns the currently pending frame. You must check where HasPendingFrame()
   // returns true before calling this method.

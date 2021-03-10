@@ -170,7 +170,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
           resource_to_child_map,
       const gfx::Transform& target_transform,
       const ClipData& clip_rect,
-      const SurfaceId& surface_id,
+      const Surface* surface,
       const MaskFilterInfoExt& mask_filter_info_pair);
 
   // Recursively walks through the render pass and updates the
@@ -245,6 +245,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   void PropagateCopyRequestPasses();
 
+  bool CheckFrameSinksChanged(const Surface* surface);
+
   // Returns true if the quad list from the render pass provided can be merged
   // with its target render pass based on mask filter info.
   bool CanMergeMaskFilterInfo(const MaskFilterInfoExt& mask_filter_info_pair,
@@ -253,8 +255,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   int ChildIdForSurface(Surface* surface);
   bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;
   gfx::Rect DamageRectForSurface(const Surface* surface,
-                                 const CompositorRenderPass& source,
-                                 const gfx::Rect& full_rect) const;
+                                 const CompositorRenderPass& source) const;
 
   // This function adds |damage_rect| to
   // |damage_rects_union_of_surfaces_on_top_|. |damage_rect| is in the quad
@@ -279,7 +280,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
       const CompositorRenderPass& source_pass,
       AggregatedRenderPass* dest_pass,
       const gfx::Transform& parent_target_transform,
-      const SurfaceId& surface_id,
+      const Surface* surface,
       const ClipData& clip_rect,
       size_t* overlay_damage_index);
 

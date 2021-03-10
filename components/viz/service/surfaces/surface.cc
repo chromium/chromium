@@ -635,7 +635,7 @@ void Surface::SetInterpolatedFrame(CompositorFrame frame) {
   interpolated_frame_.emplace(std::move(frame));
 }
 
-bool Surface::HasSurfaceAnimationDamange() const {
+bool Surface::HasSurfaceAnimationDamage() const {
   return interpolated_frame_.has_value() || has_damage_from_interpolated_frame_;
 }
 
