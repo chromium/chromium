@@ -32,8 +32,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AgeOfOriginInDays" units="days"
-    expires_after="2021-04-18">
+    expires_after="2021-03-09">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     How many days it's been since an origin's temporary storage has been
     accessed. Logged hourly for all origins with stored data.
