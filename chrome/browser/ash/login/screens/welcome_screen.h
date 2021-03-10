@@ -112,9 +112,6 @@ class WelcomeScreen : public BaseScreen,
   bool GetChromeVoxHintTimerCancelledForTesting() {
     return chromevox_hint_timer_cancelled_for_testing_;
   }
-  bool GetChromeVoxHintTimerActivatedForTesting() {
-    return chromevox_hint_timer_activated_;
-  }
 
  protected:
   // Exposes exit callback to test overrides.

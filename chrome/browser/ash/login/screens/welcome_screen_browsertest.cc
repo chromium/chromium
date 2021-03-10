@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "ash/constants/ash_paths.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -472,14 +471,6 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
   test::OobeJS().ClickOnPath({"debugging", "removeProtectionCancelButton"});
 }
 
-// The ChromeVox hint timer should not be activated if the device is in dev
-// mode.
-IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
-                       ChromeVoxHintTimerNotActivated) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  EXPECT_FALSE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
-}
-
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenTimezone() {
@@ -829,29 +820,6 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   monitor.ExpectSpeechPatternWithLocale("*", "en-US");
   monitor.Replay();
   WaitForSpokenSuccessMetric();
-}
-
-class WelcomeScreenChromeVoxHintFlagsBrowserTest
-    : public WelcomeScreenBrowserTest {
- public:
-  WelcomeScreenChromeVoxHintFlagsBrowserTest() = default;
-  ~WelcomeScreenChromeVoxHintFlagsBrowserTest() override = default;
-
-  // WelcomeScreenBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
-    command_line->AppendSwitch(
-        chromeos::switches::kEnableOOBEChromeVoxHintTimerForTesting);
-  }
-};
-
-// The ChromeVox hint timer should be activated if the device is in dev mode AND
-// we've enabled it for testing.
-IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintFlagsBrowserTest,
-                       TimerActivated) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  EXPECT_TRUE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
 }
 
 }  // namespace chromeos
