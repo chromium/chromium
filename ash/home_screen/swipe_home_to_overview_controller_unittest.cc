@@ -14,6 +14,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shelf/shelf_test_util.h"
+#include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -143,38 +144,59 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
 // Verify that the metrics of home launcher animation are recorded correctly
 // when entering/exiting overview mode.
-// The test is flaky (see https://crbug.com/1126904).
-TEST_F(SwipeHomeToOverviewControllerTest, DISABLED_VerifyHomeLauncherMetrics) {
+TEST_F(SwipeHomeToOverviewControllerTest, VerifyHomeLauncherMetrics) {
   // Set non-zero animation duration to report animation metrics.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  const gfx::Rect shelf_bounds = GetShelfBounds();
-  const int transition_threshold =
-      SwipeHomeToOverviewController::kVerticalThresholdForOverviewTransition;
 
   base::HistogramTester histogram_tester;
 
   // Enter overview mode by gesture swipe on shelf.
   {
-    GetEventGenerator()->set_current_screen_location(
-        shelf_bounds.CenterPoint());
-    GetEventGenerator()->PressTouch();
-    GetEventGenerator()->MoveTouchBy(
-        0, -transition_threshold - shelf_bounds.height() / 2 - 10);
+    const gfx::Point gesture_start_point =
+        Shelf::ForWindow(Shell::GetPrimaryRootWindow())
+            ->GetShelfViewForTesting()
+            ->GetBoundsInScreen()
+            .CenterPoint();
 
-    // Move touch location by a tiny distance to ensure the slow scroll speed
-    // which is required to trigger the overview animation.
-    GetEventGenerator()->MoveTouchBy(0, -1);
+    // Calculate the suitable gesture end location to trigger the overview mode
+    // through the gesture scroll.
+    // Note that we cannot access `SwipeHomeToOverviewController`'s non-static
+    // members here since the class instance has not be created yet.
+    const int extra_distance = 15;
+    const gfx::Point gesture_end_point(
+        gesture_start_point.x(),
+        GetPrimaryDisplay().bounds().bottom() -
+            ShelfConfig::Get()->shelf_size() -
+            SwipeHomeToOverviewController::
+                kVerticalThresholdForOverviewTransition -
+            extra_distance);
 
-    // Wait until overview animation finishes.
-    WaitForOverviewAnimation(/*enter=*/true);
+    // Scroll should be slow enough to trigger the overview mode.
+    constexpr int steps = 12;
+    int update_count = 0;
+    GetEventGenerator()->GestureScrollSequenceWithCallback(
+        gesture_start_point, gesture_end_point,
+        base::TimeDelta::FromMilliseconds(100), /*steps=*/steps,
+        base::BindRepeating(
+            [](int* update_count, ui::EventType event_type,
+               const gfx::Vector2dF& delta) {
+              if (event_type != ui::ET_GESTURE_SCROLL_UPDATE)
+                return;
 
-    GetEventGenerator()->ReleaseTouch();
-    WaitForHomeLauncherAnimationToFinish();
+              *update_count = *update_count + 1;
+              if (*update_count == steps) {
+                // Wait until overview animation finishes. If the gesture scroll
+                // ends too early, we may not be able to enter the overview mode
+                WaitForOverviewAnimation(/*enter=*/true);
+              }
+            },
+            &update_count));
   }
 
-  // Verify that the animation to hide the home launcher is recorded.
+  // Collect metrics data. Verify that the animation to hide the home launcher
+  // is recorded.
+  WaitForHomeLauncherAnimationToFinish();
   histogram_tester.ExpectTotalCount(
       "Apps.HomeLauncherTransition.AnimationSmoothness.FadeInOverview", 1);
   histogram_tester.ExpectTotalCount(
@@ -186,9 +208,9 @@ TEST_F(SwipeHomeToOverviewControllerTest, DISABLED_VerifyHomeLauncherMetrics) {
 
   // Wait until overview animation finishes.
   WaitForOverviewAnimation(/*enter=*/false);
-  WaitForHomeLauncherAnimationToFinish();
 
   // Verify that the animation to show the home launcher is recorded.
+  WaitForHomeLauncherAnimationToFinish();
   histogram_tester.ExpectTotalCount(
       "Apps.HomeLauncherTransition.AnimationSmoothness.FadeInOverview", 1);
   histogram_tester.ExpectTotalCount(
