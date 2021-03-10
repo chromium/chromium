@@ -1220,6 +1220,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Enterprise.RetrievePolicyResponse"
     enum="EnterpriseRetrievePolicyResponseType" expires_after="2020-02-16">
+  <obsolete>
+    Removed in M91 since the data is no longer monitored.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="EnterpriseRetrievePolicyResponse" -->
 
   <owner>emaxx@chromium.org</owner>

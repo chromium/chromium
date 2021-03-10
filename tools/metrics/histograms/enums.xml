@@ -24012,6 +24012,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterpriseRetrievePolicyResponseType">
+  <obsolete>
+    Removed in M91 since the data is no longer monitored.
+  </obsolete>
   <summary>
     Status codes produced by SessionManagerClient for policy retrieval requests.
     Corresponds to RetrievePolicyResponseType in
