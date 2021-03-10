@@ -297,7 +297,7 @@ TEST_F(TrustedVaultConnectionImplTest,
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
-       ShouldHandleFailedJoinSecurityDomainsRequestWithBadRequestStatus) {
+       ShouldHandleFailedJoinSecurityDomainsRequestWithNotFoundStatus) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
@@ -313,11 +313,35 @@ TEST_F(TrustedVaultConnectionImplTest,
           callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  // In particular, HTTP_BAD_REQUEST indicates that
+  // In particular, HTTP_NOT_FOUND indicates that security domain was removed.
+  EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
+  EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_NOT_FOUND));
+}
+
+TEST_F(
+    TrustedVaultConnectionImplTest,
+    ShouldHandleFailedJoinSecurityDomainsRequestWithPreconditionFailedStatus) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  base::MockCallback<
+      TrustedVaultConnection::RegisterAuthenticationFactorCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultKeyAndVersion(kTrustedVaultKey, /*version=*/1),
+          key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
+          callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  // In particular, HTTP_PRECONDITION_FAILED indicates that
   // |last_trusted_vault_key_and_version| is not actually the last on the server
   // side.
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kLocalDataObsolete)));
-  EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(net::HTTP_BAD_REQUEST));
+  EXPECT_TRUE(
+      RespondToJoinSecurityDomainsRequest(net::HTTP_PRECONDITION_FAILED));
 }
 
 TEST_F(

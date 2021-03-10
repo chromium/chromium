@@ -97,17 +97,23 @@ class DownloadKeysResponseHandlerTest : public testing::Test {
   const DownloadKeysResponseHandler handler_;
 };
 
-// All HttpStatuses except kSuccess should end up in kOtherError reporting,
-// because underlying request doesn't have any parameters inferred from local
-// state.
+// All HttpStatuses except kSuccess should end up in kOtherError or
+// kLocalDataObsolete reporting.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
   EXPECT_THAT(
       handler()
           .ProcessResponse(
-              /*http_status=*/TrustedVaultRequest::HttpStatus::kBadRequest,
+              /*http_status=*/TrustedVaultRequest::HttpStatus::kNotFound,
               /*response_body=*/std::string())
           .status,
-      Eq(TrustedVaultRequestStatus::kOtherError));
+      Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
+  EXPECT_THAT(handler()
+                  .ProcessResponse(
+                      /*http_status=*/TrustedVaultRequest::HttpStatus::
+                          kFailedPrecondition,
+                      /*response_body=*/std::string())
+                  .status,
+              Eq(TrustedVaultRequestStatus::kLocalDataObsolete));
   EXPECT_THAT(
       handler()
           .ProcessResponse(

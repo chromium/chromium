@@ -120,10 +120,13 @@ void TrustedVaultRequest::OnURLLoadComplete(
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  if (http_response_code == net::HTTP_BAD_REQUEST) {
-    // Bad request can indicate client-side data being obsolete, distinguish it
-    // to allow API users to decide how to handle.
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
+  if (http_response_code == net::HTTP_NOT_FOUND) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNotFound,
+                                             std::string());
+    return;
+  }
+  if (http_response_code == net::HTTP_PRECONDITION_FAILED) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kFailedPrecondition,
                                              std::string());
     return;
   }

@@ -162,10 +162,12 @@ DownloadKeysResponseHandler::ProcessResponse(
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
       break;
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
+      // TODO(crbug.com/1113598): expose more detailed status.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultRequestStatus::kLocalDataObsolete);
     case TrustedVaultRequest::HttpStatus::kOtherError:
-    case TrustedVaultRequest::HttpStatus::kBadRequest:
-      // Don't distinguish kBadRequest here, because request content doesn't
-      // depend on the local state.
       return ProcessedResponse(
           /*status=*/TrustedVaultRequestStatus::kOtherError);
   }
