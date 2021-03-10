@@ -322,7 +322,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   // safe to use base::Unretained() here.
   ongoing_connection_request_ = connection_->RegisterAuthenticationFactor(
       *primary_account_, last_trusted_vault_key_and_version,
-      key_pair->public_key(),
+      key_pair->public_key(), AuthenticationFactorType::kPhysicalDevice,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
                      base::Unretained(this), gaia_id));
   DCHECK(ongoing_connection_request_);

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64url.h"
 #include "base/containers/span.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/vault.pb.h"
@@ -22,55 +23,75 @@ namespace syncer {
 
 namespace {
 
-sync_pb::SharedKey CreateMemberSharedKey(
+sync_pb::SharedMemberKey CreateSharedMemberKey(
     const base::Optional<TrustedVaultKeyAndVersion>&
         trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key) {
   std::vector<uint8_t> trusted_vault_key;
-  int trusted_vault_key_version = 0;
   if (trusted_vault_key_and_version.has_value()) {
     trusted_vault_key = trusted_vault_key_and_version->key;
-    trusted_vault_key_version = trusted_vault_key_and_version->version;
   } else {
     trusted_vault_key = GetConstantTrustedVaultKey();
   }
 
-  sync_pb::SharedKey shared_key;
-  shared_key.set_epoch(trusted_vault_key_version);
+  sync_pb::SharedMemberKey shared_member_key;
+  if (trusted_vault_key_and_version.has_value()) {
+    shared_member_key.set_epoch(trusted_vault_key_and_version->version);
+  }
   AssignBytesToProtoString(
       ComputeTrustedVaultWrappedKey(public_key, trusted_vault_key),
-      shared_key.mutable_wrapped_key());
+      shared_member_key.mutable_wrapped_key());
   AssignBytesToProtoString(
-      ComputeTrustedVaultHMAC(/*key=*/trusted_vault_key,
-                              /*data=*/public_key.ExportToBytes()),
-      shared_key.mutable_member_proof());
-  return shared_key;
+      ComputeTrustedVaultHMAC(
+          /*key=*/trusted_vault_key, /*data=*/public_key.ExportToBytes()),
+      shared_member_key.mutable_member_proof());
+  return shared_member_key;
+}
+
+sync_pb::SecurityDomainMember CreateSecurityDomainMember(
+    const SecureBoxPublicKey& public_key,
+    AuthenticationFactorType authentication_factor_type) {
+  sync_pb::SecurityDomainMember member;
+  std::string public_key_string;
+  AssignBytesToProtoString(public_key.ExportToBytes(), &public_key_string);
+
+  std::string encoded_public_key;
+  base::Base64UrlEncode(public_key_string,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_public_key);
+
+  member.set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
+  // Note: |public_key_string| using here is intentional, encoding is required
+  // only to compute member name.
+  member.set_public_key(public_key_string);
+  switch (authentication_factor_type) {
+    case AuthenticationFactorType::kPhysicalDevice:
+      member.set_member_type(
+          sync_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE);
+  }
+  return member;
 }
 
 sync_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
     const base::Optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
-    const SecureBoxPublicKey& public_key) {
-  sync_pb::SecurityDomain::Member member;
-  const std::vector<uint8_t> public_key_bytes = public_key.ExportToBytes();
-  AssignBytesToProtoString(public_key.ExportToBytes(),
-                           member.mutable_public_key());
-  *member.add_keys() =
-      CreateMemberSharedKey(last_trusted_vault_key_and_version, public_key);
-
-  sync_pb::SecurityDomain security_domain;
-  security_domain.set_name(kSyncSecurityDomainName);
-  *security_domain.add_members() = member;
-
-  sync_pb::JoinSecurityDomainsRequest result;
-  *result.add_security_domains() = security_domain;
-  return result;
+    const SecureBoxPublicKey& public_key,
+    AuthenticationFactorType authentication_factor_type) {
+  sync_pb::JoinSecurityDomainsRequest request;
+  request.mutable_security_domain()->set_name(kSyncSecurityDomainName);
+  *request.mutable_security_domain_member() =
+      CreateSecurityDomainMember(public_key, authentication_factor_type);
+  *request.mutable_shared_member_key() =
+      CreateSharedMemberKey(last_trusted_vault_key_and_version, public_key);
+  return request;
 }
 
 void ProcessRegisterAuthenticationFactorRequest(
     TrustedVaultConnection::RegisterAuthenticationFactorCallback callback,
     TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) {
+  // TODO(crbug.com/1113598): update |http_status| handling: BAD_REQUEST isn't
+  // relevant anymore, NOT_FOUND and PRECONDITION_FAILED require handling.
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
       std::move(callback).Run(TrustedVaultRequestStatus::kSuccess);
@@ -118,13 +139,14 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
     const base::Optional<TrustedVaultKeyAndVersion>&
         last_trusted_vault_key_and_version,
     const SecureBoxPublicKey& public_key,
+    AuthenticationFactorType authentication_factor_type,
     RegisterAuthenticationFactorCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
       TrustedVaultRequest::HttpMethod::kPost,
       GURL(trusted_vault_service_url_.spec() + kJoinSecurityDomainsURLPath),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(last_trusted_vault_key_and_version,
-                                       public_key)
+                                       public_key, authentication_factor_type)
           .SerializeAsString());
 
   request->FetchAccessTokenAndSendRequest(

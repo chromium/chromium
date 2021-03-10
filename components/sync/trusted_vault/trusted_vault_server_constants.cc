@@ -15,8 +15,10 @@ const char kQueryParameterAlternateOutputProto[] = "proto";
 
 }  // namespace
 
-const char kSyncSecurityDomainName[] = "chromesync";
-const char kJoinSecurityDomainsURLPath[] = "/domain:join";
+const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
+const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
+const char kJoinSecurityDomainsURLPath[] =
+    "users/me/securitydomains/chromesync:join";
 const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey() {

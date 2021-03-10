@@ -41,6 +41,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       const base::Optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
+      AuthenticationFactorType authentication_factor_type,
       RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> DownloadNewKeys(

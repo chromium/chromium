@@ -12,6 +12,7 @@
 namespace syncer {
 
 extern const char kSyncSecurityDomainName[];
+extern const char kSecurityDomainMemberNamePrefix[];
 extern const char kJoinSecurityDomainsURLPath[];
 extern const char kListSecurityDomainsURLPathAndQuery[];
 

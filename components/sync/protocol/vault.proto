@@ -16,6 +16,12 @@ message SharedKey {
   optional bytes key_proof = 4;
 }
 
+message SharedMemberKey {
+  optional int32 epoch = 1;
+  optional bytes wrapped_key = 2;
+  optional bytes member_proof = 3;
+}
+
 message SecurityDomain {
   optional string name = 1;
 
@@ -24,11 +30,27 @@ message SecurityDomain {
     repeated SharedKey keys = 2;
   }
 
+  // TODO(crbug.com/1113598): remove this field once ListSecurityDomainsResponse
+  // is updated.
   repeated Member members = 2;
 }
 
+message SecurityDomainMember {
+  optional string name = 1;
+  optional bytes public_key = 2;
+
+  enum MemberType {
+    MEMBER_TYPE_UNSPECIFIED = 0;
+    MEMBER_TYPE_PHYSICAL_DEVICE = 1;
+  }
+
+  optional MemberType member_type = 4;
+}
+
 message JoinSecurityDomainsRequest {
-  repeated SecurityDomain security_domains = 1;
+  optional SecurityDomain security_domain = 1;
+  optional SecurityDomainMember security_domain_member = 2;
+  optional SharedMemberKey shared_member_key = 3;
 }
 
 message ListSecurityDomainsResponse {

@@ -28,6 +28,8 @@ enum class TrustedVaultRequestStatus {
   kOtherError
 };
 
+enum class AuthenticationFactorType { kPhysicalDevice };
+
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);
   TrustedVaultKeyAndVersion(const TrustedVaultKeyAndVersion& other);
@@ -77,6 +79,7 @@ class TrustedVaultConnection {
       const base::Optional<TrustedVaultKeyAndVersion>&
           last_trusted_vault_key_and_version,
       const SecureBoxPublicKey& authentication_factor_public_key,
+      AuthenticationFactorType authentication_factor_type,
       RegisterAuthenticationFactorCallback callback) WARN_UNUSED_RESULT = 0;
 
   // Asynchronously attempts to download new vault keys (e.g. keys with version
