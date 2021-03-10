@@ -29,6 +29,7 @@
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
+#include "absl/numeric/internal/representation.h"
 #include "absl/strings/numbers.h"
 #include "absl/types/optional.h"
 #include "absl/types/span.h"
@@ -38,6 +39,8 @@ ABSL_NAMESPACE_BEGIN
 namespace str_format_internal {
 
 namespace {
+
+using ::absl::numeric_internal::IsDoubleDouble;
 
 // The code below wants to avoid heap allocations.
 // To do so it needs to allocate memory on the stack.
@@ -110,13 +113,6 @@ inline uint64_t DivideBy10WithCarry(uint64_t *v, uint64_t carry) {
   const uint64_t next_carry = chunk_remainder * carry + mod;
   *v = *v / divisor + carry * chunk_quotient + next_carry / divisor;
   return next_carry % divisor;
-}
-
-constexpr bool IsDoubleDouble() {
-  // This is the `double-double` representation of `long double`.
-  // We do not handle it natively. Fallback to snprintf.
-  return std::numeric_limits<long double>::digits ==
-         2 * std::numeric_limits<double>::digits;
 }
 
 using MaxFloatType =
@@ -1404,6 +1400,8 @@ bool FloatToSink(const Float v, const FormatConversionSpecImpl &conv,
 bool ConvertFloatImpl(long double v, const FormatConversionSpecImpl &conv,
                       FormatSinkImpl *sink) {
   if (IsDoubleDouble()) {
+    // This is the `double-double` representation of `long double`. We do not
+    // handle it natively. Fallback to snprintf.
     return FallbackToSnprintf(v, conv, sink);
   }
 

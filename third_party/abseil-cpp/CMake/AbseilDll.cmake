@@ -131,6 +131,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "numeric/int128.cc"
   "numeric/int128.h"
   "numeric/internal/bits.h"
+  "numeric/internal/representation.h"
   "random/bernoulli_distribution.h"
   "random/beta_distribution.h"
   "random/bit_gen_ref.h"

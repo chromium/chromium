@@ -21,12 +21,14 @@
 #include <iterator>
 #include <random>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
+#include "absl/numeric/internal/representation.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
 #include "absl/random/internal/sequence_urbg.h"
@@ -43,7 +45,15 @@ using absl::random_internal::kChiSquared;
 template <typename RealType>
 class GaussianDistributionInterfaceTest : public ::testing::Test {};
 
-using RealTypes = ::testing::Types<float, double, long double>;
+// double-double arithmetic is not supported well by either GCC or Clang; see
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99048,
+// https://bugs.llvm.org/show_bug.cgi?id=49131, and
+// https://bugs.llvm.org/show_bug.cgi?id=49132. Don't bother running these tests
+// with double doubles until compiler support is better.
+using RealTypes =
+    std::conditional<absl::numeric_internal::IsDoubleDouble(),
+                     ::testing::Types<float, double>,
+                     ::testing::Types<float, double, long double>>::type;
 TYPED_TEST_CASE(GaussianDistributionInterfaceTest, RealTypes);
 
 TYPED_TEST(GaussianDistributionInterfaceTest, SerializeTest) {
@@ -128,29 +138,6 @@ TYPED_TEST(GaussianDistributionInterfaceTest, SerializeTest) {
         EXPECT_NE(before, after);
 
         ss >> after;
-
-#if defined(__powerpc64__) || defined(__PPC64__) || defined(__powerpc__) || \
-    defined(__ppc__) || defined(__PPC__)
-        if (std::is_same<TypeParam, long double>::value) {
-          // Roundtripping floating point values requires sufficient precision
-          // to reconstruct the exact value.  It turns out that long double
-          // has some errors doing this on ppc, particularly for values
-          // near {1.0 +/- epsilon}.
-          if (mean <= std::numeric_limits<double>::max() &&
-              mean >= std::numeric_limits<double>::lowest()) {
-            EXPECT_EQ(static_cast<double>(before.mean()),
-                      static_cast<double>(after.mean()))
-                << ss.str();
-          }
-          if (stddev <= std::numeric_limits<double>::max() &&
-              stddev >= std::numeric_limits<double>::lowest()) {
-            EXPECT_EQ(static_cast<double>(before.stddev()),
-                      static_cast<double>(after.stddev()))
-                << ss.str();
-          }
-          continue;
-        }
-#endif
 
         EXPECT_EQ(before.mean(), after.mean());
         EXPECT_EQ(before.stddev(), after.stddev())  //

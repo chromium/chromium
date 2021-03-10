@@ -28,3 +28,8 @@ absl_source_set("int128") {
     "//third_party/abseil-cpp/absl/base:core_headers",
   ]
 }
+
+absl_source_set("representation") {
+  public = [ "internal/representation.h" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}

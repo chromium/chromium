@@ -101,3 +101,15 @@ cc_test(
         "@com_github_google_benchmark//:benchmark_main",
     ],
 )
+
+cc_library(
+    name = "representation",
+    hdrs = [
+        "internal/representation.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+    ],
+)

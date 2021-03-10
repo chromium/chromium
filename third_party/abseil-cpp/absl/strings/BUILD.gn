@@ -111,6 +111,7 @@ absl_source_set("str_format_internal") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/numeric:int128",
+    "//third_party/abseil-cpp/absl/numeric:representation",
     "//third_party/abseil-cpp/absl/types:optional",
     "//third_party/abseil-cpp/absl/types:span",
   ]

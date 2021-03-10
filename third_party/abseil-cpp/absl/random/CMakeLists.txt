@@ -259,6 +259,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::numeric_representation
     absl::random_distributions
     absl::random_random
     absl::random_internal_distribution_test_util
@@ -381,6 +382,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::core_headers
+    absl::numeric_representation
     absl::random_distributions
     absl::random_internal_distribution_test_util
     absl::random_internal_pcg_engine
@@ -404,6 +406,7 @@ absl_cc_test(
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::core_headers
+    absl::numeric_representation
     absl::random_distributions
     absl::random_internal_distribution_test_util
     absl::random_internal_sequence_urbg
@@ -446,6 +449,7 @@ absl_cc_test(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::numeric_representation
     absl::random_distributions
     absl::random_internal_distribution_test_util
     absl::random_internal_pcg_engine
