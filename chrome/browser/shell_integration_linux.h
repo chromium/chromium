@@ -73,7 +73,8 @@ std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
                                    const base::FilePath& profile_path,
                                    const std::string& categories,
                                    const std::string& mime_type,
-                                   bool no_display);
+                                   bool no_display,
+                                   const std::string& run_on_os_login_mode);
 
 // Returns contents for .desktop file that executes command_line. This is a more
 // general form of GetDesktopFileContents. If |no_display| is true, the shortcut
