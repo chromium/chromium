@@ -2109,6 +2109,30 @@ TEST_F(UkmPageLoadMetricsObserverTest, NavigationTiming) {
   }
 }
 
+TEST_F(UkmPageLoadMetricsObserverTest, CLSNeverForegroundedNoReport) {
+  web_contents()->WasHidden();
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  page_load_metrics::mojom::FrameRenderDataUpdate render_data(1.0, 1.0, 0, 0, 0,
+                                                              0, {});
+  tester()->SimulateRenderDataUpdate(render_data);
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+
+  for (const auto& kv : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = kv.second.get();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, GURL(kTestUrl1));
+    EXPECT_FALSE(ukm_recorder.EntryHasMetric(
+        ukm_entry, PageLoad::kLayoutInstability_CumulativeShiftScoreName));
+  }
+}
+
 class CLSUkmPageLoadMetricsObserverTest
     : public UkmPageLoadMetricsObserverTest {
  protected:

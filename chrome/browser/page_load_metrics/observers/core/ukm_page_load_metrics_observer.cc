@@ -977,6 +977,10 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
 }
 
 void UkmPageLoadMetricsObserver::ReportLayoutStability() {
+  // Don't report CLS if we were never in the foreground.
+  if (last_time_shown_.is_null())
+    return;
+
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   builder
       .SetLayoutInstability_CumulativeShiftScore(
