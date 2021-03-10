@@ -1365,6 +1365,13 @@ preprocess_folder =
         "$target_gen_dir/../../../preprocessed/file_manager/background/js",
         root_build_dir)
 
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+image_loader_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+                root_build_dir)
+
 optimize_webui("build") {
   host = "file_manager"
 
@@ -1372,6 +1379,11 @@ optimize_webui("build") {
   js_module_in_files = [ "main_background.m.js" ]
 
   js_out_files = [ "main_background.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     ":main_background.m",

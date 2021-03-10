@@ -2181,6 +2181,13 @@ preprocess_folder =
         "$target_gen_dir/../../../preprocessed/file_manager/foreground/js",
         root_build_dir)
 
+files_app_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+                root_build_dir)
+image_loader_path =
+    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
+                root_build_dir)
+
 optimize_webui("build") {
   host = "file_manager"
 
@@ -2194,6 +2201,11 @@ optimize_webui("build") {
     "main.m.rollup.js",
     "deferred_elements.m.rollup.js",
     "shared.m.rollup.js",
+  ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
@@ -2211,6 +2223,11 @@ optimize_webui("build_worker") {
   js_module_in_files = [ "metadata/metadata_dispatcher.m.js" ]
 
   js_out_files = [ "metadata_dispatcher.m.rollup.js" ]
+
+  external_paths = [
+    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
+  ]
 
   deps = [
     "metadata:metadata_dispatcher.m",

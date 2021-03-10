@@ -411,9 +411,6 @@ generate_grd("build_grd") {
     "file_manager/images/files/ui/menu_ng.svg",
 
     "file_manager/background/js/main_background.m.rollup.js",
-    "file_manager/foreground/elements/files_icon_button.m.js",
-    "file_manager/foreground/elements/files_ripple.m.js",
-    "file_manager/foreground/elements/files_toggle_ripple.m.js",
     "file_manager/foreground/js/deferred_elements.m.rollup.js",
     "file_manager/foreground/js/main.m.rollup.js",
     "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
@@ -450,7 +447,6 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager:fix_broken_images",
     "//ui/file_manager/file_manager/background/js:build",
-    "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/js:build",
     "//ui/file_manager/file_manager/foreground/js:build_worker",
     "//ui/file_manager/image_loader:build",
