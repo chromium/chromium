@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
@@ -366,7 +367,10 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             // remaining 16dp evenly between start/end resulting in a paddingEnd of 8dp.
             int paddingStart = getResources().getDimensionPixelSize(
                     R.dimen.sei_ntp_fakebox_button_start_padding);
-            ImageView lensButton = findViewById(R.id.lens_camera_button);
+            ImageView lensButton =
+                    LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
+                    ? findViewById(R.id.lens_camera_button_start)
+                    : findViewById(R.id.lens_camera_button_end);
             lensButton.setPaddingRelative(paddingStart, lensButton.getPaddingTop(), getPaddingEnd(),
                     lensButton.getPaddingBottom());
         }
