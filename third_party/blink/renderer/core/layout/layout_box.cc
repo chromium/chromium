@@ -6666,9 +6666,6 @@ PositionWithAffinity LayoutBox::PositionForPoint(
   // Pass off to the closest child.
   LayoutUnit min_dist = LayoutUnit::Max();
   LayoutBox* closest_layout_object = nullptr;
-  PhysicalOffset adjusted_point = point;
-  if (IsLegacyTableRow())
-    adjusted_point += PhysicalLocation();
 
   for (LayoutObject* layout_object = first_child; layout_object;
        layout_object = layout_object->NextSibling()) {
@@ -6682,22 +6679,15 @@ PositionWithAffinity LayoutBox::PositionForPoint(
 
     auto* layout_box = To<LayoutBox>(layout_object);
 
-    LayoutUnit top =
-        layout_box->BorderTop() + layout_box->PaddingTop() +
-        (IsLegacyTableRow() ? LayoutUnit() : layout_box->Location().Y());
+    LayoutUnit top = layout_box->BorderTop() + layout_box->PaddingTop() +
+                     layout_box->Location().Y();
     LayoutUnit bottom = top + layout_box->ContentHeight();
-    LayoutUnit left =
-        layout_box->BorderLeft() + layout_box->PaddingLeft() +
-        (IsLegacyTableRow() ? LayoutUnit()
-                            : layout_box->PhysicalLocation().left);
+    LayoutUnit left = layout_box->BorderLeft() + layout_box->PaddingLeft() +
+                      layout_box->PhysicalLocation().left;
     LayoutUnit right = left + layout_box->ContentWidth();
 
     if (point.left <= right && point.left >= left && point.top <= top &&
         point.top >= bottom) {
-      if (layout_box->IsLegacyTableRow()) {
-        return layout_box->PositionForPoint(point + adjusted_point -
-                                            layout_box->PhysicalLocation());
-      }
       return layout_box->PositionForPoint(point -
                                           layout_box->PhysicalLocation());
     }
@@ -6739,7 +6729,7 @@ PositionWithAffinity LayoutBox::PositionForPoint(
 
   if (closest_layout_object) {
     return closest_layout_object->PositionForPoint(
-        adjusted_point - closest_layout_object->PhysicalLocation());
+        point - closest_layout_object->PhysicalLocation());
   }
   return FirstPositionInOrBeforeThis();
 }
