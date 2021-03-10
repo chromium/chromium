@@ -527,6 +527,10 @@ bool DesktopMediaPickerDialogView::Accept() {
   source.audio_share = audio_share_checkbox_ &&
                        audio_share_checkbox_->GetVisible() &&
                        audio_share_checkbox_->GetChecked();
+  if (source.audio_share &&
+      dialog_source_ == DialogSource::kGetCurrentBrowsingContextMedia) {
+    source.web_contents_id.disable_local_echo = true;
+  }
 
   if (source.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
     // Activate the selected tab and bring the browser window for the selected
