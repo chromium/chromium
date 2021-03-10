@@ -13,18 +13,15 @@
 namespace autofill {
 
 // A value that can be provided by the renderer in cases when the ID is missing.
-constexpr int kNotSetRendererID = -1;
+constexpr int kNotSetRendererID = 0;
 
 namespace internal {
 
-using FormRendererIdType = ::util::IdType<class FormRendererIdMarker,
-                                          uint32_t,
-                                          std::numeric_limits<uint32_t>::max()>;
+using FormRendererIdType =
+    ::util::IdType<class FormRendererIdMarker, uint32_t, kNotSetRendererID>;
 
 using FieldRendererIdType =
-    ::util::IdType<class FieldRendererIdMarker,
-                   uint32_t,
-                   std::numeric_limits<uint32_t>::max()>;
+    ::util::IdType<class FieldRendererIdMarker, uint32_t, kNotSetRendererID>;
 
 }  // namespace internal
 

@@ -77,7 +77,7 @@ class JsAutofillManagerTest : public ChromeWebTest {
   void LoadHtml(NSString* html) {
     ChromeWebTest::LoadHtml(html);
     manager_ = [[JsAutofillManager alloc] init];
-    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   }
 
   web::WebFrame* main_web_frame() {
@@ -141,7 +141,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"First Name",
-        @"unique_renderer_id" : @"1"
+        @"unique_renderer_id" : @"2"
       },
       @{
         @"aria_description" : @"",
@@ -157,7 +157,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"",
-        @"unique_renderer_id" : @"2"
+        @"unique_renderer_id" : @"3"
       },
       @{
         @"aria_description" : @"Email Address",
@@ -173,7 +173,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"",
-        @"unique_renderer_id" : @"3"
+        @"unique_renderer_id" : @"4"
       }
     ]
   };
@@ -235,7 +235,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"First Name",
-        @"unique_renderer_id" : @"1"
+        @"unique_renderer_id" : @"2"
       },
       @{
         @"aria_description" : @"",
@@ -251,7 +251,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"",
-        @"unique_renderer_id" : @"2"
+        @"unique_renderer_id" : @"3"
       },
       @{
         @"aria_description" : @"Email Address",
@@ -267,7 +267,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
         @"is_focusable" : @true,
         @"value" : @"",
         @"label" : @"",
-        @"unique_renderer_id" : @"3"
+        @"unique_renderer_id" : @"4"
       }
     ]
   };
@@ -343,7 +343,7 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
   auto data = std::make_unique<base::DictionaryValue>();
   data->SetString("name", "email");
   data->SetString("identifier", "email");
-  data->SetInteger("unique_renderer_id", 1);
+  data->SetInteger("unique_renderer_id", 2);
   data->SetString("value", "newemail@com");
   __block BOOL success = NO;
   [manager_ fillActiveFormField:std::move(data)
@@ -506,7 +506,7 @@ TEST_F(JsAutofillManagerTest, FillForm) {
   __block BOOL block_was_called = NO;
   [manager_ fillForm:std::move(autofillData)
       forceFillFieldIdentifier:@"firstname"
-        forceFillFieldUniqueID:FieldRendererId(1)
+        forceFillFieldUniqueID:FieldRendererId(2)
                        inFrame:main_web_frame()
              completionHandler:^(NSString* result) {
                filling_result = [result copy];
@@ -516,7 +516,7 @@ TEST_F(JsAutofillManagerTest, FillForm) {
       base::test::ios::kWaitForActionTimeout, ^bool() {
         return block_was_called;
       }));
-  EXPECT_NSEQ(@"{\"1\":\"Cool User\",\"2\":\"coolemail@com\"}", filling_result);
+  EXPECT_NSEQ(@"{\"2\":\"Cool User\",\"3\":\"coolemail@com\"}", filling_result);
 }
 
 // Tests form filling (fillForm:forceFillFieldIdentifier:forceFillFieldUniqueID:
@@ -536,20 +536,20 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
 
   auto autofillData = std::make_unique<base::DictionaryValue>();
   autofillData->SetKey("formName", base::Value("testform"));
-  autofillData->SetKey("formRendererID", base::Value(0));
+  autofillData->SetKey("formRendererID", base::Value(1));
 
   base::Value fieldsData(base::Value::Type::DICTIONARY);
   base::Value firstFieldData(base::Value::Type::DICTIONARY);
   firstFieldData.SetStringKey("name", "firstname");
   firstFieldData.SetStringKey("identifier", "firstname");
   firstFieldData.SetStringKey("value", "Cool User");
-  fieldsData.SetKey("1", std::move(firstFieldData));
+  fieldsData.SetKey("2", std::move(firstFieldData));
 
   base::Value secondFieldData(base::Value::Type::DICTIONARY);
   secondFieldData.SetStringKey("name", "email");
   secondFieldData.SetStringKey("identifier", "email");
   secondFieldData.SetStringKey("value", "coolemail@com");
-  fieldsData.SetKey("2", std::move(secondFieldData));
+  fieldsData.SetKey("3", std::move(secondFieldData));
 
   autofillData->SetKey("fields", std::move(fieldsData));
 
@@ -557,7 +557,7 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
   __block BOOL block_was_called = NO;
   [manager_ fillForm:std::move(autofillData)
       forceFillFieldIdentifier:@"firstname"
-        forceFillFieldUniqueID:FieldRendererId(1)
+        forceFillFieldUniqueID:FieldRendererId(2)
                        inFrame:main_web_frame()
              completionHandler:^(NSString* result) {
                filling_result = [result copy];
@@ -567,7 +567,7 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
       base::test::ios::kWaitForActionTimeout, ^bool() {
         return block_was_called;
       }));
-  EXPECT_NSEQ(@"{\"1\":\"Cool User\",\"2\":\"coolemail@com\"}", filling_result);
+  EXPECT_NSEQ(@"{\"2\":\"Cool User\",\"3\":\"coolemail@com\"}", filling_result);
 }
 
 // Tests form clearing (clearAutofilledFieldsForFormName:formUniqueID:
@@ -594,8 +594,8 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
               "</form></body></html>");
     RunFormsSearch();
 
-    std::vector<std::pair<NSString*, int>> field_ids = {{@"firstname", 1},
-                                                        {@"email", 2}};
+    std::vector<std::pair<NSString*, int>> field_ids = {{@"firstname", 2},
+                                                        {@"email", 3}};
     // Fill form fields.
     for (auto& field_data : field_ids) {
       NSString* getFieldScript =
@@ -624,9 +624,9 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
     __block NSString* clearing_result = nil;
     __block BOOL block_was_called = NO;
     [manager_ clearAutofilledFieldsForFormName:@"testform"
-                                  formUniqueID:FormRendererId(0)
+                                  formUniqueID:FormRendererId(1)
                                fieldIdentifier:@"firstname"
-                                 fieldUniqueID:FieldRendererId(1)
+                                 fieldUniqueID:FieldRendererId(2)
                                        inFrame:main_web_frame()
                              completionHandler:^(NSString* result) {
                                clearing_result = [result copy];
@@ -636,7 +636,7 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
         base::test::ios::kWaitForActionTimeout, ^bool() {
           return block_was_called;
         }));
-    EXPECT_NSEQ(@"[\"1\",\"2\"]", clearing_result);
+    EXPECT_NSEQ(@"[\"2\",\"3\"]", clearing_result);
   }
 }
 

@@ -142,7 +142,7 @@ __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION = 0;
  *
  * @const {string}
  */
-__gCrWeb.fill.RENDERER_ID_NOT_SET = '-1';
+__gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
 
 /**
  * The JS Symbol object used to set stable unique form and field IDs.

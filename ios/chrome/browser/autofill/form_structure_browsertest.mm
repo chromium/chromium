@@ -193,7 +193,7 @@ bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
     const std::string& html) {
   bool success = ChromeWebTest::LoadHtmlWithoutSubresources(html);
   if (success)
-    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+    ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   return success;
 }
 

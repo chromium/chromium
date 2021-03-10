@@ -1165,7 +1165,7 @@ autofill::FormData GetPlaceholderUsernameFormData(
     password_manager::PasswordForm signin_form) {
   // Build server predictions
   autofill::FormData form_data;
-  constexpr autofill::FormRendererId form_id(0);
+  constexpr autofill::FormRendererId form_id(1);
   form_data.unique_renderer_id = form_id;
   form_data.name_attribute = ASCIIToUTF16("testform");
   form_data.name = form_data.name_attribute;
@@ -1178,7 +1178,7 @@ autofill::FormData GetPlaceholderUsernameFormData(
   username_field.name = username_field.id_attribute;
   username_field.value = ASCIIToUTF16("example@example.com");
   username_field.label = username_field.value;
-  username_field.unique_renderer_id = autofill::FieldRendererId(0);
+  username_field.unique_renderer_id = autofill::FieldRendererId(1);
   form_data.fields.push_back(username_field);
   // Password
   autofill::FormFieldData password_field;
@@ -1187,7 +1187,7 @@ autofill::FormData GetPlaceholderUsernameFormData(
   password_field.name = password_field.id_attribute;
   password_field.value = ASCIIToUTF16("htmlPass");
   password_field.label = password_field.value;
-  password_field.unique_renderer_id = autofill::FieldRendererId(1);
+  password_field.unique_renderer_id = autofill::FieldRendererId(2);
   form_data.fields.push_back(password_field);
 
   return form_data;

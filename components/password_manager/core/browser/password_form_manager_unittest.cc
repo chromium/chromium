@@ -309,7 +309,7 @@ class PasswordFormManagerTest : public testing::Test,
     observed_form_.url = origin;
     observed_form_.action = action;
     observed_form_.name = ASCIIToUTF16("sign-in");
-    observed_form_.unique_renderer_id = FormRendererId(0);
+    observed_form_.unique_renderer_id = FormRendererId(1);
     observed_form_.is_form_tag = true;
 
     observed_form_only_password_fields_ = observed_form_;
@@ -319,14 +319,14 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "text";
-    field.unique_renderer_id = autofill::FieldRendererId(1);
+    field.unique_renderer_id = autofill::FieldRendererId(2);
     observed_form_.fields.push_back(field);
 
     field.name = ASCIIToUTF16("username");
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "text";
-    field.unique_renderer_id = autofill::FieldRendererId(2);
+    field.unique_renderer_id = autofill::FieldRendererId(3);
     observed_form_.fields.push_back(field);
 
     non_password_form_ = observed_form_;
@@ -335,7 +335,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "password";
-    field.unique_renderer_id = autofill::FieldRendererId(3);
+    field.unique_renderer_id = autofill::FieldRendererId(4);
     observed_form_.fields.push_back(field);
     observed_form_only_password_fields_.fields.push_back(field);
 
@@ -343,7 +343,7 @@ class PasswordFormManagerTest : public testing::Test,
     field.id_attribute = field.name;
     field.name_attribute = field.name;
     field.form_control_type = "password";
-    field.unique_renderer_id = autofill::FieldRendererId(4);
+    field.unique_renderer_id = autofill::FieldRendererId(5);
     observed_form_only_password_fields_.fields.push_back(field);
 
 // On iOS the unique_id member uniquely addresses this field in the DOM.
@@ -1854,7 +1854,7 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNoInteraction) {
     fetcher_->NotifyFetchCompleted();
 
     if (generation_popup_shown) {
-      form_manager_->SetGenerationElement(FieldRendererId(3));
+      form_manager_->SetGenerationElement(FieldRendererId(4));
       form_manager_->SetGenerationPopupWasShown(
           PasswordGenerationType::kAutomatic);
     }
@@ -1878,7 +1878,7 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNeverClicked) {
     fetcher_->NotifyFetchCompleted();
 
     if (generation_popup_shown) {
-      form_manager_->SetGenerationElement(FieldRendererId(3));
+      form_manager_->SetGenerationElement(FieldRendererId(4));
       form_manager_->SetGenerationPopupWasShown(
           PasswordGenerationType::kAutomatic);
     }
@@ -2102,7 +2102,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
   const base::string16 possible_username = ASCIIToUTF16("test@example.com");
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(1),
+      saved_match_.signon_realm, autofill::FieldRendererId(2),
       possible_username, base::Time::Now(), 0 /* driver_id */);
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2132,7 +2132,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   fetcher_->NotifyFetchCompleted();
   base::string16 possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
-      "https://another.domain.com", autofill::FieldRendererId(1u),
+      "https://another.domain.com", autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2154,7 +2154,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotes) {
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
   const base::string16 possible_username = ASCIIToUTF16("possible_username");
-  constexpr autofill::FieldRendererId kUsernameFieldRendererId(100);
+  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, possible_username,
       base::Time::Now(), 0 /* driver_id */);
@@ -2264,7 +2264,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
 
   const base::string16 possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(101u),
+      saved_match_.signon_realm, autofill::FieldRendererId(102u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2308,7 +2308,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFieldManager) {
 
   const base::string16 possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(101u),
+      saved_match_.signon_realm, autofill::FieldRendererId(102u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
 
   FormData submitted_form = observed_form_only_password_fields_;
@@ -2871,7 +2871,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
   const base::string16 possible_username = ASCIIToUTF16("test@example.org");
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(1u),
+      saved_match_.signon_realm, autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = ASCIIToUTF16("strongpassword");
@@ -2893,7 +2893,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   fetcher_->NotifyFetchCompleted();
   base::string16 possible_username = ASCIIToUTF16("possible_username");
   PossibleUsernameData possible_username_data(
-      "https://another.domain.com", autofill::FieldRendererId(1u),
+      "https://another.domain.com", autofill::FieldRendererId(2u),
       possible_username, base::Time::Now(), 0 /* driver_id */);
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = ASCIIToUTF16("strongpassword");

@@ -32,7 +32,7 @@ class UniqueIDDataTabHelper
   // web::WebStateObserver implementation.
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  uint32_t next_available_renderer_id_ = 0;
+  uint32_t next_available_renderer_id_ = 1;
 
   // Maps UniqueFieldId of an input element to the pair of:
   // 1) The most recent text that user typed or PasswordManager autofilled in

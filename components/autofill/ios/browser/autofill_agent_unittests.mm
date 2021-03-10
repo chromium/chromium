@@ -146,7 +146,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
   form.url = GURL("https://myform.com");
   form.action = GURL("https://myform.com/submit");
   form.name = base::ASCIIToUTF16("CC form");
-  form.unique_renderer_id = FormRendererId(0);
+  form.unique_renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
   field.form_control_type = "text";
@@ -157,7 +157,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("number_value");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(1);
+  field.unique_renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Name on Card");
   field.name = base::ASCIIToUTF16("name");
@@ -166,7 +166,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("name_value");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.unique_renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Expiry Month");
   field.name = base::ASCIIToUTF16("expiry_month");
@@ -175,7 +175,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("01");
   field.is_autofilled = false;
-  field.unique_renderer_id = FieldRendererId(3);
+  field.unique_renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Unknown field");
   field.name = base::ASCIIToUTF16("unknown");
@@ -184,7 +184,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(4);
+  field.unique_renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
   [autofill_agent_
       fillFormData:form
@@ -194,7 +194,7 @@ TEST_F(AutofillAgentTests, OnFormDataFilledTestWithFrameMessaging) {
       "__gCrWeb.autofill.fillForm({\"fields\":{\"name\":{\"section\":\"\","
       "\"value\":\"name_value\"},"
       "\"number\":{\"section\":\"\",\"value\":\"number_value\"}},"
-      "\"formName\":\"CC form\",\"formRendererID\":0}, \"\", -1, false);",
+      "\"formName\":\"CC form\",\"formRendererID\":1}, \"\", 0, false);",
       fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -218,7 +218,7 @@ TEST_F(AutofillAgentTests,
   form.url = GURL("https://myform.com");
   form.action = GURL("https://myform.com/submit");
   form.name = base::ASCIIToUTF16("CC form");
-  form.unique_renderer_id = FormRendererId(0);
+  form.unique_renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
   field.form_control_type = "text";
@@ -229,7 +229,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("number_value");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(1);
+  field.unique_renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Name on Card");
   field.name = base::ASCIIToUTF16("name");
@@ -238,7 +238,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("name_value");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.unique_renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Expiry Month");
   field.name = base::ASCIIToUTF16("expiry_month");
@@ -247,7 +247,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("01");
   field.is_autofilled = false;
-  field.unique_renderer_id = FieldRendererId(3);
+  field.unique_renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Unknown field");
   field.name = base::ASCIIToUTF16("unknown");
@@ -256,16 +256,16 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(4);
+  field.unique_renderer_id = FieldRendererId(5);
   form.fields.push_back(field);
   [autofill_agent_
       fillFormData:form
            inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"1\":{\"section\":\"\","
+  EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"\","
             "\"value\":\"number_value\"},"
-            "\"2\":{\"section\":\"\",\"value\":\"name_value\"}},"
-            "\"formName\":\"CC form\",\"formRendererID\":0}, \"\", -1, true);",
+            "\"3\":{\"section\":\"\",\"value\":\"name_value\"}},"
+            "\"formName\":\"CC form\",\"formRendererID\":1}, \"\", 0, true);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -288,7 +288,7 @@ TEST_F(AutofillAgentTests,
   autofill::FormData form;
   form.url = GURL("https://myform.com");
   form.action = GURL("https://myform.com/submit");
-  form.unique_renderer_id = FormRendererId(0);
+  form.unique_renderer_id = FormRendererId(1);
 
   autofill::FormFieldData field;
   field.form_control_type = "text";
@@ -299,7 +299,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("California");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(1);
+  field.unique_renderer_id = FieldRendererId(2);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Other field");
   field.name = base::ASCIIToUTF16("field1");
@@ -308,7 +308,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("value 1");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(2);
+  field.unique_renderer_id = FieldRendererId(3);
   form.fields.push_back(field);
   field.label = base::ASCIIToUTF16("Other field");
   field.name = base::ASCIIToUTF16("field1");
@@ -317,7 +317,7 @@ TEST_F(AutofillAgentTests,
   field.unique_id = field.id_attribute;
   field.value = base::ASCIIToUTF16("value 2");
   field.is_autofilled = true;
-  field.unique_renderer_id = FieldRendererId(3);
+  field.unique_renderer_id = FieldRendererId(4);
   form.fields.push_back(field);
   // Fields are in alphabetical order.
   [autofill_agent_
@@ -327,7 +327,7 @@ TEST_F(AutofillAgentTests,
   EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"field1\":{\"section\":"
             "\"\",\"value\":\"value "
             "2\"},\"region\":{\"section\":\"\",\"value\":\"California\"}},"
-            "\"formName\":\"\",\"formRendererID\":0}, \"\", -1, false);",
+            "\"formName\":\"\",\"formRendererID\":1}, \"\", 0, false);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
@@ -341,9 +341,9 @@ TEST_F(AutofillAgentTests,
 
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(0)
+                                               uniqueFormID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(1)
+                                              uniqueFieldID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -386,9 +386,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(0)
+                                               uniqueFormID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(1)
+                                              uniqueFieldID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -434,9 +434,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(0)
+                                               uniqueFormID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(1)
+                                              uniqueFieldID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -484,9 +484,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   };
   FormSuggestionProviderQuery* form_query =
       [[FormSuggestionProviderQuery alloc] initWithFormName:@"form"
-                                               uniqueFormID:FormRendererId(0)
+                                               uniqueFormID:FormRendererId(1)
                                             fieldIdentifier:@"address"
-                                              uniqueFieldID:FieldRendererId(1)
+                                              uniqueFieldID:FieldRendererId(2)
                                                   fieldType:@"text"
                                                        type:@"focus"
                                                  typedValue:@""
@@ -630,14 +630,14 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
 TEST_F(AutofillAgentTests, UpdateFieldManagerWithFillingResults) {
   auto test_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-  [autofill_agent_ updateFieldManagerWithFillingResults:@"{\"1\":\"Val1\"}"];
+  [autofill_agent_ updateFieldManagerWithFillingResults:@"{\"2\":\"Val1\"}"];
 
   // Check recorded FieldDataManager data.
   UniqueIDDataTabHelper* uniqueIDDataTabHelper =
       UniqueIDDataTabHelper::FromWebState(&fake_web_state_);
   scoped_refptr<FieldDataManager> fieldDataManager =
       uniqueIDDataTabHelper->GetFieldDataManager();
-  EXPECT_TRUE(fieldDataManager->WasAutofilledOnUserTrigger(FieldRendererId(1)));
+  EXPECT_TRUE(fieldDataManager->WasAutofilledOnUserTrigger(FieldRendererId(2)));
 
   // Check recorded UKM.
   auto entries = test_recorder->GetEntriesByName(

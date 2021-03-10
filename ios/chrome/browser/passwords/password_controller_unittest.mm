@@ -424,7 +424,7 @@ class PasswordControllerTest : public ChromeWebTest {
         formEligibleForGenerationFound:generation_data];
     __block BOOL block_was_called = NO;
     [passwordController_.sharedPasswordController
-        injectGeneratedPasswordForFormId:FormRendererId(0)
+        injectGeneratedPasswordForFormId:FormRendererId(1)
                        generatedPassword:password
                        completionHandler:^() {
                          block_was_called = YES;
@@ -551,48 +551,48 @@ TEST_F(PasswordControllerTest, FLAKY_FindPasswordFormsInView) {
 static NSString* kHtmlWithMultiplePasswordForms =
     @""
      // Basic form.
-     "<form>"                                      // unique_id 0
-     "<input id='un0' type='text' name='u0'>"      // unique_id 1
-     "<input id='pw0' type='password' name='p0'>"  // unique_id 2
+     "<form>"                                      // unique_id 1
+     "<input id='un0' type='text' name='u0'>"      // unique_id 2
+     "<input id='pw0' type='password' name='p0'>"  // unique_id 3
      "</form>"
      // Form with action in the same origin.
-     "<form action='?query=yes#reference'>"        // unique_id 3
-     "<input id='un1' type='text' name='u1'>"      // unique_id 4
-     "<input id='pw1' type='password' name='p1'>"  // unique_id 5
+     "<form action='?query=yes#reference'>"        // unique_id 4
+     "<input id='un1' type='text' name='u1'>"      // unique_id 5
+     "<input id='pw1' type='password' name='p1'>"  // unique_id 6
      "</form>"
      // Form with two exactly same password fields.
-     "<form>"                                      // unique_id 6
-     "<input id='un2' type='text' name='u2'>"      // unique_id 7
-     "<input id='pw2' type='password' name='p2'>"  // unique_id 8
+     "<form>"                                      // unique_id 7
+     "<input id='un2' type='text' name='u2'>"      // unique_id 8
      "<input id='pw2' type='password' name='p2'>"  // unique_id 9
+     "<input id='pw2' type='password' name='p2'>"  // unique_id 10
      "</form>"
      // Forms with same names but different ids (1 of 2).
-     "<form>"                                      // unique_id 10
-     "<input id='un3' type='text' name='u3'>"      // unique_id 11
-     "<input id='pw3' type='password' name='p3'>"  // unique_id 12
+     "<form>"                                      // unique_id 11
+     "<input id='un3' type='text' name='u3'>"      // unique_id 12
+     "<input id='pw3' type='password' name='p3'>"  // unique_id 13
      "</form>"
      // Forms with same names but different ids (2 of 2).
-     "<form>"                                      // unique_id 13
-     "<input id='un4' type='text' name='u4'>"      // unique_id 14
-     "<input id='pw4' type='password' name='p4'>"  // unique_id 15
+     "<form>"                                      // unique_id 14
+     "<input id='un4' type='text' name='u4'>"      // unique_id 15
+     "<input id='pw4' type='password' name='p4'>"  // unique_id 16
      "</form>"
      // Basic form, but with quotes in the names and IDs.
-     "<form name=\"f5'\">"                               // unique_id 16
-     "<input id=\"un5'\" type='text' name=\"u5'\">"      // unique_id 17
-     "<input id=\"pw5'\" type='password' name=\"p5'\">"  // unique_id 18
+     "<form name=\"f5'\">"                               // unique_id 17
+     "<input id=\"un5'\" type='text' name=\"u5'\">"      // unique_id 18
+     "<input id=\"pw5'\" type='password' name=\"p5'\">"  // unique_id 19
      "</form>"
      // Fields inside this form don't have name.
-     "<form>"                            // unique_id 19
-     "<input id='un6' type='text'>"      // unique_id 20
-     "<input id='pw6' type='password'>"  // unique_id 21
+     "<form>"                            // unique_id 20
+     "<input id='un6' type='text'>"      // unique_id 21
+     "<input id='pw6' type='password'>"  // unique_id 22
      "</form>"
      // Fields in this form is attached by form's id.
-     "<form id='form7'></form>"                       // unique_id 22
-     "<input id='un7' type='text' form='form7'>"      // unique_id 23
-     "<input id='pw7' type='password' form='form7'>"  // unique_id 24
+     "<form id='form7'></form>"                       // unique_id 23
+     "<input id='un7' type='text' form='form7'>"      // unique_id 24
+     "<input id='pw7' type='password' form='form7'>"  // unique_id 25
      // Fields that are outside the <form> tag.
-     "<input id='un8' type='text'>"      // unique_id 25
-     "<input id='pw8' type='password'>"  // unique_id 26
+     "<input id='un8' type='text'>"      // unique_id 26
+     "<input id='pw8' type='password'>"  // unique_id 27
                                          // Test forms inside iframes.
      "<iframe id='pf' name='pf'></iframe>"
      "<iframe id='npf' name='npf'></iframe>"
@@ -600,15 +600,15 @@ static NSString* kHtmlWithMultiplePasswordForms =
      "  var doc = frames['pf'].document.open();"
      // Add a form inside iframe. It should also be matched and autofilled.
      "  doc.write('<form id=\\'f10\\'><input id=\\'un10\\' type=\\'text\\' "
-     "name=\\'u10\\'>');"  // unique_id 27
+     "name=\\'u10\\'>');"  // unique_id 28
      "  doc.write('<input id=\\'pw10\\' type=\\'password\\' name=\\'p10\\'>');"
-     "  doc.write('</form>');"  // unique_id 28-29
+     "  doc.write('</form>');"  // unique_id 29-28
      // Add a non-password form inside iframe. It should not be matched.
      "  var doc = frames['npf'].document.open();"
      "  doc.write('<form id=\\'f10\\'><input id=\\'un10\\' type=\\'text\\' "
-     "name=\\'u10\\'>');"  // unique_id 30
+     "name=\\'u10\\'>');"  // unique_id 31
      "  doc.write('<input id=\\'pw10\\' type=\\'text\\' name=\\'p10\\'>');"
-     "  doc.write('</form>');"  // unique_id 31-32
+     "  doc.write('</form>');"  // unique_id 32-31
      "  doc.close();"
      "</script>";
 
@@ -677,12 +677,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "gChrome~form~0",
-      0,
-      "un0",
       1,
+      "un0",
+      2,
       "test_user",
       "pw0",
-      2,
+      3,
       "test_password",
       YES,
       @"un0=test_user;pw0=test_password;"
@@ -692,12 +692,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "gChrome~form~1",
-      3,
-      "un1",
       4,
+      "un1",
+      5,
       "test_user",
       "pw1",
-      5,
+      6,
       "test_password",
       YES,
       @"un1=test_user;pw1=test_password;"
@@ -706,12 +706,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       "http://someotherfakedomain.com",
       "gChrome~form~0",
-      0,
-      "un0",
       1,
+      "un0",
+      2,
       "test_user",
       "pw0",
-      2,
+      3,
       "test_password",
       NO,
       @""
@@ -720,12 +720,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "gChrome~form~0",
-      0,
-      "un0",
       1,
+      "un0",
+      2,
       "test_user",
       "pw1",
-      5,
+      6,
       "test_password",
       NO,
       @""
@@ -735,12 +735,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "gChrome~form~2",
-      6,
-      "un2",
       7,
+      "un2",
+      8,
       "test_user",
       "pw2",
-      8,
+      9,
       "test_password",
       YES,
       @"un2=test_user;pw2=test_password;"
@@ -749,12 +749,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "f5'",
-      16,
-      "un5'",
       17,
+      "un5'",
+      18,
       "test_user",
       "pw5'",
-      18,
+      19,
       "test_password",
       YES,
       @"un5'=test_user;pw5'=test_password;"
@@ -764,12 +764,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "gChrome~form~6",
-      19,
-      "un6",
       20,
+      "un6",
+      21,
       "test_user",
       "pw6",
-      21,
+      22,
       "test_password",
       YES,
       @"un6=test_user;pw6=test_password;"
@@ -778,12 +778,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "form7",
-      22,
-      "un7",
       23,
+      "un7",
+      24,
       "test_user",
       "pw7",
-      24,
+      25,
       "test_password",
       YES,
       @"un7=test_user;pw7=test_password;"
@@ -792,12 +792,12 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
     {
       base_url,
       "f10",
-      27,
-      "un10",
       28,
+      "un10",
+      29,
       "test_user",
       "pw10",
-      29,
+      30,
       "test_password",
       YES,
       @"pf.un10=test_user;pf.pw10=test_password;"
@@ -808,10 +808,10 @@ TEST_F(PasswordControllerTest, FillPasswordForm) {
       "",
       std::numeric_limits<uint32_t>::max(),
       "un8",
-      25,
+      26,
       "test_user",
       "pw8",
-      26,
+      27,
       "test_password",
       YES,
       @"un8=test_user;pw8=test_password;"
@@ -850,8 +850,8 @@ BOOL PasswordControllerTest::BasicFormFill(NSString* html) {
   LoadHtml(html);
   const std::string base_url = BaseUrl();
   PasswordFormFillData form_data;
-  SetPasswordFormFillData(base_url, "gChrome~form~0", 0, "un0", 1, "test_user",
-                          "pw0", 2, "test_password", nullptr, nullptr, false,
+  SetPasswordFormFillData(base_url, "gChrome~form~0", 1, "un0", 2, "test_user",
+                          "pw0", 3, "test_password", nullptr, nullptr, false,
                           &form_data);
   __block BOOL block_was_called = NO;
   __block BOOL return_value = NO;
@@ -994,8 +994,8 @@ TEST_F(PasswordControllerTest, SuggestionUpdateTests) {
   // we can test with an initially-empty username field. Testing with a
   // username field that contains input is performed by a specific test below.
   PasswordFormFillData form_data;
-  SetPasswordFormFillData(base_url, "gChrome~form~0", 0, "un", 1, "user0", "pw",
-                          2, "password0", "abc", "def", true, &form_data);
+  SetPasswordFormFillData(base_url, "gChrome~form~0", 1, "un", 2, "user0", "pw",
+                          3, "password0", "abc", "def", true, &form_data);
 
   __block BOOL block_was_called = NO;
   [passwordController_.sharedPasswordController
@@ -1108,8 +1108,8 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
     const uint32_t username_renderer_id;
     const char* password_element;
     const uint32_t password_renderer_id;
-  } const kTestData[] = {{"f1", 0, "u1", 1, "p1", 2},
-                         {"f2", 3, "u2", 4, "p2", 5}};
+  } const kTestData[] = {{"f1", 1, "u1", 2, "p1", 3},
+                         {"f2", 4, "u2", 5, "p2", 6}};
 
   // Send fill data to passwordController_.
   for (size_t form_i = 0; form_i < base::size(kTestData); ++form_i) {
@@ -1296,7 +1296,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
 // not sent to the store then the request the the store is sent.
 TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   LoadHtml(kHtmlWithoutPasswordForm);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
   // The standard pattern is to use a __block variable WaitUntilCondition but
@@ -1451,9 +1451,9 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
     __block BOOL completion_handler_called = NO;
 
     FormRendererId form_id =
-        store_has_credentials ? FormRendererId(3) : FormRendererId(0);
+        store_has_credentials ? FormRendererId(4) : FormRendererId(1);
     FieldRendererId field_id =
-        store_has_credentials ? FieldRendererId(4) : FieldRendererId(1);
+        store_has_credentials ? FieldRendererId(5) : FieldRendererId(2);
     std::string mainFrameID = web::GetMainWebFrameId(web_state());
 
     FormSuggestionProviderQuery* form_query =
@@ -1505,9 +1505,9 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
 
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"dynamic_form"
-          uniqueFormID:FormRendererId(0)
+          uniqueFormID:FormRendererId(1)
        fieldIdentifier:@"address"
-         uniqueFieldID:FieldRendererId(3)
+         uniqueFieldID:FieldRendererId(4)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1541,9 +1541,9 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
   std::string mainFrameID = web::GetMainWebFrameId(web_state());
   FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
       initWithFormName:@"form"
-          uniqueFormID:FormRendererId(0)
+          uniqueFormID:FormRendererId(1)
        fieldIdentifier:@"address"
-         uniqueFieldID:FieldRendererId(1)
+         uniqueFieldID:FieldRendererId(2)
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
@@ -1585,8 +1585,8 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
   // we can test with an initially-empty username field. Testing with a
   // username field that contains input is performed by a specific test below.
   PasswordFormFillData form_data;
-  SetPasswordFormFillData(base_url, "gChrome~form~0", 0, "un", 1, "user0", "pw",
-                          2, "password0", "abc", "def", true, &form_data);
+  SetPasswordFormFillData(base_url, "gChrome~form~0", 1, "un", 2, "user0", "pw",
+                          3, "password0", "abc", "def", true, &form_data);
 
   __block BOOL block_was_called = NO;
   [passwordController_.sharedPasswordController
@@ -1828,10 +1828,10 @@ TEST_F(PasswordControllerTest, SavingOnNavigateMainFrame) {
 
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms()));
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(0);");
-  FormRendererId form_id = FormRendererId(0);
-  FieldRendererId username_id = FieldRendererId(1);
-  FieldRendererId password_id = FieldRendererId(2);
+  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+  FormRendererId form_id = FormRendererId(1);
+  FieldRendererId username_id = FieldRendererId(2);
+  FieldRendererId password_id = FieldRendererId(3);
   for (bool has_commited : {false, true}) {
     for (bool is_same_document : {false, true}) {
       for (bool is_renderer_initiated : {false, true}) {
@@ -1912,9 +1912,9 @@ TEST_F(PasswordControllerTest, NoSavingOnNavigateMainFrameFailedSubmission) {
 
   std::string main_frame_id = web::GetMainWebFrameId(web_state());
 
-  SimulateUserTyping("login_form", FormRendererId(0), "username",
-                     FieldRendererId(1), "user1", main_frame_id);
-  SimulateUserTyping("login_form", FormRendererId(0), "pw", FieldRendererId(2),
+  SimulateUserTyping("login_form", FormRendererId(1), "username",
+                     FieldRendererId(2), "user1", main_frame_id);
+  SimulateUserTyping("login_form", FormRendererId(1), "pw", FieldRendererId(3),
                      "password1", main_frame_id);
 
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
@@ -1956,16 +1956,16 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
 
   std::string mainFrameID = web::GetMainWebFrameId(web_state());
 
-  SimulateUserTyping("login_form", FormRendererId(0), "username",
-                     FieldRendererId(1), "user1", mainFrameID);
-  SimulateUserTyping("login_form", FormRendererId(0), "pw", FieldRendererId(2),
+  SimulateUserTyping("login_form", FormRendererId(1), "username",
+                     FieldRendererId(2), "user1", mainFrameID);
+  SimulateUserTyping("login_form", FormRendererId(1), "pw", FieldRendererId(3),
                      "password1", mainFrameID);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(0),
+  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
                                      FieldRendererId(), std::string());
 
   auto& form_manager_check = form_manager_to_save;
@@ -1996,7 +1996,7 @@ TEST_F(PasswordControllerTest,
 
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
 
-  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(0),
+  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(1),
                                      FieldRendererId(), std::string());
 }
 
@@ -2040,9 +2040,9 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
     }
   }
 
-  SimulateUserTyping("form1", FormRendererId(0), "un", FieldRendererId(1),
+  SimulateUserTyping("form1", FormRendererId(1), "un", FieldRendererId(2),
                      "user1", iFrameID);
-  SimulateUserTyping("form1", FormRendererId(0), "pw", FieldRendererId(2),
+  SimulateUserTyping("form1", FormRendererId(1), "pw", FieldRendererId(3),
                      "password1", iFrameID);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
@@ -2167,8 +2167,8 @@ TEST_F(PasswordControllerTest, PasswordMetricsAutomatic) {
   WaitForFormManagersCreation();
 
   PasswordFormFillData form_data;
-  SetPasswordFormFillData(BaseUrl(), "login_form", 0, "username", 1, "user",
-                          "password", 2, "pw", nullptr, nullptr, false,
+  SetPasswordFormFillData(BaseUrl(), "login_form", 1, "username", 2, "user",
+                          "password", 3, "pw", nullptr, nullptr, false,
                           &form_data);
   __block BOOL block_was_called = NO;
   __block BOOL return_value = NO;
@@ -2209,7 +2209,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
             "</body></html>");
   WaitForFormManagersCreation();
 
-  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+  InjectGeneratedPassword(FormRendererId(1), FieldRendererId(3),
                           @"generated_password");
 
   // Focus the password field after password generation.
@@ -2218,9 +2218,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
   FormSuggestionProviderQuery* focus_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(0)
+              uniqueFormID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(2)
+             uniqueFieldID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"focus"
                 typedValue:@""
@@ -2253,7 +2253,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
             "</body></html>");
   WaitForFormManagersCreation();
 
-  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+  InjectGeneratedPassword(FormRendererId(1), FieldRendererId(3),
                           @"generated_password");
 
   // Extend the password after password generation.
@@ -2262,9 +2262,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
   FormSuggestionProviderQuery* extend_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(0)
+              uniqueFormID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(2)
+             uniqueFieldID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@"generated_password_long"
@@ -2297,7 +2297,7 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
             "</body></html>");
   WaitForFormManagersCreation();
 
-  InjectGeneratedPassword(FormRendererId(0), FieldRendererId(2),
+  InjectGeneratedPassword(FormRendererId(1), FieldRendererId(3),
                           @"generated_password");
 
   // Clear the password.
@@ -2306,9 +2306,9 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
   FormSuggestionProviderQuery* clear_query =
       [[FormSuggestionProviderQuery alloc]
           initWithFormName:@"signup_form"
-              uniqueFormID:FormRendererId(0)
+              uniqueFormID:FormRendererId(1)
            fieldIdentifier:@"pw"
-             uniqueFieldID:FieldRendererId(2)
+             uniqueFieldID:FieldRendererId(3)
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@""
@@ -2343,9 +2343,9 @@ TEST_F(PasswordControllerTest, SavingPasswordsOutsideTheFormTag) {
   WaitForFormManagersCreation();
 
   std::string main_frame_id = web::GetMainWebFrameId(web_state());
-  SimulateUserTyping("", FormRendererId(), "username", FieldRendererId(0),
+  SimulateUserTyping("", FormRendererId(), "username", FieldRendererId(1),
                      "user1", main_frame_id);
-  SimulateUserTyping("", FormRendererId(), "pw", FieldRendererId(1),
+  SimulateUserTyping("", FormRendererId(), "pw", FieldRendererId(2),
                      "password1", main_frame_id);
 
   __block std::unique_ptr<PasswordFormManagerForUI> form_manager;
@@ -2395,12 +2395,12 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
 
   std::string main_frame_id = web::GetMainWebFrameId(web_state());
 
-  SimulateUserTyping("change_form", FormRendererId(0), "opw",
-                     FieldRendererId(1), "oldpw", main_frame_id);
-  SimulateUserTyping("change_form", FormRendererId(0), "npw",
-                     FieldRendererId(2), "newpw", main_frame_id);
-  SimulateUserTyping("change_form", FormRendererId(0), "cpw",
+  SimulateUserTyping("change_form", FormRendererId(1), "opw",
+                     FieldRendererId(2), "oldpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(1), "npw",
                      FieldRendererId(3), "newpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(1), "cpw",
+                     FieldRendererId(4), "newpw", main_frame_id);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
@@ -2408,10 +2408,10 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
 
   std::string form_data = base::SysNSStringToUTF8(ExecuteJavaScript([NSString
       stringWithFormat:@"__gCrWeb.passwords.getPasswordFormDataAsString(%d);",
-                       0]));
+                       1]));
 
   // Imitiate the signal from the page resetting the form.
-  SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(0),
+  SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(1),
                                      FieldRendererId(), form_data);
 
   auto& form_manager_check = form_manager_to_save;
@@ -2453,19 +2453,19 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnFormlessFieldsClearing) {
 
   std::string main_frame_id = web::GetMainWebFrameId(web_state());
 
-  SimulateUserTyping("change_form", FormRendererId(), "opw", FieldRendererId(0),
+  SimulateUserTyping("change_form", FormRendererId(), "opw", FieldRendererId(1),
                      "oldpw", main_frame_id);
-  SimulateUserTyping("change_form", FormRendererId(), "npw", FieldRendererId(1),
+  SimulateUserTyping("change_form", FormRendererId(), "npw", FieldRendererId(2),
                      "newpw", main_frame_id);
-  SimulateUserTyping("change_form", FormRendererId(), "cpw", FieldRendererId(2),
+  SimulateUserTyping("change_form", FormRendererId(), "cpw", FieldRendererId(3),
                      "newpw", main_frame_id);
 
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  std::string form_data = base::SysNSStringToUTF8(ExecuteJavaScript(
-      @"__gCrWeb.passwords.getPasswordFormDataAsString(-1);"));
+  std::string form_data = base::SysNSStringToUTF8(
+      ExecuteJavaScript(@"__gCrWeb.passwords.getPasswordFormDataAsString(0);"));
 
   // Imitiate the signal from the page resetting the form.
   SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(),
