@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/borealis/borealis_installer.h"
-#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -22,7 +22,7 @@ class ProgressBar;
 class Profile;
 
 // The front end for the Borealis installation process, works closely with
-// "chrome/browser/chromeos/borealis/borealis_installer.h".
+// "chrome/browser/ash/borealis/borealis_installer.h".
 class BorealisInstallerView : public views::DialogDelegateView,
                               public borealis::BorealisInstaller::Observer {
  public:

@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/app_types.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_util.h"

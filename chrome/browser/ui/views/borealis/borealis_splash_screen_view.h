@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_SPLASH_SCREEN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_SPLASH_SCREEN_VIEW_H_
 
-#include "chrome/browser/chromeos/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 // A splash screen for borealis, displays when borealis is clicked and closed

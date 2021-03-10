@@ -115,7 +115,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
-#include "chrome/browser/chromeos/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_policy_handler.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_pref_names.h"

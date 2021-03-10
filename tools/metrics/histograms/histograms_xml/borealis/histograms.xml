@@ -24,7 +24,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     The number of Borealis installation attempts. This is recorded each time a
     user tries to install Borealis. Specifically, this metric is recorded when a
@@ -37,7 +37,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Install.OverallTime" units="ms"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     Time taken for a successful installation. An install starts when the
     &quot;install&quot; or &quot;retry&quot; installer buttons are clicked and
@@ -50,7 +50,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     The installation result, for example, a successful install, a cancelled
     install, or an error. This is recorded after an installation attempt has
@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
     expires_after="2022-02-02">
   <owner>lqu@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     Recording every attempt to exit Borealis given the that VM was launched.
     Recorded regardless of if the shutdown is successful.
@@ -81,14 +81,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Recording every attempt to start Borealis (via the UI).</summary>
 </histogram>
 
 <histogram name="Borealis.Startup.OverallTime" units="ms"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     Recording the time taken for each successful attempt to start Borealis (via
     the UI).
@@ -98,7 +98,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
     expires_after="2021-11-01">
   <owner>danielng@google.com</owner>
-  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     Recording the result of each attempt to start Borealis, whether it was
     successful or the error that it faced.
