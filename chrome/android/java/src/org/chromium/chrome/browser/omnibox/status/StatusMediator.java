@@ -83,7 +83,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
-    private final Runnable mForceModelViewReconciliationRunnable;
     @ContentSettingsType
     private int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
@@ -103,7 +102,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
 
     public StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
-            Runnable forceModelViewReconciliationRunnable,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
@@ -130,7 +128,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mTextOffsetAdjustedScale = mTextOffsetThreshold == 1 ? 1 : (1 - mTextOffsetThreshold);
 
         mIsTablet = isTablet;
-        mForceModelViewReconciliationRunnable = forceModelViewReconciliationRunnable;
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
     }
@@ -632,29 +629,6 @@ public class StatusMediator implements PermissionDialogController.Observer {
     public void onIncognitoStateChanged() {
         boolean incognitoBadgeVisible = mLocationBarDataProvider.isIncognito() && !mIsTablet;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
-        reconcileVisualState();
-    }
-
-    /**
-     * Temporary workaround for the divergent logic for status icon visibility changes for the dse
-     * icon experiment.
-     *
-     * The logic below resets the visual state for the StatusView widget when transitioning back
-     * and forth between incognito and non-incognito states.
-     * When the UrlBar is the first visible view when focused, the StatusView's alpha
-     * will be set to 0 in LocationBarPhone#populateFadeAnimations. When transitioning back from
-     * incognito, StatusView's state needs to be reset to match the current state of the status view
-     * {@link org.chromium.chrome.browser.omnibox.LocationBarPhone#updateVisualsForState}.
-     * property model.
-     *
-     * TODO(http://crbug.com/1185985): Delete this when all the code altering StatusView properties
-     * is consolidated and it is safe to do so.
-     **/
-    private void reconcileVisualState() {
-        // No reconciliation is needed on tablet because the status icon is always shown.
-        if (mIsTablet) return;
-        assert mForceModelViewReconciliationRunnable != null;
-        mForceModelViewReconciliationRunnable.run();
     }
 
     // PermissionDialogController.Observer interface

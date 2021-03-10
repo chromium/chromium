@@ -77,14 +77,12 @@ public class PageInfoDiscoverabilityTest {
         mModel = new PropertyModel(StatusProperties.ALL_KEYS);
         mPermissionDialogController = PermissionDialogController.getInstance();
 
-        // clang-format off
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator = new StatusMediator(mModel, mResources, mContext,
-                    mUrlBarEditingTextStateProvider, /* isTablet */ false,
-                    () -> {}, mLocationBarDataProvider, mPermissionDialogController,
+                    mUrlBarEditingTextStateProvider,
+                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
                     mSearchEngineLogoUtils, () -> mTemplateUrlService, () -> mProfile, null);
         });
-        // clang-format on
     }
 
     @Test
