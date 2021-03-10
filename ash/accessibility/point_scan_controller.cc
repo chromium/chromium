@@ -42,8 +42,11 @@ void PointScanController::StartHorizontalRangeScan() {
   horizontal_range_layer_.reset(
       new PointScanLayer(this, PointScanLayer::Orientation::HORIZONTAL,
                          PointScanLayer::Type::RANGE));
+  gfx::Rect layer_bounds = horizontal_range_layer_->bounds();
+  horizontal_range_layer_info_.offset = layer_bounds.x();
+  horizontal_range_layer_info_.offset_start = layer_bounds.x();
   horizontal_range_layer_info_.offset_bound =
-      horizontal_range_layer_->bounds().width() - kDefaultRangeWidthDips;
+      layer_bounds.right() - kDefaultRangeWidthDips;
   horizontal_range_layer_->Start();
 }
 
@@ -68,8 +71,11 @@ void PointScanController::StartVerticalRangeScan() {
   vertical_range_layer_.reset(
       new PointScanLayer(this, PointScanLayer::Orientation::VERTICAL,
                          PointScanLayer::Type::RANGE));
+  gfx::Rect layer_bounds = vertical_range_layer_->bounds();
+  vertical_range_layer_info_.offset = layer_bounds.y();
+  vertical_range_layer_info_.offset = layer_bounds.y();
   vertical_range_layer_info_.offset_bound =
-      vertical_range_layer_->bounds().height() - kDefaultRangeHeightDips;
+      layer_bounds.bottom() - kDefaultRangeHeightDips;
   vertical_range_layer_->Start();
 }
 
