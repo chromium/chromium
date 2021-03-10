@@ -2,26 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/webid/webid_permission_dialog.h"
+#include "chrome/browser/ui/views/webid/webid_permission_view.h"
+
 #include <memory>
 
+#include "base/bind.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/webid/identity_dialogs.h"
 #include "chrome/grit/webid_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/window/dialog_delegate.h"
 
 // Dimensions of the dialog itself.
 constexpr int kDialogMinWidth = 512;
@@ -141,79 +140,45 @@ std::unique_ptr<views::View> CreateTokenExchangeMessage(
   return view;
 }
 
-WebIdPermissionDialog::WebIdPermissionDialog(
-    content::WebContents* rp_web_contents,
-    std::unique_ptr<views::View> content,
-    WebIdPermissionDialog::Callback callback)
-    : rp_web_contents_(rp_web_contents), callback_(std::move(callback)) {
-  DCHECK(callback_);
+// static
+std::unique_ptr<WebIdPermissionView>
+WebIdPermissionView::CreateForInitialPermission(
+    WebIdDialogViews* dialog,
+    const base::string16& idp_hostname,
+    const base::string16& rp_hostname) {
+  return std::make_unique<WebIdPermissionView>(
+      dialog, CreateInitialMessage(idp_hostname, rp_hostname));
+}
 
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetModalType(ui::MODAL_TYPE_CHILD);
-  SetShowCloseButton(true);
-  set_margins(gfx::Insets());
+// static
+std::unique_ptr<WebIdPermissionView>
+WebIdPermissionView::CreateForTokenExchangePermission(
+    WebIdDialogViews* dialog,
+    const base::string16& idp_hostname,
+    const base::string16& rp_hostname) {
+  return std::make_unique<WebIdPermissionView>(
+      dialog, CreateTokenExchangeMessage(idp_hostname, rp_hostname));
+}
+
+WebIdPermissionView::WebIdPermissionView(WebIdDialogViews* dialog,
+                                         std::unique_ptr<views::View> content) {
+  dialog->SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  dialog->SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+  dialog->SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, true);
 
   // TODO(majidvp): use localized strings
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, base::ASCIIToUTF16("Continue"));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, base::ASCIIToUTF16("Cancel"));
-
-  auto width =
-      views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogMinWidth);
-  set_fixed_width(width);
+  dialog->SetButtonLabel(ui::DIALOG_BUTTON_OK, base::ASCIIToUTF16("Continue"));
+  dialog->SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                         base::ASCIIToUTF16("Cancel"));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  content->SetPreferredSize({width, kDialogHeight - kHeaderHeight});
+  content->SetPreferredSize({kDialogMinWidth, kDialogHeight - kHeaderHeight});
+
   AddChildView(std::move(content));
 }
 
-WebIdPermissionDialog::~WebIdPermissionDialog() {
-  if (callback_) {
-    // The dialog has closed without the user expressing an explicit
-    // preference. The current request should be denied.
-    std::move(callback_).Run(UserApproval::kDenied);
-  }
-}
-
-void WebIdPermissionDialog::Show() {
-  // ShowWebModalDialogViews takes ownership of this, by way of the
-  // DeleteDelegate method.
-  constrained_window::ShowWebModalDialogViews(this, rp_web_contents_);
-}
-
-bool WebIdPermissionDialog::Accept() {
-  std::move(callback_).Run(UserApproval::kApproved);
-  return true;
-}
-
-bool WebIdPermissionDialog::Cancel() {
-  std::move(callback_).Run(UserApproval::kDenied);
-  return true;
-}
-
-// Implement identity_dialogs.h functions
-
-void ShowInitialWebIdPermissionDialog(
-    content::WebContents* rp_web_contents,
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname,
-    WebIdPermissionDialog::Callback callback) {
-  auto content = CreateInitialMessage(idp_hostname, rp_hostname);
-  auto* dialog = new WebIdPermissionDialog(rp_web_contents, std::move(content),
-                                           std::move(callback));
-  dialog->Show();
-}
-
-void ShowTokenExchangeWebIdPermissionDialog(
-    content::WebContents* rp_web_contents,
-    const base::string16& idp_hostname,
-    const base::string16& rp_hostname,
-    WebIdPermissionDialog::Callback callback) {
-  auto content = CreateTokenExchangeMessage(idp_hostname, rp_hostname);
-  auto* dialog = new WebIdPermissionDialog(rp_web_contents, std::move(content),
-                                           std::move(callback));
-  dialog->Show();
-}
+WebIdPermissionView::~WebIdPermissionView() = default;

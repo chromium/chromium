@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 
+#include <memory>
+
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/webid/identity_dialogs.h"
+#include "chrome/browser/ui/webid/webid_dialog.h"
 #include "components/infobars/core/infobar.h"
 #include "url/gurl.h"
 
@@ -18,6 +20,9 @@ void IdentityDialogController::ShowInitialPermissionDialog(
     content::WebContents* rp_web_contents,
     const GURL& idp_url,
     InitialApprovalCallback callback) {
+  DCHECK(!view_);
+  view_ = WebIdDialog::Create(rp_web_contents);
+
   // The WebContents should be that of RP page to make sure info bar is shown on
   // the RP page.
 
@@ -27,8 +32,9 @@ void IdentityDialogController::ShowInitialPermissionDialog(
   auto rp_hostname =
       base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
 
-  ShowInitialWebIdPermissionDialog(rp_web_contents, idp_hostname, rp_hostname,
-                                   std::move(callback));
+  // TODO(majidvp): remove rp_web_contents from args
+  DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
+  view_->ShowInitialPermission(idp_hostname, rp_hostname, std::move(callback));
 }
 
 void IdentityDialogController::ShowIdProviderWindow(
@@ -36,15 +42,17 @@ void IdentityDialogController::ShowIdProviderWindow(
     content::WebContents* idp_web_contents,
     const GURL& idp_signin_url,
     IdProviderWindowClosedCallback callback) {
-  signin_window_ = ShowWebIdSigninWindow(rp_web_contents, idp_web_contents,
-                                         idp_signin_url, std::move(callback));
+  // TODO(majidvp): remove rp_web_contents from args
+  DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
+
+  view_->ShowSigninPage(idp_web_contents, idp_signin_url, std::move(callback));
 }
 
 void IdentityDialogController::CloseIdProviderWindow() {
   // TODO(majidvp): This may race with user closing the signin window directly.
   // So we should not really check the signin_window_ instead we should setup
   // the on_close callback here here and check that to avoid lifetime issues.
-  if (!signin_window_)
+  if (!view_)
     return;
 
   // Note that this leads to the window closed callback being run. If the
@@ -54,7 +62,7 @@ void IdentityDialogController::CloseIdProviderWindow() {
   // TODO(kenrb, majidvp): Not knowing whether this object will be destroyed
   // or not during the callback is problematic. We have to rethink the
   // lifetimes.
-  CloseWebIdSigninWindow(signin_window_);
+  view_->CloseSigninPage();
 
   // Do not touch local state here since |this| is now destroyed.
 }
@@ -68,6 +76,8 @@ void IdentityDialogController::ShowTokenExchangePermissionDialog(
   auto rp_hostname =
       base::UTF8ToUTF16(rp_web_contents->GetVisibleURL().GetOrigin().host());
 
-  ShowTokenExchangeWebIdPermissionDialog(rp_web_contents, idp_hostname,
-                                         rp_hostname, std::move(callback));
+  // TODO(majidvp): remove rp_web_contents from args
+  DCHECK_EQ(view_->rp_web_contents(), rp_web_contents);
+  view_->ShowTokenExchangePermission(idp_hostname, rp_hostname,
+                                     std::move(callback));
 }
