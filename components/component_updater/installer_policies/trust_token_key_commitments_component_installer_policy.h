@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -22,6 +23,11 @@ class FilePath;
 }  // namespace base
 
 namespace component_updater {
+
+// This file name must be in sync with the server-side configuration, or updates
+// will fail.
+const base::FilePath::CharType kTrustTokenKeyCommitmentsFileName[] =
+    FILE_PATH_LITERAL("keys.json");
 
 // TrustTokenKeyCommitmentsComponentInstallerPolicy defines an installer
 // responsible for receiving updated Trust Tokens
@@ -40,6 +46,20 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
       const TrustTokenKeyCommitmentsComponentInstallerPolicy&) = delete;
   TrustTokenKeyCommitmentsComponentInstallerPolicy& operator=(
       const TrustTokenKeyCommitmentsComponentInstallerPolicy&) = delete;
+
+  // Returns the component's SHA2 hash as raw bytes.
+  static void GetPublicKeyHash(std::vector<uint8_t>* hash);
+
+  // Loads trust tokens from string using the given `load_keys_from_disk` call.
+  //
+  // static to allow sharing with the Android `ComponentLoaderPolicy`.
+  //
+  // `load_keys_from_disk` a callback that read trust tokens from file and
+  // return them as an optional string. `on_commitments_ready` loads trust
+  // tokens in network service.
+  static void LoadTrustTokensFromString(
+      base::OnceCallback<base::Optional<std::string>()> load_keys_from_disk,
+      base::OnceCallback<void(const std::string&)> on_commitments_ready);
 
  protected:
   void GetHash(std::vector<uint8_t>* hash) const override;

@@ -90,3 +90,17 @@ source_set("embedded_component_loader_unittests") {
     "//testing/gtest",
   ]
 }
+
+static_library("loader_policies") {
+  sources = [
+    "loader_policies/trust_token_key_commitments_component_loader_policy.cc",
+    "loader_policies/trust_token_key_commitments_component_loader_policy.h",
+  ]
+
+  deps = [
+    ":embedded_component_loader",
+    "//base",
+    "//components/component_updater",
+    "//components/component_updater/installer_policies",
+  ]
+}

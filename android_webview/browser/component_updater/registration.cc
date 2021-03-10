@@ -4,11 +4,14 @@
 
 #include "android_webview/browser/component_updater/registration.h"
 
+#include "android_webview/browser/component_updater/trust_token_key_commitments_component_loader.h"
+
 namespace android_webview {
 
 component_updater::ComponentLoaderPolicyVector GetComponentLoaderPolicies() {
-  // TODO(crbug.com/1171762) register trust tokens component.
-  return component_updater::ComponentLoaderPolicyVector();
+  component_updater::ComponentLoaderPolicyVector policies;
+  LoadTrustTokenKeyCommitmentsComponent(&policies);
+  return policies;
 }
 
 }  // namespace android_webview
