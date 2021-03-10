@@ -1378,7 +1378,15 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
 
   // In order to concatenate the bypass'ed quads transform with RP itself, it
   // needs to be invertible.
-  if (!quad->shared_quad_state->quad_to_target_transform.IsInvertible())
+  // TODO(michaelludwig) - See crbug.com/1175981 and crbug.com/1186657;
+  // We can't use gfx::Transform.IsInvertible() since that checks the 4x4 matrix
+  // and the rest of skia_renderer->Skia flattens to a 3x3 matrix, which can
+  // change invertibility.
+  SkMatrix flattened;
+  gfx::TransformToFlattenedSkMatrix(
+      quad->shared_quad_state->quad_to_target_transform,
+      &flattened);
+  if (!flattened.invert(nullptr))
     return nullptr;
 
   // A renderpass normally draws its content into a transparent destination,
