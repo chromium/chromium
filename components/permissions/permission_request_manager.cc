@@ -114,10 +114,10 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
 // PermissionRequestManager ----------------------------------------------------
 
 bool PermissionRequestManager::PermissionRequestSource::
-    IsSourceFrameInactiveAndDisallowReactivation() const {
+    IsSourceFrameInactiveAndDisallowActivation() const {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  return !rfh || rfh->IsInactiveAndDisallowReactivation();
+  return !rfh || rfh->IsInactiveAndDisallowActivation();
 }
 
 PermissionRequestManager::~PermissionRequestManager() {
@@ -486,7 +486,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   while (!queued_requests_.empty()) {
     PermissionRequest* next = PopNextQueuedRequest();
     PermissionRequestSource& source = request_sources_map_.find(next)->second;
-    if (!source.IsSourceFrameInactiveAndDisallowReactivation()) {
+    if (!source.IsSourceFrameInactiveAndDisallowActivation()) {
       requests_.push_back(next);
       break;
     }
@@ -503,7 +503,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   for (; !queued_requests_.empty(); PopNextQueuedRequest()) {
     PermissionRequest* front = PeekNextQueuedRequest();
     PermissionRequestSource& source = request_sources_map_.find(front)->second;
-    if (source.IsSourceFrameInactiveAndDisallowReactivation()) {
+    if (source.IsSourceFrameInactiveAndDisallowActivation()) {
       front->Cancelled();
       front->RequestFinished();
       request_sources_map_.erase(request_sources_map_.find(front));

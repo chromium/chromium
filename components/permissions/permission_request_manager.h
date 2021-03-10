@@ -270,7 +270,7 @@ class PermissionRequestManager
     int render_process_id;
     int render_frame_id;
 
-    bool IsSourceFrameInactiveAndDisallowReactivation() const;
+    bool IsSourceFrameInactiveAndDisallowActivation() const;
   };
 
   base::circular_deque<PermissionRequest*> queued_requests_;

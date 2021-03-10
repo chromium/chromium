@@ -750,7 +750,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     // Inactive frames should never be navigated. If this happens, log a
     // DumpWithoutCrashing to understand the root cause. See
     // https://crbug.com/926820 and https://crbug.com/927705.
-    if (current_frame_host()->IsInactiveAndDisallowReactivation()) {
+    if (current_frame_host()->IsInactiveAndDisallowActivation()) {
       NOTREACHED() << "Navigation in an inactive frame";
       DEBUG_ALIAS_FOR_GURL(url, request->common_params().url);
       base::debug::DumpWithoutCrashing();

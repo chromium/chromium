@@ -82,7 +82,7 @@ void JsToBrowserMessaging::PostMessage(
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 
-  if (render_frame_host_->IsInactiveAndDisallowReactivation())
+  if (render_frame_host_->IsInactiveAndDisallowActivation())
     return;
 
   content::WebContents* web_contents =

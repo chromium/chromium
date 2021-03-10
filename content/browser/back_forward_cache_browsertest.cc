@@ -6956,14 +6956,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       IsInactiveAndDisallowReactivationIsNoopWhenActive) {
+                       IsInactiveAndDisallowActivationIsNoopWhenActive) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  EXPECT_FALSE(current_frame_host()->IsInactiveAndDisallowReactivation());
+  EXPECT_FALSE(current_frame_host()->IsInactiveAndDisallowActivation());
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -6976,7 +6976,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    IsInactiveAndDisallowReactivationDoesEvictForCachedFrames) {
+    IsInactiveAndDisallowActivationDoesEvictForCachedFrames) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -6988,7 +6988,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowReactivation());
+  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation());
 
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
@@ -9285,7 +9285,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh_a from BackForwardCache. Entries should be 0.
   // RenderViewHost, RenderProcessHost and RenderFrameHost should all be
   // deleted.
-  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowReactivation());
+  EXPECT_TRUE(rfh_a->IsInactiveAndDisallowActivation());
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_a.deleted());
   delete_observer_rfh_a.WaitUntilDeleted();
@@ -9321,7 +9321,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
   // RenderProcessHost and RenderFrameHost of sub-frame b1 should all be deleted
   // on eviction.
-  EXPECT_TRUE(a1->IsInactiveAndDisallowReactivation());
+  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation());
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_b1.deleted());
   delete_observer_rfh_b1.WaitUntilDeleted();
@@ -9356,7 +9356,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // 3) Initiate eviction of rfh a1 from BackForwardCache. RenderViewHost,
   // RenderProcessHost and RenderFrameHost of sub-frame a2 should all be
   // deleted.
-  EXPECT_TRUE(a1->IsInactiveAndDisallowReactivation());
+  EXPECT_TRUE(a1->IsInactiveAndDisallowActivation());
   destruction_observer.Wait();
   ASSERT_TRUE(delete_observer_rvh_a2.deleted());
   delete_observer_rfh_a2.WaitUntilDeleted();

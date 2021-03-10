@@ -2860,18 +2860,19 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
     FrameTreeNode* frame,
     ReloadType reload_type) {
   RenderFrameHostImpl* render_frame_host = frame->current_frame_host();
-  // Only active and prerendered frames can navigate.
+  // Only active and prerendered documents are allowed to navigate in their
+  // frame.
   if (render_frame_host->lifecycle_state() !=
       RenderFrameHostImpl::LifecycleState::kPrerendering) {
-    // - If the frame is in pending deletion, the browser already committed to
-    // destroying this RenderFrameHost. See https://crbug.com/930278.
-    // - If the frame is in back-forward cache, it's not allowed to navigate as
-    // it should remain frozen. Ignore the request and evict the document from
-    // back-forward cache.
+    // - If the document is in pending deletion, the browser already committed
+    // to destroying this RenderFrameHost. See https://crbug.com/930278.
+    // - If the document is in back-forward cache, it's not allowed to navigate
+    // as it should remain frozen. Ignore the request and evict the document
+    // from back-forward cache.
     //
-    // If the frame is inactive, there's no need to recurse into subframes,
+    // If the document is inactive, there's no need to recurse into subframes,
     // which should all be inactive as well.
-    if (render_frame_host->IsInactiveAndDisallowReactivation())
+    if (render_frame_host->IsInactiveAndDisallowActivation())
       return HistoryNavigationAction::kStopLooking;
   }
 
@@ -3690,18 +3691,20 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
     const GURL& url,
     const std::string& error_page_html,
     net::Error error) {
-  // Only active frames can load post-commit error pages:
-  // - If the frame is in pending deletion, the browser already committed to
-  // destroying this RenderFrameHost so ignore loading the error page.
-  // - If the frame is in back-forward cache, it's not allowed to navigate as it
-  // should remain frozen. Ignore the request and evict the document from
-  // back-forward cache.
-  if (static_cast<RenderFrameHostImpl*>(render_frame_host)
-          ->IsInactiveAndDisallowReactivation()) {
-    return;
-  }
   RenderFrameHostImpl* rfhi =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
+
+  // Only active documents can load post-commit error pages:
+  // - If the document is in pending deletion, the browser already committed to
+  // destroying this RenderFrameHost so ignore loading the error page.
+  // - If the document is in back-forward cache, it's not allowed to navigate as
+  // it should remain frozen. Ignore the request and evict the document from
+  // back-forward cache.
+  // - If the document is prerendering, it can navigate but when loading error
+  // pages, cancel prerendering.
+  if (rfhi->IsInactiveAndDisallowActivation())
+    return;
+
   FrameTreeNode* node = rfhi->frame_tree_node();
 
   mojom::CommonNavigationParamsPtr common_params =

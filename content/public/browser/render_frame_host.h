@@ -521,16 +521,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // For Prerendering: it cancels prerendering and triggers deletion.
 
   // This should not be called for speculative RenderFrameHosts as disallowing
-  // reactivation before the document became active for the first time is not
-  // supported. In that case |IsInactiveAndDisallowReactivation()|
-  // returns false along with terminating the renderer process.
+  // activation is not supported. In that case
+  // |IsInactiveAndDisallowActivation()| returns false along with terminating
+  // the renderer process.
 
-  // Note that if |IsInactiveAndDisallowReactivation()| returns true, then
+  // Note that if |IsInactiveAndDisallowActivation()| returns true, then
   // IsCurrent() returns false.
   //
   // TODO(https://crbug.com/1175866): Rename this method with a more suitable
   // name considering all document states.
-  virtual bool IsInactiveAndDisallowReactivation() = 0;
+  virtual bool IsInactiveAndDisallowActivation() = 0;
 
   // Get the number of proxies to this frame, in all processes. Exposed for
   // use by resource metrics.

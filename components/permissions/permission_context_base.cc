@@ -188,12 +188,15 @@ void PermissionContextBase::RequestPermission(
     return;
   }
 
-  // Don't show request permission UI for an inactive RenderFrameHost. If this
-  // is called when RenderFrameHost is in BackForwardCache, evict the document
-  // as the page might not distinguish properly between user denying the
-  // permission and automatic rejection, leading to an inconsistent UX after
-  // restoring the page from the cache.
-  if (rfh->IsInactiveAndDisallowReactivation()) {
+  // Don't show request permission UI for an inactive RenderFrameHost as the
+  // page might not distinguish properly between user denying the permission and
+  // automatic rejection, leading to an inconsistent UX once the page becomes
+  // active again.
+  // - If this is called when RenderFrameHost is in BackForwardCache, evict the
+  // document from the cache.
+  // - If this is called when RenderFrameHost is in prerendering, cancel
+  // prerendering.
+  if (rfh->IsInactiveAndDisallowActivation()) {
     std::move(callback).Run(result.content_setting);
     return;
   }

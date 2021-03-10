@@ -1457,7 +1457,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LowEndDevice) {
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       IsInactiveAndDisallowReactivationCancelsPrerendering) {
+                       IsInactiveAndDisallowActivationCancelsPrerendering) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -1476,16 +1476,15 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
       registry.FindHostByUrlForTesting(kPrerenderingUrl);
   EXPECT_NE(prerender_host, nullptr);
 
-  // Invoke IsInactiveAndDisallowReactivation for the prerendered document.
+  // Invoke IsInactiveAndDisallowActivation for the prerendered document.
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHostForTesting();
   EXPECT_EQ(prerendered_render_frame_host->lifecycle_state(),
             RenderFrameHostImpl::LifecycleState::kPrerendering);
-  EXPECT_TRUE(
-      prerendered_render_frame_host->IsInactiveAndDisallowReactivation());
+  EXPECT_TRUE(prerendered_render_frame_host->IsInactiveAndDisallowActivation());
 
   // The prerender host for the URL should be destroyed as
-  // RenderFrameHost::IsInactiveAndDisallowReactivation cancels prerendering in
+  // RenderFrameHost::IsInactiveAndDisallowActivation cancels prerendering in
   // LifecycleState::kPrerendering state.
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
