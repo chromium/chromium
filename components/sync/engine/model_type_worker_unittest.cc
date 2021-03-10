@@ -1408,7 +1408,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // Should have recorded that 1 incoming update was ignored.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeUpdateDrop.DecryptionPendingForTooLong",
-      worker()->GetModelType(), 1);
+      ModelTypeHistogramValue(worker()->GetModelType()), 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got

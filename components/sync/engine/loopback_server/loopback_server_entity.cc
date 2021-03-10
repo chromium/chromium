@@ -49,8 +49,8 @@ LoopbackServerEntity::CreateEntityFromProto(
     case sync_pb::LoopbackServerEntity_Type_PERMANENT:
       return std::make_unique<PersistentPermanentEntity>(
           entity.entity().id_string(), entity.entity().version(),
-          syncer::GetModelType(entity.entity()), entity.entity().name(),
-          entity.entity().parent_id_string(),
+          syncer::GetModelTypeFromSpecifics(entity.entity().specifics()),
+          entity.entity().name(), entity.entity().parent_id_string(),
           entity.entity().server_defined_unique_tag(),
           entity.entity().specifics());
     case sync_pb::LoopbackServerEntity_Type_BOOKMARK:

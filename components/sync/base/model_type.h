@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "components/sync/base/enum_set.h"
 
 namespace base {
@@ -19,7 +20,6 @@ class Value;
 
 namespace sync_pb {
 class EntitySpecifics;
-class SyncEntity;
 }
 
 namespace syncer {
@@ -36,14 +36,13 @@ namespace syncer {
 // update the |kModelTypeInfoMap| struct in model_type.cc and also the
 // SyncModelType histogram suffix in histograms.xml
 enum ModelType {
-  // Object type unknown.  Objects may transition through
-  // the unknown state during their initial creation, before
-  // their properties are set.  After deletion, object types
-  // are generally preserved.
+  // Object type unknown. This may be used when:
+  // a) The client received *valid* data from a data type which this version
+  // is unaware of (only present in versions newer than this one, or present
+  // in older versions but removed since).
+  // b) The client received invalid data from the server due to some error.
+  // c) A data object was just created, in which case this is a temporary state.
   UNSPECIFIED,
-  // A permanent folder whose children may be of mixed
-  // datatypes (e.g. the "Google Chrome" folder).
-  TOP_LEVEL_FOLDER,
 
   // ------------------------------------ Start of "real" model types.
   // The model types declared before here are somewhat special, as they
@@ -177,7 +176,7 @@ inline ModelType ModelTypeFromInt(int i) {
 // SyncModelType suffix in histograms.xml.
 enum class ModelTypeForHistograms {
   kUnspecified = 0,
-  kTopLevelFolder = 1,
+  // kTopLevelFolder = 1,
   kBookmarks = 2,
   kPreferences = 3,
   kPasswords = 4,
@@ -232,15 +231,8 @@ enum class ModelTypeForHistograms {
 // Used to mark the type of EntitySpecifics that has no actual data.
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics);
 
-// Extract the model type of a SyncEntity protocol buffer.  ModelType is a
-// local concept: the enum is not in the protocol.  The SyncEntity's ModelType
-// is inferred from the presence of particular datatype field in the
-// entity specifics.
-ModelType GetModelType(const sync_pb::SyncEntity& sync_entity);
-
-// Extract the model type from an EntitySpecifics field.  Note that there
-// are some ModelTypes (like TOP_LEVEL_FOLDER) that can't be inferred this way;
-// prefer using GetModelType where possible.
+// Extract the model type from an EntitySpecifics field. ModelType is a
+// local concept: the enum is not in the protocol.
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics);
 
 // Protocol types are those types that have actual protocol buffer
@@ -428,7 +420,7 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 // iff |notification_type| was the notification type of a real model
 // type and |model_type| was filled in.
 bool NotificationTypeToRealModelType(const std::string& notification_type,
-                                     ModelType* model_type);
+                                     ModelType* model_type) WARN_UNUSED_RESULT;
 
 // Returns true if |model_type| is a real datatype
 bool IsRealDataType(ModelType model_type);

@@ -74686,7 +74686,11 @@ would be helpful to identify which type is being sent.
 
 <enum name="SyncModelTypes">
   <int value="0" label="Unspecified"/>
-  <int value="1" label="Top Level Folder"/>
+  <int value="1" label="Top Level Folder">
+    <obsolete>
+      Removed on 03/2021 (M91).
+    </obsolete>
+  </int>
   <int value="2" label="Bookmarks"/>
   <int value="3" label="Preferences"/>
   <int value="4" label="Passwords"/>
@@ -74700,24 +74704,64 @@ would be helpful to identify which type is being sent.
   <int value="12" label="Apps"/>
   <int value="13" label="App Settings"/>
   <int value="14" label="Extension Settings"/>
-  <int value="15" label="App Notifications (deprecated)"/>
+  <int value="15" label="App Notifications">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="16" label="History Delete Directives"/>
   <int value="17" label="Nigori"/>
   <int value="18" label="Device Information"/>
-  <int value="19" label="Experiments"/>
-  <int value="20" label="Synced Notifications (deprecated)"/>
+  <int value="19" label="Experiments">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
+  <int value="20" label="Synced Notifications">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="21" label="Priority Preferences"/>
   <int value="22" label="Dictionary"/>
-  <int value="23" label="Favicon Images"/>
-  <int value="24" label="Favicon Tracking"/>
+  <int value="23" label="Favicon Images">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </int>
+  <int value="24" label="Favicon Tracking">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </int>
   <int value="25" label="Proxy Tabs"/>
   <int value="26" label="Managed User Settings"/>
-  <int value="27" label="Managed Users (deprecated)"/>
-  <int value="28" label="Articles (deprecated)"/>
+  <int value="27" label="Managed Users">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
+  <int value="28" label="Articles">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="29" label="App List"/>
-  <int value="30" label="Managed User Shared Settings (deprecated)"/>
-  <int value="31" label="Synced Notification App Info (deprecated)"/>
-  <int value="32" label="Wifi Credentials (deprecated)"/>
+  <int value="30" label="Managed User Shared Settings">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
+  <int value="31" label="Synced Notification App Info">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
+  <int value="32" label="Wifi Credentials">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="33" label="Managed User Whitelists"/>
   <int value="34" label="Autofill Wallet"/>
   <int value="35" label="Autofill Wallet Metadata"/>
@@ -74725,7 +74769,11 @@ would be helpful to identify which type is being sent.
   <int value="37" label="Printers"/>
   <int value="38" label="Reading List"/>
   <int value="39" label="User Events"/>
-  <int value="40" label="Mountain Shares"/>
+  <int value="40" label="Mountain Shares">
+    <obsolete>
+      Obsolete data type.
+    </obsolete>
+  </int>
   <int value="41" label="User Consents"/>
   <int value="42" label="Send Tab"/>
   <int value="43" label="Security Events"/>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/strings/string_util.h"
@@ -23,8 +24,6 @@ TEST_F(ModelTypeTest, ModelTypeToValue) {
     base::ExpectStringValue(ModelTypeToString(model_type),
                             *ModelTypeToValue(model_type));
   }
-  base::ExpectStringValue("Top-level folder",
-                          *ModelTypeToValue(TOP_LEVEL_FOLDER));
   base::ExpectStringValue("Unspecified", *ModelTypeToValue(UNSPECIFIED));
 }
 
@@ -43,7 +42,6 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
 TEST_F(ModelTypeTest, IsRealDataType) {
   EXPECT_FALSE(IsRealDataType(UNSPECIFIED));
   EXPECT_FALSE(IsRealDataType(ModelType::NUM_ENTRIES));
-  EXPECT_FALSE(IsRealDataType(TOP_LEVEL_FOLDER));
   EXPECT_TRUE(IsRealDataType(FIRST_REAL_MODEL_TYPE));
   EXPECT_TRUE(IsRealDataType(BOOKMARKS));
   EXPECT_TRUE(IsRealDataType(APPS));
@@ -168,10 +166,11 @@ TEST_F(ModelTypeTest, ModelTypeNotificationTypeMapping) {
     std::string notification_type;
     bool ret = RealModelTypeToNotificationType(model_type, &notification_type);
     if (ret) {
-      ModelType notified_model_type;
+      auto notified_model_type = ModelType::UNSPECIFIED;
+      ASSERT_NE(model_type, notified_model_type);
       EXPECT_TRUE(NotificationTypeToRealModelType(notification_type,
                                                   &notified_model_type));
-      EXPECT_EQ(notified_model_type, model_type);
+      EXPECT_EQ(model_type, notified_model_type);
     } else {
       EXPECT_FALSE(ProtocolTypes().Has(model_type));
       EXPECT_TRUE(notification_type.empty());

@@ -16,11 +16,8 @@
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/experiments_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/protocol/favicon_image_specifics.pb.h"
-#include "components/sync/protocol/favicon_tracking_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -131,10 +128,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ArcPackageSpecifics& proto) {
   VISIT(package_version);
   VISIT(last_backup_android_id);
   VISIT(last_backup_time);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::AutofillCullingFlags& proto) {
-  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillOfferSpecifics& proto) {
@@ -405,11 +398,6 @@ VISIT_PROTO_FIELDS(const sync_pb::EncryptedData& proto) {
   VISIT_BYTES(blob);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::EnhancedBookmarksFlags& proto) {
-  VISIT(enabled);
-  VISIT(extension_id);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(client_tag_hash);
   VISIT(server_id);
@@ -424,7 +412,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(39 == ModelType::NUM_ENTRIES,
+  static_assert(38 == ModelType::NUM_ENTRIES,
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -439,11 +427,8 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(bookmark);
   VISIT(device_info);
   VISIT(dictionary);
-  VISIT(experiments);
   VISIT(extension);
   VISIT(extension_setting);
-  VISIT(favicon_image);
-  VISIT(favicon_tracking);
   VISIT(history_delete_directive);
   VISIT(managed_user_setting);
   VISIT(managed_user_whitelist);
@@ -469,18 +454,6 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(wifi_configuration);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ExperimentsSpecifics& proto) {
-  VISIT(keystore_encryption);
-  VISIT(history_delete_directives);
-  VISIT(autofill_culling);
-  VISIT(pre_commit_update_avoidance);
-  VISIT(favicon_sync);
-  VISIT(gcm_channel);
-  VISIT(gcm_invalidations);
-  VISIT(obsolete_enhanced_bookmarks);
-  VISIT(obsolete_wallet_sync);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::ExtensionSettingSpecifics& proto) {
   VISIT(extension_id);
   VISIT(key);
@@ -497,39 +470,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ExtensionSpecifics& proto) {
   VISIT(remote_install);
   VISIT(all_urls_enabled);
   VISIT(disable_reasons);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::FaviconData& proto) {
-  VISIT_BYTES(favicon);
-  VISIT(width);
-  VISIT(height);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::FaviconImageSpecifics& proto) {
-  VISIT(favicon_url);
-  VISIT(favicon_web);
-  VISIT(favicon_web_32);
-  VISIT(favicon_touch_64);
-  VISIT(favicon_touch_precomposed_64);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::FaviconSyncFlags& proto) {
-  VISIT(enabled);
-  VISIT(favicon_sync_limit);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::FaviconTrackingSpecifics& proto) {
-  VISIT(favicon_url);
-  VISIT(last_visit_time_ms);
-  VISIT(is_bookmarked);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::GcmChannelFlags& proto) {
-  VISIT(enabled);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::GcmInvalidationsFlags& proto) {
-  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::GetUpdateTriggers& proto) {
@@ -578,17 +518,9 @@ VISIT_PROTO_FIELDS(const sync_pb::HistoryDeleteDirectiveSpecifics& proto) {
   VISIT(url_directive);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::HistoryDeleteDirectives& proto) {
-  VISIT(enabled);
-}
-
 VISIT_PROTO_FIELDS(const sync_pb::InvalidationSpecificFields& proto) {
   VISIT(instance_id_token);
   VISIT_REP(interested_data_type_ids);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::KeystoreEncryptionFlags& proto) {
-  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::LinkedAppIconInfo& proto) {
@@ -744,10 +676,6 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsMetadata& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::PersistedEntityData& proto) {
   VISIT(name);
   VISIT(specifics);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::PreCommitUpdateAvoidanceFlags& proto) {
-  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PreferenceSpecifics& proto) {
@@ -1172,10 +1100,6 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletCreditCardCloudTokenData& proto) {
   VISIT(exp_year);
   VISIT(art_fife_url);
   VISIT(instrument_token);
-}
-
-VISIT_PROTO_FIELDS(const sync_pb::WalletSyncFlags& proto) {
-  VISIT(enabled);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {

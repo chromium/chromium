@@ -16,7 +16,6 @@ import re
 EXCEPTION_MODEL_TYPES = [
   # Grandfathered types:
   'UNSPECIFIED',  # Doesn't have a root tag or notification type.
-  'TOP_LEVEL_FOLDER',  # Doesn't have a root tag or notification type.
   'AUTOFILL_WALLET_DATA',  # Root tag and model type string lack DATA suffix.
   'APP_SETTINGS',  # Model type string has inconsistent capitalization.
   'EXTENSION_SETTINGS',  # Model type string has inconsistent capitalization.

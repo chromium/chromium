@@ -35,7 +35,6 @@
 using std::string;
 using std::vector;
 
-using syncer::GetModelType;
 using syncer::GetModelTypeFromSpecifics;
 using syncer::ModelType;
 using syncer::ModelTypeSet;
@@ -526,7 +525,7 @@ string LoopbackServer::CommitEntity(
   }
 
   std::unique_ptr<LoopbackServerEntity> entity;
-  syncer::ModelType type = GetModelType(client_entity);
+  syncer::ModelType type = GetModelTypeFromSpecifics(client_entity.specifics());
   if (client_entity.deleted()) {
     entity = PersistentTombstoneEntity::CreateFromEntity(client_entity);
     if (entity) {
@@ -642,7 +641,8 @@ bool LoopbackServer::HandleCommitRequest(
       parent_id = client_to_server_ids[parent_id];
     }
 
-    const ModelType entity_model_type = GetModelType(client_entity);
+    const ModelType entity_model_type =
+        GetModelTypeFromSpecifics(client_entity.specifics());
     if (throttled_types_.Has(entity_model_type)) {
       entry_response->set_response_type(sync_pb::CommitResponse::OVER_QUOTA);
       throttled_datatypes_in_request->Put(entity_model_type);

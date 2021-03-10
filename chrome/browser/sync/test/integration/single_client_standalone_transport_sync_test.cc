@@ -30,7 +30,7 @@
 namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(39 == syncer::ModelType::NUM_ENTRIES,
+  static_assert(38 == syncer::ModelType::NUM_ENTRIES,
                 "Add new types below if they run in transport mode");
   // Only some special whitelisted types (and control types) are allowed in
   // standalone transport mode.

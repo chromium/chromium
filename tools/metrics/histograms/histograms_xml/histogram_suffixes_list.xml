@@ -18635,14 +18635,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="APP_LIST" label="APP_LIST"/>
   <suffix name="APP_NOTIFICATION" label="APP_NOTIFICATION">
     <obsolete>
-      Deprecated 2/2017.
+      Removed on 2/2017.
     </obsolete>
   </suffix>
   <suffix name="APP_SETTING" label="APP_SETTING"/>
   <suffix name="ARC_PACKAGE" label="ARC_PACKAGE"/>
   <suffix name="ARTICLE" label="ARTICLE">
     <obsolete>
-      Deprecated 7/2018.
+      Removed on 7/2018.
     </obsolete>
   </suffix>
   <suffix name="AUTOFILL" label="AUTOFILL"/>
@@ -18654,24 +18654,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="DICTIONARY" label="DICTIONARY"/>
   <suffix name="EXPERIMENTS" label="EXPERIMENTS">
     <obsolete>
-      Deprecated 4/2020.
+      Removed on 4/2020.
     </obsolete>
   </suffix>
   <suffix name="EXTENSION" label="EXTENSION"/>
   <suffix name="EXTENSION_SETTING" label="EXTENSION_SETTING"/>
-  <suffix name="FAVICON_IMAGE" label="FAVICON_IMAGE"/>
-  <suffix name="FAVICON_TRACKING" label="FAVICON_TRACKING"/>
+  <suffix name="FAVICON_IMAGE" label="FAVICON_IMAGE">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </suffix>
+  <suffix name="FAVICON_TRACKING" label="FAVICON_TRACKING">
+    <obsolete>
+      Removed on 01/2021 (M90).
+    </obsolete>
+  </suffix>
   <suffix name="HISTORY_DELETE_DIRECTIVE" label="HISTORY_DELETE_DIRECTIVE"/>
   <suffix name="MANAGED_USER" label="MANAGED_USER">
     <obsolete>
-      Deprecated 4/2018.
+      Removed on 4/2018.
     </obsolete>
   </suffix>
   <suffix name="MANAGED_USER_SETTING" label="MANAGED_USER_SETTING"/>
   <suffix name="MANAGED_USER_SHARED_SETTING"
       label="MANAGED_USER_SHARED_SETTING">
     <obsolete>
-      Deprecated 4/2018.
+      Removed on 4/2018.
     </obsolete>
   </suffix>
   <suffix name="MANAGED_USER_WHITELIST" label="MANAGED_USER_WHITELIST"/>
@@ -18696,13 +18704,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="SHARING_MESSAGE" label="SHARING_MESSAGE"/>
   <suffix name="SYNCED_NOTIFICATION" label="SYNCED_NOTIFICATION">
     <obsolete>
-      Deprecated in M53.
+      Removed in M53.
     </obsolete>
   </suffix>
   <suffix name="SYNCED_NOTIFICATION_APP_INFO"
       label="SYNCED_NOTIFICATION_APP_INFO">
     <obsolete>
-      Deprecated in M53.
+      Removed in M53.
     </obsolete>
   </suffix>
   <suffix name="THEME" label="THEME"/>

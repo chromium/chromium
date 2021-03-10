@@ -13,7 +13,6 @@ class DictionaryValue;
 
 namespace sync_pb {
 class AppListSpecifics;
-class AppNotificationSettings;
 class AppSettingSpecifics;
 class AppSpecifics;
 class ArcPackageSpecifics;
@@ -33,7 +32,6 @@ class DictionarySpecifics;
 class EncryptedData;
 class EntityMetadata;
 class EntitySpecifics;
-class ExperimentsSpecifics;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
 class HistoryDeleteDirectiveSpecifics;
@@ -89,9 +87,6 @@ namespace syncer {
 std::unique_ptr<base::DictionaryValue> AppListSpecificsToValue(
     const sync_pb::AppListSpecifics& proto);
 
-std::unique_ptr<base::DictionaryValue> AppNotificationSettingsToValue(
-    const sync_pb::AppNotificationSettings& app_notification_settings);
-
 std::unique_ptr<base::DictionaryValue> AppSettingSpecificsToValue(
     const sync_pb::AppSettingSpecifics& app_setting_specifics);
 
@@ -142,9 +137,6 @@ std::unique_ptr<base::DictionaryValue> EntityMetadataToValue(
 
 std::unique_ptr<base::DictionaryValue> EntitySpecificsToValue(
     const sync_pb::EntitySpecifics& specifics);
-
-std::unique_ptr<base::DictionaryValue> ExperimentsSpecificsToValue(
-    const sync_pb::ExperimentsSpecifics& proto);
 
 std::unique_ptr<base::DictionaryValue> ExtensionSettingSpecificsToValue(
     const sync_pb::ExtensionSettingSpecifics& extension_setting_specifics);

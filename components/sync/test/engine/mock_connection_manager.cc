@@ -367,7 +367,8 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
             last_commit_response().entryresponse(0).response_type());
 
   if (last_sent_commit().entries(0).deleted()) {
-    ModelType type = GetModelType(last_sent_commit().entries(0));
+    ModelType type =
+        GetModelTypeFromSpecifics(last_sent_commit().entries(0).specifics());
     AddUpdateTombstone(last_sent_commit().entries(0).id_string(), type);
   } else {
     sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
@@ -409,7 +410,8 @@ void MockConnectionManager::AddUpdateTombstone(const std::string& id,
 void MockConnectionManager::SetLastUpdateDeleted() {
   // Tombstones have only the ID set.  Wipe anything else.
   string id_string = GetMutableLastUpdate()->id_string();
-  ModelType type = GetModelType(*GetMutableLastUpdate());
+  ModelType type =
+      GetModelTypeFromSpecifics(GetMutableLastUpdate()->specifics());
   GetUpdateResponse()->mutable_entries()->RemoveLast();
   AddUpdateTombstone(id_string, type);
 }
@@ -480,7 +482,8 @@ bool MockConnectionManager::ProcessGetUpdates(
   sync_pb::GetUpdatesResponse* updates = &update_queue_.front();
   for (int i = 0; i < updates->entries_size(); ++i) {
     if (!updates->entries(i).deleted()) {
-      ModelType entry_type = GetModelType(updates->entries(i));
+      ModelType entry_type =
+          GetModelTypeFromSpecifics(updates->entries(i).specifics());
       EXPECT_TRUE(
           IsModelTypePresentInSpecifics(gu.from_progress_marker(), entry_type))
           << "Syncer did not request updates being provided by the test.";
