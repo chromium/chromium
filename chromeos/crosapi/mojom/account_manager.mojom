@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Types of accounts which can be stored in Account Manager.
 // This must be kept in sync with
 // //ash/components/account_manager/tokens.proto
@@ -96,6 +98,27 @@ struct AccountAdditionResult {
   GoogleServiceAuthError? error@2;
 };
 
+// Next ordinal value: 3
+[Stable]
+struct AccessTokenInfo {
+  // OAuth2 access token.
+  string access_token@0;
+
+  // Expiration time of `access_token`. This value has a built-in safety margin
+  // so it can be used as-is.
+  mojo_base.mojom.Time expiration_time@1;
+
+  // Contains extra information regarding the user's currently registered
+  // services.
+  string id_token@2;
+};
+
+[Stable]
+union AccessTokenResult {
+  AccessTokenInfo access_token_info;
+  GoogleServiceAuthError error;
+};
+
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
@@ -125,8 +148,8 @@ interface AccountManagerObserver {
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
 //
-// Next version: 6
-// Next method id: 7
+// Next version: 8
+// Next method id: 9
 [Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
   // Returns |true| if Chrome OS Account Manager has been fully initialized, and
@@ -167,4 +190,28 @@ interface AccountManager {
   [MinVersion = 5]
   GetPersistentErrorForAccount@6(AccountKey account) =>
       (GoogleServiceAuthError error);
+
+  // Returns a remote to an interface to fetch an access token for
+  // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.
+  // `account_key` must be a Gaia account. If `account_key` is invalid or not
+  // known to Chrome OS Account Manager, fetching an access token via
+  // `AccessTokenFetcher` will result in an error (`kUserNotSignedUp`). If the
+  // account's refresh token is no longer valid, it will result in
+  // `kInvalidGaiaCredentials` error. See `GoogleServiceAuthError` for all error
+  // types.
+  [MinVersion = 6]
+  CreateAccessTokenFetcher@7(AccountKey account_key,
+      string oauth_consumer_name) =>
+          (pending_remote<AccessTokenFetcher> access_token_fetcher);
+};
+
+// Interface for fetching OAuth2 access tokens.
+[Stable, Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
+interface AccessTokenFetcher {
+  // Starts the request for fetching an access token with the provided `scopes`.
+  // If `scopes` is empty, `access_token` will have the same scope as the
+  // underlying refresh token - login scope.
+  // Don't call this method multiple times - create a new `AccessTokenFetcher`
+  // instead.
+  Start@0(array<string> scopes) => (AccessTokenResult result);
 };

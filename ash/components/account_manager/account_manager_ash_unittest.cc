@@ -6,11 +6,14 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/components/account_manager/access_token_fetcher.h"
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
+#include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
@@ -19,9 +22,14 @@
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -34,6 +42,16 @@ namespace {
 const char kFakeGaiaId[] = "fake-gaia-id";
 const char kFakeEmail[] = "fake_email@example.com";
 const char kFakeToken[] = "fake-token";
+const char kFakeOAuthConsumerName[] = "fake-oauth-consumer-name";
+constexpr char kFakeAccessToken[] = "fake-access-token";
+// Same access token value as above in `kFakeAccessToken`.
+constexpr char kAccessTokenResponse[] = R"(
+    {
+      "access_token": "fake-access-token",
+      "expires_in": 3600,
+      "token_type": "Bearer",
+      "id_token": "id_token"
+    })";
 const account_manager::Account kFakeAccount = account_manager::Account{
     account_manager::AccountKey{kFakeGaiaId,
                                 account_manager::AccountType::kGaia},
@@ -58,15 +76,15 @@ class TestAccountManagerObserver
     receiver_.Bind(std::move(receiver));
   }
 
-  int GetNumOnTokenUpsertedCalls() { return num_token_upserted_calls_; }
+  int GetNumOnTokenUpsertedCalls() const { return num_token_upserted_calls_; }
 
-  account_manager::Account GetLastUpsertedAccount() {
+  account_manager::Account GetLastUpsertedAccount() const {
     return last_upserted_account_;
   }
 
-  int GetNumOnAccountRemovedCalls() { return num_account_removed_calls_; }
+  int GetNumOnAccountRemovedCalls() const { return num_account_removed_calls_; }
 
-  account_manager::Account GetLastRemovedAccount() {
+  account_manager::Account GetLastRemovedAccount() const {
     return last_removed_account_;
   }
 
@@ -95,10 +113,10 @@ class TestAccountManagerObserver
 
 class FakeAccountManagerUI : public ash::AccountManagerUI {
  public:
-  FakeAccountManagerUI() {}
+  FakeAccountManagerUI() = default;
   FakeAccountManagerUI(const FakeAccountManagerUI&) = delete;
   FakeAccountManagerUI& operator=(const FakeAccountManagerUI&) = delete;
-  ~FakeAccountManagerUI() override {}
+  ~FakeAccountManagerUI() override = default;
 
   void SetIsDialogShown(bool is_dialog_shown) {
     is_dialog_shown_ = is_dialog_shown;
@@ -130,6 +148,7 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
     show_account_addition_dialog_calls_++;
     is_dialog_shown_ = true;
   }
+
   void ShowReauthAccountDialog(
       const std::string& email,
       base::OnceClosure close_dialog_closure) override {
@@ -137,7 +156,9 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
     show_account_reauthentication_dialog_calls_++;
     is_dialog_shown_ = true;
   }
+
   bool IsDialogShown() override { return is_dialog_shown_; }
+
   void ShowManageAccountsSettings() override {
     show_manage_accounts_settings_calls_++;
   }
@@ -147,6 +168,36 @@ class FakeAccountManagerUI : public ash::AccountManagerUI {
   int show_account_addition_dialog_calls_ = 0;
   int show_account_reauthentication_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
+};
+
+// A test spy for intercepting AccountManager calls.
+class AccountManagerSpy : public ash::AccountManager {
+ public:
+  AccountManagerSpy() = default;
+  AccountManagerSpy(const AccountManagerSpy&) = delete;
+  AccountManagerSpy& operator=(const AccountManagerSpy&) = delete;
+  ~AccountManagerSpy() override = default;
+
+  // ash::AccountManager override:
+  std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+      const ::account_manager::AccountKey& account_key,
+      OAuth2AccessTokenConsumer* consumer) const override {
+    num_access_token_fetches_++;
+    last_access_token_account_key_ = account_key;
+
+    return ash::AccountManager::CreateAccessTokenFetcher(account_key, consumer);
+  }
+
+  int num_access_token_fetches() const { return num_access_token_fetches_; }
+
+  account_manager::AccountKey last_access_token_account_key() const {
+    return last_access_token_account_key_;
+  }
+
+ private:
+  // Mutated by const CreateAccessTokenFetcher.
+  mutable int num_access_token_fetches_ = 0;
+  mutable account_manager::AccountKey last_access_token_account_key_;
 };
 
 class AccountManagerAshTest : public ::testing::Test {
@@ -219,20 +270,60 @@ class AccountManagerAshTest : public ::testing::Test {
     account_manager_ash_->ShowManageAccountsSettings();
   }
 
-  int GetNumObservers() { return account_manager_ash_->observers_.size(); }
+  mojom::AccessTokenResultPtr FetchAccessToken(
+      const account_manager::AccountKey& account_key) {
+    return FetchAccessToken(account_key, /*scopes=*/{});
+  }
+
+  mojom::AccessTokenResultPtr FetchAccessToken(
+      const account_manager::AccountKey& account_key,
+      const std::vector<std::string>& scopes) {
+    mojo::PendingRemote<mojom::AccessTokenFetcher> pending_remote;
+    account_manager_async_waiter()->CreateAccessTokenFetcher(
+        account_manager::ToMojoAccountKey(account_key), kFakeOAuthConsumerName,
+        &pending_remote);
+    mojo::Remote<mojom::AccessTokenFetcher> remote(std::move(pending_remote));
+
+    base::RunLoop run_loop;
+    mojom::AccessTokenResultPtr result;
+    remote->Start(
+        scopes,
+        base::BindLambdaForTesting(
+            [&run_loop, &result](mojom::AccessTokenResultPtr returned_result) {
+              result = std::move(returned_result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    return result;
+  }
+
+  void AddFakeAccessTokenResponse() {
+    GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
+    test_url_loader_factory_.AddResponse(url.spec(), kAccessTokenResponse,
+                                         net::HTTP_OK);
+  }
+
+  int GetNumObservers() const {
+    return account_manager_ash_->observers_.size();
+  }
+
+  int GetNumPendingAccessTokenRequests() const {
+    return account_manager_ash_->GetNumPendingAccessTokenRequests();
+  }
 
   mojom::AccountManagerAsyncWaiter* account_manager_async_waiter() {
     return account_manager_async_waiter_.get();
   }
 
-  ash::AccountManager* account_manager() { return &account_manager_; }
+  AccountManagerSpy* account_manager() { return &account_manager_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
-  ash::AccountManager account_manager_;
+  AccountManagerSpy account_manager_;
   mojo::Remote<mojom::AccountManager> remote_;
   std::unique_ptr<AccountManagerAsh> account_manager_ash_;
   std::unique_ptr<mojom::AccountManagerAsyncWaiter>
@@ -506,6 +597,112 @@ TEST_F(AccountManagerAshTest, ShowManageAccountSettingsTest) {
   ShowManageAccountsSettings();
   EXPECT_EQ(1,
             GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
+}
+
+TEST_F(AccountManagerAshTest,
+       FetchingAccessTokenResultsInErrorForInvalidAccountKey) {
+  ASSERT_TRUE(InitializeAccountManager());
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  account_manager::AccountKey account_key{std::string(),
+                                          account_manager::AccountType::kGaia};
+  mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
+
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
+            result->get_error()->state);
+
+  // Check that requests are not leaking.
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+}
+
+TEST_F(AccountManagerAshTest,
+       FetchingAccessTokenResultsInErrorForActiveDirectoryAccounts) {
+  ASSERT_TRUE(InitializeAccountManager());
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  account_manager::AccountKey account_key{
+      kFakeGaiaId, account_manager::AccountType::kActiveDirectory};
+  mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
+
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
+            result->get_error()->state);
+
+  // Check that requests are not leaking.
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+}
+
+TEST_F(AccountManagerAshTest,
+       FetchingAccessTokenResultsInErrorForUnknownAccountKey) {
+  ASSERT_TRUE(InitializeAccountManager());
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  account_manager::AccountKey account_key{kFakeGaiaId,
+                                          account_manager::AccountType::kGaia};
+  mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
+
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
+            result->get_error()->state);
+
+  // Check that requests are not leaking.
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+}
+
+TEST_F(AccountManagerAshTest, FetchAccessTokenRequestsCanBeCancelled) {
+  // Setup.
+  ASSERT_TRUE(InitializeAccountManager());
+  account_manager::AccountKey account_key{kFakeGaiaId,
+                                          account_manager::AccountType::kGaia};
+  account_manager()->UpsertAccount(account_key, kFakeEmail, kFakeToken);
+  mojo::PendingRemote<mojom::AccessTokenFetcher> pending_remote;
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  account_manager_async_waiter()->CreateAccessTokenFetcher(
+      account_manager::ToMojoAccountKey(account_key), kFakeOAuthConsumerName,
+      &pending_remote);
+  mojo::Remote<mojom::AccessTokenFetcher> remote(std::move(pending_remote));
+  mojom::AccessTokenResultPtr result;
+  EXPECT_TRUE(result.is_null());
+  // Make a request to fetch access token. Since we haven't setup our test URL
+  // loader factory via `AddFakeAccessTokenResponse`, this request will never be
+  // completed.
+  remote->Start(/*scopes=*/{},
+                base::BindLambdaForTesting(
+                    [&result](mojom::AccessTokenResultPtr returned_result) {
+                      result = std::move(returned_result);
+                    }));
+  EXPECT_EQ(1, GetNumPendingAccessTokenRequests());
+
+  // Test.
+  // This should cancel the pending request.
+  remote.reset();
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  // Verify that result is still unset - i.e. the pending request was cancelled,
+  // and didn't complete normally.
+  EXPECT_TRUE(result.is_null());
+}
+
+TEST_F(AccountManagerAshTest, FetchAccessToken) {
+  constexpr char kFakeScope[] = "fake-scope";
+  ASSERT_TRUE(InitializeAccountManager());
+  account_manager::AccountKey account_key{kFakeGaiaId,
+                                          account_manager::AccountType::kGaia};
+  account_manager()->UpsertAccount(account_key, kFakeEmail, kFakeToken);
+  AddFakeAccessTokenResponse();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
+  mojom::AccessTokenResultPtr result =
+      FetchAccessToken(account_key, {kFakeScope});
+
+  ASSERT_TRUE(result->is_access_token_info());
+  EXPECT_EQ(kFakeAccessToken, result->get_access_token_info()->access_token);
+  EXPECT_EQ(1, account_manager()->num_access_token_fetches());
+  EXPECT_EQ(account_key, account_manager()->last_access_token_account_key());
+
+  // Check that requests are not leaking.
+  RunAllPendingTasks();
+  EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
 }
 
 }  // namespace crosapi

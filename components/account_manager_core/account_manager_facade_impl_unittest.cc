@@ -17,6 +17,7 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -87,6 +88,14 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
   void ShowManageAccountsSettings() override {
     show_manage_accounts_settings_calls_++;
+  }
+
+  void CreateAccessTokenFetcher(
+      crosapi::mojom::AccountKeyPtr mojo_account_key,
+      const std::string& oauth_consumer_name,
+      CreateAccessTokenFetcherCallback callback) override {
+    mojo::PendingRemote<crosapi::mojom::AccessTokenFetcher> pending_remote;
+    std::move(callback).Run(std::move(pending_remote));
   }
 
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {

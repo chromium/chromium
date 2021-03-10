@@ -4,22 +4,34 @@
 
 #include "ash/components/account_manager/account_manager_ash.h"
 
+#include <algorithm>
+#include <memory>
 #include <utility>
 
+#include "ash/components/account_manager/access_token_fetcher.h"
 #include "ash/components/account_manager/account_manager.h"
 #include "ash/components/account_manager/account_manager_ui.h"
+#include "base/bind.h"
 #include "base/callback.h"
-#include "base/notreached.h"
+#include "base/callback_forward.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace crosapi {
 
 namespace {
 
 void MarshalAccounts(
-    crosapi::mojom::AccountManager::GetAccountsCallback callback,
+    mojom::AccountManager::GetAccountsCallback callback,
     const std::vector<account_manager::Account>& accounts_to_marshal) {
-  std::vector<crosapi::mojom::AccountPtr> mojo_accounts;
+  std::vector<mojom::AccountPtr> mojo_accounts;
   for (const account_manager::Account& account : accounts_to_marshal) {
     mojo_accounts.emplace_back(account_manager::ToMojoAccount(account));
   }
@@ -27,8 +39,7 @@ void MarshalAccounts(
 }
 
 void ReportErrorStatusFromHasDummyGaiaToken(
-    base::OnceCallback<void(crosapi::mojom::GoogleServiceAuthErrorPtr)>
-        callback,
+    base::OnceCallback<void(mojom::GoogleServiceAuthErrorPtr)> callback,
     bool has_dummy_token) {
   GoogleServiceAuthError error(GoogleServiceAuthError::AuthErrorNone());
   if (has_dummy_token) {
@@ -40,8 +51,6 @@ void ReportErrorStatusFromHasDummyGaiaToken(
 }
 
 }  // namespace
-
-namespace crosapi {
 
 AccountManagerAsh::AccountManagerAsh(ash::AccountManager* account_manager)
     : account_manager_(account_manager) {
@@ -125,6 +134,24 @@ void AccountManagerAsh::ShowManageAccountsSettings() {
   account_manager_ui_->ShowManageAccountsSettings();
 }
 
+void AccountManagerAsh::CreateAccessTokenFetcher(
+    mojom::AccountKeyPtr mojo_account_key,
+    const std::string& oauth_consumer_name,
+    CreateAccessTokenFetcherCallback callback) {
+  // TODO(https://crbug.com/1175741): Add metrics.
+  VLOG(1) << "Received a request for access token from: "
+          << oauth_consumer_name;
+
+  mojo::PendingRemote<mojom::AccessTokenFetcher> pending_remote;
+  auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
+      account_manager_, std::move(mojo_account_key), /*done_closure=*/
+      base::BindOnce(&AccountManagerAsh::DeletePendingAccessTokenFetchRequest,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*receiver=*/pending_remote.InitWithNewPipeAndPassReceiver());
+  pending_access_token_requests_.emplace_back(std::move(access_token_fetcher));
+  std::move(callback).Run(std::move(pending_remote));
+}
+
 void AccountManagerAsh::OnTokenUpserted(
     const account_manager::Account& account) {
   for (auto& observer : observers_)
@@ -164,8 +191,23 @@ void AccountManagerAsh::FinishAddAccount(
       .Run(ToMojoAccountAdditionResult(result));
 }
 
+void AccountManagerAsh::DeletePendingAccessTokenFetchRequest(
+    AccessTokenFetcher* request) {
+  pending_access_token_requests_.erase(
+      std::remove_if(
+          pending_access_token_requests_.begin(),
+          pending_access_token_requests_.end(),
+          [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
+              -> bool { return pending_request.get() == request; }),
+      pending_access_token_requests_.end());
+}
+
 void AccountManagerAsh::FlushMojoForTesting() {
   observers_.FlushForTesting();
+}
+
+int AccountManagerAsh::GetNumPendingAccessTokenRequests() const {
+  return pending_access_token_requests_.size();
 }
 
 }  // namespace crosapi

@@ -9,6 +9,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("account_manager") {
   sources = [
+    "access_token_fetcher.cc",
+    "access_token_fetcher.h",
     "account_manager.cc",
     "account_manager.h",
     "account_manager_ash.cc",
@@ -50,6 +52,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/crosapi/mojom",
     "//components/prefs:test_support",
+    "//google_apis",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",

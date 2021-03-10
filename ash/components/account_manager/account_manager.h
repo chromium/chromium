@@ -209,7 +209,8 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
   // Creates and returns an |OAuth2AccessTokenFetcher| using the refresh token
   // stored for |account_key|. |IsTokenAvailable| should be |true| for
   // |account_key|, otherwise a |nullptr| is returned.
-  std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+  // virtual for testing.
+  virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const ::account_manager::AccountKey& account_key,
       OAuth2AccessTokenConsumer* consumer) const;
 
