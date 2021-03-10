@@ -8079,7 +8079,6 @@ interface Navigator
     getter contacts
     getter cookieEnabled
     getter credentials
-    getter device
     getter deviceMemory
     getter doNotTrack
     getter geolocation
@@ -8090,6 +8089,7 @@ interface Navigator
     getter language
     getter languages
     getter locks
+    getter managed
     getter maxTouchPoints
     getter mediaCapabilities
     getter mediaDevices

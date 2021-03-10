@@ -15,7 +15,7 @@ namespace content {
 class RenderFrameHost;
 }
 
-// A browser-side mojo service, which corresponds to the navigator.device Web
+// A browser-side mojo service, which corresponds to the navigator.managed Web
 // API. Available only to trusted web applications.
 class DeviceServiceImpl final
     : public content::FrameServiceBase<blink::mojom::DeviceAPIService>,

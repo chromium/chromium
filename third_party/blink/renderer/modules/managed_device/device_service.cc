@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
-#include "third_party/blink/renderer/modules/device/device_service.h"
+#include "third_party/blink/renderer/modules/managed_device/device_service.h"
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -24,7 +24,7 @@ const char kNotHighTrustedAppExceptionMessage[] =
 
 const char DeviceService::kSupplementName[] = "DeviceService";
 
-DeviceService* DeviceService::device(Navigator& navigator) {
+DeviceService* DeviceService::managed(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
 

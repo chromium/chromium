@@ -38,9 +38,9 @@ PASS window.cached_navigator_bluetooth.onadvertisementreceived is null
 PASS window.cached_navigator_connection.onchange is null
 PASS window.cached_navigator_connection.ontypechange is null
 PASS window.cached_navigator_connection.saveData is false
-PASS window.cached_navigator_device.onmanagedconfigurationchange is null
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
+PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'

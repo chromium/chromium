@@ -4,4 +4,4 @@
 
 modules_idl_files = [ "device_service.idl" ]
 
-modules_dependency_idl_files = [ "navigator_device.idl" ]
+modules_dependency_idl_files = [ "navigator_managed.idl" ]

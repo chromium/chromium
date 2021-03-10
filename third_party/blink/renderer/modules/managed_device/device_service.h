@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_DEVICE_SERVICE_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_DEVICE_SERVICE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_
 
 #include "third_party/blink/public/mojom/device/device.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -32,8 +32,8 @@ class MODULES_EXPORT DeviceService final
  public:
   static const char kSupplementName[];
 
-  // Web-based getter for navigator.device.
-  static DeviceService* device(Navigator&);
+  // Web-based getter for navigator.managed.
+  static DeviceService* managed(Navigator&);
 
   explicit DeviceService(Navigator&);
   DeviceService(const DeviceService&) = delete;
@@ -93,4 +93,4 @@ class MODULES_EXPORT DeviceService final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_DEVICE_SERVICE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MANAGED_DEVICE_DEVICE_SERVICE_H_

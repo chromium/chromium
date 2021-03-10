@@ -8,5 +8,5 @@
   SecureContext
 ] partial interface Navigator {
   [SameObject]
-  readonly attribute DeviceService device;
+  readonly attribute DeviceService managed;
 };

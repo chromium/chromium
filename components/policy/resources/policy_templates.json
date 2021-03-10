@@ -19561,7 +19561,7 @@
       'tags': [],
       'desc': '''Setting the policy defines the return value of Managed Configuration API for given origin.
 
-      Managed configuration API is a key-value configuration that can be accessed via navigator.device.getManagedConfiguration() javascript call. This API is only available to origins which correspond to force-installed web applications via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>.
+      Managed configuration API is a key-value configuration that can be accessed via navigator.managed.getManagedConfiguration() javascript call. This API is only available to origins which correspond to force-installed web applications via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>.
      '''
     },
     {

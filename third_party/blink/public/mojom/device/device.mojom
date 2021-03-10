@@ -12,7 +12,7 @@ interface ManagedConfigurationObserver {
 };
 
 // This interface is used to handle the information / status passed by the
-// navigator.device interface. It is exposed to trusted origins only.
+// navigator.managed interface. It is exposed to trusted origins only.
 // The connection is hosted in the browser process and is used from the
 // renderer process.
 // The connection is terminated when the origin trustness status changes.
