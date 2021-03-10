@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
-#include "components/shared_highlighting/core/common/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
@@ -109,7 +108,7 @@ template <class Direction>
 Node* FurthestVisibleTextNodeWithinBlock(Node* start_node) {
   // Move forward/backward until no next/previous node is available within same
   // |block_ancestor|.
-  Node* last_node = nullptr;
+  Node* last_node;
   for (Node* node = start_node; node; node = Direction::Next(*node)) {
     node = Direction::GetVisibleTextNode(*node);
     if (node && !node->GetLayoutObject())
@@ -194,8 +193,6 @@ void TextFragmentSelectorGenerator::UpdateSelection(
       selection_range.GetDocument(),
       ToPositionInDOMTree(selection_range.StartPosition()),
       ToPositionInDOMTree(selection_range.EndPosition()));
-  if (base::FeatureList::IsEnabled(features::kPreemptiveLinkToTextGeneration))
-    GenerateSelector();
 }
 
 void TextFragmentSelectorGenerator::BindTextFragmentSelectorProducer(
@@ -217,6 +214,7 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   Node* start_container =
       ephemeral_range.StartPosition().ComputeContainerNode();
   Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
+
   Node* corrected_start =
       ResolvePositionToNode(ephemeral_range.StartPosition());
   int corrected_start_offset =
@@ -290,52 +288,30 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   }
 }
 
-void TextFragmentSelectorGenerator::Cancel() {
-  Reset();
-}
-
-void TextFragmentSelectorGenerator::RequestSelector(
-    RequestSelectorCallback callback) {
-  DCHECK(callback);
-  pending_generate_selector_callback_ = std::move(callback);
-  if (!base::FeatureList::IsEnabled(
-          features::kPreemptiveLinkToTextGeneration)) {
-    GenerateSelector();
-  } else {
-    DCHECK_NE(state_, kNotStarted);
-    if (state_ == kFailure) {
-      std::move(pending_generate_selector_callback_)
-          .Run(
-              TextFragmentSelector(TextFragmentSelector::SelectorType::kInvalid)
-                  .ToString());
-    } else if (state_ == kSuccess) {
-      std::move(pending_generate_selector_callback_).Run(selector_->ToString());
-    }
-  }
-}
-
-void TextFragmentSelectorGenerator::GenerateSelector() {
+void TextFragmentSelectorGenerator::GenerateSelector(
+    GenerateSelectorCallback callback) {
   DCHECK(selection_range_);
+  DCHECK(callback);
 
-  Reset();
-  selection_range_->OwnerDocument().UpdateStyleAndLayout(
-      DocumentUpdateReason::kFindInPage);
-
-  // Shouldn't continue is selection is empty.
-  EphemeralRangeInFlatTree ephemeral_range(selection_range_);
-  String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
-  if (selected_text.IsEmpty()) {
-    state_ = kFailure;
-    error_ = LinkGenerationError::kEmptySelection;
-    ResolveSelectorState();
-    return;
-  }
+  generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
+  pending_generate_selector_callback_ = std::move(callback);
+  state_ = kNeedsNewCandidate;
+  error_.reset();
+  step_ = kExact;
+  max_available_prefix_ = "";
+  max_available_suffix_ = "";
+  max_available_range_start_ = "";
+  max_available_range_end_ = "";
+  num_context_words_ = 0;
+  num_range_words_ = 0;
+  iteration_ = 0;
+  selector_ = nullptr;
 
   AdjustSelection();
   UMA_HISTOGRAM_COUNTS_1000(
       "SharedHighlights.LinkGenerated.SelectionLength",
       PlainText(EphemeralRange(selection_range_)).length());
-  state_ = kNeedsNewCandidate;
+
   GenerateSelectorCandidate();
 }
 
@@ -358,7 +334,6 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
     case kTestCandidate:
       RunTextFinder();
       break;
-    case kNotStarted:
     case kNeedsNewCandidate:
       NOTREACHED();
       ABSL_FALLTHROUGH_INTENDED;
@@ -387,7 +362,7 @@ void TextFragmentSelectorGenerator::DidFindMatch(
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
   if (is_unique && PlainText(match).StripWhiteSpace().length() ==
-                       PlainText(EphemeralRangeInFlatTree(selection_range_))
+                       PlainText(EphemeralRange(selection_range_))
                            .StripWhiteSpace()
                            .length()) {
     state_ = kSuccess;
@@ -410,6 +385,7 @@ void TextFragmentSelectorGenerator::NoMatchFound() {
 
 void TextFragmentSelectorGenerator::NotifySelectorReady(
     const TextFragmentSelector& selector) {
+  DCHECK(pending_generate_selector_callback_);
   // TODO(crbug.com/1133823): Add unit tests for all SharedHighlights.*
   // histograms.
   UMA_HISTOGRAM_BOOLEAN(
@@ -448,8 +424,7 @@ void TextFragmentSelectorGenerator::NotifySelectorReady(
                                                        error);
   }
 
-  if (pending_generate_selector_callback_)
-    std::move(pending_generate_selector_callback_).Run(selector.ToString());
+  std::move(pending_generate_selector_callback_).Run(selector.ToString());
 }
 
 void TextFragmentSelectorGenerator::ClearSelection() {
@@ -478,7 +453,14 @@ void TextFragmentSelectorGenerator::GenerateExactSelector() {
     step_ = kRange;
     return;
   }
+
   String selected_text = PlainText(ephemeral_range).StripWhiteSpace();
+  if (selected_text.IsEmpty()) {
+    state_ = kFailure;
+    error_ = LinkGenerationError::kEmptySelection;
+    return;
+  }
+
   // If too long should use ranges.
   if (selected_text.length() > kExactTextMaxChars) {
     step_ = kRange;
@@ -659,23 +641,5 @@ String TextFragmentSelectorGenerator::GetNextTextBlock(
   auto range_start = Position(suffix_start, suffix_start_offset);
   auto range_end = Position(suffix_end, suffix_end->textContent().length());
   return PlainText(EphemeralRange(range_start, range_end)).StripWhiteSpace();
-}
-
-void TextFragmentSelectorGenerator::Reset() {
-  if (finder_)
-    finder_->Cancel();
-
-  generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
-  state_ = kNotStarted;
-  error_.reset();
-  step_ = kExact;
-  max_available_prefix_ = "";
-  max_available_suffix_ = "";
-  max_available_range_start_ = "";
-  max_available_range_end_ = "";
-  num_context_words_ = 0;
-  num_range_words_ = 0;
-  iteration_ = 0;
-  selector_ = nullptr;
 }
 }  // namespace blink

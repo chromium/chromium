@@ -54,16 +54,12 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Copies the generated link to the user's clipboard.
   void CopyLinkToClipboard();
 
-  // Cancels link generation if we are still waiting for it.
-  void Timeout();
-
   mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
   RenderViewContextMenuProxy* proxy_;
   GURL url_;
   base::Optional<std::string> generated_link_;
   base::Optional<std::string> generated_selector_for_testing_;
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint_;
-
   base::WeakPtrFactory<CopyLinkToTextMenuObserver> weak_ptr_factory_{this};
 };
 

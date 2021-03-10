@@ -7,12 +7,11 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
-#include "components/shared_highlighting/core/common/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
@@ -24,9 +23,6 @@
 
 namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
-
-// Indicates how long context menu should wait for link generation result.
-constexpr base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(500);
 }
 
 // static
@@ -63,14 +59,8 @@ void CopyLinkToTextMenuObserver::InitMenu(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
 
-  if (ShouldPreemptivelyGenerateLink()) {
+  if (ShouldPreemptivelyGenerateLink())
     RequestLinkGeneration();
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&CopyLinkToTextMenuObserver::Timeout,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kTimeoutMs);
-  }
 }
 
 bool CopyLinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
@@ -127,8 +117,7 @@ void CopyLinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
 }
 
 bool CopyLinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
-  return base::FeatureList::IsEnabled(
-      features::kPreemptiveLinkToTextGeneration);
+  return base::FeatureList::IsEnabled(features::kPreemtiveLinkToTextGeneration);
 }
 
 void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
@@ -163,11 +152,11 @@ void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
 
   // Make a call to the renderer to generate a string that uniquely represents
   // the selected text and any context around the text to distinguish it from
-  // the rest of the contents. Get will call a callback with
+  // the rest of the contents. GenerateSelector will call a callback with
   // the generated string if it succeeds or an empty string if it fails.
   main_frame->GetRemoteInterfaces()->GetInterface(
       remote_.BindNewPipeAndPassReceiver());
-  remote_->RequestSelector(base::BindOnce(
+  remote_->GenerateSelector(base::BindOnce(
       &CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -176,14 +165,4 @@ void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint_));
   scw.WriteText(base::UTF8ToUTF16(generated_link_.value()));
-}
-
-void CopyLinkToTextMenuObserver::Timeout() {
-  DCHECK(ShouldPreemptivelyGenerateLink());
-  if (generated_link_.has_value())
-    return;
-  remote_->Cancel();
-  remote_.reset();
-  shared_highlighting::LogGenerateErrorTimeout();
-  OnRequestLinkGenerationCompleted(std::string());
 }
