@@ -17,48 +17,67 @@ namespace chrome {
 
 namespace {
 
-std::string ChannelName() {
+struct ChannelState {
+  std::string name;
+  bool is_extended_stable;
+};
+
+// For a branded build, returns its ChannelState: `name` of "" (for stable or
+// extended), "beta", "dev", "canary", or "unknown" (in the case where the
+// channel could not be determined or is otherwise inapplicable), and an
+// `is_extended_stable` with a value corresponding to whether it is an extended
+// stable build or not.
+//
+// For an unbranded build, always returns a ChannelState with `name` of "" and
+// `is_extended_stable` of false.
+const ChannelState& GetChannelState() {
+  static const base::NoDestructor<ChannelState> channel([] {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static const base::NoDestructor<std::string> channel([] {
     // Use the main Chrome application bundle and not the framework bundle.
     // Keystone keys don't live in the framework.
     NSBundle* bundle = base::mac::OuterBundle();
-    NSString* channel = [bundle objectForInfoDictionaryKey:@"KSChannelID"];
 
-    // Only ever return "", "unknown", "beta", "dev", or "canary" in a branded
-    // build.
-    // KSProductID is not set (for stable) or "beta", "dev" or "canary" for
-    // the intel-only build.
-    // KSProductID is "arm64" (for stable) or "arm64-beta", "arm64-dev" or
-    // "arm64-canary" for the arm-only build.
-    // KSProductID is "universal" (for stable) or "universal-beta",
-    // "universal-dev" or "universal-canary" for the arm+intel universal binary.
     if (![bundle objectForInfoDictionaryKey:@"KSProductID"]) {
-      // This build is not Keystone-enabled, it can't have a channel.
-      channel = @"unknown";
-    } else if (!channel || [channel isEqual:@"arm64"] ||
-               [channel isEqual:@"universal"]) {
-      // For the intel stable channel, KSChannelID is not set.
-      channel = @"";
-    } else {
-      if ([channel hasPrefix:@"arm64-"])
-        channel = [channel substringFromIndex:[@"arm64-" length]];
-      else if ([channel hasPrefix:@"universal-"])
-        channel = [channel substringFromIndex:[@"universal-" length]];
-      if ([channel isEqual:@"beta"] || [channel isEqual:@"dev"] ||
-          [channel isEqual:@"canary"]) {
-        // Do nothing.
-      } else {
-        channel = @"unknown";
-      }
+      // This build is not Keystone-enabled; it can't have a channel.
+      return ChannelState{"unknown", false};
     }
 
-    return base::SysNSStringToUTF8(channel);
+    // KSChannelID values:
+    //
+    //                     Intel       Arm              Universal
+    //                   ┌───────────┬────────────────┬────────────────────┐
+    //  Stable           │ (not set) │ arm64          │ universal          │
+    //  Extended Stable  │ extended  │ arm64-extended │ universal-extended │
+    //  Beta             │ beta      │ arm64-beta     │ universal-beta     │
+    //  Dev              │ dev       │ arm64-dev      │ universal-dev      │
+    //  Canary           │ canary    │ arm64-canary   │ universal-canary   │
+    //                   └───────────┴────────────────┴────────────────────┘
+    NSString* channel = [bundle objectForInfoDictionaryKey:@"KSChannelID"];
+
+    if (!channel || [channel isEqual:@"arm64"] ||
+        [channel isEqual:@"universal"]) {
+      return ChannelState{"", false};  // "" means stable channel.
+    }
+
+    if ([channel hasPrefix:@"arm64-"])
+      channel = [channel substringFromIndex:[@"arm64-" length]];
+    else if ([channel hasPrefix:@"universal-"])
+      channel = [channel substringFromIndex:[@"universal-" length]];
+
+    if ([channel isEqual:@"extended"])
+      return ChannelState{"", true};  // "" means stable channel.
+
+    if ([channel isEqual:@"beta"] || [channel isEqual:@"dev"] ||
+        [channel isEqual:@"canary"]) {
+      return ChannelState{base::SysNSStringToUTF8(channel), false};
+    }
+
+    return ChannelState{"unknown", false};
+#else
+    return ChannelState{"", false};
+#endif
   }());
   return *channel;
-#else
-  return std::string();
-#endif
 }
 
 bool SideBySideCapable() {
@@ -73,7 +92,7 @@ bool SideBySideCapable() {
       return true;
     }
 
-    if (GetChannelName().empty()) {
+    if (GetChannelState().name.empty()) {
       // For the stable channel, GetChannelName() returns the empty string.
       // Stable Chromes are what side-by-side capable Chromes are running
       // side-by-side *to* and by definition are side-by-side capable.
@@ -94,13 +113,17 @@ bool SideBySideCapable() {
 }  // namespace
 
 void CacheChannelInfo() {
-  ignore_result(ChannelName());
+  ignore_result(GetChannelState());
   ignore_result(SideBySideCapable());
 }
 
 std::string GetChannelName(WithExtendedStable with_extended_stable) {
-  // TODO(https://crbug.com/1185621): Detect extended stable.
-  return ChannelName();
+  const auto& channel = GetChannelState();
+
+  if (channel.is_extended_stable && with_extended_stable.value())
+    return "extended";
+
+  return channel.name;
 }
 
 version_info::Channel GetChannelByName(const std::string& channel) {
@@ -122,12 +145,11 @@ bool IsSideBySideCapable() {
 }
 
 version_info::Channel GetChannel() {
-  return GetChannelByName(ChannelName());
+  return GetChannelByName(GetChannelState().name);
 }
 
 bool IsExtendedStableChannel() {
-  // TODO(https://crbug.com/1185621): Detect extended stable.
-  return false;
+  return GetChannelState().is_extended_stable;
 }
 
 }  // namespace chrome
