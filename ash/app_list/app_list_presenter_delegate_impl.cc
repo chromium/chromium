@@ -4,6 +4,9 @@
 
 #include "ash/app_list/app_list_presenter_delegate_impl.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_util.h"
@@ -279,11 +282,22 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
 
     // Don't dismiss the auto-hide shelf if event happened in status area. Then
     // the event can still be propagated.
-    base::Optional<Shelf::ScopedAutoHideLock> auto_hide_lock;
     const aura::Window* status_window =
         shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
-    if (status_window && status_window->Contains(target))
-      auto_hide_lock.emplace(shelf);
+    if (status_window && status_window->Contains(target)) {
+      auto shelf_visibility_lock =
+          std::make_unique<ShelfLayoutManager::ScopedVisibilityLock>(
+              shelf->shelf_layout_manager());
+
+      // Use a task runner to delete the |shelf_visibility_lock| and update the
+      // shelf visibility after the current event has been handled by the shelf.
+      // This is important for the case where dismissing the app list might hide
+      // the shelf, which would stop the shelf from handling the event.
+      // TODO(crbug.com/1186479): Investigate whether there is a better way to
+      // do this, instead of using a task runner here.
+      base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
+          FROM_HERE, std::move(shelf_visibility_lock));
+    }
 
     // Record the current AppListViewState to be used later for metrics. The
     // AppListViewState will change on app launch, so this will record the

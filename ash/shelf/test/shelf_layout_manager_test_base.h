@@ -80,6 +80,10 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
                                     int delta_y,
                                     bool reverse_scroll);
 
+  // Run the |visibility_update_for_tray_callback_| if set in
+  // ShelfLayoutManager and return true. Otherwise, return false.
+  bool RunVisibilityUpdateForTrayCallback();
+
  private:
   base::TimeTicks timestamp_;
   gfx::Point current_point_;

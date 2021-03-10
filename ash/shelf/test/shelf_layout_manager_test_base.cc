@@ -744,4 +744,15 @@ void ShelfLayoutManagerTestBase::RunGestureDragTests(
             GetShelfWidget()->GetWindowBoundsInScreen().ToString());
 }
 
+bool ShelfLayoutManagerTestBase::RunVisibilityUpdateForTrayCallback() {
+  if (!GetShelfLayoutManager()
+           ->visibility_update_for_tray_callback_.callback()) {
+    return false;
+  }
+  GetShelfLayoutManager()
+      ->visibility_update_for_tray_callback_.callback()
+      .Run();
+  return true;
+}
+
 }  //  namespace ash

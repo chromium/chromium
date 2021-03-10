@@ -48,6 +48,11 @@ namespace ash {
 StatusAreaWidget::ScopedTrayBubbleCounter::ScopedTrayBubbleCounter(
     StatusAreaWidget* status_area_widget)
     : status_area_widget_(status_area_widget->weak_ptr_factory_.GetWeakPtr()) {
+  if (status_area_widget_->tray_bubble_count_ == 0) {
+    status_area_widget_->shelf()
+        ->shelf_layout_manager()
+        ->OnShelfTrayBubbleVisibilityChanged(/*bubble_shown=*/true);
+  }
   ++status_area_widget_->tray_bubble_count_;
 }
 
@@ -57,6 +62,12 @@ StatusAreaWidget::ScopedTrayBubbleCounter::~ScopedTrayBubbleCounter() {
     return;
 
   --status_area_widget_->tray_bubble_count_;
+  if (status_area_widget_->tray_bubble_count_ == 0) {
+    status_area_widget_->shelf()
+        ->shelf_layout_manager()
+        ->OnShelfTrayBubbleVisibilityChanged(/*bubble_shown=*/false);
+  }
+
   DCHECK_GE(status_area_widget_->tray_bubble_count_, 0);
 }
 

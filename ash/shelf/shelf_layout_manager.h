@@ -28,6 +28,7 @@
 #include "ash/wm/wm_default_layout_manager.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -38,7 +39,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/message_center/message_center_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ui {
@@ -82,7 +82,6 @@ class ASH_EXPORT ShelfLayoutManager
       public WallpaperControllerObserver,
       public LocaleChangeObserver,
       public DesksController::Observer,
-      public message_center::MessageCenterObserver,
       public ShelfConfig::Observer {
  public:
   // Suspend work area updates within its scope. Note that relevant
@@ -96,6 +95,17 @@ class ASH_EXPORT ShelfLayoutManager
    private:
     ShelfLayoutManager* const manager_;
     DISALLOW_COPY_AND_ASSIGN(ScopedSuspendWorkAreaUpdate);
+  };
+
+  // Used to maintain a lock for the shelf visibility state. If locked, then we
+  // should not update the state of the shelf visibility.
+  class ScopedVisibilityLock {
+   public:
+    explicit ScopedVisibilityLock(ShelfLayoutManager* shelf);
+    ~ScopedVisibilityLock();
+
+   private:
+    base::WeakPtr<ShelfLayoutManager> shelf_;
   };
 
   ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf);
@@ -304,6 +314,10 @@ class ASH_EXPORT ShelfLayoutManager
   HotseatState CalculateHotseatState(ShelfVisibilityState visibility_state,
                                      ShelfAutoHideState auto_hide_state) const;
 
+  // Called when the visibility for a tray bubble in the shelf's status area
+  // changes.
+  void OnShelfTrayBubbleVisibilityChanged(bool bubble_shown);
+
  private:
   class UpdateShelfObserver;
   friend class DimShelfLayoutManagerTestBase;
@@ -354,10 +368,6 @@ class ASH_EXPORT ShelfLayoutManager
     kAiming,  // Calculating target bounds
     kMoving,  // Laying out and animating to target bounds
   };
-
-  // MessageCenterObserver:
-  void OnCenterVisibilityChanged(
-      message_center::Visibility visibility) override;
 
   // Suspends/resumes work area updates.
   void SuspendWorkAreaUpdate();
@@ -505,9 +515,8 @@ class ASH_EXPORT ShelfLayoutManager
   void MaybeCancelWindowDrag();
   bool IsWindowDragInProgress() const;
 
-  // Updates the visibility state because of the change on the system tray.
-  void UpdateVisibilityStateForSystemTrayChange(
-      message_center::Visibility visibility);
+  // Updates the visibility state because of the change on a status area tray.
+  void UpdateVisibilityStateForTrayBubbleChange(bool bubble_shown);
 
   bool in_shutdown_ = false;
 
@@ -674,6 +683,8 @@ class ASH_EXPORT ShelfLayoutManager
 
   // Records the presentation time for hotseat dragging.
   std::unique_ptr<PresentationTimeRecorder> hotseat_presentation_time_recorder_;
+
+  base::WeakPtrFactory<ShelfLayoutManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfLayoutManager);
 };

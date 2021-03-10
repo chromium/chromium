@@ -73,7 +73,6 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/types/event_type.h"
-#include "ui/message_center/message_center.h"
 #include "ui/views/border.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -349,6 +348,23 @@ ShelfLayoutManager::ScopedSuspendWorkAreaUpdate::
   manager_->ResumeWorkAreaUpdate();
 }
 
+// ShelfLayoutManager::ScopedVisibilityLock ------------------------------------
+
+ShelfLayoutManager::ScopedVisibilityLock::ScopedVisibilityLock(
+    ShelfLayoutManager* shelf)
+    : shelf_(shelf->weak_factory_.GetWeakPtr()) {
+  ++shelf_->suspend_visibility_update_;
+}
+
+ShelfLayoutManager::ScopedVisibilityLock::~ScopedVisibilityLock() {
+  if (!shelf_)
+    return;
+  --shelf_->suspend_visibility_update_;
+  DCHECK_GE(shelf_->suspend_visibility_update_, 0);
+  if (shelf_->suspend_visibility_update_ == 0)
+    shelf_->UpdateVisibilityState();
+}
+
 // ShelfLayoutManager ----------------------------------------------------------
 
 ShelfLayoutManager::ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf)
@@ -394,7 +410,6 @@ void ShelfLayoutManager::InitObservers() {
   shelf_background_type_ = GetShelfBackgroundType();
   wallpaper_controller_observation_.Observe(shell->wallpaper_controller());
   display::Screen::GetScreen()->AddObserver(this);
-  message_center::MessageCenter::Get()->AddObserver(this);
 
   // DesksController could be null when virtual desks feature is not enabled.
   if (DesksController::Get())
@@ -419,8 +434,6 @@ void ShelfLayoutManager::PrepareForShutdown() {
 
   SplitViewController::Get(shelf_widget_->GetNativeWindow())
       ->RemoveObserver(this);
-
-  message_center::MessageCenter::Get()->RemoveObserver(this);
 }
 
 bool ShelfLayoutManager::IsVisible() const {
@@ -1148,23 +1161,6 @@ void ShelfLayoutManager::OnShelfConfigUpdated() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // ShelfLayoutManager, private:
-
-void ShelfLayoutManager::OnCenterVisibilityChanged(
-    message_center::Visibility visibility) {
-  // Uses base::CancelableOnceClosure to handle two edge cases: (1)
-  // ShelfLayoutManager is destructed before the callback runs. (2) The previous
-  // callback is still pending.
-  visibility_update_for_tray_callback_.Reset(base::BindOnce(
-      &ShelfLayoutManager::UpdateVisibilityStateForSystemTrayChange,
-      base::Unretained(this), visibility));
-
-  // OnCenterVisibilityChanged is called when the visibility of system tray
-  // is set, which is before the tray bubble is created/destructed. Meanwhile,
-  // we rely on the state of tray bubble to calculate the auto-hide state.
-  // Use ThreadTaskRunnerHandle to specify that the task runs on the UI thread.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, visibility_update_for_tray_callback_.callback());
-}
 
 void ShelfLayoutManager::SuspendWorkAreaUpdate() {
   ++suspend_work_area_update_;
@@ -1988,6 +1984,12 @@ bool ShelfLayoutManager::IsShelfHiddenForFullscreen() const {
     return false;
   }
 
+  // The shelf should be shown when any bubble in the status area is shown.
+  if (shelf_widget_->status_area_widget() &&
+      shelf_widget_->status_area_widget()->ShouldShowShelf()) {
+    return false;
+  }
+
   const aura::Window* fullscreen_window = GetWindowForFullscreenModeInRoot(
       shelf_widget_->GetNativeWindow()->GetRootWindow());
   return fullscreen_window &&
@@ -2679,18 +2681,34 @@ bool ShelfLayoutManager::IsWindowDragInProgress() const {
   return window_drag_controller_ && window_drag_controller_->drag_started();
 }
 
-void ShelfLayoutManager::UpdateVisibilityStateForSystemTrayChange(
-    message_center::Visibility visibility) {
+void ShelfLayoutManager::UpdateVisibilityStateForTrayBubbleChange(
+    bool bubble_shown) {
   base::Optional<base::AutoReset<bool>> reset;
 
   // Hides the hotseat when the hotseat is in kExtended mode and the system tray
   // shows.
-  if (visibility == message_center::Visibility::VISIBILITY_MESSAGE_CENTER &&
-      hotseat_state() == HotseatState::kExtended) {
+  if (bubble_shown && hotseat_state() == HotseatState::kExtended) {
     reset.emplace(&should_hide_hotseat_, true);
   }
 
   UpdateVisibilityState();
+}
+
+void ShelfLayoutManager::OnShelfTrayBubbleVisibilityChanged(bool bubble_shown) {
+  // Uses base::CancelableOnceClosure to handle two edge cases: (1)
+  // ShelfLayoutManager is destructed before the callback runs. (2) The previous
+  // callback is still pending.
+  visibility_update_for_tray_callback_.Reset(base::BindOnce(
+      &ShelfLayoutManager::UpdateVisibilityStateForTrayBubbleChange,
+      base::Unretained(this), /*bubble_shown=*/bubble_shown));
+
+  // OnShelfTrayBubbleVisibilityChanged is called when the visibility of a
+  // status area tray bubble is set, which is before the tray bubble is
+  // created/destructed. Meanwhile, we rely on the state of tray bubble to
+  // calculate the auto-hide state.
+  // Use ThreadTaskRunnerHandle to specify that the task runs on the UI thread.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, visibility_update_for_tray_callback_.callback());
 }
 
 }  // namespace ash

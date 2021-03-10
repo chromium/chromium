@@ -2812,6 +2812,7 @@ TEST_F(AppListPresenterDelegateTest, TapAutoHideShelfWithAppListOpened) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureTapAt(
       GetPrimaryUnifiedSystemTray()->GetBoundsInScreen().CenterPoint());
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());

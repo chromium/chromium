@@ -53,6 +53,7 @@
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shelf/test/widget_animation_waiter.h"
 #include "ash/shell.h"
+#include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -1064,6 +1065,105 @@ TEST_F(ShelfLayoutManagerTest, OpenAppListWithShelfHiddenState) {
   // Hide the app list and the shelf should be hidden again.
   GetAppListTestHelper()->DismissAndRunLoop();
   GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+}
+
+// With a fullscreen window, ensure the hidden shelf is shown temporarily when
+// the app list is shown and when tray bubbles are shown. Ensure that the shelf
+// is hidden again once tray bubbles are closed.
+TEST_F(ShelfLayoutManagerTest, OpenAppListInFullscreenWithShelfHiddenState) {
+  Shelf* shelf = GetPrimaryShelf();
+  StatusAreaWidget* status_area = shelf->status_area_widget();
+  status_area->ime_menu_tray()->SetVisiblePreferred(true);
+
+  // Create a window and make it full screen; the shelf should be hidden.
+  aura::Window* window = CreateTestWindow();
+  window->SetBounds(gfx::Rect(0, 0, 100, 100));
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->Show();
+  wm::ActivateWindow(window);
+  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+  EXPECT_EQ(WorkspaceWindowState::kFullscreen, GetWorkspaceWindowState());
+  EXPECT_FALSE(GetNonLockScreenContainersContainerLayer()->GetMasksToBounds());
+
+  // Show the app list and the shelf should be temporarily visible.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Click on the ime menu tray button, to show a tray bubble. The shelf
+  // should still be showing and the app list should hide.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(
+      status_area->ime_menu_tray()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  // Click away from the shelf and tray bubble to hide the shelf.
+  generator->MoveMouseTo(10, 10);
+  generator->ClickLeftButton();
+  EXPECT_TRUE(RunVisibilityUpdateForTrayCallback());
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+
+  // Show the app list and the shelf should be temporarily visible.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Click on the unified system tray button, opening the tray and hiding the
+  // app list.
+  EXPECT_FALSE(status_area->IsMessageBubbleShown());
+  generator->MoveMouseTo(
+      status_area->unified_system_tray()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(status_area->IsMessageBubbleShown());
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  // Click away from the shelf and unified system tray to hide the shelf.
+  generator->MoveMouseTo(10, 10);
+  generator->ClickLeftButton();
+  EXPECT_TRUE(RunVisibilityUpdateForTrayCallback());
+  EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
+
+  // Show the app list and the shelf should be temporarily visible.
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Click on the unified system tray button, closing the app list.
+  EXPECT_FALSE(status_area->IsMessageBubbleShown());
+  generator->MoveMouseTo(
+      status_area->unified_system_tray()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(status_area->IsMessageBubbleShown());
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  // Click on the ime menu tray button, to show a tray bubble and close the
+  // unified system tray. The shelf should still be showing.
+  generator->MoveMouseTo(
+      status_area->ime_menu_tray()->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_FALSE(status_area->IsMessageBubbleShown());
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Click away from the shelf and tray bubble to hide the shelf.
+  generator->MoveMouseTo(10, 10);
+  generator->ClickLeftButton();
+  EXPECT_TRUE(RunVisibilityUpdateForTrayCallback());
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 }
 
