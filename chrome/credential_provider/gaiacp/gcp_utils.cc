@@ -11,18 +11,16 @@
 #include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <ntsecapi.h>  // For LsaLookupAuthenticationPackage()
-#include <sddl.h>      // For ConvertSidToStringSid()
-#include <security.h>  // For NEGOSSP_NAME_A
-#include <wbemidl.h>
-
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlcomcli.h>
-
 #include <malloc.h>
 #include <memory.h>
+#include <ntsecapi.h>  // For LsaLookupAuthenticationPackage()
+#include <sddl.h>      // For ConvertSidToStringSid()
+#include <security.h>  // For NEGOSSP_NAME_A
 #include <stdlib.h>
+#include <wbemidl.h>
 
 #include <iomanip>
 #include <memory>
@@ -84,6 +82,11 @@ bool g_use_test_chrome_path = false;
 base::FilePath g_test_chrome_path(L"");
 
 const wchar_t kKernelLibFile[] = L"kernel32.dll";
+const wchar_t kOsRegistryPath[] =
+    L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+const wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
+const wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
+const wchar_t kOsBuildName[] = L"CurrentBuildNumber";
 const int kVersionStringSize = 128;
 
 constexpr wchar_t kDefaultMdmUrl[] =
@@ -1119,15 +1122,7 @@ std::vector<std::string> GetMacAddresses() {
   return mac_addresses;
 }
 
-// The current solution is based on the version of the "kernel32.dll" file. A
-// cleaner alternative would be to use the GetVersionEx API. However, since
-// Windows 8.1 the values returned by that API are dependent on how
-// the application is manifested, and might not be the actual OS version.
-void GetOsVersion(std::string* version) {
-  if (g_use_test_os_version) {
-    *version = g_test_os_version;
-    return;
-  }
+void GetOsVersionFallback(std::string* version) {
   int buffer_size = GetFileVersionInfoSize(kKernelLibFile, nullptr);
   if (buffer_size) {
     std::vector<wchar_t> buffer(buffer_size, 0);
@@ -1148,6 +1143,45 @@ void GetOsVersion(std::string* version) {
       }
     }
   }
+}
+
+// The current solution is based on registries or the version of the
+// "kernel32.dll" file. A cleaner alternative would be to use the GetVersionEx
+// API. However, since Windows 8.1 the values returned by that API are dependent
+// on how the application is manifested, and might not be the actual OS version.
+// The format of the OS version is <Major>.<Minor>.<BuildNumber>. Eg: 10.0.18363
+void GetOsVersion(std::string* version) {
+  if (g_use_test_os_version) {
+    *version = g_test_os_version;
+    return;
+  }
+
+  // Fetching Windows version from registries.
+  // https://stackoverflow.com/questions/32729244
+  // https://stackoverflow.com/questions/31072543
+  DWORD major;
+  DWORD minor;
+  wchar_t build[32];
+  ULONG length = base::size(build);
+
+  HRESULT hr1 = GetMachineRegDWORD(kOsRegistryPath, kOsMajorName, &major);
+  HRESULT hr2 = GetMachineRegDWORD(kOsRegistryPath, kOsMinorName, &minor);
+  HRESULT hr3 =
+      GetMachineRegString(kOsRegistryPath, kOsBuildName, build, &length);
+
+  if (SUCCEEDED(hr1) && SUCCEEDED(hr2) && SUCCEEDED(hr3)) {
+    char version_buffer[kVersionStringSize];
+    snprintf(version_buffer, kVersionStringSize, "%lu.%lu.%ls", major, minor,
+             build);
+    *version = version_buffer;
+    return;
+  }
+  LOGFN(ERROR) << "Error while fetching Os version hr=" << hr1 << "," << hr2
+               << "," << hr3;
+
+  // Try getting the version from kernel.dll in case there is a issue with
+  // getting OS version from registries.
+  GetOsVersionFallback(version);
 }
 
 HRESULT GenerateDeviceId(std::string* device_id) {

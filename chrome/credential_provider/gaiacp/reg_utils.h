@@ -243,6 +243,11 @@ HRESULT SetMachineRegString(const std::wstring& key_name,
                             const std::wstring& name,
                             const std::wstring& value);
 
+// Sets DWORD value at registry path key_name/name.
+HRESULT SetMachineRegDWORD(const std::wstring& key_name,
+                           const std::wstring& name,
+                           DWORD value);
+
 // Set corresponding registry entry that would make GCPW as the default
 // credential provider.
 HRESULT MakeGcpwDefaultCP();

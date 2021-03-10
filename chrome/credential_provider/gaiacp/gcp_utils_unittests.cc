@@ -39,6 +39,28 @@ TEST(GcpPasswordTest, GenerateRandomPassword) {
   }
 }
 
+TEST(GcpOsVersionTest, GetOsFromRegistries) {
+  registry_util::RegistryOverrideManager registry_override_;
+  InitializeRegistryOverrideForTesting(&registry_override_);
+  wchar_t kOsRegistryPath[] =
+      L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+  wchar_t kOsMajorName[] = L"CurrentMajorVersionNumber";
+  wchar_t kOsMinorName[] = L"CurrentMinorVersionNumber";
+  wchar_t kOsBuildName[] = L"CurrentBuildNumber";
+  wchar_t kOsBuild[] = L"10819";
+  DWORD major = 15;
+  DWORD minor = 1;
+
+  SetMachineRegDWORD(kOsRegistryPath, kOsMajorName, major);
+  SetMachineRegDWORD(kOsRegistryPath, kOsMinorName, minor);
+  SetMachineRegString(kOsRegistryPath, kOsBuildName, kOsBuild);
+
+  std::string version;
+  GetOsVersion(&version);
+
+  ASSERT_EQ(version, "15.1.10819");
+}
+
 class GcpProcHelperTest : public ::testing::Test {
  protected:
   void CreateHandle(base::win::ScopedHandle* handle);

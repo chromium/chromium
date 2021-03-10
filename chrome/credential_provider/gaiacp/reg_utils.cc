@@ -87,21 +87,6 @@ constexpr wchar_t kDefaultCredProviderKey[] = L"DefaultCredentialProvider";
 constexpr wchar_t kEnrollmentRegKey[] = L"SOFTWARE\\Google\\Enrollment";
 constexpr wchar_t kDmTokenRegKey[] = L"dmtoken";
 
-HRESULT SetMachineRegDWORD(const std::wstring& key_name,
-                           const std::wstring& name,
-                           DWORD value) {
-  base::win::RegKey key;
-  LONG sts = key.Create(HKEY_LOCAL_MACHINE, key_name.c_str(), KEY_WRITE);
-  if (sts != ERROR_SUCCESS)
-    return HRESULT_FROM_WIN32(sts);
-
-  sts = key.WriteValue(name.c_str(), value);
-  if (sts != ERROR_SUCCESS)
-    return HRESULT_FROM_WIN32(sts);
-
-  return S_OK;
-}
-
 HRESULT SetMachineRegBinaryInternal(const std::wstring& key_name,
                                     const std::wstring& name,
                                     const std::string& value,
@@ -136,6 +121,21 @@ std::wstring GetAccountPictureRegPathForUSer(const std::wstring& user_sid) {
 }
 
 }  // namespace
+
+HRESULT SetMachineRegDWORD(const std::wstring& key_name,
+                           const std::wstring& name,
+                           DWORD value) {
+  base::win::RegKey key;
+  LONG sts = key.Create(HKEY_LOCAL_MACHINE, key_name.c_str(), KEY_WRITE);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  sts = key.WriteValue(name.c_str(), value);
+  if (sts != ERROR_SUCCESS)
+    return HRESULT_FROM_WIN32(sts);
+
+  return S_OK;
+}
 
 HRESULT MakeGcpwDefaultCP() {
   if (GetGlobalFlagOrDefault(kMakeGcpwDefaultCredProvider, 1))
