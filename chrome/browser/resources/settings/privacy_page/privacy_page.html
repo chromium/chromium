@@ -398,7 +398,7 @@
               <settings-radio-group
                   pref="{{prefs.plugins.always_open_pdf_externally}}"
                   selectable-elements="settings-collapse-radio-button">
-                <!-- TODO(1113642): Apply actual strings and new off icon. -->
+                <!-- TODO(1113642): Apply actual strings. -->
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.plugins.always_open_pdf_externally]]"
                     label="$i18n{siteSettingsAllow}"
@@ -411,7 +411,7 @@
                     label="$i18n{siteSettingsBlock}"
                     name="false"
                     disabled$="[[isGuest_]]"
-                    icon="settings:pdf">
+                    icon="settings:pdf-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </div>
@@ -850,15 +850,15 @@
           <settings-subpage page-title="$i18n{siteSettingsBluetoothDevices}">
             <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
               <div class="content-settings-header">
-                <h2>$i18n{siteSettingsBluetoothDevices}</h2>
+                <h2>$i18n{siteSettingsBluetoothDevicesDescription}</h2>
               </div>
-              <!-- TODO(1113642): Apply actual strings. -->
               <settings-category-default-radio-group
                     category="[[ContentSettingsTypes.BLUETOOTH_DEVICES]]"
                     allow-option-label=
-                        "$i18n{siteSettingsAllow}"
+                        "$i18n{siteSettingsBluetoothDevicesAllowed}"
                     allow-option-icon="settings:bluetooth"
-                    block-option-label="$i18n{siteSettingsBlock}"
+                    block-option-label=
+                        "$i18n{siteSettingsBluetoothDevicesBlocked}"
                     block-option-icon="settings:bluetooth-off">
             </settings-category-default-radio-group>
             </template>
@@ -922,16 +922,15 @@
         <settings-subpage page-title="$i18n{siteSettingsHidDevices}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
             <div class="content-settings-header">
-              <h2>$i18n{siteSettingsHidDevices}</h2>
+              <h2>$i18n{siteSettingsHidDevicesDescription}</h2>
             </div>
-            <!-- TODO(1113642): Apply actual strings. -->
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.HID_DEVICES]]"
                 allow-option-label=
-                    "$i18n{siteSettingsAllow}"
+                    "$i18n{siteSettingsHidDevicesAllowed}"
                 allow-option-icon="settings:hid-device"
                 block-option-label=
-                    "$i18n{siteSettingsBlock}"
+                    "$i18n{siteSettingsHidDevicesBlocked}"
                 block-option-icon="settings:hid-device-off">
             </settings-category-default-radio-group>
           </template>
@@ -978,8 +977,7 @@
 </if>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
             <div class="radio-group">
-              <!-- TODO(1113642): Apply actual strings and new off icon. -->
-              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsProtectedContentDescription}</h2>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
@@ -989,17 +987,17 @@
                 selectable-elements="settings-collapse-radio-button">
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
-                    label="$i18n{siteSettingsAllow}"
+                    label="$i18n{siteSettingsProtectedContentAllowed}"
                     name="true"
                     disabled$="[[isGuest_]]"
                     icon="settings:protected-content">
                 </settings-collapse-radio-button>
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
-                    label="$i18n{siteSettingsBlock}"
+                    label="$i18n{siteSettingsProtectedContentBlocked}"
                     name="false"
                     disabled$="[[isGuest_]]"
-                    icon="settings:protected-content">
+                    icon="settings:protected-content-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </div>
@@ -1015,8 +1013,7 @@
 <if expr="chromeos or is_win">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
              <div class="radio-group">
-              <!-- TODO(1113642): Apply actual strings and new off icon. -->
-              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <h2>$i18n{siteSettingsProtectedContentDescription}</h2>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
@@ -1026,17 +1023,17 @@
                 selectable-elements="settings-collapse-radio-button">
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.settings.privacy.drm_enabled]]"
-                    label="$i18n{siteSettingsAllow}"
+                    label="$i18n{siteSettingsProtectedContentAllowed}"
                     name="true"
                     disabled$="[[isGuest_]]"
                     icon="settings:protected-content">
                 </settings-collapse-radio-button>
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.settings.privacy.drm_enabled]]"
-                    label="$i18n{siteSettingsBlock}"
+                    label="$i18n{siteSettingsProtectedContentBlocked}"
                     name="false"
                     disabled$="[[isGuest_]]"
-                    icon="settings:protected-content">
+                    icon="settings:protected-content-off">
                 </settings-collapse-radio-button>
               </settings-radio-group>
             </div>
@@ -1273,7 +1270,7 @@
                 allow-option-label="$i18n{siteSettingsIdleDetectionAsk}"
                 allow-option-icon="settings:devices"
                 block-option-label="$i18n{siteSettingsIdleDetectionBlock}"
-                block-option-icon="settings:devices">
+                block-option-icon="settings:devices-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.IDLE_DETECTION]]"
