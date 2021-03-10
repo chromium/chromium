@@ -50,14 +50,14 @@ TEST(StoragePartitionImplMapTest, GarbageCollect) {
 }
 
 TEST(StoragePartitionImplMapTest, AppCacheCleanup) {
-  const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
-      "foo", /*partition_name=*/"", /*in_memory=*/false);
-
   base::test::ScopedFeatureList f;
   f.InitAndDisableFeature(blink::features::kAppCache);
   BrowserTaskEnvironment task_environment;
   TestBrowserContext browser_context;
   base::FilePath appcache_path;
+
+  const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
+      &browser_context, "foo", /*partition_name=*/"", /*in_memory=*/false);
 
   {
     // Creating the partition in the map also does the deletion, so

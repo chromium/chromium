@@ -44,7 +44,7 @@ class TestBrowserClient : public ContentBrowserClient {
     DCHECK(browser_context);
     auto partition_num = std::to_string(++partition_count_);
     return StoragePartitionConfig::Create(
-        std::string("PartitionDomain") + partition_num,
+        browser_context, std::string("PartitionDomain") + partition_num,
         std::string("Partition") + partition_num, false /* in_memory */);
   }
 

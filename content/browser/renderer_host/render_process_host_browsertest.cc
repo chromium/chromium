@@ -498,12 +498,12 @@ class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
       const GURL& site) override {
     // Override for |site_to_isolate_|.
     if (site == site_to_isolate_) {
-      return StoragePartitionConfig::Create("blah_isolated_storage",
-                                            "blah_isolated_storage",
-                                            false /* in_memory */);
+      return StoragePartitionConfig::Create(
+          browser_context, "blah_isolated_storage", "blah_isolated_storage",
+          false /* in_memory */);
     }
 
-    return StoragePartitionConfig::CreateDefault();
+    return StoragePartitionConfig::CreateDefault(browser_context);
   }
 
   std::string GetStoragePartitionIdForSite(BrowserContext* browser_context,

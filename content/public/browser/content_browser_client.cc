@@ -534,7 +534,7 @@ StoragePartitionConfig ContentBrowserClient::GetStoragePartitionConfigForSite(
     const GURL& site) {
   DCHECK(browser_context);
 
-  return StoragePartitionConfig::CreateDefault();
+  return StoragePartitionConfig::CreateDefault(browser_context);
 }
 
 MediaObserver* ContentBrowserClient::GetMediaObserver() {

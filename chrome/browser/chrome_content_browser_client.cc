@@ -1445,11 +1445,11 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
   // Default to the browser-wide storage partition and override based on |site|
   // below.
   content::StoragePartitionConfig storage_partition_config =
-      content::StoragePartitionConfig::CreateDefault();
+      content::StoragePartitionConfig::CreateDefault(browser_context);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (extensions::WebViewGuest::GetGuestPartitionConfigForSite(
-          site, &storage_partition_config)) {
+          browser_context, site, &storage_partition_config)) {
     return storage_partition_config;
   }
 

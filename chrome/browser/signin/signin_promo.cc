@@ -94,7 +94,8 @@ GURL GetAddAccountURLForDice(const std::string& email,
 content::StoragePartition* GetSigninPartition(
     content::BrowserContext* browser_context) {
   const auto signin_partition_config = content::StoragePartitionConfig::Create(
-      "chrome-signin", /* partition_name= */ "", /* in_memory= */ true);
+      browser_context, "chrome-signin", /* partition_name= */ "",
+      /* in_memory= */ true);
   return content::BrowserContext::GetStoragePartition(browser_context,
                                                       signin_partition_config);
 }

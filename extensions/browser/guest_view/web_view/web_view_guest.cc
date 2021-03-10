@@ -272,6 +272,7 @@ GuestViewBase* WebViewGuest::Create(WebContents* owner_web_contents) {
 
 // static
 bool WebViewGuest::GetGuestPartitionConfigForSite(
+    content::BrowserContext* browser_context,
     const GURL& site,
     content::StoragePartitionConfig* storage_partition_config) {
   if (!site.SchemeIs(content::kGuestScheme))
@@ -296,7 +297,7 @@ bool WebViewGuest::GetGuestPartitionConfigForSite(
   bool in_memory = (site.path() != "/persist");
 
   *storage_partition_config = content::StoragePartitionConfig::Create(
-      site.host(), partition_name, in_memory);
+      browser_context, site.host(), partition_name, in_memory);
   // A <webview> inside a chrome app needs to be able to resolve Blob URLs that
   // were created by the chrome app. The chrome app has the same
   // partition_domain but empty partition_name. Setting this flag on the
@@ -390,6 +391,8 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
                                      WebContentsCreatedCallback callback) {
   RenderProcessHost* owner_render_process_host =
       owner_web_contents()->GetMainFrame()->GetProcess();
+  DCHECK_EQ(browser_context(), owner_render_process_host->GetBrowserContext());
+
   std::string storage_partition_id;
   bool persist_storage = false;
   ParsePartitionParam(create_params, &storage_partition_id, &persist_storage);
@@ -405,15 +408,15 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
   }
   std::string partition_domain = GetOwnerSiteURL().host();
   auto partition_config = content::StoragePartitionConfig::Create(
-      partition_domain, storage_partition_id, !persist_storage /* in_memory */);
+      browser_context(), partition_domain, storage_partition_id,
+      !persist_storage /* in_memory */);
 
   if (GetOwnerSiteURL().SchemeIs(extensions::kExtensionScheme)) {
     auto owner_config =
         extensions::util::GetStoragePartitionConfigForExtensionId(
-            GetOwnerSiteURL().host(),
-            owner_render_process_host->GetBrowserContext());
-    if (owner_render_process_host->GetBrowserContext()->IsOffTheRecord()) {
-      owner_config = owner_config.CopyWithInMemorySet();
+            GetOwnerSiteURL().host(), browser_context());
+    if (browser_context()->IsOffTheRecord()) {
+      DCHECK(owner_config.in_memory());
     }
     if (!owner_config.is_default()) {
       partition_config.set_fallback_to_partition_domain_for_blob_urls(
@@ -431,20 +434,19 @@ void WebViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
   // If we already have a webview tag in the same app using the same storage
   // partition, we should use the same SiteInstance so the existing tag and
   // the new tag can script each other.
-  auto* guest_view_manager = GuestViewManager::FromBrowserContext(
-      owner_render_process_host->GetBrowserContext());
+  auto* guest_view_manager =
+      GuestViewManager::FromBrowserContext(browser_context());
   scoped_refptr<content::SiteInstance> guest_site_instance =
       guest_view_manager->GetGuestSiteInstance(guest_site);
   if (!guest_site_instance) {
     // Create the SiteInstance in a new BrowsingInstance, which will ensure
     // that webview tags are also not allowed to send messages across
     // different partitions.
-    guest_site_instance = content::SiteInstance::CreateForGuest(
-        owner_render_process_host->GetBrowserContext(), guest_site);
+    guest_site_instance =
+        content::SiteInstance::CreateForGuest(browser_context(), guest_site);
   }
-  WebContents::CreateParams params(
-      owner_render_process_host->GetBrowserContext(),
-      std::move(guest_site_instance));
+  WebContents::CreateParams params(browser_context(),
+                                   std::move(guest_site_instance));
   params.guest_delegate = this;
   // TODO(erikchen): Fix ownership semantics for guest views.
   // https://crbug.com/832879.
@@ -1067,8 +1069,9 @@ void WebViewGuest::ReportFrameNameChange(const std::string& name) {
 void WebViewGuest::PushWebViewStateToIOThread() {
   const GURL& site_url = web_contents()->GetSiteInstance()->GetSiteURL();
   content::StoragePartitionConfig storage_partition_config =
-      content::StoragePartitionConfig::CreateDefault();
-  if (!GetGuestPartitionConfigForSite(site_url, &storage_partition_config)) {
+      content::StoragePartitionConfig::CreateDefault(browser_context());
+  if (!GetGuestPartitionConfigForSite(browser_context(), site_url,
+                                      &storage_partition_config)) {
     NOTREACHED();
     return;
   }

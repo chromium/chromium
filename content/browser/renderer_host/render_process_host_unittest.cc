@@ -851,11 +851,12 @@ class StoragePartitionContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& site) override {
     if (site == site_) {
-      return StoragePartitionConfig::Create(partition_domain_, partition_name_,
+      return StoragePartitionConfig::Create(browser_context, partition_domain_,
+                                            partition_name_,
                                             false /* in_memory */);
     }
 
-    return StoragePartitionConfig::CreateDefault();
+    return StoragePartitionConfig::CreateDefault(browser_context);
   }
 
   GURL site_;

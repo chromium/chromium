@@ -125,10 +125,11 @@ content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
     // the |partition_domain|. The |in_memory| and |partition_name| are only
     // used in guest schemes so they are cleared here.
     return content::StoragePartitionConfig::Create(
-        extension_id, std::string() /* partition_name */, false /*in_memory */);
+        browser_context, extension_id, std::string() /* partition_name */,
+        false /*in_memory */);
   }
 
-  return content::StoragePartitionConfig::CreateDefault();
+  return content::StoragePartitionConfig::CreateDefault(browser_context);
 }
 
 content::StoragePartition* GetStoragePartitionForExtensionId(

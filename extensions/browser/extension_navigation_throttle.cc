@@ -210,10 +210,16 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
           registry->enabled_extensions().GetByID(owner_extension_id);
 
       content::StoragePartitionConfig storage_partition_config =
-          content::StoragePartitionConfig::CreateDefault();
-      bool is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
-          navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
-          &storage_partition_config);
+          content::StoragePartitionConfig::CreateDefault(browser_context);
+      bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
+      if (is_guest) {
+        is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
+            browser_context,
+            navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
+            &storage_partition_config);
+      }
+      CHECK_EQ(is_guest,
+               navigation_handle()->GetStartingSiteInstance()->IsGuest());
 
       bool allowed = true;
       url_request_util::AllowCrossRendererResourceLoadHelper(

@@ -221,7 +221,8 @@ StoragePartition* BrowserContext::GetStoragePartition(
     bool can_create) {
   if (!site_instance) {
     return GetStoragePartition(
-        browser_context, StoragePartitionConfig::CreateDefault(), can_create);
+        browser_context, StoragePartitionConfig::CreateDefault(browser_context),
+        can_create);
   }
 
   return GetStoragePartitionForSite(browser_context,
@@ -235,11 +236,12 @@ StoragePartition* BrowserContext::GetStoragePartition(
   StoragePartitionImplMap* partition_map =
       GetStoragePartitionMap(browser_context);
 
-  auto config_to_use = storage_partition_config;
-  if (browser_context->IsOffTheRecord())
-    config_to_use = storage_partition_config.CopyWithInMemorySet();
+  if (browser_context->IsOffTheRecord()) {
+    // An off the record profile MUST only use in memory storage partitions.
+    CHECK(storage_partition_config.in_memory());
+  }
 
-  return partition_map->Get(config_to_use, can_create);
+  return partition_map->Get(storage_partition_config, can_create);
 }
 
 StoragePartition* BrowserContext::GetStoragePartitionForSite(
@@ -276,8 +278,8 @@ size_t BrowserContext::GetStoragePartitionCount(
 
 StoragePartition* BrowserContext::GetDefaultStoragePartition(
     BrowserContext* browser_context) {
-  return GetStoragePartition(browser_context,
-                             StoragePartitionConfig::CreateDefault());
+  return GetStoragePartition(
+      browser_context, StoragePartitionConfig::CreateDefault(browser_context));
 }
 
 // static

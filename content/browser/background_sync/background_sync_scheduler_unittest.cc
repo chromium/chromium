@@ -42,8 +42,8 @@ class TestBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& site) override {
     return content::StoragePartitionConfig::Create(
-        "PartitionDomain" + site.spec(), "Partition" + site.spec(),
-        false /* in_memory */);
+        browser_context, "PartitionDomain" + site.spec(),
+        "Partition" + site.spec(), false /* in_memory */);
   }
 };
 

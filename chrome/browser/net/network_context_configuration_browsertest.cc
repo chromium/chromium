@@ -313,9 +313,10 @@ class NetworkContextConfigurationBrowserTest
   content::StoragePartition* GetStoragePartitionForContextType(
       NetworkContextType network_context_type) {
     const auto kOnDiskConfig = content::StoragePartitionConfig::Create(
-        "foo", /*partition_name=*/"", /*in_memory=*/false);
+        browser()->profile(), "foo", /*partition_name=*/"",
+        /*in_memory=*/false);
     const auto kInMemoryConfig = content::StoragePartitionConfig::Create(
-        "foo", /*partition_name=*/"", /*in_memory=*/true);
+        browser()->profile(), "foo", /*partition_name=*/"", /*in_memory=*/true);
 
     switch (network_context_type) {
       case NetworkContextType::kSystem:
@@ -335,10 +336,19 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kInMemoryApp:
         return content::BrowserContext::GetStoragePartition(
             browser()->profile(), kInMemoryConfig);
-      case NetworkContextType::kOnDiskAppWithIncognitoProfile:
+      case NetworkContextType::kOnDiskAppWithIncognitoProfile: {
         DCHECK(incognito_);
+        // Note: Even though we are requesting an on-disk config, the function
+        // will return an in-memory config because incognito profiles are not
+        // supposed to to use on-disk storage.
+        const auto kIncognitoConfig = content::StoragePartitionConfig::Create(
+            incognito_->profile(), "foo", /*partition_name=*/"",
+            /*in_memory=*/false);
+        DCHECK(kIncognitoConfig.in_memory());
+
         return content::BrowserContext::GetStoragePartition(
-            incognito_->profile(), kOnDiskConfig);
+            incognito_->profile(), kIncognitoConfig);
+      }
     }
     NOTREACHED();
     return nullptr;

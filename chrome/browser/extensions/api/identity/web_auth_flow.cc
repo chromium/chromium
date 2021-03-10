@@ -153,7 +153,8 @@ content::StoragePartitionConfig WebAuthFlow::GetWebViewPartitionConfig(
   // This has to mirror the logic in WebViewGuest::CreateWebContents for
   // creating the correct StoragePartitionConfig.
   auto result = content::StoragePartitionConfig::Create(
-      extension_misc::kIdentityApiUiAppId, GetPartitionName(partition),
+      browser_context, extension_misc::kIdentityApiUiAppId,
+      GetPartitionName(partition),
       /*in_memory=*/true);
   result.set_fallback_to_partition_domain_for_blob_urls(
       browser_context->IsOffTheRecord()
