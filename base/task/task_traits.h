@@ -113,7 +113,10 @@ enum class TaskShutdownBehavior : uint8_t {
   // until they're executed. Generally, this should be used only to save
   // critical user data.
   //
-  // Note: Background threads will be promoted to normal threads at shutdown
+  // Note 1: Delayed tasks cannot block shutdown. Delayed tasks posted as part
+  // of a BLOCK_SHUTDOWN sequence will behave like SKIP_ON_SHUTDOWN tasks.
+  //
+  // Note 2: Background threads will be promoted to normal threads at shutdown
   // (i.e. TaskPriority::BEST_EFFORT + TaskShutdownBehavior::BLOCK_SHUTDOWN will
   // resolve without a priority inversion).
   BLOCK_SHUTDOWN,

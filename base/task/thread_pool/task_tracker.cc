@@ -370,8 +370,13 @@ bool TaskTracker::WillPostTask(Task* task,
 }
 
 bool TaskTracker::WillPostTaskNow(const Task& task, TaskPriority priority) {
+  // Delayed tasks's TaskShutdownBehavior is implicitly capped at
+  // SKIP_ON_SHUTDOWN. i.e. it cannot BLOCK_SHUTDOWN, TaskTracker will not wait
+  // for a delayed task in a BLOCK_SHUTDOWN TaskSource and will also skip
+  // delayed tasks that happen to become ripe during shutdown.
   if (!task.delayed_run_time.is_null() && state_->HasShutdownStarted())
     return false;
+
   if (has_log_best_effort_tasks_switch_ &&
       priority == TaskPriority::BEST_EFFORT) {
     // A TaskPriority::BEST_EFFORT task is being posted.
