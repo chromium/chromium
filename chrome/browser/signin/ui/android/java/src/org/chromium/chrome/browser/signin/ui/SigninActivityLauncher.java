@@ -46,13 +46,6 @@ public interface SigninActivityLauncher {
     void launchActivityForPromoAddAccountFlow(Context context, @SigninAccessPoint int accessPoint);
 
     /**
-     * Launches a {@link SigninActivity}.
-     * @param context A {@link Context} object.
-     * @param accessPoint {@link SigninAccessPoint} enum value representing.
-     */
-    void launchActivity(Context context, @SigninAccessPoint int accessPoint);
-
-    /**
      * Launches the {@link SigninActivity} if signin is allowed.
      * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.

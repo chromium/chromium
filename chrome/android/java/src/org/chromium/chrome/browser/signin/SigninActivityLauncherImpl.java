@@ -27,7 +27,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     /**
      * Singleton instance getter
      */
-    public static SigninActivityLauncherImpl get() {
+    public static SigninActivityLauncher get() {
         if (sLauncher == null) {
             sLauncher = new SigninActivityLauncherImpl();
         }
@@ -78,15 +78,6 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     }
 
     /**
-     * Launches the signin activity.
-     * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
-     */
-    @Override
-    public void launchActivity(Context context, @SigninAccessPoint int accessPoint) {
-        launchInternal(context, SigninFragmentBase.createArguments(accessPoint, null));
-    }
-
-    /**
      * Launches the {@link SigninActivity} if signin is allowed.
      * @param context A {@link Context} object.
      * @param accessPoint {@link SigninAccessPoint} for starting sign-in flow.
@@ -97,7 +88,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         if (signinManager.isSignInAllowed()) {
-            launchActivity(context, accessPoint);
+            launchInternal(context, SigninFragmentBase.createArguments(accessPoint, null));
             return true;
         }
         if (signinManager.isSigninDisabledByPolicy()) {

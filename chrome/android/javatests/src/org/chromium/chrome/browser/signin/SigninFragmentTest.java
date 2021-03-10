@@ -320,7 +320,7 @@ public class SigninFragmentTest {
                 new HistogramDelta("Signin.SigninStartedAccessPoint", SigninAccessPoint.SETTINGS);
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
-                    SigninActivityLauncherImpl.get().launchActivity(
+                    SigninActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
                 });
         onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
