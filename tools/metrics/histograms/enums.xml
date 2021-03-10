@@ -5888,6 +5888,13 @@ others/histograms.xml -->
       label="Not migrated (Unexpected primary account id with email format)."/>
 </enum>
 
+<enum name="AutofillOfferNotificationBubbleResult">
+  <int value="0" label="User closed bubble via OK button"/>
+  <int value="1" label="User closed bubble via corner X"/>
+  <int value="2" label="User did not interact with the bubble"/>
+  <int value="3" label="Bubble lost focus and was deactivated"/>
+</enum>
+
 <enum name="AutofillPredictionSource">
   <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
   <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>

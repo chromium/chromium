@@ -78,6 +78,8 @@ class OfferNotificationBubbleControllerImpl
     observer_for_testing_ = observer;
   }
 
+  // Denotes whether the bubble is shown due to user gesture. If this is true,
+  // it means the bubble is a reshown bubble.
   bool is_user_gesture_ = false;
 
   // The related credit card for a card linked offer. This can be nullopt for
