@@ -52,12 +52,7 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
  private:
   // Handles requests to get samples from the provided buffer.  This will be
   // called by the audio server when it has samples ready.
-  static int SamplesReady(cras_client* client,
-                          cras_stream_id_t stream_id,
-                          uint8_t* samples,
-                          size_t frames,
-                          const timespec* sample_ts,
-                          void* arg);
+  static int SamplesReady(struct libcras_stream_cb_data* data);
 
   // Handles notification that there was an error with the playback stream.
   static int StreamError(cras_client* client,
@@ -67,7 +62,7 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
 
   // Reads one or more buffers of audio from the device, passes on to the
   // registered callback. Called from SamplesReady().
-  void ReadAudio(size_t frames, uint8_t* buffer, const timespec* sample_ts);
+  void ReadAudio(size_t frames, uint8_t* buffer, const timespec* latency_ts);
 
   // Deals with an error that occured in the stream.  Called from StreamError().
   void NotifyStreamError(int err);
@@ -88,14 +83,11 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream> {
   // the manager from that thread.
   AudioManagerCrasBase* const audio_manager_;
 
-  // Size of frame in bytes.
-  uint32_t bytes_per_frame_;
-
   // Callback to pass audio samples too, valid while recording.
   AudioInputCallback* callback_;
 
   // The client used to communicate with the audio server.
-  cras_client* client_;
+  struct libcras_client* client_;
 
   // PCM parameters for the stream.
   const AudioParameters params_;
