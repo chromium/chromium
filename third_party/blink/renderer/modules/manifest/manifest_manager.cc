@@ -212,6 +212,11 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
     UseCounter::Count(GetSupplementable(),
                       WebFeature::kWebAppManifestCaptureLinks);
   }
+
+  if (!manifest.url_handlers.IsEmpty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestUrlHandlers);
+  }
 }
 
 void ManifestManager::ResolveCallbacks(ResolveState state) {

@@ -3158,6 +3158,7 @@ enum WebFeature {
   kV8ScreenAdvanced_PointerTypes_AttributeGetter = 3848,
   kV8ScreenAdvanced_Label_AttributeGetter = 3849,
   kPermissionsPolicyHeader = 3850,
+  kWebAppManifestUrlHandlers = 3851,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
