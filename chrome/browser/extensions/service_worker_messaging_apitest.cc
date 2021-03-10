@@ -202,22 +202,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests chrome.runtime.sendNativeMessage from SW extension to a native
-// messaging host.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, NativeMessagingBasic) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("service_worker/messaging/send_native_message"))
-      << message_;
-}
-
-// Tests chrome.runtime.connectNative from SW extension to a native messaging
-// host.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, ConnectNative) {
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
-  ASSERT_TRUE(RunExtensionTest("service_worker/messaging/connect_native"))
-      << message_;
-}
-
 // Regression test for https://crbug.com/1176400.
 // Tests that service worker shutdown closes messaging channel properly.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,

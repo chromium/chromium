@@ -66,6 +66,7 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          NativeMessagingLazyApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+// Tests chrome.runtime.sendNativeMessage to a native messaging host.
 IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, NativeMessagingBasic) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
   ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
@@ -74,6 +75,18 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, NativeMessagingBasic) {
 IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, UserLevelNativeMessaging) {
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
   ASSERT_TRUE(RunLazyTest("native_messaging_lazy")) << message_;
+}
+
+// Tests chrome.runtime.connectNative to a native messaging host.
+IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest, ConnectNative) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
+  ASSERT_TRUE(RunLazyTest("native_messaging_connect_lazy")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(NativeMessagingLazyApiTest,
+                       UserLevelNativeMessagingConnectNative) {
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(true));
+  ASSERT_TRUE(RunLazyTest("native_messaging_connect_lazy")) << message_;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
