@@ -168,7 +168,7 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
   // of the main frame.
   if (IsA<LayoutView>(layer.GetLayoutObject())) {
     const auto* frame = layer.GetLayoutObject().GetFrame();
-    if (frame && frame->IsMainFrame() && !frame->ClipsContent())
+    if (frame && !frame->ClipsContent())
       return true;
   }
   return false;
