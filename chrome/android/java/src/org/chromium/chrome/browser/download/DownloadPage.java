@@ -4,21 +4,27 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.app.Activity;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactoryHelper;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Native page for managing downloads handled through Chrome.
@@ -32,23 +38,31 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     /**
      * Create a new instance of the downloads page.
      * @param activity The activity to get context and manage fragments.
+     * @param snackbarManager The {@link SnackbarManager} to show snack bars.
+     * @param modalDialogManager The {@link ModalDialogManager} associated with the activity.
+     * @param tabModelSelectorSupplier A supplier for retrieving the {@link TabModelSelector}.
      * @param host A NativePageHost to load urls.
      */
-    public DownloadPage(ChromeActivity activity, NativePageHost host) {
+    public DownloadPage(Activity activity, SnackbarManager snackbarManager,
+            ModalDialogManager modalDialogManager,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier, NativePageHost host) {
         super(host);
 
         ThreadUtils.assertOnUiThread();
+        boolean isIncognito = tabModelSelectorSupplier.get().getCurrentModel().isIncognito();
+        OTRProfileID otrProfileId =
+                tabModelSelectorSupplier.get().getCurrentModel().getProfile().getOTRProfileID();
+
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setIsOffTheRecord(activity.getCurrentTabModel().isIncognito())
-                        .setOTRProfileID(
-                                activity.getCurrentTabModel().getProfile().getOTRProfileID())
+                        .setIsOffTheRecord(isIncognito)
+                        .setOTRProfileID(otrProfileId)
                         .setIsSeparateActivity(false)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .build();
 
         mDownloadCoordinator = DownloadManagerCoordinatorFactoryHelper.create(
-                activity, config, activity.getSnackbarManager(), activity.getModalDialogManager());
+                activity, config, snackbarManager, modalDialogManager);
 
         mDownloadCoordinator.addObserver(this);
         mTitle = activity.getString(R.string.menu_downloads);
@@ -60,7 +74,7 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
         // resumed.
         mActivityStateListener = (activity1, newState) -> {
             if (newState == ActivityState.RESUMED) {
-                Profile profile = activity.getCurrentTabModel().getProfile();
+                Profile profile = tabModelSelectorSupplier.get().getCurrentModel().getProfile();
                 ProfileKey profileKey = profile == null ? ProfileKey.getLastUsedRegularProfileKey()
                                                         : profile.getProfileKey();
                 DownloadUtils.checkForExternallyRemovedDownloads(profileKey);

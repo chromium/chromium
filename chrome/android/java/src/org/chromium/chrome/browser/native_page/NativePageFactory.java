@@ -104,7 +104,9 @@ public class NativePageFactory {
         }
 
         protected NativePage buildDownloadsPage(Tab tab) {
-            return new DownloadPage(mActivity, new TabShim(tab, mActivity));
+            return new DownloadPage(mActivity, mActivity.getSnackbarManager(),
+                    mActivity.getModalDialogManager(), mActivity.getTabModelSelectorSupplier(),
+                    new TabShim(tab, mActivity));
         }
 
         protected NativePage buildExploreSitesPage(Tab tab) {
