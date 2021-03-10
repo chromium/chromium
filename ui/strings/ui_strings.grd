@@ -28,6 +28,7 @@ need to be translated for each locale.-->
       <output filename="ui_strings_hy.pak" type="data_package" lang="hy" />
       <output filename="ui_strings_is.pak" type="data_package" lang="is" />
       <output filename="ui_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="ui_strings_kab.pak" type="data_package" lang="kab" />    
       <output filename="ui_strings_kk.pak" type="data_package" lang="kk" />
       <output filename="ui_strings_km.pak" type="data_package" lang="km" />
       <output filename="ui_strings_ky.pak" type="data_package" lang="ky" />
@@ -153,6 +154,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_iw.xtb" lang="he" />
     <file path="translations/ui_strings_ja.xtb" lang="ja" />
     <file path="translations/ui_strings_ka.xtb" lang="ka" />
+    <file path="translations/ui_strings_kab.xtb" lang="kab" />    
     <file path="translations/ui_strings_kk.xtb" lang="kk" />
     <file path="translations/ui_strings_km.xtb" lang="km" />
     <file path="translations/ui_strings_kn.xtb" lang="kn" />
