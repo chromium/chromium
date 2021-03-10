@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * Super class for all custom elements defined in the tab strip.
+ * @fileoverview Base class for Web Components that don't use Polymer.
+ * See the following file for usage:
+ * chrome/test/data/webui/js/custom_element_test.js
  */
 export class CustomElement extends HTMLElement {
   constructor() {

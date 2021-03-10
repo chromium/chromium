@@ -46,7 +46,6 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "custom_element.js",
     "drag_manager.js",
     "tab_strip_embedder_proxy.js",
     "tab_swiper.js",
@@ -89,7 +88,6 @@ js_type_check("closure_compile") {
   deps = [
     ":alert_indicator",
     ":alert_indicators",
-    ":custom_element",
     ":drag_manager",
     ":tab",
     ":tab_group",
@@ -102,8 +100,8 @@ js_type_check("closure_compile") {
 
 js_library("alert_indicator") {
   deps = [
-    ":custom_element",
     ":tabs_api_proxy",
+    "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -111,12 +109,9 @@ js_library("alert_indicator") {
 js_library("alert_indicators") {
   deps = [
     ":alert_indicator",
-    ":custom_element",
     ":tabs_api_proxy",
+    "//ui/webui/resources/js:custom_element",
   ]
-}
-
-js_library("custom_element") {
 }
 
 js_library("drag_manager") {
@@ -140,10 +135,10 @@ js_library("tabs_api_proxy") {
 js_library("tab") {
   deps = [
     ":alert_indicators",
-    ":custom_element",
     ":tab_strip_embedder_proxy",
     ":tab_swiper",
     ":tabs_api_proxy",
+    "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:icon.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",
@@ -153,22 +148,22 @@ js_library("tab") {
 
 js_library("tab_group") {
   deps = [
-    ":custom_element",
     ":tab_strip_embedder_proxy",
     ":tabs_api_proxy",
+    "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("tab_list") {
   deps = [
-    ":custom_element",
     ":drag_manager",
     ":tab",
     ":tab_group",
     ":tab_strip_embedder_proxy",
     ":tabs_api_proxy",
     "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:custom_element",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:util.m",

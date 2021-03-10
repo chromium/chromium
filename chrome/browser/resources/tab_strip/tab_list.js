@@ -10,10 +10,10 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
+import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 
-import {CustomElement} from './custom_element.js';
 import {DragManager, DragManagerDelegate} from './drag_manager.js';
 import {isTabElement, TabElement} from './tab.js';
 import {isTabGroupElement, TabGroupElement} from './tab_group.js';
