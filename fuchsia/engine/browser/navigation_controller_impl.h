@@ -76,8 +76,10 @@ class NavigationControllerImpl : public fuchsia::web::NavigationController,
   fuchsia::web::NavigationState pending_navigation_event_;
   bool waiting_for_navigation_event_ack_ = false;
 
-  // True once the main document finishes loading.
+  // True once the main document finishes loading and there are no outstanding
+  // navigations.
   bool is_main_document_loaded_ = false;
+  content::NavigationHandle* active_navigation_ = nullptr;
 
   // True if navigation failed due to an error during page load.
   bool uncommitted_load_error_ = false;
