@@ -52,4 +52,10 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
+
+  # crbug.com/1185030
+  "inputs.VirtualKeyboardJapaneseInputs.stable",
+
+  # crbug.com/1185031
+  "inputs.VirtualKeyboardInputFields.jp_us_stable",
 ]
