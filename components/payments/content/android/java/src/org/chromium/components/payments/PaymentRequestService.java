@@ -708,8 +708,6 @@ public class PaymentRequestService
             for (String method : invokedPaymentApp.getInstrumentMethodNames()) {
                 if (method.equals(MethodStrings.ANDROID_PAY)
                         || method.equals(MethodStrings.GOOGLE_PAY)) {
-                    // TODO(crbug.com/1183977): assert the type after correcting
-                    // GooglePayPaymentApp's app type.
                     category = PaymentMethodCategory.GOOGLE;
                     break;
                 } else if (method.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
