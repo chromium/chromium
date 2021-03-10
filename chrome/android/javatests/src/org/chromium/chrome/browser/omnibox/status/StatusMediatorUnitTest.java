@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -68,6 +70,8 @@ public final class StatusMediatorUnitTest {
     @Mock
     UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
     @Mock
+    Runnable mMockForceModelViewReconciliationRunnable;
+    @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock
     Profile mProfile;
@@ -110,8 +114,9 @@ public final class StatusMediatorUnitTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
-                    mSearchEngineLogoUtils, () -> mTemplateUrlService, () -> mProfile, null);
+                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
+                    mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
+                    () -> mTemplateUrlService, () -> mProfile, null);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
     }
@@ -455,6 +460,49 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals(
                 msg, "https://foo.com", mMediator.resolveUrlBarTextWithAutocomplete("foo.com"));
         Assert.assertEquals(msg, "bar.com", mMediator.resolveUrlBarTextWithAutocomplete("bar.com"));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
+    @UiThreadTest
+    public void testIncognitoStateChange_goingToIncognito() {
+        mMediator.setShowIconsWhenUrlFocused(true);
+
+        setupSearchEngineLogoForTesting(
+                /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        verify(mMockForceModelViewReconciliationRunnable, times(0)).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
+    @UiThreadTest
+    public void testIncognitoStateChange_backFromIncognito() {
+        mMediator.setShowIconsWhenUrlFocused(true);
+
+        setupSearchEngineLogoForTesting(
+                /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        verify(mMockForceModelViewReconciliationRunnable).run();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
+    @UiThreadTest
+    public void testIncognitoStateChange_shouldShowStatusIcon() {
+        mMediator.setShowIconsWhenUrlFocused(true);
+        doReturn(true).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        doReturn(false).when(mLocationBarDataProvider).isIncognito();
+        mMediator.onIncognitoStateChanged();
+        verify(mMockForceModelViewReconciliationRunnable, times(0)).run();
     }
 
     @Test
