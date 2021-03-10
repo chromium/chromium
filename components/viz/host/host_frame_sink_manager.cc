@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -21,7 +22,9 @@
 namespace viz {
 
 HostFrameSinkManager::HostFrameSinkManager()
-    : debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
+    : enable_sync_window_destruction_(
+          features::IsSyncWindowDestructionEnabled()),
+      debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
 
 HostFrameSinkManager::~HostFrameSinkManager() = default;
 
@@ -144,7 +147,8 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
   data.has_created_compositor_frame_sink = true;
 
   // Only wait on destruction if using GPU compositing for the window.
-  data.wait_on_destruction = params->gpu_compositing;
+  data.wait_on_destruction =
+      enable_sync_window_destruction_ && params->gpu_compositing;
 
   frame_sink_manager_->CreateRootCompositorFrameSink(std::move(params));
   display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();

@@ -134,9 +134,13 @@ bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
 }
 
-bool IsVizHitTestingDebugEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableVizHitTestDebug);
+// If a synchronous IPC should used when destroying windows. This exists to test
+// the impact of removing the sync IPC.
+bool IsSyncWindowDestructionEnabled() {
+  static constexpr base::Feature kSyncWindowDestruction{
+      "SyncWindowDestruction", base::FEATURE_ENABLED_BY_DEFAULT};
+
+  return base::FeatureList::IsEnabled(kSyncWindowDestruction);
 }
 
 bool IsUsingSkiaRenderer() {
@@ -210,6 +214,11 @@ bool IsUsingVizFrameSubmissionForWebView() {
 
 bool IsUsingPreferredIntervalForVideo() {
   return base::FeatureList::IsEnabled(kUsePreferredIntervalForVideo);
+}
+
+bool IsVizHitTestingDebugEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableVizHitTestDebug);
 }
 
 bool ShouldUseRealBuffersForPageFlipTest() {

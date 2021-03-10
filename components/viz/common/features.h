@@ -40,16 +40,17 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
-VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
-VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
 VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
+VIZ_COMMON_EXPORT bool IsSyncWindowDestructionEnabled();
 VIZ_COMMON_EXPORT bool IsUsingFastPathForSolidColorQuad();
+VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
 VIZ_COMMON_EXPORT bool IsUsingVizForWebView();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
+VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
 VIZ_COMMON_EXPORT bool ShouldUseRealBuffersForPageFlipTest();
 VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 #if defined(OS_WIN)

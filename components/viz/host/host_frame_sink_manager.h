@@ -269,6 +269,8 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
 
+  const bool enable_sync_window_destruction_;
+
   // This will point to |frame_sink_manager_remote_| if using mojo or it may
   // point directly at FrameSinkManagerImpl in tests. Use this to make function
   // calls.
