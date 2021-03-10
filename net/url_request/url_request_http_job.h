@@ -125,7 +125,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // This just forwards the call to URLRequestJob::NotifyConnected().
   // We need it because that method is protected and cannot be bound in a
   // callback in this class.
-  int NotifyConnectedCallback(const TransportInfo& info);
+  int NotifyConnectedCallback(const TransportInfo& info,
+                              CompletionOnceCallback callback);
 
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 

@@ -186,6 +186,12 @@ class TestDelegate : public URLRequest::Delegate {
     credentials_ = credentials;
   }
 
+  // If true, the delegate will asynchronously run the callback passed in from
+  // URLRequest with `on_connected_result_`
+  void set_on_connected_run_callback(bool run_callback) {
+    on_connected_run_callback_ = run_callback;
+  }
+
   // Returns the list of arguments with which OnConnected() was called.
   // The arguments are listed in the same order as the calls were received.
   const std::vector<TransportInfo>& transports() const { return transports_; }
@@ -211,7 +217,9 @@ class TestDelegate : public URLRequest::Delegate {
   int request_status() const { return request_status_; }
 
   // URLRequest::Delegate:
-  int OnConnected(URLRequest* request, const TransportInfo& info) override;
+  int OnConnected(URLRequest* request,
+                  const TransportInfo& info,
+                  CompletionOnceCallback callback) override;
   void OnReceivedRedirect(URLRequest* request,
                           const RedirectInfo& redirect_info,
                           bool* defer_redirect) override;
@@ -271,6 +279,8 @@ class TestDelegate : public URLRequest::Delegate {
   scoped_refptr<IOBuffer> buf_;
 
   RedirectInfo redirect_info_;
+
+  bool on_connected_run_callback_ = false;
 };
 
 //-----------------------------------------------------------------------------

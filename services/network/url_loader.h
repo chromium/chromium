@@ -153,7 +153,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // net::URLRequest::Delegate implementation:
   int OnConnected(net::URLRequest* url_request,
-                  const net::TransportInfo& info) override;
+                  const net::TransportInfo& info,
+                  net::CompletionOnceCallback callback) override;
   void OnReceivedRedirect(net::URLRequest* url_request,
                           const net::RedirectInfo& redirect_info,
                           bool* defer_redirect) override;

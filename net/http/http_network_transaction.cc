@@ -543,6 +543,11 @@ int HttpNetworkTransaction::ResumeNetworkStart() {
   return DoLoop(OK);
 }
 
+void HttpNetworkTransaction::ResumeAfterConnected(int result) {
+  DCHECK_EQ(next_state_, STATE_CONNECTED_CALLBACK_COMPLETE);
+  OnIOComplete(result);
+}
+
 void HttpNetworkTransaction::CloseConnectionOnDestruction() {
   close_connection_on_destruction_ = true;
 }
@@ -726,6 +731,9 @@ int HttpNetworkTransaction::DoLoop(int result) {
       case STATE_INIT_STREAM_COMPLETE:
         rv = DoInitStreamComplete(rv);
         break;
+      case STATE_CONNECTED_CALLBACK_COMPLETE:
+        rv = DoConnectedCallbackComplete(rv);
+        break;
       case STATE_GENERATE_PROXY_AUTH_TOKEN:
         DCHECK_EQ(OK, rv);
         rv = DoGenerateProxyAuthToken();
@@ -883,16 +891,24 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
     return result;
   }
 
+  next_state_ = STATE_CONNECTED_CALLBACK_COMPLETE;
+
   // Fire off notification that we have successfully connected.
   if (!connected_callback_.is_null()) {
     TransportType type = TransportType::kDirect;
     if (!proxy_info_.is_direct()) {
       type = TransportType::kProxied;
     }
-    result = connected_callback_.Run(TransportInfo(type, remote_endpoint_));
-    DCHECK_NE(result, ERR_IO_PENDING);
+    result = connected_callback_.Run(
+        TransportInfo(type, remote_endpoint_),
+        base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
+                       base::Unretained(this)));
   }
 
+  return result;
+}
+
+int HttpNetworkTransaction::DoConnectedCallbackComplete(int result) {
   if (result == OK) {
     // Only transition if we succeeded. Otherwise stop at STATE_NONE.
     next_state_ = STATE_GENERATE_PROXY_AUTH_TOKEN;

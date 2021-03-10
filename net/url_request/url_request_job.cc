@@ -385,8 +385,9 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
   return GURL();
 }
 
-int URLRequestJob::NotifyConnected(const TransportInfo& info) {
-  return request_->NotifyConnected(info);
+int URLRequestJob::NotifyConnected(const TransportInfo& info,
+                                   CompletionOnceCallback callback) {
+  return request_->NotifyConnected(info, std::move(callback));
 }
 
 void URLRequestJob::NotifyCertificateRequested(

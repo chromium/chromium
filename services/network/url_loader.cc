@@ -1085,7 +1085,8 @@ bool URLLoader::CanConnectToAddressSpace(
 }
 
 int URLLoader::OnConnected(net::URLRequest* url_request,
-                           const net::TransportInfo& info) {
+                           const net::TransportInfo& info,
+                           net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
 
   DVLOG(1) << "Connection obtained for URL request to " << url_request->url()

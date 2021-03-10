@@ -1053,6 +1053,57 @@ TEST_F(HttpNetworkTransactionTest, ConnectedCallbackCalledOnEachRetry) {
                           EmbeddedHttpServerTransportInfo()));
 }
 
+TEST_F(HttpNetworkTransactionTest, ConnectedCallbackCalledAsync) {
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  ConnectedHandler connected_handler;
+  connected_handler.set_run_callback(true);
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+  auto request = DefaultRequestInfo();
+  HttpNetworkTransaction transaction(DEFAULT_PRIORITY, session.get());
+  transaction.SetConnectedCallback(connected_handler.Callback());
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      transaction.Start(&request, callback.callback(), NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  EXPECT_THAT(connected_handler.transports(),
+              ElementsAre(EmbeddedHttpServerTransportInfo()));
+}
+
+TEST_F(HttpNetworkTransactionTest, ConnectedCallbackCalledAsyncError) {
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.0 200 OK\r\n"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  StaticSocketDataProvider data(data_reads, base::span<MockWrite>());
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  ConnectedHandler connected_handler;
+  connected_handler.set_run_callback(true);
+  connected_handler.set_result(ERR_FAILED);
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+  auto request = DefaultRequestInfo();
+  HttpNetworkTransaction transaction(DEFAULT_PRIORITY, session.get());
+  transaction.SetConnectedCallback(connected_handler.Callback());
+
+  TestCompletionCallback callback;
+  EXPECT_THAT(
+      transaction.Start(&request, callback.callback(), NetLogWithSource()),
+      IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FAILED));
+
+  EXPECT_THAT(connected_handler.transports(),
+              ElementsAre(EmbeddedHttpServerTransportInfo()));
+}
+
 // Allow up to 4 bytes of junk to precede status line.
 TEST_F(HttpNetworkTransactionTest, StatusLineJunk3Bytes) {
   MockRead data_reads[] = {

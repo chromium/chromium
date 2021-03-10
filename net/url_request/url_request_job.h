@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
@@ -260,7 +261,8 @@ class NET_EXPORT URLRequestJob {
 
  protected:
   // Notifies the job that we are connected.
-  int NotifyConnected(const TransportInfo& info);
+  int NotifyConnected(const TransportInfo& info,
+                      CompletionOnceCallback callback);
 
   // Notifies the job that a certificate is requested.
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);

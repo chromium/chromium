@@ -140,6 +140,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
     STATE_INIT_STREAM_COMPLETE,
+    STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_GENERATE_PROXY_AUTH_TOKEN,
     STATE_GENERATE_PROXY_AUTH_TOKEN_COMPLETE,
     STATE_GENERATE_SERVER_AUTH_TOKEN,
@@ -180,6 +181,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int DoCreateStreamComplete(int result);
   int DoInitStream();
   int DoInitStreamComplete(int result);
+  int DoConnectedCallbackComplete(int results);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();
@@ -300,6 +302,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Returns true if response "Content-Encoding" headers respect
   // "Accept-Encoding".
   bool ContentEncodingsValid() const;
+
+  void ResumeAfterConnected(int result);
 
   scoped_refptr<HttpAuthController>
       auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];

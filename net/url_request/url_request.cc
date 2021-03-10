@@ -24,6 +24,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
 #include "net/base/upload_data_stream.h"
+#include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -131,7 +132,8 @@ void ConvertRealLoadTimesToBlockingTimes(LoadTimingInfo* load_timing_info) {
 // URLRequest::Delegate
 
 int URLRequest::Delegate::OnConnected(URLRequest* request,
-                                      const TransportInfo& info) {
+                                      const TransportInfo& info,
+                                      CompletionOnceCallback callback) {
   return OK;
 }
 
@@ -776,8 +778,9 @@ bool URLRequest::failed() const {
   return (status_ != OK && status_ != ERR_IO_PENDING);
 }
 
-int URLRequest::NotifyConnected(const TransportInfo& info) {
-  return delegate_->OnConnected(this, info);
+int URLRequest::NotifyConnected(const TransportInfo& info,
+                                CompletionOnceCallback callback) {
+  return delegate_->OnConnected(this, info, std::move(callback));
 }
 
 void URLRequest::NotifyReceivedRedirect(const RedirectInfo& redirect_info,

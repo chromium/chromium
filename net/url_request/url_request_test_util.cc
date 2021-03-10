@@ -242,8 +242,17 @@ void TestDelegate::RunUntilAuthRequired() {
   run_loop.Run();
 }
 
-int TestDelegate::OnConnected(URLRequest* request, const TransportInfo& info) {
+int TestDelegate::OnConnected(URLRequest* request,
+                              const TransportInfo& info,
+                              CompletionOnceCallback callback) {
   transports_.push_back(info);
+
+  if (on_connected_run_callback_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), on_connected_result_));
+    return net::ERR_IO_PENDING;
+  }
+
   return on_connected_result_;
 }
 

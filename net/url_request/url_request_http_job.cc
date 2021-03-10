@@ -322,8 +322,10 @@ void URLRequestHttpJob::CloseConnectionOnDestruction() {
   transaction_->CloseConnectionOnDestruction();
 }
 
-int URLRequestHttpJob::NotifyConnectedCallback(const TransportInfo& info) {
-  return URLRequestJob::NotifyConnected(info);
+int URLRequestHttpJob::NotifyConnectedCallback(
+    const TransportInfo& info,
+    CompletionOnceCallback callback) {
+  return URLRequestJob::NotifyConnected(info, std::move(callback));
 }
 
 void URLRequestHttpJob::NotifyHeadersComplete() {

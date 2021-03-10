@@ -13099,4 +13099,36 @@ TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
               testing::ElementsAre("www.example.test"));
 }
 
+TEST_F(URLRequestTest, OnConnectedCallbackAsyncOK) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestURLRequestContext context;
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(OK);
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsOk());
+}
+
+TEST_F(URLRequestTest, OnConnectedCallbackAsyncError) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestURLRequestContext context;
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(ERR_FAILED);
+  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsError(ERR_FAILED));
+}
+
 }  // namespace net

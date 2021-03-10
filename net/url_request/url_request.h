@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
@@ -126,13 +127,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     // several times per transaction, e.g. if the connection is retried, after
     // each HTTP auth challenge, or for split HTTP range requests.
     //
-    // If this returns an error, the request fails with the given error.
-    // Otherwise the request continues unimpeded.
-    // Must not return ERR_IO_PENDING.
-    //
-    // TODO(crbug.com/591068): Allow ERR_IO_PENDING for a potentially-slow
-    // CORS-RFC1918 preflight check.
-    virtual int OnConnected(URLRequest* request, const TransportInfo& info);
+    // If this returns an error, the transaction will stop. The transaction
+    // will continue when the |callback| is run. If run with an error, the
+    // transaction will fail.
+    virtual int OnConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback);
 
     // Called upon receiving a redirect.  The delegate may call the request's
     // Cancel method to prevent the redirect from being followed.  Since there
@@ -805,7 +805,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // These functions delegate to |delegate_|.  See URLRequest::Delegate for the
   // meaning of these functions.
-  int NotifyConnected(const TransportInfo& info);
+  int NotifyConnected(const TransportInfo& info,
+                      CompletionOnceCallback callback);
   void NotifyAuthRequired(std::unique_ptr<AuthChallengeInfo> auth_info);
   void NotifyCertificateRequested(SSLCertRequestInfo* cert_request_info);
   void NotifySSLCertificateError(int net_error,
