@@ -659,7 +659,9 @@ public class StatusMediator implements PermissionDialogController.Observer {
             return;
         }
         mLastPermission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
-        assert mLastPermission != ContentSettingsType.DEFAULT;
+        // The permission is not available in the settings page. Do not show an icon.
+        if (mLastPermission == ContentSettingsType.DEFAULT) return;
+
         Drawable permissionIcon =
                 ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
         PermissionIconResource statusIcon = new PermissionIconResource(permissionIcon);
