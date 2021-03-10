@@ -58,8 +58,12 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // Runs all deferred binders and runs binder callbacks for all subsequent
   // requests, i.e., it stops applying the policies.
   void GrantAll();
+  // Deletes all deferred binders without running them.
+  void DropDeferredBinders();
 
  private:
+  friend class MojoBinderPolicyApplierTest;
+
   // Gets the corresponding policy of the given mojo interface name.
   MojoBinderPolicy GetMojoBinderPolicy(const std::string& interface_name) const;
 

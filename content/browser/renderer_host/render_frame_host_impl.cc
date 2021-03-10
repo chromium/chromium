@@ -1079,6 +1079,17 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     set_nav_entry_id(parent_->nav_entry_id());
   }
 
+  if (blink::features::IsPrerender2Enabled()) {
+    if (frame_tree_->is_prerendering()) {
+      // TODO(https://crbug.com/1132752): Check the prerendering page is
+      // same-origin to the prerender trigger page.
+      broker_.ApplyMojoBinderPolicies(
+          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
+              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
+                             base::Unretained(this))));
+    }
+  }
+
   // The initial empty document inherits its policy container from its creator.
   // The creator is either its parent for iframes or its opener for new windows.
   //
@@ -5084,6 +5095,21 @@ void RenderFrameHostImpl::SetModalCloseListener(
 void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   DCHECK(receiver.is_valid());
+  if (blink::features::IsPrerender2Enabled()) {
+    if (frame_tree()->is_prerendering()) {
+      // RenderFrameHostImpl will rebind the receiver end of
+      // BrowserInterfaceBroker if it receives a new one sent from renderer
+      // processes. It happens when renderer processes navigate to a new
+      // document, see RenderFrameImpl::DidCommitNavigation() and
+      // RenderFrameHostImpl::DidCommitNavigation().
+      // So before binding a new receiver end of BrowserInterfaceBroker,
+      // RenderFrameHostImpl should drop all deferred binders to avoid
+      // connecting Mojo pipes with old documents.
+      auto* applier = broker_.GetMojoBinderPolicyApplier();
+      DCHECK(applier) << "prerendering pages should have a policy applier";
+      applier->DropDeferredBinders();
+    }
+  }
   broker_receiver_.Bind(std::move(receiver));
   broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
 }
@@ -6299,17 +6325,6 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(!IsRendererDebugURL(common_params->url));
   DCHECK(navigation_request);
 
-  if (blink::features::IsPrerender2Enabled()) {
-    if (frame_tree()->is_prerendering()) {
-      // TODO(https://crbug.com/1132752): Check the prerendering page is
-      // same-origin to the prerender trigger page.
-      broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
-                             base::Unretained(this))));
-    }
-  }
-
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
@@ -6813,22 +6828,6 @@ void RenderFrameHostImpl::FailedNavigation(
                "error", error_code);
 
   DCHECK(navigation_request);
-
-  // The failed navigation still results in a document that may make Mojo
-  // interface requests, so set the MojoBinderPolicyApplier for prerendering if
-  // needed.
-  // TODO(lingqi): Set the MojoBinderPolicyApplier at DidCommitNavigation
-  // instead to align with the prerendering LifecycleState.
-  if (blink::features::IsPrerender2Enabled()) {
-    if (frame_tree()->is_prerendering()) {
-      // TODO(https://crbug.com/1132752): Check the prerendering page is
-      // same-origin to the prerender trigger page.
-      broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
-                             base::Unretained(this))));
-    }
-  }
 
   // Update renderer permissions even for failed commits, so that for example
   // the URL bar correctly displays privileged URLs instead of filtering them.
@@ -8825,20 +8824,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // create one in order to properly issue DidFinishNavigation calls to
     // WebContentsObservers.
     DCHECK(is_initial_empty_commit || is_same_document_navigation);
-
-    // Handle src-less <iframe> for prerendering.
-    // This is a special case that does not go through CommitNavigation path.
-    if (blink::features::IsPrerender2Enabled() && is_initial_empty_commit &&
-        !is_main_frame()) {
-      if (frame_tree()->is_prerendering()) {
-        // TODO(https://crbug.com/1132752): Check the prerendering page is
-        // same-origin to the prerender trigger page.
-        broker_.ApplyMojoBinderPolicies(
-            MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-                base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
-                               base::Unretained(this))));
-      }
-    }
 
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.

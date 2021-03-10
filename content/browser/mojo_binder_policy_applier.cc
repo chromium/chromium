@@ -58,6 +58,10 @@ void MojoBinderPolicyApplier::GrantAll() {
   deferred_binders_.clear();
 }
 
+void MojoBinderPolicyApplier::DropDeferredBinders() {
+  deferred_binders_.clear();
+}
+
 MojoBinderPolicy MojoBinderPolicyApplier::GetMojoBinderPolicy(
     const std::string& interface_name) const {
   return policy_map_.GetMojoBinderPolicy(interface_name, default_policy_);

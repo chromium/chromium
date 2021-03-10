@@ -17,8 +17,6 @@
 
 namespace content {
 
-namespace {
-
 // A test class that implements test interfaces and provides verification
 // methods.
 class TestReceiverCollector : public mojom::TestInterfaceForDefer,
@@ -79,6 +77,10 @@ class MojoBinderPolicyApplierTest : public testing::Test {
   MojoBinderPolicyApplierTest() = default;
 
  protected:
+  std::vector<base::OnceClosure>& deferred_binders() {
+    return policy_applier_.deferred_binders_;
+  }
+
   const MojoBinderPolicyMapImpl policy_map_{
       {{"content.mojom.TestInterfaceForDefer", MojoBinderPolicy::kDefer},
        {"content.mojom.TestInterfaceForGrant", MojoBinderPolicy::kGrant},
@@ -109,7 +111,10 @@ TEST_F(MojoBinderPolicyApplierTest, ApplyDeferPolicy) {
                      base::Unretained(&collector_),
                      defer_receiver.As<mojom::TestInterfaceForDefer>()));
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
+  EXPECT_EQ(1U, deferred_binders().size());
+
   policy_applier_.GrantAll();
+  EXPECT_EQ(0U, deferred_binders().size());
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
   EXPECT_FALSE(collector_.IsCanceled());
 }
@@ -199,8 +204,29 @@ TEST_F(MojoBinderPolicyApplierTest, BindInterfacesAfterResolving) {
   EXPECT_TRUE(collector_.IsDeferReceiverBound());
   EXPECT_TRUE(collector_.IsCancelReceiverBound());
   EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_EQ(0U, deferred_binders().size());
 }
 
-}  // namespace
+// Verifies that DropDeferredBinders() deletes all deferred binders.
+TEST_F(MojoBinderPolicyApplierTest, DropDeferredBinders) {
+  // Initialize Mojo interfaces.
+  mojo::Remote<mojom::TestInterfaceForDefer> defer_remote;
+  mojo::GenericPendingReceiver defer_receiver(
+      defer_remote.BindNewPipeAndPassReceiver());
+
+  const std::string interface_name = defer_receiver.interface_name().value();
+  EXPECT_FALSE(collector_.IsCanceled());
+  policy_applier_.ApplyPolicyToBinder(
+      interface_name,
+      base::BindOnce(&TestReceiverCollector::BindDeferInterface,
+                     base::Unretained(&collector_),
+                     defer_receiver.As<mojom::TestInterfaceForDefer>()));
+  EXPECT_FALSE(collector_.IsDeferReceiverBound());
+  EXPECT_EQ(1U, deferred_binders().size());
+  policy_applier_.DropDeferredBinders();
+  EXPECT_EQ(0U, deferred_binders().size());
+  policy_applier_.GrantAll();
+  EXPECT_FALSE(collector_.IsDeferReceiverBound());
+}
 
 }  // namespace content
