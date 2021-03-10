@@ -18,6 +18,8 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
@@ -298,6 +300,11 @@ class PasswordFormManagerTest : public testing::Test,
         prefs::kProfileStoreDateLastUsedForFilling, base::Time());
     pref_service_.registry()->RegisterTimePref(
         prefs::kAccountStoreDateLastUsedForFilling, base::Time());
+    pref_service_.registry()->RegisterBooleanPref(
+        autofill::RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled,
+        true);
+    pref_service_.registry()->RegisterStringPref(
+        autofill::prefs::kAutofillUploadEncodingSeed, "seed");
 
     form_manager_->set_wait_for_server_predictions_for_filling(true);
 
