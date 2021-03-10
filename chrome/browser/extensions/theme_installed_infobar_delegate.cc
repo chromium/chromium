@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -70,13 +68,12 @@ ThemeInstalledInfoBarDelegate::ThemeInstalledInfoBarDelegate(
       theme_name_(theme_name),
       theme_id_(theme_id),
       prev_theme_reinstaller_(std::move(prev_theme_reinstaller)) {
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(theme_service_));
+  theme_service_->AddObserver(this);
 }
 
 ThemeInstalledInfoBarDelegate::~ThemeInstalledInfoBarDelegate() {
   // We don't want any notifications while we're running our destructor.
-  registrar_.RemoveAll();
+  theme_service_->RemoveObserver(this);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -114,11 +111,7 @@ bool ThemeInstalledInfoBarDelegate::Cancel() {
   return false;  // The theme change will close us.
 }
 
-void ThemeInstalledInfoBarDelegate::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_BROWSER_THEME_CHANGED, type);
+void ThemeInstalledInfoBarDelegate::OnThemeChanged() {
   // If the new theme is different from what this info bar is associated with,
   // close this info bar since it is no longer relevant.
   if (theme_id_ != theme_service_->GetThemeID())

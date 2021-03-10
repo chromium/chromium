@@ -5,12 +5,12 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/instant_service_observer.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -106,13 +106,11 @@ class InstantThemeTest : public extensions::ExtensionBrowserTest,
     size_t num_before = extensions::ExtensionRegistry::Get(profile())
                             ->enabled_extensions()
                             .size();
-    content::WindowedNotificationObserver theme_change_observer(
-        chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-        content::Source<ThemeService>(
-            ThemeServiceFactory::GetForProfile(profile())));
+    test::ThemeServiceChangedWaiter waiter(
+        ThemeServiceFactory::GetForProfile(profile()));
     ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(
         theme_path, 1, extensions::ExtensionBrowserTest::browser()));
-    theme_change_observer.Wait();
+    waiter.WaitForThemeChanged();
     size_t num_after = extensions::ExtensionRegistry::Get(profile())
                            ->enabled_extensions()
                            .size();

@@ -6,17 +6,16 @@
 
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "content/public/test/test_utils.h"
 
 void SetCustomTheme(Profile* profile, int theme_index) {
+  test::ThemeServiceChangedWaiter waiter(
+      ThemeServiceFactory::GetForProfile(profile));
   themes_helper::UseCustomTheme(profile, theme_index);
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(
-          ThemeServiceFactory::GetForProfile(profile)));
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 }
 
 ServerCountMatchStatusChecker::ServerCountMatchStatusChecker(

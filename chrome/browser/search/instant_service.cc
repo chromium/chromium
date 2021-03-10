@@ -228,9 +228,7 @@ InstantService::InstantService(Profile* profile)
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
 
   // Listen for theme installation.
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(
-                     ThemeServiceFactory::GetForProfile(profile_)));
+  ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
   // Set up the data sources that Instant uses on the NTP.
   content::URLDataSource::Add(profile_,
@@ -285,6 +283,11 @@ void InstantService::OnNewTabPageOpened() {
   if (most_visited_sites_) {
     most_visited_sites_->Refresh();
   }
+}
+
+void InstantService::OnThemeChanged() {
+  theme_ = nullptr;
+  UpdateNtpTheme();
 }
 
 void InstantService::DeleteMostVisitedItem(const GURL& url) {
@@ -515,6 +518,8 @@ void InstantService::Shutdown() {
   if (most_visited_sites_) {
     most_visited_sites_.reset();
   }
+
+  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 }
 
 void InstantService::OnNextCollectionImageAvailable() {
@@ -559,10 +564,6 @@ void InstantService::Observe(int type,
         OnRendererProcessTerminated(rph->GetID());
       break;
     }
-    case chrome::NOTIFICATION_BROWSER_THEME_CHANGED:
-      theme_ = nullptr;
-      UpdateNtpTheme();
-      break;
     default:
       NOTREACHED() << "Unexpected notification type in InstantService.";
   }

@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error.h"
@@ -26,7 +27,8 @@ namespace sync_pb {
 class ThemeSpecifics;
 }
 
-class ThemeSyncableService : public syncer::SyncableService {
+class ThemeSyncableService : public syncer::SyncableService,
+                             public ThemeServiceObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -42,8 +44,8 @@ class ThemeSyncableService : public syncer::SyncableService {
 
   static syncer::ModelType model_type() { return syncer::THEMES; }
 
-  // Called by ThemeService when user changes theme.
-  void OnThemeChange();
+  // ThemeServiceObserver implementation.
+  void OnThemeChanged() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

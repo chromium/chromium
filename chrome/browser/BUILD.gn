@@ -4114,6 +4114,7 @@ static_library("browser") {
       "themes/theme_service.h",
       "themes/theme_service_factory.cc",
       "themes/theme_service_factory.h",
+      "themes/theme_service_observer.h",
       "themes/theme_syncable_service.cc",
       "themes/theme_syncable_service.h",
       "upgrade_detector/build_state.cc",

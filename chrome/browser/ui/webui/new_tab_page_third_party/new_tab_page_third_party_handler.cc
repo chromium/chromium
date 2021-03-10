@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -24,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/color_utils.h"
 
@@ -47,12 +45,12 @@ NewTabPageThirdPartyHandler::NewTabPageThirdPartyHandler(
       this, ntp_tiles::kMaxNumMostVisited);
   most_visited_sites_->EnableCustomLinks(false);
   // Listen for theme installation.
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(
-                     ThemeServiceFactory::GetForProfile(profile_)));
+  ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 }
 
-NewTabPageThirdPartyHandler::~NewTabPageThirdPartyHandler() = default;
+NewTabPageThirdPartyHandler::~NewTabPageThirdPartyHandler() {
+  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
+}
 
 void NewTabPageThirdPartyHandler::DeleteMostVisitedTile(const GURL& url) {
   most_visited_sites_->AddOrRemoveBlockedUrl(url, true);
@@ -138,17 +136,8 @@ void NewTabPageThirdPartyHandler::OnMostVisitedTileNavigation(
       false));
 }
 
-void NewTabPageThirdPartyHandler::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_BROWSER_THEME_CHANGED:
-      NotifyAboutTheme();
-      break;
-    default:
-      NOTREACHED() << "Unexpected notification type in InstantService.";
-  }
+void NewTabPageThirdPartyHandler::OnThemeChanged() {
+  NotifyAboutTheme();
 }
 
 void NewTabPageThirdPartyHandler::OnURLsAvailable(

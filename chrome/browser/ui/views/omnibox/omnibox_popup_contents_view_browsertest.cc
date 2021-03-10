@@ -10,6 +10,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -73,18 +74,17 @@ class ClickTrackingOverlayView : public views::View {
 class ThemeChangeWaiter {
  public:
   explicit ThemeChangeWaiter(ThemeService* theme_service)
-      : theme_change_observer_(chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                               content::Source<ThemeService>(theme_service)) {}
+      : waiter_(theme_service) {}
 
   ~ThemeChangeWaiter() {
-    theme_change_observer_.Wait();
+    waiter_.WaitForThemeChanged();
     // Theme changes propagate asynchronously in DesktopWindowTreeHostX11::
     // FrameTypeChanged(), so ensure all tasks are consumed.
     content::RunAllPendingInMessageLoop();
   }
 
  private:
-  content::WindowedNotificationObserver theme_change_observer_;
+  test::ThemeServiceChangedWaiter waiter_;
 
   DISALLOW_COPY_AND_ASSIGN(ThemeChangeWaiter);
 };

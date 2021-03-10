@@ -45,12 +45,14 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
       theme_service_(theme_service),
       use_system_theme_by_default_(false) {
   DCHECK(theme_service_);
+  theme_service_->AddObserver(this);
 }
 
 ThemeSyncableService::~ThemeSyncableService() {
+  theme_service_->RemoveObserver(this);
 }
 
-void ThemeSyncableService::OnThemeChange() {
+void ThemeSyncableService::OnThemeChanged() {
   if (sync_processor_.get()) {
     sync_pb::ThemeSpecifics current_specifics;
     if (!GetThemeSpecificsFromCurrentTheme(&current_specifics))

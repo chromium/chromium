@@ -26,7 +26,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -37,6 +36,7 @@
 #include "chrome/browser/themes/increased_contrast_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/buildflags.h"
@@ -501,6 +501,14 @@ ThemeService::BuildReinstallerForCurrentTheme() {
                                             std::move(reinstall_callback));
 }
 
+void ThemeService::AddObserver(ThemeServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ThemeService::RemoveObserver(ThemeServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void ThemeService::SetCustomDefaultTheme(
     scoped_refptr<CustomThemeSupplier> theme_supplier) {
   ClearAllThemeData();
@@ -574,17 +582,9 @@ void ThemeService::NotifyThemeChanged() {
   if (!ready_)
     return;
 
-  DVLOG(1) << "Sending BROWSER_THEME_CHANGED";
-  // Redraw!
-  content::NotificationService* service =
-      content::NotificationService::current();
-  service->Notify(chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                  content::Source<ThemeService>(this),
-                  content::NotificationService::NoDetails());
-  // Notify sync that theme has changed.
-  if (theme_syncable_service_.get()) {
-    theme_syncable_service_->OnThemeChange();
-  }
+  // Redraw and notify sync that theme has changed.
+  for (auto& observer : observers_)
+    observer.OnThemeChanged();
 }
 
 void ThemeService::FixInconsistentPreferencesIfNeeded() {}
@@ -768,7 +768,7 @@ bool ThemeService::DisableExtension(const std::string& extension_id) {
 
   if (registry->GetInstalledExtension(extension_id)) {
     // Do not disable the previous theme if it is already uninstalled. Sending
-    // NOTIFICATION_BROWSER_THEME_CHANGED causes the previous theme to be
+    // |ThemeServiceObserver::OnThemeChanged()| causes the previous theme to be
     // uninstalled when the notification causes the remaining infobar to close
     // and does not open any new infobars. See crbug.com/468280.
     service->DisableExtension(extension_id,

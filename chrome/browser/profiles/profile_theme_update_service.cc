@@ -6,7 +6,6 @@
 
 #include "base/notreached.h"
 #include "base/optional.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -27,13 +26,14 @@ ProfileThemeUpdateService::ProfileThemeUpdateService(
     : profile_(profile),
       profile_attributes_storage_(profile_attributes_storage),
       theme_service_(theme_service) {
-  notification_registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                              content::NotificationService::AllSources());
+  theme_service_->AddObserver(this);
   // Kicks off an update on startup.
   UpdateProfileThemeColors();
 }
 
-ProfileThemeUpdateService::~ProfileThemeUpdateService() = default;
+ProfileThemeUpdateService::~ProfileThemeUpdateService() {
+  theme_service_->RemoveObserver(this);
+}
 
 void ProfileThemeUpdateService::UpdateProfileThemeColors() {
   ProfileAttributesEntry* entry =
@@ -54,16 +54,6 @@ void ProfileThemeUpdateService::UpdateProfileThemeColors() {
   entry->SetProfileThemeColors(colors);
 }
 
-// content::NotificationObserver:
-void ProfileThemeUpdateService::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_BROWSER_THEME_CHANGED:
-      UpdateProfileThemeColors();
-      break;
-    default:
-      NOTREACHED();
-  }
+void ProfileThemeUpdateService::OnThemeChanged() {
+  UpdateProfileThemeColors();
 }

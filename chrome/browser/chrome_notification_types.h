@@ -55,11 +55,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174777): Remove.
   NOTIFICATION_BROWSER_CLOSE_CANCELLED,
 
-  // The user has changed the browser theme. The source is a
-  // Source<ThemeService>. There are no details.
-  // TODO(https://crbug.com/1174780): Remove.
-  NOTIFICATION_BROWSER_THEME_CHANGED,
-
   // Application-wide ----------------------------------------------------------
 
   // This message is sent when the application is terminating (the last

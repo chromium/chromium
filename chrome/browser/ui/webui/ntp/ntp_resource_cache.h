@@ -13,10 +13,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
@@ -52,7 +51,7 @@ std::string GetNewTabBackgroundTilingCSS(
 // regenerate them all the time.
 // Note: This is only used for incognito and guest mode NTPs (NewTabUI), as well
 // as for (non-incognito) app launcher pages (AppLauncherPageUI).
-class NTPResourceCache : public content::NotificationObserver,
+class NTPResourceCache : public ThemeServiceObserver,
                          public KeyedService,
                          public ui::NativeThemeObserver {
  public:
@@ -73,10 +72,8 @@ class NTPResourceCache : public content::NotificationObserver,
       WindowType win_type,
       const content::WebContents::Getter wc_getter);
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
 
   static WindowType GetWindowType(
       Profile* profile, content::RenderProcessHost* render_host);
@@ -103,6 +100,9 @@ class NTPResourceCache : public content::NotificationObserver,
     int features_ids;
     int warnings_ids;
   };
+
+  // KeyedService:
+  void Shutdown() override;
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* updated_theme) override;
@@ -145,7 +145,6 @@ class NTPResourceCache : public content::NotificationObserver,
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_html_;
   scoped_refptr<base::RefCountedMemory> new_tab_incognito_css_;
   scoped_refptr<base::RefCountedMemory> new_tab_non_primary_otr_html_;
-  content::NotificationRegistrar registrar_;
   PrefChangeRegistrar profile_pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

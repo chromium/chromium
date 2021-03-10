@@ -10,14 +10,13 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/ntp_tiles/section_type.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,7 +36,7 @@ class WebContents;
 class NewTabPageThirdPartyHandler
     : public new_tab_page_third_party::mojom::PageHandler,
       public ntp_tiles::MostVisitedSites::Observer,
-      public content::NotificationObserver,
+      public ThemeServiceObserver,
       public ui::NativeThemeObserver {
  public:
   NewTabPageThirdPartyHandler(
@@ -68,10 +67,8 @@ class NewTabPageThirdPartyHandler
   void UpdateTheme() override;
 
  private:
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ThemeServiceObserver:
+  void OnThemeChanged() override;
 
   // ntp_tiles::MostVisitedSites::Observer implementation.
   void OnURLsAvailable(
@@ -92,7 +89,6 @@ class NewTabPageThirdPartyHandler
   NTPUserDataLogger logger_;
   base::Time ntp_navigation_start_time_;
   GURL last_blocklisted_;
-  content::NotificationRegistrar registrar_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

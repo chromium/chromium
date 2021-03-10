@@ -20,7 +20,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -32,6 +31,7 @@
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -530,15 +530,13 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(theme_service));
+  test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> theme = CreateExtension(
       base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
       extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(theme.get());
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 
@@ -619,15 +617,13 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(theme_service));
+  test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> ext1 = CreateExtension(
       base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
       extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(ext1.get());
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 

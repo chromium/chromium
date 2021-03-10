@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/increased_contrast_theme_supplier.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -25,8 +26,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -105,6 +104,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
   ThemeScoper LoadUnpackedTheme(const std::string& source_file_path =
                                     "extensions/theme_minimal/manifest.json") {
     ThemeScoper scoper(service_, registry_);
+    test::ThemeServiceChangedWaiter waiter(theme_service_);
     base::FilePath temp_dir = scoper.GetTempPath();
     base::FilePath dst_manifest_path = temp_dir.AppendASCII("manifest.json");
     base::FilePath test_data_dir;
@@ -119,7 +119,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     installer->Load(temp_dir);
     scoper.set_extension_id(observer.WaitForExtensionLoaded()->id());
 
-    WaitForThemeInstall();
+    waiter.WaitForThemeChanged();
 
     return scoper;
   }
@@ -162,13 +162,6 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
             &has_custom_color);
     EXPECT_TRUE(color);
     return color.value_or(gfx::kPlaceholderColor);
-  }
-
-  void WaitForThemeInstall() {
-    content::WindowedNotificationObserver theme_change_observer(
-        chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-        content::Source<ThemeService>(theme_service_));
-    theme_change_observer.Wait();
   }
 
   bool IsExtensionDisabled(const std::string& id) const {
@@ -226,8 +219,11 @@ TEST_F(ThemeServiceTest, DisableUnusedTheme) {
   EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
 
   // 2) Enabling a disabled theme extension should swap the current theme.
-  service_->EnableExtension(scoper1.extension_id());
-  WaitForThemeInstall();
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service_);
+    service_->EnableExtension(scoper1.extension_id());
+    waiter.WaitForThemeChanged();
+  }
   EXPECT_EQ(scoper1.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(service_->IsExtensionEnabled(scoper1.extension_id()));
   EXPECT_TRUE(IsExtensionDisabled(scoper2.extension_id()));
@@ -235,8 +231,11 @@ TEST_F(ThemeServiceTest, DisableUnusedTheme) {
   // 3) Using RevertToExtensionTheme() with a disabled theme should enable and
   // set the theme. This is the case when the user reverts to the previous theme
   // via an infobar.
-  theme_service_->RevertToExtensionTheme(scoper2.extension_id());
-  WaitForThemeInstall();
+  {
+    test::ThemeServiceChangedWaiter waiter(theme_service_);
+    theme_service_->RevertToExtensionTheme(scoper2.extension_id());
+    waiter.WaitForThemeChanged();
+  }
   EXPECT_EQ(scoper2.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(service_->IsExtensionEnabled(scoper2.extension_id()));
   EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
@@ -265,14 +264,12 @@ TEST_F(ThemeServiceTest, ThemeUpgrade) {
   EXPECT_EQ(scoper2.extension_id(), theme_service_->GetThemeID());
 
   // 1) Upgrading the current theme should not revert to the default theme.
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(theme_service_));
+  test::ThemeServiceChangedWaiter waiter(theme_service_);
   UpdateUnpackedTheme(scoper2.extension_id());
 
   // The ThemeService should have sent an theme change notification even though
   // the id of the current theme did not change.
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 
   EXPECT_EQ(scoper2.extension_id(), theme_service_->GetThemeID());
   EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
@@ -398,8 +395,9 @@ TEST_F(ThemeServiceTest, UninstallThemeWhenNoReinstallers) {
     EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
     EXPECT_EQ(scoper2.extension_id(), theme_service_->GetThemeID());
 
+    test::ThemeServiceChangedWaiter waiter(theme_service_);
     reinstaller->Reinstall();
-    WaitForThemeInstall();
+    waiter.WaitForThemeChanged();
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(IsExtensionDisabled(scoper2.extension_id()));
     EXPECT_EQ(scoper1.extension_id(), theme_service_->GetThemeID());

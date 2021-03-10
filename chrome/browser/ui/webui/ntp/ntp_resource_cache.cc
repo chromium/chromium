@@ -18,7 +18,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -48,7 +47,6 @@
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -156,9 +154,7 @@ std::string GetNewTabBackgroundTilingCSS(
 
 NTPResourceCache::NTPResourceCache(Profile* profile)
     : profile_(profile), is_swipe_tracking_from_scroll_events_enabled_(false) {
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(
-                     ThemeServiceFactory::GetForProfile(profile)));
+  ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
   base::RepeatingClosure callback = base::BindRepeating(
       &NTPResourceCache::OnPreferenceChanged, base::Unretained(this));
@@ -265,13 +261,12 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
   return new_tab_css_.get();
 }
 
-void NTPResourceCache::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_BROWSER_THEME_CHANGED, type);
-
-  // Invalidate the cache.
+void NTPResourceCache::OnThemeChanged() {
   Invalidate();
+}
+
+void NTPResourceCache::Shutdown() {
+  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 }
 
 void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {

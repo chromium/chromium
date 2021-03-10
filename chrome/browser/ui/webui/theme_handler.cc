@@ -8,21 +8,22 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/theme_resources.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_ui.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ThemeHandler
 
 ThemeHandler::ThemeHandler() = default;
-ThemeHandler::~ThemeHandler() = default;
+
+ThemeHandler::~ThemeHandler() {
+  ThemeServiceFactory::GetForProfile(GetProfile())->RemoveObserver(this);
+}
 
 void ThemeHandler::RegisterMessages() {
   // These are not actual message registrations, but can't be done in the
@@ -37,9 +38,8 @@ void ThemeHandler::RegisterMessages() {
 
 void ThemeHandler::OnJavascriptAllowed() {
   // Listen for theme installation.
-  registrar_.Add(this, chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-                 content::Source<ThemeService>(
-                     ThemeServiceFactory::GetForProfile(GetProfile())));
+  ThemeServiceFactory::GetForProfile(GetProfile())->AddObserver(this);
+
   // Or native theme change.
   if (web_ui()) {
     theme_observation_.Observe(
@@ -48,14 +48,11 @@ void ThemeHandler::OnJavascriptAllowed() {
 }
 
 void ThemeHandler::OnJavascriptDisallowed() {
-  registrar_.RemoveAll();
+  ThemeServiceFactory::GetForProfile(GetProfile())->RemoveObserver(this);
   theme_observation_.Reset();
 }
 
-void ThemeHandler::Observe(int type,
-                           const content::NotificationSource& source,
-                           const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_BROWSER_THEME_CHANGED, type);
+void ThemeHandler::OnThemeChanged() {
   SendThemeChanged();
 }
 

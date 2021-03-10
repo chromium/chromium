@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/themes/theme_helper.h"
@@ -26,6 +27,7 @@
 
 class BrowserThemePack;
 class CustomThemeSupplier;
+class ThemeServiceObserver;
 class ThemeSyncableService;
 class Profile;
 
@@ -145,6 +147,10 @@ class ThemeService : public KeyedService,
   // Returns |ThemeService::ThemeReinstaller| for the current theme.
   std::unique_ptr<ThemeService::ThemeReinstaller>
   BuildReinstallerForCurrentTheme();
+
+  void AddObserver(ThemeServiceObserver* observer);
+
+  void RemoveObserver(ThemeServiceObserver* observer);
 
   const ThemeHelper& theme_helper_for_testing() const { return theme_helper_; }
 
@@ -293,6 +299,8 @@ class ThemeService : public KeyedService,
 
   ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observer_{this};
+
+  base::ObserverList<ThemeServiceObserver> observers_;
 
   base::WeakPtrFactory<ThemeService> weak_ptr_factory_{this};
 
