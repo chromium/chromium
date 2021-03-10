@@ -116,8 +116,11 @@ void PhoneHubTray::OnPhoneHubUiStateChanged() {
     return;
   }
 
-  if (content_view_)
+  if (content_view_) {
     bubble_view->RemoveChildView(content_view_);
+    delete content_view_;
+  }
+
   content_view_ = content_view.get();
   bubble_view->AddChildView(std::move(content_view));
 
