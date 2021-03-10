@@ -13,7 +13,6 @@ include_rules = [
     "+base/files",
     "+base/containers/flat_map.h",
     "+base/guid.h",
-    "+base/i18n/uchar.h",
     "+base/json",
     "+base/location.h",
     "+base/logging.h",

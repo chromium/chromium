@@ -128,12 +128,9 @@ TEST(UtfOffsetTest, Utf8OffsetFromUtf16Offset) {
   };
 
   for (const auto& test_case : kTestCases) {
-    // TODO(crbug.com/911896): Get rid of reinterpret_cast on switching
-    // to char16_t.
-    base::string16 text(reinterpret_cast<const char16_t*>(test_case.str));
     EXPECT_EQ(test_case.expect,
-              Utf8OffsetFromUtf16Offset(text, test_case.offset))
-        << " at " << text << "[" << test_case.offset << "]";
+              Utf8OffsetFromUtf16Offset(test_case.str, test_case.offset))
+        << " at " << test_case.str << "[" << test_case.offset << "]";
   }
 }
 

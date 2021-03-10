@@ -4,7 +4,6 @@
 
 #include "third_party/blink/public/platform/url_conversion.h"
 
-#include "base/i18n/uchar.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,8 +23,7 @@ GURL WebStringToGURL(const WebString& web_string) {
   }
 
   // GURL can consume UTF-16 directly.
-  return GURL(base::StringPiece16(base::i18n::ToChar16Ptr(str.Characters16()),
-                                  str.length()));
+  return GURL(base::StringPiece16(str.Characters16(), str.length()));
 }
 
 }  // namespace blink

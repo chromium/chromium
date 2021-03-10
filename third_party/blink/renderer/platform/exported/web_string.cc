@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 
-#include "base/i18n/uchar.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
@@ -57,8 +56,7 @@ WebString& WebString::operator=(const WebString&) = default;
 WebString& WebString::operator=(WebString&&) = default;
 
 WebString::WebString(const WebUChar* data, size_t len)
-    : impl_(StringImpl::Create8BitIfPossible(base::i18n::ToUCharPtr(data),
-                                             len)) {}
+    : impl_(StringImpl::Create8BitIfPossible(data, len)) {}
 
 void WebString::Reset() {
   impl_ = nullptr;
@@ -77,8 +75,7 @@ const WebLChar* WebString::Data8() const {
 }
 
 const WebUChar* WebString::Data16() const {
-  return impl_ && !Is8Bit() ? base::i18n::ToChar16Ptr(impl_->Characters16())
-                            : nullptr;
+  return impl_ && !Is8Bit() ? impl_->Characters16() : nullptr;
 }
 
 std::string WebString::Utf8(UTF8ConversionMode mode) const {

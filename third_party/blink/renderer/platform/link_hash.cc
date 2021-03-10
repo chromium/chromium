@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/platform/link_hash.h"
 
-#include "base/i18n/uchar.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -53,8 +52,7 @@ static bool ResolveRelative(const KURL& base,
                                 relative_utf8.size(), nullptr, buffer, &parsed);
   }
   return url::ResolveRelative(base_utf8.data(), base_utf8.size(),
-                              base.GetParsed(),
-                              base::i18n::ToChar16Ptr(relative.Characters16()),
+                              base.GetParsed(), relative.Characters16(),
                               relative.length(), nullptr, buffer, &parsed);
 }
 

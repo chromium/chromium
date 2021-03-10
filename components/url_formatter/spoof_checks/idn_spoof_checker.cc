@@ -5,7 +5,6 @@
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
 #include "base/check_op.h"
-#include "base/i18n/uchar.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -358,7 +357,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
     base::StringPiece16 top_level_domain_unicode) {
   UErrorCode status = U_ZERO_ERROR;
   int32_t result =
-      uspoof_check(checker_, base::i18n::ToUCharPtr(label.data()),
+      uspoof_check(checker_, label.data(),
                    base::checked_cast<int32_t>(label.size()), nullptr, &status);
   // If uspoof_check fails (due to library failure), or if any of the checks
   // fail, treat the IDN as unsafe.

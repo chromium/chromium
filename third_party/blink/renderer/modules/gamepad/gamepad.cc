@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
 
-#include "base/i18n/uchar.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
@@ -58,10 +57,9 @@ Gamepad::~Gamepad() = default;
 void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad) {
   bool newly_connected;
   GamepadComparisons::HasGamepadConnectionChanged(
-      connected(),               // Old connected.
-      device_gamepad.connected,  // New connected.
-      id() !=
-          StringView(base::i18n::ToUCharPtr(device_gamepad.id)),  // ID changed.
+      connected(),                            // Old connected.
+      device_gamepad.connected,               // New connected.
+      id() != StringView(device_gamepad.id),  // ID changed.
       &newly_connected, nullptr);
 
   SetConnected(device_gamepad.connected);
@@ -76,7 +74,7 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad) {
   // These fields are not expected to change and will only be written when the
   // gamepad is newly connected.
   if (newly_connected) {
-    SetId(base::i18n::ToUCharPtr(device_gamepad.id));
+    SetId(device_gamepad.id);
     SetMapping(device_gamepad.mapping);
   }
 }

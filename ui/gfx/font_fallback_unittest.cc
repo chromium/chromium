@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/i18n/uchar.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -238,8 +237,8 @@ std::vector<FallbackFontTestCase> GetSampleFontTestCases() {
     // Make a sample text to test the script.
     char16_t text[8];
     UErrorCode errorCode = U_ZERO_ERROR;
-    int text_length = uscript_getSampleString(
-        script, base::i18n::ToUCharPtr(text), base::size(text), &errorCode);
+    int text_length =
+        uscript_getSampleString(script, text, base::size(text), &errorCode);
     if (text_length <= 0 || errorCode != U_ZERO_ERROR)
       continue;
 

@@ -5,7 +5,6 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 
 #include "base/files/file_path.h"
-#include "base/i18n/uchar.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -18,8 +17,8 @@ base::FilePath StringToFilePath(const String& str) {
     return base::FilePath();
 
   if (!str.Is8Bit()) {
-    return base::FilePath::FromUTF16Unsafe(base::StringPiece16(
-        base::i18n::ToChar16Ptr(str.Characters16()), str.length()));
+    return base::FilePath::FromUTF16Unsafe(
+        base::StringPiece16(str.Characters16(), str.length()));
   }
 
 #if defined(OS_POSIX)

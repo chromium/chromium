@@ -6,7 +6,6 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
-#include "base/i18n/uchar.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -76,7 +75,7 @@ double ScoreForMatches(const std::vector<MatchRecord>& matches,
 }
 
 size_t LengthInCodePoints(const base::string16& str) {
-  return u_countChar32(base::i18n::ToUCharPtr(str.data()), str.size());
+  return u_countChar32(str.data(), str.size());
 }
 
 // Returns a positive score if every code point in |needle| is present in
