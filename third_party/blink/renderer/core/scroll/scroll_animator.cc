@@ -101,10 +101,20 @@ ScrollResult ScrollAnimator::UserScroll(
   // scroll, the callback is invoked immediately without being stored.
   DCHECK(HasRunningAnimation() || on_finish_.is_null());
 
+#if defined(OS_MAC)
+  have_scrolled_since_page_load_ = true;
+#endif
+
   base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
-  if (!scrollable_area_->ScrollAnimatorEnabled() ||
-      granularity == ScrollGranularity::kScrollByPrecisePixel) {
+  bool is_instant_scroll =
+#if defined(OS_MAC)
+      granularity == ScrollGranularity::kScrollByPixel ||
+#endif
+      !scrollable_area_->ScrollAnimatorEnabled() ||
+      granularity == ScrollGranularity::kScrollByPrecisePixel;
+
+  if (is_instant_scroll) {
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
@@ -387,6 +397,9 @@ void ScrollAnimator::CancelAnimation() {
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_)
     std::move(on_finish_).Run();
+#if defined(OS_MAC)
+  have_scrolled_since_page_load_ = false;
+#endif
 }
 
 void ScrollAnimator::TakeOverCompositorAnimation() {

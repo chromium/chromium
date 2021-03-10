@@ -60,8 +60,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
   if (current_offset_ == new_pos)
     return ScrollResult(false, false, delta.Width(), delta.Height());
 
-  current_offset_ = new_pos;
-
+  SetCurrentOffset(new_pos);
   NotifyOffsetChanged();
 
   return ScrollResult(consumed_delta.Width(), consumed_delta.Height(),
@@ -71,7 +70,7 @@ ScrollResult ScrollAnimatorBase::UserScroll(
 
 void ScrollAnimatorBase::ScrollToOffsetWithoutAnimation(
     const ScrollOffset& offset) {
-  current_offset_ = offset;
+  SetCurrentOffset(offset);
   NotifyOffsetChanged();
 }
 

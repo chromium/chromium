@@ -10,6 +10,8 @@ blink_core_sources_scroll = [
   "programmatic_scroll_animator.h",
   "scroll_alignment.cc",
   "scroll_alignment.h",
+  "scroll_animator.cc",
+  "scroll_animator.h",
   "scroll_animator_base.cc",
   "scroll_animator_base.h",
   "scroll_animator_compositor_coordinator.cc",
@@ -22,6 +24,7 @@ blink_core_sources_scroll = [
   "scrollable_area.h",
   "scrollbar.cc",
   "scrollbar.h",
+  "mac_scrollbar_animator.h",
   "scrollbar_layer_delegate.cc",
   "scrollbar_layer_delegate.h",
   "scrollbar_theme.cc",
@@ -41,16 +44,11 @@ if (is_android) {
 
 if (is_mac) {
   blink_core_sources_scroll += [
-    "scroll_animator_mac.h",
-    "scroll_animator_mac.mm",
+    "mac_scrollbar_animator_impl.h",
+    "mac_scrollbar_animator_impl.mm",
     "scrollbar_theme_mac.h",
     "scrollbar_theme_mac.mm",
     "web_scrollbar_theme.mm",
-  ]
-} else {
-  blink_core_sources_scroll += [
-    "scroll_animator.cc",
-    "scroll_animator.h",
   ]
 }
 

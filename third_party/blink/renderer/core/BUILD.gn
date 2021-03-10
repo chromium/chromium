@@ -1564,6 +1564,8 @@ source_set("unit_tests") {
     "script/module_record_resolver_impl_test.cc",
     "script/module_script_test.cc",
     "script/script_runner_test.cc",
+    "scroll/scroll_animator_test.cc",
+    "scroll/scroll_test.cc",
     "scroll/scrollable_area_test.cc",
     "scroll/scrollbar_test_suite.h",
     "scroll/scrollbar_theme_overlay_test.cc",
@@ -1665,13 +1667,6 @@ source_set("unit_tests") {
   ]
 
   data_deps = [ ":unit_tests_data" ]
-
-  if (!is_mac) {
-    sources += [
-      "scroll/scroll_animator_test.cc",
-      "scroll/scroll_test.cc",
-    ]
-  }
 
   if (use_aura) {
     sources += [ "scroll/scrollbar_theme_aura_test.cc" ]

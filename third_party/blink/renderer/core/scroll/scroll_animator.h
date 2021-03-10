@@ -34,6 +34,7 @@
 #include <memory>
 #include "base/time/default_tick_clock.h"
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
@@ -130,6 +131,10 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
 
   void Trace(Visitor*) const override;
 
+#if defined(OS_MAC)
+  bool HaveScrolledSincePageLoad() { return have_scrolled_since_page_load_; }
+#endif
+
  protected:
   // Returns whether or not the animation was sent to the compositor.
   virtual bool SendAnimationToCompositor();
@@ -157,6 +162,14 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // on_finish_ is a callback to call on animation finished, cancelled, or
   // otherwise interrupted in any way.
   ScrollableArea::ScrollCallback on_finish_;
+
+  // TODO(crbug.com/1183387): investigate usage scenarios of this flag to verify
+  // if it is still useful.
+  // TODO(crbug.com/1122682): This is necessary for fade-in/out animations
+  // on Mac scrollbars. Remove this when MacScrollbarAnimatorImpl is removed.
+#if defined(OS_MAC)
+  bool have_scrolled_since_page_load_;
+#endif
 };
 
 }  // namespace blink

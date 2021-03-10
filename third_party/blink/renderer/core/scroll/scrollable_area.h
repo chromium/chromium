@@ -65,6 +65,7 @@ class Node;
 class PaintLayer;
 class ProgrammaticScrollAnimator;
 class ScrollAnchor;
+class MacScrollbarAnimator;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
 class SmoothScrollSequencer;
@@ -155,8 +156,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void MouseExitedScrollbar(Scrollbar&);
   void MouseCapturedScrollbar();
   void MouseReleasedScrollbar();
-  void ContentAreaDidShow() const;
-  void ContentAreaDidHide() const;
 
   virtual const cc::SnapContainerData* GetSnapContainerData() const {
     return nullptr;
@@ -207,8 +206,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return base::nullopt;
   }
 
-  void FinishCurrentScrollAnimations() const;
-
   virtual void DidAddScrollbar(Scrollbar&, ScrollbarOrientation);
   virtual void WillRemoveScrollbar(Scrollbar&, ScrollbarOrientation);
 
@@ -229,6 +226,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     return static_cast<ScrollbarOverlayColorTheme>(
         scrollbar_overlay_color_theme_);
   }
+
+  MacScrollbarAnimator* GetMacScrollbarAnimator() const;
 
   // This getter will create a ScrollAnimatorBase if it doesn't already exist.
   ScrollAnimatorBase& GetScrollAnimator() const;
@@ -371,7 +370,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual IntPoint LastKnownMousePosition() const { return IntPoint(); }
 
   virtual bool ShouldSuspendScrollAnimations() const { return true; }
-  virtual void ScrollbarStyleChanged() {}
   virtual bool ScrollbarsCanBeActive() const = 0;
 
   virtual CompositorElementId GetScrollElementId() const = 0;
@@ -405,7 +403,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Overlay scrollbars can "fade-out" when inactive. This value should only be
   // updated if BlinkControlsOverlayVisibility is true in the
   // ScrollbarTheme. On Mac, where it is false, this can only be updated from
-  // the ScrollbarAnimatorMac painting code which will do so via
+  // the MacScrollbarAnimatorImpl painting code which will do so via
   // SetScrollbarsHiddenFromExternalAnimator.
   virtual bool ScrollbarsHiddenIfOverlay() const;
   void SetScrollbarsHiddenIfOverlay(bool);
@@ -630,6 +628,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       mojom::blink::ScrollBehavior behavior =
           mojom::blink::ScrollBehavior::kSmooth,
       base::ScopedClosureRunner on_finish = base::ScopedClosureRunner());
+
+  // This animator is used to handle painting animations for MacOS scrollbars
+  // using AppKit-specific code (Cocoa APIs). It requires input from
+  // ScrollableArea about changes on scrollbars. For other platforms, painting
+  // is done by blink, and this member will be a nullptr.
+  mutable Member<MacScrollbarAnimator> scrollbar_animator_;
 
   mutable Member<ScrollAnimatorBase> scroll_animator_;
   mutable Member<ProgrammaticScrollAnimator> programmatic_scroll_animator_;

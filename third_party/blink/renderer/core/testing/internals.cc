@@ -140,6 +140,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
+#include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -3663,8 +3664,12 @@ bool Internals::setScrollbarVisibilityInScrollableArea(Node* node,
                                                        bool visible) {
   if (ScrollableArea* scrollable_area = ScrollableAreaForNode(node)) {
     scrollable_area->SetScrollbarsHiddenForTesting(!visible);
-    scrollable_area->GetScrollAnimator().SetScrollbarsVisibleForTesting(
-        visible);
+
+    if (MacScrollbarAnimator* scrollbar_animator =
+            scrollable_area->GetMacScrollbarAnimator()) {
+      scrollbar_animator->SetScrollbarsVisibleForTesting(visible);
+    }
+
     return scrollable_area->GetPageScrollbarTheme().UsesOverlayScrollbars();
   }
   return false;
