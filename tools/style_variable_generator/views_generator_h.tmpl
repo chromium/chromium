@@ -25,16 +25,24 @@ enum class ColorName {
 {%- if opacities %}
 
 enum class OpacityName {
-{%-   for name in opacities %}
+{%-   for name in opacities.keys() %}
   {{name | to_const_name}},
 {%-   endfor %}
 };
 
-constexpr SkAlpha GetOpacity(OpacityName opacity_name) {
+constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
   switch (opacity_name) {
-{%-   for name, value in opacities.items() %}
+{%-   for name, mode_values in opacities.items() %}
     case OpacityName::{{name | to_const_name}}:
-      return {{value | alpha_to_hex}};
+{%-   if mode_values[Modes.DARK] %}
+      if (is_dark_mode) {
+        return {{mode_values[Modes.DARK] | alpha_to_hex}};
+      } else {
+        return {{mode_values[Modes.LIGHT] | alpha_to_hex}};
+      }
+{%-    else %}
+      return {{mode_values[Modes.LIGHT] | alpha_to_hex}};
+{%-    endif %}
 {%-   endfor %}
   }
 }

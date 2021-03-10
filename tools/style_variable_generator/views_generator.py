@@ -55,19 +55,19 @@ class ViewsStyleGenerator(BaseGenerator):
     def _ToConstName(self, var_name):
         return 'k%s' % var_name.title().replace('_', '')
 
-    def _AlphaToHex(self, a):
-        return '0x%X' % math.floor(a * 255)
+    def _AlphaToHex(self, opacity):
+        return '0x%X' % math.floor(opacity.a * 255)
 
     def _CppColor(self, c):
         '''Returns the C++ color representation of |c|'''
         assert (isinstance(c, Color))
 
         def CppOpacity(color):
-            if c.a != -1:
-                return self._AlphaToHex(c.a)
-            elif c.opacity_var:
-                return 'GetOpacity(OpacityName::%s)' % self._ToConstName(
-                    c.opacity_var)
+            if c.opacity.a != -1:
+                return self._AlphaToHex(c.opacity)
+            elif c.opacity.var:
+                return ('GetOpacity(OpacityName::%s, is_dark_mode)' %
+                    self._ToConstName(c.opacity.var))
             raise ValueError('Color with invalid opacity: ' + repr(color))
 
         if c.var:
@@ -79,7 +79,7 @@ class ViewsStyleGenerator(BaseGenerator):
                 'SkColorSetA(ResolveColor(ColorName::%s, is_dark_mode), %s)' %
                 (self._ToConstName(c.RGBVarToVar()), CppOpacity(c)))
 
-        if c.a != 1:
+        if c.opacity.a != 1:
             return 'SkColorSetARGB(%s, 0x%X, 0x%X, 0x%X)' % (CppOpacity(c),
                                                              c.r, c.g, c.b)
         else:

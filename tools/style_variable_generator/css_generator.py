@@ -29,7 +29,7 @@ class CSSStyleGenerator(BaseGenerator):
             colors = self.model[VariableType.COLOR].Flatten()
 
         return {
-            'opacities': self.model[VariableType.OPACITY],
+            'opacities': self.model[VariableType.OPACITY].Flatten(),
             'colors': colors,
         }
 
@@ -68,11 +68,11 @@ class CSSStyleGenerator(BaseGenerator):
         return '--%s%s' % (self._GetCSSVarPrefix(model_name),
                            model_name.replace('_', '-'))
 
-    def _CSSOpacity(self, c):
-        if c.opacity_var:
-            return 'var(%s)' % self._ToCSSVarName(c.opacity_var)
+    def _CSSOpacity(self, opacity):
+        if opacity.var:
+            return 'var(%s)' % self._ToCSSVarName(opacity.var)
 
-        return ('%f' % c.a).rstrip('0').rstrip('.')
+        return ('%f' % opacity.a).rstrip('0').rstrip('.')
 
     def _CSSColor(self, c):
         '''Returns the CSS color representation of |c|'''
@@ -81,15 +81,15 @@ class CSSStyleGenerator(BaseGenerator):
             return 'var(%s)' % self._ToCSSVarName(c.var)
 
         if c.rgb_var:
-            if c.a != 1:
+            if c.opacity.a != 1:
                 return 'rgba(var(%s-rgb), %g)' % (self._ToCSSVarName(
-                    c.RGBVarToVar()), self._CSSOpacity(c))
+                    c.RGBVarToVar()), self._CSSOpacity(c.opacity))
             else:
                 return 'rgb(var(%s-rgb))' % self._ToCSSVarName(c.RGBVarToVar())
 
         elif c.a != 1:
             return 'rgba(%d, %d, %d, %g)' % (c.r, c.g, c.b,
-                                             self._CSSOpacity(c))
+                                             self._CSSOpacity(c.opacity))
         else:
             return 'rgb(%d, %d, %d)' % (c.r, c.g, c.b)
 
@@ -105,8 +105,8 @@ class CSSStyleGenerator(BaseGenerator):
 
     def _CSSColorFromRGBVar(self, model_name, color):
         '''Returns the CSS color representation given a color name and color'''
-        if color.a != 1 and (color.a != -1 or color.opacity_var):
+        if color.opacity and color.opacity.a != 1:
             return 'rgba(var(%s-rgb), %s)' % (self._ToCSSVarName(model_name),
-                                              self._CSSOpacity(color))
+                                              self._CSSOpacity(color.opacity))
         else:
             return 'rgb(var(%s-rgb))' % self._ToCSSVarName(model_name)

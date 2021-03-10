@@ -7,11 +7,15 @@
  *  {{path}}
 {%-  endfor %}
  */
-{% macro list_colors(mode) -%}
+{% macro render_variables_for_mode(mode) -%}
 {%- for model_name, color in colors[mode].items() %}
   {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
   {{model_name | to_css_var_name}}: {{css_color_from_rgb_var(model_name, color)}};
 {% endfor %}
+
+{%- for name, value in opacities[mode].items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%  endfor -%}
 {%- endmacro %}
 {#
 The :not(body) adds extra selector specificity so that these colors 'win'
@@ -20,17 +24,15 @@ TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
 Chrome OS pages.
 -#}
 html:not(body) {
-{{- list_colors(Modes.DEFAULT) -}}
+{{- render_variables_for_mode(Modes.DEFAULT) -}}
 
-{%- for name, value in opacities.items() %}
-  {{name | to_css_var_name}}: {{value}};
-{%  endfor -%}
+
 }
 
 {%- if colors[Modes.DARK] and dark_mode_selector is not none %}
 
 {{dark_mode_selector}} {
-{{- list_colors(Modes.DARK) -}}
+{{- render_variables_for_mode(Modes.DARK) -}}
 }
 {%- elif colors[Modes.DARK] %}
 
@@ -42,7 +44,7 @@ TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
 Chrome OS pages.
 #}
 html:not(body) {
-{{- list_colors(Modes.DARK) -}}
+{{- render_variables_for_mode(Modes.DARK) -}}
 }
 }
 {%- endif %}

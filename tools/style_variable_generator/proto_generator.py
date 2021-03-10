@@ -69,7 +69,7 @@ class BaseProtoStyleGenerator(BaseGenerator):
         def AlphaToInt(alpha):
             return int(alpha * 255)
 
-        return '0x%X%02X%02X%02X' % (AlphaToInt(c.a), c.r, c.g, c.b)
+        return '0x%X%02X%02X%02X' % (AlphaToInt(c.opacity.a), c.r, c.g, c.b)
 
 
 class ProtoStyleGenerator(BaseProtoStyleGenerator):

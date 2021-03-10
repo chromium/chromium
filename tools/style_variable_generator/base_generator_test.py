@@ -10,6 +10,11 @@ class BaseGeneratorTest(unittest.TestCase):
     def setUp(self):
         self.generator = BaseGenerator()
 
+    def ResolveOpacity(self, name, mode=Modes.LIGHT):
+        opacity_model = self.generator.model[VariableType.OPACITY]
+        opacity = opacity_model.Resolve(name, mode)
+        return opacity_model.ResolveOpacity(opacity, mode).a
+
     def ResolveRGBA(self, name, mode=Modes.LIGHT):
         return repr(
             self.generator.model[VariableType.COLOR].ResolveToRGBA(name, mode))
@@ -110,15 +115,22 @@ class BaseGeneratorTest(unittest.TestCase):
 
     def testReferenceOpacity(self):
         # Add a reference opacity.
-        self.assertRaises(
-            ValueError, self.generator.AddJSONToModel, '''
+        self.generator.AddJSONToModel('''
 {
+  colors: {
+    google_grey_900: "rgba(255, 255, 255, $disabled_opacity)",
+  },
   opacities: {
-    disabled_opacity: "$another_opacity",
+    disabled_opacity: "$second_opacity",
+    second_opacity: { "light": "$another_opacity", "dark": 1 },
     another_opacity: 0.5,
   },
 }
         ''')
+        self.assertEqual(self.ResolveRGBA('google_grey_900'),
+                         'rgba(255, 255, 255, 0.5)')
+        self.assertEqual(self.ResolveOpacity('disabled_opacity'), 0.5)
+        self.assertEqual(self.ResolveOpacity('disabled_opacity', Modes.DARK), 1)
 
     def testMissingOpacity(self):
         # Reference a missing opacity.
