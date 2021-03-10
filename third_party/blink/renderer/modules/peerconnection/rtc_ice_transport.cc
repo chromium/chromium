@@ -77,49 +77,7 @@ class DtlsIceTransportAdapterCrossThreadFactory
   rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_;
 };
 
-class DefaultIceTransportAdapterCrossThreadFactory
-    : public IceTransportAdapterCrossThreadFactory {
- public:
-  void InitializeOnMainThread(LocalFrame& frame) override {
-    DCHECK(!port_allocator_);
-    DCHECK(!async_resolver_factory_);
-
-    auto* rtc_dependency_factory =
-        blink::PeerConnectionDependencyFactory::GetInstance();
-    port_allocator_ = rtc_dependency_factory->CreatePortAllocator(
-        frame.Client()->GetWebFrame());
-    async_resolver_factory_ =
-        rtc_dependency_factory->CreateAsyncResolverFactory();
-  }
-
-  std::unique_ptr<IceTransportAdapter> ConstructOnWorkerThread(
-      IceTransportAdapter::Delegate* delegate) override {
-    DCHECK(port_allocator_);
-    DCHECK(async_resolver_factory_);
-    return std::make_unique<IceTransportAdapterImpl>(
-        delegate, std::move(port_allocator_),
-        std::move(async_resolver_factory_));
-  }
-
- private:
-  std::unique_ptr<cricket::PortAllocator> port_allocator_;
-  std::unique_ptr<webrtc::AsyncResolverFactory> async_resolver_factory_;
-};
-
 }  // namespace
-
-RTCIceTransport* RTCIceTransport::Create(ExecutionContext* context) {
-  scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
-      context->GetTaskRunner(TaskType::kNetworking);
-
-  PeerConnectionDependencyFactory::GetInstance()->EnsureInitialized();
-  scoped_refptr<base::SingleThreadTaskRunner> host_thread =
-      PeerConnectionDependencyFactory::GetInstance()
-          ->GetWebRtcNetworkTaskRunner();
-  return MakeGarbageCollected<RTCIceTransport>(
-      context, std::move(proxy_thread), std::move(host_thread),
-      std::make_unique<DefaultIceTransportAdapterCrossThreadFactory>());
-}
 
 RTCIceTransport* RTCIceTransport::Create(
     ExecutionContext* context,
