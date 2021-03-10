@@ -75,8 +75,12 @@ class LoginBubbleHandler : public ui::EventHandler {
     if (!bubble_->GetVisible())
       return;
 
-    if (bubble_->GetBubbleOpener() && bubble_->GetBubbleOpener()->HasFocus())
+    // Hide the bubble if the bubble opener is about to lose focus from tab
+    // traversal.
+    if (bubble_->GetBubbleOpener() && bubble_->GetBubbleOpener()->HasFocus() &&
+        event->key_code() != ui::VKEY_TAB) {
       return;
+    }
 
     if (login_views_utils::HasFocusInAnyChildView(bubble_))
       return;
