@@ -175,6 +175,10 @@ public class WebViewChromiumAwInit {
             AwBrowserProcess.start();
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(true /* updateMetricsConsent */);
 
+            // This has to be done after variations are initialized, so components could be
+            // registered or not depending on the variations flags.
+            AwBrowserProcess.loadComponents();
+
             mSharedStatics = new SharedStatics();
             if (BuildInfo.isDebugAndroid()) {
                 mSharedStatics.setWebContentsDebuggingEnabledUnconditionally(true);

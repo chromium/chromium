@@ -13,6 +13,7 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/cdm/browser",
+  "+components/component_updater/android",
   "+components/crash/content/browser",
   "+components/crash/core",
   "+components/download/public/common",

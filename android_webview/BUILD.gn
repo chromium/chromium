@@ -530,6 +530,7 @@ android_library("browser_java") {
     "//components/autofill/android:autofill_java",
     "//components/autofill/android/provider:java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/component_updater/android:embedded_component_loader_java",
     "//components/content_capture/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",

@@ -46,6 +46,8 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
+import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -57,6 +59,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -483,11 +486,31 @@ public final class AwBrowserProcess {
         }
     }
 
+    /**
+     * Load components files from {@link
+     * org.chromium.android_webview.services.ComponentsProviderService}.
+     */
+    public static void loadComponents() {
+        ComponentLoaderPolicyBridge[] componentPolicies =
+                AwBrowserProcessJni.get().getComponentLoaderPolicies();
+        // Don't connect to the service if there are no components to load.
+        if (componentPolicies.length == 0) {
+            return;
+        }
+        EmbeddedComponentLoader loader =
+                new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
+        final Intent intent = new Intent();
+        intent.setClassName(
+                ContextUtils.getApplicationContext(), ServiceNames.AW_COMPONENTS_PROVIDER_SERVICE);
+        loader.connect(intent);
+    }
+
     // Do not instantiate this class.
     private AwBrowserProcess() {}
 
     @NativeMethods
     interface Natives {
         void setProcessNameCrashKey(String processName);
+        ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
     }
 }
