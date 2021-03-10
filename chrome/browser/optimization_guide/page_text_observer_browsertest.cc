@@ -95,9 +95,8 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     InProcessBrowserTest::SetUpOnMainThread();
 
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&PageTextObserverBrowserTest::HandleSlowRequest,
-                            base::Unretained(this)));
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &PageTextObserverBrowserTest::RequestHandler, base::Unretained(this)));
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/optimization_guide");
 
@@ -112,13 +111,17 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
     return PageTextObserver::FromWebContents(web_contents());
   }
 
+ protected:
+  std::string dynamic_response_body_;
+
  private:
-  // This script is render blocking in the HTML, but is intentionally slow. This
-  // provides important time between commit and first layout for any text dump
-  // requests to make it to the renderer, reducing flakes.
-  std::unique_ptr<net::test_server::HttpResponse> HandleSlowRequest(
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
     std::string path_value;
+
+    // This script is render blocking in the HTML, but is intentionally slow.
+    // This provides important time between commit and first layout for any text
+    // dump requests to make it to the renderer, reducing flakes.
     if (request.GetURL().path() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
@@ -128,6 +131,16 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
       resp->set_content(std::string());
       return resp;
     }
+
+    if (request.GetURL().path() == "/dynamic.html") {
+      std::unique_ptr<net::test_server::BasicHttpResponse> resp =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      resp->set_code(net::HTTP_OK);
+      resp->set_content_type("text/html");
+      resp->set_content(dynamic_response_body_);
+      return resp;
+    }
+
     return nullptr;
   }
 };
@@ -183,6 +196,44 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
 
   ASSERT_TRUE(on_load_consumer.text());
   EXPECT_EQ(base::ASCIIToUTF16("hello\n\nworld"), *on_load_consumer.text());
+}
+
+class PageTextObserverSingleProcessBrowserTest
+    : public PageTextObserverBrowserTest {
+ public:
+  PageTextObserverSingleProcessBrowserTest() = default;
+  ~PageTextObserverSingleProcessBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* cmd_line) override {
+    PageTextObserverBrowserTest::SetUpCommandLine(cmd_line);
+    cmd_line->AppendSwitch("single-process");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
+                       SameProcessIframe) {
+  PageTextObserver::CreateForWebContents(web_contents());
+  ASSERT_TRUE(observer());
+
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+  consumer.PopulateRequest(/*max_size=*/1024,
+                           /*events=*/{mojom::TextDumpEvent::kFinishedLoad});
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/dynamic.html"));
+  dynamic_response_body_ = base::StringPrintf(
+      "<html><body>"
+      "<p>foo</p>"
+      "<iframe src=\"%s\"></iframe>"
+      "</body></html>",
+      embedded_test_server()->GetURL("a.com", "/hello.html").spec().c_str());
+
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(consumer.was_called());
+
+  consumer.WaitForPageText();
+  ASSERT_TRUE(consumer.text());
+  EXPECT_EQ(base::ASCIIToUTF16("foo\n\nhello"), *consumer.text());
 }
 
 }  // namespace optimization_guide
