@@ -235,6 +235,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                             NGSimplifiedOOFLayoutAlgorithm* algorithm,
                             Vector<MulticolChildInfo>* multicol_children);
   NGConstraintSpace GetFragmentainerConstraintSpace(wtf_size_t index);
+  const NGBlockBreakToken* PreviousFragmentainerBreakToken(
+      wtf_size_t index) const;
   void ComputeStartFragmentIndexAndRelativeOffset(
       const ContainingBlockInfo& container_info,
       WritingMode default_writing_mode,

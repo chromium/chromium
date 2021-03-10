@@ -1230,6 +1230,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const NGConstraintSpace& space = GetFragmentainerConstraintSpace(index);
 
   // If we are a new fragment, find a non-spanner fragmentainer as a basis.
+  wtf_size_t original_index = index;
   while (
       index >= num_children ||
       !container_builder_->Children()[index].fragment->IsFragmentainerBox()) {
@@ -1243,19 +1244,13 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const auto& fragment =
       To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
 
-  // Grab the previous fragment's break token. We can't just use the current
-  // fragment's break token sequence, since there might not be one if we're
-  // adding a new fragment.
-  const NGBreakToken* previous_break_token =
-      (index == 0)
-          ? nullptr
-          : To<NGPhysicalBoxFragment>(
-                container_builder_->Children()[index - 1].fragment.get())
-                ->BreakToken();
+  const NGBlockBreakToken* previous_break_token =
+      PreviousFragmentainerBreakToken(add_to_last_fragment ? index
+                                                           : original_index);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
   NGLayoutAlgorithmParams params(node, fragment_geometry, space,
-                                 To<NGBlockBreakToken>(previous_break_token),
+                                 previous_break_token,
                                  /* early_break */ nullptr);
 
   // |algorithm| corresponds to the "mutable copy" of our original
@@ -1438,6 +1433,21 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
       *container_builder_->ConstraintSpace(), column_size,
       percentage_resolution_size, allow_discard_start_margin,
       /* balance_columns */ false);
+}
+
+const NGBlockBreakToken* NGOutOfFlowLayoutPart::PreviousFragmentainerBreakToken(
+    wtf_size_t index) const {
+  const NGBlockBreakToken* previous_break_token = nullptr;
+  for (wtf_size_t i = index; i > 0; --i) {
+    auto* previous_fragment =
+        container_builder_->Children()[i - 1].fragment.get();
+    if (previous_fragment->IsFragmentainerBox()) {
+      previous_break_token = To<NGBlockBreakToken>(
+          To<NGPhysicalBoxFragment>(previous_fragment)->BreakToken());
+      break;
+    }
+  }
+  return previous_break_token;
 }
 
 // Compute in which fragmentainer the OOF element will start its layout and

@@ -1403,13 +1403,9 @@ TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewColumns) {
   EXPECT_EQ(expectation, dump);
 }
 
-// TODO(almaher): Figure out why this is hitting a DCHECK in
-// AssertClearedPaintInvalidationFlags.
-//
 // Fragmented OOF element inside a nested multi-column starting at a
 // fragmentainer index beyond the last existing fragmentainer.
-TEST_F(NGOutOfFlowLayoutPartTest,
-       DISABLED_AbsposNestedFragmentationNewEmptyColumns) {
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposNestedFragmentationNewEmptyColumns) {
   SetBodyInnerHTML(
       R"HTML(
       <style>
@@ -1439,8 +1435,6 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       )HTML");
   String dump = DumpFragmentTree(GetElementById("container"));
 
-  // TODO(almaher): The OOFs are added out of order due to how ordering is
-  // currently handled in NGSimplifiedOOFLayoutAlgorithm.
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x100
     offset:0,0 size:1000x100
@@ -1451,9 +1445,9 @@ TEST_F(NGOutOfFlowLayoutPartTest,
             offset:0,0 size:55x40
           offset:258,0 size:242x40
             offset:0,0 size:55x40
+            offset:516,0 size:5x40
             offset:774,0 size:5x40
             offset:1032,0 size:5x40
-            offset:516,0 size:5x40
           offset:0,40 size:500x0
           offset:0,40 size:500x0
           offset:0,40 size:500x0
