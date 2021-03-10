@@ -63,6 +63,7 @@ CONTENT_EXPORT extern const base::Feature kCrashReporting;
 }  // namespace features
 
 namespace net {
+class HttpResponseHeaders;
 class IsolationInfo;
 class NetworkIsolationKey;
 }
@@ -336,6 +337,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the last committed origin of this RenderFrameHost.
   virtual const url::Origin& GetLastCommittedOrigin() = 0;
+
+  // Returns the current document's HTTP response headers. Note that this value
+  // will change when a cross-document navigation reuses RenderFrameHost and
+  // commits a new document in existing RenderFrameHost. Must not be called
+  // before committing a document
+  //
+  // This is null if there was no response: the initial empty document,
+  // about:blank, about:srcdoc, and MHTML iframes.
+  virtual const net::HttpResponseHeaders* GetLastResponseHeaders() = 0;
 
   // Returns the network isolation key used for subresources from the currently
   // committed navigation. It's set on commit and does not change until the next

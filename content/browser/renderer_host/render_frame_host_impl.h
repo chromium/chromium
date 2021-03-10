@@ -331,6 +331,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CrossOriginIsolationStatus GetCrossOriginIsolationStatus() override;
   const GURL& GetLastCommittedURL() override;
   const url::Origin& GetLastCommittedOrigin() override;
+  const net::HttpResponseHeaders* GetLastResponseHeaders() override;
   const net::NetworkIsolationKey& GetNetworkIsolationKey() override;
   const net::IsolationInfo& GetIsolationInfoForSubresources() override;
   net::IsolationInfo GetPendingIsolationInfoForSubresources() override;

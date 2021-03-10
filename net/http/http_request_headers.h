@@ -93,6 +93,8 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kTransferEncoding[];
   static const char kUserAgent[];
 
+  static const char kNoStoreDirective[];
+
   HttpRequestHeaders();
   HttpRequestHeaders(const HttpRequestHeaders& other);
   HttpRequestHeaders(HttpRequestHeaders&& other);

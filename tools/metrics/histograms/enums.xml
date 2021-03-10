@@ -33801,6 +33801,14 @@ Called by update_permissions_policy_enum.py.-->
       label="Not visible, no layout object created (e.g., display: none)"/>
 </enum>
 
+<enum name="FreezingAttemptOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure - Content doesn't exist"/>
+  <int value="2" label="Failure - Page has notification permission"/>
+  <int value="3"
+      label="Failure - Page has the 'Cache-control: no-store' header"/>
+</enum>
+
 <enum name="FtpDataConnectionError">
   <obsolete>
     Removed in Chrome 76.
