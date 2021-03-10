@@ -15,10 +15,10 @@
 #include "base/version.h"
 #include "components/google/core/common/google_util.h"
 #include "components/version_info/version_info.h"
+#include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/geolocation/CLLocation+OmniboxGeolocation.h"
 #import "ios/chrome/browser/geolocation/CLLocation+XGeoHeader.h"
-#import "ios/chrome/browser/geolocation/location_manager.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_authorization_alert.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller+Testing.h"
@@ -36,70 +36,6 @@
 
 namespace {
 
-// Feature to control how the location is use when sending omnibox requests.
-const base::Feature kSendLocationInOmnibox{"SendLocationInOmnibox",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-const char kSendLocationInOmniboxParamName[] = "location";
-const char kSendLocationInOmniboxParamNoLocation[] = "none";
-const char kSendLocationInOmniboxParamCoarseLocation[] = "coarse";
-
-// Returns whether the geolocation should be omitted when sending omnibox
-// requests.
-bool ShouldOmitLocation() {
-  if (@available(iOS 14, *)) {
-    // Check only on iOS 14 as the restricted location is only available on
-    // iOS 14.
-    if (!base::FeatureList::IsEnabled(kSendLocationInOmnibox))
-      return false;
-
-    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-        kSendLocationInOmnibox, kSendLocationInOmniboxParamName);
-    return field_trial_param == kSendLocationInOmniboxParamNoLocation;
-  }
-  return false;
-}
-
-// Returns whether the geolocation should be using the restricted settings when
-// sending omnibox requests.
-bool ShouldUseCoarseLocation() {
-  if (@available(iOS 14, *)) {
-    if (!base::FeatureList::IsEnabled(kSendLocationInOmnibox))
-      return false;
-
-    std::string field_trial_param = base::GetFieldTrialParamValueByFeature(
-        kSendLocationInOmnibox, kSendLocationInOmniboxParamName);
-    return field_trial_param == kSendLocationInOmniboxParamCoarseLocation;
-  }
-  return false;
-}
-
-// Values for the histogram that records whether we sent the X-Geo header for
-// an Omnibox query or why we did not do so. These match the definition of
-// GeolocationHeaderSentOrNot in Chromium
-// src-internal/tools/histograms/histograms.xml.
-typedef enum {
-  // The user disabled location for Google.com (not used by Chrome iOS).
-  kHeaderStateNotSentAuthorizationGoogleDenied = 0,
-  // The user has not yet determined Chrome's access to the current device
-  // location or Chrome's use of geolocation for Omnibox queries.
-  kHeaderStateNotSentAuthorizationNotDetermined,
-  // The current device location is not available.
-  kHeaderStateNotSentLocationNotAvailable,
-  // The current device location is stale.
-  kHeaderStateNotSentLocationStale,
-  // The X-Geo header was sent.
-  kHeaderStateSent,
-  // The user denied Chrome from accessing the current device location.
-  kHeaderStateNotSentAuthorizationChromeDenied,
-  // The user denied Chrome from using geolocation for Omnibox queries.
-  kHeaderStateNotSentAuthorizationOmniboxDenied,
-  // The user's Google search domain is not allowed.
-  kHeaderStateNotSentDomainNotAllowed,
-  // The number of possible of HeaderState values to report.
-  kHeaderStateCount,
-} HeaderState;
-
 // Values for the histograms that record the user's action when prompted to
 // authorize the use of location by Chrome. These match the definition of
 // GeolocationAuthorizationAction in Chromium
@@ -115,10 +51,6 @@ typedef enum {
   kAuthorizationActionCount,
 } AuthorizationAction;
 
-// Name of the histogram recording HeaderState.
-const char* const kGeolocationHeaderSentOrNotHistogram =
-    "Geolocation.HeaderSentOrNot";
-
 // Name of the histogram recording AuthorizationAction for an existing user.
 const char* const kGeolocationAuthorizationActionExistingUser =
     "Geolocation.AuthorizationActionExistingUser";
@@ -130,19 +62,15 @@ const char* const kGeolocationAuthorizationActionNewUser =
 }  // anonymous namespace
 
 @interface OmniboxGeolocationController () <
-    CRWWebStateObserver,
-    LocationManagerDelegate,
+    CLLocationManagerDelegate,
     OmniboxGeolocationAuthorizationAlertDelegate> {
+  CLLocationManager* _locationManager;
   OmniboxGeolocationLocalState* _localState;
-  LocationManager* _locationManager;
   OmniboxGeolocationAuthorizationAlert* _authorizationAlert;
-
-  // Bridge to observe the web state from Objective-C.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
   // Records whether we have deliberately presented the system prompt, so that
   // we can record the user's action in
-  // locationManagerDidChangeAuthorizationStatus:.
+  // locationManagerDidChangeAuthorization:.
   BOOL _systemPrompt;
 
   // Records whether we are prompting for a new user, so that we can record the
@@ -158,56 +86,18 @@ const char* const kGeolocationAuthorizationActionNewUser =
 // Convenience property lazily initializes |localState_|.
 @property(nonatomic, readonly) OmniboxGeolocationLocalState* localState;
 
-// Convenience property lazily initializes |locationManager_|.
-@property(nonatomic, readonly) LocationManager* locationManager;
-
-// A pointer to the current active webState to reload in case of authorization
-// changes. This WebState will be observed and the pointer will be set to null
-// in webStateDestroyed.
-@property(nonatomic) web::WebState* webStateToReload;
-
-// Whether the accuracy has been/should be reduced or not.
-// TODO(crbug.com/1165794): Those properties have been added for an experiment.
-// Do not use them and remove them once the experiment is done.
-@property(nonatomic, assign) BOOL accuracyReduced;
-@property(nonatomic, assign) BOOL shouldReduceAccuracy;
-
-// Returns YES if and only if |url| and |transition| specify an Omnibox query
-// that is eligible for geolocation.
-- (BOOL)URLIsEligibleQueryURL:(const GURL&)url
-                   transition:(ui::PageTransition)transition;
-
-// Returns YES if and only if |url| and |transition| specify an Omnibox query.
-//
-// Note: URLIsQueryURL:transition: is more liberal than
-// URLIsEligibleQueryURL:transition:. Use URLIsEligibleQueryURL:transition: and
-// not URLIsQueryURL:transition: to test Omnibox query URLs with respect to
-// sending location to Google.
-- (BOOL)URLIsQueryURL:(const GURL&)url
-           transition:(ui::PageTransition)transition;
+@property(nonatomic, strong) CLLocationManager* locationManager;
 
 // Returns YES if and only if |url| specifies a page for which we will prompt
 // the user to authorize the use of geolocation for Omnibox queries.
 - (BOOL)URLIsAuthorizationPromptingURL:(const GURL&)url;
 
-// Starts updating device location if needed.
-- (void)startUpdatingLocation;
-// Stops updating device location.
-- (void)stopUpdatingLocation;
-// If the current location is not stale, then adds the current location to the
-// current session entry for |webState| and reloads |webState|. If the current
-// location is stale, then does nothing.
-- (void)addLocationAndReloadWebState:(web::WebState*)webState;
 // Returns YES if and only if we should show an alert that prompts the user to
 // authorize using geolocation for Omnibox queries.
 - (BOOL)shouldShowAuthorizationAlert;
 // Shows an alert that prompts the user to authorize using geolocation for
-// Omnibox queries. Sets |webStateToReload| from |webState|, so that we can
-// reload |webState| if the user authorizes using geolocation.
+// Omnibox queries.
 - (void)showAuthorizationAlertForWebState:(web::WebState*)webState;
-// Records |headerState| for the |kGeolocationHeaderSentOrNotHistogram|
-// histogram.
-- (void)recordHeaderState:(HeaderState)headerState;
 // Records |authorizationAction|.
 - (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction;
 
@@ -221,12 +111,20 @@ const char* const kGeolocationAuthorizationActionNewUser =
   return instance;
 }
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _locationManager = [[CLLocationManager alloc] init];
+    [_locationManager setDelegate:self];
+  }
+  return self;
+}
+
 - (void)triggerSystemPromptForNewUser:(BOOL)newUser {
-  if (self.locationManager.locationServicesEnabled &&
-      self.locationManager.authorizationStatus ==
-          kCLAuthorizationStatusNotDetermined) {
+  if (self.locationServicesEnabled && CLLocationManager.authorizationStatus ==
+                                          kCLAuthorizationStatusNotDetermined) {
     // Set |systemPrompt_|, so that
-    // locationManagerDidChangeAuthorizationStatus: will know to handle any
+    // locationManagerDidChangeAuthorization: will know to handle any
     // CLAuthorizationStatus changes.
     //
     // TODO(crbug.com/661996): Remove the now useless
@@ -237,113 +135,15 @@ const char* const kGeolocationAuthorizationActionNewUser =
         geolocation::kAuthorizationStateNotDeterminedSystemPrompt;
 
     // Turn on location updates, so that iOS will prompt the user.
-    [self startUpdatingLocation];
-    self.webStateToReload = nullptr;
+    [self requestPermission];
     _newUser = newUser;
   }
 }
 
 - (void)locationBarDidBecomeFirstResponder:(ChromeBrowserState*)browserState {
   if (self.enabled && browserState && !browserState->IsOffTheRecord()) {
-    [self startUpdatingLocation];
+    [self requestPermission];
   }
-}
-
-- (void)locationBarDidResignFirstResponder:(ChromeBrowserState*)browserState {
-  // It's always okay to stop updating location.
-  [self stopUpdatingLocation];
-}
-
-- (void)locationBarDidSubmitURL {
-  // Stop updating the location when the user submits a query from the Omnibox.
-  // We're not interested in further updates until the next time the user puts
-  // the focus on the Omnbox.
-  [self stopUpdatingLocation];
-}
-
-- (BOOL)addLocationToNavigationItem:(web::NavigationItem*)item
-                       browserState:(web::BrowserState*)browserState {
-  // If this is incognito mode or is not an Omnibox query, then do nothing.
-  //
-  // Check the URL with URLIsQueryURL:transition: here and not
-  // URLIsEligibleQueryURL:transition:, because we want to log the cases where
-  // we did not send the X-Geo header due to the Google search domain not being
-  // allow-listed.
-  DCHECK(item);
-  const GURL& url = item->GetURL();
-  if (!browserState || browserState->IsOffTheRecord() ||
-      ![self URLIsQueryURL:url transition:item->GetTransitionType()]) {
-    return NO;
-  }
-
-  if (![[OmniboxGeolocationConfig sharedInstance] URLHasEligibleDomain:url]) {
-    [self recordHeaderState:kHeaderStateNotSentDomainNotAllowed];
-    return NO;
-  }
-
-  // At this point, we should only have Omnibox query URLs that are eligible
-  // for geolocation.
-  DCHECK([self URLIsEligibleQueryURL:url transition:item->GetTransitionType()]);
-
-  HeaderState headerState;
-  if (!self.locationManager.locationServicesEnabled) {
-    headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-  } else {
-    switch (self.localState.authorizationState) {
-      case geolocation::kAuthorizationStateNotDeterminedWaiting:
-      case geolocation::kAuthorizationStateNotDeterminedSystemPrompt:
-        if (self.locationManager.authorizationStatus ==
-                kCLAuthorizationStatusNotDetermined ||
-            [self shouldShowAuthorizationAlert]) {
-          headerState = kHeaderStateNotSentAuthorizationNotDetermined;
-        } else {
-          DCHECK(self.locationManager.authorizationStatus ==
-                     kCLAuthorizationStatusAuthorizedAlways ||
-                 self.locationManager.authorizationStatus ==
-                     kCLAuthorizationStatusAuthorizedWhenInUse);
-          headerState = kHeaderStateNotSentAuthorizationOmniboxDenied;
-        }
-        break;
-
-      case geolocation::kAuthorizationStateDenied:
-        switch (self.locationManager.authorizationStatus) {
-          case kCLAuthorizationStatusNotDetermined:
-            NOTREACHED();
-            // To keep the compiler quiet about headerState not being
-            // initialized in this switch case.
-            headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-            break;
-          case kCLAuthorizationStatusRestricted:
-          case kCLAuthorizationStatusDenied:
-            headerState = kHeaderStateNotSentAuthorizationChromeDenied;
-            break;
-          case kCLAuthorizationStatusAuthorizedAlways:
-          case kCLAuthorizationStatusAuthorizedWhenInUse:
-            headerState = kHeaderStateNotSentAuthorizationOmniboxDenied;
-            break;
-        }
-        break;
-
-      case geolocation::kAuthorizationStateAuthorized: {
-        DCHECK(self.enabled);
-        CLLocation* currentLocation = [self.locationManager currentLocation];
-        if (!currentLocation) {
-          headerState = kHeaderStateNotSentLocationNotAvailable;
-        } else if (![currentLocation cr_isFreshEnough]) {
-          headerState = kHeaderStateNotSentLocationStale;
-        } else {
-          NSDictionary* locationHTTPHeaders =
-              @{ @"X-Geo" : [currentLocation cr_xGeoString] };
-          item->AddHttpRequestHeaders(locationHTTPHeaders);
-          headerState = kHeaderStateSent;
-        }
-        break;
-      }
-    }
-  }
-
-  [self recordHeaderState:headerState];
-  return headerState == kHeaderStateSent;
 }
 
 - (void)finishPageLoadForWebState:(web::WebState*)webState
@@ -363,25 +163,21 @@ const char* const kGeolocationAuthorizationActionNewUser =
   }
 
   if (![self URLIsAuthorizationPromptingURL:item->GetURL()] ||
-      !self.locationManager.locationServicesEnabled) {
+      !self.locationServicesEnabled) {
     return;
   }
 
-  switch (self.locationManager.authorizationStatus) {
+  switch (CLLocationManager.authorizationStatus) {
     case kCLAuthorizationStatusNotDetermined:
       // Prompt the user with the iOS system location authorization alert.
       //
       // Set |systemPrompt_|, so that
-      // locationManagerDidChangeAuthorizationStatus: will know that any
+      // locationManagerDidChangeAuthorization: will know that any
       // CLAuthorizationStatus changes are coming from this specific prompt.
       _systemPrompt = YES;
       self.localState.authorizationState =
           geolocation::kAuthorizationStateNotDeterminedSystemPrompt;
-      [self startUpdatingLocation];
-
-      // Save this webState in case we're able to transition to
-      // kAuthorizationStateAuthorized.
-      self.webStateToReload = webState;
+      [self requestPermission];
       break;
 
     case kCLAuthorizationStatusRestricted:
@@ -392,7 +188,7 @@ const char* const kGeolocationAuthorizationActionNewUser =
     case kCLAuthorizationStatusAuthorizedWhenInUse:
       // We might be in state kAuthorizationStateNotDeterminedSystemPrompt here
       // if we presented the iOS system location alert when
-      // [CLLocationManager authorizationStatus] was
+      // CLLocationManager.authorizationStatus was
       // kCLAuthorizationStatusNotDetermined but the user managed to authorize
       // the app through some other flow; this might happen if the user
       // backgrounded the app or the app crashed. If so, then reset the state.
@@ -420,74 +216,16 @@ const char* const kGeolocationAuthorizationActionNewUser =
 #pragma mark - Private
 
 - (BOOL)enabled {
-  BOOL enabled = self.locationManager.locationServicesEnabled &&
-                 self.localState.authorizationState ==
-                     geolocation::kAuthorizationStateAuthorized;
-  if (enabled) {
-    // Check what to do with the location only if it was already enabled to
-    // avoid having bias in groups (users with location disabled in the
-    // "precise" group).
-    if (ShouldOmitLocation()) {
-      enabled = NO;
-    } else {
-      self.shouldReduceAccuracy = ShouldUseCoarseLocation();
-    }
-  }
-  return enabled;
+  return self.locationServicesEnabled &&
+         self.localState.authorizationState ==
+             geolocation::kAuthorizationStateAuthorized;
 }
 
 - (OmniboxGeolocationLocalState*)localState {
   if (!_localState) {
-    _localState = [[OmniboxGeolocationLocalState alloc]
-        initWithLocationManager:self.locationManager];
+    _localState = [[OmniboxGeolocationLocalState alloc] init];
   }
   return _localState;
-}
-
-- (LocationManager*)locationManager {
-  if (!_locationManager) {
-    _locationManager = [[LocationManager alloc] init];
-    [_locationManager setDelegate:self];
-    self.accuracyReduced = NO;
-    self.shouldReduceAccuracy = NO;
-  }
-  return _locationManager;
-}
-
-- (void)setWebStateToReload:(web::WebState*)webState {
-  if (webState == _webStateToReload)
-    return;
-
-  if (!_webStateObserverBridge) {
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-  }
-  if (_webStateToReload)
-    _webStateToReload->RemoveObserver(_webStateObserverBridge.get());
-  if (webState)
-    webState->AddObserver(_webStateObserverBridge.get());
-  _webStateToReload = webState;
-}
-
-- (BOOL)URLIsEligibleQueryURL:(const GURL&)url
-                   transition:(ui::PageTransition)transition {
-  return [self URLIsQueryURL:url transition:transition] &&
-         [[OmniboxGeolocationConfig sharedInstance] URLHasEligibleDomain:url];
-}
-
-- (BOOL)URLIsQueryURL:(const GURL&)url
-           transition:(ui::PageTransition)transition {
-  if (google_util::IsGoogleSearchUrl(url) &&
-      (transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0) {
-    ui::PageTransition coreTransition = static_cast<ui::PageTransition>(
-        transition & ui::PAGE_TRANSITION_CORE_MASK);
-    if (PageTransitionCoreTypeIs(coreTransition,
-                                 ui::PAGE_TRANSITION_GENERATED) ||
-        PageTransitionCoreTypeIs(coreTransition, ui::PAGE_TRANSITION_RELOAD)) {
-      return YES;
-    }
-  }
-  return NO;
 }
 
 - (BOOL)URLIsAuthorizationPromptingURL:(const GURL&)url {
@@ -499,48 +237,9 @@ const char* const kGeolocationAuthorizationActionNewUser =
          [[OmniboxGeolocationConfig sharedInstance] URLHasEligibleDomain:url];
 }
 
-- (void)startUpdatingLocation {
-  if (@available(iOS 14, *)) {
-    if (self.shouldReduceAccuracy && !self.accuracyReduced) {
-      [self.locationManager
-          setDesiredAccuracy:kCLLocationAccuracyReduced
-              distanceFilter:kCLLocationAccuracyHundredMeters];
-      self.accuracyReduced = YES;
-    }
-  }
-  // Note that GeolocationUpdater will stop itself automatically after 5
-  // seconds.
-  [self.locationManager startUpdatingLocation];
-}
-
-- (void)stopUpdatingLocation {
-  // Note that we don't need to initialize |locationManager_| here. If it's
-  // nil, then it's not running.
-  [_locationManager stopUpdatingLocation];
-}
-
-- (void)addLocationAndReloadWebState:(web::WebState*)webState {
-  if (self.enabled && webState) {
-    // Make sure that GeolocationUpdater is running the first time we request
-    // the current location.
-    //
-    // If GeolocationUpdater is not running, then it returns nil for the
-    // current location. That's normally okay, because we cache the most recent
-    // location in LocationManager. However, we arrive here when the user first
-    // authorizes us to use location, so we may not have ever started
-    // GeolocationUpdater.
-    [self startUpdatingLocation];
-
-    web::NavigationManager* navigationManager =
-        webState->GetNavigationManager();
-    web::NavigationItem* item = navigationManager->GetVisibleItem();
-    if (item &&
-        [self addLocationToNavigationItem:item
-                             browserState:webState->GetBrowserState()]) {
-      navigationManager->Reload(web::ReloadType::NORMAL,
-                                false /* check_for_repost */);
-    }
-  }
+// Requests the authorization to use location.
+- (void)requestPermission {
+  [self.locationManager requestWhenInUseAuthorization];
 }
 
 - (BOOL)shouldShowAuthorizationAlert {
@@ -554,21 +253,12 @@ const char* const kGeolocationAuthorizationActionNewUser =
 }
 
 - (void)showAuthorizationAlertForWebState:(web::WebState*)webState {
-  // Save this webState in case we're able to transition to
-  // kAuthorizationStateAuthorized.
-  self.webStateToReload = webState;
-
   _authorizationAlert =
       [[OmniboxGeolocationAuthorizationAlert alloc] initWithDelegate:self];
   [_authorizationAlert showAuthorizationAlert];
 
   self.localState.lastAuthorizationAlertVersion =
       version_info::GetVersionNumber();
-}
-
-- (void)recordHeaderState:(HeaderState)headerState {
-  UMA_HISTOGRAM_ENUMERATION(kGeolocationHeaderSentOrNotHistogram, headerState,
-                            kHeaderStateCount);
 }
 
 - (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction {
@@ -583,12 +273,19 @@ const char* const kGeolocationAuthorizationActionNewUser =
   }
 }
 
-#pragma mark - LocationManagerDelegate
+// Boolean value indicating whether location services are enabled on the
+// device.
+- (BOOL)locationServicesEnabled {
+  return !tests_hook::DisableGeolocation() &&
+         [CLLocationManager locationServicesEnabled];
+}
 
-- (void)locationManagerDidChangeAuthorizationStatus:
-    (LocationManager*)locationManager {
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManagerDidChangeAuthorization:
+    (CLLocationManager*)locationManager {
   if (_systemPrompt) {
-    switch (self.locationManager.authorizationStatus) {
+    switch (CLLocationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
         // |kCLAuthorizationStatusNotDetermined| when we first start location
@@ -611,9 +308,6 @@ const char* const kGeolocationAuthorizationActionNewUser =
             geolocation::kAuthorizationStateAuthorized;
         _systemPrompt = NO;
 
-        [self addLocationAndReloadWebState:self.webStateToReload];
-        self.webStateToReload = nullptr;
-
         [self recordAuthorizationAction:kAuthorizationActionAuthorized];
         break;
     }
@@ -627,10 +321,7 @@ const char* const kGeolocationAuthorizationActionNewUser =
   self.localState.authorizationState =
       geolocation::kAuthorizationStateAuthorized;
 
-  [self addLocationAndReloadWebState:self.webStateToReload];
-
   _authorizationAlert = nil;
-  self.webStateToReload = nullptr;
 
   [self recordAuthorizationAction:kAuthorizationActionAuthorized];
 }
@@ -642,7 +333,6 @@ const char* const kGeolocationAuthorizationActionNewUser =
   // application update.
 
   _authorizationAlert = nil;
-  self.webStateToReload = nullptr;
 
   [self recordAuthorizationAction:kAuthorizationActionDenied];
 }
@@ -651,17 +341,6 @@ const char* const kGeolocationAuthorizationActionNewUser =
 
 - (void)setLocalState:(OmniboxGeolocationLocalState*)localState {
   _localState = localState;
-}
-
-- (void)setLocationManager:(LocationManager*)locationManager {
-  _locationManager = locationManager;
-}
-
-#pragma mark - CRWWebStateObserver Methods
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  DCHECK_EQ(webState, _webStateToReload);
-  self.webStateToReload = nullptr;
 }
 
 @end

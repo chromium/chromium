@@ -44,11 +44,6 @@ void OmniboxGeolocationTabHelper::DidStartNavigation(
     // not have committed items (which is normal situation).
     return;
   }
-
-  [[OmniboxGeolocationController sharedInstance]
-      addLocationToNavigationItem:navigation_item
-                     browserState:ChromeBrowserState::FromBrowserState(
-                                      web_state->GetBrowserState())];
 }
 
 void OmniboxGeolocationTabHelper::PageLoaded(

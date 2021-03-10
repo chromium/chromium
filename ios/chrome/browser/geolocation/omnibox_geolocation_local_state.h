@@ -45,12 +45,6 @@ class PrefRegistrySimple;
 // we last showed the authorization alert.
 @property(nonatomic, assign) std::string lastAuthorizationAlertVersion;
 
-// Designated initializer.
-- (instancetype)initWithLocationManager:(LocationManager*)locationManager
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_GEOLOCATION_OMNIBOX_GEOLOCATION_LOCAL_STATE_H_
