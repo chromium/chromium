@@ -1841,6 +1841,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveRequest.BlockStatus"
     enum="KeepaliveRequestBlockStatus" expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <summary>
@@ -1855,6 +1858,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveRequest.HeadersSize" units="bytes"
     expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>panicker@chromium.org</owner>
   <summary>
@@ -1864,6 +1870,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveRequest.Result" enum="KeepaliveRequestResult"
     expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <summary>The end state of keepalive request.</summary>
@@ -1871,6 +1880,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveRequest.UrlPlusHeadersSize" units="bytes"
     expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>panicker@chromium.org</owner>
   <summary>
@@ -1881,6 +1893,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveRequest.UrlSize" units="bytes"
     expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <owner>panicker@chromium.org</owner>
   <summary>
@@ -1890,6 +1905,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.KeepaliveStatisticsRecorder.PeakInflightRequests2"
     units="requests" expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2021-03.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <summary>
     The peak number of concurrent outstanding requests with keepalive specified.
@@ -1902,6 +1920,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Net.KeepaliveStatisticsRecorder.PeakInflightRequestsPerProcess"
     units="requests" expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2019-12.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <summary>
     The peak number of concurrent outstanding requests with keepalive specified
@@ -1912,6 +1933,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Net.KeepaliveStatisticsRecorder.PeakInflightRequestsPerProcess2"
     units="requests" expires_after="2020-06-30">
+  <obsolete>
+    Removed from code 2019-12.
+  </obsolete>
   <owner>yhirano@chromium.org</owner>
   <summary>
     The peak number of concurrent outstanding requests with keepalive specified

@@ -16,7 +16,7 @@
 namespace network {
 
 // KeepaliveStatisticsRecorder keeps tracks of the number of inflight requests
-// with "keepalive" set and records UMA histograms.
+// with "keepalive" set.
 class COMPONENT_EXPORT(NETWORK_SERVICE) KeepaliveStatisticsRecorder
     : public base::SupportsWeakPtr<KeepaliveStatisticsRecorder> {
  public:

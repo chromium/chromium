@@ -180,12 +180,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
       headers_size += (pair.key.size() + pair.value.size());
     }
 
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.UrlSize", url_size);
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.HeadersSize",
-                               headers_size);
-    UMA_HISTOGRAM_COUNTS_10000("Net.KeepaliveRequest.UrlPlusHeadersSize",
-                               url_size + headers_size);
-
     keepalive_request_size = url_size + headers_size;
 
     KeepaliveBlockStatus block_status = KeepaliveBlockStatus::kNotBlocked;
@@ -223,7 +217,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
     } else {
       block_status = KeepaliveBlockStatus::kNotBlocked;
     }
-    UMA_HISTOGRAM_ENUMERATION("Net.KeepaliveRequest.BlockStatus", block_status);
   }
 
   if (exhausted) {

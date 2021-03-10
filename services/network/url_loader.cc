@@ -1815,16 +1815,6 @@ void URLLoader::CancelRequest() {
 }
 
 void URLLoader::NotifyCompleted(int error_code) {
-  if (keepalive_) {
-    if (error_code == net::OK) {
-      RecordKeepaliveResult(KeepaliveRequestResult::kOk);
-    } else if (has_received_response_) {
-      RecordKeepaliveResult(KeepaliveRequestResult::kErrorAfterResponseArrival);
-    } else {
-      RecordKeepaliveResult(
-          KeepaliveRequestResult::kErrorBeforeResponseArrival);
-    }
-  }
   // Ensure sending the final upload progress message here, since
   // OnResponseCompleted can be called without OnResponseStarted on cancellation
   // or error cases.
@@ -1881,25 +1871,7 @@ void URLLoader::NotifyCompleted(int error_code) {
   DeleteSelf();
 }
 
-void URLLoader::RecordKeepaliveResult(KeepaliveRequestResult result) {
-  if (has_recorded_keepalive_result_) {
-    return;
-  }
-  has_recorded_keepalive_result_ = true;
-  UMA_HISTOGRAM_ENUMERATION("Net.KeepaliveRequest.Result", result);
-}
-
 void URLLoader::OnMojoDisconnect() {
-  if (keepalive_) {
-    if (has_received_response_) {
-      RecordKeepaliveResult(
-          KeepaliveRequestResult::kMojoConnectionErrorAfterResponseArrival);
-    } else {
-      RecordKeepaliveResult(
-          KeepaliveRequestResult::kMojoConnectionErrorBeforeResponseArrival);
-    }
-  }
-
   NotifyCompleted(net::ERR_FAILED);
 }
 

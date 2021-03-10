@@ -319,7 +319,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void ReadMore();
   void DidRead(int num_bytes, bool completed_synchronously);
   void NotifyCompleted(int error_code);
-  void RecordKeepaliveResult(KeepaliveRequestResult result);
   void OnMojoDisconnect();
   void OnResponseBodyStreamConsumerClosed(MojoResult result);
   void OnResponseBodyStreamReady(MojoResult result);
@@ -406,7 +405,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   int resource_type_;
   bool is_load_timing_enabled_;
   bool has_received_response_ = false;
-  bool has_recorded_keepalive_result_ = false;
 
   // URLLoaderFactory is guaranteed to outlive URLLoader, so it is safe to
   // store a raw pointer to mojom::URLLoaderFactoryParams.
