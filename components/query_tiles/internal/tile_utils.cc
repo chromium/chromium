@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "components/query_tiles/internal/tile_config.h"
 #include "components/query_tiles/internal/tile_utils.h"
@@ -13,16 +14,35 @@ namespace query_tiles {
 namespace {
 
 struct TileComparator {
-  explicit TileComparator(const std::map<std::string, double>& tile_score_map)
+  explicit TileComparator(std::map<std::string, double>* tile_score_map)
       : tile_score_map(tile_score_map) {}
 
   inline bool operator()(const std::unique_ptr<Tile>& a,
                          const std::unique_ptr<Tile>& b) {
-    return tile_score_map[a->id] > tile_score_map[b->id];
+    return (*tile_score_map)[a->id] > (*tile_score_map)[b->id];
   }
 
-  std::map<std::string, double> tile_score_map;
+  std::map<std::string, double>* tile_score_map;
 };
+
+// Shuffle unclicked tiles from index starting with |GetTileShufflePosition()|,
+// so that they have a chance to be displayed. Trending tiles are excluded.
+void ShuffleUnclickedTiles(std::vector<std::unique_ptr<Tile>>* tiles,
+                           std::map<std::string, double>* tile_score_map) {
+  size_t starting_index = TileConfig::GetTileShufflePosition();
+  if (tiles->empty() || tiles->size() <= starting_index + 1)
+    return;
+
+  auto iter = --tiles->end();
+  while (iter >= tiles->begin() + starting_index) {
+    const std::string& id = iter->get()->id;
+    if ((*tile_score_map)[id] > 0 || IsTrendingTile(id))
+      break;
+    --iter;
+  }
+  if (iter + 1 != tiles->end())
+    base::RandomShuffle(iter + 1, tiles->end());
+}
 
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
                std::map<std::string, TileStats>* tile_stats,
@@ -84,7 +104,12 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
     }
   }
   // Sort the tiles in descending order.
-  std::sort(tiles->begin(), tiles->end(), TileComparator(*score_map));
+  std::sort(tiles->begin(), tiles->end(), TileComparator(score_map));
+
+  // Randomly shuffle tiles that are never clicked so they get a chance
+  // to show up on the display.
+  ShuffleUnclickedTiles(tiles, score_map);
+
   for (auto& tile : *tiles)
     SortTiles(&tile->sub_tiles, tile_stats, score_map);
 }
