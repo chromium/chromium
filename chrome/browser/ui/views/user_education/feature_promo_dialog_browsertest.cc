@@ -201,6 +201,12 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogReadLaterTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(FeaturePromoDialogReadLaterTest,
+                       InvokeUi_IPH_ReadingListEntryPoint) {
+  set_baseline("2749474");
+  ShowAndVerifyUi();
+}
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 // Need a separate fixture to override the feature flag.

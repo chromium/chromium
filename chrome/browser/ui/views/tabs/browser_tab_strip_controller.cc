@@ -802,6 +802,9 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
     browser_view_->feature_promo_controller()->MaybeShowPromo(
         feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHReadingListEntryPointFeature);
   }
 }
 

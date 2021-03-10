@@ -57,6 +57,14 @@ views::View* GetReadingListButton(BrowserView* browser_view) {
   return browser_view->bookmark_bar()->read_later_button();
 }
 
+// kIPHReadingListEntryPointFeature:
+views::View* GetReadingListStarView(BrowserView* browser_view) {
+  return browser_view->toolbar()
+      ->location_bar()
+      ->page_action_icon_controller()
+      ->GetIconView(PageActionIconType::kBookmarkStar);
+}
+
 // kIPHReopenTabFeature:
 views::View* GetAppMenuButton(BrowserView* browser_view) {
   return browser_view->toolbar()->app_menu_button();
@@ -184,6 +192,16 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
 
     RegisterFeature(feature_engagement::kIPHReadingListDiscoveryFeature, params,
                     base::BindRepeating(GetReadingListButton));
+  }
+
+  {
+    // kIPHReadingListEntryPointFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_READING_LIST_ENTRY_POINT_PROMO;
+    params.arrow = views::BubbleBorder::TOP_LEFT;
+
+    RegisterFeature(feature_engagement::kIPHReadingListEntryPointFeature,
+                    params, base::BindRepeating(GetReadingListStarView));
   }
 
   {
