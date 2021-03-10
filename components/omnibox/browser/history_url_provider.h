@@ -43,7 +43,7 @@ class URLDatabase;
 //   -----------                --------------
 //   AutocompleteController::Start
 //     -> HistoryURLProvider::Start
-//       -> SuggestExactInput
+//       -> VerbatimMatchForInput
 //       [params_ allocated]
 //       -> DoAutocomplete (for inline autocomplete)
 //         -> URLDatabase::AutocompleteForPrefix (on in-memory DB)
@@ -207,19 +207,6 @@ class HistoryURLProvider : public HistoryProvider {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
-
-  // Returns a match representing a navigation to |destination_url|, highlighted
-  // appropriately against |input|.  |trim_default_scheme| controls whether the
-  // match's |fill_into_edit| and |contents| should have the scheme (http or
-  // https only) stripped off, and should not be set to true if the user's
-  // original input contains the scheme. The default scheme is https if |input|
-  // is upgraded to https, otherwise it's http.
-  // NOTES: This does not set the relevance of the returned match, as different
-  //        callers want different behavior. Callers must set this manually.
-  //        This function should only be called on the UI thread.
-  AutocompleteMatch SuggestExactInput(const AutocompleteInput& input,
-                                      const GURL& destination_url,
-                                      bool trim_default_scheme);
 
   // Runs the history query on the history thread, called by the history
   // system. The history database MAY BE NULL in which case it is not

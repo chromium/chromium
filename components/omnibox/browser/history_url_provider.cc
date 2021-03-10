@@ -35,6 +35,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -526,8 +527,9 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
 
   // Create a match for what the user typed.
   const bool trim_http = !AutocompleteInput::HasHTTPScheme(input.text());
-  AutocompleteMatch what_you_typed_match(SuggestExactInput(
-      fixed_up_input, fixed_up_input.canonicalized_url(), trim_http));
+  AutocompleteMatch what_you_typed_match(
+      VerbatimMatchForInput(this, client(), fixed_up_input,
+                            fixed_up_input.canonicalized_url(), trim_http));
 
   // If the input fix-up above added characters, show them as an
   // autocompletion, unless directed not to.
@@ -619,76 +621,6 @@ size_t HistoryURLProvider::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(scoring_params_);
 
   return res;
-}
-
-AutocompleteMatch HistoryURLProvider::SuggestExactInput(
-    const AutocompleteInput& input,
-    const GURL& destination_url,
-    bool trim_default_scheme) {
-  // The FormattedStringWithEquivalentMeaning() call below requires callers to
-  // be on the main thread.
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  AutocompleteMatch match(this, 0, false,
-                          AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-
-  if (destination_url.is_valid()) {
-    match.destination_url = destination_url;
-    // If the input explicitly contains "http://" or "https://", callers must
-    // set |trim_default_scheme| to false. Otherwise, |trim_default_scheme| may
-    // be either true or false.
-    if (input.added_default_scheme_to_typed_url()) {
-      DCHECK(!(trim_default_scheme &&
-               AutocompleteInput::HasHTTPSScheme(input.text())));
-    } else {
-      DCHECK(!(trim_default_scheme &&
-               AutocompleteInput::HasHTTPScheme(input.text())));
-    }
-    const url_formatter::FormatUrlType format_type =
-        input.added_default_scheme_to_typed_url()
-            ? url_formatter::kFormatUrlOmitHTTPS
-            : url_formatter::kFormatUrlOmitHTTP;
-
-    base::string16 display_string(url_formatter::FormatUrl(
-        destination_url, url_formatter::kFormatUrlOmitDefaults & ~format_type,
-        net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    if (trim_default_scheme) {
-      TrimSchemePrefix(&display_string,
-                       input.added_default_scheme_to_typed_url());
-    }
-
-    match.fill_into_edit =
-        AutocompleteInput::FormattedStringWithEquivalentMeaning(
-            destination_url, display_string, client()->GetSchemeClassifier(),
-            nullptr);
-    // The what-you-typed match is generally only allowed to be default for
-    // URL inputs or when there is no default search provider.  (It's also
-    // allowed to be default for UNKNOWN inputs where the destination is a known
-    // intranet site.  In this case, |allowed_to_be_default_match| is revised in
-    // FixupExactSuggestion().)
-    const bool has_default_search_provider =
-       client()->GetTemplateURLService() &&
-       client()->GetTemplateURLService()->GetDefaultSearchProvider();
-    match.allowed_to_be_default_match =
-        (input.type() == metrics::OmniboxInputType::URL) ||
-        !has_default_search_provider;
-    // NOTE: Don't set match.inline_autocompletion to something non-empty here;
-    // it's surprising and annoying.
-
-    // Try to highlight "innermost" match location.  If we fix up "w" into
-    // "www.w.com", we want to highlight the fifth character, not the first.
-    // This relies on match.destination_url being the non-prefix-trimmed version
-    // of match.contents.
-    match.contents = display_string;
-
-    TermMatches termMatches = {{0, 0, input.text().length()}};
-    match.contents_class = ClassifyTermMatches(
-        termMatches, match.contents.size(),
-        ACMatchClassification::MATCH | ACMatchClassification::URL,
-        ACMatchClassification::URL);
-  }
-
-  return match;
 }
 
 void HistoryURLProvider::ExecuteWithDB(HistoryURLProviderParams* params,
@@ -828,7 +760,7 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
   // Check whether what the user typed appears in history.
   const bool can_check_history_for_exact_match =
       // Checking what_you_typed_match.destination_url.is_valid() tells us
-      // whether SuggestExactInput() succeeded in constructing a valid match.
+      // whether VerbatimMatchForInput succeeded in constructing a valid match.
       params->what_you_typed_match.destination_url.is_valid() &&
       // Additionally, in the case where the user has typed "foo.com" and
       // visited (but not typed) "foo/", and the input is "foo", the first pass

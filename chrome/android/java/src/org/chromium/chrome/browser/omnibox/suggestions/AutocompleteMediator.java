@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.query_tiles.QueryTile;
@@ -337,7 +338,21 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             mUrlFocusTime = System.currentTimeMillis();
             setSuggestionVisibilityState(SuggestionVisibilityState.PENDING_ALLOW);
 
-            postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+            // Ask directly for zero-suggestions related to current input, unless the user is
+            // currently visiting SearchActivity and the input is populated from the launch intent.
+            // For SearchActivity, in most cases the input will be empty, triggering the same
+            // response (starting zero suggestions), but if the Activity was launched with a QUERY,
+            // then the query might point to a different URL than the reported Page, and the
+            // suggestion would take the user to the DSE home page.
+            // This is tracked by MobileStartup.LaunchCause / EXTERNAL_SEARCH_ACTION_INTENT
+            // metric.
+            if (mDataProvider.getPageClassification(false)
+                    != PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
+                postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+            } else {
+                String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
+                onTextChanged(text, text);
+            }
         } else {
             cancelAutocompleteRequests();
             if (mNativeInitialized) mDropdownViewInfoListManager.recordSuggestionsShown();

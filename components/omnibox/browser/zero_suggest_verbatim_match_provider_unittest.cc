@@ -11,6 +11,8 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -27,8 +29,10 @@ class ZeroSuggestVerbatimMatchProviderTest
 
  protected:
   bool IsVerbatimMatchEligible() const;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   scoped_refptr<ZeroSuggestVerbatimMatchProvider> provider_;
-  MockAutocompleteProviderClient mock_client_;
+  FakeAutocompleteProviderClient mock_client_;
 };
 
 bool ZeroSuggestVerbatimMatchProviderTest::IsVerbatimMatchEligible() const {

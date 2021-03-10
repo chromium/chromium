@@ -315,6 +315,13 @@ class AutocompleteProvider
   static bool IsExplicitlyInKeywordMode(const AutocompleteInput& input,
                                         const base::string16& keyword);
 
+  // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
+  // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
+  // number of characters that were trimmed.
+  // NOTE: For a view-source: URL, this will trim from after "view-source:" and
+  // return 0.
+  static size_t TrimSchemePrefix(base::string16* url, bool trim_https);
+
  protected:
   friend class base::RefCountedThreadSafe<AutocompleteProvider>;
   FRIEND_TEST_ALL_PREFIXES(BookmarkProviderTest, InlineAutocompletion);
@@ -340,13 +347,6 @@ class AutocompleteProvider
   // fixup failed; this lets callers who don't care about failure simply use the
   // string unconditionally.
   static FixupReturn FixupUserInput(const AutocompleteInput& input);
-
-  // Trims "http:" or "https:" and up to two subsequent slashes from |url|. If
-  // |trim_https| is true, trims "https:", otherwise trims "http:". Returns the
-  // number of characters that were trimmed.
-  // NOTE: For a view-source: URL, this will trim from after "view-source:" and
-  // return 0.
-  static size_t TrimSchemePrefix(base::string16* url, bool trim_https);
 
   const size_t provider_max_matches_;
 

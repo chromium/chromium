@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/history_quick_provider.h"
+#include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/default_search_manager.h"
@@ -1150,8 +1151,9 @@ TEST_F(HistoryURLProviderTest, SuggestExactInput) {
                             metrics::OmniboxEventProto::BLANK,
                             TestSchemeClassifier());
     input.set_current_url(GURL("about:blank"));
-    AutocompleteMatch match(autocomplete_->SuggestExactInput(
-        input, input.canonicalized_url(), test_cases[i].trim_http));
+    AutocompleteMatch match(VerbatimMatchForInput(
+        autocomplete_.get(), client_.get(), input, input.canonicalized_url(),
+        test_cases[i].trim_http));
     EXPECT_EQ(ASCIIToUTF16(test_cases[i].contents), match.contents);
     for (size_t match_index = 0; match_index < match.contents_class.size();
          ++match_index) {

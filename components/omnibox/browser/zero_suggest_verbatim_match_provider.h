@@ -6,6 +6,7 @@
 
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/history_url_provider.h"
 
 class AutocompleteProviderClient;
 

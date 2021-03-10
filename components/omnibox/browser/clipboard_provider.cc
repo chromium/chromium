@@ -254,9 +254,8 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
         (base::FeatureList::IsEnabled(omnibox::kDisplayTitleForCurrentUrl))
             ? input.current_title()
             : base::string16();
-    AutocompleteMatch verbatim_match =
-        VerbatimMatchForURL(client_, input, input.current_url(), description,
-                            history_url_provider_, -1);
+    AutocompleteMatch verbatim_match = VerbatimMatchForURL(
+        this, client_, input, input.current_url(), description, -1);
     matches_.push_back(verbatim_match);
   }
 

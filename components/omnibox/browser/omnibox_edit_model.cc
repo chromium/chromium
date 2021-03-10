@@ -43,6 +43,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
@@ -622,9 +623,10 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     input.set_want_asynchronous_matches(input_.want_asynchronous_matches());
     input.set_focus_type(input_.focus_type());
     input_ = input;
-    AutocompleteMatch url_match(
-        autocomplete_controller()->history_url_provider()->SuggestExactInput(
-            input_, input_.canonicalized_url(), false));
+    AutocompleteMatch url_match(VerbatimMatchForInput(
+        autocomplete_controller()->history_url_provider(),
+        autocomplete_controller()->autocomplete_provider_client(), input_,
+        input_.canonicalized_url(), false));
 
     if (url_match.destination_url.is_valid()) {
       // We have a valid URL, we use this newly generated AutocompleteMatch.
@@ -758,7 +760,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   base::string16 input_text(pasted_text);
   if (input_text.empty())
     input_text = user_input_in_progress_ ? user_text_ : url_for_editing_;
-  // Create a dummy AutocompleteInput for use in calling SuggestExactInput()
+  // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
       input_text, GetPageClassification(), client_->GetSchemeClassifier(),
@@ -771,7 +773,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   std::unique_ptr<OmniboxNavigationObserver> observer(
       client_->CreateOmniboxNavigationObserver(
           input_text, match,
-          autocomplete_controller()->history_url_provider()->SuggestExactInput(
+          VerbatimMatchForInput(
+              autocomplete_controller()->history_url_provider(),
+              autocomplete_controller()->autocomplete_provider_client(),
               alternate_input, alternate_nav_url, false)));
 
   base::TimeDelta elapsed_time_since_last_change_to_default_match(

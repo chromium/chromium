@@ -457,9 +457,9 @@ AutocompleteMatch ZeroSuggestProvider::MatchForCurrentText() {
   // We pass a nullptr as the |history_url_provider| parameter now to force
   // VerbatimMatch to do a classification, since the text can be a search query.
   // TODO(tommycli): Simplify this - probably just bypass VerbatimMatchForURL.
-  AutocompleteMatch match = VerbatimMatchForURL(
-      client(), tmp, GURL(current_query_), description,
-      /*history_url_provider=*/nullptr, results_.verbatim_relevance);
+  AutocompleteMatch match =
+      VerbatimMatchForURL(this, client(), tmp, GURL(current_query_),
+                          description, results_.verbatim_relevance);
   match.provider = this;
   return match;
 }

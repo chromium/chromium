@@ -27,7 +27,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -53,12 +52,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /** Whether the omnibox has already cleared its content for the focus event. */
     private boolean mHasClearedOmniboxForFocus;
-
-    /** The URL of the last omnibox suggestion to be processed. */
-    private GURL mLastProcessedSuggestionURL;
-
-    /** The original title of the page. */
-    private String mOriginalTitle;
 
     /**
      * @param locationBarDelegate A means of modifying the location bar.
@@ -97,8 +90,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             return false;
         }
 
-        mLastProcessedSuggestionURL = suggestion.getUrl();
-
         if (!mHasClearedOmniboxForFocus) {
             mHasClearedOmniboxForFocus = true;
             mUrlBarDelegate.setOmniboxEditingText("");
@@ -120,14 +111,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
-        if (mOriginalTitle == null) {
-            mOriginalTitle = mTabSupplier.get().getTitle();
-        }
-
-        model.set(
-                SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable(mOriginalTitle));
+        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
+                new SuggestionSpannable(mTabSupplier.get().getTitle()));
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
-                new SuggestionSpannable(mLastProcessedSuggestionURL.getSpec()));
+                new SuggestionSpannable(suggestion.getDisplayText()));
 
         setSuggestionDrawableState(model,
                 SuggestionDrawableState.Builder
@@ -151,7 +138,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         .setLarge(true)
                                         .setAllowTint(true)
                                         .build(),
-                                R.string.copy_link, this::onCopyLink),
+                                R.string.copy_link, () -> onCopyLink(suggestion)),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
                         new Action(mContext,
                                 SuggestionDrawableState.Builder
@@ -160,15 +147,14 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         .setLarge(true)
                                         .setAllowTint(true)
                                         .build(),
-                                R.string.bookmark_item_edit, this::onEditLink)));
+                                R.string.bookmark_item_edit, () -> onEditLink(suggestion))));
 
-        fetchSuggestionFavicon(model, mLastProcessedSuggestionURL, mIconBridgeSupplier.get(), null);
+        fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), null);
     }
 
     @Override
     public void onUrlFocusChange(boolean hasFocus) {
         if (hasFocus) return;
-        mOriginalTitle = null;
         mHasClearedOmniboxForFocus = false;
     }
 
@@ -188,14 +174,14 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     /** Invoked when user interacts with Copy action button. */
-    private void onCopyLink() {
+    private void onCopyLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Copy");
-        Clipboard.getInstance().copyUrlToClipboard(mLastProcessedSuggestionURL);
+        Clipboard.getInstance().copyUrlToClipboard(suggestion.getUrl());
     }
 
     /** Invoked when user interacts with Edit action button. */
-    private void onEditLink() {
+    private void onEditLink(AutocompleteMatch suggestion) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Edit");
-        mUrlBarDelegate.setOmniboxEditingText(mLastProcessedSuggestionURL.getSpec());
+        mUrlBarDelegate.setOmniboxEditingText(suggestion.getUrl().getSpec());
     }
 }
