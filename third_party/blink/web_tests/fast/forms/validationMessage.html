@@ -10,7 +10,7 @@
 <script>
 description("Test for validationMessage DOM property.");
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 var form = document.createElement("form");
 document.body.appendChild(form);
 

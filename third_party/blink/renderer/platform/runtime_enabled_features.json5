@@ -1103,6 +1103,7 @@
     },
     {
       name: "LangAttributeAwareFormControlUI",
+      settable_from_internals: true,
     },
     {
       name: "LangClientHintHeader",

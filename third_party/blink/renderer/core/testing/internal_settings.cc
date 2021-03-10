@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/text/locale_to_script_mapping.h"
 
@@ -61,9 +60,7 @@ using mojom::blink::HoverType;
 using mojom::blink::PointerType;
 
 InternalSettings::Backup::Backup(Settings* settings)
-    : original_csp_(RuntimeEnabledFeatures::
-                        ExperimentalContentSecurityPolicyFeaturesEnabled()),
-      original_editing_behavior_(settings->GetEditingBehaviorType()),
+    : original_editing_behavior_(settings->GetEditingBehaviorType()),
       original_text_autosizing_enabled_(settings->GetTextAutosizingEnabled()),
       original_text_autosizing_window_size_override_(
           settings->GetTextAutosizingWindowSizeOverride()),
@@ -73,17 +70,11 @@ InternalSettings::Backup::Backup(Settings* settings)
       original_display_mode_override_(settings->GetDisplayModeOverride()),
       original_mock_gesture_tap_highlights_enabled_(
           settings->GetMockGestureTapHighlightsEnabled()),
-      lang_attribute_aware_form_control_ui_enabled_(
-          RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled()),
       images_enabled_(settings->GetImagesEnabled()),
       default_video_poster_url_(settings->GetDefaultVideoPosterURL()),
-      original_image_animation_policy_(settings->GetImageAnimationPolicy()),
-      original_scroll_top_left_interop_enabled_(
-          RuntimeEnabledFeatures::ScrollTopLeftInteropEnabled()) {}
+      original_image_animation_policy_(settings->GetImageAnimationPolicy()) {}
 
 void InternalSettings::Backup::RestoreTo(Settings* settings) {
-  RuntimeEnabledFeatures::SetExperimentalContentSecurityPolicyFeaturesEnabled(
-      original_csp_);
   settings->SetEditingBehaviorType(original_editing_behavior_);
   settings->SetTextAutosizingEnabled(original_text_autosizing_enabled_);
   settings->SetTextAutosizingWindowSizeOverride(
@@ -94,14 +85,10 @@ void InternalSettings::Backup::RestoreTo(Settings* settings) {
   settings->SetDisplayModeOverride(original_display_mode_override_);
   settings->SetMockGestureTapHighlightsEnabled(
       original_mock_gesture_tap_highlights_enabled_);
-  RuntimeEnabledFeatures::SetLangAttributeAwareFormControlUIEnabled(
-      lang_attribute_aware_form_control_ui_enabled_);
   settings->SetImagesEnabled(images_enabled_);
   settings->SetDefaultVideoPosterURL(default_video_poster_url_);
   settings->GetGenericFontFamilySettings().Reset();
   settings->SetImageAnimationPolicy(original_image_animation_policy_);
-  RuntimeEnabledFeatures::SetScrollTopLeftInteropEnabled(
-      original_scroll_top_left_interop_enabled_);
 }
 
 InternalSettings* InternalSettings::From(Page& page) {
@@ -146,12 +133,6 @@ void InternalSettings::setMockGestureTapHighlightsEnabled(
     ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
   GetSettings()->SetMockGestureTapHighlightsEnabled(enabled);
-}
-
-void InternalSettings::setExperimentalContentSecurityPolicyFeaturesEnabled(
-    bool enabled) {
-  RuntimeEnabledFeatures::SetExperimentalContentSecurityPolicyFeaturesEnabled(
-      enabled);
 }
 
 void InternalSettings::setViewportEnabled(bool enabled,
@@ -339,10 +320,6 @@ void InternalSettings::setEditingBehavior(const String& editing_behavior,
   }
 }
 
-void InternalSettings::setLangAttributeAwareFormControlUIEnabled(bool enabled) {
-  RuntimeEnabledFeatures::SetLangAttributeAwareFormControlUIEnabled(enabled);
-}
-
 void InternalSettings::setImagesEnabled(bool enabled,
                                         ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
@@ -504,10 +481,6 @@ void InternalSettings::setImageAnimationPolicy(
         "The image animation policy provided ('" + policy + "') is invalid.");
     return;
   }
-}
-
-void InternalSettings::setScrollTopLeftInteropEnabled(bool enabled) {
-  RuntimeEnabledFeatures::SetScrollTopLeftInteropEnabled(enabled);
 }
 
 void InternalSettings::SetDnsPrefetchLogging(bool enabled,

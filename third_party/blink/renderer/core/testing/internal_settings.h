@@ -54,7 +54,6 @@ class InternalSettings final : public InternalSettingsGenerated,
     explicit Backup(Settings*);
     void RestoreTo(Settings*);
 
-    bool original_csp_;
     bool original_overlay_scrollbars_enabled_;
     mojom::EditingBehavior original_editing_behavior_;
     bool original_text_autosizing_enabled_;
@@ -63,11 +62,9 @@ class InternalSettings final : public InternalSettingsGenerated,
     String original_media_type_override_;
     blink::mojom::DisplayMode original_display_mode_override_;
     bool original_mock_gesture_tap_highlights_enabled_;
-    bool lang_attribute_aware_form_control_ui_enabled_;
     bool images_enabled_;
     String default_video_poster_url_;
     mojom::blink::ImageAnimationPolicy original_image_animation_policy_;
-    bool original_scroll_top_left_interop_enabled_;
   };
 
   static InternalSettings* From(Page&);
@@ -98,7 +95,6 @@ class InternalSettings final : public InternalSettingsGenerated,
   void setPictographFontFamily(const AtomicString& family,
                                const String& script,
                                ExceptionState&);
-
   void setDefaultVideoPosterURL(const String& url, ExceptionState&);
   void setEditingBehavior(const String&, ExceptionState&);
   void setImagesEnabled(bool, ExceptionState&);
@@ -120,23 +116,15 @@ class InternalSettings final : public InternalSettingsGenerated,
   void setPresentationReceiver(bool, ExceptionState&);
   void setAutoplayPolicy(const String&, ExceptionState&);
   void setUniversalAccessFromFileURLs(bool, ExceptionState&);
-
-  // FIXME: The following are RuntimeEnabledFeatures and likely
-  // cannot be changed after process start. These setters should
-  // be removed or moved onto internals.runtimeFlags:
-  void setLangAttributeAwareFormControlUIEnabled(bool);
-  void setExperimentalContentSecurityPolicyFeaturesEnabled(bool);
   void setImageAnimationPolicy(const String&, ExceptionState&);
-  void setScrollTopLeftInteropEnabled(bool);
-
-  void Trace(Visitor*) const override;
-
   void setAvailablePointerTypes(const String&, ExceptionState&);
   void setPrimaryPointerType(const String&, ExceptionState&);
   void setAvailableHoverTypes(const String&, ExceptionState&);
   void setPrimaryHoverType(const String&, ExceptionState&);
   void SetDnsPrefetchLogging(bool, ExceptionState&);
   void SetPreloadLogging(bool, ExceptionState&);
+
+  void Trace(Visitor*) const override;
 
  private:
   Settings* GetSettings() const;

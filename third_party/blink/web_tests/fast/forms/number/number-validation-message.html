@@ -6,7 +6,7 @@
 <body>
 <script>
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 description('Test for validationMessage IDL attribute for &lt;input type=number>');
 var parent = document.createElement('div');
 document.body.appendChild(parent);
