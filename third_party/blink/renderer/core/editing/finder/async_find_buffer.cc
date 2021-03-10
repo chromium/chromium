@@ -19,10 +19,14 @@ void AsyncFindBuffer::FindMatchInRange(Range* search_range,
                                        String search_text,
                                        FindOptions options,
                                        Callback completeCallback) {
-  iterations_ = 0;
-  search_start_time_ = base::TimeTicks::Now();
-  NextIteration(search_range, search_text, options,
-                std::move(completeCallback));
+  pending_find_match_task_ = PostCancellableTask(
+      *search_range->OwnerDocument()
+           .GetTaskRunner(TaskType::kInternalFindInPage)
+           .get(),
+      FROM_HERE,
+      WTF::Bind(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
+                WrapWeakPersistent(search_range), search_text, options,
+                std::move(completeCallback)));
 }
 
 void AsyncFindBuffer::Cancel() {
@@ -38,38 +42,16 @@ void AsyncFindBuffer::Run(Range* search_range,
   EphemeralRangeInFlatTree range = FindBuffer::FindMatchInRange(
       EphemeralRangeInFlatTree(search_range), search_text, options,
       kFindBufferTaskTimeoutMs);
-
   if (range.IsNotNull() && range.IsCollapsed()) {
     // FindBuffer reached time limit - Start/End of range is last checked
     // position
     search_range->setStart(ToPositionInDOMTree(range.StartPosition()));
-    NextIteration(search_range, search_text, options,
-                  std::move(completeCallback));
+    FindMatchInRange(search_range, search_text, options,
+                     std::move(completeCallback));
     return;
   }
-
   // Search finished, return the result
-  UMA_HISTOGRAM_COUNTS_100("SharedHighlights.AsyncTask.Iterations",
-                           iterations_);
-  UMA_HISTOGRAM_TIMES("SharedHighlights.AsyncTask.SearchDuration",
-                      base::TimeTicks::Now() - search_start_time_);
-
   std::move(completeCallback).Run(range);
-}
-
-void AsyncFindBuffer::NextIteration(Range* search_range,
-                                    String search_text,
-                                    FindOptions options,
-                                    Callback completeCallback) {
-  iterations_++;
-  pending_find_match_task_ = PostCancellableTask(
-      *search_range->OwnerDocument()
-           .GetTaskRunner(TaskType::kInternalFindInPage)
-           .get(),
-      FROM_HERE,
-      WTF::Bind(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
-                WrapWeakPersistent(search_range), search_text, options,
-                std::move(completeCallback)));
 }
 
 }  // namespace blink
