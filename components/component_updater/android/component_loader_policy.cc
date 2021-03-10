@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/component_updater/android/embedded_component_loader.h"
+#include "components/component_updater/android/component_loader_policy.h"
 
 #include <jni.h>
 #include <stdio.h>
@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
@@ -26,7 +27,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -72,15 +72,24 @@ std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
 
 ComponentLoaderPolicy::~ComponentLoaderPolicy() = default;
 
-EmbeddedComponentLoader::EmbeddedComponentLoader(
+AndroidComponentLoaderPolicy::AndroidComponentLoaderPolicy(
     std::unique_ptr<ComponentLoaderPolicy> loader_policy)
     : loader_policy_(std::move(loader_policy)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  obj_.Reset(env, Java_ComponentLoaderPolicyBridge_Constructor(
+                      env, reinterpret_cast<intptr_t>(this))
+                      .obj());
 }
 
-EmbeddedComponentLoader::~EmbeddedComponentLoader() = default;
+AndroidComponentLoaderPolicy::~AndroidComponentLoaderPolicy() = default;
 
-void EmbeddedComponentLoader::ComponentLoaded(
+base::android::ScopedJavaLocalRef<jobject>
+AndroidComponentLoaderPolicy::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<jobject>(obj_);
+}
+
+void AndroidComponentLoaderPolicy::ComponentLoaded(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& jfile_names,
     const base::android::JavaRef<jintArray>& jfds) {
@@ -115,24 +124,25 @@ void EmbeddedComponentLoader::ComponentLoaded(
       {base::ThreadPool(), base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(ReadManifestFromFd, manifest_fd),
-      base::BindOnce(&EmbeddedComponentLoader::NotifyNewVersion,
-                     weak_ptr_factory_.GetWeakPtr(), fd_map));
+      base::BindOnce(&AndroidComponentLoaderPolicy::NotifyNewVersion,
+                     base::Owned(this), fd_map));
 }
 
-void EmbeddedComponentLoader::ComponentLoadFailed(JNIEnv* env) {
+void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   loader_policy_->ComponentLoadFailed();
+  delete this;
 }
 
 base::android::ScopedJavaLocalRef<jstring>
-EmbeddedComponentLoader::GetComponentId(JNIEnv* env) {
+AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
   std::vector<uint8_t> hash;
   loader_policy_->GetHash(&hash);
   return base::android::ConvertUTF8ToJavaString(
       env, update_client::GetCrxIdFromPublicKeyHash(hash));
 }
 
-void EmbeddedComponentLoader::NotifyNewVersion(
+void AndroidComponentLoaderPolicy::NotifyNewVersion(
     const base::flat_map<std::string, int>& fd_map,
     std::unique_ptr<base::DictionaryValue> manifest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -151,13 +161,33 @@ void EmbeddedComponentLoader::NotifyNewVersion(
   loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
 }
 
-void EmbeddedComponentLoader::CloseFdsAndFail(
+void AndroidComponentLoaderPolicy::CloseFdsAndFail(
     const base::flat_map<std::string, int>& fd_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& iter : fd_map) {
     close(iter.second);
   }
   loader_policy_->ComponentLoadFailed();
+}
+
+// static
+base::android::ScopedJavaLocalRef<jobjectArray>
+AndroidComponentLoaderPolicy::ToJavaArrayOfAndroidComponentLoaderPolicy(
+    JNIEnv* env,
+    ComponentLoaderPolicyVector policies) {
+  base::android::ScopedJavaLocalRef<jobjectArray> policy_array =
+      Java_ComponentLoaderPolicyBridge_createNewArray(env, policies.size());
+
+  for (size_t i = 0; i < policies.size(); ++i) {
+    // The `AndroidComponentLoaderPolicy` object is owned by the java
+    // ComponentLoaderPolicy object which manages its life time and will triger
+    // deletion.
+    auto* android_policy =
+        new AndroidComponentLoaderPolicy(std::move(policies[i]));
+    Java_ComponentLoaderPolicyBridge_setArrayElement(
+        env, policy_array, i, android_policy->GetJavaObject());
+  }
+  return policy_array;
 }
 
 }  // namespace component_updater

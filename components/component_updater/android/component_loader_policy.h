@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_COMPONENT_UPDATER_ANDROID_EMBEDDED_COMPONENT_LOADER_H_
-#define COMPONENTS_COMPONENT_UPDATER_ANDROID_EMBEDDED_COMPONENT_LOADER_H_
+#ifndef COMPONENTS_COMPONENT_UPDATER_ANDROID_COMPONENT_LOADER_POLICY_H_
+#define COMPONENTS_COMPONENT_UPDATER_ANDROID_COMPONENT_LOADER_POLICY_H_
 
 #include <jni.h>
 #include <stdint.h>
@@ -15,7 +15,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
 namespace base {
@@ -25,13 +24,13 @@ class DictionaryValue;
 
 namespace component_updater {
 
-// Components should use `EmbeddedComponentLoader` by defining a class that
+// Components should use `AndroidComponentLoaderPolicy` by defining a class that
 // implements the members of `ComponentLoaderPolicy`, and then registering a
-// `EmbeddedComponentLoader` that has been constructed with an instance of that
-// class in an instance of embedded WebView or WebLayer with the Java
-// EmbeddedComponentLoader. The `EmbeddedComponentLoader` will fetch the
-// components files from the Android `ComponentsProviderService` and invoke the
-// callbacks defined in this class.
+// `AndroidComponentLoaderPolicy` that has been constructed with an instance of
+// that class in an instance of embedded WebView or WebLayer with the Java
+// AndroidComponentLoaderPolicy. The `AndroidComponentLoaderPolicy` will fetch
+// the components files from the Android `ComponentsProviderService` and invoke
+// the callbacks defined in this class.
 //
 // Ideally, the implementation of this class should share implementation with
 // its component `ComponentInstallerPolicy` counterpart.
@@ -45,8 +44,11 @@ class ComponentLoaderPolicy {
   // descriptors for all files in the component from the
   // ComponentsProviderService.
   //
-  // Must close all file descriptors after using them. Can be called multiple
-  // times in the same run.
+  // Will be called at most once. This is mutually exclusive with
+  // ComponentLoadFailed; if this is called then ComponentLoadFailed won't be
+  // called.
+  //
+  // Overriders must close all file descriptors after using them.
   //
   // `version` is the version of the component.
   // `fd_map` maps file relative paths in the install directory to its file
@@ -58,8 +60,10 @@ class ComponentLoaderPolicy {
       std::unique_ptr<base::DictionaryValue> manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
-  // or if the manifest file is missing or invalid. Can
-  // be called multiple times in the same run.
+  // or if the manifest file is missing or invalid.
+  //
+  // Will be called at most once. This is mutually exclusive with
+  // ComponentLoaded; if this is called then ComponentLoaded won't be called.
   //
   // TODO(crbug.com/1180966) accept error code for different types of errors.
   virtual void ComponentLoadFailed() = 0;
@@ -70,16 +74,33 @@ class ComponentLoaderPolicy {
   virtual void GetHash(std::vector<uint8_t>* hash) const = 0;
 };
 
+using ComponentLoaderPolicyVector =
+    std::vector<std::unique_ptr<ComponentLoaderPolicy>>;
+
 // Provides a bridge from Java to native to receive callbacks from the Java
 // loader and pass it to the wrapped ComponentLoaderPolicy instance.
 //
+// The object is single use only, it will be deleted when ComponentLoaded or
+// ComponentLoadedFailed is called once.
+//
 // Can be called on a thread that is different from the thread the object is
 // created on.
-class EmbeddedComponentLoader {
+class AndroidComponentLoaderPolicy {
  public:
-  explicit EmbeddedComponentLoader(
+  explicit AndroidComponentLoaderPolicy(
       std::unique_ptr<ComponentLoaderPolicy> loader_policy);
-  ~EmbeddedComponentLoader();
+  ~AndroidComponentLoaderPolicy();
+
+  AndroidComponentLoaderPolicy(const AndroidComponentLoaderPolicy&) = delete;
+  AndroidComponentLoaderPolicy& operator=(const AndroidComponentLoaderPolicy&) =
+      delete;
+
+  // A utility method that returns an array of Java objects of
+  // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
+  static base::android::ScopedJavaLocalRef<jobjectArray>
+  ToJavaArrayOfAndroidComponentLoaderPolicy(
+      JNIEnv* env,
+      ComponentLoaderPolicyVector policies);
 
   // JNI overrides:
   void ComponentLoaded(JNIEnv* env,
@@ -89,16 +110,23 @@ class EmbeddedComponentLoader {
   base::android::ScopedJavaLocalRef<jstring> GetComponentId(JNIEnv* env);
 
  private:
-  SEQUENCE_CHECKER(sequence_checker_);
+  // Returns a Java object of
+  // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void NotifyNewVersion(const base::flat_map<std::string, int>& fd_map,
                         std::unique_ptr<base::DictionaryValue> manifest);
   void CloseFdsAndFail(const base::flat_map<std::string, int>& fd_map);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // A Java object of
+  // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
+  base::android::ScopedJavaGlobalRef<jobject> obj_;
+
   std::unique_ptr<ComponentLoaderPolicy> loader_policy_;
-  base::WeakPtrFactory<EmbeddedComponentLoader> weak_ptr_factory_{this};
 };
 
 }  // namespace component_updater
 
-#endif  // COMPONENTS_COMPONENT_UPDATER_ANDROID_EMBEDDED_COMPONENT_LOADER_H_
+#endif  // COMPONENTS_COMPONENT_UPDATER_ANDROID_COMPONENT_LOADER_POLICY_H_

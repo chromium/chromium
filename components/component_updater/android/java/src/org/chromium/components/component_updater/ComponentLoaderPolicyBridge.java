@@ -6,6 +6,8 @@ package org.chromium.components.component_updater;
 
 import android.os.ParcelFileDescriptor;
 
+import org.chromium.base.LifetimeAssert;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
@@ -16,10 +18,15 @@ import java.util.Map;
  */
 @JNINamespace("component_updater")
 public class ComponentLoaderPolicyBridge {
-    private final long mNativeComponentLoader;
+    private static final long NATIVE_NULL = 0;
 
-    public ComponentLoaderPolicyBridge(long nativeComponentLoader) {
-        mNativeComponentLoader = nativeComponentLoader;
+    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+
+    private long mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
+
+    @CalledByNative
+    private ComponentLoaderPolicyBridge(long nativeAndroidComponentLoaderPolicy) {
+        mNativeAndroidComponentLoaderPolicy = nativeAndroidComponentLoaderPolicy;
     }
 
     /**
@@ -28,9 +35,13 @@ public class ComponentLoaderPolicyBridge {
      *
      * Should close all file descriptors after using them. Can be called on a background thread.
      *
-     * @param fileMap maps file relative paths in CRX file to its file descriptor.
+     * Exactly one of componentLoaded or componentLoadFailed should be called exactly once.
+     *
+     * @param fileMap maps file relative paths in the install directory to its file descriptor.
      */
     public void componentLoaded(Map<String, ParcelFileDescriptor> fileMap) {
+        assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
+
         // Flatten the map into two arrays one for keys and another for values to be able to
         // pass them to native.
         String[] fileNames = new String[fileMap.size()];
@@ -42,15 +53,32 @@ public class ComponentLoaderPolicyBridge {
             ++i;
         }
         ComponentLoaderPolicyBridgeJni.get().componentLoaded(
-                mNativeComponentLoader, fileNames, fds);
+                mNativeAndroidComponentLoaderPolicy, fileNames, fds);
+        // Setting it to null, because it is deleted after componentLoaded is called.
+        mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
+
+        // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
+        // with a stack trace showing the stack during LifetimeAssert.create().
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     /**
      * Called if connection to the service fails, components files are not found or if the manifest
      * file is missing or invalid. Can be called on a background thread.
+     *
+     * Exactly one of componentLoaded or componentLoadFailed should be called exactly once.
      */
     public void componentLoadFailed() {
-        ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(mNativeComponentLoader);
+        assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
+
+        ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(
+                mNativeAndroidComponentLoaderPolicy);
+        // Setting it to null, because it is deleted after componentLoadFailed is called.
+        mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
+
+        // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
+        // with a stack trace showing the stack during LifetimeAssert.create().
+        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
     /**
@@ -58,13 +86,28 @@ public class ComponentLoaderPolicyBridge {
      * files from the ComponentsProviderService. Can be called on a background thread.
      */
     public String getComponentId() {
-        return ComponentLoaderPolicyBridgeJni.get().getComponentId(mNativeComponentLoader);
+        assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
+
+        return ComponentLoaderPolicyBridgeJni.get().getComponentId(
+                mNativeAndroidComponentLoaderPolicy);
+    }
+
+    @CalledByNative
+    private static ComponentLoaderPolicyBridge[] createNewArray(int size) {
+        return new ComponentLoaderPolicyBridge[size];
+    }
+
+    @CalledByNative
+    private static void setArrayElement(
+            ComponentLoaderPolicyBridge[] array, int index, ComponentLoaderPolicyBridge policy) {
+        array[index] = policy;
     }
 
     @NativeMethods
     interface Natives {
-        void componentLoaded(long nativeEmbeddedComponentLoader, String[] fileNames, int[] fds);
-        void componentLoadFailed(long nativeEmbeddedComponentLoader);
-        String getComponentId(long nativeEmbeddedComponentLoader);
+        void componentLoaded(
+                long nativeAndroidComponentLoaderPolicy, String[] fileNames, int[] fds);
+        void componentLoadFailed(long nativeAndroidComponentLoaderPolicy);
+        String getComponentId(long nativeAndroidComponentLoaderPolicy);
     }
 }

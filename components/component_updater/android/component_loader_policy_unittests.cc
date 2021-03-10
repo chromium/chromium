@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/component_updater/android/embedded_component_loader.h"
+#include "components/component_updater/android/component_loader_policy.h"
 
 #include <fcntl.h>
 #include <jni.h>
@@ -109,14 +109,15 @@ void VerifyComponentLoaded(base::OnceClosure on_done,
 
 }  // namespace
 
-class EmbeddedComponentLoaderTest : public testing::Test {
+class AndroidComponentLoaderPolicyTest : public testing::Test {
  public:
-  EmbeddedComponentLoaderTest() = default;
-  ~EmbeddedComponentLoaderTest() override = default;
+  AndroidComponentLoaderPolicyTest() = default;
+  ~AndroidComponentLoaderPolicyTest() override = default;
 
-  EmbeddedComponentLoaderTest(const EmbeddedComponentLoaderTest&) = delete;
-  EmbeddedComponentLoaderTest& operator=(const EmbeddedComponentLoaderTest&) =
+  AndroidComponentLoaderPolicyTest(const AndroidComponentLoaderPolicyTest&) =
       delete;
+  AndroidComponentLoaderPolicyTest& operator=(
+      const AndroidComponentLoaderPolicyTest&) = delete;
 
   void SetUp() override {
     env_ = base::android::AttachCurrentThread();
@@ -141,7 +142,7 @@ class EmbeddedComponentLoaderTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(EmbeddedComponentLoaderTest, TestValidManifest) {
+TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file1.txt", "1");
@@ -150,36 +151,38 @@ TEST_F(EmbeddedComponentLoaderTest, TestValidManifest) {
             "{\n\"manifest_version\": 2,\n\"version\": \"123.456.789\"\n}");
 
   base::RunLoop run_loop;
-  EmbeddedComponentLoader loader(std::make_unique<MockLoaderPolicy>(
-      base::BindOnce(&VerifyComponentLoaded, run_loop.QuitClosure()),
-      base::BindOnce([]() { FAIL(); })));
+  auto* android_policy =
+      new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
+          base::BindOnce(&VerifyComponentLoaded, run_loop.QuitClosure()),
+          base::BindOnce([]() { FAIL(); })));
 
-  loader.ComponentLoaded(env_,
-                         base::android::ToJavaArrayOfStrings(env_, files_),
-                         base::android::ToJavaIntArray(env_, GetFileFds()));
+  android_policy->ComponentLoaded(
+      env_, base::android::ToJavaArrayOfStrings(env_, files_),
+      base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
 }
 
-TEST_F(EmbeddedComponentLoaderTest, TestMissingManifest) {
+TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file.txt", "test");
 
   base::RunLoop run_loop;
-  EmbeddedComponentLoader loader(std::make_unique<MockLoaderPolicy>(
-      base::BindOnce(
-          [](const base::Version& version,
-             const base::flat_map<std::string, int>& fd_map,
-             std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-      run_loop.QuitClosure()));
+  auto* android_policy =
+      new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
+          base::BindOnce(
+              [](const base::Version& version,
+                 const base::flat_map<std::string, int>& fd_map,
+                 std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
+          run_loop.QuitClosure()));
 
-  loader.ComponentLoaded(env_,
-                         base::android::ToJavaArrayOfStrings(env_, files_),
-                         base::android::ToJavaIntArray(env_, GetFileFds()));
+  android_policy->ComponentLoaded(
+      env_, base::android::ToJavaArrayOfStrings(env_, files_),
+      base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
 }
 
-TEST_F(EmbeddedComponentLoaderTest, TestInvalidVersion) {
+TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file.txt", "test");
@@ -187,46 +190,49 @@ TEST_F(EmbeddedComponentLoaderTest, TestInvalidVersion) {
             "{\n\"manifest_version\": 2,\n\"version\": \"\"\n}");
 
   base::RunLoop run_loop;
-  EmbeddedComponentLoader loader(std::make_unique<MockLoaderPolicy>(
-      base::BindOnce(
-          [](const base::Version& version,
-             const base::flat_map<std::string, int>& fd_map,
-             std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-      run_loop.QuitClosure()));
+  auto* android_policy =
+      new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
+          base::BindOnce(
+              [](const base::Version& version,
+                 const base::flat_map<std::string, int>& fd_map,
+                 std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
+          run_loop.QuitClosure()));
 
-  loader.ComponentLoaded(env_,
-                         base::android::ToJavaArrayOfStrings(env_, files_),
-                         base::android::ToJavaIntArray(env_, GetFileFds()));
+  android_policy->ComponentLoaded(
+      env_, base::android::ToJavaArrayOfStrings(env_, files_),
+      base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
 }
 
-TEST_F(EmbeddedComponentLoaderTest, TestInvalidManifest) {
+TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file.txt", "test");
   WriteFile("manifest.json", "{\n\"manifest_version\":}");
 
   base::RunLoop run_loop;
-  EmbeddedComponentLoader loader(std::make_unique<MockLoaderPolicy>(
-      base::BindOnce(
-          [](const base::Version& version,
-             const base::flat_map<std::string, int>& fd_map,
-             std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-      run_loop.QuitClosure()));
+  auto* android_policy =
+      new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
+          base::BindOnce(
+              [](const base::Version& version,
+                 const base::flat_map<std::string, int>& fd_map,
+                 std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
+          run_loop.QuitClosure()));
 
-  loader.ComponentLoaded(env_,
-                         base::android::ToJavaArrayOfStrings(env_, files_),
-                         base::android::ToJavaIntArray(env_, GetFileFds()));
+  android_policy->ComponentLoaded(
+      env_, base::android::ToJavaArrayOfStrings(env_, files_),
+      base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
 }
 
-TEST_F(EmbeddedComponentLoaderTest, TestGetComponentId) {
+TEST_F(AndroidComponentLoaderPolicyTest, TestGetComponentId) {
   base::test::TaskEnvironment task_environment;
 
-  EmbeddedComponentLoader loader(std::make_unique<MockLoaderPolicy>());
+  auto* android_policy =
+      new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>());
 
   base::android::ScopedJavaLocalRef<jstring> jcomponentId =
-      loader.GetComponentId(env_);
+      android_policy->GetComponentId(env_);
 
   EXPECT_EQ(base::android::ConvertJavaStringToUTF8(jcomponentId), kComponentId);
 }

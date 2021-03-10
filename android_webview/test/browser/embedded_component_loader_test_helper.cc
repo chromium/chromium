@@ -17,7 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/component_updater/android/embedded_component_loader.h"
+#include "components/component_updater/android/component_loader_policy.h"
 
 namespace component_updater {
 
@@ -102,14 +102,13 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
 
 }  // namespace
 
-static base::android::ScopedJavaLocalRef<jlongArray>
-JNI_EmbeddedComponentLoaderFactory_GetComponentLoaders(JNIEnv* env) {
-  std::vector<int64_t> loaders{
-      reinterpret_cast<int64_t>(new EmbeddedComponentLoader(
-          std::make_unique<AvailableComponentLoaderPolicy>())),
-      reinterpret_cast<int64_t>(new EmbeddedComponentLoader(
-          std::make_unique<UnavailableComponentLoaderPolicy>()))};
-  return base::android::ToJavaLongArray(env, loaders);
+static base::android::ScopedJavaLocalRef<jobjectArray>
+JNI_EmbeddedComponentLoaderFactory_GetComponentLoaderPolicies(JNIEnv* env) {
+  ComponentLoaderPolicyVector loaders;
+  loaders.push_back(std::make_unique<AvailableComponentLoaderPolicy>());
+  loaders.push_back(std::make_unique<UnavailableComponentLoaderPolicy>());
+  return AndroidComponentLoaderPolicy::
+      ToJavaArrayOfAndroidComponentLoaderPolicy(env, std::move(loaders));
 }
 
 }  // namespace component_updater

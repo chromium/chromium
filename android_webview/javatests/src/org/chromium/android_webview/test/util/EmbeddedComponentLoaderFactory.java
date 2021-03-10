@@ -9,8 +9,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * A utility class to bridge to native to get list of native component loaders for
@@ -22,17 +21,12 @@ public class EmbeddedComponentLoaderFactory {
     private EmbeddedComponentLoaderFactory() {}
 
     public static EmbeddedComponentLoader makeEmbeddedComponentLoader() {
-        long[] nativeComponentLoaders =
-                EmbeddedComponentLoaderFactoryJni.get().getComponentLoaders();
-        List<ComponentLoaderPolicyBridge> policyList = new ArrayList<>();
-        for (long nativeLoader : nativeComponentLoaders) {
-            policyList.add(new ComponentLoaderPolicyBridge(nativeLoader));
-        }
-        return new EmbeddedComponentLoader(policyList);
+        return new EmbeddedComponentLoader(Arrays.asList(
+                EmbeddedComponentLoaderFactoryJni.get().getComponentLoaderPolicies()));
     }
 
     @NativeMethods
     interface Natives {
-        long[] getComponentLoaders();
+        ComponentLoaderPolicyBridge[] getComponentLoaderPolicies();
     }
 }

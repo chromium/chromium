@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Java-side implementation of the EmbeddedComponentLoader, it implements a ServiceConnection to
+ * ComponentLoader that is used in embedded WebViews/WebLayers. It implements a ServiceConnection to
  * connect to the provider service to fetch components files.
  */
 public class EmbeddedComponentLoader implements ServiceConnection {

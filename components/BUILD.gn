@@ -368,6 +368,7 @@ test("components_unittests") {
       "//components/autofill_assistant/browser:unit_tests",
       "//components/browser_ui/sms/android:unit_tests",
       "//components/cdm/browser:unit_tests",
+      "//components/component_updater/android:embedded_component_loader_java",
       "//components/component_updater/android:embedded_component_loader_unittests",
       "//components/crash/android:java",
       "//components/crash/android:unit_tests",
