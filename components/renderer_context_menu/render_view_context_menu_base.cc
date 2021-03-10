@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -249,8 +250,13 @@ void RenderViewContextMenuBase::UpdateMenuItem(int command_id,
   menu_model_.SetLabel(index, label);
   menu_model_.SetEnabledAt(index, enabled);
   menu_model_.SetVisibleAt(index, !hidden);
-  if (toolkit_delegate_)
+  if (toolkit_delegate_) {
+#if defined(OS_MAC)
+    toolkit_delegate_->UpdateMenuItem(command_id, enabled, hidden, label);
+#else
     toolkit_delegate_->RebuildMenu();
+#endif
+  }
 }
 
 void RenderViewContextMenuBase::UpdateMenuIcon(int command_id,
