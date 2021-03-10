@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 <style>
-body {
-  display: grid;
-  grid: repeat(100, 30px) / repeat(100, 60px);
-}
 
 span {
+  display: inline-block;
   border: solid;
   width: 60px;
   height: 30px;
@@ -42,7 +39,7 @@ span:nth-child(3n) {
 
     PerfTestRunner.forceLayout();
 
-    PerfTestRunner.measureRunsPerSecond({
+    PerfTestRunner.measureTime({
       description: "Measures performance of changing text nodes content.",
       run: function() {
         for (let i = 0; i < textNodes.length; i++) {
