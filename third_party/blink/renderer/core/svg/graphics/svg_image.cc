@@ -821,6 +821,9 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       page->GetSettings().SetDefaultFixedFontSize(
           default_settings.GetDefaultFixedFontSize());
 
+      page->GetSettings().SetImageAnimationPolicy(
+          default_settings.GetImageAnimationPolicy());
+
       // Also copy the preferred-color-scheme to ensure a responsiveness to
       // dark/light color schemes.
       page->GetSettings().SetPreferredColorScheme(

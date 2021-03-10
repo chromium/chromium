@@ -13,14 +13,20 @@
       }
     </script>
     <style>
-      div {
+      .gif {
         background-image: url(animation-blue.gif);
+        height: 100px;
+        width: 100px;
+      }
+      .svg {
+        background-image: url(resources/animation-green-red.svg);
         height: 100px;
         width: 100px;
       }
     </style>
   </head>
   <body onload="waitForFrame()">
-    <div></div>
+    <div class="gif"></div>
+    <div class="svg"></div>
   </body>
 </html>
