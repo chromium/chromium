@@ -1040,4 +1040,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     nil);
 }
 
++ (id<GREYMatcher>)manualFallbackSuggestPasswordMatcher {
+  return grey_accessibilityID(
+      manual_fill::SuggestPasswordAccessibilityIdentifier);
+}
+
++ (id<GREYMatcher>)useSuggestedPasswordMatcher {
+  return grey_allOf(
+      [self buttonWithAccessibilityLabelID:IDS_IOS_USE_SUGGESTED_PASSWORD],
+      grey_interactable(), nullptr);
+}
+
 @end

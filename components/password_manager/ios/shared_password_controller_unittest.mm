@@ -9,6 +9,7 @@
 #include "components/autofill/core/common/password_form_generation_data.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
+#include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -421,6 +422,57 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
                      uniqueFieldID:field_id
                            frameID:@"test-frame-id"
                  completionHandler:nil];
+
+  [delegate_ verify];
+}
+
+// Tests that triggering password generation on the last focused field triggers
+// the generation flow.
+TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
+  autofill::FormActivityParams params;
+  params.unique_form_id = autofill::FormRendererId(0);
+  params.field_type = "password";
+  params.unique_field_id = autofill::FieldRendererId(1);
+  params.type = "focus";
+  params.input_missing = false;
+
+  web::FakeWebFrame web_frame("frame-id", /*is_main_frame=*/true, GURL());
+
+  [controller_ webState:&web_state_
+      didRegisterFormActivity:params
+                      inFrame:&web_frame];
+
+  [[delegate_ expect] sharedPasswordController:controller_
+                showGeneratedPotentialPassword:[OCMArg isNotNil]
+                               decisionHandler:[OCMArg any]];
+
+  [controller_ triggerPasswordGeneration];
+
+  [delegate_ verify];
+}
+
+// Tests that triggering password generation on the last focused field does not
+// trigger the generation flow if the last reported form activity did not
+// provide valid form and field identifiers.
+TEST_F(SharedPasswordControllerTest, LastFocusedFieldData) {
+  autofill::FormActivityParams params;
+  params.unique_form_id = autofill::FormRendererId(0);
+  params.field_type = "password";
+  params.unique_field_id = autofill::FieldRendererId(1);
+  params.type = "focus";
+  params.input_missing = true;
+
+  web::FakeWebFrame web_frame("frame-id", /*is_main_frame=*/true, GURL());
+
+  [controller_ webState:&web_state_
+      didRegisterFormActivity:params
+                      inFrame:&web_frame];
+
+  [[delegate_ reject] sharedPasswordController:controller_
+                showGeneratedPotentialPassword:[OCMArg isNotNil]
+                               decisionHandler:[OCMArg any]];
+
+  [controller_ triggerPasswordGeneration];
 
   [delegate_ verify];
 }

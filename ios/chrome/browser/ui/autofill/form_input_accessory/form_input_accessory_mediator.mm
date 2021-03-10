@@ -272,6 +272,10 @@ using base::UmaHistogramEnumeration;
   }
 }
 
+- (BOOL)lastFocusedFieldWasPassword {
+  return _lastSeenParams.field_type == autofill::kPasswordFieldType;
+}
+
 #pragma mark - KeyboardObserverHelperConsumer
 
 - (void)keyboardDidStayOnScreen {

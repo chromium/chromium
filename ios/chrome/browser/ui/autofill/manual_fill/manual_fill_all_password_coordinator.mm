@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -51,9 +53,16 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
   self.passwordMediator =
       [[ManualFillPasswordMediator alloc] initWithPasswordStore:passwordStore
-                                                  faviconLoader:faviconLoader];
+                                                  faviconLoader:faviconLoader
+                                                       webState:webState
+                                                    syncService:syncService
+                                         invokedOnPasswordField:NO];
   [self.passwordMediator fetchPasswordsForURL:GURL::EmptyGURL()];
   self.passwordMediator.actionSectionEnabled = NO;
   self.passwordMediator.consumer = self.passwordViewController;

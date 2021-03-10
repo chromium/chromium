@@ -546,6 +546,13 @@ id<GREYMatcher> ManualFallbackCreditCardTableViewWindowMatcher();
 // Returns the matcher for the iOS 13+ Activity View header.
 id<GREYMatcher> ActivityViewHeader(NSString* page_title);
 
+// Returns a matcher for the button to trigger password generation on manual
+// fallback.
+id<GREYMatcher> ManualFallbackSuggestPasswordMatcher();
+
+// Returns a matcher for the button to accept the generated password.
+id<GREYMatcher> UseSuggestedPasswordMatcher();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_H_

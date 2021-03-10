@@ -1129,6 +1129,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD" desc="The title for the manual fallback UI with all passwords without filter." meaning="The title for a list where the user is about to select a password or username to be filled in a form [Length: 10em]">
         Passwords
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. [30em]">
+        Suggest password...
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to open a list of all the user credentials where they can select one to fill a form. This button is showed at the same time as a different button with  IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS as title. [30em]">
         Use Other Password...
       </message>
