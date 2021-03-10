@@ -3500,6 +3500,18 @@
       }
     ]
   },
+  "Win x64 Builder (reclient)": {
+    "additional_compile_targets": [
+      "pdf_fuzzers"
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      }
+    ]
+  },
   "android-code-coverage": {
     "gtest_tests": [
       {
