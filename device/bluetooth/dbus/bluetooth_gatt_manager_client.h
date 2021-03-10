@@ -65,6 +65,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattManagerClient
 
   // Constants used to indicate exceptional error conditions.
   static const char kNoResponseError[];
+  static const char kUnknownGattManager[];
 
  protected:
   BluetoothGattManagerClient();
