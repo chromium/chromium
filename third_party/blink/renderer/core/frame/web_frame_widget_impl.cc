@@ -469,13 +469,7 @@ void WebFrameWidgetImpl::DragSourceSystemDragEnded() {
 }
 
 void WebFrameWidgetImpl::SetBackgroundOpaque(bool opaque) {
-  if (opaque) {
-    View()->ClearBaseBackgroundColorOverride();
-    View()->ClearBackgroundColorOverride();
-  } else {
-    View()->SetBaseBackgroundColorOverride(SK_ColorTRANSPARENT);
-    View()->SetBackgroundColorOverride(SK_ColorTRANSPARENT);
-  }
+  View()->SetBaseBackgroundColorOverrideTransparent(!opaque);
 }
 
 void WebFrameWidgetImpl::SetTextDirection(base::i18n::TextDirection direction) {

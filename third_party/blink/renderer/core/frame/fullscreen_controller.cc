@@ -156,18 +156,6 @@ void FullscreenController::EnterFullscreen(LocalFrame& frame,
     return;
   }
 
-  // We need to store these values here rather than in |DidEnterFullscreen()|
-  // since by the time the latter is called, a Resize has already occurred,
-  // clamping the scroll offset. Don't save values if we're still waiting to
-  // restore a previous set. This can happen if we exit and quickly reenter
-  // fullscreen without performing a layout.
-  if (state_ == State::kInitial) {
-    initial_background_color_override_enabled_ =
-        web_view_base_->BackgroundColorOverrideEnabled();
-    initial_background_color_override_ =
-        web_view_base_->BackgroundColorOverride();
-  }
-
   pending_frames_->insert(&frame);
 
   // If already entering fullscreen, just wait.
@@ -233,8 +221,10 @@ void FullscreenController::FullscreenElementChanged(
 
       // If the video uses overlay fullscreen mode, make the background
       // transparent.
-      if (video_element->UsesOverlayFullscreenVideo())
-        web_view_base_->SetBackgroundColorOverride(Color::kTransparent);
+      if (video_element->UsesOverlayFullscreenVideo()) {
+        web_view_base_->SetBackgroundColorOverrideForFullscreenController(
+            Color::kTransparent);
+      }
     }
   }
 
@@ -265,17 +255,8 @@ void FullscreenController::FullscreenElementChanged(
 }
 
 void FullscreenController::RestoreBackgroundColorOverride() {
-  if (web_view_base_->BackgroundColorOverrideEnabled() !=
-          initial_background_color_override_enabled_ ||
-      web_view_base_->BackgroundColorOverride() !=
-          initial_background_color_override_) {
-    if (initial_background_color_override_enabled_) {
-      web_view_base_->SetBackgroundColorOverride(
-          initial_background_color_override_);
-    } else {
-      web_view_base_->ClearBackgroundColorOverride();
-    }
-  }
+  web_view_base_->SetBackgroundColorOverrideForFullscreenController(
+      base::nullopt);
 }
 
 void FullscreenController::NotifyFramesOfFullscreenEntry(bool granted) {

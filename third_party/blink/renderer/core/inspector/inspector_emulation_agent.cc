@@ -531,7 +531,7 @@ Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
     return response;
   if (!color.isJust()) {
     // Clear the override and state.
-    GetWebViewImpl()->ClearBaseBackgroundColorOverride();
+    GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(base::nullopt);
     default_background_color_override_rgba_.Clear();
     return Response::Success();
   }
@@ -540,7 +540,7 @@ Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   default_background_color_override_rgba_.Set(rgba->Serialize());
   // Clamping of values is done by Color() constructor.
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
-  GetWebViewImpl()->SetBaseBackgroundColorOverride(
+  GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(
       Color(rgba->getR(), rgba->getG(), rgba->getB(), alpha).Rgb());
   return Response::Success();
 }

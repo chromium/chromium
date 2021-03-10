@@ -26,7 +26,7 @@ class AutoscrollControllerTest : public SimTest {
 TEST_F(AutoscrollControllerTest,
        CrashWhenLayoutStopAnimationBeforeScheduleAnimation) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  WebView().SetBaseBackgroundColorOverride(SK_ColorTRANSPARENT);
+  WebView().SetBaseBackgroundColor(SK_ColorTRANSPARENT);
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(

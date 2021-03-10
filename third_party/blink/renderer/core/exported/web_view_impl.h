@@ -207,15 +207,33 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void AddObserver(WebViewObserver* observer);
   void RemoveObserver(WebViewObserver* observer);
 
-  // Overrides the page's background and base background color. You
-  // can use this to enforce a transparent background, which is useful if you
-  // want to have some custom background rendered behind the widget.
+  // `BaseBackgroundColor()` affects how the document is rendered.
+  // `BackgroundColor()` is what the document computes as its background color
+  // (with `BaseBackgroundColor()` as an input), or `BaseBackgroundColor()` if
+  // there is no local main frame; it's used as the background color of the
+  // compositor.
   //
-  // These may are only called for composited WebViews.
-  void SetBackgroundColorOverride(SkColor);
-  void ClearBackgroundColorOverride();
-  void SetBaseBackgroundColorOverride(SkColor);
-  void ClearBaseBackgroundColorOverride();
+  // These methods override `BaseBackgroundColor()` or `BackgroundColor()` for
+  // specific use cases. You can use this to set a transparent background,
+  // which is useful if you want to have some custom background rendered behind
+  // the widget.
+  //
+  // These settings only have an effect for composited WebViews
+  // These overrides are listed in order of precedence.
+  // - Overriding the background color for fullscreen ignores all other inputs,
+  //   including `BaseBackgroundColor()`. Note, however, that
+  //   `BaseBackgroundColor()` is passed directly into
+  //   `LocalFrameView::SetBaseBackgroundColor`.
+  // - Overriding base background color transparency takes precedences over
+  //   any base background color that might be specified for inspector--the
+  //   transparency specified in the inspector base background color is
+  //   ignored.
+  //
+  // Add new methods with clear precedence for new use cases.
+  void SetBackgroundColorOverrideForFullscreenController(
+      base::Optional<SkColor>);
+  void SetBaseBackgroundColorOverrideTransparent(bool override_to_transparent);
+  void SetBaseBackgroundColorOverrideForInspector(base::Optional<SkColor>);
 
   // Resize the WebView. You likely should be using
   // MainFrameWidget()->Resize instead.
@@ -276,10 +294,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   SkColor BackgroundColor() const;
   Color BaseBackgroundColor() const;
-  bool BackgroundColorOverrideEnabled() const {
-    return background_color_override_enabled_;
-  }
-  SkColor BackgroundColorOverride() const { return background_color_override_; }
 
   Frame* FocusedCoreFrame() const;
 
@@ -759,11 +773,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   std::unique_ptr<FullscreenController> fullscreen_controller_;
 
+  base::Optional<SkColor> background_color_override_for_fullscreen_controller_;
+  bool override_base_background_color_to_transparent_ = false;
+  base::Optional<SkColor> base_background_color_override_for_inspector_;
   SkColor base_background_color_ = Color::kWhite;
-  bool base_background_color_override_enabled_ = false;
-  SkColor base_background_color_override_ = Color::kTransparent;
-  bool background_color_override_enabled_ = false;
-  SkColor background_color_override_ = Color::kTransparent;
+
   float zoom_factor_override_ = 0.f;
 
   FloatSize elastic_overscroll_;
