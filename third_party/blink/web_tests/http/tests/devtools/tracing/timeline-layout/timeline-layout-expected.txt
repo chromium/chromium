@@ -11,8 +11,24 @@ Layout Properties:
             totalObjects : 8
         }
         endData : {
-            root : <object>
-            rootNode : <number>
+            layoutRoots : [
+                {
+                    depth : 4
+                    nodeId : <number>
+                    quads : [
+                        [
+                            8
+                            8
+                            108
+                            8
+                            108
+                            108
+                            8
+                            108
+                        ]
+                    ]
+                }
+            ]
         }
     }
     endTime : <number>
@@ -33,8 +49,24 @@ Layout Properties:
             totalObjects : 11
         }
         endData : {
-            root : <object>
-            rootNode : <number>
+            layoutRoots : [
+                {
+                    depth : 4
+                    nodeId : <number>
+                    quads : [
+                        [
+                            8
+                            108
+                            108
+                            108
+                            108
+                            208
+                            8
+                            208
+                        ]
+                    ]
+                }
+            ]
         }
     }
     endTime : <number>

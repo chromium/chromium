@@ -61,7 +61,7 @@
       dur: 1000,
       'tid': mainThread,
       'pid': pid,
-      args: {beginData: {}, endData: {}}
+      args: {beginData: {}, endData: {'layoutRoots':[]}}
     },
 
     {
@@ -102,7 +102,7 @@
       'dur': 1000,
       'tid': mainThread,
       'pid': pid,
-      args: {beginData: {}, endData: {}}
+      args: {beginData: {}, endData: {'layoutRoots':[]}}
     },
   ];
 

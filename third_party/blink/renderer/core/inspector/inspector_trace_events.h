@@ -59,6 +59,7 @@ class InvalidationSet;
 class KURL;
 class LayoutImage;
 class LayoutObject;
+struct LayoutObjectWithDepth;
 class LocalFrame;
 class LocalFrameView;
 class Node;
@@ -149,7 +150,7 @@ class CORE_EXPORT InspectorTraceEvents
 
 namespace inspector_layout_event {
 std::unique_ptr<TracedValue> BeginData(LocalFrameView*);
-std::unique_ptr<TracedValue> EndData(LayoutObject* root_for_this_layout);
+std::unique_ptr<TracedValue> EndData(const Vector<LayoutObjectWithDepth>&);
 }  // namespace inspector_layout_event
 
 namespace inspector_schedule_style_invalidation_tracking_event {

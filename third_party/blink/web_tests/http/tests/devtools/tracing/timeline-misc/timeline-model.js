@@ -87,7 +87,7 @@
       'name': 'Layout',
       'ts': 1003000,
       'ph': 'E',
-      args: {endData: {}},
+      args: {endData: {'layoutRoots':[]}},
       'tid': mainThread,
       'pid': 100,
       'cat': 'disabled-by-default.devtools.timeline'
@@ -151,7 +151,7 @@
       'name': 'Layout',
       'ts': 2003001,
       'ph': 'E',
-      args: {endData: {}},
+      args: {endData: {'layoutRoots':[]}},
       'tid': mainThread,
       'pid': 100,
       'cat': 'disabled-by-default.devtools.timeline'

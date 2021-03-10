@@ -16,9 +16,16 @@
           position: relative;
       }
       </style>
-      <div id="boundary" class="relayout-boundary">
+      <div>
+          <div id="boundary1" class="relayout-boundary">
+              <div>
+                  <div id="invalidate1"><div>text</div></div>
+              </div>
+          </div>
+      </div>
+      <div id="boundary2" class="relayout-boundary">
           <div>
-              <div id="invalidate1"><div>text</div></div>
+              <div id="invalidate2"><div>text</div></div>
           </div>
       </div>
     `);
@@ -27,27 +34,34 @@
       {
           var element = document.getElementById("invalidate1");
           element.style.marginTop = "10px";
+          element = document.getElementById("invalidate2");
+          element.style.marginTop = "15px";
           var unused = element.offsetHeight;
       }
   `);
+
+  var rows;
 
   TestRunner.evaluateInPage('var unused = document.body.offsetWidth;', async function() {
     const records = await PerformanceTestRunner.evaluateWithTimeline('performActions()');
     const layoutEvent = PerformanceTestRunner.findTimelineEvent(TimelineModel.TimelineModel.RecordType.Layout);
     UI.context.addFlavorChangeListener(SDK.DOMNode, onSelectedNodeChanged);
-    clickValueLink(layoutEvent, 'Layout root');
+    var model = UI.panels.timeline._performanceModel.timelineModel();
+    var element = await Timeline.TimelineUIUtils.buildTraceEventDetails(layoutEvent, model, new Components.Linkifier(), true);
+    rows = Array.from(element.querySelectorAll('.timeline-details-view-row'));
+    clickNextLayoutRoot();
   });
 
-  async function clickValueLink(event, row) {
-    var model = UI.panels.timeline._performanceModel.timelineModel();
-    var element = await Timeline.TimelineUIUtils.buildTraceEventDetails(event, model, new Components.Linkifier(), true);
-    var rows = element.querySelectorAll('.timeline-details-view-row');
-    for (var i = 0; i < rows.length; ++i) {
-      if (rows[i].firstChild.textContent.indexOf(row) !== -1) {
-        rows[i].lastChild.firstChild.shadowRoot.lastChild.click();
+  async function clickNextLayoutRoot() {
+    while (rows.length) {
+      let row = rows.shift();
+      if (row.firstChild.textContent.indexOf('Layout root') !== -1) {
+        row.lastChild.firstChild.shadowRoot.lastChild.click();
         return;
       }
     }
+    UI.context.removeFlavorChangeListener(SDK.DOMNode, onSelectedNodeChanged);
+    TestRunner.completeTest();
   }
 
   function onSelectedNodeChanged() {
@@ -55,8 +69,7 @@
     // We may first get an old selected node while switching to the Elements panel.
     if (node.nodeName() === 'BODY')
       return;
-    UI.context.removeFlavorChangeListener(SDK.DOMNode, onSelectedNodeChanged);
     TestRunner.addResult('Layout root node id: ' + node.getAttribute('id'));
-    TestRunner.completeTest();
+    clickNextLayoutRoot();
   }
 })();

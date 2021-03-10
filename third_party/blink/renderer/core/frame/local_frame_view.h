@@ -877,7 +877,7 @@ class CORE_EXPORT LocalFrameView final
   void ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 
   void PerformPreLayoutTasks();
-  LayoutObject* PerformLayout();
+  void PerformLayout();
   void PerformPostLayoutTasks(bool view_size_changed);
 
   DocumentLifecycle& Lifecycle() const;

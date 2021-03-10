@@ -16,6 +16,31 @@ class LayoutObject;
 // Put data inside a forward-declared struct, to avoid including LayoutObject.h.
 struct DepthOrderedLayoutObjectListData;
 
+struct LayoutObjectWithDepth {
+  explicit LayoutObjectWithDepth(LayoutObject* in_object)
+      : object(in_object), depth(DetermineDepth(in_object)) {}
+
+  LayoutObjectWithDepth() = default;
+
+  LayoutObject* object = nullptr;
+  unsigned depth = 0u;
+
+  LayoutObject& operator*() const { return *object; }
+  LayoutObject* operator->() const { return object; }
+
+  bool operator<(const LayoutObjectWithDepth& other) const {
+    return depth > other.depth;
+  }
+
+  void operator=(LayoutObject* obj) {
+    object = obj;
+    depth = DetermineDepth(obj);
+  }
+
+ private:
+  static unsigned DetermineDepth(LayoutObject*);
+};
+
 class DepthOrderedLayoutObjectList {
   DISALLOW_NEW();
 
@@ -29,27 +54,6 @@ class DepthOrderedLayoutObjectList {
 
   int size() const;
   bool IsEmpty() const;
-
-  struct LayoutObjectWithDepth {
-    LayoutObjectWithDepth(LayoutObject* in_object)
-        : object(in_object), depth(DetermineDepth(in_object)) {}
-
-    LayoutObjectWithDepth() : object(nullptr), depth(0) {}
-
-    LayoutObject* object;
-    unsigned depth;
-
-    LayoutObject& operator*() const { return *object; }
-    LayoutObject* operator->() const { return object; }
-
-    bool operator<(const DepthOrderedLayoutObjectList::LayoutObjectWithDepth&
-                       other) const {
-      return depth > other.depth;
-    }
-
-   private:
-    static unsigned DetermineDepth(LayoutObject*);
-  };
 
   const HashSet<LayoutObject*>& Unordered() const;
   const Vector<LayoutObjectWithDepth>& Ordered();

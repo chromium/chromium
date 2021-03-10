@@ -69,7 +69,7 @@
       'tts': 1758056
     },
     {
-      'args': {'endData': {'root': [0, 286, 1681, 286, 1681, 1371, 0, 1371], 'rootNode': 9}},
+      'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': [[0, 286, 1681, 286, 1681, 1371, 0, 1371]]}]},
       'cat': 'disabled-by-default-devtools.timeline',
       'name': 'Layout',
       'ph': 'E',

@@ -36,8 +36,12 @@
   testRunner.log('totalObjects > 0: ' + (beginData.totalObjects > 0));
 
   var endData = layout.args.endData;
-  testRunner.log('has rootNode id: ' + (endData.rootNode > 0));
-  testRunner.log('has root quad: ' + !!endData.root);
+  testRunner.log('has layoutRoots: ' + !!endData.layoutRoots);
+  testRunner.log('layoutRoots is not empty: ' + (endData.layoutRoots.length > 0));
+  testRunner.log('layoutRoots[0] has nodeId: ' + !!endData.layoutRoots[0].nodeId);
+  testRunner.log('layoutRoots[0] has depth: ' + !!endData.layoutRoots[0].depth);
+  testRunner.log('layoutRoots[0] has quads: ' + !!endData.layoutRoots[0].quads);
+  testRunner.log('layoutRoots[0].quads is not empty: ' + (endData.layoutRoots[0].quads.length > 0));
 
   testRunner.log('SUCCESS: found all expected events.');
   testRunner.completeTest();

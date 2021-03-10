@@ -54,6 +54,9 @@ namespace blink {
 
 namespace {
 
+const unsigned kMaxLayoutRoots = 10;
+const unsigned kMaxQuads = 10;
+
 std::unique_ptr<TracedValue> InspectorParseHtmlBeginData(Document* document,
                                                          unsigned start_line) {
   auto value = std::make_unique<TracedValue>();
@@ -678,9 +681,7 @@ std::unique_ptr<TracedValue> inspector_layout_event::BeginData(
 }
 
 static void CreateQuad(TracedValue* value,
-                       const char* name,
                        const FloatQuad& quad) {
-  value->BeginArray(name);
   value->PushDouble(quad.P1().X());
   value->PushDouble(quad.P1().Y());
   value->PushDouble(quad.P2().X());
@@ -689,7 +690,6 @@ static void CreateQuad(TracedValue* value,
   value->PushDouble(quad.P3().Y());
   value->PushDouble(quad.P4().X());
   value->PushDouble(quad.P4().Y());
-  value->EndArray();
 }
 
 static void SetGeneratingNodeInfo(TracedValue* value,
@@ -705,18 +705,36 @@ static void SetGeneratingNodeInfo(TracedValue* value,
   SetNodeInfo(value, node, id_field_name, name_field_name);
 }
 
-std::unique_ptr<TracedValue> inspector_layout_event::EndData(
-    LayoutObject* root_for_this_layout) {
+static void CreateLayoutRoot(TracedValue* value,
+                             const LayoutObjectWithDepth& layout_root) {
+  value->BeginDictionary();
+  SetGeneratingNodeInfo(value, layout_root.object, "nodeId");
+  value->SetInteger("depth", static_cast<int>(layout_root.depth));
   Vector<FloatQuad> quads;
-  root_for_this_layout->AbsoluteQuads(quads);
-
-  auto value = std::make_unique<TracedValue>();
-  if (quads.size() >= 1) {
-    CreateQuad(value.get(), "root", quads[0]);
-    SetGeneratingNodeInfo(value.get(), root_for_this_layout, "rootNode");
-  } else {
-    NOTREACHED();
+  layout_root.object->AbsoluteQuads(quads);
+  if (quads.size() > kMaxQuads)
+    quads.Shrink(kMaxQuads);
+  value->BeginArray("quads");
+  for (auto& quad : quads) {
+    value->BeginArray();
+    CreateQuad(value, quad);
+    value->EndArray();
   }
+  value->EndArray();
+  value->EndDictionary();
+}
+
+std::unique_ptr<TracedValue> inspector_layout_event::EndData(
+    const Vector<LayoutObjectWithDepth>& layout_roots) {
+  auto value = std::make_unique<TracedValue>();
+  value->BeginArray("layoutRoots");
+  unsigned numRoots = 0u;
+  for (auto& layout_root : layout_roots) {
+    if (++numRoots > kMaxLayoutRoots)
+      break;
+    CreateLayoutRoot(value.get(), layout_root);
+  }
+  value->EndArray();
   return value;
 }
 
@@ -1118,7 +1136,9 @@ std::unique_ptr<TracedValue> inspector_paint_event::Data(
                    IdentifiersFactory::FrameId(layout_object->GetFrame()));
   FloatQuad quad;
   LocalToPageQuad(*layout_object, clip_rect, &quad);
-  CreateQuad(value.get(), "clip", quad);
+  value->BeginArray("clip");
+  CreateQuad(value.get(), quad);
+  value->EndArray();
   SetGeneratingNodeInfo(value.get(), layout_object, "nodeId");
   int graphics_layer_id = graphics_layer ? graphics_layer->CcLayer().id() : 0;
   value->SetInteger("layerId", graphics_layer_id);

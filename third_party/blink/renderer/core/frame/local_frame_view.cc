@@ -735,7 +735,7 @@ std::unique_ptr<TracedValue> LocalFrameView::AnalyzerCounters() {
 #define PERFORM_LAYOUT_TRACE_CATEGORIES \
   "blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout")
 
-LayoutObject* LocalFrameView::PerformLayout() {
+void LocalFrameView::PerformLayout() {
   ScriptForbiddenScope forbid_script;
 
   has_pending_layout_ = false;
@@ -766,7 +766,7 @@ LayoutObject* LocalFrameView::PerformLayout() {
   if (!root_for_this_layout) {
     // FIXME: Do we need to set m_size here?
     NOTREACHED();
-    return nullptr;
+    return;
   }
 
   Document* document = GetFrame().GetDocument();
@@ -900,8 +900,6 @@ LayoutObject* LocalFrameView::PerformLayout() {
         text_autosizer->UpdatePageInfoInAllFrames(frame_);
     }
   }
-
-  return root_for_this_layout;
 }
 
 void LocalFrameView::UpdateLayout() {
@@ -914,20 +912,22 @@ void LocalFrameView::UpdateLayout() {
       !frame_->GetDocument()->IsActive() || frame_->IsProvisional())
     return;
 
-  base::Optional<probe::UpdateLayout> probe;
   base::Optional<RuntimeCallTimerScope> rcs_scope;
+  base::Optional<probe::UpdateLayout> probe;
+  Vector<LayoutObjectWithDepth> layout_roots;
   if (!nested_layout_count_) {
     TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
-
     if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) {
       rcs_scope.emplace(
           RuntimeCallStats::From(V8PerIsolateData::MainThreadIsolate()),
           RuntimeCallStats::CounterId::kUpdateLayout);
     }
-
+    probe.emplace(GetFrame().GetDocument());
+    layout_roots = layout_subtree_root_list_.Ordered();
+    if (layout_roots.IsEmpty())
+      layout_roots.push_back(LayoutObjectWithDepth(GetLayoutView()));
     TRACE_EVENT_BEGIN1("devtools.timeline", "Layout", "beginData",
                        inspector_layout_event::BeginData(this));
-    probe.emplace(GetFrame().GetDocument());
   }
   nested_layout_count_++;
 
@@ -944,10 +944,9 @@ void LocalFrameView::UpdateLayout() {
     kLayoutPassesComplete
   };
 
-  LayoutObject* layout_root = nullptr;
   LayoutPass layout_pass = kLayoutFirstPass;
   while (true) {
-    layout_root = PerformLayout();
+    PerformLayout();
     switch (layout_pass) {
       case kLayoutFirstPass:
         layout_pass = kAutoSizePass;
@@ -996,10 +995,8 @@ void LocalFrameView::UpdateLayout() {
 
   TRACE_EVENT_END0("blink,benchmark", "LocalFrameView::layout");
 
-  // FIXME: The notion of a single root for layout is no longer applicable.
-  // Remove or update this code. crbug.com/460596
   TRACE_EVENT_END1("devtools.timeline", "Layout", "endData",
-                   inspector_layout_event::EndData(layout_root));
+                   inspector_layout_event::EndData(layout_roots));
   probe::DidChangeViewport(frame_.Get());
 
 

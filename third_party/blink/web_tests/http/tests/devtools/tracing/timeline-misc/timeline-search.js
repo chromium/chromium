@@ -115,7 +115,7 @@
       'tid': mainThread,
       'pid': pid,
       'cat': 'disabled-by-default-devtools.timeline',
-      'args': {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}}
+      'args': {'beginData': {'frame': 0x12345678}, 'endData': {'layoutRoots':[]}}
     },
     {
       'name': 'Paint',

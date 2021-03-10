@@ -78,7 +78,7 @@
       'tid': mainThread,
       'pid': pid,
       'cat': 'disabled-by-default-devtools.timeline',
-      'args': {'endData': {'root': [0, 0, 1570, 0, 1570, 243, 0, 243], 'rootNode': 1}}
+      'args': {'endData': {'layoutRoots': [{'nodeId': 1, 'depth': 1, 'quads': [[0, 0, 1570, 0, 1570, 243, 0, 243]]}]}}
     },
     {
       'name': 'FunctionCall',
