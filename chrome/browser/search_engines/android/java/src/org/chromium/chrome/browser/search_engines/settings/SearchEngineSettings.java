@@ -11,7 +11,7 @@ import android.widget.ListView;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.ListFragment;
 
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
