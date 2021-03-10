@@ -66,6 +66,7 @@ function keyPress(key) {
 promise_test (async () => {
   await mouseClickOn(510, 10);
   scroller.scrollTo(-615, 0);
+  await waitForAnimationEndTimeBased(scrollLeft);
   await keyPress("ArrowRight");
   // The left border of #right is at -width.
   // The right border of #right is thus 200 - width.
@@ -76,6 +77,7 @@ promise_test (async () => {
 promise_test (async () => {
   await mouseClickOn(510, 10);
   scroller.scrollTo(-215, 0);
+  await waitForAnimationEndTimeBased(scrollLeft);
   await keyPress("ArrowLeft");
   // The left border of #left is at -(400 + width).
   // The right border of #left is thus -(200 + width).
