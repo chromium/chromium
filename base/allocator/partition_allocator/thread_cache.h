@@ -228,16 +228,8 @@ class BASE_EXPORT ThreadCache {
   static constexpr float kDefaultMultiplier = 2.;
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
-  // TODO(crbug.com/1169157): Tune this further.
-  //
-  // From local experiments on Linux with Speedometer 2.0 (see
-  // crbug.com/1169157), renderers make a lot of allocations up to 1024
-  // bytes. The limit was previously set to 512, which is only good to serve
-  // ~81% of allocations in renderers, vs 98% in the browser process. Increasing
-  // this limit to 1024 catches 90% of allocations, that is halves forced misses
-  // vs 512. However, to get to 98%, it is necessary to set the limit at 8192,
-  // which is likely too high across all processes.
-  static constexpr size_t kSizeThreshold = 1024;
+  // TODO(lizeb): Optimize the threshold.
+  static constexpr size_t kSizeThreshold = 512;
 
  private:
   struct Bucket {
