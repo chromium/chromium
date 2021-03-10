@@ -780,6 +780,7 @@ crbug.com/1099959 [ swiftshader-gl no-passthrough ] WebglExtension_EXT_texture_c
 
 # All platforms, Vulkan backend
 crbug.com/1114284 [ linux angle-swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
+crbug.com/1114284 [ mac angle-swiftshader passthrough google-0xffff ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
 
 # Windows. All backends.
 crbug.com/1170944 [ win google angle-swiftshader passthrough ] conformance/buffers/buffer-data-dynamic-delay.html [ Skip ]
