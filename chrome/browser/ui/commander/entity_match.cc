@@ -52,7 +52,7 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
                                               bool match_profile) {
   std::vector<WindowMatch> results;
   const BrowserList* browser_list = BrowserList::GetInstance();
-  double mru_score = 1.0;
+  double mru_score = .95;
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;
   for (BrowserList::const_reverse_iterator it =
@@ -91,12 +91,14 @@ std::vector<GroupMatch> GroupsMatchingInput(
   TabGroupModel* model = browser->tab_strip_model()->group_model();
   // For empty input, use this to preserve TabGroupModel's ordering, which is
   // arbitrary but still helpful to keep consistent across calls and surfaces.
-  double ordering_score = 1.0;
+  double ordering_score = .95;
   for (const tab_groups::TabGroupId& group_id : model->ListTabGroups()) {
     if (group_to_exclude == group_id)
       continue;
+    TabGroup* group = model->GetTabGroup(group_id);
+    const base::string16& group_title = group->visual_data()->title();
     const base::string16& title =
-        model->GetTabGroup(group_id)->visual_data()->title();
+        group_title.empty() ? group->GetContentString() : group_title;
     if (input.empty()) {
       GroupMatch match(group_id, title, ordering_score);
       results.push_back(std::move(match));

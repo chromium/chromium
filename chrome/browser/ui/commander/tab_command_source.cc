@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/commander/tab_command_source.h"
 
+#include <numeric>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/entity_match.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -31,6 +34,27 @@ std::unique_ptr<CommandItem> ItemForTitle(const base::string16& title,
   if (score > 0)
     return std::make_unique<CommandItem>(title, score, *ranges);
   return nullptr;
+}
+
+// Returns the tab group that the currently selected tabs can *not* be moved to.
+// In practice, this is the tab group that *all* selected tabs belong to, if
+// any. In the common special case of single selection, this will return that
+// tab's group if it has one.
+base::Optional<tab_groups::TabGroupId> IneligibleGroupForSelected(
+    TabStripModel* tab_strip_model) {
+  base::Optional<tab_groups::TabGroupId> excluded_group = base::nullopt;
+  for (int index : tab_strip_model->selection_model().selected_indices()) {
+    auto group = tab_strip_model->GetTabGroupForTab(index);
+    if (group.has_value()) {
+      if (!excluded_group.has_value()) {
+        excluded_group = group;
+      } else if (group != excluded_group) {
+        // More than one group in the selection, so don't exclude anything.
+        return base::nullopt;
+      }
+    }
+  }
+  return excluded_group;
 }
 
 // Commands:
@@ -98,6 +122,25 @@ void MoveTabsToExistingWindow(base::WeakPtr<Browser> source,
                                    std::vector<int>(sel.begin(), sel.end()));
 }
 
+bool CanAddAllToNewGroup(const TabStripModel* model) {
+  return model->group_model()->ListTabGroups().size() == 0;
+}
+
+void AddAllToNewGroup(Browser* browser) {
+  std::vector<int> indices(browser->tab_strip_model()->count());
+  std::iota(indices.begin(), indices.end(), 0);
+  browser->tab_strip_model()->AddToNewGroup(indices);
+}
+
+void AddSelectedToNewGroup(Browser* browser) {
+  TabStripModel* model = browser->tab_strip_model();
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      model->selection_model().selected_indices();
+  model->AddToNewGroup(std::vector<int>(sel.begin(), sel.end()));
+}
+
+// Multiphase commands:
+
 std::unique_ptr<CommandItem> CreateMoveTabsToWindowItem(
     Browser* source,
     const WindowMatch& match) {
@@ -115,6 +158,50 @@ CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
   // is fixed.
   for (auto& match : WindowsMatchingInput(source, input))
     results.push_back(CreateMoveTabsToWindowItem(source, match));
+  return results;
+}
+
+void AddTabsToGroup(base::WeakPtr<Browser> browser,
+                    tab_groups::TabGroupId group) {
+  if (!browser.get())
+    return;
+  const ui::ListSelectionModel::SelectedIndices& sel =
+      browser->tab_strip_model()->selection_model().selected_indices();
+  browser->tab_strip_model()->AddToExistingGroup(
+      std::vector<int>(sel.begin(), sel.end()), group);
+}
+
+CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
+    Browser* browser,
+    const base::string16& input) {
+  CommandSource::CommandResults results;
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  // Add "New Group", if appropriate. It should score highest with no input.
+  base::string16 new_group_title =
+      l10n_util::GetStringUTF16(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP);
+  if (input.empty()) {
+    auto item = std::make_unique<CommandItem>(new_group_title, .99,
+                                              std::vector<gfx::Range>());
+    item->entity_type = CommandItem::Entity::kGroup;
+    item->command =
+        base::BindOnce(&AddSelectedToNewGroup, base::Unretained(browser));
+    results.push_back(std::move(item));
+  } else {
+    FuzzyFinder finder(input);
+    std::vector<gfx::Range> ranges;
+    if (auto item = ItemForTitle(new_group_title, finder, &ranges)) {
+      item->command =
+          base::BindOnce(&chrome::GroupTab, base::Unretained(browser));
+      results.push_back(std::move(item));
+    }
+  }
+  for (auto& match : GroupsMatchingInput(
+           browser, input, IneligibleGroupForSelected(tab_strip_model))) {
+    auto item = match.ToCommandItem();
+    item->command =
+        base::BindOnce(&AddTabsToGroup, browser->AsWeakPtr(), match.group);
+    results.push_back(std::move(item));
+  }
   return results;
 }
 
@@ -211,6 +298,29 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     }
   }
 
+  if (CanAddAllToNewGroup(tab_strip_model)) {
+    if (auto item =
+            ItemForTitle(u"Move all tabs to new group", finder, &ranges)) {
+      item->command =
+          base::BindOnce(&AddAllToNewGroup, base::Unretained(browser));
+      results.push_back(std::move(item));
+    }
+  }
+
+  if (!tab_strip_model->WillContextMenuGroup(tab_strip_model->active_index())) {
+    if (auto item = ItemForTitle(u"Ungroup tab", finder, &ranges)) {
+      item->command =
+          base::BindOnce(&chrome::GroupTab, base::Unretained(browser));
+      results.push_back(std::move(item));
+    }
+  }
+  if (auto item = ItemForTitle(u"Add tab to group...", finder, &ranges)) {
+    item->command = std::make_pair(
+        u"Add to group...",
+        base::BindRepeating(&AddTabsToGroupCommandsForGroupsMatching,
+                            base::Unretained(browser)));
+    results.push_back(std::move(item));
+  }
   return results;
 }
 
