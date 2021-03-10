@@ -54,6 +54,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+// static
+constexpr int
+    NearbySharingServiceImpl::kMaxRecentNearbyProcessUnexpectedShutdownCount;
+
 namespace {
 
 using NearbyProcessShutdownReason =
@@ -79,6 +83,11 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 // Used to hash a token into a 4 digit string.
 constexpr int kHashModulo = 9973;
 constexpr int kHashBaseMultiplier = 31;
+
+// Length of the window during which we count the amount of times the nearby
+// process stops unexpectedly.
+constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
+    base::TimeDelta::FromMinutes(1);
 
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
@@ -946,20 +955,63 @@ void NearbySharingServiceImpl::CleanupAfterNearbyProcessStopped() {
 
 void NearbySharingServiceImpl::RestartNearbyProcessIfAppropriate(
     NearbyProcessShutdownReason shutdown_reason) {
-  if (!settings_.GetEnabled())
+  if (!ShouldRestartNearbyProcess(shutdown_reason))
     return;
 
+  NS_LOG(INFO) << __func__
+               << ": Attempting to restart nearby process after shutdown: "
+               << shutdown_reason;
+
+  BindToNearbyProcess();
+
+  // Track the number of process shutdowns that occur in a fixed time window.
+  recent_nearby_process_unexpected_shutdown_count_++;
+  if (!clear_recent_nearby_process_shutdown_count_timer_.IsRunning()) {
+    clear_recent_nearby_process_shutdown_count_timer_.Start(
+        FROM_HERE, kClearNearbyProcessUnexpectedShutdownCountDelay,
+        base::BindOnce(&NearbySharingServiceImpl::
+                           ClearRecentNearbyProcessUnexpectedShutdownCount,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+bool NearbySharingServiceImpl::ShouldRestartNearbyProcess(
+    NearbyProcessShutdownReason shutdown_reason) {
+  // Ensure Nearby Share is still enabled.
+  if (!settings_.GetEnabled()) {
+    NS_LOG(INFO) << __func__
+                 << ": Choosing to not restart process because Nearby Share is "
+                    "disabled.";
+    return false;
+  }
+
+  // Check if the current shutdown reason is one which we want to restart after.
   switch (shutdown_reason) {
+    case NearbyProcessShutdownReason::kNormal:
+      return false;
+      break;
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kMojoPipeDisconnection:
-      NS_LOG(INFO) << __func__
-                   << ": Attempting to restart nearby process after shutdown: "
-                   << shutdown_reason;
-      BindToNearbyProcess();
-      break;
-    case NearbyProcessShutdownReason::kNormal:
       break;
   }
+
+  // Check if the process shutdown count is above the allowed threshold.
+  if (recent_nearby_process_unexpected_shutdown_count_ >
+      NearbySharingServiceImpl::
+          kMaxRecentNearbyProcessUnexpectedShutdownCount) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Choosing to not restart process because the recent stop "
+           "count has exceeded the threshold.";
+    return false;
+  }
+
+  return true;
+}
+
+void NearbySharingServiceImpl::
+    ClearRecentNearbyProcessUnexpectedShutdownCount() {
+  recent_nearby_process_unexpected_shutdown_count_ = 0;
 }
 
 void NearbySharingServiceImpl::BindToNearbyProcess() {
