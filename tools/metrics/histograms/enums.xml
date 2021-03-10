@@ -83687,6 +83687,15 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="ServiceWorker"/>
 </enum>
 
+<enum name="WrappingKeyDerivation">
+  <int value="0" label="Backed by scrypt"/>
+  <int value="1" label="Backed by LECredential"/>
+  <int value="2" label="Backed by Signature Challenge"/>
+  <int value="3" label="Backed by TPM/GSC bound to PCR"/>
+  <int value="4" label="Backed by TPM/GSC not bound to PCR"/>
+  <int value="5" label="(Deprecated) Backed by scrypt and TPM/GSC"/>
+</enum>
+
 <enum name="WrenchMenuAction">
   <int value="0" label="New tab"/>
   <int value="1" label="New window"/>

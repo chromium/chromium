@@ -221,12 +221,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cryptohome.EvkkEncryptionType" enum="EvkkEncryptionType"
     expires_after="2021-08-01">
+  <obsolete>
+    Replaced with Cryptohome.WrappingKeyDerivation.Mount 2021-03-08 which
+    describes the derivation types more comprehensively.
+  </obsolete>
   <owner>enlightened@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>
     Indicates whether Encrypted Vault Keyset Key (EVKK) is TPM wrapped. This is
     reported when the Derive function inside scrypt auth block or TPM auth block
-    is called, which happends during cryptohome mount phase.
+    is called, which happens during cryptohome mount phase.
   </summary>
 </histogram>
 
@@ -567,6 +571,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The errors resulting from interacting with the Trusted Platform Module (TPM)
     device.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.WrappingKeyDerivation.Mount"
+    enum="WrappingKeyDerivation" expires_after="2022-03-01">
+  <owner>tnagel@chromium.org</owner>
+  <owner>zauri@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Derivation types of the Cryptohome's wrapping key. Reporting happens when
+    the Cryptohome is being mounted, which happens during a user creation, user
+    login, password change, migration from scrypt to TPM/GSC (in case the
+    security chip becomes available later).
   </summary>
 </histogram>
 
