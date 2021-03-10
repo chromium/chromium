@@ -2,15 +2,15 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++link name='unread '
-++++++++presentational ignored name=''
+++++++++presentational ignored
 ++++++++staticText name='unread '
 ++++++++++inlineTextBox name='unread '
 ++++++link name='read '
-++++++++image ignored name=''
+++++++++image ignored
 ++++++++staticText name='read '
 ++++++++++inlineTextBox name='read '
 ++++++link name='read '
-++++++++image ignored name=''
+++++++++image ignored
 ++++++++staticText name='read '
 ++++++++++inlineTextBox name='read '
 ++++++link name='read'

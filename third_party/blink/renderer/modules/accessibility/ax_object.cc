@@ -1450,8 +1450,13 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) {
 
 void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) {
   Element* element = GetElement();
-  if (!element)
+  if (!element) {
+    if (ui::IsPlatformDocument(RoleValue())) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kHtmlTag, "#document");
+    }
     return;
+  }
 
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,

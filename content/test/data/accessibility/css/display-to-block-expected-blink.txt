@@ -1,7 +1,7 @@
 rootWebArea
-++genericContainer ignored display='block'
-++++genericContainer ignored display='block'
-++++++genericContainer ignored display='block'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
 ++++++++genericContainer display='block'
 ++++++++++staticText display='block' name='Cats'
 ++++++++++++inlineTextBox display='block' name='Cats'

@@ -19,6 +19,6 @@ rootWebArea
 ++++++++staticText name='E('
 ++++++++++inlineTextBox name='E('
 ++++++++staticText name=' '
-++++++++presentational ignored name='<newline>'
+++++++++presentational ignored
 ++++++++staticText name=')F'
 ++++++++++inlineTextBox name=')F'

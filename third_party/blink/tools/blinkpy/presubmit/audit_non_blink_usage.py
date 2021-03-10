@@ -508,14 +508,15 @@ _CONFIG = [
             'ax::mojom::Restriction',
 
             # Accessibility helper functions - mostly used in Blink for
-            # serialization.
+            # serialization. Please keep alphabetized.
             'ui::CanHaveInlineTextBoxChildren',
+            'ui::IsCellOrTableHeader',
+            'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
             'ui::IsHeading',
-            'ui::IsContainerWithSelectableChildren',
+            'ui::IsPlatformDocument',
             'ui::IsTableLike',
             'ui::IsTableRow',
-            'ui::IsCellOrTableHeader',
             'ui::IsTableHeader',
 
             # Blink uses UKM for logging e.g. always-on leak detection (crbug/757374)

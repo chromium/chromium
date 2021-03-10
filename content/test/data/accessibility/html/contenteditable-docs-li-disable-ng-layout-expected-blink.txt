@@ -82,14 +82,14 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++presentational ignored isLineBreakingObject=true
 ++++++++++++++staticText name='Hello' nextOnLineId=inlineTextBox:" " previousOnLineId=listMarker:"9. "
 ++++++++++++++++inlineTextBox name='Hello' nextOnLineId=inlineTextBox:" " previousOnLineId=listMarker:"9. "
-++++++++++++++staticText name=' ' nextOnLineId=presentational:"<newline>" previousOnLineId=inlineTextBox:"Hello"
-++++++++++++++++inlineTextBox name=' ' nextOnLineId=presentational:"<newline>" previousOnLineId=inlineTextBox:"Hello"
-++++++++++++++presentational ignored name='<newline>' previousOnLineId=inlineTextBox:" " isLineBreakingObject=true
+++++++++++++++staticText name=' ' nextOnLineId=presentational previousOnLineId=inlineTextBox:"Hello"
+++++++++++++++++inlineTextBox name=' ' nextOnLineId=presentational previousOnLineId=inlineTextBox:"Hello"
+++++++++++++++presentational ignored isLineBreakingObject=true
 ++++++++++++++staticText name='world this' nextOnLineId=inlineTextBox:" "
 ++++++++++++++++inlineTextBox name='world this' nextOnLineId=inlineTextBox:" "
-++++++++++++++staticText name=' ' nextOnLineId=presentational:"<newline>" previousOnLineId=inlineTextBox:"world this"
-++++++++++++++++inlineTextBox name=' ' nextOnLineId=presentational:"<newline>" previousOnLineId=inlineTextBox:"world this"
-++++++++++++++presentational ignored name='<newline>' previousOnLineId=inlineTextBox:" " isLineBreakingObject=true
+++++++++++++++staticText name=' ' nextOnLineId=presentational previousOnLineId=inlineTextBox:"world this"
+++++++++++++++++inlineTextBox name=' ' nextOnLineId=presentational previousOnLineId=inlineTextBox:"world this"
+++++++++++++++presentational ignored isLineBreakingObject=true
 ++++++++++++++staticText name='is just like docs, and your kitchen sink'
 ++++++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
 ++++++++paragraph isLineBreakingObject=true

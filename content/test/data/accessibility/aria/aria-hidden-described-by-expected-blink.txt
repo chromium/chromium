@@ -2,10 +2,10 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored
-++++++++genericContainer ignored invisible name='span-1'
-++++++++++genericContainer ignored invisible name='span-2'
-++++++++++genericContainer ignored invisible description='span-4' name='span-3' descriptionFrom=relatedElement describedbyIds=genericContainer
-++++++++++++genericContainer ignored invisible name='span-4'
+++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
 ++++++++genericContainer description='span-1' name='span-A' descriptionFrom=relatedElement describedbyIds=genericContainer
 ++++++++genericContainer description='span-2' name='span-B' descriptionFrom=relatedElement describedbyIds=genericContainer
 ++++++++genericContainer description='span-3' name='span-C' descriptionFrom=relatedElement describedbyIds=genericContainer

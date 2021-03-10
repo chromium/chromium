@@ -5,7 +5,7 @@ rootWebArea
 ++++++++dialog ignored invisible
 ++++++++popUpButton ignored invisible
 ++++++++++menuListPopup ignored invisible
-++++++button ignored invisible name='This button should not be in the tree.'
+++++++button ignored invisible
 ++++++dialog ignored invisible
 ++++++dialog
 ++++++++staticText name='This is the now active dialog. Of course it should be in the tree. '

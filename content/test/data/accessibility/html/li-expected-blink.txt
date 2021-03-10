@@ -1,6 +1,6 @@
 rootWebArea
-++genericContainer ignored display='block'
-++++genericContainer ignored display='block'
+++genericContainer ignored
+++++genericContainer ignored
 ++++++list display='block' setSize=3
 ++++++++listItem display='list-item' name='Custom name' hierarchicalLevel=1 setSize=3 posInSet=1
 ++++++++++listMarker display='inline-block' name='• '

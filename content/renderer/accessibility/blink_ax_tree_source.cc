@@ -481,15 +481,30 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   TRACE_EVENT2("accessibility", "BlinkAXTreeSource::SerializeNode", "role",
                ui::ToString(dst->role), "id", dst->id);
 
-  SerializeNameAndDescriptionAttributes(src, dst);
-
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
+    SerializeNameAndDescriptionAttributes(src, dst);
     // Return early. None of the following attributes are needed for PDFs.
     return;
   }
 
+  // Bounding boxes are needed on all nodes, including ignored, for hit testing.
   SerializeBoundingBoxAttributes(src, dst);
   cached_bounding_boxes_[dst->id] = dst->relative_bounds;
+
+  // Return early. The following attributes are unnecessary for ignored nodes.
+  // Exception: focusable ignored nodes are fully serialized, so that reasonable
+  // verbalizations can be made if they actually receive focus.
+  if (src.AccessibilityIsIgnored() &&
+      !dst->HasState(ax::mojom::State::kFocusable)) {
+    // The name is important for exposing the selection around ignored nodes.
+    // TODO(accessibility) Remove this and still pass this content_browsertest:
+    // All/DumpAccessibilityTreeTest.AccessibilityIgnoredSelection/blink
+    if (src.Role() == ax::mojom::Role::kStaticText)
+      SerializeNameAndDescriptionAttributes(src, dst);
+    return;
+  }
+
+  SerializeNameAndDescriptionAttributes(src, dst);
 
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
     if (src.IsInLiveRegion())
@@ -758,11 +773,6 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
 
   if (ui::IsDialog(dst->role)) {
     dst->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, src.IsModal());
-  }
-
-  if (ui::IsPlatformDocument(dst->role)) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kHtmlTag,
-                                  "#document");
   }
 
   if (ui::IsImage(dst->role))

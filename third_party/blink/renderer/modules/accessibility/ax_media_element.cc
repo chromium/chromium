@@ -48,7 +48,7 @@ bool AccessibilityMediaElement::CanHaveChildren() const {
 
 bool AccessibilityMediaElement::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
-  return !HasControls() && HasEmptySource();
+  return false;
 }
 
 AXRestriction AccessibilityMediaElement::Restriction() const {

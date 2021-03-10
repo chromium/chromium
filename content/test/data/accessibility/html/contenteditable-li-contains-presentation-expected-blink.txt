@@ -7,14 +7,14 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"text in span in presentational paragraph in li" isLineBreakingObject=true
 ++++++++++++++staticText name='1. ' nextOnLineId=inlineTextBox:"text in span in presentational paragraph in li"
 ++++++++++++++++inlineTextBox name='1. ' nextOnLineId=inlineTextBox:"text in span in presentational paragraph in li"
-++++++++++++presentational ignored previousOnLineId=inlineTextBox:"1. " isLineBreakingObject=true
+++++++++++++presentational ignored isLineBreakingObject=true
 ++++++++++++++staticText name='text in span in presentational paragraph in li' previousOnLineId=inlineTextBox:"1. "
 ++++++++++++++++inlineTextBox name='text in span in presentational paragraph in li' previousOnLineId=inlineTextBox:"1. "
 ++++++++++listItem isLineBreakingObject=true
 ++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"A list item with both a br and" isLineBreakingObject=true
 ++++++++++++++staticText name='2. ' nextOnLineId=inlineTextBox:"A list item with both a br and"
 ++++++++++++++++inlineTextBox name='2. ' nextOnLineId=inlineTextBox:"A list item with both a br and"
-++++++++++++presentational ignored previousOnLineId=inlineTextBox:"2. " isLineBreakingObject=true
+++++++++++++presentational ignored isLineBreakingObject=true
 ++++++++++++++staticText name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=inlineTextBox:"2. "
 ++++++++++++++++inlineTextBox name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=inlineTextBox:"2. "
 ++++++++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:"A list item with both a br and" isLineBreakingObject=true

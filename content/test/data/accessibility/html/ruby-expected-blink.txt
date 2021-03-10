@@ -4,16 +4,16 @@ rootWebArea
 ++++++ruby description='ruby text' descriptionFrom=relatedElement
 ++++++++staticText name='ruby base'
 ++++++++++inlineTextBox name='ruby base'
-++++++++rubyAnnotation ignored name='ruby text'
+++++++++rubyAnnotation ignored
 ++++++paragraph
 ++++++++ruby description='ruby text' descriptionFrom=relatedElement
 ++++++++++staticText name='ruby base'
 ++++++++++++inlineTextBox name='ruby base'
-++++++++++rubyAnnotation ignored name='ruby text'
+++++++++++rubyAnnotation ignored
 ++++++paragraph
 ++++++++staticText name='Hi! '
 ++++++++++inlineTextBox name='Hi! '
 ++++++++ruby description='ruby text' descriptionFrom=relatedElement
 ++++++++++staticText name='ruby base'
 ++++++++++++inlineTextBox name='ruby base'
-++++++++++rubyAnnotation ignored name='ruby text'
+++++++++++rubyAnnotation ignored

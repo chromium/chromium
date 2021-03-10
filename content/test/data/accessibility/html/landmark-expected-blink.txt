@@ -69,7 +69,7 @@ rootWebArea
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored name='▸ '
+++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='▸ '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
@@ -122,7 +122,7 @@ rootWebArea
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored name='▸ '
+++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='▸ '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
@@ -174,7 +174,7 @@ rootWebArea
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored name='▸ '
+++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='▸ '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'
@@ -227,7 +227,7 @@ rootWebArea
 ++++++details
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='Details'
-++++++++++++listMarker ignored name='▸ '
+++++++++++++listMarker ignored
 ++++++++++++++staticText ignored name='▸ '
 ++++++++++++staticText name='Details'
 ++++++++++++++inlineTextBox name='Details'

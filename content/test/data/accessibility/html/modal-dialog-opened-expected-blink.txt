@@ -10,8 +10,8 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Link inside the dialog.'
 ++++++++popUpButton ignored invisible
 ++++++++++menuListPopup ignored invisible
-++++++button ignored invisible name='No file chosen, Choose File'
-++++++++button ignored invisible name='Choose File'
+++++++button ignored invisible
+++++++++button ignored invisible
 ++++++++genericContainer ignored invisible
 ++++++++++staticText ignored invisible name='No file chosen'
 ++++++dialog ignored invisible
