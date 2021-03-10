@@ -17,13 +17,9 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -253,37 +249,6 @@ public class DownloadController {
         if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
         DownloadUtils.showDownloadStartToast(ContextUtils.getApplicationContext());
-    }
-
-    private static TabModelSelector getTabModelSelector(Tab tab) {
-        Activity activity = TabUtils.getActivity(tab);
-        if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity).getTabModelSelector();
-        }
-        return null;
-    }
-
-    /**
-     * Close a tab if it is blank. Returns true if it is or already closed.
-     * @param Tab Tab to close.
-     * @return true iff the tab was (already) closed.
-     */
-    @CalledByNative
-    static boolean closeTabIfBlank(Tab tab) {
-        if (tab == null) return true;
-        WebContents contents = tab.getWebContents();
-        boolean isInitialNavigation = contents == null
-                || contents.getNavigationController().isInitialNavigation();
-        if (isInitialNavigation) {
-            // Tab is created just for download, close it.
-            TabModelSelector selector = getTabModelSelector(tab);
-            if (selector == null) return true;
-            if (selector.getModel(tab.isIncognito()).getCount() == 1) return false;
-            boolean closed = selector.closeTab(tab);
-            assert closed;
-            return true;
-        }
-        return false;
     }
 
     @NativeMethods
