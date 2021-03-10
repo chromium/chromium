@@ -1940,9 +1940,7 @@ Polymer({
         if (this.isUpdatedCellularUiEnabled_) {
           fields.push('cellular.activationState');
         }
-        fields.push(
-            'cellular.family', 'cellular.networkTechnology',
-            'cellular.servingOperator.code');
+        fields.push('cellular.networkTechnology');
         break;
       case chromeos.networkConfig.mojom.NetworkType.kWiFi:
         fields.push(
@@ -1968,10 +1966,8 @@ Polymer({
 
     return [
       'cellular.homeProvider.name', 'cellular.homeProvider.country',
-      'cellular.homeProvider.code', 'cellular.manufacturer', 'cellular.modelId',
       'cellular.firmwareRevision', 'cellular.hardwareRevision', 'cellular.esn',
-      'cellular.iccid', 'cellular.imei', 'cellular.imsi', 'cellular.mdn',
-      'cellular.meid', 'cellular.min'
+      'cellular.iccid', 'cellular.imei', 'cellular.meid', 'cellular.min'
     ];
   },
 
