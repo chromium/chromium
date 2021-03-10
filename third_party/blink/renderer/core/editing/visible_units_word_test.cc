@@ -629,6 +629,30 @@ TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipTextControl) {
             DoNextWord("foo<input value=\"bla\">bar|"));
 }
 
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordSkipSpacesEmoji) {
+  EXPECT_EQ("<p> abc |😂 def</p>",
+            DoNextWordSkippingSpaces("<p> |abc &#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 |def</p>",
+            DoNextWordSkippingSpaces("<p> abc |&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 def|</p>",
+            DoNextWordSkippingSpaces("<p> abc &#x1F602; |def</p>"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordEmoji) {
+  EXPECT_EQ("<p> abc| 😂 def</p>", DoNextWord("<p> |abc &#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂| def</p>", DoNextWord("<p> abc |&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂 def|</p>", DoNextWord("<p> abc &#x1F602; |def</p>"));
+}
+
+TEST_P(ParameterizedVisibleUnitsWordTest, NextWordEmojiSequence) {
+  EXPECT_EQ("<p> abc| 😂😂 def</p>",
+            DoNextWord("<p> |abc &#x1F602;&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂😂| def</p>",
+            DoNextWord("<p> abc |&#x1F602;&#x1F602; def</p>"));
+  EXPECT_EQ("<p> abc 😂😂 def|</p>",
+            DoNextWord("<p> abc &#x1F602;&#x1F602; |def</p>"));
+}
+
 //----
 
 TEST_P(ParameterizedVisibleUnitsWordTest, PreviousWordBasic) {

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
@@ -49,8 +50,8 @@ static bool IsLineBreak(UChar ch) {
 }
 
 static bool IsWordBreak(UChar ch) {
-  return WTF::unicode::IsAlphanumeric(ch) || IsLineBreak(ch) ||
-         ch == kLowLineCharacter || WTF::unicode::IsPunct(ch);
+  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
+         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
 }
 
 PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
@@ -127,9 +128,10 @@ PositionInFlatTree NextWordPositionInternal(
         // Move after line break
         if (IsLineBreak(text[runner]))
           return SkipWhitespaceIfNeeded(text, runner);
-        // Accumulate punctuation runs
+        // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            WTF::unicode::IsPunct(text[runner])) {
+            (WTF::unicode::IsPunct(text[runner]) ||
+             U16_IS_SURROGATE(text[runner]))) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return SkipWhitespaceIfNeeded(text, runner);
           continue;
@@ -207,9 +209,10 @@ PositionInFlatTree PreviousWordPositionInternal(
       int punct_runner = -1;
       for (int runner = it->preceding(offset); runner != kTextBreakDone;
            runner = it->preceding(runner)) {
-        // Accumulate punctuation runs
+        // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            WTF::unicode::IsPunct(text[runner])) {
+            (WTF::unicode::IsPunct(text[runner]) ||
+             U16_IS_SURROGATE(text[runner]))) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return Position::Before(runner);
           punct_runner = runner;

@@ -41,7 +41,7 @@ selection_test(
   `<div conntenteditable>${kSegment0}${kSegment1}${kSegment2}|${kSegment3} ${kSentence1}.</div>`,
   selection => selection.modify('move', 'forward', 'word'),
   isMac
-      ? `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}.</div>`
+      ? `<div conntenteditable>${kSentence0}| ${kSegment4}${kSegment5}${kSegment6}${kSegment7}.</div>`
       : `<div conntenteditable>${kSentence0} |${kSegment4}${kSegment5}${kSegment6}${kSegment7}.</div>`,
   '4 Move forward word with period');
 
@@ -54,13 +54,13 @@ selection_test(
 selection_test(
   `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}|${kSegment6}${kSegment7}.</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}${kSegment6}|${kSegment7}.</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48|${kSegment2}${kSegment7}.</div>`,
   '6 Move forward word with period');
 
 selection_test(
-  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}${kSegment6}|${kSegment7}.</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48|${kSegment2}${kSegment7}.</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSentence1}|.</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48${kSegment2}|${kSegment7}.</div>`,
   '7 Move forward word with period');
 
 selection_test(
@@ -98,7 +98,7 @@ selection_test(
   `<div conntenteditable>${kSegment0}${kSegment1}${kSegment2}|${kSegment3} ${kSentence1}</div>`,
   selection => selection.modify('move', 'forward', 'word'),
   isMac
-      ? `<div conntenteditable>${kSentence0} ${kSegment4}|${kSegment5}${kSegment6}${kSegment7}</div>`
+      ? `<div conntenteditable>${kSentence0}| ${kSegment4}${kSegment5}${kSegment6}${kSegment7}</div>`
       : `<div conntenteditable>${kSentence0} |${kSegment4}${kSegment5}${kSegment6}${kSegment7}</div>`,
   '4 Move forward word without period');
 
@@ -109,15 +109,15 @@ selection_test(
   '5 Move forward word without period');
 
 selection_test(
-  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}|${kSegment6}${kSegment7}</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48|${kSegment2}${kSegment7}</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}${kSegment6}|${kSegment7}</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48${kSegment2}|${kSegment7}</div>`,
   '6 Move forward word without period');
 
 selection_test(
-  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}${kSegment6}|${kSegment7}</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48|${kSegment2}${kSegment7}</div>`,
   selection => selection.modify('move', 'forward', 'word'),
-  `<div conntenteditable>${kSentence0} ${kSentence1}|</div>`,
+  `<div conntenteditable>${kSentence0} ${kSegment4}${kSegment5}\u0E43\u0E2B\u0E21\u0E48${kSegment2}|${kSegment7}</div>`,
   '7 Move forward word without period');
 
 selection_test(
