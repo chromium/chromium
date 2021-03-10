@@ -11,7 +11,7 @@
 namespace {
 
 static bool affects_alpha(const SkColorFilter* cf) {
-  return cf && !(cf->getFlags() & SkColorFilter::kAlphaUnchanged_Flag);
+  return cf && !cf->isAlphaUnchanged();
 }
 
 }  // namespace

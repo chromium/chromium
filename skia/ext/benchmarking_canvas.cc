@@ -137,10 +137,9 @@ std::unique_ptr<base::Value> AsValue(SkCanvas::PointMode mode) {
 std::unique_ptr<base::Value> AsValue(const SkColorFilter& filter) {
   std::unique_ptr<base::DictionaryValue> val(new base::DictionaryValue());
 
-  if (unsigned flags = filter.getFlags()) {
+  if (filter.isAlphaUnchanged()) {
     FlagsBuilder builder('|');
-    builder.addFlag(flags & SkColorFilter::kAlphaUnchanged_Flag,
-                    "kAlphaUnchanged_Flag");
+    builder.addFlag(true, "kAlphaUnchanged_Flag");
 
     val->SetString("flags", builder.str());
   }
