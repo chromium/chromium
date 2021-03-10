@@ -93,7 +93,6 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     params.is_corb_enabled = false;
     url_loader_ = std::make_unique<network::URLLoader>(
         context_.get(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         base::BindOnce(&TestNavigationLoaderInterceptor::DeleteURLLoader,
                        base::Unretained(this)),

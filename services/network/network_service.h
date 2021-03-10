@@ -115,8 +115,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       net::NetLog::ThreadSafeObserver* observer);
 
   // mojom::NetworkService implementation:
-  void SetClient(mojo::PendingRemote<mojom::NetworkServiceClient> client,
-                 mojom::NetworkServiceParamsPtr params) override;
+  void SetParams(mojom::NetworkServiceParamsPtr params) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ReinitializeLogging(mojom::LoggingSettingsPtr settings) override;
 #endif
@@ -206,9 +205,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   bool IsInitiatorAllowedForPlugin(int process_id,
                                    const url::Origin& request_initiator);
 
-  mojom::NetworkServiceClient* client() {
-    return client_.is_bound() ? client_.get() : nullptr;
-  }
   net::NetworkQualityEstimator* network_quality_estimator() {
     return network_quality_estimator_manager_->GetNetworkQualityEstimator();
   }
@@ -260,6 +256,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   SCTAuditingCache* sct_auditing_cache() { return sct_auditing_cache_.get(); }
 #endif
 
+  mojom::URLLoaderNetworkServiceObserver*
+  GetDefaultURLLoaderNetworkServiceObserver();
+
   static NetworkService* GetNetworkServiceForTesting();
 
  private:
@@ -280,8 +279,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<net::FileNetLogObserver> file_net_log_observer_;
   net::TraceNetLogObserver trace_net_log_observer_;
 
-  mojo::Remote<mojom::NetworkServiceClient> client_;
-
   KeepaliveStatisticsRecorder keepalive_statistics_recorder_;
 
   std::unique_ptr<NetworkChangeManager> network_change_manager_;
@@ -295,6 +292,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<service_manager::BinderRegistry> registry_;
 
   mojo::Receiver<mojom::NetworkService> receiver_{this};
+
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      default_url_loader_network_service_observer_;
 
   std::unique_ptr<NetworkQualityEstimatorManager>
       network_quality_estimator_manager_;

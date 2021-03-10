@@ -461,8 +461,6 @@ source_set("test_support") {
     "test/test_network_context_client.h",
     "test/test_network_quality_tracker.cc",
     "test/test_network_quality_tracker.h",
-    "test/test_network_service_client.cc",
-    "test/test_network_service_client.h",
     "test/test_resource_scheduler.h",
     "test/test_shared_url_loader_factory.cc",
     "test/test_shared_url_loader_factory.h",

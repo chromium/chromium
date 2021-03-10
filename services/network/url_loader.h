@@ -114,7 +114,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   URLLoader(
       net::URLRequestContext* url_request_context,
       URLLoaderFactory* url_loader_factory,
-      mojom::NetworkServiceClient* network_service_client,
       mojom::NetworkContextClient* network_context_client,
       DeleteCallback delete_callback,
       mojo::PendingReceiver<mojom::URLLoader> url_loader_receiver,
@@ -395,8 +394,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
 
   net::URLRequestContext* url_request_context_;
+
+  // |url_loader_factory_| is guaranteed to outlive URLLoader, so it is safe to
+  // store a raw pointer here. It can also be null in tests.
   URLLoaderFactory* const url_loader_factory_;
-  mojom::NetworkServiceClient* network_service_client_;
+
   mojom::NetworkContextClient* network_context_client_;
   DeleteCallback delete_callback_;
 

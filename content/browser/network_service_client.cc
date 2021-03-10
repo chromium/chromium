@@ -27,6 +27,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
@@ -40,13 +41,9 @@
 
 namespace content {
 
-NetworkServiceClient::NetworkServiceClient(
-    mojo::PendingReceiver<network::mojom::NetworkServiceClient>
-        network_service_client_receiver)
-    : receiver_(this, std::move(network_service_client_receiver))
+NetworkServiceClient::NetworkServiceClient()
 #if defined(OS_ANDROID)
-      ,
-      app_status_listener_(base::android::ApplicationStatusListener::New(
+    : app_status_listener_(base::android::ApplicationStatusListener::New(
           base::BindRepeating(&NetworkServiceClient::OnApplicationStateChange,
                               base::Unretained(this))))
 #endif
@@ -157,12 +154,78 @@ void NetworkServiceClient::OnDNSChanged() {
 }
 #endif
 
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+NetworkServiceClient::BindURLLoaderNetworkServiceObserver() {
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_service_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+void NetworkServiceClient::OnSSLCertificateError(
+    const GURL& url,
+    int net_error,
+    const net::SSLInfo& ssl_info,
+    bool fatal,
+    OnSSLCertificateErrorCallback response) {
+  std::move(response).Run(net::ERR_INSECURE_RESPONSE);
+}
+
+void NetworkServiceClient::OnCertificateRequested(
+    const base::Optional<base::UnguessableToken>& window_id,
+    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+        cert_responder_remote) {
+  mojo::Remote<network::mojom::ClientCertificateResponder> cert_responder(
+      std::move(cert_responder_remote));
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          network::switches::kIgnoreUrlFetcherCertRequests)) {
+    cert_responder->ContinueWithoutCertificate();
+    return;
+  }
+  cert_responder->CancelRequest();
+}
+
+void NetworkServiceClient::OnAuthRequired(
+    const base::Optional<base::UnguessableToken>& window_id,
+    uint32_t request_id,
+    const GURL& url,
+    bool first_auth_attempt,
+    const net::AuthChallengeInfo& auth_info,
+    const scoped_refptr<net::HttpResponseHeaders>& head_headers,
+    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
+        auth_challenge_responder) {
+  mojo::Remote<network::mojom::AuthChallengeResponder>
+      auth_challenge_responder_remote(std::move(auth_challenge_responder));
+  auth_challenge_responder_remote->OnAuthCredentials(base::nullopt);
+}
+
+void NetworkServiceClient::OnClearSiteData(const GURL& url,
+                                           const std::string& header_value,
+                                           int load_flags,
+                                           OnClearSiteDataCallback callback) {
+  std::move(callback).Run();
+}
+
+void NetworkServiceClient::OnLoadingStateUpdate(
+    network::mojom::LoadInfoPtr info,
+    OnLoadingStateUpdateCallback callback) {
+  std::move(callback).Run();
+}
+
 void NetworkServiceClient::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
       network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
+}
+
+void NetworkServiceClient::Clone(
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+        observer) {
+  url_loader_network_service_observers_.Add(this, std::move(observer));
 }
 
 }  // namespace content

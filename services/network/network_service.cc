@@ -339,6 +339,11 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   trust_token_key_commitments_ = std::make_unique<TrustTokenKeyCommitments>();
 
+  if (params->default_observer) {
+    default_url_loader_network_service_observer_.Bind(
+        std::move(params->default_observer));
+  }
+
   first_party_sets_ = std::make_unique<FirstPartySets>();
   if (net::cookie_util::IsFirstPartySetsEnabled() &&
       command_line->HasSwitch(switches::kUseFirstPartySet)) {
@@ -436,10 +441,7 @@ void NetworkService::CreateNetLogEntriesForActiveObjects(
   return net::CreateNetLogEntriesForActiveObjects(contexts, observer);
 }
 
-void NetworkService::SetClient(
-    mojo::PendingRemote<mojom::NetworkServiceClient> client,
-    mojom::NetworkServiceParamsPtr params) {
-  client_.Bind(std::move(client));
+void NetworkService::SetParams(mojom::NetworkServiceParamsPtr params) {
   Initialize(std::move(params));
 }
 
@@ -792,6 +794,13 @@ void NetworkService::Bind(
     mojo::PendingReceiver<mojom::NetworkService> receiver) {
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
+}
+
+mojom::URLLoaderNetworkServiceObserver*
+NetworkService::GetDefaultURLLoaderNetworkServiceObserver() {
+  if (default_url_loader_network_service_observer_)
+    return default_url_loader_network_service_observer_.get();
+  return nullptr;
 }
 
 // static

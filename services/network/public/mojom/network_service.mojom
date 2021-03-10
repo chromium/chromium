@@ -27,6 +27,7 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
@@ -35,17 +36,6 @@ import "url/mojom/url.mojom";
 
 [EnableIf=is_android]
 import "mojo/public/mojom/base/application_state.mojom";
-
-// Implemented by the browser process. The network service sends messages to
-// the browser process over this interface.
-interface NetworkServiceClient {
-  // Called on every request completion to update the network traffic annotation
-  // ID, and the total bytes received and sent.
-  // |network_traffic_annotation_id_hash| represents the hash of unique tag that
-  // identifies the annotation of the request.
-  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
-                  int64 sent_bytes);
-};
 
 // Values for configuring HTTP authentication that can only be set once.
 struct HttpAuthStaticParams {
@@ -129,6 +119,10 @@ struct NetworkServiceParams {
   // A set of environment variables that should be set in the network
   // service when starting up.
   array<EnvironmentVariable> environment;
+
+  // An URLLoaderFactory can provide its own URLLoaderNetworkServiceObserver
+  // but if it does not, this default will be used.
+  pending_remote<URLLoaderNetworkServiceObserver> default_observer;
 };
 
 // Information about how logging should be configured.
@@ -145,11 +139,8 @@ struct LoggingSettings {
 // This is a trusted interface that only the browser process should have access
 // to. It must not be sent to any untrusted process like a renderer process.
 interface NetworkService {
-  // Sets client used by all |NetworkContext|s creating by |NetworkService|.
-  // Pending requests may hang if the |client| pipe is closed before they
-  // complete.
-  SetClient(pending_remote<NetworkServiceClient> client,
-            NetworkServiceParams params);
+  // Sets the parameters and initializes the service.
+  SetParams(NetworkServiceParams params);
 
   // Reinitializes the Network Service's logging with the given settings. This
   // is needed on Chrome OS, which switches to a log file in the user's home

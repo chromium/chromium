@@ -85,7 +85,7 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
 
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
-      url_loader_network_observer_;
+      url_loader_network_service_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);

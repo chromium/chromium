@@ -1762,6 +1762,14 @@ void StoragePartitionImpl::OnLoadingStateUpdate(
   std::move(callback).Run();
 }
 
+void StoragePartitionImpl::OnDataUseUpdate(
+    int32_t network_traffic_annotation_id_hash,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {
+  GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
+      network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
+}
+
 void StoragePartitionImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

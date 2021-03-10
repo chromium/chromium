@@ -52,6 +52,9 @@ class TestURLLoaderNetworkObserver
                        OnClearSiteDataCallback callback) override;
   void OnLoadingStateUpdate(mojom::LoadInfoPtr info,
                             OnLoadingStateUpdateCallback callback) override;
+  void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
+                       int64_t recv_bytes,
+                       int64_t sent_bytes) override;
   void Clone(
       mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) override;
 

@@ -139,6 +139,13 @@ interface URLLoaderNetworkServiceObserver {
   // receive the next update.
   OnLoadingStateUpdate(LoadInfo infos) => ();
 
+  // Called on every request completion to update the network traffic annotation
+  // ID, and the total bytes received and sent.
+  // |network_traffic_annotation_id_hash| represents the hash of unique tag that
+  // identifies the annotation of the request.
+  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
+                  int64 sent_bytes);
+
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
   // observer).

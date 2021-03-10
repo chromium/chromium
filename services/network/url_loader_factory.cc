@@ -79,7 +79,7 @@ URLLoaderFactory::URLLoaderFactory(
       coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
-      url_loader_network_observer_(
+      url_loader_network_service_observer_(
           std::move(params_->url_loader_network_observer)),
       devtools_observer_(std::move(params_->devtools_observer)) {
   DCHECK(context);
@@ -151,11 +151,9 @@ void URLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  mojom::NetworkServiceClient* network_service_client = nullptr;
   base::WeakPtr<KeepaliveStatisticsRecorder> keepalive_statistics_recorder;
   base::WeakPtr<NetworkUsageAccumulator> network_usage_accumulator;
   if (context_->network_service()) {
-    network_service_client = context_->network_service()->client();
     keepalive_statistics_recorder = context_->network_service()
                                         ->keepalive_statistics_recorder()
                                         ->AsWeakPtr();
@@ -275,8 +273,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
   }
 
   auto loader = std::make_unique<URLLoader>(
-      context_->url_request_context(), this, network_service_client,
-      context_->client(),
+      context_->url_request_context(), this, context_->client(),
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
@@ -313,9 +310,12 @@ mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
 
 mojom::URLLoaderNetworkServiceObserver*
 URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
-  if (url_loader_network_observer_)
-    return url_loader_network_observer_.get();
-  return nullptr;
+  if (url_loader_network_service_observer_)
+    return url_loader_network_service_observer_.get();
+  if (!context_->network_service())
+    return nullptr;
+  return context_->network_service()
+      ->GetDefaultURLLoaderNetworkServiceObserver();
 }
 
 }  // namespace network

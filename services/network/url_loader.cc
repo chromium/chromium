@@ -451,7 +451,6 @@ void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
 URLLoader::URLLoader(
     net::URLRequestContext* url_request_context,
     URLLoaderFactory* url_loader_factory,
-    mojom::NetworkServiceClient* network_service_client,
     mojom::NetworkContextClient* network_context_client,
     DeleteCallback delete_callback,
     mojo::PendingReceiver<mojom::URLLoader> url_loader_receiver,
@@ -477,7 +476,6 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : url_request_context_(url_request_context),
       url_loader_factory_(url_loader_factory),
-      network_service_client_(network_service_client),
       network_context_client_(network_context_client),
       delete_callback_(std::move(delete_callback)),
       options_(options),
@@ -1829,9 +1827,11 @@ void URLLoader::NotifyCompleted(int error_code) {
         url_request_->GetTotalReceivedBytes(),
         url_request_->GetTotalSentBytes());
   }
-  if (network_service_client_ && (url_request_->GetTotalReceivedBytes() > 0 ||
-                                  url_request_->GetTotalSentBytes() > 0)) {
-    network_service_client_->OnDataUseUpdate(
+  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
+  if (url_loader_network_observer &&
+      (url_request_->GetTotalReceivedBytes() > 0 ||
+       url_request_->GetTotalSentBytes() > 0)) {
+    url_loader_network_observer->OnDataUseUpdate(
         url_request_->traffic_annotation().unique_id_hash_code,
         url_request_->GetTotalReceivedBytes(),
         url_request_->GetTotalSentBytes());

@@ -57,6 +57,11 @@ void TestURLLoaderNetworkObserver::OnLoadingStateUpdate(
   std::move(callback).Run();
 }
 
+void TestURLLoaderNetworkObserver::OnDataUseUpdate(
+    int32_t network_traffic_annotation_id_hash,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {}
+
 void TestURLLoaderNetworkObserver::Clone(
     mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) {
   receivers_.Add(this, std::move(observer));

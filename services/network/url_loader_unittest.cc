@@ -92,7 +92,6 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "services/network/test/test_network_context_client.h"
-#include "services/network/test/test_network_service_client.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_network_observer.h"
 #include "services/network/test_chunked_data_pipe_getter.h"
@@ -798,8 +797,7 @@ class URLLoaderTest : public testing::Test {
         net::IsolationInfo::CreateForInternalRequest(origin);
     params.is_trusted = true;
     url_loader = std::make_unique<URLLoader>(
-        context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr, network_context_client.get(),
+        context(), /*url_loader_factory=*/nullptr, network_context_client.get(),
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), options, request,
         client_.CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -1844,7 +1842,6 @@ TEST_F(URLLoaderTest, DestroyOnURLLoaderPipeClosed) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -1904,7 +1901,6 @@ TEST_F(URLLoaderTest, CloseResponseBodyConsumerBeforeProducer) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -1966,7 +1962,6 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2050,7 +2045,6 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2123,7 +2117,6 @@ TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2191,7 +2184,6 @@ TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2449,8 +2441,7 @@ TEST_F(URLLoaderTest, UploadFileCanceled) {
   auto network_context_client =
       std::make_unique<CallbackSavingNetworkContextClient>();
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
-      context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */, network_context_client.get(),
+      context(), /*url_loader_factory=*/nullptr, network_context_client.get(),
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
       TRAFFIC_ANNOTATION_FOR_TESTS, &params, /*coep_reporter=*/nullptr,
@@ -2584,7 +2575,6 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2639,7 +2629,6 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -2751,8 +2740,7 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
   TestURLLoaderNetworkObserver url_loader_network_observer;
   url_loader_network_observer.set_ignore_certificate_errors(true);
   url_loader = std::make_unique<URLLoader>(
-      context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */, network_context_client.get(),
+      context(), /*url_loader_factory=*/nullptr, network_context_client.get(),
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(),
       mojom::kURLLoadOptionSendSSLInfoWithResponse |
@@ -2789,7 +2777,6 @@ TEST_F(URLLoaderTest, RedirectModifiedHeaders) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -2849,7 +2836,6 @@ TEST_F(URLLoaderTest, RedirectFailsOnModifyUnsafeHeader) {
     params.is_corb_enabled = false;
     url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -2895,7 +2881,6 @@ TEST_F(URLLoaderTest, RedirectLogsModifiedConcerningHeader) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -2954,7 +2939,6 @@ TEST_F(URLLoaderTest, RedirectRemoveHeader) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -3003,7 +2987,6 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -3056,7 +3039,6 @@ TEST_F(URLLoaderTest, UpgradeAddsSecHeaders) {
   params.process_id = mojom::kBrowserProcessId;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -3113,7 +3095,6 @@ TEST_F(URLLoaderTest, DowngradeRemovesSecHeaders) {
   params.process_id = mojom::kBrowserProcessId;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -3179,7 +3160,6 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
   params.process_id = mojom::kBrowserProcessId;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -3251,7 +3231,6 @@ TEST_F(URLLoaderTest, RedirectSecHeadersUser) {
   params.process_id = mojom::kBrowserProcessId;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -3289,7 +3268,6 @@ TEST_F(URLLoaderTest, RedirectDirectlyModifiedSecHeadersUser) {
   params.process_id = mojom::kBrowserProcessId;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -3397,7 +3375,6 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
 
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         NeverInvokedDeleteLoaderCallback(),
         loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -3427,7 +3404,6 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
   mojo::PendingRemote<mojom::URLLoader> loader_remote;
   std::unique_ptr<URLLoader> loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */, NeverInvokedDeleteLoaderCallback(),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -3469,7 +3445,6 @@ TEST_F(URLLoaderTest, ReadPipeClosedWhileReadTaskPosted) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -3754,7 +3729,6 @@ TEST_F(URLLoaderTest, SetAuth) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -3804,7 +3778,6 @@ TEST_F(URLLoaderTest, CancelAuth) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -3854,7 +3827,6 @@ TEST_F(URLLoaderTest, TwoChallenges) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -3905,7 +3877,6 @@ TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -3955,7 +3926,6 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4002,7 +3972,6 @@ TEST_F(URLLoaderTest, CorbEffectiveWithCors) {
   mojom::URLLoaderFactoryParams params;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4049,7 +4018,6 @@ TEST_F(URLLoaderTest, CorbEffectiveWithNoCorsWhenNoActualPlugin) {
   // what we primarily want to cover in this test.
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4090,7 +4058,6 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      nullptr /* network_service_client */,
       nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -4197,7 +4164,6 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -4254,7 +4220,6 @@ TEST_F(URLLoaderTest, ClientAuthDestroyResponder) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -4302,7 +4267,6 @@ TEST_F(URLLoaderTest, ClientAuthCancelConnection) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), 0, request, client()->CreateRemote(),
@@ -4349,7 +4313,6 @@ TEST_F(URLLoaderTest, ClientAuthCancelCertificateSelection) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4405,7 +4368,6 @@ TEST_F(URLLoaderTest, ClientAuthNoCertificate) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4465,7 +4427,6 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithValidSignature) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4527,7 +4488,6 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithInvalidSignature) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -4570,7 +4530,7 @@ TEST_F(URLLoaderTest, BlockAllCookies) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(),
       mojom::kURLLoadOptionBlockAllCookies, request, client()->CreateRemote(),
@@ -4602,7 +4562,7 @@ TEST_F(URLLoaderTest, BlockOnlyThirdPartyCookies) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(),
       mojom::kURLLoadOptionBlockThirdPartyCookies, request,
@@ -4634,7 +4594,7 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
       request, client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -4690,7 +4650,6 @@ TEST_F(URLLoaderTest, CredentialsModeOmit) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -4749,7 +4708,6 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaround) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -4810,7 +4768,6 @@ TEST_F(URLLoaderTest, CredentialsModeOmitWorkaroundWithOptionalCerts) {
   params.is_corb_enabled = false;
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -4846,7 +4803,6 @@ TEST_F(URLLoaderTest, CookieReporting) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -4887,7 +4843,6 @@ TEST_F(URLLoaderTest, CookieReporting) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -4928,7 +4883,6 @@ TEST_F(URLLoaderTest, CookieReporting) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -4980,7 +4934,6 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
   params.is_corb_enabled = false;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /*network_context_client=*/nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -5031,7 +4984,6 @@ TEST_F(URLLoaderTest, CookieReportingAuth) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5084,7 +5036,6 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5139,7 +5090,6 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5186,7 +5136,6 @@ TEST_F(URLLoaderTest, RawResponseCookies) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5236,7 +5185,6 @@ TEST_F(URLLoaderTest, RawResponseCookiesInvalid) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5288,7 +5236,6 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -5347,7 +5294,6 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
@@ -5401,7 +5347,6 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5453,7 +5398,6 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5500,7 +5444,6 @@ TEST_F(URLLoaderTest, RawResponseQUIC) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5559,7 +5502,6 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5621,7 +5563,6 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5671,7 +5612,6 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     params.is_corb_enabled = false;
     std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        /*network_service_client=*/nullptr,
         /*network_context_client=*/nullptr,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
@@ -5771,7 +5711,6 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -5830,7 +5769,6 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -5876,7 +5814,6 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -5928,7 +5865,6 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
 
     url_loader = std::make_unique<URLLoader>(
         context(), /*url_loader_factory=*/nullptr,
-        nullptr /* network_service_client */,
         nullptr /* network_context_client */,
         DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -6227,7 +6163,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -6286,7 +6222,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -6333,7 +6269,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -6380,7 +6316,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -6427,7 +6363,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr, nullptr /* network_context_client */,
+      nullptr /* network_context_client */,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader_remote.InitWithNewPipeAndPassReceiver(), 0, request,
       client()->CreateRemote(), TRAFFIC_ANNOTATION_FOR_TESTS, &params,
@@ -6476,7 +6412,6 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /* network_context_client */ nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -6526,7 +6461,6 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateRequest) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /* network_context_client */ nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -6568,7 +6502,6 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /* network_context_client */ nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,
@@ -6603,7 +6536,6 @@ TEST_F(URLLoaderTest, OnRawResponseIPAddressSpace) {
   mojo::PendingRemote<mojom::URLLoader> loader;
   std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
       context(), /*url_loader_factory=*/nullptr,
-      /*network_service_client=*/nullptr,
       /* network_context_client */ nullptr,
       DeleteLoaderCallback(&delete_run_loop, &url_loader),
       loader.InitWithNewPipeAndPassReceiver(), 0, request,

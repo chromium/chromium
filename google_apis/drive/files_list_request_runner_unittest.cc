@@ -25,7 +25,6 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
-#include "services/network/test/test_network_service_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,14 +83,13 @@ class FilesListRequestRunnerTest : public testing::Test {
         network_context_.BindNewPipeAndPassReceiver(),
         std::move(context_params));
 
-    mojo::PendingRemote<network::mojom::NetworkServiceClient>
-        network_service_client_remote;
-    network_service_client_ =
-        std::make_unique<network::TestNetworkServiceClient>(
-            network_service_client_remote.InitWithNewPipeAndPassReceiver());
-    network_service_remote->SetClient(
-        std::move(network_service_client_remote),
-        network::mojom::NetworkServiceParams::New());
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+        default_observer_receiver;
+    network::mojom::NetworkServiceParamsPtr network_service_params =
+        network::mojom::NetworkServiceParams::New();
+    network_service_params->default_observer =
+        default_observer_receiver.InitWithNewPipeAndPassRemote();
+    network_service_remote->SetParams(std::move(network_service_params));
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
@@ -161,7 +159,6 @@ class FilesListRequestRunnerTest : public testing::Test {
   net::EmbeddedTestServer test_server_;
   std::unique_ptr<FilesListRequestRunner> runner_;
   std::unique_ptr<network::mojom::NetworkService> network_service_;
-  std::unique_ptr<network::mojom::NetworkServiceClient> network_service_client_;
   mojo::Remote<network::mojom::NetworkContext> network_context_;
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
