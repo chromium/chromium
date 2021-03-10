@@ -118,6 +118,10 @@ void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
     return;
 
   int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().Width();
+  if (frame_width == 0) {
+    return;
+  }
+
   int total_text_width;
   int text_content_outside_viewport_percentage = 0;
 
