@@ -1449,7 +1449,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
   "java/src/org/chromium/chrome/browser/webauth/FidoErrorResponseCallback.java",
   "java/src/org/chromium/chrome/browser/webauth/GetAssertionResponseCallback.java",
-  "java/src/org/chromium/chrome/browser/webauth/IsUvpaaHelper.java",
   "java/src/org/chromium/chrome/browser/webauth/IsUvpaaResponseCallback.java",
   "java/src/org/chromium/chrome/browser/webauth/MakeCredentialResponseCallback.java",
   "java/src/org/chromium/chrome/browser/webauth/authenticator/CableAuthenticatorActivity.java",

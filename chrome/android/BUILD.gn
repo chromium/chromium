@@ -3525,7 +3525,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
     "java/src/org/chromium/chrome/browser/webauth/AuthenticatorImpl.java",
     "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
-    "java/src/org/chromium/chrome/browser/webauth/IsUvpaaHelper.java",
   ]
 
   # Used for testing only, should not be shipped to end users.
