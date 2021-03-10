@@ -9,9 +9,7 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -520,27 +518,6 @@ bool GetColorModelSettings(ppd_file_t* ppd,
 // Default port for IPP print servers.
 const int kDefaultIPPServerPort = 631;
 
-// Provide scoping of a temporary file to be used by a FILE stream.  This is
-// akin to base::ScopedFILE but provides access to an open FILE handle, which
-// is needed when performing multiple operations from within a sandbox.
-class ScopedTempFile {
- public:
-  ScopedTempFile() { file_ = base::CreateAndOpenTemporaryStream(&path_); }
-  ScopedTempFile(const ScopedTempFile&) = delete;
-  ScopedTempFile& operator=(const ScopedTempFile&) = delete;
-  ~ScopedTempFile() {
-    file_.reset();  // Closes the file if it is open.
-    if (base::PathExists(path_))
-      base::DeleteFile(path_);
-  }
-
-  FILE* handle() { return file_.get(); }
-
- private:
-  base::FilePath path_;
-  base::ScopedFILE file_;
-};
-
 }  // namespace
 
 // Helper wrapper around http_t structure, with connection and cleanup
@@ -592,24 +569,23 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
                           base::StringPiece locale,
                           base::StringPiece printer_capabilities,
                           PrinterSemanticCapsAndDefaults* printer_info) {
-  ScopedTempFile ppd_file;
-  if (!ppd_file.handle())
+  base::FilePath ppd_file_path;
+  if (!base::CreateTemporaryFile(&ppd_file_path))
     return false;
 
-  const size_t caps_size = printer_capabilities.size();
-  if (fwrite(printer_capabilities.data(), 1, caps_size, ppd_file.handle()) !=
-      caps_size) {
+  if (!base::WriteFile(ppd_file_path, printer_capabilities)) {
+    base::DeleteFile(ppd_file_path);
     return false;
   }
 
-  if (fflush(ppd_file.handle()))
+  ppd_file_t* ppd = ppdOpenFile(ppd_file_path.value().c_str());
+  if (!ppd) {
+    int line = 0;
+    ppd_status_t ppd_status = ppdLastError(&line);
+    LOG(ERROR) << "Failed to open PDD file: error " << ppd_status << " at line "
+               << line << ", " << ppdErrorString(ppd_status);
     return false;
-  if (fseek(ppd_file.handle(), 0, SEEK_SET) != 0)
-    return false;
-
-  ppd_file_t* ppd = ppdOpen(ppd_file.handle());
-  if (!ppd)
-    return false;
+  }
 
   ppdMarkDefaults(ppd);
   if (dest)
@@ -690,6 +666,7 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
   }
 
   ppdClose(ppd);
+  base::DeleteFile(ppd_file_path);
 
   *printer_info = caps;
   return true;
