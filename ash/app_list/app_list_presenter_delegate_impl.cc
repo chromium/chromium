@@ -96,12 +96,6 @@ void AppListPresenterDelegateImpl::SetPresenter(
 void AppListPresenterDelegateImpl::Init(AppListView* view, int64_t display_id) {
   view_ = view;
   view->InitView(controller_->GetContainerForDisplayId(display_id));
-
-  // By setting us as DnD recipient, the app list knows that we can
-  // handle items.
-  Shelf* shelf = Shelf::ForWindow(Shell::GetRootWindowForDisplayId(display_id));
-  view->SetDragAndDropHostOfCurrentAppList(
-      shelf->shelf_widget()->GetDragAndDropHostForAppList());
 }
 
 void AppListPresenterDelegateImpl::ShowForDisplay(
@@ -122,6 +116,12 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
   if (!shelf_observation_.IsObservingSource(shelf))
     shelf_observation_.AddObservation(shelf);
 
+  // By setting us as a drag-and-drop recipient, the app list knows that we can
+  // handle items. Do this on every show because |view_| can be reused after a
+  // monitor is disconnected but that monitor's ShelfView and
+  // ScrollableShelfView are deleted. https://crbug.com/1163332
+  view_->SetDragAndDropHostOfCurrentAppList(
+      shelf->shelf_widget()->GetDragAndDropHostForAppList());
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
   view_->Show(preferred_state, IsSideShelf(shelf));
