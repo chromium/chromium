@@ -2598,6 +2598,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.MojoVideoDecoderServiceTiming.{Impl}.{Method}"
+    units="ms" expires_after="M95">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The duration of MojoVideoDecoderService method calls. Recorded every call.
+  </summary>
+  <token key="Impl">
+    <variant name="Alternate"
+        summary="Timing for the kAlternate media::VideoDecoderImplementation."/>
+    <variant name="Default"
+        summary="Timing for the kDefault media::VideoDecoderImplementation."/>
+  </token>
+  <token key="Method">
+    <variant name="Construct" summary="The time taken for Construct()."/>
+    <variant name="Destruct" summary="Time time taken for destruction."/>
+  </token>
+</histogram>
+
 <histogram name="Media.MSE.AudioCodec" enum="MSECodec" expires_after="never">
 <!-- expires-never: Codec support planning metric. -->
 

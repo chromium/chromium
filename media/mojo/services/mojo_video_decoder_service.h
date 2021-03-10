@@ -86,6 +86,9 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
       bool restart_for_transitions,
       ProvideOverlayInfoCB provide_overlay_info_cb);
 
+  // Implementation value provided at the time of Construct().
+  base::Optional<VideoDecoderImplementation> implementation_;
+
   // Whether this instance is active (Decode() was called at least once).
   bool is_active_instance_ = false;
 
