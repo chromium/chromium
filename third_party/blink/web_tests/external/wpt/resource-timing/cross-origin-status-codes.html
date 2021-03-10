@@ -19,38 +19,52 @@
 <script id="script_502"></script>
 <script>
 
-promise_test(t => {
-  const destUrl = get_host_info().HTTP_REMOTE_ORIGIN + '/resource-timing/resources/';
-  const statusCodes = ['200', '307', '404', '502'];
-
-  statusCodes.forEach(status => {
-    document.getElementById(`img_${status}`).src = `${destUrl}status-code.py?status=${status}`;
-    document.getElementById(`script_${status}`).src = `${destUrl}status-code.py?status=${status}&script=1`;
-  });
-
-  let nameMap = {};
-  let firstEntry = null;
-  // We will check that the non-timestamp values of the entry match for all entries.
-  const keys = ['entryType', 'nextHopProtocol', 'transferSize', 'encodedBodySize', 'decodedBodySize'];
+function listenForPerformanceEntries(num_expected) {
   return new Promise(resolve => {
-    new PerformanceObserver(t.step_func(entryList => {
+    let results = [];
+    new PerformanceObserver(entryList => {
       entryList.getEntries().forEach(entry => {
         if (!entry.name.includes("status-code"))
           return;
 
-        nameMap[entry.name] = true;
-        if (!firstEntry) {
-          firstEntry = entry;
-        } else {
-          keys.forEach(key => {
-            assert_equals(entry[key], firstEntry[key], `Discernible difference in ${key} for ${entry.name}`);
-          });
+        results.push(entry);
+        if (results.length == num_expected) {
+          resolve(results);
         }
       });
-      if (Object.keys(nameMap).length === 8) {
-        resolve();
-      }
-    })).observe({entryTypes: ['resource']});
+    }).observe({entryTypes: ['resource']});
   });
+}
+
+promise_test(async t => {
+  const destUrl = get_host_info().HTTP_REMOTE_ORIGIN + '/resource-timing/resources/';
+  const statusCodes = ['200', '307', '404', '502'];
+
+  let expected_entry_count = 0;
+  statusCodes.forEach(status => {
+    document.getElementById(`img_${status}`).src = `${destUrl}status-code.py?status=${status}`;
+    document.getElementById(`script_${status}`).src = `${destUrl}status-code.py?status=${status}&script=1`;
+    expected_entry_count += 2;
+  });
+
+  const entries = await listenForPerformanceEntries(expected_entry_count);
+
+  // We will check that the non-timestamp values of the entry match for all
+  // entries.
+  const keys = [
+    'entryType',
+    'nextHopProtocol',
+    'transferSize',
+    'encodedBodySize',
+    'decodedBodySize',
+  ];
+
+  const first = entries[0];
+  entries.slice(1).forEach(entry => {
+    keys.forEach(attribute => {
+      assert_equals(entry[attribute], first[attribute],
+        `There must be no discernible difference for the ${attribute} ` +
+        `attribute but found a difference for the ${entry.name} resource.`);
+  })});
 }, "Make sure cross origin resource fetch failures with different status codes are indistinguishable");
 </script>
