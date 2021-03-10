@@ -33,7 +33,7 @@ js_library("appearance_browser_proxy") {
 js_library("appearance_fonts_page") {
   deps = [
     ":fonts_browser_proxy",
-    "../controls:settings_dropdown_menu.m",
+    "../controls:settings_dropdown_menu",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -47,7 +47,7 @@ js_library("appearance_page") {
     "..:page_visibility",
     "..:route",
     "..:router.m",
-    "../controls:settings_dropdown_menu.m",
+    "../controls:settings_dropdown_menu",
     "../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -62,7 +62,7 @@ js_library("fonts_browser_proxy") {
 js_library("home_url_input") {
   deps = [
     ":appearance_browser_proxy",
-    "../controls:pref_control_behavior.m",
+    "../controls:pref_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",

@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.m.js';
 import '../settings_vars_css.m.js';
-import '../controls/settings_textarea.m.js';
+import '../controls/settings_textarea.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';

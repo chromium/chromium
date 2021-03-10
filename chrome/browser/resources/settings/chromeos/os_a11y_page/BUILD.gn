@@ -6,6 +6,7 @@ import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
@@ -40,8 +41,8 @@ js_library("manage_a11y_page.m") {
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/chromeos:route_origin_behavior.m",
     "//chrome/browser/resources/settings/chromeos/device_page:device_page_browser_proxy.m",
-    "//chrome/browser/resources/settings/controls:settings_slider.m",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/controls:settings_slider",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -148,7 +149,7 @@ js_library("tts_subpage.m") {
     "//chrome/browser/resources/settings:router.m",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/controls:settings_slider.m",
+    "//chrome/browser/resources/settings/controls:settings_slider",
     "//chrome/browser/resources/settings/languages_page:languages_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -185,6 +186,7 @@ polymer_modulizer("manage_a11y_page") {
   html_file = "manage_a11y_page.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -202,6 +204,7 @@ polymer_modulizer("switch_access_action_assignment_dialog") {
   html_file = "switch_access_action_assignment_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -210,6 +213,7 @@ polymer_modulizer("switch_access_setup_guide_dialog") {
   html_file = "switch_access_setup_guide_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -218,6 +222,7 @@ polymer_modulizer("switch_access_subpage") {
   html_file = "switch_access_subpage.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -226,6 +231,7 @@ polymer_modulizer("tts_subpage") {
   html_file = "tts_subpage.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 

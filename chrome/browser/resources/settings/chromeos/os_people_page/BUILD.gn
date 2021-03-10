@@ -85,8 +85,8 @@ js_library("lock_screen.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
-    "../../controls:settings_dropdown_menu.m",
-    "../../controls:settings_toggle_button.m",
+    "../../controls:settings_dropdown_menu",
+    "../../controls:settings_toggle_button",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
     "//ui/webui/resources/js:assert.m",
@@ -102,7 +102,7 @@ js_library("lock_screen_password_prompt_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/lock_screen_password_prompt_dialog.m.js" ]
   deps = [
     ":lock_state_behavior.m",
-    "../../controls:password_prompt_dialog.m",
+    "../../controls:password_prompt_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
   ]

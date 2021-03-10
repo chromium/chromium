@@ -5,8 +5,10 @@
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [ ":os_settings_menu.m" ]
 }
@@ -31,5 +33,6 @@ polymer_modulizer("os_settings_menu") {
   html_file = "os_settings_menu.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }

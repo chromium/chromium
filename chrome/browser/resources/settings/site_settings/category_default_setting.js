@@ -34,7 +34,7 @@
  * TODO(crbug.com/1113642): Remove this element when content settings redesign
  * is launched.
  */
-import '../controls/settings_toggle_button.m.js';
+import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

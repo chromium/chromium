@@ -21,9 +21,9 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './languages.m.js';
 import './languages_subpage.js';
-import '../controls/controlled_radio_button.m.js';
-import '../controls/settings_radio_group.m.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/controlled_radio_button.js';
+import '../controls/settings_radio_group.js';
+import '../controls/settings_toggle_button.js';
 import '../icons.m.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';

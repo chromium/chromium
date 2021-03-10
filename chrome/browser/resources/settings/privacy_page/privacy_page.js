@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.m.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import '../settings_page/settings_animated_pages.js';

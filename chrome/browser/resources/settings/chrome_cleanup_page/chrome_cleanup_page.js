@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
-import '../controls/controlled_button.m.js';
+import '../controls/controlled_button.js';
 import '../controls/settings_checkbox.js';
 import '../prefs/prefs.m.js';
 import '../settings_shared_css.m.js';

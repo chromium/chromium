@@ -6,8 +6,20 @@
  * @fileoverview
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../settings_shared_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.js';
+
 Polymer({
   is: 'settings-toggle-button',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [SettingsBooleanControlBehavior],
 

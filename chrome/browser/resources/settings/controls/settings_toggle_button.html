@@ -1,84 +1,69 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-actionable-row-style settings-shared iron-flex">
+  :host {
+    padding: 0 var(--cr-section-padding);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_actionable_row_style.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="settings_boolean_control_behavior.html">
-<link rel="import" href="../settings_shared_css.html">
+  :host([elide-label]),
+  :host([elide-label]) #outerRow,
+  :host([elide-label]) #outerRow > div.flex {
+    min-width: 0;
+  }
 
-<dom-module id="settings-toggle-button">
-  <template>
-    <style include="cr-actionable-row-style settings-shared iron-flex">
-      :host {
-        padding: 0 var(--cr-section-padding);
-      }
+  :host([elide-label]) .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-      :host([elide-label]),
-      :host([elide-label]) #outerRow,
-      :host([elide-label]) #outerRow > div.flex {
-        min-width: 0;
-      }
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--settings-row-two-line-min-height);
+    width: 100%;
+  }
 
-      :host([elide-label]) .label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+  #outerRow[noSubLabel] {
+    min-height: var(--settings-row-min-height);
+  }
 
-      #outerRow {
-        align-items: center;
-        display: flex;
-        min-height: var(--settings-row-two-line-min-height);
-        width: 100%;
-      }
+  #labelWrapper {
+    padding: var(--cr-section-vertical-padding) 0;
+  }
 
-      #outerRow[noSubLabel] {
-        min-height: var(--settings-row-min-height);
-      }
+  #labelWrapper,
+  ::slotted([slot='more-actions']) {
+    margin-inline-end: var(--settings-control-label-spacing) !important;
+  }
 
-      #labelWrapper {
-        padding: var(--cr-section-vertical-padding) 0;
-      }
-
-      #labelWrapper,
-      ::slotted([slot='more-actions']) {
-        margin-inline-end: var(--settings-control-label-spacing) !important;
-      }
-
-      cr-policy-pref-indicator {
-        margin-inline-end: var(--settings-controlled-by-spacing);
-      }
-    </style>
-    <div id="outerRow" noSubLabel$="[[!subLabel]]">
-      <div class="flex" id="labelWrapper" hidden$="[[!label]]">
-        <div class="label" aria-hidden="true">[[label]]</div>
-        <div class="secondary label" id="sub-label">
-          <span id="sub-label-text" aria-hidden="true">
-            [[subLabel]]
-          </span>
-          <template is="dom-if" if="[[learnMoreUrl]]">
-            <a id="learn-more" href="[[learnMoreUrl]]" target="_blank"
-                aria-labeledby="sub-label-text learn-more"
-                on-click="onLearnMoreClicked_">
-              $i18n{learnMore}
-            </a>
-          </template>
-        </div>
-      </div>
-      <slot name="more-actions"></slot>
-      <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]">
-        <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
-        </cr-policy-pref-indicator>
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--settings-controlled-by-spacing);
+  }
+</style>
+<div id="outerRow" noSubLabel$="[[!subLabel]]">
+  <div class="flex" id="labelWrapper" hidden$="[[!label]]">
+    <div class="label" aria-hidden="true">[[label]]</div>
+    <div class="secondary label" id="sub-label">
+      <span id="sub-label-text" aria-hidden="true">
+        [[subLabel]]
+      </span>
+      <template is="dom-if" if="[[learnMoreUrl]]">
+        <a id="learn-more" href="[[learnMoreUrl]]" target="_blank"
+            aria-labeledby="sub-label-text learn-more"
+            on-click="onLearnMoreClicked_">
+          $i18n{learnMore}
+        </a>
       </template>
-      <cr-toggle id="control" checked="{{checked}}"
-          on-change="onChange_"
-          aria-label$="[[getAriaLabel_(label, ariaLabel)]]"
-          aria-describedby="sub-label-text"
-          disabled="[[controlDisabled(disabled, pref)]]">
-      </cr-toggle>
     </div>
+  </div>
+  <slot name="more-actions"></slot>
+  <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]">
+    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+    </cr-policy-pref-indicator>
   </template>
-  <script src="settings_toggle_button.js"></script>
-</dom-module>
+  <cr-toggle id="control" checked="{{checked}}"
+      on-change="onChange_"
+      aria-label$="[[getAriaLabel_(label, ariaLabel)]]"
+      aria-describedby="sub-label-text"
+      disabled="[[controlDisabled(disabled, pref)]]">
+  </cr-toggle>
+</div>

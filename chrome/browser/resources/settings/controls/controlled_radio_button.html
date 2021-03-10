@@ -1,62 +1,45 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared cr-radio-button-style">
+  :host([disabled]) {
+    opacity: 1;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
-<link rel="import" href="pref_control_behavior.html">
-<link rel="import" href="../prefs/pref_util.html">
-<link rel="import" href="../settings_shared_css.html">
+  /* Disc and label should be transluscent, but not the policy indicator. */
+  :host([disabled]) .disc-wrapper,
+  :host([disabled]) #labelWrapper {
+    opacity: var(--cr-disabled-opacity);
+  }
 
-<dom-module id="controlled-radio-button">
-  <template>
-    <style include="settings-shared cr-radio-button-style">
-      :host([disabled]) {
-        opacity: 1;
-      }
+  cr-policy-pref-indicator {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+    /* Enable pointer events for the indicator so :hover works. Disable
+     * clicks/taps via onIndicatorTap_ so outer on-tap doesn't trigger. */
+    pointer-events: all;
+  }
+</style>
 
-      /* Disc and label should be transluscent, but not the policy indicator. */
-      :host([disabled]) .disc-wrapper,
-      :host([disabled]) #labelWrapper {
-        opacity: var(--cr-disabled-opacity);
-      }
+<div
+    aria-checked$="[[getAriaChecked_(checked)]]"
+    aria-describedby="slotted-content"
+    aria-disabled$="[[getAriaDisabled_(disabled)]]"
+    aria-labelledby="label"
+    class="disc-wrapper"
+    id="button"
+    role="radio"
+    tabindex$="[[buttonTabIndex_]]"
+    on-keydown="onInputKeydown_">
+  <div class="disc-border"></div>
+  <div class="disc"></div>
+</div>
 
-      cr-policy-pref-indicator {
-        margin-inline-start: var(--settings-controlled-by-spacing);
-        /* Enable pointer events for the indicator so :hover works. Disable
-         * clicks/taps via onIndicatorTap_ so outer on-tap doesn't trigger. */
-        pointer-events: all;
-      }
-    </style>
+<div id="labelWrapper">
+  <span id="label" hidden$="[[!label]]">[[label]]</span>
+  <span id="slotted-content">
+    <slot></slot>
+  </span>
+</div>
 
-    <div
-        aria-checked$="[[getAriaChecked_(checked)]]"
-        aria-describedby="slotted-content"
-        aria-disabled$="[[getAriaDisabled_(disabled)]]"
-        aria-labelledby="label"
-        class="disc-wrapper"
-        id="button"
-        role="radio"
-        tabindex$="[[buttonTabIndex_]]"
-        on-keydown="onInputKeydown_">
-      <div class="disc-border"></div>
-      <div class="disc"></div>
-    </div>
-
-    <div id="labelWrapper">
-      <span id="label" hidden$="[[!label]]">[[label]]</span>
-      <span id="slotted-content">
-        <slot></slot>
-      </span>
-    </div>
-
-    <template is="dom-if" if="[[showIndicator_(disabled, name, pref.*)]]">
-      <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorTap_"
-          icon-aria-label="[[label]]">
-      </cr-policy-pref-indicator>
-    </template>
-
-  </template>
-  <script src="controlled_radio_button.js"></script>
-</dom-module>
+<template is="dom-if" if="[[showIndicator_(disabled, name, pref.*)]]">
+  <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorTap_"
+      icon-aria-label="[[label]]">
+  </cr-policy-pref-indicator>
+</template>

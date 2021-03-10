@@ -51,7 +51,7 @@ js_library("kerberos_add_account_dialog.m") {
   deps = [
     ":kerberos_accounts_browser_proxy.m",
     "..:metrics_recorder.m",
-    "//chrome/browser/resources/settings/controls:settings_textarea.m",
+    "//chrome/browser/resources/settings/controls:settings_textarea",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",

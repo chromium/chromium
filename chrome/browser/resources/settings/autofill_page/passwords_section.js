@@ -29,8 +29,8 @@ import {IronA11yKeysBehavior} from 'chrome://resources/polymer/v3_0/iron-a11y-ke
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import '../controls/extension_controlled_indicator.m.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/extension_controlled_indicator.js';
+import '../controls/settings_toggle_button.js';
 import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.m.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
@@ -51,7 +51,7 @@ import './passwords_export_dialog.js';
 import './passwords_shared_css.js';
 import './avatar_icon.js';
 // <if expr="chromeos">
-import '../controls/password_prompt_dialog.m.js';
+import '../controls/password_prompt_dialog.js';
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 

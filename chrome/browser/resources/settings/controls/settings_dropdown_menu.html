@@ -1,53 +1,36 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select">
+  :host {
+    align-items: center;
+    display: inline-flex;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="pref_control_behavior.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../prefs/pref_util.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
+  /* When settings-dropdown-menu is start-aligned, we probably want policy
+   * indicator to be be displayed after the dropdown.
+   * Setting --settings-dropdown-menu-policy-order to 1 will do the job.
+   */
+  cr-policy-pref-indicator {
+    height: var(--iron-icon-width, 24px);
+    margin: 0 var(--settings-controlled-by-spacing);
+    order: var(--settings-dropdown-menu-policy-order, 0);
+    width: var(--iron-icon-width, 24px);
+  }
 
-<dom-module id="settings-dropdown-menu">
-  <template>
-    <style include="settings-shared md-select">
-      :host {
-        align-items: center;
-        display: inline-flex;
-      }
-
-      /* When settings-dropdown-menu is start-aligned, we probably want policy
-       * indicator to be be displayed after the dropdown.
-       * Setting --settings-dropdown-menu-policy-order to 1 will do the job.
-       */
-      cr-policy-pref-indicator {
-        height: var(--iron-icon-width, 24px);
-        margin: 0 var(--settings-controlled-by-spacing);
-        order: var(--settings-dropdown-menu-policy-order, 0);
-        width: var(--iron-icon-width, 24px);
-      }
-
-      /* Hide "Custom" value when unselectable. */
-      option:disabled {
-        display: none;
-      }
-    </style>
-    <template is="dom-if" if="[[pref.controlledBy]]" restamp>
-      <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
-    </template>
-    <select class="md-select" id="dropdownMenu" on-change="onChange_"
-        aria-label$="[[label]]"
-        disabled="[[shouldDisableMenu_(disabled, menuOptions.*, pref.*)]]">
-      <template is="dom-repeat" items="[[menuOptions]]">
-        <option value="[[item.value]]">[[item.name]]</option>
-      </template>
-      <option value="[[notFoundValue_]]"
-          disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]">
-        $i18n{custom}
-      </option>
-    </select>
+  /* Hide "Custom" value when unselectable. */
+  option:disabled {
+    display: none;
+  }
+</style>
+<template is="dom-if" if="[[pref.controlledBy]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+<select class="md-select" id="dropdownMenu" on-change="onChange_"
+    aria-label$="[[label]]"
+    disabled="[[shouldDisableMenu_(disabled, menuOptions.*, pref.*)]]">
+  <template is="dom-repeat" items="[[menuOptions]]">
+    <option value="[[item.value]]">[[item.name]]</option>
   </template>
-  <script src="settings_dropdown_menu.js"></script>
-</dom-module>
+  <option value="[[notFoundValue_]]"
+      disabled="[[!showNotFoundValue_(menuOptions, pref.value)]]">
+    $i18n{custom}
+  </option>
+</select>

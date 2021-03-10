@@ -1,20 +1,7 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="pref_control_behavior.html">
-<link rel="import" href="../prefs/pref_util.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-radio-group">
-  <template>
-    <style include="settings-shared"></style>
-    <cr-radio-group selected="[[selected]]"
-        on-selected-changed="onSelectedChanged_"
-        aria-label$="[[groupAriaLabel]]"
-        selectable-elements="[[selectableElements]]">
-      <slot></slot>
-    </cr-radio-group>
-  </template>
-  <script src="settings_radio_group.js"></script>
-</dom-module>
+<style include="settings-shared"></style>
+<cr-radio-group selected="[[selected]]"
+    on-selected-changed="onSelectedChanged_"
+    aria-label$="[[groupAriaLabel]]"
+    selectable-elements="[[selectableElements]]">
+  <slot></slot>
+</cr-radio-group>

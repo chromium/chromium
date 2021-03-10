@@ -12,36 +12,33 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
   deps = [
-    ":controlled_button.m",
-    ":controlled_radio_button.m",
-    ":extension_controlled_indicator.m",
-    ":password_prompt_dialog.m",
-    ":pref_control_behavior.m",
-    ":settings_boolean_control_behavior.m",
+    ":controlled_button",
+    ":controlled_radio_button",
+    ":extension_controlled_indicator",
+    ":password_prompt_dialog",
+    ":pref_control_behavior",
+    ":settings_boolean_control_behavior",
     ":settings_checkbox",
-    ":settings_dropdown_menu.m",
+    ":settings_dropdown_menu",
     ":settings_idle_load",
-    ":settings_radio_group.m",
-    ":settings_slider.m",
-    ":settings_textarea.m",
-    ":settings_toggle_button.m",
+    ":settings_radio_group",
+    ":settings_slider",
+    ":settings_textarea",
+    ":settings_toggle_button",
   ]
 }
 
-js_library("controlled_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/controlled_button.m.js" ]
+js_library("controlled_button") {
   deps = [
-    ":pref_control_behavior.m",
+    ":pref_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
   ]
-  extra_deps = [ ":controlled_button_module" ]
 }
 
-js_library("controlled_radio_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/controlled_radio_button.m.js" ]
+js_library("controlled_radio_button") {
   deps = [
-    ":pref_control_behavior.m",
+    ":pref_control_behavior",
     "../prefs:pref_util.m",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -49,22 +46,18 @@ js_library("controlled_radio_button.m") {
     "//ui/webui/resources/js:assert.m",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
-  extra_deps = [ ":controlled_radio_button_module" ]
 }
 
-js_library("extension_controlled_indicator.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/extension_controlled_indicator.m.js" ]
+js_library("extension_controlled_indicator") {
   deps = [
     "..:extension_control_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":extension_controlled_indicator_module" ]
 }
 
-js_library("password_prompt_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/password_prompt_dialog.m.js" ]
+js_library("password_prompt_dialog") {
   deps = [
     "..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -73,37 +66,31 @@ js_library("password_prompt_dialog.m") {
   ]
   externs_list = chrome_extension_public_externs +
                  [ "$externs_path/quick_unlock_private.js" ]
-  extra_deps = [ ":password_prompt_dialog_module" ]
 }
 
-js_library("pref_control_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/pref_control_behavior.m.js" ]
+js_library("pref_control_behavior") {
   deps = [ "../prefs:prefs_types.m" ]
-  extra_deps = [ ":modulize" ]
 }
 
-js_library("settings_boolean_control_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_boolean_control_behavior.m.js" ]
+js_library("settings_boolean_control_behavior") {
   deps = [
-    ":pref_control_behavior.m",
+    ":pref_control_behavior",
     "../prefs:prefs_types.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_pref_behavior.m",
     "//ui/webui/resources/js:assert.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("settings_checkbox") {
   deps = [
-    ":settings_boolean_control_behavior.m",
+    ":settings_boolean_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
-js_library("settings_dropdown_menu.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_dropdown_menu.m.js" ]
+js_library("settings_dropdown_menu") {
   deps = [
-    ":pref_control_behavior.m",
+    ":pref_control_behavior",
     "../prefs:pref_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
@@ -112,7 +99,6 @@ js_library("settings_dropdown_menu.m") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":settings_dropdown_menu_module" ]
 }
 
 js_library("settings_idle_load") {
@@ -122,20 +108,17 @@ js_library("settings_idle_load") {
   ]
 }
 
-js_library("settings_radio_group.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_radio_group.m.js" ]
+js_library("settings_radio_group") {
   deps = [
-    ":pref_control_behavior.m",
+    ":pref_control_behavior",
     "../prefs:pref_util.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":settings_radio_group_module" ]
 }
 
-js_library("settings_slider.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_slider.m.js" ]
+js_library("settings_slider") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
@@ -143,134 +126,33 @@ js_library("settings_slider.m") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":settings_slider_module" ]
 }
 
-js_library("settings_textarea.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_textarea.m.js" ]
+js_library("settings_textarea") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":settings_textarea_module" ]
 }
 
-js_library("settings_toggle_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/controls/settings_toggle_button.m.js" ]
+js_library("settings_toggle_button") {
   deps = [
-    ":settings_boolean_control_behavior.m",
+    ":settings_boolean_control_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
-  extra_deps = [ ":settings_toggle_button_module" ]
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":controlled_button_module",
-    ":controlled_radio_button_module",
-    ":extension_controlled_indicator_module",
-    ":modulize",
-    ":password_prompt_dialog_module",
-    ":settings_dropdown_menu_module",
-    ":settings_radio_group_module",
-    ":settings_slider_module",
-    ":settings_textarea_module",
-    ":settings_toggle_button_module",
-    ":web_components",
   ]
 }
 
 html_to_js("web_components") {
-  js_files = [ "settings_checkbox.js" ]
-}
-
-polymer_modulizer("controlled_button") {
-  js_file = "controlled_button.js"
-  html_file = "controlled_button.html"
-  html_type = "dom-module"
-  auto_imports = settings_auto_imports
-  migrated_imports = settings_migrated_imports
-}
-
-polymer_modulizer("controlled_radio_button") {
-  js_file = "controlled_radio_button.js"
-  html_file = "controlled_radio_button.html"
-  html_type = "dom-module"
-  auto_imports =
-      settings_auto_imports + [
-        "ui/webui/resources/html/assert.html|assert",
-        "chrome/browser/resources/settings/prefs/pref_util.html|prefToString",
-      ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("extension_controlled_indicator") {
-  js_file = "extension_controlled_indicator.js"
-  html_file = "extension_controlled_indicator.html"
-  html_type = "dom-module"
-  auto_imports = [
-    "chrome/browser/resources/settings/extension_control_browser_proxy.html|ExtensionControlBrowserProxyImpl",
-    "ui/webui/resources/html/assert.html|assert",
-  ]
-  migrated_imports = settings_migrated_imports
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("password_prompt_dialog") {
-  js_file = "password_prompt_dialog.js"
-  html_file = "password_prompt_dialog.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("settings_dropdown_menu") {
-  js_file = "settings_dropdown_menu.js"
-  html_file = "settings_dropdown_menu.html"
-  html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/prefs/pref_util.html|stringToPrefValue, prefToString",
-                   "ui/webui/resources/html/assert.html|assert",
-                 ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("settings_radio_group") {
-  js_file = "settings_radio_group.js"
-  html_file = "settings_radio_group.html"
-  html_type = "dom-module"
-  auto_imports = settings_auto_imports + [ "chrome/browser/resources/settings/prefs/pref_util.html|stringToPrefValue, prefToString" ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("settings_slider") {
-  js_file = "settings_slider.js"
-  html_file = "settings_slider.html"
-  html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
-  auto_imports =
-      settings_auto_imports + [
-        "ui/webui/resources/html/assert.html|assert",
-        "ui/webui/resources/cr_elements/cr_slider/cr_slider.html|SliderTick",
-      ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("settings_textarea") {
-  js_file = "settings_textarea.js"
-  html_file = "settings_textarea.html"
-  html_type = "dom-module"
-}
-
-polymer_modulizer("settings_toggle_button") {
-  js_file = "settings_toggle_button.js"
-  html_file = "settings_toggle_button.html"
-  html_type = "dom-module"
-  auto_imports = settings_auto_imports
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "pref_control_behavior.js",
-    "settings_boolean_control_behavior.js",
+  js_files = [
+    "controlled_button.js",
+    "controlled_radio_button.js",
+    "extension_controlled_indicator.js",
+    "password_prompt_dialog.js",
+    "settings_checkbox.js",
+    "settings_dropdown_menu.js",
+    "settings_radio_group.js",
+    "settings_slider.js",
+    "settings_textarea.js",
+    "settings_toggle_button.js",
   ]
 }

@@ -12,7 +12,7 @@ import '../settings_shared_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.m.js';
+import {SettingsBooleanControlBehavior} from './settings_boolean_control_behavior.js';
 
 Polymer({
   is: 'settings-checkbox',

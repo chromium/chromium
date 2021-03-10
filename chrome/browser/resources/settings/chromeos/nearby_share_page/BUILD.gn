@@ -179,7 +179,7 @@ group("polymer3_elements") {
     ":nearby_share_high_visibility_page_module",
     ":nearby_share_receive_dialog_module",
     ":nearby_share_subpage_module",
-    "../../controls:polymer3_elements",
+    "../../controls:web_components",
     "../../prefs:polymer3_elements",
     "//chrome/browser/ui/webui/nearby_share:mojom_js",
   ]
@@ -205,6 +205,7 @@ polymer_modulizer("nearby_share_confirm_page") {
   html_file = "nearby_share_confirm_page.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -214,6 +215,7 @@ polymer_modulizer("nearby_share_contact_visibility_dialog") {
   html_type = "dom-module"
   namespace_rewrites =
       os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports =
       os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
 }
@@ -223,6 +225,7 @@ polymer_modulizer("nearby_share_data_usage_dialog") {
   html_file = "nearby_share_data_usage_dialog.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -232,6 +235,7 @@ polymer_modulizer("nearby_share_device_name_dialog") {
   html_type = "dom-module"
   namespace_rewrites =
       os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports =
       os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
 }
@@ -241,6 +245,7 @@ polymer_modulizer("nearby_share_high_visibility_page") {
   html_file = "nearby_share_high_visibility_page.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -261,6 +266,7 @@ polymer_modulizer("nearby_share_subpage") {
   html_type = "dom-module"
   namespace_rewrites =
       os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports =
       os_settings_auto_imports + nearby_shared_auto_imports_closure_fix +
       [ "chrome/browser/resources/settings/chromeos/os_route.html|routes" ]

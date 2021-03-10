@@ -47,8 +47,8 @@ polymer_modulizer("os_files_page") {
   js_file = "os_files_page.js"
   html_file = "os_files_page.html"
   html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -57,5 +57,6 @@ polymer_modulizer("smb_shares_page") {
   html_file = "smb_shares_page.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }

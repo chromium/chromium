@@ -166,7 +166,7 @@ js_library("crostini_port_forwarding.m") {
     ":crostini_browser_proxy.m",
     ":crostini_port_forwarding_add_port_dialog.m",
     "..:metrics_recorder.m",
-    "../../controls:settings_toggle_button.m",
+    "../../controls:settings_toggle_button",
     "../../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
@@ -208,7 +208,7 @@ js_library("crostini_subpage.m") {
     "..:os_route.m",
     "..:route_origin_behavior.m",
     "../..:router.m",
-    "../../controls:settings_toggle_button.m",
+    "../../controls:settings_toggle_button",
     "../../prefs:prefs_behavior.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
@@ -241,6 +241,7 @@ polymer_modulizer("crostini_arc_adb") {
   html_file = "crostini_arc_adb.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -249,6 +250,7 @@ polymer_modulizer("crostini_arc_adb_confirmation_dialog") {
   html_file = "crostini_arc_adb_confirmation_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -257,6 +259,7 @@ polymer_modulizer("crostini_disk_resize_dialog") {
   html_file = "crostini_disk_resize_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -265,6 +268,7 @@ polymer_modulizer("crostini_disk_resize_confirmation_dialog") {
   html_file = "crostini_disk_resize_confirmation_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -273,6 +277,7 @@ polymer_modulizer("crostini_export_import") {
   html_file = "crostini_export_import.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -281,6 +286,7 @@ polymer_modulizer("crostini_import_confirmation_dialog") {
   html_file = "crostini_import_confirmation_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -289,6 +295,7 @@ polymer_modulizer("crostini_mic_sharing_dialog") {
   html_file = "crostini_mic_sharing_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -296,8 +303,8 @@ polymer_modulizer("crostini_page") {
   js_file = "crostini_page.js"
   html_file = "crostini_page.html"
   html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -306,6 +313,7 @@ polymer_modulizer("crostini_port_forwarding") {
   html_file = "crostini_port_forwarding.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -314,6 +322,7 @@ polymer_modulizer("crostini_port_forwarding_add_port_dialog") {
   html_file = "crostini_port_forwarding_add_port_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -322,6 +331,7 @@ polymer_modulizer("crostini_subpage") {
   html_file = "crostini_subpage.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 

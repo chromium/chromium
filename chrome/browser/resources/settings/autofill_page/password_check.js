@@ -17,26 +17,31 @@ import './password_check_edit_dialog.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';
 import './password_remove_confirmation_dialog.js';
+// <if expr="chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+// <if expr="chromeos">
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// </if>
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.m.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
-import {Route, Router, RouteObserverBehavior} from '../router.m.js';
 import {routes} from '../route.js';
+import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
-import {PasswordCheckBehavior} from './password_check_behavior.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 // <if expr="chromeos">
-import '../controls/password_prompt_dialog.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
+import {PasswordCheckBehavior} from './password_check_behavior.js';
+import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 

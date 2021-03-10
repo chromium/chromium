@@ -14,7 +14,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.m.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.m.js';
 import './credit_card_edit_dialog.js';
 import './passwords_shared_css.js';

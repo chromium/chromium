@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":guest_os_browser_proxy.m",
@@ -62,6 +63,7 @@ polymer_modulizer("guest_os_shared_paths") {
   html_file = "guest_os_shared_paths.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -70,6 +72,7 @@ polymer_modulizer("guest_os_shared_usb_devices") {
   html_file = "guest_os_shared_usb_devices.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 

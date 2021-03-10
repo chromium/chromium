@@ -398,7 +398,9 @@ cr.define('settings', function() {
         case settings.StatusAction.ENTER_PASSPHRASE:
         case settings.StatusAction.CONFIRM_SYNC_SETTINGS:
         default:
-          router.navigateTo(router.getRoutes().SYNC);
+          router.navigateTo(
+              /** @type {{ SYNC: !settings.Route }} */ (router.getRoutes())
+                  .SYNC);
       }
     },
 

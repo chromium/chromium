@@ -5,6 +5,7 @@
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
@@ -22,7 +23,7 @@ js_library("os_search_page.m") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
     "//chrome/browser/resources/settings/chromeos/google_assistant_page:google_assistant_page.m",
-    "//chrome/browser/resources/settings/controls:extension_controlled_indicator.m",
+    "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
     "//chrome/browser/resources/settings/search_engines_page:search_engines_browser_proxy",
     "//chrome/browser/resources/settings/settings_page:settings_animated_pages",
     "//chrome/browser/resources/settings/settings_page:settings_subpage",

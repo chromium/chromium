@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
+import("../settings.gni")
 import("./os_settings.gni")
 
 preprocess_folder_v3 = "preprocess_v3"
@@ -202,6 +203,8 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/ensure_lazy_loaded.m.js",
     "chromeos/lazy_load.js",
     "chromeos/os_settings.js",
+    "controls/pref_control_behavior.js",
+    "controls/settings_boolean_control_behavior.js",
     "i18n_setup.js",
     "page_visibility.js",
     "privacy_page/privacy_page_browser_proxy.js",
@@ -449,17 +452,15 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/pref_to_setting_metric_converter.m.js",
     "chromeos/route_origin_behavior.m.js",
     "chromeos/search_handler.m.js",
-    "controls/controlled_button.m.js",
-    "controls/controlled_radio_button.m.js",
-    "controls/extension_controlled_indicator.m.js",
-    "controls/password_prompt_dialog.m.js",
-    "controls/pref_control_behavior.m.js",
-    "controls/settings_boolean_control_behavior.m.js",
-    "controls/settings_dropdown_menu.m.js",
-    "controls/settings_radio_group.m.js",
-    "controls/settings_slider.m.js",
-    "controls/settings_textarea.m.js",
-    "controls/settings_toggle_button.m.js",
+    "controls/controlled_button.js",
+    "controls/controlled_radio_button.js",
+    "controls/extension_controlled_indicator.js",
+    "controls/password_prompt_dialog.js",
+    "controls/settings_dropdown_menu.js",
+    "controls/settings_radio_group.js",
+    "controls/settings_slider.js",
+    "controls/settings_textarea.js",
+    "controls/settings_toggle_button.js",
     "extension_control_browser_proxy.m.js",
     "global_scroll_target_behavior.m.js",
     "icons.m.js",
@@ -532,6 +533,7 @@ group("closure_compile_module") {
 
 js_type_check("closure_compile_local_module") {
   is_polymer3 = true
+  closure_flags = settings_closure_flags
   deps = [
     ":lazy_load",
     ":metrics_recorder.m",

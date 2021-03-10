@@ -1,38 +1,27 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="cr-hidden-style cr-input-style cr-shared-style">
+  textarea {
+    display: block;
+    resize: none;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input_style_css.html">
+  #input-container {
+    background-color: var(--cr-input-background-color);
+  }
 
-<dom-module id="settings-textarea">
-  <template>
-    <style include="cr-hidden-style cr-input-style cr-shared-style">
-      textarea {
-        display: block;
-        resize: none;
-      }
-
-      #input-container {
-        background-color: var(--cr-input-background-color);
-      }
-
-      #underline {
-        position: static;
-      }
-    </style>
-    <div id="label" class="cr-form-field-label" hidden="[[!label]]">
-      [[label]]
-    </div>
-    <div id="input-container">
-      <!-- The textarea is limited to |rows| height. If the content exceeds the
-           bounds, it scrolls by default. No space or comments are allowed
-           before the closing tag. -->
-      <textarea id="input" autofocus="[[autofocus]]" rows="[[rows]]"
-          value="{{value::input}}" aria-label$="[[label]]"
-          on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
-          on-change="onInputChange_" disabled="[[disabled]]"></textarea>
-      <div id="underline"></div>
-    </div>
-  </template>
-  <script src="settings_textarea.js"></script>
-</dom-module>
+  #underline {
+    position: static;
+  }
+</style>
+<div id="label" class="cr-form-field-label" hidden="[[!label]]">
+  [[label]]
+</div>
+<div id="input-container">
+  <!-- The textarea is limited to |rows| height. If the content exceeds the
+       bounds, it scrolls by default. No space or comments are allowed
+       before the closing tag. -->
+  <textarea id="input" autofocus="[[autofocus]]" rows="[[rows]]"
+      value="{{value::input}}" aria-label$="[[label]]"
+      on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
+      on-change="onInputChange_" disabled="[[disabled]]"></textarea>
+  <div id="underline"></div>
+</div>

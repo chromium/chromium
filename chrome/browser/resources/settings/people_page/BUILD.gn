@@ -231,7 +231,7 @@ polymer_modulizer("sync_controls") {
   namespace_rewrites = settings_namespace_rewrites
   migrated_imports = settings_migrated_imports
   auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/router.html|Router,RouteObserverBehavior",
+                   "chrome/browser/resources/settings/router.html|Route,Router,RouteObserverBehavior",
                    "chrome/browser/resources/settings/people_page/sync_browser_proxy.html|SyncBrowserProxy,SyncBrowserProxyImpl,StatusAction,SyncStatus,SyncPrefs",
                    "ui/webui/resources/html/assert.html|assert",
                  ]

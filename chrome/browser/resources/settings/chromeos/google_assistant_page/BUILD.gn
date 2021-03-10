@@ -6,8 +6,10 @@ import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":google_assistant_browser_proxy.m",
@@ -31,8 +33,8 @@ js_library("google_assistant_page.m") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/controls:controlled_button.m",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/controls:controlled_button",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/prefs:pref_util.m",
     "//chrome/browser/resources/settings/prefs:prefs.m",
     "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
@@ -59,6 +61,7 @@ polymer_modulizer("google_assistant_page") {
   html_file = "google_assistant_page.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 

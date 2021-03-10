@@ -1,39 +1,39 @@
-    <style include="settings-shared">
-      #outerRow {
-        align-items: center;
-        display: flex;
-        min-height: var(--settings-row-two-line-min-height);
-        width: 100%;
-      }
+<style include="settings-shared">
+  #outerRow {
+    align-items: center;
+    display: flex;
+    min-height: var(--settings-row-two-line-min-height);
+    width: 100%;
+  }
 
-      #outerRow[noSubLabel] {
-        min-height: var(--settings-row-min-height);
-      }
+  #outerRow[noSubLabel] {
+    min-height: var(--settings-row-min-height);
+  }
 
-      cr-checkbox {
-        /* Additional margin in case subLabel needs more than one line. */
-        margin-bottom: 4px;
-        margin-top: var(--settings-checkbox-margin-top, 4px);
-        width: 100%;
-      }
+  cr-checkbox {
+    /* Additional margin in case subLabel needs more than one line. */
+    margin-bottom: 4px;
+    margin-top: var(--settings-checkbox-margin-top, 4px);
+    width: 100%;
+  }
 
-      cr-policy-pref-indicator {
-        margin-inline-start: var(--settings-controlled-by-spacing);
-      }
-    </style>
-    <div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
-      <cr-checkbox id="checkbox" checked="{{checked}}"
-          on-change="notifyChangedByUserInteraction"
-          disabled="[[controlDisabled(disabled, pref.*)]]"
-          aria-label="[[label]]">
-        <div id="label" class="label">[[label]] <slot></slot></div>
-        <div id="subLabel" class="secondary label">
-          <div inner-h-t-m-l="[[subLabelHtml]]"></div>
-          [[subLabel]]
-        </div>
-      </cr-checkbox>
-      <template is="dom-if" if="[[pref.controlledBy]]">
-        <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
-        </cr-policy-pref-indicator>
-      </template>
+  cr-policy-pref-indicator {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
+</style>
+<div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelHtml)]]">
+  <cr-checkbox id="checkbox" checked="{{checked}}"
+      on-change="notifyChangedByUserInteraction"
+      disabled="[[controlDisabled(disabled, pref.*)]]"
+      aria-label="[[label]]">
+    <div id="label" class="label">[[label]] <slot></slot></div>
+    <div id="subLabel" class="secondary label">
+      <div inner-h-t-m-l="[[subLabelHtml]]"></div>
+      [[subLabel]]
     </div>
+  </cr-checkbox>
+  <template is="dom-if" if="[[pref.controlledBy]]">
+    <cr-policy-pref-indicator pref="[[pref]]" icon-aria-label="[[label]]">
+    </cr-policy-pref-indicator>
+  </template>
+</div>

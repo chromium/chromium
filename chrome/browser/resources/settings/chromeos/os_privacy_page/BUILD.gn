@@ -63,8 +63,8 @@ polymer_modulizer("os_privacy_page") {
   js_file = "os_privacy_page.js"
   html_file = "os_privacy_page.html"
   html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 
@@ -73,6 +73,7 @@ polymer_modulizer("peripheral_data_access_protection_dialog") {
   html_file = "peripheral_data_access_protection_dialog.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
 }
 

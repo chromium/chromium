@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
+  closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
     ":date_time_page.m",
@@ -55,7 +56,7 @@ js_library("timezone_selector.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/date_time_page/timezone_selector.m.js" ]
   deps = [
     ":timezone_browser_proxy.m",
-    "../../controls:settings_dropdown_menu.m",
+    "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior.m",
     "../../prefs:prefs_types.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

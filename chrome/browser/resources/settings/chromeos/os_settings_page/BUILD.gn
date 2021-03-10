@@ -83,13 +83,13 @@ polymer_modulizer("os_settings_page") {
   js_file = "os_settings_page.js"
   html_file = "os_settings_page.html"
   html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
   auto_imports =
       os_settings_auto_imports + [
         "ui/webui/resources/html/polymer.html|Polymer,html,beforeNextRender",
         "ui/webui/resources/html/assert.html|assert",
       ]
   namespace_rewrites = os_settings_namespace_rewrites
+  migrated_imports = os_settings_migrated_imports
 }
 
 polymer_modulizer("settings_idle_load") {

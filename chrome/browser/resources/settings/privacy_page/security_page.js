@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './collapse_radio_button.js';
 import './disable_safebrowsing_dialog.js';
 import './secure_dns.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/settings_toggle_button.js';
 import '../icons.m.js';
 import '../prefs/prefs.m.js';
 import '../settings_shared_css.m.js';

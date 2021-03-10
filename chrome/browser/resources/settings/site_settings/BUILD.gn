@@ -174,7 +174,7 @@ js_library("settings_category_default_radio_group") {
   deps = [
     ":constants",
     ":site_settings_behavior",
-    "../controls:settings_radio_group.m",
+    "../controls:settings_radio_group",
     "../privacy_page:collapse_radio_button",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",

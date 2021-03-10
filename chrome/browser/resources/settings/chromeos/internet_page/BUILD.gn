@@ -6,6 +6,7 @@ import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
@@ -85,8 +86,8 @@ js_library("internet_detail_page.m") {
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
     "//chrome/browser/resources/settings/chromeos:metrics_recorder.m",
     "//chrome/browser/resources/settings/chromeos/os_people_page:os_sync_browser_proxy.m",
-    "//chrome/browser/resources/settings/controls:controlled_button.m",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/controls:controlled_button",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/people_page:sync_browser_proxy.m",
     "//chrome/browser/resources/settings/prefs:prefs.m",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
@@ -227,8 +228,8 @@ js_library("network_proxy_section.m") {
     ":internet_shared_css.m",
     "//chrome/browser/resources/settings:router.m",
     "//chrome/browser/resources/settings/chromeos:os_route.m",
-    "//chrome/browser/resources/settings/controls:extension_controlled_indicator.m",
-    "//chrome/browser/resources/settings/controls:settings_toggle_button.m",
+    "//chrome/browser/resources/settings/controls:extension_controlled_indicator",
+    "//chrome/browser/resources/settings/controls:settings_toggle_button",
     "//chrome/browser/resources/settings/prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -370,6 +371,7 @@ polymer_modulizer("internet_config") {
   html_file = "internet_config.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -378,6 +380,7 @@ polymer_modulizer("internet_detail_menu") {
   html_file = "internet_detail_menu.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -386,6 +389,7 @@ polymer_modulizer("internet_detail_page") {
   html_file = "internet_detail_page.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.html|InternetPageBrowserProxy,InternetPageBrowserProxyImpl" ]
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -394,6 +398,7 @@ polymer_modulizer("internet_known_networks_page") {
   html_file = "internet_known_networks_page.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -401,8 +406,8 @@ polymer_modulizer("internet_page") {
   js_file = "internet_page.js"
   html_file = "internet_page.html"
   html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -417,6 +422,7 @@ polymer_modulizer("internet_subpage") {
   html_file = "internet_subpage.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -425,6 +431,7 @@ polymer_modulizer("network_proxy_section") {
   html_file = "network_proxy_section.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -433,6 +440,7 @@ polymer_modulizer("network_summary") {
   html_file = "network_summary.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -441,6 +449,7 @@ polymer_modulizer("network_summary_item") {
   html_file = "network_summary_item.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -449,6 +458,7 @@ polymer_modulizer("tether_connection_dialog") {
   html_file = "tether_connection_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites =
       [ "cros_network_config.mojom.m.js|cros_network_config.mojom-lite.js" ]
 }
@@ -458,6 +468,7 @@ polymer_modulizer("cellular_setup_dialog") {
   html_file = "cellular_setup_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -466,6 +477,7 @@ polymer_modulizer("cellular_networks_list") {
   html_file = "cellular_networks_list.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -474,6 +486,7 @@ polymer_modulizer("esim_install_error_dialog") {
   html_file = "esim_install_error_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -482,6 +495,7 @@ polymer_modulizer("esim_rename_dialog") {
   html_file = "esim_rename_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 
@@ -490,6 +504,7 @@ polymer_modulizer("esim_remove_profile_dialog") {
   html_file = "esim_remove_profile_dialog.html"
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
+  migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
 }
 

@@ -17,7 +17,7 @@
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import 'chrome://resources/cr_elements/md_select_css.m.js';
-import '../controls/settings_toggle_button.m.js';
+import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.m.js';
 import '../settings_shared_css.m.js';
 import './secure_dns_input.js';
