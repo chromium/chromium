@@ -580,14 +580,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     # Delete suspect testcase from tests.
     tests = [test for test in tests if not test in self._crashes]
 
-    batch_size = self._test_instance.test_launcher_batch_limit
+    max_shard_size = self._test_instance.test_launcher_batch_limit
 
-    for i in xrange(0, device_count):
-      unbounded_shard = tests[i::device_count]
-      shards += [
-          unbounded_shard[j:j + batch_size]
-          for j in xrange(0, len(unbounded_shard), batch_size)
-      ]
+    shards.extend(self._PartitionTests(tests, device_count, max_shard_size))
     return shards
 
   #override

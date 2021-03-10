@@ -70,6 +70,10 @@ class LocalDeviceTestRun(test_run.TestRun):
       SetAppCompatibilityFlagsIfNecessary(self._installed_packages, dev)
       consecutive_device_errors = 0
       for test in tests:
+        if not test:
+          logging.warning('No tests in shared. Continuing.')
+          tests.test_completed()
+          continue
         if exit_now.isSet():
           thread.exit()
 
@@ -247,15 +251,91 @@ class LocalDeviceTestRun(test_run.TestRun):
       raise InvalidShardingSettings(shard_index, total_shards)
 
     sharded_tests = []
-    for t in self._GroupTests(tests):
-      if (hash(self._GetUniqueTestName(t[0] if isinstance(t, list) else t)) %
-          total_shards == shard_index):
-        if isinstance(t, list):
-          sharded_tests.extend(t)
-        else:
-          sharded_tests.append(t)
 
+    # Group tests by tests that should run in the same test invocation - either
+    # unit tests or batched tests.
+    grouped_tests = self._GroupTests(tests)
+
+    # Partition grouped tests approximately evenly across shards.
+    partitioned_tests = self._PartitionTests(grouped_tests, total_shards,
+                                             float('inf'))
+    if len(partitioned_tests) <= shard_index:
+      return []
+    for t in partitioned_tests[shard_index]:
+      if isinstance(t, list):
+        sharded_tests.extend(t)
+      else:
+        sharded_tests.append(t)
     return sharded_tests
+
+  # Partition tests evenly into |num_desired_partitions| partitions where
+  # possible. However, many constraints make partitioning perfectly impossible.
+  # If the max_partition_size isn't large enough, extra partitions may be
+  # created (infinite max size should always return precisely the desired
+  # number of partitions). Even if the |max_partition_size| is technically large
+  # enough to hold all of the tests in |num_desired_partitions|, we attempt to
+  # keep test order relatively stable to minimize flakes, so when tests are
+  # grouped (eg. batched tests), we cannot perfectly fill all paritions as that
+  # would require breaking up groups.
+  def _PartitionTests(self, tests, num_desired_partitions, max_partition_size):
+    # pylint: disable=no-self-use
+    partitions = []
+
+    # Sort by hash so we don't put all tests in a slow suite in the same
+    # partition.
+    tests = sorted(
+        tests,
+        key=lambda t: hash(
+            self._GetUniqueTestName(t[0] if isinstance(t, list) else t)))
+
+    def CountTestsIndividually(test):
+      if not isinstance(test, list):
+        return False
+      annotations = test[0]['annotations']
+      # UnitTests tests are really fast, so to balance shards better, count
+      # UnitTests Batches as single tests.
+      return ('Batch' not in annotations
+              or annotations['Batch']['value'] != 'UnitTests')
+
+    num_not_yet_allocated = sum(
+        [len(test) - 1 for test in tests if CountTestsIndividually(test)])
+    num_not_yet_allocated += len(tests)
+
+    # Fast linear partition approximation capped by max_partition_size. We
+    # cannot round-robin or otherwise re-order tests dynamically because we want
+    # test order to remain stable.
+    partition_size = min(num_not_yet_allocated // num_desired_partitions,
+                         max_partition_size)
+    partitions.append([])
+    last_partition_size = 0
+    for test in tests:
+      test_count = len(test) if CountTestsIndividually(test) else 1
+      num_not_yet_allocated -= test_count
+      # Make a new shard whenever we would overfill the previous one. However,
+      # if the size of the test group is larger than the max partition size on
+      # its own, just put the group in its own shard instead of splitting up the
+      # group.
+      if (last_partition_size + test_count > partition_size
+          and last_partition_size > 0):
+        num_desired_partitions -= 1
+        partitions.append([])
+        partitions[-1].append(test)
+        last_partition_size = test_count
+        if num_desired_partitions <= 0:
+          # Too many tests for number of partitions, just fill all partitions
+          # beyond num_desired_partitions.
+          partition_size = max_partition_size
+        else:
+          # Re-balance remaining partitions.
+          partition_size = min(num_not_yet_allocated // num_desired_partitions,
+                               max_partition_size)
+      else:
+        partitions[-1].append(test)
+        last_partition_size += test_count
+
+    if not partitions[-1]:
+      partitions.pop()
+    return partitions
 
   def GetTool(self, device):
     if str(device) not in self._tools:
