@@ -30,6 +30,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Notifications.Android.Build" enum="BooleanSuccess"
+    expires_after="M96">
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Records whether we could successfully build a notification using Android's
+    Notification Builder. If unsuccessful, we will silently drop the
+    notification display request. Note that delivering the notification may
+    still fail which is logged in Mobile.SystemNotification.NotifyFailure.
+    Logged when we try to build a notification using an instance of
+    NotificationWrapperBuilder.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Android.JobStartDelay" units="ms"
     expires_after="M96">
   <owner>peter@chromium.org</owner>

@@ -19,6 +19,7 @@ import android.widget.RemoteViews;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
@@ -354,7 +355,14 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
 
     @Override
     public Notification build() {
-        return mBuilder.build();
+        boolean success = false;
+        try {
+            Notification notification = mBuilder.build();
+            success = true;
+            return notification;
+        } finally {
+            RecordHistogram.recordBooleanHistogram("Notifications.Android.Build", success);
+        }
     }
 
     @Override

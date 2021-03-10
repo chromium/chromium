@@ -19,6 +19,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 /**
@@ -332,12 +333,16 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public Notification build() {
+        boolean success = false;
         Notification notification = null;
         try {
             notification = mBuilder.build();
+            success = true;
         } catch (NullPointerException e) {
             // Android M and L may throw exception, see https://crbug.com/949794.
             Log.e(TAG, "Failed to build notification.", e);
+        } finally {
+            RecordHistogram.recordBooleanHistogram("Notifications.Android.Build", success);
         }
         return notification;
     }
