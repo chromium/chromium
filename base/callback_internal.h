@@ -79,7 +79,7 @@ class BASE_EXPORT BindStateBase
   friend class CallbackBase;
   friend class CallbackBaseCopyable;
 
-  // Whitelist subclasses that access the destructor of BindStateBase.
+  // Allowlist subclasses that access the destructor of BindStateBase.
   template <typename Functor, typename... BoundArgs>
   friend struct BindState;
   friend struct ::base::FakeBindState;

@@ -135,7 +135,7 @@ class OwnedWrapper {
 //
 // Two notes:
 //  1) PassedWrapper supports any type that has a move constructor, however
-//     the type will need to be specifically whitelisted in order for it to be
+//     the type will need to be specifically allowed in order for it to be
 //     bound to a Callback. We guard this explicitly at the call of Passed()
 //     to make for clear errors. Things not given to Passed() will be forwarded
 //     and stored by value which will not work for general move-only types.

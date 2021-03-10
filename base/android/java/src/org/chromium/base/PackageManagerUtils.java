@@ -49,7 +49,7 @@ public class PackageManagerUtils {
      * See {@link PackageManager#queryIntentActivities(Intent, int)}
      */
     public static List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-        // White-list for Samsung. See http://crbug.com/613977 and https://crbug.com/894160 for more
+        // Allowlist for Samsung. See http://crbug.com/613977 and https://crbug.com/894160 for more
         // context.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();

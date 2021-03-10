@@ -27,7 +27,7 @@ class BASE_EXPORT FilteredServiceDirectory {
   explicit FilteredServiceDirectory(sys::ServiceDirectory* directory);
   ~FilteredServiceDirectory();
 
-  // Adds the specified service to the list of whitelisted services.
+  // Adds the specified service to the list of allowed services.
   void AddService(base::StringPiece service_name);
 
   // Connects a directory client. The directory can be passed to a sandboxed
