@@ -31,6 +31,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -242,6 +243,12 @@ public abstract class SigninFragmentBase
                 ? ProfileDataCache.createWithDefaultImageSize(
                         requireContext(), R.drawable.ic_account_child_20dp)
                 : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
+                && mSigninAccessPoint == SigninAccessPoint.START_PAGE) {
+            mProfileDataCache.disableGmsProfileDataSource();
+        }
+
         // By default this is set to true so that when system back button is pressed user action
         // is recorded in onDestroy().
         mRecordUndoSignin = true;

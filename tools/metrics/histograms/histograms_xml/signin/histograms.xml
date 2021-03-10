@@ -126,6 +126,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
+    expires_after="2021-08-16">
+  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The time it takes to fetch the account information (user names, avatar) for
+    one account on Android. This is recorded when account information is
+    downloaded in FRE or when there is an accounts change event.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AndroidAccountSigninViewSeedingTime" units="ms"
     expires_after="M89">
   <owner>bsazonov@chromium.org</owner>

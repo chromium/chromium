@@ -5,6 +5,7 @@
 package org.chromium.components.signin.identitymanager;
 
 import android.accounts.Account;
+import android.os.SystemClock;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -13,9 +14,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * IdentityManager provides access to native IdentityManager's public API to java components.
@@ -56,6 +61,9 @@ public class IdentityManager {
     private ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    // Account id and the corresponding fetch start time, this is only used to record the
+    // account information fetch duration.
+    private final Map<CoreAccountId, Long> mAccountAndFetchStartTimes = new HashMap<>();
 
     /**
      * Called by native to create an instance of IdentityManager.
@@ -122,6 +130,14 @@ public class IdentityManager {
     @CalledByNative
     @VisibleForTesting
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
+        final CoreAccountId accountId = accountInfo.getId();
+        if (accountInfo.getAccountImage() != null
+                && mAccountAndFetchStartTimes.containsKey(accountId)) {
+            long startTime = mAccountAndFetchStartTimes.get(accountId);
+            RecordHistogram.recordTimesHistogram("Signin.AndroidAccountInfoFetchTime",
+                    SystemClock.elapsedRealtime() - startTime);
+            mAccountAndFetchStartTimes.remove(accountId);
+        }
         for (Observer observer : mObservers) {
             observer.onExtendedAccountInfoUpdated(accountInfo);
         }
@@ -174,6 +190,7 @@ public class IdentityManager {
      */
     public void forceRefreshOfExtendedAccountInfo(CoreAccountId coreAccountId) {
         assert coreAccountId != null : "coreAccountId shouldn't be null!";
+        mAccountAndFetchStartTimes.put(coreAccountId, SystemClock.elapsedRealtime());
         IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
                 mNativeIdentityManager, coreAccountId);
     }
