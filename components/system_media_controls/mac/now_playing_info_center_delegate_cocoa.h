@@ -25,6 +25,7 @@ API_AVAILABLE(macos(10.13.1))
 - (void)setCurrentPlaybackDate:(NSDate*)date;
 - (void)setElapsedPlaybackTime:(NSNumber*)time;
 - (void)setDuration:(NSNumber*)duration;
+- (void)updateNowPlayingInfo;
 
 // Sets all metadata to default values.
 - (void)clearMetadata;

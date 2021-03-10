@@ -6,6 +6,7 @@
 
 #import <MediaPlayer/MediaPlayer.h>
 
+#include "base/bind.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/system_media_controls/mac/now_playing_info_center_delegate_cocoa.h"
@@ -40,52 +41,88 @@ NowPlayingInfoCenterDelegate::NowPlayingInfoCenterDelegate() {
 
 NowPlayingInfoCenterDelegate::~NowPlayingInfoCenterDelegate() {
   [now_playing_info_center_delegate_cocoa_ resetNowPlayingInfo];
+  timer_->Stop();
 }
 
 void NowPlayingInfoCenterDelegate::SetPlaybackStatus(
     SystemMediaControls::PlaybackStatus status) {
-  MPNowPlayingPlaybackState state =
-      PlaybackStatusToMPNowPlayingPlaybackState(status);
-  [now_playing_info_center_delegate_cocoa_ setPlaybackState:state];
+  playback_status_ = status;
+  StartTimer();
 }
 
 void NowPlayingInfoCenterDelegate::SetTitle(const base::string16& title) {
   [now_playing_info_center_delegate_cocoa_
       setTitle:base::SysUTF16ToNSString(title)];
+  [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
 void NowPlayingInfoCenterDelegate::SetArtist(const base::string16& artist) {
   [now_playing_info_center_delegate_cocoa_
       setArtist:base::SysUTF16ToNSString(artist)];
+  [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
 void NowPlayingInfoCenterDelegate::SetAlbum(const base::string16& album) {
   [now_playing_info_center_delegate_cocoa_
       setAlbum:base::SysUTF16ToNSString(album)];
+  [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
 void NowPlayingInfoCenterDelegate::SetPosition(
     const media_session::MediaPosition& position) {
+  position_ = position;
+  StartTimer();
+}
+
+void NowPlayingInfoCenterDelegate::StartTimer() {
+  timer_->Start(
+      FROM_HERE, base::TimeDelta::FromMilliseconds(100),
+      base::BindOnce(
+          &NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition,
+          base::Unretained(this)));
+}
+
+void NowPlayingInfoCenterDelegate::UpdatePlaybackStatusAndPosition() {
+  auto position = position_.value_or(media_session::MediaPosition(
+      0 /* playback_rate */, base::TimeDelta::FromSeconds(0) /* duration */,
+      base::TimeDelta::FromSeconds(0) /* position */));
+  auto playback_status =
+      playback_status_.value_or(SystemMediaControls::PlaybackStatus::kStopped);
+
+  MPNowPlayingPlaybackState state =
+      PlaybackStatusToMPNowPlayingPlaybackState(playback_status);
+  [now_playing_info_center_delegate_cocoa_ setPlaybackState:state];
+
   auto time_since_epoch =
       position.last_updated_time() - base::TimeTicks::UnixEpoch();
-
-  [now_playing_info_center_delegate_cocoa_
-      setPlaybackRate:[NSNumber numberWithDouble:position.playback_rate()]];
   [now_playing_info_center_delegate_cocoa_
       setCurrentPlaybackDate:
           [NSDate dateWithTimeIntervalSince1970:time_since_epoch.InSecondsF()]];
+  [now_playing_info_center_delegate_cocoa_
+      setDuration:[NSNumber numberWithFloat:position.duration().InSecondsF()]];
+
+  // If we're not currently playing, then set the rate to zero.
+  double rate =
+      (playback_status == SystemMediaControls::PlaybackStatus::kPlaying)
+          ? position.playback_rate()
+          : 0;
+  [now_playing_info_center_delegate_cocoa_
+      setPlaybackRate:[NSNumber numberWithDouble:rate]];
   [now_playing_info_center_delegate_cocoa_
       setElapsedPlaybackTime:
           [NSNumber numberWithFloat:position
                                         .GetPositionAtTime(
                                             position.last_updated_time())
                                         .InSecondsF()]];
-  [now_playing_info_center_delegate_cocoa_
-      setDuration:[NSNumber numberWithFloat:position.duration().InSecondsF()]];
+
+  [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
 void NowPlayingInfoCenterDelegate::ClearMetadata() {
   [now_playing_info_center_delegate_cocoa_ clearMetadata];
+  playback_status_.reset();
+  position_.reset();
+  timer_->Stop();
 }
 
 }  // namespace internal

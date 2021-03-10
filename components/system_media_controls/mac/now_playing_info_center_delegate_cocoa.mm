@@ -40,45 +40,37 @@
 
 - (void)setPlaybackState:(MPNowPlayingPlaybackState)state {
   [MPNowPlayingInfoCenter defaultCenter].playbackState = state;
-  [self updateNowPlayingInfo];
 }
 
 - (void)setTitle:(NSString*)title {
   [_nowPlayingInfo setObject:title forKey:MPMediaItemPropertyTitle];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setArtist:(NSString*)artist {
   [_nowPlayingInfo setObject:artist forKey:MPMediaItemPropertyArtist];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setAlbum:(NSString*)album {
   [_nowPlayingInfo setObject:album forKey:MPMediaItemPropertyAlbumTitle];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setPlaybackRate:(NSNumber*)rate {
   [_nowPlayingInfo setObject:rate forKey:MPNowPlayingInfoPropertyPlaybackRate];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setCurrentPlaybackDate:(NSDate*)date {
   [_nowPlayingInfo setObject:date
                       forKey:MPNowPlayingInfoPropertyCurrentPlaybackDate];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setElapsedPlaybackTime:(NSNumber*)time {
   [_nowPlayingInfo setObject:time
                       forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-  [self updateNowPlayingInfo];
 }
 
 - (void)setDuration:(NSNumber*)duration {
   [_nowPlayingInfo setObject:duration
                       forKey:MPMediaItemPropertyPlaybackDuration];
-  [self updateNowPlayingInfo];
 }
 
 - (void)clearMetadata {
