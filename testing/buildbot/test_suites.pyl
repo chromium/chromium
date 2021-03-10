@@ -2418,6 +2418,7 @@
         ],
         'args': [
           'angle_gles1_conformance_tests',
+          '--test-timeout=40',
         ],
         'desktop_args': [
           '--bot-mode',

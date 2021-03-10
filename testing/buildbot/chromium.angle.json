@@ -4250,6 +4250,7 @@
       {
         "args": [
           "angle_gles1_conformance_tests",
+          "--test-timeout=40",
           "--bot-mode"
         ],
         "merge": {
@@ -5007,6 +5008,7 @@
       {
         "args": [
           "angle_gles1_conformance_tests",
+          "--test-timeout=40",
           "--bot-mode"
         ],
         "merge": {
@@ -5370,6 +5372,7 @@
       {
         "args": [
           "angle_gles1_conformance_tests",
+          "--test-timeout=40",
           "--bot-mode"
         ],
         "merge": {
