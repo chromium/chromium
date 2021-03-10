@@ -227,6 +227,6 @@ function createTable(systemInfo) {
  * Initializes the page when the window is loaded.
  */
 window.onload = function() {
-  // TODO(crbug.com/1167223): Implement this.
-  // getFullSystemInfo(createTable);
+  // The getFullSystemInfo promise is set from the parent page
+  getFullSystemInfo().then(createTable);
 };

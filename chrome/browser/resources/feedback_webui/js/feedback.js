@@ -2,20 +2,131 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1167223
-// dummy data, use  temporarily until a message handler is implemented
-// real data shall be retrieved from backend or be passed via query string
-const feedbackInfo = {
-  categoryTag: '',
-  description: '',
-  descriptionPlaceholder: 'Please enter a description of your issue',
-  flow: 'regular',
-  pageUrl:
-      'https://superuser.com/questions/777213/copy-json-from-console-log-in-developer-tool-to-clipboard',
+/**
+ * The object will be manipulated by feedbackHelper
+ *
+ * @type {chrome.feedbackPrivate.FeedbackInfo}
+ */
+let feedbackInfo = {
+  assistantDebugInfoAllowed: false,
+  attachedFile: undefined,
+  attachedFileBlobUuid: undefined,
+  categoryTag: undefined,
+  description: '...',
+  descriptionPlaceholder: undefined,
+  email: undefined,
+  flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
+  fromAssistant: false,
+  includeBluetoothLogs: false,
+  pageUrl: undefined,
+  sendHistograms: undefined,
   systemInformation: [],
   useSystemWindowFrame: false,
-  screenshot: {}
 };
+
+
+class FeedbackHelper {
+  constructor() {
+    /**
+     * @type {boolean}
+     */
+    this.systemInformationLoaded = false;
+  }
+
+  getFeedbackInfo() {
+    // If the getFeedbackInfo is implemented by a message handler, then the
+    // data returned from it will be used. Otherwise, the default data is used.
+    // Currently, if a user visits chrome://feedback directly, the message
+    // handler will not be available. In this case, we should still allow the
+    // user submit a feedback.
+    return new Promise(
+        resolve => cr.sendWithPromise('getFeedbackInfo')
+                       .then(resolve, resolve({
+                               assistantDebugInfoAllowed: false,
+                               attachedFile: undefined,
+                               attachedFileBlobUuid: undefined,
+                               categoryTag: undefined,
+                               description: undefined,
+                               descriptionPlaceholder: undefined,
+                               email: undefined,
+                               flow: 'regular',
+                               fromAssistant: false,
+                               includeBluetoothLogs: false,
+                               pageUrl: undefined,
+                               screenshot: {},
+                               systemInformation: [],
+                               useSystemWindowFrame: false,
+                             })));
+  }
+
+  getSystemInformation() {
+    return new Promise(
+        resolve => chrome.feedbackPrivate.getSystemInformation(resolve));
+  }
+
+  getFullSystemInformation() {
+    return new Promise(resolve => {
+      if (this.systemInformationLoaded) {
+        resolve(feedbackInfo.systemInformation);
+      } else {
+        this.getSystemInformation().then(function(sysInfo) {
+          if (feedbackInfo.systemInformation) {
+            feedbackInfo.systemInformation =
+                feedbackInfo.systemInformation.concat(sysInfo);
+          } else {
+            feedbackInfo.systemInformation = sysInfo;
+          }
+          this.systemInformationLoaded = true;
+          resolve(feedbackInfo.systemInformation);
+        });
+      }
+    });
+  }
+
+  getUserEmail() {
+    return new Promise(resolve => chrome.feedbackPrivate.getUserEmail(resolve));
+  }
+
+  /**
+   * @param {boolean} useSystemInfo
+   */
+  sendFeedbackReport(useSystemInfo) {
+    const ID = Math.round(Date.now() / 1000);
+    const FLOW = feedbackInfo.flow;
+    if (!useSystemInfo) {
+      this.systemInformationLoaded = false;
+      feedbackInfo.systemInformation = [];
+    }
+
+    chrome.feedbackPrivate.sendFeedback(
+        feedbackInfo, function(result, landingPageType) {
+          if (result == chrome.feedbackPrivate.Status.SUCCESS) {
+            if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
+                landingPageType !=
+                    chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
+              const landingPage = landingPageType ==
+                      chrome.feedbackPrivate.LandingPageType.NORMAL ?
+                  FEEDBACK_LANDING_PAGE :
+                  FEEDBACK_LANDING_PAGE_TECHSTOP;
+              window.open(landingPage, '_blank');
+            }
+          } else {
+            console.warn(
+                'Feedback: Report for request with ID ' + ID +
+                ' will be sent later.');
+          }
+          if (FLOW == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+            chrome.feedbackPrivate.loginFeedbackComplete();
+          }
+        });
+  }
+}
+
+/**
+ * @type {FeedbackHelper}
+ * @const
+ */
+const feedbackHelper = new FeedbackHelper();
 
 /** @type {number}
  * @const
@@ -50,6 +161,9 @@ const MAX_SCREENSHOT_WIDTH = 100;
  */
 const SYSINFO_WINDOW_ID = 'sysinfo_window';
 
+/**
+ * @type {Blob}
+ */
 let attachedFileBlob = null;
 const lastReader = null;
 
@@ -138,7 +252,7 @@ function onOpenFileDialog() {
 function clearAttachedFile() {
   $('custom-file-container').hidden = true;
   attachedFileBlob = null;
-  feedbackInfo.attachedFile = null;
+  feedbackInfo.attachedFile = undefined;
   $('attach-file').hidden = false;
 }
 
@@ -233,11 +347,10 @@ function sendReport() {
 
   // Prevent double clicking from sending additional reports.
   $('send-report-button').disabled = true;
-  console.log('Feedback: Sending report');
   if (!feedbackInfo.attachedFile && attachedFileBlob) {
     feedbackInfo.attachedFile = {
       name: $('attach-file').value,
-      data: attachedFileBlob
+      data: attachedFileBlob,
     };
   }
 
@@ -270,7 +383,7 @@ function sendReport() {
   }
   if ($('performance-info-checkbox') == null ||
       !($('performance-info-checkbox').checked)) {
-    feedbackInfo.traceId = null;
+    feedbackInfo.traceId = undefined;
   }
   // </if>
 
@@ -289,16 +402,14 @@ function sendReport() {
     // For apps that still use a string value as the |productId|, we must clear
     // that value since the API uses an integer value, and a conflict in data
     // types will cause the report to fail to be sent.
-    productId = null;
+    productId = undefined;
   }
   feedbackInfo.productId = productId;
 
-  // Request sending the report, show the landing page (if allowed), and close
-  // this window right away. The FeedbackRequest object that represents this
-  // report will take care of sending the report in the background.
+  // Request sending the report, show the landing page (if allowed)
+  feedbackHelper.sendFeedbackReport(useSystemInfo);
   // TODO(crbug.com/1167223): Implement this.
-  // sendFeedbackReport(useSystemInfo);
-  scheduleWindowClose();
+  // scheduleWindowClose();
   return true;
 }
 
@@ -435,7 +546,7 @@ function initialize() {
       });
     });
 
-    chrome.feedbackPrivate.getUserEmail(function(email) {
+    feedbackHelper.getUserEmail().then(function(email) {
       // Never add an empty option.
       if (!email) {
         return;
@@ -491,19 +602,7 @@ function initialize() {
             window.open('/html/sys_info.html', SYSINFO_WINDOW_ID, params);
 
         if (sysWin) {
-          sysWin.window.getFullSystemInfo = function(callback) {
-            chrome.feedbackPrivate.getSystemInformation(function(sysInfo) {
-              if (feedbackInfo.systemInformation) {
-                callback(sysInfo.concat(feedbackInfo.systemInformation));
-              } else {
-                callback(sysInfo);
-              }
-            });
-          };
-
-          sysWin.window.getLoadTimeData = function() {
-            return loadTimeData;
-          };
+          sysWin.window.getFullSystemInfo = feedbackHelper.getSystemInformation;
         }
       };
 
@@ -585,26 +684,21 @@ function initialize() {
   };
 
   window.addEventListener('DOMContentLoaded', function() {
-    // TODO(crbug.com/1167223
-    // feedbackInfo will be retrieved from backend or
-    // be passed as query string. This will be addressed via
-    // following CL.
-    // chrome.feedbackPrivate.getFeedbackInfo(function(feedbackInfo) {
-    //   applyData(feedbackInfo);
-    // });
-    applyData(feedbackInfo);
+    feedbackHelper.getFeedbackInfo().then(function(data) {
+      feedbackInfo = data;
+      applyData(feedbackInfo);
 
-
-    // Setup our event handlers.
-    $('attach-file').addEventListener('change', onFileSelected);
-    $('attach-file').addEventListener('click', onOpenFileDialog);
-    $('send-report-button').onclick = sendReport;
-    $('cancel-button').onclick = cancel;
-    $('remove-attached-file').onclick = clearAttachedFile;
-    // <if expr="chromeos">
-    $('performance-info-checkbox')
-        .addEventListener('change', performanceFeedbackChanged);
-    // </if>
+      // Setup our event handlers.
+      $('attach-file').addEventListener('change', onFileSelected);
+      $('attach-file').addEventListener('click', onOpenFileDialog);
+      $('send-report-button').onclick = sendReport;
+      $('cancel-button').onclick = cancel;
+      $('remove-attached-file').onclick = clearAttachedFile;
+      // <if expr="chromeos">
+      $('performance-info-checkbox')
+          .addEventListener('change', performanceFeedbackChanged);
+      // </if>
+    });
   });
 }
 
