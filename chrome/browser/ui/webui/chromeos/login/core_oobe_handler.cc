@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -116,8 +115,6 @@ void CoreOobeHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
                base::Value(ash::TabletMode::Get()->InTabletMode()));
   dict->SetKey("isDemoModeEnabled",
                base::Value(DemoSetupController::IsDemoModeAllowed()));
-  dict->SetKey("showTechnologyBadge",
-               base::Value(!ash::features::IsSeparateNetworkIconsEnabled()));
   dict->SetKey("newLayoutEnabled",
                base::Value(features::IsNewOobeLayoutEnabled()));
 }

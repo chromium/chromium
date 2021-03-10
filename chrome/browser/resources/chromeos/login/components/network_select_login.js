@@ -65,10 +65,7 @@
        */
       showTechnologyBadge_: {
         type: Boolean,
-        value() {
-          return loadTimeData.valueExists('showTechnologyBadge') &&
-              loadTimeData.getBoolean('showTechnologyBadge');
-        }
+        value: false,
       }
     },
 
