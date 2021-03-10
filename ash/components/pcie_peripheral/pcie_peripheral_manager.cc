@@ -57,6 +57,11 @@ void PciePeripheralManager::NotifyGuestModeNotificationReceived(
     observer.OnGuestModeNotificationReceived(is_thunderbolt_only);
 }
 
+void PciePeripheralManager::NotifyPeripheralBlockedReceived() {
+  for (auto& observer : observer_list_)
+    observer.OnPeripheralBlockedReceived();
+}
+
 void PciePeripheralManager::OnThunderboltDeviceConnected(
     bool is_thunderbolt_only) {
   if (is_guest_profile_) {

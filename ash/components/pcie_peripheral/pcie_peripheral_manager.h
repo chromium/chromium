@@ -34,6 +34,11 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
     // Thunderbolt/USB4 device has been plugged in during a guest session. Can
     // be called multiple times.
     virtual void OnGuestModeNotificationReceived(bool is_thunderbolt_only) = 0;
+
+    // Called to notify observers, primarily notification controllers, that the
+    // recently plugged in Thunderbolt/USB4 device is in the block list. The
+    // block list is specified by the Pciguard Daemon.
+    virtual void OnPeripheralBlockedReceived() = 0;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -78,6 +83,7 @@ class COMPONENT_EXPORT(ASH_PCIE_PERIPHERAL) PciePeripheralManager
   // Call to notify observers that a new notification is needed.
   void NotifyLimitedPerformancePeripheralReceived();
   void NotifyGuestModeNotificationReceived(bool is_thunderbolt_only);
+  void NotifyPeripheralBlockedReceived();
 
   const bool is_guest_profile_;
   // Pcie tunneling refers to allowing Thunderbolt/USB4 peripherals to run at

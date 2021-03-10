@@ -26,6 +26,10 @@ class FakeObserver : public PciePeripheralManager::Observer {
     return num_guest_notification_calls_;
   }
 
+  size_t num_peripheral_blocked_notification_calls() const {
+    return num_peripheral_blocked_notification_calls_;
+  }
+
   bool is_current_guest_device_tbt_only() const {
     return is_current_guest_device_tbt_only_;
   }
@@ -40,9 +44,14 @@ class FakeObserver : public PciePeripheralManager::Observer {
     ++num_guest_notification_calls_;
   }
 
+  void OnPeripheralBlockedReceived() override {
+    ++num_peripheral_blocked_notification_calls_;
+  }
+
  private:
   size_t num_limited_performance_notification_calls_ = 0u;
   size_t num_guest_notification_calls_ = 0u;
+  size_t num_peripheral_blocked_notification_calls_ = 0u;
   bool is_current_guest_device_tbt_only_ = false;
 };
 

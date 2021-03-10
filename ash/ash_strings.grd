@@ -3527,6 +3527,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED" desc="Notification body text that explains to the user that their peripheral is not supported in Guest mode due to security reasons.">
         Peripheral not supported in Guest mode for security reasons
       </message>
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_TITLE" translateable="false" desc="Notification title that indicates to the user that their peripheral is not supported due to security reasons.">
+        Peripheral not supported for security reasons
+      </message>
+      <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_BODY" translateable="false" desc="Notification body text that explains to the user that their peripheral is not supported because it is not part of the approved peripherals list.">
+        Only approved Thunderbolt devices are compatible with your Chromebook
+      </message>
     </messages>
   </release>
 </grit>

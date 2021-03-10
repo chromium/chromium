@@ -42,6 +42,7 @@ class ASH_EXPORT PciePeripheralNotificationController
   // chromeos::PciePeripheral::Observer
   void OnLimitedPerformancePeripheralReceived() override;
   void OnGuestModeNotificationReceived(bool is_thunderbolt_only) override;
+  void OnPeripheralBlockedReceived() override;
 
   // Call to show a notification to indicate that the recently plugged in
   // Thunderbolt/USB4 peripheral performance is limited.
@@ -50,6 +51,10 @@ class ASH_EXPORT PciePeripheralNotificationController
   // Call to show a notification to indicate to the Guest user of the current
   // state of their Thunderbolt/USB4 peripheral.
   void NotifyGuestModeNotification(bool is_thunderbolt_only);
+
+  // Call to show a notification to indicate to the user that their
+  // Thunderbolt/USB4 peripheral is not allowed due to security reasons.
+  void NotifyPeripheralBlockedNotification();
 
  private:
   friend class PciePeripheralNotificationControllerTest;
