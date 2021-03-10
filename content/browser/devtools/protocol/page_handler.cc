@@ -32,6 +32,9 @@
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/manifest/manifest_manager_host.h"
+#include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -1246,6 +1249,22 @@ void PageHandler::GetManifestIcons(
   // TODO: Use InstallableManager once it moves into content/.
   // Until then, this code is only used to return no image data in the tests.
   callback->sendSuccess(Maybe<Binary>());
+}
+
+void PageHandler::HistoryNavigationOutcomeReported(
+    const NavigationRequest* navigation) {
+  if (!enabled_)
+    return;
+
+  FrameTreeNode* ftn = navigation->frame_tree_node();
+  std::string devtools_navigation_token =
+      navigation->devtools_navigation_token().ToString();
+  std::string frame_id = ftn->devtools_frame_token().ToString();
+
+  frontend_->HistoryNavigationOutcomeReported(
+      devtools_navigation_token, frame_id,
+      const_cast<NavigationRequest*>(navigation)
+          ->IsServedFromBackForwardCache());
 }
 
 }  // namespace protocol

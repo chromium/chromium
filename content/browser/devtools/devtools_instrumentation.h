@@ -116,6 +116,8 @@ void OnNavigationRequestFailed(
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item);
 
+void HistoryNavigationOutcomeReported(const NavigationRequest* nav_request);
+
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
     base::Optional<const base::UnguessableToken> devtools_navigation_token,

@@ -98,6 +98,8 @@ class PageHandler : public DevToolsDomainHandler,
 
   WebContentsImpl* GetWebContents();
 
+  void HistoryNavigationOutcomeReported(const NavigationRequest* nav_request);
+
   Response Enable() override;
   Response Disable() override;
 

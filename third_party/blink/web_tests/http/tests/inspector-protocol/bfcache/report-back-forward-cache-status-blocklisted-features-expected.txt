@@ -1,0 +1,12 @@
+Test that back/forward navigations report the bfcache status
+{
+    frameId : <string>
+    isRestoredFromBackForwardCache : false
+    requestId : <string>
+}
+{
+    frameId : <string>
+    isRestoredFromBackForwardCache : false
+    requestId : <string>
+}
+
