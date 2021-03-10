@@ -358,7 +358,7 @@ base::Value ClipboardHistoryControllerImpl::GetHistoryValues(
         break;
       }
     }
-    item_value.SetKey("idToken", base::Value(item.id().ToString()));
+    item_value.SetKey("id", base::Value(item.id().ToString()));
     item_results.Append(std::move(item_value));
   }
 
