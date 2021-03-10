@@ -332,7 +332,7 @@ class BlinkScrollbarPartAnimationTimer {
   BEGIN_BLOCK_OBJC_EXCEPTIONS;
   [self stopAnimation];
   END_BLOCK_OBJC_EXCEPTIONS;
-  _scrollbar = 0;
+  _scrollbar = nullptr;
 }
 @end
 
