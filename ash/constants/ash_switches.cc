@@ -620,6 +620,9 @@ const char kUpdateRequiredAueForTest[] = "aue-reached-for-update-required-test";
 // only be used for lacros_chrome_browsertests that requires ml service.
 const char kUseFakeMLServiceForTest[] = "use-fake-ml-service-for-test";
 
+// Enables configuring the OEM Device Requsition in the OOBE.
+const char kEnableRequisitionEdits[] = "enable-requisition-edits";
+
 bool MemoryPressureHandlingEnabled() {
   if (base::FieldTrialList::FindFullName(kMemoryPressureExperimentName) ==
       kMemoryPressureHandlingOff) {
@@ -697,6 +700,11 @@ bool IsAueReachedForUpdateRequiredForTest() {
 bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableOOBEChromeVoxHintTimerForTesting);
+}
+
+bool IsDeviceRequisitionConfigurable() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableRequisitionEdits);
 }
 
 }  // namespace switches

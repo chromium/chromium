@@ -111,6 +111,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableNdkTranslation[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableNdkTranslation64[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnableRequisitionEdits[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableRequestTabletSite[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnableTouchCalibrationSetting[];
@@ -283,6 +285,10 @@ bool IsAueReachedForUpdateRequiredForTest();
 // Returns true if the OOBE ChromeVox hint timer is disabled for testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBEChromeVoxHintTimerDisabledForTesting();
+
+// Returns true if the OEM Device Requisition can be configured.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsDeviceRequisitionConfigurable();
 
 }  // namespace switches
 }  // namespace chromeos
