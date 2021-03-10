@@ -78,5 +78,7 @@ executable("modetest") {
     "src/tests/modetest",
   ]
 
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ ":libdrm" ]
 }
