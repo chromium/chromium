@@ -49,10 +49,8 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void AdjustSelection();
 
   // blink::mojom::blink::TextFragmentSelectorProducer interface
-  void Cancel() override;
-
-  // Requests selector for current selection.
-  void RequestSelector(RequestSelectorCallback callback) override;
+  // Generates selector for current selection.
+  void GenerateSelector(GenerateSelectorCallback callback) override;
 
   // TextFragmentFinder::Client interface
   void DidFindMatch(const EphemeralRangeInFlatTree& match,
@@ -83,9 +81,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
 
   // Used for determining the current state of |selector_|.
   enum SelectorState {
-    // Sreach for candidate selector didn't start.
-    kNotStarted,
-
     // Candidate selector should be generated or extended.
     kNeedsNewCandidate,
 
@@ -100,9 +95,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     // Selector is found. No further attempts are necessary.
     kSuccess
   };
-
-  // Generates selector for current selection.
-  void GenerateSelector();
 
   void GenerateSelectorCandidate();
 
@@ -121,8 +113,6 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   void ExtendRangeSelector();
   void ExtendContext();
 
-  void Reset();
-
   Member<LocalFrame> selection_frame_;
   Member<Range> selection_range_;
   std::unique_ptr<TextFragmentSelector> selector_;
@@ -132,7 +122,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   HeapMojoReceiver<blink::mojom::blink::TextFragmentSelectorProducer,
                    TextFragmentSelectorGenerator>
       selector_producer_{this, nullptr};
-  RequestSelectorCallback pending_generate_selector_callback_;
+  GenerateSelectorCallback pending_generate_selector_callback_;
 
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;

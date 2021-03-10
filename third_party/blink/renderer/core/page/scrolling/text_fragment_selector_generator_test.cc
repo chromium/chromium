@@ -96,7 +96,7 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
     GetDocument()
         .GetFrame()
         ->GetTextFragmentSelectorGenerator()
-        ->RequestSelector(std::move(callback));
+        ->GenerateSelector(std::move(callback));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(callback_called);
@@ -1125,44 +1125,6 @@ TEST_F(TextFragmentSelectorGeneratorTest, Input) {
   ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
 
   VerifySelector(start, end, "First%20paragraph,Second");
-}
-
-// Checks selection across an input element.
-TEST_F(TextFragmentSelectorGeneratorTest, Input_Submit) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-  <div id='div'>
-    First paragraph<input type='submit' value="button text"> Second paragraph
-  </div>
-  )HTML");
-  GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
-  const auto& start = Position(div->firstChild(), 0);
-  const auto& end = Position(div->lastChild(), 7);
-  ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
-
-  VerifySelector(start, end, "First%20paragraph,Second");
-}
-
-// Checks selection across an input element.
-TEST_F(TextFragmentSelectorGeneratorTest, Input_Submit_prefix) {
-  SimRequest request("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-  <div id='div'>
-    <input type='submit' value="button text"> paragraph text
-  </div>
-  )HTML");
-  GetDocument().UpdateStyleAndLayoutTree();
-  Node* div = GetDocument().getElementById("div");
-  const auto& start = Position(div->lastChild(), 0);
-  const auto& end = Position(div->lastChild(), 10);
-  ASSERT_EQ(" paragraph", PlainText(EphemeralRange(start, end)));
-
-  VerifySelector(start, end, "button%20text-,paragraph,-text");
 }
 
 // Basic test case for |GetNextTextBlock|.

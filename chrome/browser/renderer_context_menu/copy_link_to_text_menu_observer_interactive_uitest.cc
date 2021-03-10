@@ -11,10 +11,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/shared_highlighting/core/common/features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -35,10 +35,10 @@ class CopyLinkToTextMenuObserverTest
 
     if (GetParam()) {
       scoped_feature_list.InitAndEnableFeature(
-          features::kPreemptiveLinkToTextGeneration);
+          features::kPreemtiveLinkToTextGeneration);
     } else {
       scoped_feature_list.InitAndDisableFeature(
-          features::kPreemptiveLinkToTextGeneration);
+          features::kPreemtiveLinkToTextGeneration);
     }
   }
 
@@ -75,7 +75,7 @@ class CopyLinkToTextMenuObserverTest
 
   bool ShouldPreemptivelyGenerateLink() {
     return base::FeatureList::IsEnabled(
-        features::kPreemptiveLinkToTextGeneration);
+        features::kPreemtiveLinkToTextGeneration);
   }
 
   ~CopyLinkToTextMenuObserverTest() override;

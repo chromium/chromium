@@ -2643,9 +2643,9 @@ const char kSharedHighlightingV2Description[] =
     "Improvements to Shared Highlighting. Including ability to reshare or "
     "remove a highlight.";
 
-const char kPreemptiveLinkToTextGenerationName[] =
+const char kPreemtiveLinkToTextGenerationName[] =
     "Preemptive generation of link to text";
-const char kPreemptiveLinkToTextGenerationDescription[] =
+const char kPreemtiveLinkToTextGenerationDescription[] =
     "Enables link to text to be generated in advance.";
 
 const char kDraw1PredictedPoint12Ms[] = "1 point 12ms ahead.";

@@ -1546,8 +1546,8 @@ extern const char kSharedHighlightingUseBlocklistDescription[];
 extern const char kSharedHighlightingV2Name[];
 extern const char kSharedHighlightingV2Description[];
 
-extern const char kPreemptiveLinkToTextGenerationName[];
-extern const char kPreemptiveLinkToTextGenerationDescription[];
+extern const char kPreemtiveLinkToTextGenerationName[];
+extern const char kPreemtiveLinkToTextGenerationDescription[];
 
 extern const char kDraw1PredictedPoint12Ms[];
 extern const char kDraw2PredictedPoints6Ms[];

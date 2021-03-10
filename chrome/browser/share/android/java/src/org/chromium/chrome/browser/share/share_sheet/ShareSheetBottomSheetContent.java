@@ -227,7 +227,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             fetchFavicon(mParams.getUrl());
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)
                 && contentTypes.contains(ContentType.HIGHLIGHTED_TEXT)) {
             setLinkImageViewForPreview();
         }

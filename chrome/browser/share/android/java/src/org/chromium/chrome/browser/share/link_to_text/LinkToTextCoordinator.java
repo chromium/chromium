@@ -10,7 +10,6 @@ import android.net.Uri;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.TextFragmentSelectorProducer;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -38,7 +36,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     private static final String INVALID_SELECTOR = "";
-    private static final long TIMEOUT_MS = 50;
     private final Context mContext;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final String mVisibleUrl;
@@ -88,7 +85,6 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         mRequestSelectorStartTime = System.currentTimeMillis();
         requestSelector();
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
     }
 
     public ShareParams getShareParams(@LinkGeneration int linkGeneration) {
@@ -106,7 +102,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 System.currentTimeMillis() - mRequestSelectorStartTime);
         if (mCancelRequest) return;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMTIVE_LINK_TO_TEXT_GENERATION)) {
             mShareLinkParams = selector.isEmpty()
                     ? null
                     : new ShareParams
@@ -164,7 +160,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
                 TextFragmentSelectorProducer.MANAGER);
-        mProducer.requestSelector(new TextFragmentSelectorProducer.RequestSelectorResponse() {
+        mProducer.generateSelector(new TextFragmentSelectorProducer.GenerateSelectorResponse() {
             @Override
             public void call(String selector) {
                 onSelectorReady(selector);
@@ -204,18 +200,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void cleanup() {
-        if (mProducer != null) {
-            mProducer.cancel();
-            mProducer.close();
-        }
+        // TODO(gayane): Consider canceling request in renderer.
+        if (mProducer != null) mProducer.close();
         mCancelRequest = true;
         mTab.removeObserver(this);
-    }
-
-    private void timeout() {
-        if (!mCancelRequest) {
-            LinkToTextBridge.logGenerateErrorTimeout();
-            onSelectorReady(INVALID_SELECTOR);
-        }
     }
 }
