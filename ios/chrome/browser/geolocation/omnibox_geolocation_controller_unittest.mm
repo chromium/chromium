@@ -49,6 +49,14 @@ TEST_F(OmniboxGeolocationControllerTest, TriggerSystemPromptForNewUser) {
       });
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunguarded-availability-new"
+  // |authorizationStatus| was a class method but got deprecated in favor of an
+  // instance method in iOS 14.
+  OCMStub(ClassMethod([locationManagerMock authorizationStatus]))
+      .andReturn(kCLAuthorizationStatusNotDetermined);
+#pragma GCC diagnostic pop
+
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   // |locationServicesEnabled| is deprecated as an instance method in favor of
   // the class method. Even with ClassMethod, it is still treated as an instance
