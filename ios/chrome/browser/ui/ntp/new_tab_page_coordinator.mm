@@ -284,6 +284,11 @@
 - (void)stop {
   if (!self.started)
     return;
+  // Unfocus omnibox, to prevent it from lingering when it should be dismissed
+  // (for example, when navigating away or when changing feed visibility).
+  id<OmniboxCommands> omniboxCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
+  [omniboxCommandHandler cancelOmniboxEdit];
   self.viewPresented = NO;
   [self updateVisible];
   [self.contentSuggestionsCoordinator stop];
