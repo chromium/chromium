@@ -3597,6 +3597,7 @@ ci.fyi_builder(
 
 ci.fyi_windows_builder(
     name = "Win x64 Builder (reclient)",
+    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "re",
