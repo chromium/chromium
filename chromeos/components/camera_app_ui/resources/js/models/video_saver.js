@@ -11,7 +11,7 @@ import * as util from '../util.js';
 import {AsyncWriter} from './async_writer.js';
 import {createPrivateTempVideoFile} from './file_system.js';
 // eslint-disable-next-line no-unused-vars
-import {NativeFileEntry} from './native_file_system_entry.js';
+import {FileAccessEntry} from './file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
 import {VideoProcessor} from './video_processor_interface.js';
 
@@ -52,12 +52,12 @@ function createWriterForIntent(intent) {
  */
 export class VideoSaver {
   /**
-   * @param {!NativeFileEntry} file
+   * @param {!FileAccessEntry} file
    * @param {!VideoProcessor} processor
    */
   constructor(file, processor) {
     /**
-     * @const {!NativeFileEntry}
+     * @const {!FileAccessEntry}
      */
     this.file_ = file;
 
@@ -77,7 +77,7 @@ export class VideoSaver {
 
   /**
    * Finishes the write of video data parts and returns result video file.
-   * @return {!Promise<!NativeFileEntry>} Result video file.
+   * @return {!Promise<!FileAccessEntry>} Result video file.
    */
   async endWrite() {
     await this.processor_.close();
@@ -86,7 +86,7 @@ export class VideoSaver {
 
   /**
    * Creates video saver for the given file.
-   * @param {!NativeFileEntry} file
+   * @param {!FileAccessEntry} file
    * @return {!Promise<!VideoSaver>}
    */
   static async createForFile(file) {

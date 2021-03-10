@@ -6,9 +6,9 @@ import {assert} from './chrome_util.js';
 import * as dom from './dom.js';
 import * as filesystem from './models/file_system.js';
 import {
-  NativeDirectoryEntry,  // eslint-disable-line no-unused-vars
-  NativeFileEntry,       // eslint-disable-line no-unused-vars
-} from './models/native_file_system_entry.js';
+  DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
+  FileAccessEntry,       // eslint-disable-line no-unused-vars
+} from './models/file_system_access_entry.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
@@ -26,12 +26,12 @@ const THUMBNAIL_WIDTH = 240;
  */
 class CoverPhoto {
   /**
-   * @param {!NativeFileEntry} file File entry of cover photo.
+   * @param {!FileAccessEntry} file File entry of cover photo.
    * @param {string} thumbnailUrl Url to its thumbnail.
    */
   constructor(file, thumbnailUrl) {
     /**
-     * @type {!NativeFileEntry}
+     * @type {!FileAccessEntry}
      * @const
      */
     this.file = file;
@@ -60,7 +60,7 @@ class CoverPhoto {
 
   /**
    * Creates CoverPhoto objects from photo file.
-   * @param {!NativeFileEntry} file
+   * @param {!FileAccessEntry} file
    * @return {!Promise<!CoverPhoto>}
    */
   static async create(file) {
@@ -96,7 +96,7 @@ export class GalleryButton {
 
     /**
      * Directory holding saved pictures showing in gallery.
-     * @type {?NativeDirectoryEntry}
+     * @type {?DirectoryAccessEntry}
      * @private
      */
     this.directory_ = null;
@@ -115,7 +115,7 @@ export class GalleryButton {
 
   /**
    * Initializes the gallery button.
-   * @param {!NativeDirectoryEntry} dir Directory holding saved pictures
+   * @param {!DirectoryAccessEntry} dir Directory holding saved pictures
    *     showing in gallery.
    */
   async initialize(dir) {
@@ -124,7 +124,7 @@ export class GalleryButton {
   }
 
   /**
-   * @param {?NativeFileEntry} file File to be set as cover photo.
+   * @param {?FileAccessEntry} file File to be set as cover photo.
    * @return {!Promise}
    * @private
    */

@@ -10,7 +10,7 @@ import {AsyncWriter} from './async_writer.js';
 /**
  * The file system entry implementation for SWA.
  */
-export class NativeFileSystemEntry {
+export class FileSystemAccessEntry {
   /**
    * @param {!FileSystemHandle} handle
    */
@@ -33,7 +33,7 @@ export class NativeFileSystemEntry {
 /**
  * The file entry implementation for SWA.
  */
-export class NativeFileEntry extends NativeFileSystemEntry {
+export class FileAccessEntry extends FileSystemAccessEntry {
   /**
    * @param {!FileSystemFileHandle} handle
    */
@@ -104,7 +104,7 @@ const createFileJobs = new AsyncJobQueue();
  * The abstract interface for the directory entry.
  * @interface
  */
-export class NativeDirectoryEntry {
+export class DirectoryAccessEntry {
   /* eslint-disable getter-return */
 
   /**
@@ -118,14 +118,14 @@ export class NativeDirectoryEntry {
 
   /**
    * Gets files in this directory.
-   * @return {!Promise<!Array<!NativeFileEntry>>}
+   * @return {!Promise<!Array<!FileAccessEntry>>}
    * @abstract
    */
   async getFiles() {}
 
   /**
    * Gets directories in this directory.
-   * @return {!Promise<!Array<!NativeDirectoryEntry>>}
+   * @return {!Promise<!Array<!DirectoryAccessEntry>>}
    * @abstract
    */
   async getDirectories() {}
@@ -133,7 +133,7 @@ export class NativeDirectoryEntry {
   /**
    * Gets the file given by its |name|.
    * @param {string} name The name of the file.
-   * @return {!Promise<?NativeFileEntry>} The entry of the found file.
+   * @return {!Promise<?FileAccessEntry>} The entry of the found file.
    * @abstract
    */
   async getFile(name) {}
@@ -143,7 +143,7 @@ export class NativeDirectoryEntry {
    * name, it will try to use a name with index as suffix.
    * e.g. IMG.png => IMG (1).png
    * @param {string} name The name of the file.
-   * @return {!Promise<!NativeFileEntry>} The entry of the created file.
+   * @return {!Promise<!FileAccessEntry>} The entry of the created file.
    * @abstract
    */
   async createFile(name) {}
@@ -154,7 +154,7 @@ export class NativeDirectoryEntry {
    * TODO(crbug.com/1127587): Split this method to getDirectory() and
    * createDirectory().
    * @param {{name: string, createIfNotExist: boolean}} params
-   * @return {!Promise<?NativeDirectoryEntry>} The entry of the found/created
+   * @return {!Promise<?DirectoryAccessEntry>} The entry of the found/created
    *     directory.
    */
   async getDirectory({name, createIfNotExist}) {}
@@ -162,9 +162,9 @@ export class NativeDirectoryEntry {
 
 /**
  * The directory entry implementation for SWA.
- * @implements {NativeDirectoryEntry}
+ * @implements {DirectoryAccessEntry}
  */
-export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
+export class DirectoryAccessEntryImpl extends FileSystemAccessEntry {
   /**
    * @param {!FileSystemDirectoryHandle} handle
    */
@@ -189,7 +189,7 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
    * @override
    */
   async getFiles() {
-    return /** @type {!Array<!NativeFileEntry>} */ (
+    return /** @type {!Array<!FileAccessEntry>} */ (
         await this.getHandles_({isDirectory: false}));
   }
 
@@ -197,7 +197,7 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
    * @override
    */
   async getDirectories() {
-    return /** @type {!Array<!NativeDirectoryEntry>} */ (
+    return /** @type {!Array<!DirectoryAccessEntry>} */ (
         await this.getHandles_({isDirectory: true}));
   }
 
@@ -206,7 +206,7 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
    */
   async getFile(name) {
     const handle = await this.handle_.getFileHandle(name, {create: false});
-    return new NativeFileEntry(handle);
+    return new FileAccessEntry(handle);
   }
 
   /**
@@ -242,7 +242,7 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
       }
       const handle =
           await this.handle_.getFileHandle(uniqueName, {create: true});
-      return new NativeFileEntry(handle);
+      return new FileAccessEntry(handle);
     });
   }
 
@@ -254,7 +254,7 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
       const handle = await this.handle_.getDirectoryHandle(
           name, {create: createIfNotExist});
       assert(handle !== null);
-      return new NativeDirectoryEntryImpl(
+      return new DirectoryAccessEntryImpl(
           /** @type {!FileSystemDirectoryHandle} */ (handle));
     } catch (error) {
       if (!createIfNotExist && error.name === 'NotFoundError') {
@@ -268,15 +268,15 @@ export class NativeDirectoryEntryImpl extends NativeFileSystemEntry {
    * Gets the file handles in this directory if |isDirectory| is set to false.
    * If |isDirectory| is true, gets the directory entries instead.
    * @param {{isDirectory: boolean}} params
-   * @return {!Promise<!Array<!NativeFileSystemEntry>>}
+   * @return {!Promise<!Array<!FileSystemAccessEntry>>}
    */
   async getHandles_({isDirectory}) {
     const results = [];
     for await (const handle of this.handle_.values()) {
       if (isDirectory && handle.kind === 'directory') {
-        results.push(new NativeDirectoryEntryImpl(handle));
+        results.push(new DirectoryAccessEntryImpl(handle));
       } else if (!isDirectory && handle.kind === 'file') {
-        results.push(new NativeFileEntry(handle));
+        results.push(new FileAccessEntry(handle));
       }
     }
     return results;

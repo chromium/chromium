@@ -36,7 +36,7 @@ compile_js_files = [
   "models/load_time_data.js",
   "models/local_storage.js",
   "models/mp4_video_processor.js",
-  "models/native_file_system_entry.js",
+  "models/file_system_access_entry.js",
   "models/result_saver.js",
   "models/video_processor_interface.js",
   "models/video_saver.js",
