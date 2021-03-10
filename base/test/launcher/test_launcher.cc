@@ -997,9 +997,8 @@ void TestLauncher::LaunchChildGTestProcess(
   options.flags = launcher_delegate_->GetLaunchOptions();
 
   ChildProcessResults process_results = DoLaunchChildTestProcess(
-      new_command_line, child_temp_dir,
-      launcher_delegate_->GetTimeout() * test_names.size(), options,
-      redirect_stdio_, launcher_delegate_);
+      new_command_line, child_temp_dir, launcher_delegate_->GetTimeout(),
+      options, redirect_stdio_, launcher_delegate_);
 
   // Invoke ProcessTestResults on the original thread, not
   // on a worker pool thread.
