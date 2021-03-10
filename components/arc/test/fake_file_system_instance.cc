@@ -728,6 +728,14 @@ void FakeFileSystemInstance::OpenUrlsWithPermission(
   handled_url_requests_.emplace_back(std::move(request));
 }
 
+void FakeFileSystemInstance::OpenUrlsWithPermissionAndWindowInfo(
+    mojom::OpenUrlsRequestPtr request,
+    mojom::WindowInfoPtr window_info,
+    OpenUrlsWithPermissionCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  handled_url_requests_.emplace_back(std::move(request));
+}
+
 std::string FakeFileSystemInstance::FindChildDocumentId(
     const std::string& authority,
     const std::string& parent_document_id,

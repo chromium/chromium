@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 43
+// Next MinVersion: 44
 
 module arc.mojom;
 
@@ -331,7 +331,7 @@ interface IntentHelperHost {
 
 // Sends intents to ARC on behalf of Chrome.
 // Deprecated method ID: 7
-// Next method ID: 20
+// Next method ID: 21
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
   // intent is sent with a URL that requires disambiguation, instead of opening
@@ -358,8 +358,12 @@ interface IntentHelperInstance {
   // DEPRECATED. Use FileSystemInstance.GetFileSize() instead.
   [MinVersion=15] GetFileSizeDeprecated@11(string url) => (int64 size);
 
-  // Passes an intent to an activity.
+  // DEPRECATED. Use HandleIntentWithWindowInfo() instead.
   [MinVersion=12] HandleIntent@10(IntentInfo intent, ActivityName activity);
+
+  // Passes an intent to an activity with a specific launch window info.
+  [MinVersion=43] HandleIntentWithWindowInfo@20(
+      IntentInfo intent, ActivityName activity, WindowInfo window_info);
 
   // Handles the URL by sending an ACTION_VIEW intent to the package. The
   // most suitable activity for the URL within the package will be started.

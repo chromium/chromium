@@ -354,6 +354,10 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
   void ReindexDirectory(const std::string& directory_path) override;
   void OpenUrlsWithPermission(mojom::OpenUrlsRequestPtr request,
                               OpenUrlsWithPermissionCallback callback) override;
+  void OpenUrlsWithPermissionAndWindowInfo(
+      mojom::OpenUrlsRequestPtr request,
+      mojom::WindowInfoPtr window_info,
+      OpenUrlsWithPermissionCallback callback) override;
 
  private:
   // A pair of an authority and a document ID which identifies the location

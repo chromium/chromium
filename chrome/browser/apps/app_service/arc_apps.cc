@@ -369,6 +369,7 @@ void OnContentUrlResolved(const base::FilePath& file_path,
                           int64_t display_id,
                           apps::mojom::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
+                          apps::mojom::WindowInfoPtr window_info,
                           const std::vector<GURL>& content_urls) {
   for (const auto& content_url : content_urls) {
     if (!content_url.is_valid()) {
@@ -384,14 +385,23 @@ void OnContentUrlResolved(const base::FilePath& file_path,
 
   arc::mojom::FileSystemInstance* arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->file_system(),
-      OpenUrlsWithPermission);
-  if (!arc_file_system) {
-    return;
-  }
+      OpenUrlsWithPermissionAndWindowInfo);
+  if (arc_file_system) {
+    arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
+        ConstructOpenUrlsRequest(intent, activity, content_urls),
+        apps::MakeArcWindowInfo(std::move(window_info)), base::DoNothing());
+  } else {
+    arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->file_system(),
+        OpenUrlsWithPermission);
+    if (!arc_file_system) {
+      return;
+    }
 
-  arc_file_system->OpenUrlsWithPermission(
-      ConstructOpenUrlsRequest(intent, activity, content_urls),
-      base::DoNothing());
+    arc_file_system->OpenUrlsWithPermission(
+        ConstructOpenUrlsRequest(intent, activity, content_urls),
+        base::DoNothing());
+  }
 
   ::full_restore::SaveAppLaunchInfo(
       file_path, std::make_unique<full_restore::AppLaunchInfo>(
@@ -623,18 +633,12 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
                          event_flags, display_id, std::move(intent),
-                         std::move(activity)));
+                         std::move(activity), std::move(window_info)));
       return;
     }
 
     auto* arc_service_manager = arc::ArcServiceManager::Get();
-    arc::mojom::IntentHelperInstance* instance = nullptr;
-    if (arc_service_manager) {
-      instance = ARC_GET_INSTANCE_FOR_METHOD(
-          arc_service_manager->arc_bridge_service()->intent_helper(),
-          HandleIntent);
-    }
-    if (!instance) {
+    if (!arc_service_manager) {
       return;
     }
 
@@ -646,7 +650,23 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       return;
     }
 
-    instance->HandleIntent(std::move(arc_intent), std::move(activity));
+    arc::mojom::IntentHelperInstance* instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        HandleIntentWithWindowInfo);
+    if (instance) {
+      instance->HandleIntentWithWindowInfo(
+          std::move(arc_intent), std::move(activity),
+          MakeArcWindowInfo(std::move(window_info)));
+    } else {
+      instance = ARC_GET_INSTANCE_FOR_METHOD(
+          arc_service_manager->arc_bridge_service()->intent_helper(),
+          HandleIntent);
+      if (!instance) {
+        return;
+      }
+
+      instance->HandleIntent(std::move(arc_intent), std::move(activity));
+    }
 
     prefs->SetLastLaunchTime(app_id);
 
