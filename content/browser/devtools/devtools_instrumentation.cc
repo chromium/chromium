@@ -174,14 +174,6 @@ void OnNavigationResponseReceived(
                    frame_id);
 }
 
-void HistoryNavigationOutcomeReported(const NavigationRequest* nav_request) {
-  DCHECK(nav_request);
-  FrameTreeNode* ftn = nav_request->frame_tree_node();
-  DispatchToAgents(ftn,
-                   &protocol::PageHandler::HistoryNavigationOutcomeReported,
-                   nav_request);
-}
-
 namespace {
 protocol::String BuildBlockedByResponseReason(
     network::mojom::BlockedByResponseReason reason) {

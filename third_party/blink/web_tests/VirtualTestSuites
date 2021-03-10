@@ -853,9 +853,5 @@
     "bases": ["external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/confirm-different-origin-frame.sub.html",
               "external/wpt/html/webappapis/user-prompts/cannot-show-simple-dialogs/prompt-different-origin-frame.sub.html"],
     "args": [ "--enable-features=SuppressDifferentOriginSubframeJSDialogs"]
-  },
-  {"prefix": "inspector-protocol-bfcache",
-    "bases": ["http/tests/inspector-protocol/bfcache" ],
-    "args": ["--enable-features=BackForwardCache"]
   }
 ]
