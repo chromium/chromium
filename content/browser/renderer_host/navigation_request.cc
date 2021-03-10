@@ -2163,8 +2163,9 @@ void NavigationRequest::AddSameProcessOriginAgentClusterOptInIfNecessary(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (policy->ShouldOriginGetOptInIsolation(isolation_context, origin,
                                             true /* is_requested */)) {
-    policy->AddOptInIsolatedOriginForBrowsingInstance(isolation_context,
-                                                      origin);
+    policy->AddIsolatedOriginForBrowsingInstance(
+        isolation_context, origin, true /* is_origin_keyed */,
+        ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 }
 

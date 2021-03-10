@@ -232,6 +232,9 @@ class ChildProcessSecurityPolicy {
     // Used for origins that are isolated based on user-triggered runtime
     // heuristics.
     USER_TRIGGERED,
+    // Used for origins that are isolated based on runtime heuristics triggered
+    // directly by web pages, such as headers.
+    WEB_TRIGGERED,
     // Used for testing purposes.
     TEST
   };

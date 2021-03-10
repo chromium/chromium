@@ -718,13 +718,16 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
 // IsolatedOriginEntry implementation.
 ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::IsolatedOriginEntry(
     const url::Origin& origin,
-    BrowsingInstanceId min_browsing_instance_id,
+    bool applies_to_future_browsing_instances,
+    BrowsingInstanceId browsing_instance_id,
     BrowserContext* browser_context,
     ResourceContext* resource_context,
     bool isolate_all_subdomains,
     IsolatedOriginSource source)
     : origin_(origin),
-      min_browsing_instance_id_(min_browsing_instance_id),
+      applies_to_future_browsing_instances_(
+          applies_to_future_browsing_instances),
+      browsing_instance_id_(browsing_instance_id),
       browser_context_(browser_context),
       resource_context_(resource_context),
       isolate_all_subdomains_(isolate_all_subdomains),
@@ -772,6 +775,14 @@ bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::MatchesProfile(
   }
   NOTREACHED();
   return false;
+}
+
+bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::
+    MatchesBrowsingInstance(BrowsingInstanceId browsing_instance_id) const {
+  if (applies_to_future_browsing_instances_)
+    return browsing_instance_id_ <= browsing_instance_id;
+
+  return browsing_instance_id_ == browsing_instance_id;
 }
 
 // Make sure BrowsingInstance state is cleaned up after the max amount of time
@@ -1911,55 +1922,92 @@ void ChildProcessSecurityPolicyImpl::AddIsolatedOrigins(
 
     url::Origin origin_to_add = pattern.origin();
 
-    // GetSiteForOrigin() is used to look up the site URL of |origin| to speed
-    // up the isolated origin lookup.  This only performs a straightforward
-    // translation of an origin to eTLD+1; it does *not* take into account
-    // effective URLs, isolated origins, and other logic that's not needed
-    // here, but *is* typically needed for making process model decisions. Be
-    // very careful about using GetSiteForOrigin() elsewhere, and consider
-    // whether you should be using GetSiteForURL() instead.
-    GURL key(SiteInfo::GetSiteForOrigin(origin_to_add));
-
-    // Isolated origins should apply only to future BrowsingInstances and
-    // processes.  Save the first BrowsingInstance ID to which they should
-    // apply along with the actual origin.
-    BrowsingInstanceId min_browsing_instance_id =
+    // Isolated origins added here should apply only to future
+    // BrowsingInstances and processes.  Determine the first BrowsingInstance
+    // ID to which they should apply.
+    BrowsingInstanceId browsing_instance_id =
         SiteInstanceImpl::NextBrowsingInstanceId();
 
-    // Check if the origin to be added already exists, in which case it may not
-    // need to be added again.
-    bool should_add = true;
-    for (const auto& entry : isolated_origins_[key]) {
-      if (entry.origin() != origin_to_add)
-        continue;
+    AddIsolatedOriginInternal(browser_context, origin_to_add,
+                              true /* applies_to_future_browsing_instances */,
+                              browsing_instance_id,
+                              pattern.isolate_all_subdomains(), source);
+  }
+}
 
-      // If the added origin already exists for the same BrowserContext, don't
-      // re-add it. Note that in this case, it must necessarily have a
-      // lower/same BrowsingInstance ID: it's impossible for it to be
-      // isolated with a higher ID, since NextBrowsingInstanceId() returns
-      // monotonically increasing IDs.
-      if (entry.browser_context() == browser_context) {
-        DCHECK_LE(entry.min_browsing_instance_id(), min_browsing_instance_id);
+void ChildProcessSecurityPolicyImpl::AddIsolatedOriginInternal(
+    BrowserContext* browser_context,
+    const url::Origin& origin_to_add,
+    bool applies_to_future_browsing_instances,
+    BrowsingInstanceId browsing_instance_id,
+    bool isolate_all_subdomains,
+    IsolatedOriginSource source) {
+  // GetSiteForOrigin() is used to look up the site URL of |origin| to speed
+  // up the isolated origin lookup.  This only performs a straightforward
+  // translation of an origin to eTLD+1; it does *not* take into account
+  // effective URLs, isolated origins, and other logic that's not needed
+  // here, but *is* typically needed for making process model decisions. Be
+  // very careful about using GetSiteForOrigin() elsewhere, and consider
+  // whether you should be using SiteInfo::Create() instead.
+  GURL key(SiteInfo::GetSiteForOrigin(origin_to_add));
+
+  // Check if the origin to be added already exists, in which case it may not
+  // need to be added again.
+  bool should_add = true;
+  for (const auto& entry : isolated_origins_[key]) {
+    // TODO(alexmos): The exact origin comparison here allows redundant entries
+    // with certain uses of `isolate_all_subdomains`.  See
+    // https://crbug.com/1184580.
+    if (entry.origin() != origin_to_add)
+      continue;
+    // If the added origin already exists for the same BrowserContext and
+    // covers the same BrowsingInstances, don't re-add it.
+    if (entry.browser_context() == browser_context) {
+      if (entry.applies_to_future_browsing_instances() &&
+          entry.browsing_instance_id() <= browsing_instance_id) {
+        // If the existing entry applies to future BrowsingInstances, and it
+        // has a lower/same BrowsingInstance ID, don't re-add the origin.  Note
+        // that if the new isolated origin is also requested to apply to future
+        // BrowsingInstances, the threshold ID must necessarily be greater than
+        // the old ID, since NextBrowsingInstanceId() returns monotonically
+        // increasing IDs.
+        if (applies_to_future_browsing_instances)
+          DCHECK_LE(entry.browsing_instance_id(), browsing_instance_id);
+        should_add = false;
+        break;
+      } else if (!entry.applies_to_future_browsing_instances() &&
+                 entry.browsing_instance_id() == browsing_instance_id) {
+        // Otherwise, don't re-add the origin if the existing entry is for the
+        // same BrowsingInstance ID.  Note that if an origin had been added for
+        // a specific BrowsingInstance, we can't later receive a request to
+        // isolate that origin within future BrowsingInstances that start at
+        // the same (or lower) BrowsingInstance. Requests to isolate future
+        // BrowsingInstances should always reference
+        // SiteInstanceImpl::NextBrowsingInstanceId(), which always refers to
+        // an ID that's greater than any existing BrowsingInstance ID.
+        DCHECK(!applies_to_future_browsing_instances);
+
         should_add = false;
         break;
       }
-
-      // Otherwise, allow the origin to be added again for a different profile
-      // (or globally for all profiles), possibly with a different
-      // BrowsingInstance ID cutoff.  Note that a particular origin might have
-      // multiple entries, each one for a different profile, so we must loop
-      // over all such existing entries before concluding that |origin| really
-      // needs to be added.
     }
 
-    if (should_add) {
-      ResourceContext* resource_context =
-          browser_context ? browser_context->GetResourceContext() : nullptr;
-      IsolatedOriginEntry entry(
-          std::move(origin_to_add), min_browsing_instance_id, browser_context,
-          resource_context, pattern.isolate_all_subdomains(), source);
-      isolated_origins_[key].emplace_back(std::move(entry));
-    }
+    // Otherwise, allow the origin to be added again for a different profile
+    // (or globally for all profiles), possibly with a different
+    // BrowsingInstance ID cutoff.  Note that a particular origin might have
+    // multiple entries, each one for a different profile, so we must loop
+    // over all such existing entries before concluding that |origin| really
+    // needs to be added.
+  }
+
+  if (should_add) {
+    ResourceContext* resource_context =
+        browser_context ? browser_context->GetResourceContext() : nullptr;
+    IsolatedOriginEntry entry(std::move(origin_to_add),
+                              applies_to_future_browsing_instances,
+                              browsing_instance_id, browser_context,
+                              resource_context, isolate_all_subdomains, source);
+    isolated_origins_[key].emplace_back(std::move(entry));
   }
 }
 
@@ -2147,10 +2195,7 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
               isolation_context.browser_or_resource_context()))
         continue;
 
-      bool matches_browsing_instance_id =
-          isolated_origin_entry.min_browsing_instance_id() <=
-          browsing_instance_id;
-      if (matches_browsing_instance_id &&
+      if (isolated_origin_entry.MatchesBrowsingInstance(browsing_instance_id) &&
           IsolatedOriginUtil::DoesOriginMatchIsolatedOrigin(
               origin, isolated_origin_entry.origin())) {
         // If a match has been found that requires all subdomains to be isolated
@@ -2337,17 +2382,47 @@ void ChildProcessSecurityPolicyImpl::
     // origin.
   }
 
-  base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
-  origin_isolation_by_browsing_instance_.erase(browsing_instance_id);
-  origin_isolation_non_isolated_by_browsing_instance_.erase(
-      browsing_instance_id);
+  {
+    base::AutoLock origins_isolation_opt_in_lock(
+        origins_isolation_opt_in_lock_);
+    origin_isolation_by_browsing_instance_.erase(browsing_instance_id);
+    origin_isolation_non_isolated_by_browsing_instance_.erase(
+        browsing_instance_id);
+  }
+
+  {
+    base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+    for (auto& iter : isolated_origins_) {
+      base::EraseIf(iter.second, [&browsing_instance_id](
+                                     const IsolatedOriginEntry& entry) {
+        // Remove entries that are specific to `browsing_instance_id` and
+        // do not apply to future BrowsingInstances.
+        return (entry.browsing_instance_id() == browsing_instance_id &&
+                !entry.applies_to_future_browsing_instances());
+      });
+    }
+  }
 }
 
-void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
+void ChildProcessSecurityPolicyImpl::AddIsolatedOriginForBrowsingInstance(
     const IsolationContext& isolation_context,
-    const url::Origin& origin) {
-  CHECK(IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin))
-      << "Attempting to opt-in invalid origin: " << origin;
+    const url::Origin& origin,
+    bool is_origin_keyed,
+    IsolatedOriginSource source) {
+  // We ought to have validated the origin prior to getting here.  If the
+  // origin isn't valid at this point, something has gone wrong.  Note that the
+  // origin-keyed OriginAgentCluster isolated origins have slightly different
+  // validation requirements.
+  bool is_valid_origin =
+      is_origin_keyed
+          ? IsolatedOriginUtil::IsValidOriginForOptInIsolation(origin)
+          : IsolatedOriginUtil::IsValidIsolatedOrigin(origin);
+  CHECK(is_valid_origin) << "Trying to isolate invalid origin: " << origin;
+
+  // This can only be called from the UI thread, as it reads state that's only
+  // available (and is only safe to be retrieved) on the UI thread, such as
+  // BrowsingInstance IDs.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());
@@ -2355,12 +2430,34 @@ void ChildProcessSecurityPolicyImpl::AddOptInIsolatedOriginForBrowsingInstance(
   // a new SiteInstance, so |browsing_instance_id| should always be defined.
   CHECK(!browsing_instance_id.is_null());
 
+  // For site-keyed isolation, add `origin` to the isolated_origins_ map (which
+  // supports subdomain matching).
+  if (!is_origin_keyed) {
+    // Ensure that `origin` is a site (scheme + eTLD+1) rather than any origin.
+    auto site_origin = url::Origin::Create(SiteInfo::GetSiteForOrigin(origin));
+    CHECK_EQ(origin, site_origin);
+
+    base::AutoLock isolated_origins_lock(isolated_origins_lock_);
+
+    // Explicitly set `applies_to_future_browsing_instances` to false to only
+    // isolate `origin` within the provided BrowsingInstance, but not future
+    // ones.  Note that it's possible for `origin` to also become isolated for
+    // future BrowsingInstances if AddIsolatedOrigins() is called for it later.
+    AddIsolatedOriginInternal(
+        isolation_context.browser_or_resource_context().ToBrowserContext(),
+        origin, false /* applies_to_future_browsing_instances */,
+        isolation_context.browsing_instance_id(),
+        false /* isolate_all_subdomains */, source);
+    return;
+  }
+
+  // For origin-keyed isolation, use the origin_isolation_by_browsing_instance_
+  // map.
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
   auto it = origin_isolation_by_browsing_instance_.find(browsing_instance_id);
   if (it == origin_isolation_by_browsing_instance_.end()) {
-    origin_isolation_by_browsing_instance_.emplace(browsing_instance_id,
-                                                   std::vector<url::Origin>());
-    it = origin_isolation_by_browsing_instance_.find(browsing_instance_id);
+    std::tie(it, std::ignore) = origin_isolation_by_browsing_instance_.emplace(
+        browsing_instance_id, std::vector<url::Origin>());
   }
 
   // We only support adding new entries, not modifying existing ones. If at

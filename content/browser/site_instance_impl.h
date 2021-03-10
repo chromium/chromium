@@ -375,11 +375,18 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       bool can_reuse_process = false,
       bool is_guest = false);
 
-  // Creates a SiteInstance for |url| like CreateForURL() would except the
+  // Creates a SiteInstance for |url| like CreateForUrlInfo() would except the
   // instance that is returned has its process_reuse_policy set to
   // REUSE_PENDING_OR_COMMITTED_SITE and the default SiteInstance will never
   // be returned.
   static scoped_refptr<SiteInstanceImpl> CreateReusableInstanceForTesting(
+      BrowserContext* browser_context,
+      const GURL& url);
+
+  // Creates a SiteInstance for |url| in a new BrowsingInstance for testing
+  // purposes. This works similarly to CreateForUrlInfo() but with default
+  // parameters that are suitable for most tests.
+  static scoped_refptr<SiteInstanceImpl> CreateForTesting(
       BrowserContext* browser_context,
       const GURL& url);
 

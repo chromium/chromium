@@ -652,6 +652,16 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
 }
 
 // static
+scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForTesting(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  DCHECK(browser_context);
+  return SiteInstanceImpl::CreateForUrlInfo(
+      browser_context, UrlInfo::CreateForTesting(url),
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+}
+
+// static
 bool SiteInstanceImpl::ShouldAssignSiteForURL(const GURL& url) {
   // about:blank should not "use up" a new SiteInstance.  The SiteInstance can
   // still be used for a normal web site.
@@ -922,8 +932,10 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
     // This site handles the case where OAC isolation gets a separate process.
     // In future, when SiteInstance Groups are complete, this may revert to
     // being the only call site.
-    policy->AddOptInIsolatedOriginForBrowsingInstance(
-        browsing_instance_->isolation_context(), site_origin);
+    policy->AddIsolatedOriginForBrowsingInstance(
+        browsing_instance_->isolation_context(), site_origin,
+        true /* is_origin_keyed */,
+        ChildProcessSecurityPolicy::IsolatedOriginSource::WEB_TRIGGERED);
   }
 
   // Update the process reuse policy based on the site.
