@@ -8,7 +8,6 @@ TEST COMPLETE
 
 PASS contextLostTest is false
 PASS ctx.isContextLost() is false
-PASS ctx.isContextLost() is false
 PASS contextLostTest is true
 PASS ctx.isContextLost() is true
 PASS Graphics context lost event dispatched.

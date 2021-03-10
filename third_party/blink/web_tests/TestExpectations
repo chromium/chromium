@@ -280,7 +280,6 @@ crbug.com/774873 virtual/exotic-color-space/images/color-profile-border-fade.htm
 
 crbug.com/1098369 fast/canvas/OffscreenCanvas-copyImage.html [ Pass Failure ]
 
-crbug.com/1011060 virtual/gpu/fast/canvas/canvas-lost-gpu-context.html [ Pass Failure Crash ]
 crbug.com/1106590 virtual/gpu/fast/canvas/canvas-path-non-invertible-transform.html [ Pass Crash ]
 
 crbug.com/974720 [ Mac10.13 ] virtual/text-antialias/firstline/capitalize-transform-2.html [ Pass Crash ]

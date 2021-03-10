@@ -200,6 +200,7 @@ bool CanvasRenderingContext2D::IsComposited() const {
 void CanvasRenderingContext2D::Stop() {
   if (!isContextLost()) {
     // Never attempt to restore the context because the page is being torn down.
+    context_restorable_ = false;
     LoseContext(kSyntheticLostContext);
   }
 }
@@ -257,9 +258,8 @@ void CanvasRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
     }
   }
 
-  // If RealLostContext, it means the context was not lost due to surface
-  // failure but rather due to a an eviction, which means image buffer exists.
-  if (context_restorable_ && context_lost_mode_ == kRealLostContext) {
+  if (context_restorable_ && (context_lost_mode_ == kRealLostContext ||
+                              context_lost_mode_ == kSyntheticLostContext)) {
     try_restore_context_attempt_count_ = 0;
     try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
                                                     FROM_HERE);
@@ -274,8 +274,20 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
     return;
   }
 
-  DCHECK(context_lost_mode_ == kRealLostContext);
-  if (IsPaintable() && canvas()->GetCanvas2DLayerBridge()->Restore()) {
+  DCHECK(context_lost_mode_ != kWebGLLoseContextLostContext);
+
+  // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
+  // true, it means context is forced to be lost for testing purpose. Restore
+  // the context.
+  if (context_lost_mode_ == kSyntheticLostContext && IsPaintable()) {
+    try_restore_context_event_timer_.Stop();
+    Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+    DispatchContextRestoredEvent(nullptr);
+
+    // If RealLostContext, it means the context was not lost due to surface
+    // failure but rather due to a an eviction, which means image buffer exists.
+  } else if (context_lost_mode_ == kRealLostContext && IsPaintable() &&
+             canvas()->GetCanvas2DLayerBridge()->Restore()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
   }

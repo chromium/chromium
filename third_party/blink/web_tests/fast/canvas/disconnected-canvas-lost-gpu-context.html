@@ -1,20 +1,23 @@
-description("Test the behavior of canvas recovery after a gpu context loss");
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<script>
+description("Test the behavior of disconneced canvas recovery after a gpu context loss");
 
 var ctx;
 var lostEventHasFired = false;
 var contextLostTest;
-
 if (window.internals) {
     if (window.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
     }
     var canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 300;
     canvas.addEventListener('contextlost', contextLost);
     canvas.addEventListener('contextrestored', contextRestored);
     ctx = canvas.getContext('2d');
-    document.body.appendChild(ctx.canvas);
 
     ctx.fillRect(0, 0, 1, 1);
     // setTimeout creates a frame barrier that locks the canvas into gpu
@@ -24,13 +27,7 @@ if (window.internals) {
         // because a rendering mode was fixed.
         verifyContextLost(false);
 
-        internals.loseSharedGraphicsContext3D();
-        // for the canvas to realize its Graphics context was lost we must try to
-        // use the contents of the canvas -- that is, we must either try to present
-        // the canvas or read from it (e.g. by calling getImageData)
-        ctx.fillRect(0, 0, 1, 1);
-        shouldBeFalse('ctx.isContextLost()');
-        var imageData = ctx.getImageData(0, 0, 1, 1);
+        internals.forceLoseCanvasContext(canvas, "2d");
         if (!ctx.isContextLost()) {
             debug('<span>Aborting test: Graphics context loss did not destroy canvas contents. This is expected if canvas is not accelerated.</span>');
             if (window.testRunner) {
@@ -43,7 +40,6 @@ if (window.internals) {
 } else {
     testFailed('This test requires window.internals.');
 }
-
 
 function verifyContextLost(shouldBeLost) {
     // Verify context loss experimentally as well as isContextLost()
@@ -80,3 +76,7 @@ function contextRestored() {
         testRunner.notifyDone();
     }
 }
+
+</script>
+</body>
+</html>

@@ -164,9 +164,6 @@ virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/mouse-scrolling-on
 # Android doesn't support plugins
 virtual/android/fullscreen/rendering/backdrop-object.html [ Skip ]
 
-# We only run it through the virtual gpu test suite.
-fast/canvas/canvas-lost-gpu-context.html [ Skip ]
-
 # Missing Chrome Mac support, will start working when we move to harfbuzz on mac.
 [ Mac ] virtual/text-antialias/international/zerowidthjoiner.html [ Skip ]
 

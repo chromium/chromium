@@ -97,8 +97,10 @@
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -3497,6 +3499,14 @@ bool Internals::isInCanvasFontCache(Document* document,
 
 unsigned Internals::canvasFontCacheMaxFonts() {
   return CanvasFontCache::MaxFonts();
+}
+
+void Internals::forceLoseCanvasContext(HTMLCanvasElement* canvas,
+                                       const String& context_type) {
+  CanvasContextCreationAttributesCore attr;
+  CanvasRenderingContext* context =
+      canvas->GetCanvasRenderingContext(context_type, attr);
+  context->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
 }
 
 void Internals::setScrollChain(ScrollState* scroll_state,

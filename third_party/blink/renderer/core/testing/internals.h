@@ -56,6 +56,7 @@ class Element;
 class ExceptionState;
 class ExecutionContext;
 class GCObservation;
+class HTMLCanvasElement;
 class HTMLIFrameElement;
 class HTMLInputElement;
 class HTMLMediaElement;
@@ -509,6 +510,8 @@ class Internals final : public ScriptWrappable {
 
   bool isInCanvasFontCache(Document*, const String&);
   unsigned canvasFontCacheMaxFonts();
+  void forceLoseCanvasContext(HTMLCanvasElement* canvas,
+                              const String& context_type);
 
   void setScrollChain(ScrollState*,
                       const HeapVector<Member<Element>>& elements,
