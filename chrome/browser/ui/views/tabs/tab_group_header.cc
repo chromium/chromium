@@ -174,21 +174,21 @@ bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
-  if (dragging()) {
-    tab_strip_->EndDrag(END_DRAG_COMPLETE);
-    return;
+  if (!dragging()) {
+    if (event.IsLeftMouseButton()) {
+      bool successful_toggle =
+          tab_strip_->controller()->ToggleTabGroupCollapsedState(
+              group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
+      if (successful_toggle)
+        LogCollapseTime();
+    } else if (event.IsRightMouseButton() &&
+               !editor_bubble_tracker_.is_open()) {
+      editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
+          tab_strip_->controller()->GetBrowser(), group().value(), this));
+    }
   }
 
-  if (event.IsLeftMouseButton()) {
-    bool successful_toggle =
-        tab_strip_->controller()->ToggleTabGroupCollapsedState(
-            group().value(), ToggleTabGroupCollapsedStateOrigin::kMouse);
-    if (successful_toggle)
-      LogCollapseTime();
-  } else if (event.IsRightMouseButton() && !editor_bubble_tracker_.is_open()) {
-    editor_bubble_tracker_.Opened(TabGroupEditorBubbleView::Show(
-        tab_strip_->controller()->GetBrowser(), group().value(), this));
-  }
+  tab_strip_->EndDrag(END_DRAG_COMPLETE);
 }
 
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
