@@ -3595,6 +3595,19 @@ ci.fyi_builder(
     os = os.LINUX_DEFAULT,
 )
 
+ci.fyi_windows_builder(
+    name = "Win x64 Builder (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "re",
+    ),
+    goma_backend = None,
+    reclient_instance = "goma-rbe-chromium",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.WINDOWS_DEFAULT,
+)
+
 ci.fyi_celab_builder(
     name = "win-celab-builder-rel",
     console_view_entry = consoles.console_view_entry(
