@@ -55,7 +55,8 @@ class H264Encoder : public AcceleratedVideoEncoder {
 
     // Quantization parameter. Their ranges are 0-51.
     int initial_qp;
-    ScalingSettings scaling_settings;
+    int min_qp;
+    int max_qp;
 
     // Maxium Number of Reference frames.
     size_t max_num_ref_frames;
@@ -111,7 +112,6 @@ class H264Encoder : public AcceleratedVideoEncoder {
                    uint32_t framerate) override;
   gfx::Size GetCodedSize() const override;
   size_t GetMaxNumOfRefFrames() const override;
-  ScalingSettings GetScalingSettings() const override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
 
  private:

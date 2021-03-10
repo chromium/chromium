@@ -167,8 +167,6 @@ class AcceleratedVideoEncoder {
   // at least this many frames simultaneously for encode to make progress.
   virtual size_t GetMaxNumOfRefFrames() const = 0;
 
-  virtual ScalingSettings GetScalingSettings() const = 0;
-
   // Prepares a new |encode_job| to be executed in Accelerator and returns true
   // on success. The caller may then call Execute() on the job to run it.
   virtual bool PrepareEncodeJob(EncodeJob* encode_job) = 0;

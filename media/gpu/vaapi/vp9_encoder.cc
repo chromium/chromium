@@ -122,10 +122,8 @@ libvpx::VP9RateControlRtcConfig CreateRateControlConfig(
   libvpx::VP9RateControlRtcConfig rc_cfg{};
   rc_cfg.width = encode_size.width();
   rc_cfg.height = encode_size.height();
-  rc_cfg.max_quantizer =
-      QindexToQuantizer(encode_params.scaling_settings.max_qp);
-  rc_cfg.min_quantizer =
-      QindexToQuantizer(encode_params.scaling_settings.min_qp);
+  rc_cfg.max_quantizer = QindexToQuantizer(encode_params.max_qp);
+  rc_cfg.min_quantizer = QindexToQuantizer(encode_params.min_qp);
   // libvpx::VP9RateControlRtcConfig is kbps.
   rc_cfg.target_bandwidth = encode_params.bitrate_allocation.GetSumBps() / 1000;
   // These default values come from
@@ -163,7 +161,8 @@ VP9Encoder::EncodeParams::EncodeParams()
       cpb_window_size_ms(kCPBWindowSizeMs),
       cpb_size_bits(0),
       initial_qp(kDefaultQP),
-      scaling_settings(kMinQP, kMaxQP),
+      min_qp(kMinQP),
+      max_qp(kMaxQP),
       error_resilient_mode(false) {}
 
 void VP9Encoder::set_rate_ctrl_for_testing(
@@ -224,7 +223,7 @@ bool VP9Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
       temporal_layers_ =
           std::make_unique<VP9TemporalLayers>(num_temporal_layers);
     }
-    current_params_.scaling_settings.max_qp = kMaxQPForSoftwareRateCtrl;
+    current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
 
     // |rate_ctrl_| might be injected for tests.
     if (!rate_ctrl_) {
@@ -260,12 +259,6 @@ size_t VP9Encoder::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return kVp9NumRefFrames;
-}
-
-ScalingSettings VP9Encoder::GetScalingSettings() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return current_params_.scaling_settings;
 }
 
 bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {

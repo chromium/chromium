@@ -178,9 +178,6 @@ webrtc::VideoEncoder::EncoderInfo CopyToWebrtcEncoderInfo(
   info.has_trusted_rate_controller = enc_info.has_trusted_rate_controller;
   info.is_hardware_accelerated = enc_info.is_hardware_accelerated;
   info.supports_simulcast = enc_info.supports_simulcast;
-  // Scaling settings set min/max QP thresholds for resolution or/and frame
-  // rate adaptation. Rely on WebRTC defaults which are used in case of kOff.
-  info.scaling_settings = webrtc::VideoEncoder::ScalingSettings::kOff;
   static_assert(
       webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
       "webrtc::kMaxSpatiallayers is less than "

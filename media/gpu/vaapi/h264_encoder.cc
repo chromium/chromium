@@ -50,7 +50,8 @@ H264Encoder::EncodeParams::EncodeParams()
       cpb_window_size_ms(kCPBWindowSizeMs),
       cpb_size_bits(0),
       initial_qp(kDefaultQP),
-      scaling_settings(kMinQP, kMaxQP),
+      min_qp(kMinQP),
+      max_qp(kMaxQP),
       max_num_ref_frames(kMaxNumReferenceFrames),
       max_ref_pic_list0_size(kMaxRefIdxL0Size),
       max_ref_pic_list1_size(kMaxRefIdxL1Size) {}
@@ -153,12 +154,6 @@ size_t H264Encoder::GetMaxNumOfRefFrames() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return curr_params_.max_num_ref_frames;
-}
-
-ScalingSettings H264Encoder::GetScalingSettings() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return curr_params_.scaling_settings;
 }
 
 bool H264Encoder::PrepareEncodeJob(EncodeJob* encode_job) {

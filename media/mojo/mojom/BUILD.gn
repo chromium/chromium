@@ -416,10 +416,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.ScalingSettings"
-          cpp = "::media::ScalingSettings"
-        },
-        {
           mojom = "media.mojom.ResolutionBitrateLimit"
           cpp = "::media::ResolutionBitrateLimit"
         },
