@@ -197,7 +197,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 
 // OpenURLFromTab goes through a different code path than traditional popups
 // that use window.open(). Make sure the tracker is created in those cases.
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ControlClick_HasTracker) {
+// Disabled due to flakiness. See crbug.com/1186441.
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
@@ -242,7 +243,8 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ControlClick_HasTracker) {
       entry, kUkmNumGestureScrollBeginInteractions, 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, ShiftClick_HasTracker) {
+// Disabled due to flakiness. See crbug.com/1186441.
+IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ShiftClick_HasTracker) {
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
