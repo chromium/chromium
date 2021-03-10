@@ -572,6 +572,8 @@ static_library("browser") {
     "history/top_sites_factory.h",
     "history/web_history_service_factory.cc",
     "history/web_history_service_factory.h",
+    "history_clusters/history_clusters_tab_helper.cc",
+    "history_clusters/history_clusters_tab_helper.h",
     "icon_loader.cc",
     "icon_loader.h",
     "icon_manager.cc",

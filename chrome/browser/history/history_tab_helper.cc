@@ -10,6 +10,7 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/content/browser/history_context_helper.h"
@@ -189,7 +190,19 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
 #endif
 
+  HistoryClustersTabHelper* clusters_tab_helper =
+      HistoryClustersTabHelper::FromWebContents(web_contents());
+  if (clusters_tab_helper) {
+    clusters_tab_helper->WillUpdateHistoryForNavigation(navigation_handle,
+                                                        add_page_args);
+  }
+
   UpdateHistoryForNavigation(add_page_args);
+
+  if (clusters_tab_helper) {
+    clusters_tab_helper->DidUpdateHistoryForNavigation(navigation_handle,
+                                                       add_page_args);
+  }
 }
 
 // We update history upon the associated WebContents becoming the top level
