@@ -148,7 +148,7 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
   while (keep_running_) {
     mac::ScopedNSAutoreleasePool pool;
 
-    bool do_more_work = DoInternalWork(nullptr);
+    bool do_more_work = DoInternalWork(delegate, nullptr);
     if (!keep_running_)
       break;
 
@@ -167,7 +167,7 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
     if (do_more_work)
       continue;
 
-    DoInternalWork(&next_work_info);
+    DoInternalWork(delegate, &next_work_info);
   }
 }
 
@@ -357,7 +357,8 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
   return rv >= 0;
 }
 
-bool MessagePumpKqueue::DoInternalWork(Delegate::NextWorkInfo* next_work_info) {
+bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
+                                       Delegate::NextWorkInfo* next_work_info) {
   if (events_.size() < event_count_) {
     events_.resize(event_count_);
   }
@@ -385,10 +386,10 @@ bool MessagePumpKqueue::DoInternalWork(Delegate::NextWorkInfo* next_work_info) {
   } while (rv < 0 && errno == EINTR);
 
   PCHECK(rv >= 0) << "kevent64";
-  return ProcessEvents(rv);
+  return ProcessEvents(delegate, rv);
 }
 
-bool MessagePumpKqueue::ProcessEvents(int count) {
+bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
   bool did_work = false;
 
   for (int i = 0; i < count; ++i) {
@@ -402,7 +403,7 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
         // this event could be processed.
         continue;
       }
-      FdWatcher* delegate = controller->watcher();
+      FdWatcher* fd_watcher = controller->watcher();
 
       if (event->flags & EV_ONESHOT) {
         // If this was a one-shot event, the Controller needs to stop tracking
@@ -413,10 +414,11 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
         --event_count_;
       }
 
+      auto scoped_do_native_work = delegate->BeginNativeWork();
       if (event->filter == EVFILT_READ) {
-        delegate->OnFileCanReadWithoutBlocking(event->ident);
+        fd_watcher->OnFileCanReadWithoutBlocking(event->ident);
       } else if (event->filter == EVFILT_WRITE) {
-        delegate->OnFileCanWriteWithoutBlocking(event->ident);
+        fd_watcher->OnFileCanWriteWithoutBlocking(event->ident);
       }
     } else if (event->filter == EVFILT_MACHPORT) {
       mach_port_t port = KqueueNeedsPortSet() ? event->data : event->ident;
@@ -443,6 +445,7 @@ bool MessagePumpKqueue::ProcessEvents(int count) {
       // The controller could have been removed by some other work callout
       // before this event could be processed.
       if (controller) {
+        auto scoped_do_native_work = delegate->BeginNativeWork();
         controller->watcher()->OnMachMessageReceived(port);
       }
     } else {

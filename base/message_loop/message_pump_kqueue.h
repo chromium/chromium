@@ -129,12 +129,13 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // amount of time specified by the NextWorkInfo or until an event is
   // triggered. Returns whether any events were dispatched, with the events
   // stored in |events_|.
-  bool DoInternalWork(Delegate::NextWorkInfo* next_work_info);
+  bool DoInternalWork(Delegate* delegate,
+                      Delegate::NextWorkInfo* next_work_info);
 
   // Called by DoInternalWork() to dispatch the user events stored in |events_|
   // that were triggered. |count| is the number of events to process. Returns
   // true if work was done, or false if no work was done.
-  bool ProcessEvents(int count);
+  bool ProcessEvents(Delegate* delegate, int count);
 
   // Receive right to which an empty Mach message is sent to wake up the pump
   // in response to ScheduleWork().
