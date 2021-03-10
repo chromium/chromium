@@ -1114,6 +1114,13 @@
           如果未设置此政策，则“插入符号突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="2509919237512982967">在 M84 之前的版本中使用旧版表单控件。</translation>
 <translation id="2515699738406900920">在 Chrome 启动时是否显示个人资料选择器</translation>
+<translation id="2515914624025258624">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式。
+
+      与 BrowserAddPersonEnabled 和 BrowserGuestModeEnabled 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建辅助个人资料，也无法使用访客模式。
+
+      如果此政策设为 true，用户将能够创建辅助个人资料以及使用访客模式。
+
+      请注意，如果此政策设为 true 但 BrowserAddPersonEnabled 设为 false，用户将无法创建辅助个人资料。同理，如果此政策设为 true 但 BrowserGuestModeEnabled 设为 false，用户将无法使用访客模式。</translation>
 <translation id="2517466659416174529">允许系统冻结后台标签页</translation>
 <translation id="2518231489509538392">允许播放视频</translation>
 <translation id="2521581787935130926">在书签栏中显示应用快捷方式</translation>
@@ -3178,6 +3185,7 @@
 
           如果此政策已停用，系统会强制停用该功能。
           </translation>
+<translation id="5432043531153963184">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次版本号即可访问开发者选项。</translation>
 <translation id="5445596354079213552">仅当设备的自动更新期限已过且不符合允许使用的最低 <ph name="PRODUCT_OS_NAME" />版本（通过 <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> 政策设置）的要求时，此政策才有效。
 
@@ -3667,6 +3675,7 @@
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
+<translation id="6135895880862759946">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建辅助个人资料以及使用访客模式</translation>
 <translation id="6138636318340561140">实时查看网址的安全浏览状态</translation>
 <translation id="6141402445226505817">一律使用粗略式时区检测方式</translation>
 <translation id="6144046700495610112">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入自动填充表单数据。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何自动填充表单数据。
@@ -5037,6 +5046,12 @@
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
+<translation id="7940359358774136765">通过 chrome://password-change 启用一个页面，以便 SAML 用户能够在会话期间更改其 SAML 密码，从而确保 SAML 密码和设备屏幕锁定密码保持同步。
+
+      此政策还可在 SAML 密码即将到期时向 SAML 用户显示通知以示警告，以便他们能够通过在会话期间更改密码来立即采取应对措施。
+      但是，除非 SAML 身份提供商在 SAML 登录流程中将密码到期信息发送给设备，否则系统不会显示此类通知。
+
+      如果此政策已停用或未设置，用户将无法在 chrome://password-change 上更改 SAML 密码，而且当 SAML 密码即将到期时，系统将不会显示任何通知。</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
 <translation id="7952007677054834789">在 <ph name="PRODUCT_NAME" /> 中配置启动时加载的页面、默认主页和默认新标签页，并禁止用户更改它们。
