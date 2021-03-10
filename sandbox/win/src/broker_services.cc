@@ -139,6 +139,9 @@ ResultCode BrokerServicesBase::Init() {
 
   no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
 
+  // The thread pool is shared by all the targets.
+  thread_pool_ = std::make_unique<Win2kThreadPool>();
+
 #if defined(ARCH_CPU_32_BITS)
   // Conserve address space in 32-bit Chrome. This thread uses a small and
   // consistent amount and doesn't need the default of 1.5 MiB.
@@ -481,11 +484,6 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   if (!startup_info->BuildStartupInformation())
     return SBOX_ERROR_PROC_THREAD_ATTRIBUTES;
-
-  // Construct the thread pool here in case it is expensive.
-  // The thread pool is shared by all the targets
-  if (!thread_pool_)
-    thread_pool_ = std::make_unique<Win2kThreadPool>();
 
   // Create the TargetProcess object and spawn the target suspended. Note that
   // Brokerservices does not own the target object. It is owned by the Policy.
