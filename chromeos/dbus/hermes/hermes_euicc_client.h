@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
     // Set delay for interactive methods.
     virtual void SetInteractiveDelay(base::TimeDelta delay) = 0;
+
+    // Returns a valid fake activation code that can be used to install
+    // a new fake carrier profile.
+    virtual std::string GenerateFakeActivationCode() = 0;
   };
 
   // Hermes Euicc properties.

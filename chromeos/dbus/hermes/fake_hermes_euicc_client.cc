@@ -188,6 +188,11 @@ void FakeHermesEuiccClient::SetInteractiveDelay(base::TimeDelta delay) {
   interactive_delay_ = delay;
 }
 
+std::string FakeHermesEuiccClient::GenerateFakeActivationCode() {
+  return base::StringPrintf("%s-%04d", kFakeActivationCodePrefix,
+                            fake_profile_counter_++);
+}
+
 void FakeHermesEuiccClient::InstallProfileFromActivationCode(
     const dbus::ObjectPath& euicc_path,
     const std::string& activation_code,

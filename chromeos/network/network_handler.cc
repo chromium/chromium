@@ -183,6 +183,11 @@ AutoConnectHandler* NetworkHandler::auto_connect_handler() {
   return auto_connect_handler_.get();
 }
 
+CellularESimConnectionHandler*
+NetworkHandler::cellular_esim_connection_handler() {
+  return cellular_esim_connection_handler_.get();
+}
+
 CellularESimProfileHandler* NetworkHandler::cellular_esim_profile_handler() {
   return cellular_esim_profile_handler_.get();
 }

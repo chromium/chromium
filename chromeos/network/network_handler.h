@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // explicit so that classes can be constructed explicitly in tests without
   // NetworkHandler.
   AutoConnectHandler* auto_connect_handler();
+  CellularESimConnectionHandler* cellular_esim_connection_handler();
   CellularESimProfileHandler* cellular_esim_profile_handler();
   CellularESimUninstallHandler* cellular_esim_uninstall_handler();
   CellularInhibitor* cellular_inhibitor();

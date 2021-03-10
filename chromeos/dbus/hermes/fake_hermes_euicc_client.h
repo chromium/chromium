@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
                          bool service_only) override;
   void QueueHermesErrorStatus(HermesResponseStatus status) override;
   void SetInteractiveDelay(base::TimeDelta delay) override;
+  std::string GenerateFakeActivationCode() override;
 
   // HermesEuiccClient:
   void InstallProfileFromActivationCode(

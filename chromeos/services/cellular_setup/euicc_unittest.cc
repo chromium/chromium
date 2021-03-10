@@ -4,11 +4,15 @@
 
 #include <utility>
 
+#include "base/run_loop.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/services/cellular_setup/esim_test_base.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 namespace cellular_setup {
@@ -17,31 +21,6 @@ namespace {
 
 using InstallResultPair = std::pair<mojom::ProfileInstallResult,
                                     mojo::PendingRemote<mojom::ESimProfile>>;
-
-InstallResultPair InstallProfileFromActivationCode(
-    const mojo::Remote<mojom::Euicc>& euicc,
-    const std::string& activation_code,
-    const std::string& confirmation_code) {
-  mojom::ProfileInstallResult install_result;
-  mojo::PendingRemote<mojom::ESimProfile> esim_profile;
-
-  base::RunLoop run_loop;
-  euicc->InstallProfileFromActivationCode(
-      activation_code, confirmation_code,
-      base::BindOnce(
-          [](mojom::ProfileInstallResult* out_install_result,
-             mojo::PendingRemote<mojom::ESimProfile>* out_esim_profile,
-             base::OnceClosure quit_closure,
-             mojom::ProfileInstallResult install_result,
-             mojo::PendingRemote<mojom::ESimProfile> esim_profile) {
-            *out_install_result = install_result;
-            *out_esim_profile = std::move(esim_profile);
-            std::move(quit_closure).Run();
-          },
-          &install_result, &esim_profile, run_loop.QuitClosure()));
-  run_loop.Run();
-  return std::make_pair(install_result, std::move(esim_profile));
-}
 
 mojom::ESimOperationResult RequestPendingProfiles(
     mojo::Remote<mojom::Euicc>& euicc) {
@@ -69,6 +48,50 @@ class EuiccTest : public ESimTestBase {
   void SetUp() override {
     ESimTestBase::SetUp();
     SetupEuicc();
+  }
+
+  InstallResultPair InstallProfileFromActivationCode(
+      const mojo::Remote<mojom::Euicc>& euicc,
+      const std::string& activation_code,
+      const std::string& confirmation_code,
+      bool wait_for_connect,
+      bool fail_connect) {
+    mojom::ProfileInstallResult install_result;
+    mojo::PendingRemote<mojom::ESimProfile> esim_profile;
+
+    base::RunLoop run_loop;
+    euicc->InstallProfileFromActivationCode(
+        activation_code, confirmation_code,
+        base::BindOnce(
+            [](mojom::ProfileInstallResult* out_install_result,
+               mojo::PendingRemote<mojom::ESimProfile>* out_esim_profile,
+               base::OnceClosure quit_closure,
+               mojom::ProfileInstallResult install_result,
+               mojo::PendingRemote<mojom::ESimProfile> esim_profile) {
+              *out_install_result = install_result;
+              *out_esim_profile = std::move(esim_profile);
+              std::move(quit_closure).Run();
+            },
+            &install_result, &esim_profile, run_loop.QuitClosure()));
+
+    if (wait_for_connect) {
+      base::RunLoop().RunUntilIdle();
+      EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
+      if (fail_connect) {
+        network_connection_handler()
+            ->connect_calls()
+            .back()
+            .InvokeErrorCallback("fake_error_name", /*error_data=*/nullptr);
+      } else {
+        network_connection_handler()
+            ->connect_calls()
+            .back()
+            .InvokeSuccessCallback();
+      }
+    }
+
+    run_loop.Run();
+    return std::make_pair(install_result, std::move(esim_profile));
   }
 };
 
@@ -110,22 +133,49 @@ TEST_F(EuiccTest, InstallProfileFromActivationCode) {
   // Verify that install errors return error code properly.
   euicc_test->QueueHermesErrorStatus(
       HermesResponseStatus::kErrorInvalidActivationCode);
-  InstallResultPair result_pair =
-      InstallProfileFromActivationCode(euicc, "", "");
+  InstallResultPair result_pair = InstallProfileFromActivationCode(
+      euicc, /*activation_code=*/std::string(),
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
+      /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kErrorInvalidActivationCode,
             result_pair.first);
   EXPECT_FALSE(result_pair.second.is_valid());
 
-  // Verify that installing a profile returns proper status code
-  // and profile object.
+  // Verify that connect failures are handled properly.
+  result_pair = InstallProfileFromActivationCode(
+      euicc, euicc_test->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
+      /*fail_connect=*/true);
+  EXPECT_EQ(mojom::ProfileInstallResult::kFailure, result_pair.first);
+  ASSERT_FALSE(result_pair.second.is_valid());
+
+  // Verify that install succeeds when valid activation code is passed.
+  result_pair = InstallProfileFromActivationCode(
+      euicc, euicc_test->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
+      /*fail_connect=*/false);
+  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
+  ASSERT_TRUE(result_pair.second.is_valid());
+}
+
+TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
+  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
+  ASSERT_TRUE(euicc.is_bound());
+
+  HermesEuiccClient::TestInterface* euicc_test =
+      HermesEuiccClient::Get()->GetTestInterface();
+  // Verify that installing a pending profile with it's activation code returns
+  // proper status code and profile object.
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
       dbus::ObjectPath(kTestEuiccPath), hermes::profile::State::kPending, "",
       /*service_only=*/false);
   base::RunLoop().RunUntilIdle();
   HermesProfileClient::Properties* dbus_properties =
       HermesProfileClient::Get()->GetProperties(profile_path);
-  result_pair = InstallProfileFromActivationCode(
-      euicc, dbus_properties->activation_code().value(), "");
+  InstallResultPair result_pair = InstallProfileFromActivationCode(
+      euicc, dbus_properties->activation_code().value(),
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
+      /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
   ASSERT_TRUE(result_pair.second.is_valid());
 
