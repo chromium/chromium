@@ -99,6 +99,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
+    expires_after="2021-09-24">
+  <owner>dmblack@google.com</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records a failure to launch a holding space item of a specific type at the
+    moment of failure.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
     expires_after="2021-09-24">
   <owner>dmblack@google.com</owner>

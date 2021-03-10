@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -100,6 +99,10 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
         "HoldingSpace.Item.Count." + ItemTypeToString(type),
         counts_by_type[type]);
   }
+}
+
+void RecordItemFailureToLaunch(HoldingSpaceItem::Type type) {
+  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch", type);
 }
 
 void RecordTimeFromFirstAvailabilityToFirstAdd(base::TimeDelta time_delta) {
