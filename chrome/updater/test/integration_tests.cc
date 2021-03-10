@@ -635,7 +635,13 @@ TEST_P(IntegrationTest, ReportsActive) {
   Uninstall();
 }
 
-TEST_P(IntegrationTest, UnregisterUninstalledApp) {
+// TODO(https://crbug.com/1186583): Test failing frequently on Mac
+#if defined(OS_MAC)
+#define MAYBE_UnregisterUninstalledApp DISABLED_UnregisterUninstalledApp
+#else
+#define MAYBE_UnregisterUninstalledApp UnregisterUninstalledApp
+#endif
+TEST_P(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
@@ -656,7 +662,15 @@ TEST_P(IntegrationTest, UnregisterUninstalledApp) {
   Uninstall();
 }
 
-TEST_P(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
+// TODO(https://crbug.com/1186583): Test failing frequently on Mac
+#if defined(OS_MAC)
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+  DISABLED_UninstallUpdaterWhenAllAppsUninstalled
+#else
+#define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
+  UninstallUpdaterWhenAllAppsUninstalled
+#endif
+TEST_P(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
   RegisterTestApp();
   ExpectInstalled();
   ExpectVersionActive(UPDATER_VERSION_STRING);
