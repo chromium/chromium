@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
@@ -14,10 +15,16 @@ js_type_check("closure_compile") {
   deps = [ ":memories" ]
 }
 
-js_library("memories") {
+js_library("app") {
   deps = [
     ":browser_proxy",
+    ":memory_card",
+    ":page_thumbnail",
+    ":utils",
     "//chrome/browser/ui/webui/memories:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//url/mojom:url_mojom_origin_webui_js",
   ]
 }
 
@@ -28,9 +35,47 @@ js_library("browser_proxy") {
   ]
 }
 
+js_library("memories") {
+  deps = [ ":app" ]
+}
+
+js_library("memory_card") {
+  deps = [
+    "//components/memories/core:mojo_bindings_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("page_thumbnail") {
+  deps = [
+    ":utils",
+    "//components/memories/core:mojo_bindings_webui_js",
+    "//mojo/public/mojom/base:base_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//url/mojom:url_mojom_origin_webui_js",
+  ]
+}
+
+js_library("utils") {
+  deps = [ "//mojo/public/mojom/base:base_webui_js" ]
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "app.js",
+    "memory_card.js",
+    "page_thumbnail.js",
+  ]
+}
+
+group("web_components") {
+  public_deps = [ ":web_components_local" ]
+}
+
 grd_prefix = "memories"
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
@@ -40,7 +85,21 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "browser_proxy.js",
     "memories.js",
+    "utils.js",
   ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "app.js",
+    "memory_card.js",
+    "page_thumbnail.js",
+  ]
+  deps = [ ":web_components" ]
 }
 
 generate_grd("build_memories_api_mojo_grdp") {
@@ -78,8 +137,12 @@ generate_grd("build_grd") {
     ":build_memories_api_mojo_grdp",
     ":build_memories_definition_mojo_grdp",
     ":preprocess",
+    ":preprocess_gen",
   ]
-  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
 }
 
 grit("resources") {

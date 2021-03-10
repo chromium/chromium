@@ -1,0 +1,56 @@
+<style include="cr-shared-style">
+  :host {
+    --memory-card-width: 742px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    margin: 40px auto 10px;
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+    width: var(--memory-card-width);
+  }
+
+  .header {
+    align-items: center;
+    display: flex;
+  }
+
+  page-thumbnail {
+    --border-radius: 16px;
+    --max-height: 100px;
+    --max-width: 100px;
+    margin-inline-end: 25px;
+  }
+
+  .title {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title .description {
+    color: var(--google-grey-refresh-700);
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .title .text {
+    font-size: 36px;
+    line-height: 42px;
+  }
+</style>
+<div class="container">
+  <div class="header" hidden$="[[!title_]]">
+    <page-thumbnail page="[[createPageWithThumbnail_(result_.thumbnailUrl)]]"
+        hidden$="[[!result_.thumbnailUrl]]">
+    </page-thumbnail>
+    <div class="title">
+      <span class="description">$i18n{memoryTitleDescription}</span>
+      <span class="text">[[decodeMojoString16_(result_.title)]]</span>
+    </div>
+  </div>
+  <template is="dom-repeat" items="[[result_.memories]]" as="memory">
+    <memory-card memory="[[memory]]"></memory-card>
+  </template>
+</div>

@@ -1,0 +1,28 @@
+<style include="cr-shared-style">
+  :host {
+    align-items: center;
+    display: flex;
+    height: var(--max-height);
+    justify-content: center;
+    width: var(--max-width);
+  }
+
+  a {
+    position: relative;
+  }
+
+  :host(:not([is-clickable])) a {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  img {
+    border-radius: var(--border-radius, 0);
+    max-height: var(--max-height);
+    max-width: var(--max-width);
+  }
+</style>
+<a href$="[[page.url.url]]">
+  <img title="[[decodeMojoString16_(page.title)]]"
+      src$="[[thumbnailSrc_(page.thumbnailUrl)]]">
+</a>

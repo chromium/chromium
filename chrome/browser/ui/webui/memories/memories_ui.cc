@@ -5,12 +5,16 @@
 #include "chrome/browser/ui/webui/memories/memories_ui.h"
 
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/memories/memories_handler.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/memories_resources.h"
 #include "chrome/grit/memories_resources_map.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -19,7 +23,7 @@
 
 namespace {
 
-content::WebUIDataSource* CreateAndSetupWebUIDataSource() {
+content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIMemoriesHost);
 
@@ -27,6 +31,10 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource() {
       {"title", IDS_MEMORIES_PAGE_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
+
+  // TODO(crbug.com/1173908): Replace these with localized strings.
+  source->AddString("memoryTitleDescription",
+                    base::UTF8ToUTF16("Based on previous web activity"));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),
@@ -44,7 +52,7 @@ MemoriesUI::MemoriesUI(content::WebUI* web_ui)
   DCHECK(profile_);
   DCHECK(web_contents_);
 
-  auto* source = CreateAndSetupWebUIDataSource();
+  auto* source = CreateAndSetupWebUIDataSource(profile_);
   content::WebUIDataSource::Add(profile_, source);
 }
 
