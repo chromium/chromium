@@ -79,6 +79,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // from |file_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
 
+  // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
+  int32_t GetArcSessionId();
+
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:
@@ -157,6 +160,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
   // Records whether the saving process is running for a full restore file.
   std::set<base::FilePath> save_running_;
+
+  int32_t arc_session_id = 0;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

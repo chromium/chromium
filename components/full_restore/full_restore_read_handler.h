@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -77,6 +78,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   void ModifyWidgetParams(int32_t restore_window_id,
                           views::Widget::InitParams* out_params);
 
+  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
+  // apps.
+  int32_t GetArcSessionId();
+
  private:
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
@@ -100,6 +105,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // id when get the window info.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
+
+  int32_t arc_session_id =
+      full_restore::kArcSessionIdOffsetForRestoredLaunching;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

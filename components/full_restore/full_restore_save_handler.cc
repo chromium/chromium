@@ -261,6 +261,15 @@ void FullRestoreSaveHandler::RemoveApp(const base::FilePath& profile_path,
   MaybeStartSaveTimer();
 }
 
+int32_t FullRestoreSaveHandler::GetArcSessionId() {
+  if (arc_session_id >= kArcSessionIdOffsetForRestoredLaunching) {
+    LOG(WARNING) << "ARC session id is too large: " << arc_session_id;
+    arc_session_id = 0;
+  }
+
+  return ++arc_session_id;
+}
+
 void FullRestoreSaveHandler::MaybeStartSaveTimer() {
   if (!save_timer_.IsRunning() && save_running_.empty()) {
     save_timer_.Start(FROM_HERE, kSaveDelay,

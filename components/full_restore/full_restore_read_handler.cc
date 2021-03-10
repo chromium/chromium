@@ -12,7 +12,6 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/full_restore_file_handler.h"
-#include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
 #include "components/sessions/core/session_id.h"
@@ -166,6 +165,15 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     out_params->show_state =
         chromeos::ToWindowShowState(*window_info->window_state_type);
   }
+}
+
+int32_t FullRestoreReadHandler::GetArcSessionId() {
+  if (arc_session_id < kArcSessionIdOffsetForRestoredLaunching) {
+    LOG(WARNING) << "ARC session id is overflow: " << arc_session_id;
+    arc_session_id = kArcSessionIdOffsetForRestoredLaunching;
+  }
+
+  return ++arc_session_id;
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(

@@ -38,11 +38,13 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
 
   AppLaunchInfo(const std::string& app_id,
                 int32_t event_flags,
+                int32_t arc_session_id,
                 int64_t display_id);
 
   AppLaunchInfo(const std::string& app_id,
                 int32_t event_flags,
                 apps::mojom::IntentPtr intent,
+                int32_t arc_session_id,
                 int64_t display_id);
 
   AppLaunchInfo(const AppLaunchInfo&) = delete;
@@ -55,6 +57,7 @@ struct COMPONENT_EXPORT(FULL_RESTORE) AppLaunchInfo {
   base::Optional<int32_t> event_flag;
   base::Optional<int32_t> container;
   base::Optional<int32_t> disposition;
+  base::Optional<int32_t> arc_session_id;
   base::Optional<int64_t> display_id;
   base::Optional<GURL> url;
   base::Optional<std::vector<base::FilePath>> file_paths;

@@ -246,7 +246,9 @@ void AppLaunchHandler::LaunchArcApp(
   for (const auto& it : launch_list) {
     DCHECK(it.second->event_flag.has_value());
     apps::mojom::WindowInfoPtr window_info = it.second->GetAppWindowInfo();
-    window_info->window_id = it.first;
+    window_info->window_id =
+        ::full_restore::FullRestoreReadHandler::GetInstance()
+            ->GetArcSessionId();
     if (it.second->intent.has_value()) {
       proxy->LaunchAppWithIntent(app_id, it.second->event_flag.value(),
                                  std::move(it.second->intent.value()),

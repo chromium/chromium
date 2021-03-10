@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -43,6 +44,7 @@
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -366,7 +368,6 @@ arc::mojom::OpenUrlsRequestPtr ConstructOpenUrlsRequest(
 void OnContentUrlResolved(const base::FilePath& file_path,
                           const std::string& app_id,
                           int32_t event_flags,
-                          int64_t display_id,
                           apps::mojom::IntentPtr intent,
                           arc::mojom::ActivityNamePtr activity,
                           apps::mojom::WindowInfoPtr window_info,
@@ -382,6 +383,10 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   if (!arc_service_manager) {
     return;
   }
+
+  DCHECK(window_info);
+  int32_t session_id = window_info->window_id;
+  int64_t display_id = window_info->display_id;
 
   arc::mojom::FileSystemInstance* arc_file_system = ARC_GET_INSTANCE_FOR_METHOD(
       arc_service_manager->arc_bridge_service()->file_system(),
@@ -404,8 +409,28 @@ void OnContentUrlResolved(const base::FilePath& file_path,
   }
 
   ::full_restore::SaveAppLaunchInfo(
-      file_path, std::make_unique<full_restore::AppLaunchInfo>(
-                     app_id, event_flags, std::move(intent), display_id));
+      file_path,
+      std::make_unique<full_restore::AppLaunchInfo>(
+          app_id, event_flags, std::move(intent), session_id, display_id));
+}
+
+// Sets the session id for |window_info|. If the full restore feature is
+// disabled, or the session id has been set, returns |window_info|. Otherwise,
+// fetches a new ARC session id, and sets to window_id for |window_info|.
+apps::mojom::WindowInfoPtr SetSessionId(
+    apps::mojom::WindowInfoPtr window_info) {
+  if (!window_info) {
+    window_info = apps::mojom::WindowInfo::New();
+    window_info->display_id = display::kInvalidDisplayId;
+  }
+
+  if (!ash::features::IsFullRestoreEnabled() || window_info->window_id != -1) {
+    return window_info;
+  }
+
+  window_info->window_id =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  return window_info;
 }
 
 }  // namespace
@@ -582,14 +607,16 @@ void ArcApps::Launch(const std::string& app_id,
     return;
   }
 
-  int64_t display_id =
-      window_info ? window_info->display_id : display::kInvalidDisplayId;
-  arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
-                 MakeArcWindowInfo(std::move(window_info)));
+  auto new_window_info = SetSessionId(std::move(window_info));
+  int32_t session_id = new_window_info->window_id;
+  int64_t display_id = new_window_info->display_id;
 
-  full_restore::SaveAppLaunchInfo(profile_->GetPath(),
-                                  std::make_unique<full_restore::AppLaunchInfo>(
-                                      app_id, event_flags, display_id));
+  arc::LaunchApp(profile_, app_id, event_flags, user_interaction_type.value(),
+                 MakeArcWindowInfo(std::move(new_window_info)));
+
+  full_restore::SaveAppLaunchInfo(
+      profile_->GetPath(), std::make_unique<full_restore::AppLaunchInfo>(
+                               app_id, event_flags, session_id, display_id));
 }
 
 void ArcApps::LaunchAppWithIntent(const std::string& app_id,
@@ -624,16 +651,17 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       activity->activity_name = intent->activity_name.value();
     }
 
-    int64_t display_id =
-        window_info ? window_info->display_id : display::kInvalidDisplayId;
+    auto new_window_info = SetSessionId(std::move(window_info));
+    int32_t session_id = new_window_info->window_id;
+    int64_t display_id = new_window_info->display_id;
 
     if (intent->mime_type.has_value() && intent->file_urls.has_value()) {
       const auto file_urls = intent->file_urls.value();
       arc::ConvertToContentUrlsAndShare(
           profile_, apps::GetFileSystemURL(profile_, file_urls),
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
-                         event_flags, display_id, std::move(intent),
-                         std::move(activity), std::move(window_info)));
+                         event_flags, std::move(intent), std::move(activity),
+                         std::move(new_window_info)));
       return;
     }
 
@@ -656,7 +684,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     if (instance) {
       instance->HandleIntentWithWindowInfo(
           std::move(arc_intent), std::move(activity),
-          MakeArcWindowInfo(std::move(window_info)));
+          MakeArcWindowInfo(std::move(new_window_info)));
     } else {
       instance = ARC_GET_INSTANCE_FOR_METHOD(
           arc_service_manager->arc_bridge_service()->intent_helper(),
@@ -673,7 +701,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
     full_restore::SaveAppLaunchInfo(
         profile_->GetPath(),
         std::make_unique<full_restore::AppLaunchInfo>(
-            app_id, event_flags, std::move(intent_for_full_restore),
+            app_id, event_flags, std::move(intent_for_full_restore), session_id,
             display_id));
     return;
   }

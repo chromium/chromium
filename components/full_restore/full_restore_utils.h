@@ -26,6 +26,15 @@ namespace full_restore {
 struct AppLaunchInfo;
 struct WindowInfo;
 
+// For ARC session id, 1 ~ 1000000000 is used as the window id for all new app
+// launching. 1000000001 - INT_MAX is used as the session id for all restored
+// app launching read from the full restore file.
+//
+// Assuming each day the new windows launched account is 1M, the above scope is
+// enough for 3 years (1000 days). So there should be enough number to be
+// assigned for ARC session ids.
+constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
+
 // A property key to indicate the id for the window to be saved in RestoreData.
 // For web apps, browser windows or Chrome app windows, this is the session id.
 // For ARC apps, this is the task id.
