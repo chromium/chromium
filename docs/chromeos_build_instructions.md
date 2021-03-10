@@ -70,7 +70,6 @@ or running `gn args out/Default`:
     is_debug = false           # Release build, runs faster.
     dcheck_always_on = true    # Enables DCHECK despite release build.
     enable_nacl = false        # Skips native client build, compiles faster.
-    use_sysroot = false        # Build for local machine instead of sysroot.
 
     # Set the following true to create a Chrome (instead of Chromium) build.
     # This requires a src-internal checkout.
