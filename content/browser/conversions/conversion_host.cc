@@ -85,7 +85,7 @@ ConversionHost::~ConversionHost() {
 }
 
 void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
-  // Navigations with an impression set should only occur in the main frame.
+  // Impression navigations need to navigate the main frame to be valid.
   if (!navigation_handle->GetImpression() ||
       !navigation_handle->IsInMainFrame() ||
       !conversion_manager_provider_->GetManager(web_contents())) {
