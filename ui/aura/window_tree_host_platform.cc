@@ -214,13 +214,21 @@ void WindowTreeHostPlatform::OnBoundsChanged(const gfx::Rect& new_bounds) {
   float current_scale = compositor()->device_scale_factor();
   float new_scale = ui::GetScaleFactorForNativeView(window());
   gfx::Rect old_bounds = bounds_in_pixels_;
+  auto weak_ref = GetWeakPtr();
   bounds_in_pixels_ = new_bounds;
-  if (bounds_in_pixels_.origin() != old_bounds.origin())
+  if (bounds_in_pixels_.origin() != old_bounds.origin()) {
     OnHostMovedInPixels(bounds_in_pixels_.origin());
+    // Changing the bounds may destroy this.
+    if (!weak_ref)
+      return;
+  }
   if (bounds_in_pixels_.size() != old_bounds.size() ||
       current_scale != new_scale) {
     pending_size_ = gfx::Size();
     OnHostResizedInPixels(bounds_in_pixels_.size());
+    // Changing the size may destroy this.
+    if (!weak_ref)
+      return;
   }
   DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
   if (--on_bounds_changed_recursion_depth_ == 0) {
