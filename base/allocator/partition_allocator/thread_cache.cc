@@ -358,6 +358,8 @@ ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
       prev_(nullptr) {
   ThreadCacheRegistry::Instance().RegisterThreadCache(this);
 
+  memset(&stats_, 0, sizeof(stats_));
+
   for (int index = 0; index < kBucketCount; index++) {
     const auto& root_bucket = root->buckets[index];
     Bucket* tcache_bucket = &buckets_[index];
@@ -526,6 +528,13 @@ void ThreadCache::AccumulateStats(ThreadCacheStats* stats) const {
   stats->cache_fill_misses += stats_.cache_fill_misses;
 
   stats->batch_fill_count += stats_.batch_fill_count;
+
+#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+  for (size_t i = 0; i < kNumBuckets + 1; i++) {
+    stats->bucket_size_[i] = root_->buckets[i].slot_size;
+    stats->allocs_per_bucket_[i] += stats_.allocs_per_bucket_[i];
+  }
+#endif  // defined(PA_THREAD_CACHE_ALLOC_STATS)
 
   for (const Bucket& bucket : buckets_) {
     stats->bucket_total_memory +=

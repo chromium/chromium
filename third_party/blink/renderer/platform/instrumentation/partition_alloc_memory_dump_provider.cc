@@ -34,7 +34,11 @@ class PartitionStatsDumperImpl final : public base::PartitionStatsDumper {
   PartitionStatsDumperImpl(
       base::trace_event::ProcessMemoryDump* memory_dump,
       base::trace_event::MemoryDumpLevelOfDetail level_of_detail)
-      : memory_dump_(memory_dump), uid_(0), total_active_bytes_(0) {}
+      : memory_dump_(memory_dump),
+        uid_(0),
+        total_active_bytes_(0),
+        detailed_(level_of_detail !=
+                  base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {}
 
   // PartitionStatsDumper implementation.
   void PartitionDumpTotals(const char* partition_name,
@@ -49,6 +53,7 @@ class PartitionStatsDumperImpl final : public base::PartitionStatsDumper {
   base::trace_event::ProcessMemoryDump* memory_dump_;
   uint64_t uid_;
   size_t total_active_bytes_;
+  bool detailed_;
 
   DISALLOW_COPY_AND_ASSIGN(PartitionStatsDumperImpl);
 };
@@ -77,13 +82,15 @@ void PartitionStatsDumperImpl::PartitionDumpTotals(
     auto* thread_cache_dump = memory_dump_->CreateAllocatorDump(
         dump_name + "/thread_cache/main_thread");
     base::trace_event::ReportPartitionAllocThreadCacheStats(
-        thread_cache_dump, thread_cache_stats, ".MainThread");
+        memory_dump_, thread_cache_dump, thread_cache_stats, ".MainThread",
+        detailed_);
 
     const auto& all_thread_caches_stats = memory_stats->all_thread_caches_stats;
     auto* all_thread_caches_dump =
         memory_dump_->CreateAllocatorDump(dump_name + "/thread_cache");
     base::trace_event::ReportPartitionAllocThreadCacheStats(
-        all_thread_caches_dump, all_thread_caches_stats, "");
+        memory_dump_, all_thread_caches_dump, all_thread_caches_stats, "",
+        detailed_);
   }
 }
 

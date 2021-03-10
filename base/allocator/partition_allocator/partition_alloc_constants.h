@@ -10,11 +10,19 @@
 
 #include <algorithm>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "build/build_config.h"
 
 #if defined(OS_APPLE)
 #include <mach/vm_page_size.h>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
+// Too expensive for official builds, as it adds cache misses to all
+// allocations. On the other hand, we want wide metrics coverage to get
+// realistic profiles.
+#define PA_THREAD_CACHE_ALLOC_STATS
 #endif
 
 namespace base {

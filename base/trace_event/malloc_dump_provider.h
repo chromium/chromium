@@ -59,9 +59,11 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
 class MemoryAllocatorDump;
 
 BASE_EXPORT void ReportPartitionAllocThreadCacheStats(
+    ProcessMemoryDump* pmd,
     MemoryAllocatorDump* dump,
     const ThreadCacheStats& stats,
-    const std::string& metrics_suffix);
+    const std::string& metrics_suffix,
+    bool detailed);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace trace_event

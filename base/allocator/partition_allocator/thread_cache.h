@@ -350,6 +350,10 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
 
 ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
                                               size_t* slot_size) {
+#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+  stats_.allocs_per_bucket_[bucket_index]++;
+#endif
+
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
