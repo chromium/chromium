@@ -34,6 +34,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
@@ -470,6 +471,10 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (connector->IsActiveDirectoryManaged())
+    return user_manager::UserList();
+
+  // Multiprofile mode is not allowed when Lacros is enabled.
+  if (crosapi::browser_util::IsLacrosEnabled())
     return user_manager::UserList();
 
   user_manager::UserList result;
