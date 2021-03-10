@@ -6,7 +6,7 @@ import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/blink/renderer/config.gni")
 
-if (is_mac) {
+if (host_os == "mac") {
   import("//build/config/mac/mac_sdk.gni")
 }
 
