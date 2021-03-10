@@ -25,6 +25,7 @@ LibassistantService::LibassistantService(
           &speech_recognition_observers_,
           conversation_controller_.conversation_observers(),
           &audio_input_controller_),
+      device_settings_controller_(),
       display_controller_(&speech_recognition_observers_),
       media_controller_(),
       settings_controller_(),
@@ -34,6 +35,8 @@ LibassistantService::LibassistantService(
       &conversation_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(
       &conversation_state_listener_);
+  service_controller_.AddAndFireAssistantManagerObserver(
+      &device_settings_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(&display_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(&media_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(
@@ -41,6 +44,7 @@ LibassistantService::LibassistantService(
   service_controller_.AddAndFireAssistantManagerObserver(&settings_controller_);
   service_controller_.AddAndFireAssistantManagerObserver(&timer_controller_);
 
+  conversation_controller_.AddActionObserver(&device_settings_controller_);
   platform_api_.SetAudioInputProvider(
       &audio_input_controller_.audio_input_provider());
 }
@@ -72,6 +76,7 @@ void LibassistantService::Bind(
   audio_input_controller_.Bind(std::move(audio_input_controller),
                                platform_delegate_.get());
   conversation_controller_.Bind(std::move(conversation_controller));
+  device_settings_controller_.Bind(std::move(device_settings_delegate));
   display_controller_.Bind(std::move(display_controller));
   media_controller_.Bind(std::move(media_controller),
                          std::move(media_delegate));

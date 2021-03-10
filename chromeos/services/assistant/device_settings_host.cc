@@ -45,27 +45,37 @@ void DeviceSettingsHost::GetScreenBrightnessLevel(
 }
 
 void DeviceSettingsHost::SetBluetoothEnabled(bool enabled) {
+  has_setting_changed_ = true;
   device_actions().SetBluetoothEnabled(enabled);
 }
 
 void DeviceSettingsHost::SetDoNotDisturbEnabled(bool enabled) {
+  has_setting_changed_ = true;
   assistant_notification_controller().SetQuietMode(enabled);
 }
 
 void DeviceSettingsHost::SetNightLightEnabled(bool enabled) {
+  has_setting_changed_ = true;
   device_actions().SetNightLightEnabled(enabled);
 }
 
 void DeviceSettingsHost::SetScreenBrightnessLevel(double level, bool gradual) {
+  has_setting_changed_ = true;
   device_actions().SetScreenBrightnessLevel(level, gradual);
 }
 
 void DeviceSettingsHost::SetSwitchAccessEnabled(bool enabled) {
+  has_setting_changed_ = true;
   device_actions().SetSwitchAccessEnabled(enabled);
 }
 
 void DeviceSettingsHost::SetWifiEnabled(bool enabled) {
+  has_setting_changed_ = true;
   device_actions().SetWifiEnabled(enabled);
+}
+
+void DeviceSettingsHost::reset_has_setting_changed() {
+  has_setting_changed_ = false;
 }
 
 DeviceActions& DeviceSettingsHost::device_actions() {

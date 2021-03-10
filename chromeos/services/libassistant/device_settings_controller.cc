@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/assistant_device_settings_delegate.h"
+#include "chromeos/services/libassistant/device_settings_controller.h"
 
 #include <algorithm>
 #include <memory>
@@ -13,6 +13,7 @@
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/google3/assistant/api/client_op/device_args.pb.h"
 #include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
+#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 
 namespace client_op = ::assistant::api::client_op;
 
@@ -20,7 +21,18 @@ using chromeos::libassistant::mojom::DeviceSettingsDelegate;
 using chromeos::libassistant::mojom::GetBrightnessResultPtr;
 
 namespace chromeos {
-namespace assistant {
+namespace libassistant {
+
+namespace {
+// A macro which ensures we are running on the main thread.
+#define ENSURE_MOJOM_THREAD(method, ...)                                    \
+  if (!mojom_task_runner_->RunsTasksInCurrentSequence()) {                  \
+    mojom_task_runner_->PostTask(                                           \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
+}  // namespace
 
 class Setting {
  public:
@@ -167,6 +179,7 @@ class BluetoothSetting : public Setting {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
+      VLOG(1) << "Assistant: Setting bluetooth enabled: " << enabled;
       delegate().SetBluetoothEnabled(enabled);
     });
   }
@@ -182,6 +195,7 @@ class DoNotDisturbSetting : public Setting {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
+      VLOG(1) << "Assistant: Setting do not disturb enabled: " << enabled;
       delegate().SetDoNotDisturbEnabled(enabled);
     });
   }
@@ -197,6 +211,7 @@ class SwitchAccessSetting : public Setting {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
+      VLOG(1) << "Assistant: Setting switch access enabled: " << enabled;
       delegate().SetSwitchAccessEnabled(enabled);
     });
   }
@@ -210,6 +225,7 @@ class NightLightSetting : public Setting {
 
   void Modify(const client_op::ModifySettingArgs& request) override {
     HandleOnOffChange(request, [&](bool enabled) {
+      VLOG(1) << "Assistant: Setting night light enabled: " << enabled;
       delegate().SetNightLightEnabled(enabled);
     });
   }
@@ -236,6 +252,8 @@ class BrightnessSetting : public Setting {
           HandleSliderChange(
               request,
               [&this_](double new_value) {
+                VLOG(1) << "Assistant: Setting brightness to " << new_value
+                        << " percent";
                 this_->delegate().SetScreenBrightnessLevel(new_value, true);
               },
               [current_value = result->level]() { return current_value; });
@@ -249,28 +267,26 @@ class BrightnessSetting : public Setting {
 
 }  // namespace
 
-AssistantDeviceSettingsDelegate::AssistantDeviceSettingsDelegate(
-    DeviceSettingsDelegate* delegate) {
-  AddSetting(std::make_unique<WifiSetting>(delegate));
-  AddSetting(std::make_unique<BluetoothSetting>(delegate));
-  AddSetting(std::make_unique<NightLightSetting>(delegate));
-  AddSetting(std::make_unique<DoNotDisturbSetting>(delegate));
-  AddSetting(std::make_unique<BrightnessSetting>(delegate));
-  AddSetting(std::make_unique<SwitchAccessSetting>(delegate));
+DeviceSettingsController::DeviceSettingsController()
+    : mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+DeviceSettingsController::~DeviceSettingsController() = default;
+
+void DeviceSettingsController::Bind(
+    mojo::PendingRemote<mojom::DeviceSettingsDelegate> remote) {
+  remote_.Bind(std::move(remote));
+
+  AddSetting(std::make_unique<WifiSetting>(remote_.get()));
+  AddSetting(std::make_unique<BluetoothSetting>(remote_.get()));
+  AddSetting(std::make_unique<NightLightSetting>(remote_.get()));
+  AddSetting(std::make_unique<DoNotDisturbSetting>(remote_.get()));
+  AddSetting(std::make_unique<BrightnessSetting>(remote_.get()));
+  AddSetting(std::make_unique<SwitchAccessSetting>(remote_.get()));
 }
 
-AssistantDeviceSettingsDelegate::~AssistantDeviceSettingsDelegate() = default;
-
-bool AssistantDeviceSettingsDelegate::IsSettingSupported(
-    const std::string& setting_id) const {
-  return std::any_of(settings_.begin(), settings_.end(),
-                     [&setting_id](const auto& setting) {
-                       return setting->setting_id() == setting_id;
-                     });
-}
-
-void AssistantDeviceSettingsDelegate::HandleModifyDeviceSetting(
+void DeviceSettingsController::OnModifyDeviceSetting(
     const client_op::ModifySettingArgs& modify_setting_args) {
+  ENSURE_MOJOM_THREAD(&DeviceSettingsController::OnModifyDeviceSetting,
+                      modify_setting_args);
   VLOG(1) << "Assistant: Modifying Device Setting '"
           << modify_setting_args.setting_id() << "'";
   DCHECK(IsSettingSupported(modify_setting_args.setting_id()));
@@ -285,18 +301,58 @@ void AssistantDeviceSettingsDelegate::HandleModifyDeviceSetting(
   NOTREACHED();
 }
 
-std::vector<DeviceSetting> AssistantDeviceSettingsDelegate::GetDeviceSettings(
+void DeviceSettingsController::OnGetDeviceSettings(
+    int interaction_id,
+    const ::assistant::api::client_op::GetDeviceSettingsArgs& args) {
+  if (!assistant_manager_internal_) {
+    VLOG(1) << "Assistant: Dropping OnGetDeviceSettings call as Libassistant "
+               "has not started yet";
+    return;
+  }
+
+  std::vector<assistant::DeviceSetting> result =
+      GetSupportedDeviceSettings(args);
+
+  assistant_client::VoicelessOptions voiceless_options;
+  voiceless_options.is_user_initiated = true;
+
+  assistant_manager_internal_->SendVoicelessInteraction(
+      CreateGetDeviceSettingInteraction(interaction_id, result),
+      /*description=*/"get_settings_result", voiceless_options, [](auto) {});
+}
+
+void DeviceSettingsController::OnAssistantManagerCreated(
+    assistant_client::AssistantManager* assistant_manager,
+    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  assistant_manager_internal_ = assistant_manager_internal;
+}
+
+void DeviceSettingsController::OnDestroyingAssistantManager(
+    assistant_client::AssistantManager* assistant_manager,
+    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  assistant_manager_internal_ = nullptr;
+}
+
+std::vector<chromeos::assistant::DeviceSetting>
+DeviceSettingsController::GetSupportedDeviceSettings(
     const ::assistant::api::client_op::GetDeviceSettingsArgs& args) const {
-  std::vector<DeviceSetting> result;
+  std::vector<chromeos::assistant::DeviceSetting> result;
   for (const std::string& setting_id : args.setting_ids())
     result.emplace_back(setting_id, IsSettingSupported(setting_id));
   return result;
 }
 
-void AssistantDeviceSettingsDelegate::AddSetting(
-    std::unique_ptr<Setting> setting) {
+bool DeviceSettingsController::IsSettingSupported(
+    const std::string& setting_id) const {
+  return std::any_of(settings_.begin(), settings_.end(),
+                     [&setting_id](const auto& setting) {
+                       return setting->setting_id() == setting_id;
+                     });
+}
+
+void DeviceSettingsController::AddSetting(std::unique_ptr<Setting> setting) {
   settings_.push_back(std::move(setting));
 }
 
-}  // namespace assistant
+}  // namespace libassistant
 }  // namespace chromeos

@@ -57,7 +57,6 @@ class PendingSharedURLLoaderFactory;
 namespace chromeos {
 namespace assistant {
 
-class AssistantDeviceSettingsDelegate;
 class AssistantManagerServiceDelegate;
 class AssistantMediaSession;
 class AssistantProxy;
@@ -176,11 +175,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnShowNotification(const action::Notification& notification) override;
   void OnVerifyAndroidApp(const std::vector<AndroidAppInfo>& apps_info,
                           const InteractionInfo& interaction) override;
-  void OnModifyDeviceSetting(
-      const ::assistant::api::client_op::ModifySettingArgs& args) override;
-  void OnGetDeviceSettings(
-      int interaction_id,
-      const ::assistant::api::client_op::GetDeviceSettingsArgs& args) override;
 
   // chromeos::assistant::ConversationObserver overrides:
   void OnInteractionStarted(
@@ -231,6 +225,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // and settings modification proto along with any text/voice responses would
   // be sent back in the second round (recorded as kDeviceAction).
   void RecordQueryResponseTypeUMA();
+  bool HasReceivedQueryResponse() const;
+  AssistantQueryResponseType GetQueryResponseType() const;
 
   std::string NewPendingInteraction(AssistantInteractionType interaction_type,
                                     AssistantQuerySource source,
@@ -276,7 +272,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
-  std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
   std::unique_ptr<DeviceSettingsHost> device_settings_host_;
   std::unique_ptr<MediaHost> media_host_;
   std::unique_ptr<TimerHost> timer_host_;
@@ -290,7 +285,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   base::TimeTicks started_time_;
 
-  bool receive_modify_settings_proto_response_ = false;
   bool receive_inline_response_ = false;
   std::string receive_url_response_;
 

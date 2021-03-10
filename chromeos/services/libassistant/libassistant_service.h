@@ -11,6 +11,7 @@
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
+#include "chromeos/services/libassistant/device_settings_controller.h"
 #include "chromeos/services/libassistant/display_controller.h"
 #include "chromeos/services/libassistant/media_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
@@ -87,6 +88,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   // |service_controller_|.
   ConversationController conversation_controller_;
   ConversationStateListenerImpl conversation_state_listener_;
+  DeviceSettingsController device_settings_controller_;
   DisplayController display_controller_;
   MediaController media_controller_;
   SettingsController settings_controller_;

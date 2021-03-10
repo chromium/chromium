@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   void Bind(mojo::PendingReceiver<mojom::ConversationController> receiver);
 
+  void AddActionObserver(
+      chromeos::assistant::action::AssistantActionObserver* observer);
   void AddAuthenticationStateObserver(
       mojo::PendingRemote<
           chromeos::libassistant::mojom::AuthenticationStateObserver> observer);

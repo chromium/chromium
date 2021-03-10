@@ -40,11 +40,17 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
   void SetSwitchAccessEnabled(bool enabled) override;
   void SetWifiEnabled(bool enabled) override;
 
+  // Return if any setting has been modified.
+  bool has_setting_changed() const { return has_setting_changed_; }
+  void reset_has_setting_changed();
+
  private:
   ServiceContext& context_;
 
   DeviceActions& device_actions();
   ash::AssistantNotificationController& assistant_notification_controller();
+
+  bool has_setting_changed_ = false;
 
   mojo::Receiver<DeviceSettingsDelegate> receiver_{this};
 };

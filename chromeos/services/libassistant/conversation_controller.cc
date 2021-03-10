@@ -179,10 +179,10 @@ ConversationController::ConversationController(
           assistant::features::IsAppSupportEnabled(),
           assistant::features::IsWaitSchedulingEnabled())),
       mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-  // TODO(jeroendh): We no longer need to pass in service_controller as we
-  // already are a AssistantManagerObserver.
+  // TODO(jeroendh): We should not pass in the |ServiceController| into this
+  // constructor. Instead, we should access the |AssistantManager| through
+  // the methods offered by |AssistantManagerObserver|.
   DCHECK(service_controller_);
-
   action_module_->AddObserver(this);
 }
 
@@ -193,6 +193,11 @@ void ConversationController::Bind(
   // Cannot bind the receiver twice.
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
+}
+
+void ConversationController::AddActionObserver(
+    chromeos::assistant::action::AssistantActionObserver* observer) {
+  action_module_->AddObserver(observer);
 }
 
 void ConversationController::AddAuthenticationStateObserver(

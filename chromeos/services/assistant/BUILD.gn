@@ -76,8 +76,6 @@ component("lib") {
 
   if (enable_cros_libassistant) {
     sources += [
-      "assistant_device_settings_delegate.cc",
-      "assistant_device_settings_delegate.h",
       "assistant_manager_service_delegate_impl.cc",
       "assistant_manager_service_delegate_impl.h",
       "assistant_manager_service_impl.cc",
@@ -162,7 +160,6 @@ source_set("tests") {
 
   if (enable_cros_libassistant) {
     sources += [
-      "assistant_device_settings_delegate_unittest.cc",
       "assistant_manager_service_impl_unittest.cc",
       "test_support/fake_service_context.cc",
       "test_support/fake_service_context.h",
