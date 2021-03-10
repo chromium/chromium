@@ -607,9 +607,7 @@ Response TargetHandler::Disable() {
     for (auto* context : delegate->GetBrowserContexts()) {
       if (!dispose_on_detach_context_ids_.contains(context->UniqueId()))
         continue;
-      delegate->DisposeBrowserContext(
-          context,
-          base::BindOnce([](bool success, const std::string& error) {}));
+      delegate->DisposeBrowserContext(context, base::DoNothing());
     }
     dispose_on_detach_context_ids_.clear();
   }

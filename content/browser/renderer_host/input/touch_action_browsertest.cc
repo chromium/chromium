@@ -258,9 +258,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     std::unique_ptr<SyntheticSmoothScrollGesture> gesture1(
         new SyntheticSmoothScrollGesture(params1));
-    GetWidgetHost()->QueueSyntheticGesture(
-        std::move(gesture1),
-        base::BindOnce([](SyntheticGesture::Result result) {}));
+    GetWidgetHost()->QueueSyntheticGesture(std::move(gesture1),
+                                           base::DoNothing());
 
     JankMainThread(kLongJankTime);
     GiveItSomeTime(800);

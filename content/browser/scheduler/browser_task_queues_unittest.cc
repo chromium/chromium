@@ -261,9 +261,8 @@ TEST_F(BrowserTaskQueuesTest, HandleStillWorksWhenQueuesDestroyed) {
   queues_.reset();
 
   for (size_t i = 0; i < BrowserTaskQueues::kNumQueueTypes; ++i) {
-    EXPECT_FALSE(
-        handle_->GetBrowserTaskRunner(static_cast<QueueType>(i))
-            ->PostTask(FROM_HERE, base::BindLambdaForTesting([]() {})));
+    EXPECT_FALSE(handle_->GetBrowserTaskRunner(static_cast<QueueType>(i))
+                     ->PostTask(FROM_HERE, base::DoNothing()));
   }
 
   RunLoop run_loop;

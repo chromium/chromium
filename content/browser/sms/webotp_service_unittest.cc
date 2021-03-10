@@ -873,8 +873,7 @@ TEST_F(WebOTPServiceTest, RecordTimeoutAsOutcomeWithTimerActivation) {
     service.ActivateTimer();
   }));
 
-  service.MakeRequest(BindLambdaForTesting(
-      [](SmsStatus status, const Optional<string>& otp) {}));
+  service.MakeRequest(base::DoNothing());
 
   ukm_loop.Run();
 
@@ -893,8 +892,7 @@ TEST_F(WebOTPServiceTest, NotRecordTimeoutAsOutcomeWithoutTimerActivation) {
     loop.Quit();
   }));
 
-  service.MakeRequest(BindLambdaForTesting(
-      [](SmsStatus status, const Optional<string>& otp) {}));
+  service.MakeRequest(base::DoNothing());
 
   loop.Run();
   ExpectNoOutcomeUKM();
@@ -915,8 +913,7 @@ TEST_F(WebOTPServiceTest, RecordUserCancelledAsOutcome) {
     service.ActivateTimer();
   }));
 
-  service.MakeRequest(BindLambdaForTesting(
-      [](SmsStatus status, const Optional<string>& otp) {}));
+  service.MakeRequest(base::DoNothing());
 
   ukm_loop.Run();
 
@@ -938,8 +935,7 @@ TEST_F(WebOTPServiceTest,
     loop.Quit();
   }));
 
-  service.MakeRequest(BindLambdaForTesting(
-      [](SmsStatus status, const Optional<string>& otp) {}));
+  service.MakeRequest(base::DoNothing());
 
   loop.Run();
   ExpectNoOutcomeUKM();
@@ -961,8 +957,7 @@ TEST_F(WebOTPServiceTest, RecordUserDismissPrompt) {
     service.DismissPrompt();
   }));
 
-  service.MakeRequest(BindLambdaForTesting(
-      [](SmsStatus status, const Optional<string>& otp) {}));
+  service.MakeRequest(base::DoNothing());
 
   ukm_loop.Run();
 
@@ -1045,8 +1040,7 @@ TEST_F(WebOTPServiceTest, NotRecordUnhandledRequestWhenRequestIsHandled) {
       service.DismissPrompt();
     }));
 
-    service.MakeRequest(BindLambdaForTesting(
-        [](SmsStatus status, const Optional<string>& otp) {}));
+    service.MakeRequest(base::DoNothing());
 
     ukm_loop.Run();
   }

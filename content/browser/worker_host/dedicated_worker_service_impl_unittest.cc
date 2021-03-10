@@ -60,8 +60,7 @@ class MockDedicatedWorker
       factory_->CreateWorkerHost(
           blink::DedicatedWorkerToken(),
           browser_interface_broker_.BindNewPipeAndPassReceiver(),
-          remote_host_.BindNewPipeAndPassReceiver(),
-          base::BindOnce([](const network::CrossOriginEmbedderPolicy&) {}));
+          remote_host_.BindNewPipeAndPassReceiver(), base::DoNothing());
     }
   }
 

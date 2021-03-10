@@ -173,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   // Ensure that if an Accept header is already set, it is not overwritten.
   EXPECT_EQ("custom/type", GetFor("/xhr_with_accept_header"));
 
-  shell()->web_contents()->GetManifest(
-      base::BindOnce([](const GURL&, const blink::Manifest&) {}));
+  shell()->web_contents()->GetManifest(base::DoNothing());
 
   // ResourceType::kSubResource
   EXPECT_EQ("*/*", GetFor("/manifest"));

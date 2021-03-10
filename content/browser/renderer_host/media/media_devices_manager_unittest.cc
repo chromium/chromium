@@ -52,7 +52,7 @@ const int kNumCalls = 3;
 
 const size_t kNumAudioInputDevices = 2;
 
-const auto kIgnoreLogMessageCB = base::BindRepeating([](const std::string&) {});
+const auto kIgnoreLogMessageCB = base::DoNothing();
 
 MediaDeviceSaltAndOrigin GetSaltAndOrigin(int /* process_id */,
                                           int /* frame_id */) {

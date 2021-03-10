@@ -66,9 +66,7 @@ void SyntheticGestureController::QueueSyntheticGesture(
 
 void SyntheticGestureController::QueueSyntheticGestureCompleteImmediately(
     std::unique_ptr<SyntheticGesture> synthetic_gesture) {
-  QueueSyntheticGesture(std::move(synthetic_gesture),
-                        base::BindOnce([](SyntheticGesture::Result result) {}),
-                        true);
+  QueueSyntheticGesture(std::move(synthetic_gesture), base::DoNothing(), true);
 }
 
 void SyntheticGestureController::QueueSyntheticGesture(

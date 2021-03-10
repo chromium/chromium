@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsReceiverSetBrowserTest,
   // Verify that this message never reaches the binding for the old frame. If it
   // does, the impl will hit a DCHECK. The RunLoop terminates when the client is
   // disconnected.
-  override_client->Ping(base::BindOnce([] {}));
+  override_client->Ping(base::DoNothing());
   run_loop.Run();
 }
 

@@ -137,30 +137,28 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
 
   CheckUnauthorizedOrigin([&]() {
     host()->OpenFile(bad_vfs_file_name,
-                     /*desired_flags=*/0, base::BindOnce([](base::File) {}));
+                     /*desired_flags=*/0, base::DoNothing());
   });
 
   CheckUnauthorizedOrigin([&]() {
     host()->DeleteFile(bad_vfs_file_name,
-                       /*sync_dir=*/false, base::BindOnce([](int32_t) {}));
+                       /*sync_dir=*/false, base::DoNothing());
   });
 
   CheckUnauthorizedOrigin([&]() {
-    host()->GetFileAttributes(bad_vfs_file_name,
-                              base::BindOnce([](int32_t) {}));
+    host()->GetFileAttributes(bad_vfs_file_name, base::DoNothing());
   });
 
-  CheckUnauthorizedOrigin([&]() {
-    host()->GetFileSize(bad_vfs_file_name, base::BindOnce([](int64_t) {}));
-  });
+  CheckUnauthorizedOrigin(
+      [&]() { host()->GetFileSize(bad_vfs_file_name, base::DoNothing()); });
 
   CheckUnauthorizedOrigin([&]() {
     host()->SetFileSize(bad_vfs_file_name, /*expected_size=*/0,
-                        base::BindOnce([](bool) {}));
+                        base::DoNothing());
   });
 
   CheckUnauthorizedOrigin([&]() {
-    host()->GetSpaceAvailable(incorrect_origin, base::BindOnce([](int64_t) {}));
+    host()->GetSpaceAvailable(incorrect_origin, base::DoNothing());
   });
 
   CheckUnauthorizedOrigin([&]() {
@@ -182,9 +180,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesInvalid) {
   const url::Origin opaque_origin;
   const base::string16 db_name(base::ASCIIToUTF16("db_name"));
 
-  CheckInvalidOrigin([&]() {
-    host()->GetSpaceAvailable(opaque_origin, base::BindOnce([](int64_t) {}));
-  });
+  CheckInvalidOrigin(
+      [&]() { host()->GetSpaceAvailable(opaque_origin, base::DoNothing()); });
 
   CheckInvalidOrigin([&]() {
     host()->Opened(opaque_origin, db_name, base::ASCIIToUTF16("description"),

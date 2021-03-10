@@ -712,8 +712,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
     StoragePartition* storage_partition =
         BrowserContext::GetStoragePartition(browser_context, nullptr);
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
-        network::mojom::CookieDeletionFilter::New(),
-        base::BindOnce([](uint32_t) {}));
+        network::mojom::CookieDeletionFilter::New(), base::DoNothing());
   }
 
   ui::SelectFileDialog::SetFactory(nullptr);
