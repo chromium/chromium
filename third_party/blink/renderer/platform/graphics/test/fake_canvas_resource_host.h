@@ -63,10 +63,6 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     return ResourceProvider();
   }
 
-  SkFilterQuality FilterQuality() const override {
-    return kLow_SkFilterQuality;
-  }
-
  private:
   IntSize size_;
 };

@@ -502,10 +502,10 @@ bool OffscreenCanvas::BeginFrame() {
 
 void OffscreenCanvas::SetFilterQualityInResource(
     SkFilterQuality filter_quality) {
-  if (filter_quality_ == filter_quality)
+  if (FilterQuality() == filter_quality)
     return;
 
-  filter_quality_ = filter_quality;
+  SetFilterQuality(filter_quality);
   if (ResourceProvider())
     GetOrCreateResourceProvider()->SetFilterQuality(filter_quality);
 }

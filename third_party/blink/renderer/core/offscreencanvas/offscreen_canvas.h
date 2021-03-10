@@ -100,10 +100,6 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t ClientId() const { return client_id_; }
   uint32_t SinkId() const { return sink_id_; }
 
-  void SetFilterQuality(const SkFilterQuality& quality) {
-    filter_quality_ = quality;
-  }
-
   void AllowHighPerformancePowerPreference() {
     allow_high_performance_power_preference_ = true;
   }
@@ -130,7 +126,6 @@ class CORE_EXPORT OffscreenCanvas final
   void SetNeedsCompositingUpdate() override {}
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;
-  SkFilterQuality FilterQuality() const override { return filter_quality_; }
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {
@@ -252,8 +247,6 @@ class CORE_EXPORT OffscreenCanvas final
   bool needs_matrix_clip_restore_ = false;
   bool needs_push_frame_ = false;
   bool inside_worker_raf_ = false;
-
-  SkFilterQuality filter_quality_ = kLow_SkFilterQuality;
 
   // An offscreen canvas should only prefer the high-performance GPU if it is
   // initialized by transferring control from an HTML canvas that is not

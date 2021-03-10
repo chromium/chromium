@@ -189,10 +189,9 @@ LayoutObject* HTMLCanvasElement::CreateLayoutObject(const ComputedStyle& style,
       GetExecutionContext()->CanExecuteScripts(kNotAboutToExecuteScript)) {
     // Allocation of a layout object indicates that the canvas doesn't
     // have display:none set, so is conceptually being displayed.
-    if (context_) {
-      context_->SetIsBeingDisplayed(style.Visibility() ==
-                                    EVisibility::kVisible);
-    }
+    if (context_)
+      context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
+
     return new LayoutHTMLCanvas(this);
   }
   return HTMLElement::CreateLayoutObject(style, legacy);
@@ -368,11 +367,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
 
   LayoutObject* layout_object = GetLayoutObject();
   if (layout_object) {
-    const ComputedStyle* style = GetComputedStyle();
-    if (style) {
-      context_->SetIsBeingDisplayed(style->Visibility() ==
-                                    EVisibility::kVisible);
-    }
+    context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
 
     if (IsRenderingContext2D() && !context_->CreationAttributes().alpha) {
       // In the alpha false case, canvas is initially opaque, so we need to
@@ -740,30 +735,12 @@ static std::pair<blink::Image*, float> BrokenCanvas(float device_scale_factor) {
   return std::make_pair(broken_canvas_lo_res, 1);
 }
 
-static SkFilterQuality FilterQualityFromStyle(const ComputedStyle* style) {
-  if (style && style->ImageRendering() == EImageRendering::kPixelated)
-    return kNone_SkFilterQuality;
-  return kLow_SkFilterQuality;
-}
-
-SkFilterQuality HTMLCanvasElement::FilterQuality() const {
-  if (!isConnected())
-    return kLow_SkFilterQuality;
-
-  const ComputedStyle* style = GetComputedStyle();
-  if (!style) {
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
-    HTMLCanvasElement* non_const_this = const_cast<HTMLCanvasElement*>(this);
-    style = non_const_this->EnsureComputedStyle();
-  }
-  return FilterQualityFromStyle(style);
-}
-
 bool HTMLCanvasElement::LowLatencyEnabled() const {
   return !!frame_dispatcher_;
 }
 
-void HTMLCanvasElement::UpdateFilterQuality(SkFilterQuality filter_quality) {
+void HTMLCanvasElement::SetFilterQuality(SkFilterQuality filter_quality) {
+  CanvasResourceHost::SetFilterQuality(filter_quality);
   if (IsOffscreenCanvasRegistered())
     UpdateOffscreenCanvasFilterQuality(filter_quality);
 
@@ -826,7 +803,6 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
                                       const PhysicalRect& r) {
   context_->PaintRenderingResultsToCanvas(kFrontBuffer);
   if (HasResourceProvider()) {
-    const ComputedStyle* style = GetComputedStyle();
     // For 2D Canvas, there are two ways of render Canvas for printing:
     // display list or image snapshot. Display list allows better PDF printing
     // and we prefer this method.
@@ -840,7 +816,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     if (IsPrinting() && !Is3d() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording();
       if (canvas2d_bridge_->getLastRecord()) {
-        if (style && style->ImageRendering() != EImageRendering::kPixelated) {
+        if (FilterQuality() != kNone_SkFilterQuality) {
           context.Canvas()->save();
           context.Canvas()->translate(r.X(), r.Y());
           context.Canvas()->scale(r.Width() / Size().Width(),
@@ -867,6 +843,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       // GraphicsContext cannot handle gpu resource serialization.
       snapshot = snapshot->MakeUnaccelerated();
       DCHECK(!snapshot->IsTextureBacked());
+      const ComputedStyle* style = GetComputedStyle();
       context.DrawImage(snapshot.get(), Image::kSyncDecode,
                         FloatRect(PixelSnappedIntRect(r)), &src_rect,
                         style && style->HasFilterInducingProperty(),
@@ -1222,10 +1199,8 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
     return;
 
   canvas2d_bridge_->SetCanvasResourceHost(this);
-  bool is_being_displayed =
-      GetLayoutObject() && GetComputedStyle() &&
-      GetComputedStyle()->Visibility() == EVisibility::kVisible;
-  canvas2d_bridge_->SetIsBeingDisplayed(is_being_displayed);
+
+  canvas2d_bridge_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
 
   did_fail_to_create_resource_provider_ = false;
   UpdateMemoryUsage();
@@ -1305,9 +1280,15 @@ bool HTMLCanvasElement::StyleChangeNeedsDidDraw(
 
 void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
                                        const ComputedStyle& new_style) {
-  UpdateFilterQuality(FilterQualityFromStyle(&new_style));
-  if (context_)
+  SkFilterQuality filter_quality = kLow_SkFilterQuality;
+  if (new_style.ImageRendering() == EImageRendering::kPixelated)
+    filter_quality = kNone_SkFilterQuality;
+  SetFilterQuality(filter_quality);
+  style_is_visible_ = new_style.Visibility() == EVisibility::kVisible;
+  if (context_) {
+    context_->SetIsBeingDisplayed(GetLayoutObject() && style_is_visible_);
     context_->StyleDidChange(old_style, new_style);
+  }
   if (StyleChangeNeedsDidDraw(old_style, new_style))
     DidDraw();
 }
@@ -1315,8 +1296,9 @@ void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
 void HTMLCanvasElement::LayoutObjectDestroyed() {
   // If the canvas has no layout object then it definitely isn't being
   // displayed any more.
-  if (context_)
+  if (context_) {
     context_->SetIsBeingDisplayed(false);
+  }
 }
 
 void HTMLCanvasElement::DidMoveToNewDocument(Document& old_document) {
@@ -1716,6 +1698,12 @@ void HTMLCanvasElement::OnContentsCcLayerChanged() {
 }
 
 RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
+  // TODO(junov): Computing style here will be problematic for applying the
+  // NoAllocDirectCall IDL attribute to drawImage.
+  if (!GetComputedStyle()) {
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    const_cast<HTMLCanvasElement*>(this)->EnsureComputedStyle();
+  }
   return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
 }
 
