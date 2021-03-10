@@ -92,22 +92,22 @@ void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
 
 void CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
-  if (selector.empty())
-    generated_link_ = url_.spec();
-  else
-    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
-
   if (ShouldPreemptivelyGenerateLink()) {
     if (selector.empty()) {
       // If there is no valid selector, leave the item disabled.
       return;
     }
+    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
     proxy_->UpdateMenuItem(
         IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
     return;
   }
 
+  if (selector.empty())
+    generated_link_ = url_.spec();
+  else
+    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
   CopyLinkToClipboard();
 }
 
