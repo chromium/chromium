@@ -192,23 +192,23 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
   switch (role) {
     case ax::mojom::Role::kSplitter:
       return isFocusable;
-    case ax::mojom::Role::kTreeItem:
     case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
-    case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kDocBackLink:
     case ax::mojom::Role::kDocBiblioRef:
     case ax::mojom::Role::kDocGlossRef:
     case ax::mojom::Role::kDocNoteRef:
+    case ax::mojom::Role::kInputTime:
     case ax::mojom::Role::kLink:
+    case ax::mojom::Role::kTreeItem:
       return true;
+    case ax::mojom::Role::kAlert:
+    case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kUnknown:
     case ax::mojom::Role::kTree:
-    case ax::mojom::Role::kDialog:
-    case ax::mojom::Role::kAlert:
+    case ax::mojom::Role::kUnknown:
       return false;
     default:
       return IsControl(role);
