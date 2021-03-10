@@ -81,4 +81,5 @@ settings_migrated_imports = [
   "chrome/browser/resources/settings/settings_page/settings_animated_pages.html",
   "chrome/browser/resources/settings/settings_page/settings_section.html",
   "chrome/browser/resources/settings/settings_page/settings_subpage.html",
+  "ui/webui/resources/html/plural_string_proxy.html",
 ]

@@ -9,6 +9,7 @@
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/plural_string_proxy.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="fingerprint_browser_proxy.html">
@@ -173,7 +174,7 @@
           <div class="start">
             $i18n{lockScreenEditFingerprints}
             <div class="secondary" id="lockScreenEditFingerprintsSecondary">
-              [[getDescriptionText_(numFingerprints_)]]
+              [[numFingerprintDescription_]]
             </div>
           </div>
           <div class="separator"></div>

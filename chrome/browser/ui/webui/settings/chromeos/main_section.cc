@@ -254,6 +254,10 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
   plural_string_handler->AddLocalizedString(
       "nearbyShareContactVisibilityNumUnreachable",
       IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
+
+  plural_string_handler->AddLocalizedString(
+      "lockScreenNumberFingerprints",
+      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS);
   return plural_string_handler;
 }
 

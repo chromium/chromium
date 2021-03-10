@@ -2682,7 +2682,9 @@ Press an assigned switch to remove assignment.
     Change PIN
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NUM_FINGERPRINTS" desc="Text on the lock screen which tells users how many fingerprints they have enrolled.">
-    <ph name="NUM_FINGERPRINTS">$1<ex>1</ex></ph> fingerprints set up
+    {COUNT, plural,
+      =1 {1 fingerprint set up}
+      other {{COUNT} fingerprints set up}}
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NONE" desc="Text on the people page which notifies the user that the device will not show lock screen or prompt for auth after waking from sleep.">
     Sign in automatically

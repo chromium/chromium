@@ -223,6 +223,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/html/icon.html|getImage",
                              "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
                              "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
+                             "ui/webui/resources/html/plural_string_proxy.html|PluralStringProxyImpl",
                              "ui/webui/resources/html/polymer.html|afterNextRender,Polymer,html,flush,Templatizer,TemplateInstanceBase",
                              "ui/webui/resources/html/util.html|HTMLEscape,listenOnce",
                              "ui/webui/resources/html/web_ui_listener_behavior.html|WebUIListenerBehavior",
