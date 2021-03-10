@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +32,31 @@ TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kBorealis);
   EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+}
+
+TEST_F(BorealisFeaturesTest, CanDisableByUserPolicy) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kBorealisAllowedForUser, false);
+
+  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
+}
+
+TEST_F(BorealisFeaturesTest, CanDisableByDevicePolicy) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
+
+  profile_.ScopedCrosSettingsTestHelper()
+      ->ReplaceDeviceSettingsProviderWithStub();
+  profile_.ScopedCrosSettingsTestHelper()->InstallAttributes()->SetCloudManaged(
+      "unittest.com", "device_id");
+  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+
+  profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
+      chromeos::kBorealisAllowedForDevice, false);
+
+  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }
 
 TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
