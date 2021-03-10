@@ -18,7 +18,6 @@
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "url/gurl.h"
 
-class PrefService;
 class Profile;
 
 namespace web_app {
@@ -61,8 +60,6 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
       const AppId& app_id,
       base::OnceCallback<void(bool success)> callback,
       apps::UrlHandlers url_handlers);
-  // Returns the local state pref service of the browser process.
-  PrefService* GetLocalState();
 
   base::WeakPtrFactory<UrlHandlerManagerImpl> weak_ptr_factory_{this};
 };

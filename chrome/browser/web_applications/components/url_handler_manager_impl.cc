@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/components/url_handler_prefs.h"
 #include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/url_constants.h"
 
@@ -89,14 +90,14 @@ void UrlHandlerManagerImpl::OnDidGetAssociationsAtInstall(
     base::OnceCallback<void(bool success)> callback,
     apps::UrlHandlers url_handlers) {
   if (!url_handlers.empty()) {
-    url_handler_prefs::AddWebApp(GetLocalState(), app_id, profile()->GetPath(),
-                                 std::move(url_handlers));
+    url_handler_prefs::AddWebApp(g_browser_process->local_state(), app_id,
+                                 profile()->GetPath(), std::move(url_handlers));
   }
   std::move(callback).Run(true);
 }
 
 bool UrlHandlerManagerImpl::UnregisterUrlHandlers(const AppId& app_id) {
-  url_handler_prefs::RemoveWebApp(GetLocalState(), app_id,
+  url_handler_prefs::RemoveWebApp(g_browser_process->local_state(), app_id,
                                   profile()->GetPath());
   return true;
 }
@@ -108,7 +109,7 @@ void UrlHandlerManagerImpl::UpdateUrlHandlers(
 
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableUrlHandlers)) {
-    url_handler_prefs::RemoveWebApp(GetLocalState(), app_id,
+    url_handler_prefs::RemoveWebApp(g_browser_process->local_state(), app_id,
                                     profile()->GetPath());
     std::move(callback).Run(false);
     return;
@@ -127,13 +128,10 @@ void UrlHandlerManagerImpl::OnDidGetAssociationsAtUpdate(
     apps::UrlHandlers url_handlers) {
   // TODO(crbug/1072058): Only overwrite existing url_handlers if associations
   // changed. Allow this after user permission is implemented.
-  url_handler_prefs::UpdateWebApp(GetLocalState(), app_id, profile()->GetPath(),
+  url_handler_prefs::UpdateWebApp(g_browser_process->local_state(), app_id,
+                                  profile()->GetPath(),
                                   std::move(url_handlers));
   std::move(callback).Run(true);
-}
-
-PrefService* UrlHandlerManagerImpl::GetLocalState() {
-  return g_browser_process->local_state();
 }
 
 }  // namespace web_app
