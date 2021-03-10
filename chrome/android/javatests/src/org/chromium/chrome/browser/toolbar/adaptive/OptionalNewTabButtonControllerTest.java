@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -40,10 +41,11 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ViewUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests {@link OptionalNewTabButtonController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// @Batch(Batch.PER_CLASS)
+@Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
@@ -57,16 +59,13 @@ public class OptionalNewTabButtonControllerTest {
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, true);
+            new BlankCTATabInitialStateRule(sActivityTestRule, /*clearAllTabState=*/false);
 
     private String mTestPageUrl;
     private String mButtonDescription;
 
     @Before
     public void setUp() {
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_NEW_TAB);
-        AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-
         mTestPageUrl = sActivityTestRule.getTestServer().getURL(TEST_PAGE);
         mButtonDescription =
                 sActivityTestRule.getActivity().getResources().getString(R.string.button_new_tab);
@@ -75,17 +74,22 @@ public class OptionalNewTabButtonControllerTest {
     @Test
     @MediumTest
     public void testClick_opensNewTab() {
-        sActivityTestRule.loadUrl(mTestPageUrl);
+        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
 
         onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
                               withContentDescription(mButtonDescription)))
                 .perform(click());
 
-        assertEquals(2,
-                sActivityTestRule.getActivity()
-                        .getCurrentTabModel()
-                        .getComprehensiveModel()
-                        .getCount());
+        // Expected tabs:
+        // 1: mTestPageUrl
+        // 2: opened by the click
+        assertEquals(Integer.valueOf(2),
+                TestThreadUtils.<Integer>runOnUiThreadBlockingNoException(() -> {
+                    return sActivityTestRule.getActivity()
+                            .getCurrentTabModel()
+                            .getComprehensiveModel()
+                            .getCount();
+                }));
     }
 
     @Test
@@ -97,21 +101,28 @@ public class OptionalNewTabButtonControllerTest {
                               withContentDescription(mButtonDescription)))
                 .perform(click());
 
-        assertEquals(2,
-                sActivityTestRule.getActivity()
-                        .getCurrentTabModel()
-                        .getComprehensiveModel()
-                        .getCount());
-        assertTrue(sActivityTestRule.getActivity()
-                           .getTabModelSelectorSupplier()
-                           .get()
-                           .isIncognitoSelected());
+        // Expected tabs:
+        // 1: mTestPageUrl
+        // 2: opened by the click
+        assertEquals(Integer.valueOf(2),
+                TestThreadUtils.<Integer>runOnUiThreadBlockingNoException(() -> {
+                    return sActivityTestRule.getActivity()
+                            .getCurrentTabModel()
+                            .getComprehensiveModel()
+                            .getCount();
+                }));
+        assertTrue(TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return sActivityTestRule.getActivity()
+                    .getTabModelSelectorSupplier()
+                    .get()
+                    .isIncognitoSelected();
+        }));
     }
 
     @Test
     @MediumTest
     public void testClick_recordsUserAction() {
-        sActivityTestRule.loadUrl(mTestPageUrl);
+        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
         UserActionTester userActionTester = new UserActionTester();
 
         onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
@@ -125,7 +136,7 @@ public class OptionalNewTabButtonControllerTest {
     @Test
     @MediumTest
     public void testButton_hidesOnNTP() {
-        sActivityTestRule.loadUrl(mTestPageUrl);
+        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
         onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
                 withContentDescription(mButtonDescription)));
 
