@@ -39,6 +39,7 @@ class DelayProcessor final : public AudioDSPKernelProcessor {
  public:
   DelayProcessor(float sample_rate,
                  unsigned number_of_channels,
+                 unsigned render_quantum_frames,
                  AudioParamHandler& delay_time,
                  double max_delay_time);
   ~DelayProcessor() override;

@@ -48,13 +48,13 @@ static bool hasConstantValues(float* values, int frames_to_process) {
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
-    float cutoff_frequency[audio_utilities::kRenderQuantumFrames];
-    float q[audio_utilities::kRenderQuantumFrames];
-    float gain[audio_utilities::kRenderQuantumFrames];
-    float detune[audio_utilities::kRenderQuantumFrames];  // in Cents
+    float cutoff_frequency[RenderQuantumFrames()];
+    float q[RenderQuantumFrames()];
+    float gain[RenderQuantumFrames()];
+    float detune[RenderQuantumFrames()];  // in Cents
 
     SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                   audio_utilities::kRenderQuantumFrames);
+                   RenderQuantumFrames());
 
     if (GetBiquadProcessor()->HasSampleAccurateValues() &&
         GetBiquadProcessor()->IsAudioRate()) {

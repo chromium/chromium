@@ -39,7 +39,10 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
           kNodeTypeWaveShaper,
           node,
           sample_rate,
-          std::make_unique<WaveShaperProcessor>(sample_rate, 1)) {
+          std::make_unique<WaveShaperProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
   Initialize();
 }
 

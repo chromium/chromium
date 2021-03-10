@@ -37,8 +37,10 @@ namespace blink {
 // setNumberOfChannels() may later be called if the object is not yet in an
 // "initialized" state.
 AudioDSPKernelProcessor::AudioDSPKernelProcessor(float sample_rate,
-                                                 unsigned number_of_channels)
-    : AudioProcessor(sample_rate, number_of_channels), has_just_reset_(true) {}
+                                                 unsigned number_of_channels,
+                                                 unsigned render_quantum_frames)
+    : AudioProcessor(sample_rate, number_of_channels, render_quantum_frames),
+      has_just_reset_(true) {}
 
 void AudioDSPKernelProcessor::Initialize() {
   if (IsInitialized())

@@ -80,11 +80,12 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       buffer_read_write_index_(0),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
-      internal_input_bus_(
-          AudioBus::Create(number_of_input_channels,
-                           audio_utilities::kRenderQuantumFrames,
-                           false)) {
-  DCHECK_GE(buffer_size_, audio_utilities::kRenderQuantumFrames);
+      internal_input_bus_(AudioBus::Create(
+          number_of_input_channels,
+          node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
+          false)) {
+  DCHECK_GE(buffer_size_,
+            node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
 
   AddInput();
@@ -348,8 +349,8 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
     : AudioNode(context) {
   // Regardless of the allowed buffer sizes, we still need to process at the
   // granularity of the AudioNode.
-  if (buffer_size < audio_utilities::kRenderQuantumFrames)
-    buffer_size = audio_utilities::kRenderQuantumFrames;
+  if (buffer_size < context.GetDeferredTaskHandler().RenderQuantumFrames())
+    buffer_size = context.GetDeferredTaskHandler().RenderQuantumFrames();
 
   // Create double buffers on both the input and output sides.
   // These AudioBuffers will be directly accessed in the main thread by

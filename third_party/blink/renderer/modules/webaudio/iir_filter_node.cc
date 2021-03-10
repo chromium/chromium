@@ -28,11 +28,13 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
           kNodeTypeIIRFilter,
           node,
           sample_rate,
-          std::make_unique<IIRProcessor>(sample_rate,
-                                         1,
-                                         feedforward_coef,
-                                         feedback_coef,
-                                         is_filter_stable)) {
+          std::make_unique<IIRProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
+              feedforward_coef,
+              feedback_coef,
+              is_filter_stable)) {
   DCHECK(Context());
   DCHECK(Context()->GetExecutionContext());
 
