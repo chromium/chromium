@@ -528,8 +528,20 @@ base::Optional<SystemAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
   }
 
   const WebApp* web_app = web_registrar->GetAppById(app_id);
-  if (web_app && web_app->client_data().system_web_app_data.has_value()) {
-    return web_app->client_data().system_web_app_data->system_app_type;
+  if (!web_app || !web_app->client_data().system_web_app_data.has_value()) {
+    return base::nullopt;
+  }
+
+  // The registered system apps can change from previous runs (e.g. flipping a
+  // SWA flag). The registry isn't up-to-date until SWA finishes installing, so
+  // we could have a invalid type (for current session) during SWA install.
+  //
+  // This check ensures we return a type that is safe for other methods (avoids
+  // crashing when looking up that type).
+  SystemAppType proto_type =
+      web_app->client_data().system_web_app_data->system_app_type;
+  if (system_app_infos_.contains(proto_type)) {
+    return proto_type;
   }
 
   return base::nullopt;
@@ -548,16 +560,7 @@ std::vector<AppId> SystemWebAppManager::GetAppIds() const {
 }
 
 bool SystemWebAppManager::IsSystemWebApp(const AppId& app_id) const {
-  WebAppRegistrar* web_registrar = registrar_->AsWebAppRegistrar();
-  // some non-swa web app browser tests call this, and don't have a
-  // web registrar (they have a BookmarkAppRegistrar) so we need to be a little
-  // careful.
-  if (!web_registrar) {
-    return false;
-  }
-
-  const WebApp* web_app = web_registrar->GetAppById(app_id);
-  return web_app && web_app->client_data().system_web_app_data.has_value();
+  return GetSystemAppTypeForAppId(app_id).has_value();
 }
 
 bool SystemWebAppManager::IsSingleWindow(SystemAppType type) const {

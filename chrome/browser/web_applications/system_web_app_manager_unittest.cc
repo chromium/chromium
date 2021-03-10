@@ -995,6 +995,8 @@ TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
       &controller().sync_bridge(), &ui_manager(),
       &controller().os_integration_manager(), &web_app_policy_manager());
 
+  unsynced_system_web_app_manager->SetSystemAppsForTesting(system_apps);
+
   EXPECT_TRUE(unsynced_system_web_app_manager->IsSystemWebApp(
       GenerateAppIdFromURL(AppUrl1())));
 }
@@ -1117,6 +1119,58 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
 
   EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
+}
+
+TEST_F(SystemWebAppManagerTest,
+       HonorsRegisteredAppsDespiteOfPersistedWebAppInfo) {
+  InitEmptyRegistrar();
+
+  base::flat_map<SystemAppType, SystemAppInfo> system_apps;
+  system_apps.emplace(
+      SystemAppType::SETTINGS,
+      SystemAppInfo(kSettingsAppInternalName, AppUrl1(),
+                    base::BindRepeating(&GetApp1WebApplicationInfo)));
+  system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
+
+  base::RunLoop run_loop;
+  system_web_app_manager().on_apps_synchronized().Post(FROM_HERE,
+                                                       run_loop.QuitClosure());
+  system_web_app_manager().Start();
+  run_loop.Run();
+
+  // App should be installed.
+  auto opt_app_id =
+      system_web_app_manager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
+  ASSERT_TRUE(opt_app_id.has_value());
+  auto opt_type =
+      system_web_app_manager().GetSystemAppTypeForAppId(*opt_app_id);
+  ASSERT_TRUE(opt_type.has_value());
+  ASSERT_EQ(SystemAppType::SETTINGS, *opt_type);
+
+  // Creates a new SystemWebAppManager without the previously installed App.
+  auto unsynced_system_web_app_manager =
+      std::make_unique<TestSystemWebAppManager>(profile());
+
+  unsynced_system_web_app_manager->SetSubsystems(
+      &pending_app_manager(), &controller().registrar(),
+      &controller().sync_bridge(), &ui_manager(),
+      &controller().os_integration_manager(), &web_app_policy_manager());
+
+  // Before Apps are synchronized, WebAppRegistry should know about the App.
+  const WebApp* web_app = controller().registrar().GetAppById(*opt_app_id);
+  ASSERT_TRUE(web_app);
+  ASSERT_TRUE(web_app->client_data().system_web_app_data.has_value());
+  ASSERT_EQ(SystemAppType::SETTINGS,
+            web_app->client_data().system_web_app_data->system_app_type);
+
+  // Checks the new SystemWebAppManager reports the App being non-SWA.
+  auto opt_app_id2 = unsynced_system_web_app_manager->GetAppIdForSystemApp(
+      SystemAppType::SETTINGS);
+  EXPECT_FALSE(opt_app_id2.has_value());
+  auto opt_type2 =
+      unsynced_system_web_app_manager->GetSystemAppTypeForAppId(*opt_app_id);
+  EXPECT_FALSE(opt_type2.has_value());
+  EXPECT_FALSE(unsynced_system_web_app_manager->IsSystemWebApp(*opt_app_id));
 }
 
 }  // namespace web_app
