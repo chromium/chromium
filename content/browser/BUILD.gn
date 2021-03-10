@@ -1505,6 +1505,8 @@ source_set("browser") {
     "renderer_host/policy_container_navigation_bundle.h",
     "renderer_host/raw_clipboard_host_impl.cc",
     "renderer_host/raw_clipboard_host_impl.h",
+    "renderer_host/recently_destroyed_hosts.cc",
+    "renderer_host/recently_destroyed_hosts.h",
     "renderer_host/render_frame_host_csp_context.cc",
     "renderer_host/render_frame_host_csp_context.h",
     "renderer_host/render_frame_host_delegate.cc",
