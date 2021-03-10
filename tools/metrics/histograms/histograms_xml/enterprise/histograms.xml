@@ -907,6 +907,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.LockToSingleUserResult"
     enum="LockToSingleUserResult" expires_after="M86">
+  <obsolete>
+    Removed in M91, enough data has been gathered.
+  </obsolete>
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>

@@ -36,26 +36,6 @@ chromeos::ConciergeClient* GetConciergeClient() {
   return chromeos::DBusThreadManager::Get()->GetConciergeClient();
 }
 
-// The result of locking the device to single user.
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "LockToSingleUserResult" in src/tools/metrics/histograms/enums.xml.
-enum class LockToSingleUserResult {
-  // Successfully locked to single user.
-  kSuccess = 0,
-  // No response from DBus call.
-  kNoResponse = 1,
-  // Request failed on Chrome OS side.
-  kFailedToLock = 2,
-  // Expected device to already be locked to a single user
-  kUnexpectedLockState = 3,
-  kMaxValue = kUnexpectedLockState,
-};
-
-void RecordDBusResult(LockToSingleUserResult result) {
-  base::UmaHistogramEnumeration("Enterprise.LockToSingleUserResult", result);
-}
-
 LockToSingleUserManager* g_lock_to_single_user_manager_instance;
 }  // namespace
 
@@ -168,7 +148,6 @@ void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
   if (!reply || !reply->HasExtension(RebootOnSignOutReply::reply)) {
     LOG(ERROR) << "Signing out user: no reply from "
                   "LockToSingleUserMountUntilReboot D-Bus call.";
-    RecordDBusResult(LockToSingleUserResult::kNoResponse);
     chrome::AttemptUserExit();
     return;
   }
@@ -182,17 +161,9 @@ void LockToSingleUserManager::OnLockToSingleUserMountUntilRebootDone(
     // The device is locked to single user on TPM level. Update the cache in
     // SessionTerminationManager, so that it triggers reboot on sign out.
     chromeos::SessionTerminationManager::Get()->SetDeviceLockedToSingleUser();
-
-    if (expect_to_be_locked_ &&
-        extension.result() != RebootOnSignOutResult::PCR_ALREADY_EXTENDED) {
-      RecordDBusResult(LockToSingleUserResult::kUnexpectedLockState);
-    } else {
-      RecordDBusResult(LockToSingleUserResult::kSuccess);
-    }
   } else {
     LOG(ERROR) << "Signing out user: failed to lock device to single user: "
                << extension.result();
-    RecordDBusResult(LockToSingleUserResult::kFailedToLock);
     chrome::AttemptUserExit();
   }
 }

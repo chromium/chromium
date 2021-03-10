@@ -43316,6 +43316,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LockToSingleUserResult">
+  <obsolete>
+    Removed in M91, enough data has been gathered.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="No response"/>
   <int value="2" label="Failed to lock"/>
