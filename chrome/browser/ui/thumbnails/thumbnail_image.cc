@@ -26,6 +26,11 @@ ThumbnailImage::Subscription::~Subscription() {
   thumbnail_->HandleSubscriptionDestroyed(this);
 }
 
+ThumbnailImage::CaptureReadiness ThumbnailImage::Delegate::GetCaptureReadiness()
+    const {
+  return CaptureReadiness::kNotReady;
+}
+
 ThumbnailImage::Delegate::~Delegate() {
   if (thumbnail_)
     thumbnail_->delegate_ = nullptr;
@@ -44,6 +49,11 @@ ThumbnailImage::~ThumbnailImage() {
   ThumbnailStatsTracker::GetInstance().RemoveThumbnail(this);
   if (delegate_)
     delegate_->thumbnail_ = nullptr;
+}
+
+ThumbnailImage::CaptureReadiness ThumbnailImage::GetCaptureReadiness() const {
+  return delegate_ ? delegate_->GetCaptureReadiness()
+                   : CaptureReadiness::kNotReady;
 }
 
 std::unique_ptr<ThumbnailImage::Subscription> ThumbnailImage::Subscribe() {

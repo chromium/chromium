@@ -140,7 +140,7 @@ class ThumbnailTabHelper::TabStateTracker
   }
 
  private:
-  using PageReadiness = ThumbnailReadinessTracker::Readiness;
+  using CaptureReadinesss = ThumbnailImage::CaptureReadiness;
 
   // ThumbnailCaptureDriver::Client:
   void RequestCapture() override {
@@ -166,7 +166,7 @@ class ThumbnailTabHelper::TabStateTracker
 
     visible_ = new_visible;
     capture_driver_.UpdatePageVisibility(visible_);
-    if (!visible_ && page_readiness_ != PageReadiness::kNotReady)
+    if (!visible_ && page_readiness_ != CaptureReadinesss::kNotReady)
       thumbnail_tab_helper_->CaptureThumbnailOnTabHidden();
   }
 
@@ -185,12 +185,16 @@ class ThumbnailTabHelper::TabStateTracker
       web_contents()->GetController().LoadIfNecessary();
   }
 
-  void PageReadinessChanged(PageReadiness readiness) {
+  ThumbnailImage::CaptureReadiness GetCaptureReadiness() const override {
+    return page_readiness_;
+  }
+
+  void PageReadinessChanged(CaptureReadinesss readiness) {
     if (page_readiness_ == readiness)
       return;
     // If we transition back to a kNotReady state, clear any existing thumbnail,
     // as it will contain an old snapshot, possibly from a different domain.
-    if (readiness == PageReadiness::kNotReady)
+    if (readiness == CaptureReadinesss::kNotReady)
       thumbnail_tab_helper_->ClearData();
     page_readiness_ = readiness;
     capture_driver_.UpdatePageReadiness(readiness);
@@ -206,7 +210,7 @@ class ThumbnailTabHelper::TabStateTracker
   bool visible_ = false;
 
   // Where we are in the page lifecycle.
-  PageReadiness page_readiness_ = PageReadiness::kNotReady;
+  CaptureReadinesss page_readiness_ = CaptureReadinesss::kNotReady;
 
   // Scoped request for video capture. Ensures we always decrement the counter
   // once per increment.

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -27,6 +28,36 @@
 #endif
 
 namespace {
+
+base::TimeDelta GetPreviewImageCaptureDelay(
+    ThumbnailImage::CaptureReadiness readiness) {
+  int ms = 0;
+  switch (readiness) {
+    case ThumbnailImage::CaptureReadiness::kNotReady: {
+      static const int not_ready_delay = base::GetFieldTrialParamByFeatureAsInt(
+          features::kTabHoverCardImages,
+          features::kTabHoverCardImagesNotReadyDelayParameterName, 0);
+      ms = not_ready_delay;
+      break;
+    }
+    case ThumbnailImage::CaptureReadiness::kReadyForInitialCapture: {
+      static const int loading_delay = base::GetFieldTrialParamByFeatureAsInt(
+          features::kTabHoverCardImages,
+          features::kTabHoverCardImagesLoadingDelayParameterName, 0);
+      ms = loading_delay;
+      break;
+    }
+    case ThumbnailImage::CaptureReadiness::kReadyForFinalCapture: {
+      static const int loaded_delay = base::GetFieldTrialParamByFeatureAsInt(
+          features::kTabHoverCardImages,
+          features::kTabHoverCardImagesLoadedDelayParameterName, 0);
+      ms = loaded_delay;
+      break;
+    }
+  }
+  DCHECK_GE(ms, 0);
+  return base::TimeDelta::FromMilliseconds(ms);
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // UMA histograms that record animation smoothness for fade-in and fade-out
@@ -351,6 +382,7 @@ void TabHoverCardController::UpdateOrShowCard(
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
     UpdateCardContent(tab);
+    MaybeStartThumbnailObservation(tab, /* is_initial_show */ false);
 
     // If widget is already visible and anchored to the correct tab we should
     // not try to reset the anchor view or reshow.
@@ -389,6 +421,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial) {
 
   CreateHoverCard(target_tab_);
   UpdateCardContent(target_tab_);
+  MaybeStartThumbnailObservation(target_tab_, is_initial);
 
   if (!is_initial || !UseAnimations()) {
     hover_card_->GetWidget()->Show();
@@ -480,10 +513,11 @@ void TabHoverCardController::UpdateCardContent(Tab* tab) {
     hover_card_->SetTextFade(0.0);
 
   hover_card_->UpdateCardContent(tab);
-  MaybeStartThumbnailObservation(tab);
 }
 
-void TabHoverCardController::MaybeStartThumbnailObservation(Tab* tab) {
+void TabHoverCardController::MaybeStartThumbnailObservation(
+    Tab* tab,
+    bool is_initial_show) {
   // If the preview image feature is not enabled, |thumbnail_observer_| will be
   // null.
   if (!thumbnail_observer_)
@@ -506,6 +540,38 @@ void TabHoverCardController::MaybeStartThumbnailObservation(Tab* tab) {
 
   // We're definitely going to wait for an image at some point.
   waiting_for_preview_ = true;
+  // For the first show there has already been a delay, so it's fine to ask for
+  // the image immediately; same is true if we already have a thumbnail.
+  //  Otherwise the delay is based on the capture readiness.
+  const base::TimeDelta capture_delay =
+      is_initial_show || thumbnail->has_data()
+          ? base::TimeDelta()
+          : GetPreviewImageCaptureDelay(thumbnail->GetCaptureReadiness());
+  if (capture_delay.is_zero()) {
+    thumbnail_observer_->Observe(thumbnail);
+  } else if (!delayed_show_timer_.IsRunning()) {
+    // Stop updating the preview image unless/until we re-enable capture.
+    thumbnail_observer_->Observe(nullptr);
+    hover_card_->ClearPreviewImage();
+    delayed_show_timer_.Start(
+        FROM_HERE, capture_delay,
+        base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
+                       base::Unretained(this), tab));
+  }
+}
+
+void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
+  if (tab != target_tab_)
+    return;
+
+  DCHECK(tab);
+  DCHECK(hover_card_);
+  DCHECK(waiting_for_preview_);
+
+  auto thumbnail = tab->data().thumbnail;
+  if (!thumbnail || thumbnail == thumbnail_observer_->current_image())
+    return;
+
   thumbnail_observer_->Observe(thumbnail);
 }
 

@@ -114,6 +114,11 @@ const char kTabHoverCardsFeatureParameterName[] = "setting";
 // https://crbug.com/928954
 const base::Feature kTabHoverCardImages{"TabHoverCardImages",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
+const char kTabHoverCardImagesNotReadyDelayParameterName[] =
+    "page_not_ready_delay";
+const char kTabHoverCardImagesLoadingDelayParameterName[] =
+    "page_loading_delay";
+const char kTabHoverCardImagesLoadedDelayParameterName[] = "page_loaded_delay";
 
 // Enables tab outlines in additional situations for accessibility.
 const base::Feature kTabOutlinesInLowContrastThemes{

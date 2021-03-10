@@ -1505,6 +1505,22 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs do not shrink", kMinimumTabWidthSettingFull,
      base::size(kMinimumTabWidthSettingFull), nullptr}};
 
+const FeatureEntry::FeatureParam kTabHoverCardImagesOptimizationCaptureSpeed[] =
+    {{features::kTabHoverCardImagesNotReadyDelayParameterName, "0"},
+     {features::kTabHoverCardImagesLoadingDelayParameterName, "0"},
+     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesOptimizationResourceUsage[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "800"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "300"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "300"}};
+
+const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
+    {" capture speed", kTabHoverCardImagesOptimizationCaptureSpeed,
+     base::size(kTabHoverCardImagesOptimizationCaptureSpeed), nullptr},
+    {" resource usage", kTabHoverCardImagesOptimizationResourceUsage,
+     base::size(kTabHoverCardImagesOptimizationResourceUsage), nullptr}};
+
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};
 const FeatureEntry::FeatureParam
@@ -4828,7 +4844,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabHoverCardImages,
+                                    kTabHoverCardImagesVariations,
+                                    "TabHoverCardImages")},
 
     {"stop-in-background", flag_descriptions::kStopInBackgroundName,
      flag_descriptions::kStopInBackgroundDescription, kOsAndroid,

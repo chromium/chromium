@@ -59,7 +59,8 @@ class TabHoverCardController : public views::ViewObserver {
 
   void CreateHoverCard(Tab* tab);
   void UpdateCardContent(Tab* tab);
-  void MaybeStartThumbnailObservation(Tab* tab);
+  void MaybeStartThumbnailObservation(Tab* tab, bool is_initial_show);
+  void StartThumbnailObservation(Tab* tab);
 
   void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 

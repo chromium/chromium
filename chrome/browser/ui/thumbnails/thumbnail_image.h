@@ -28,6 +28,20 @@ class TimeTicks;
 // uncompressed image to observers.
 class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
  public:
+  // Describes the readiness of the source page for thumbnail capture.
+  enum class CaptureReadiness : int {
+    // The page is not ready for capturing.
+    kNotReady = 0,
+    // Thumbnails can be captured, but the page might change. Captured frames
+    // should not be used as the final thumbnail.
+    kReadyForInitialCapture,
+    // The page is fully loaded and a thumbnail can be captured that should be
+    // representative of the page's final state. Dynamic elements might not be
+    // in final position yet, but should settle fairly quickly (on the order of
+    // a few seconds).
+    kReadyForFinalCapture,
+  };
+
   // Smart pointer to reference-counted compressed image data; in this case
   // JPEG format.
   using CompressedThumbnailData =
@@ -93,6 +107,10 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
     // useful to track when there are no observers. Default behavior is no-op.
     virtual void ThumbnailImageBeingObservedChanged(bool is_being_observed) = 0;
 
+    // Requests the backing tab's capture readiness from the delegate.
+    // The default implementation returns kUnknown.
+    virtual CaptureReadiness GetCaptureReadiness() const;
+
    protected:
     virtual ~Delegate();
 
@@ -104,6 +122,9 @@ class ThumbnailImage : public base::RefCounted<ThumbnailImage> {
   explicit ThumbnailImage(Delegate* delegate);
 
   bool has_data() const { return data_.get(); }
+
+  // Gets the capture readiness of the backing tab.
+  CaptureReadiness GetCaptureReadiness() const;
 
   // Subscribe to thumbnail updates. See |Subscription| to set a
   // callback and conigure additional options.
