@@ -16,4 +16,11 @@ public interface CriticalPersistedTabDataObserver {
      * @param newRootId new value of new root id
      */
     default void onRootIdChanged(Tab tab, int newRootId) {}
+
+    /**
+     * Broadcast that the timestamp on a {@link Tab} has changed
+     * @param tab {@link Tab} timestamp has changed on
+     * @param timestampMillis new value of the timestamp
+     */
+    default void onTimestampChanged(Tab tab, long timestampMillis) {}
 }

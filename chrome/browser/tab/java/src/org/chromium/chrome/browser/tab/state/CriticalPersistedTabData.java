@@ -152,7 +152,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     /**
      * Acquire {@link CriticalPersistedTabData} from a {@link Tab} or create if it doesn't exist
-     * @param  corresponding {@link Tab} for which {@link CriticalPersistedTabData} is sought
+     * @param  tab corresponding {@link Tab} for which {@link CriticalPersistedTabData} is sought
      * @return acquired or created {@link CriticalPersistedTabData}
      */
     public static CriticalPersistedTabData from(Tab tab) {
@@ -528,7 +528,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     }
 
     /**
-     * set the timetsamp
+     * Set the timestamp.
      * @param timestamp the timestamp
      */
     public void setTimestampMillis(long timestamp) {
@@ -536,6 +536,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
             return;
         }
         mTimestampMillis = timestamp;
+        for (CriticalPersistedTabDataObserver observer : mObservers) {
+            observer.onTimestampChanged(mTab, timestamp);
+        }
         save();
     }
 

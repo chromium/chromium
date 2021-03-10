@@ -805,9 +805,6 @@ class TabSwitcherMediator
      *  @return whether tabs should show in MRU order
      */
     static boolean isShowingTabsInMRUOrder() {
-        // TODO(crbug.com/1076449): Support MRU mode in Instant start.
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) return false;
-
         String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
         return TextUtils.equals(feature, "twopanes");
     }
