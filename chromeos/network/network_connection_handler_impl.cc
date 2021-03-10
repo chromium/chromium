@@ -363,7 +363,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
     cellular_esim_connection_handler_->EnableProfileForConnection(
         service_path,
         base::BindOnce(&NetworkConnectionHandlerImpl::CallShillConnect,
-                       AsWeakPtr(), service_path),
+                       AsWeakPtr()),
         base::BindOnce(
             &NetworkConnectionHandlerImpl::OnEnableESimProfileFailure,
             AsWeakPtr(), service_path));

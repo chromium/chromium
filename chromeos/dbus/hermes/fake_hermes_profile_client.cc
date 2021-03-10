@@ -87,10 +87,9 @@ void FakeHermesProfileClient::EnableCarrierProfile(
 
   // Update cellular device properties to match this profile.
   UpdateCellularDevice(properties);
-  // Set all cellular services state to idle. The service associated with the
-  // carrier profile that was just enabled should be connected to with a
-  // subsequent Connect call for that service.
-  SetCellularServicesState(shill::kStateIdle);
+  // Update all cellular services to set their connection state and connectable
+  // properties. The newly enabled profile will have connectable set to true.
+  UpdateCellularServices(properties->iccid().value(), /*connectable=*/true);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -116,7 +115,8 @@ void FakeHermesProfileClient::DisableCarrierProfile(
   }
   properties->state().ReplaceValue(hermes::profile::State::kInactive);
 
-  SetCellularServicesState(shill::kStateIdle);
+  // The newly disabled profile should have connectable set to false.
+  UpdateCellularServices(properties->iccid().value(), /*connectable=*/false);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -164,8 +164,8 @@ void FakeHermesProfileClient::UpdateCellularDevice(
       kCellularDevicePath, shill::kHomeProviderProperty, home_provider, true);
 }
 
-void FakeHermesProfileClient::SetCellularServicesState(
-    const std::string& state) {
+void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
+                                                     bool connectable) {
   ShillManagerClient::TestInterface* manager_test =
       ShillManagerClient::Get()->GetTestInterface();
   ShillServiceClient::TestInterface* service_test =
@@ -175,11 +175,23 @@ void FakeHermesProfileClient::SetCellularServicesState(
   for (const base::Value& service_path : service_list.GetList()) {
     const base::Value* properties =
         service_test->GetServiceProperties(service_path.GetString());
-    const base::Value* type = properties->FindDictKey(shill::kTypeProperty);
-    if (!type || type->GetString() != shill::kTypeCellular)
+    const std::string* type = properties->FindStringKey(shill::kTypeProperty);
+    const std::string* service_iccid =
+        properties->FindStringKey(shill::kIccidProperty);
+    if (!service_iccid || !type || *type != shill::kTypeCellular)
       continue;
+
+    // All services except one with given |iccid| will have connectable set to
+    // false.
+    bool service_connectable = iccid == *service_iccid ? connectable : false;
     service_test->SetServiceProperty(service_path.GetString(),
-                                     shill::kStateProperty, base::Value(state));
+                                     shill::kConnectableProperty,
+                                     base::Value(service_connectable));
+    // Set all cellular services to idle state. A new connect call must be
+    // issued to connect to a cellular service.
+    service_test->SetServiceProperty(service_path.GetString(),
+                                     shill::kStateProperty,
+                                     base::Value(shill::kStateIdle));
   }
 }
 

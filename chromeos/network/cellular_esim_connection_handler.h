@@ -50,24 +50,49 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
   void Init(NetworkStateHandler* network_state_handler,
             CellularInhibitor* cellular_inhibitor);
 
+  // Type of success callback for enable profile operations. This callback is
+  // called when enable was successful and profile is ready for connection. The
+  // callback receives path to the network service as argument.
+  typedef base::OnceCallback<void(const std::string&)> SuccessCallback;
+
   // Enables an eSIM profile to prepare for connecting to it. If successful,
   // this operation causes the service's "connectable" property to be set to
   // true. On error, |error_callback| is invoked.
   void EnableProfileForConnection(
       const std::string& service_path,
-      base::OnceClosure success_callback,
+      SuccessCallback success_callback,
+      network_handler::ErrorCallback error_callback);
+
+  // Enables a newly installed eSIM profile with |profile_path| on EUICC with
+  // given |euicc_path| to prepare for connecting to it. |inhibit_lock| is the
+  // lock acquired during installation and will be re-used for enable operations
+  // and destroyed before |success_callback| is invoked. If successful, a new
+  // network state corresponding to this profile will have been initialized with
+  // "connectable" property to set to true. On error, |error_callback| is
+  // invoked.
+  void EnableNewProfileForConnection(
+      const dbus::ObjectPath& euicc_path,
+      const dbus::ObjectPath& profile_path,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      SuccessCallback success_callback,
       network_handler::ErrorCallback error_callback);
 
  private:
   struct ConnectionRequestMetadata {
-    ConnectionRequestMetadata(const std::string& service_path,
-                              base::OnceClosure success_callback,
-                              network_handler::ErrorCallback error_callback);
+    ConnectionRequestMetadata(
+        std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+        const base::Optional<std::string>& service_path,
+        const base::Optional<dbus::ObjectPath>& euicc_path,
+        const base::Optional<dbus::ObjectPath>& profile_path,
+        SuccessCallback success_callback,
+        network_handler::ErrorCallback error_callback);
     ~ConnectionRequestMetadata();
 
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
-    std::string service_path;
-    base::OnceClosure success_callback;
+    base::Optional<std::string> service_path;
+    base::Optional<dbus::ObjectPath> euicc_path;
+    base::Optional<dbus::ObjectPath> profile_path;
+    SuccessCallback success_callback;
     network_handler::ErrorCallback error_callback;
   };
 
@@ -84,14 +109,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
                                   const ConnectionState& step);
 
   // NetworkStateHandlerObserver:
+  void NetworkListChanged() override;
   void NetworkPropertiesUpdated(const NetworkState* network) override;
 
   void ProcessRequestQueue();
   void TransitionToConnectionState(ConnectionState state);
 
-  // If |error_name| is null, invokes the success callback. Otherwise, invokes
-  // the error callback.
-  void CompleteConnectionAttempt(const base::Optional<std::string>& error_name);
+  // If |error_name| is null and |service_path| is non null, invokes the success
+  // callback with |service_path|. Otherwise, invokes the error callback with
+  // |error_name|.
+  void CompleteConnectionAttempt(
+      const base::Optional<std::string>& error_name,
+      const base::Optional<std::string>& service_path);
 
   const NetworkState* GetNetworkStateForCurrentOperation() const;
   base::Optional<dbus::ObjectPath> GetEuiccPathForCurrentOperation() const;
@@ -102,6 +131,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void RequestInstalledProfiles();
   void OnRequestInstalledProfilesResult(HermesResponseStatus status);
+  void EnableProfile();
   void OnEnableCarrierProfileResult(HermesResponseStatus status);
 
   void UninhibitScans(

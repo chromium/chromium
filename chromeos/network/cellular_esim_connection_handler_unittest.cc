@@ -10,10 +10,12 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +27,7 @@ namespace {
 const char kTestCellularDevicePath[] = "cellular_path";
 const char kTestCellularDeviceName[] = "cellular_name";
 
+const char kTestBaseProfilePath[] = "profile_path_";
 const char kTestBaseServicePath[] = "service_path_";
 const char kTestBaseGuid[] = "guid_";
 const char kTestBaseName[] = "name_";
@@ -35,6 +38,10 @@ const char kTestBaseEid[] = "12345678901234567890123456789012";
 
 std::string CreateTestServicePath(int profile_num) {
   return base::StringPrintf("%s%d", kTestBaseServicePath, profile_num);
+}
+
+std::string CreateTestProfilePath(int profile_num) {
+  return base::StringPrintf("%s%d", kTestBaseProfilePath, profile_num);
 }
 
 std::string CreateTestGuid(int profile_num) {
@@ -72,9 +79,23 @@ class CellularESimConnectionHandlerTest : public testing::Test {
     handler_.Init(helper_.network_state_handler(), &inhibitor_);
   }
 
-  void StartOperation(int profile_num) {
+  void StartEnableProfileForConnection(int profile_num) {
     handler_.EnableProfileForConnection(
         CreateTestServicePath(profile_num),
+        base::BindOnce(&CellularESimConnectionHandlerTest::OnSuccess,
+                       base::Unretained(this)),
+        base::BindOnce(&CellularESimConnectionHandlerTest::OnFailure,
+                       base::Unretained(this)));
+  }
+
+  void StartEnableNewProfileForConnection(
+      int profile_num,
+      int euicc_num,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+    handler_.EnableNewProfileForConnection(
+        dbus::ObjectPath(CreateTestEuiccPath(profile_num)),
+        dbus::ObjectPath(CreateTestProfilePath(profile_num)),
+        std::move(inhibit_lock),
         base::BindOnce(&CellularESimConnectionHandlerTest::OnSuccess,
                        base::Unretained(this)),
         base::BindOnce(&CellularESimConnectionHandlerTest::OnFailure,
@@ -87,6 +108,13 @@ class CellularESimConnectionHandlerTest : public testing::Test {
         CreateTestName(profile_num), shill::kTypeCellular, shill::kStateIdle,
         /*visible=*/true);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void ExpectServiceConnectable(int profile_num) {
+    const NetworkState* network_state =
+        helper_.network_state_handler()->GetNetworkState(
+            CreateTestServicePath(profile_num));
+    EXPECT_TRUE(network_state->connectable());
   }
 
   void SetServiceConnectable(int profile_num) {
@@ -130,7 +158,7 @@ class CellularESimConnectionHandlerTest : public testing::Test {
 
   void AddProfile(int profile_num, int euicc_num) {
     helper_.hermes_euicc_test()->AddCarrierProfile(
-        dbus::ObjectPath(CreateTestServicePath(profile_num)),
+        dbus::ObjectPath(CreateTestProfilePath(profile_num)),
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
         CreateTestIccid(profile_num), CreateTestName(profile_num),
         "service_provider", "activation_code",
@@ -153,8 +181,22 @@ class CellularESimConnectionHandlerTest : public testing::Test {
     on_failure_callback_ = run_loop->QuitClosure();
   }
 
+  std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellular() {
+    base::RunLoop run_loop;
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
+    inhibitor_.InhibitCellularScanning(base::BindLambdaForTesting(
+        [&](std::unique_ptr<CellularInhibitor::InhibitLock> new_inhibit_lock) {
+          inhibit_lock = std::move(new_inhibit_lock);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return inhibit_lock;
+  }
+
  private:
-  void OnSuccess() { std::move(on_success_callback_).Run(); }
+  void OnSuccess(const std::string& service_only) {
+    std::move(on_success_callback_).Run();
+  }
 
   void OnFailure(const std::string& error_name,
                  std::unique_ptr<base::DictionaryValue> error_data) {
@@ -178,7 +220,7 @@ TEST_F(CellularESimConnectionHandlerTest, NoService) {
 
   base::RunLoop run_loop;
   ExpectFailure(NetworkConnectionHandler::kErrorNotFound, &run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
 }
 
@@ -189,7 +231,7 @@ TEST_F(CellularESimConnectionHandlerTest, ServiceAlreadyConnectable) {
 
   base::RunLoop run_loop;
   ExpectSuccess(&run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
 }
 
@@ -201,7 +243,7 @@ TEST_F(CellularESimConnectionHandlerTest, FailsInhibiting) {
   base::RunLoop run_loop;
   ExpectFailure(NetworkConnectionHandler::kErrorCellularInhibitFailure,
                 &run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
 }
 
@@ -211,7 +253,7 @@ TEST_F(CellularESimConnectionHandlerTest, NoRelevantEuicc) {
 
   base::RunLoop run_loop;
   ExpectFailure(NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
 }
 
@@ -225,7 +267,7 @@ TEST_F(CellularESimConnectionHandlerTest, FailsRequestingInstalledProfiles) {
 
   base::RunLoop run_loop;
   ExpectFailure(NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
 }
 
@@ -241,7 +283,7 @@ TEST_F(CellularESimConnectionHandlerTest, TimeoutWaitingForConnectable) {
 
   base::RunLoop run_loop;
   ExpectSuccess(&run_loop);
-  StartOperation(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/1);
   ExpectFailure(NetworkConnectionHandler::kErrorESimProfileIssue, &run_loop);
 
   // Let all operations run, then wait for the timeout to occur.
@@ -260,13 +302,9 @@ TEST_F(CellularESimConnectionHandlerTest, Success) {
 
   base::RunLoop run_loop;
   ExpectSuccess(&run_loop);
-  StartOperation(/*profile_num=*/1);
-
-  // Let all operations run, then set the service to be connectable.
-  base::RunLoop().RunUntilIdle();
-  SetServiceConnectable(/*profile_num=*/1);
-
+  StartEnableProfileForConnection(/*profile_num=*/1);
   run_loop.Run();
+  ExpectServiceConnectable(/*profile_num=*/1);
 }
 
 TEST_F(CellularESimConnectionHandlerTest, MultipleRequests) {
@@ -283,21 +321,37 @@ TEST_F(CellularESimConnectionHandlerTest, MultipleRequests) {
   ExpectSuccess(&run_loop1);
 
   // Start both operations.
-  StartOperation(/*profile_num=*/1);
-  StartOperation(/*profile_num=*/2);
+  StartEnableProfileForConnection(/*profile_num=*/1);
+  StartEnableProfileForConnection(/*profile_num=*/2);
 
-  // Make service 1 connectable.
-  base::RunLoop().RunUntilIdle();
-  SetServiceConnectable(/*profile_num=*/1);
-
+  // Verify that the first service becomes connectable.
   run_loop1.Run();
+  ExpectServiceConnectable(/*profile_num=*/1);
+
   base::RunLoop run_loop2;
   ExpectSuccess(&run_loop2);
 
-  // Make service 2 connectable.
-  base::RunLoop().RunUntilIdle();
-  SetServiceConnectable(/*profile_num=*/2);
+  // Verify that the second service becomes connectable.
   run_loop2.Run();
+  ExpectServiceConnectable(/*profile_num=*/2);
+}
+
+TEST_F(CellularESimConnectionHandlerTest, NewProfileTest) {
+  AddCellularDevice();
+  AddEuicc(/*euicc_num=*/1);
+  AddProfile(/*profile_num=*/1, /*euicc_num=*/1);
+
+  base::RunLoop run_loop;
+  ExpectSuccess(&run_loop);
+  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock =
+      InhibitCellular();
+  StartEnableNewProfileForConnection(/*profile_num=*/1, /*euicc_num=*/1,
+                                     std::move(inhibit_lock));
+
+  // Verify that service corresponding to new profile becomes
+  // connectable.
+  run_loop.Run();
+  ExpectServiceConnectable(/*profile_num=*/1);
 }
 
 }  // namespace chromeos

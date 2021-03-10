@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesProfileClient
 
  private:
   void UpdateCellularDevice(HermesProfileClient::Properties* properties);
-  void SetCellularServicesState(const std::string& state);
+  void UpdateCellularServices(const std::string& iccid, bool connectable);
   void CallNotifyPropertyChanged(const dbus::ObjectPath& object_path,
                                  const std::string& property_name);
   void NotifyPropertyChanged(const dbus::ObjectPath& object_path,
