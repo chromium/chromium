@@ -224,6 +224,14 @@ class TaskManagerInterface {
   virtual TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const = 0;
 
+  // Update the accumulated network stats with additional data sent/received
+  // for a route described by |process_id| and |route_id|. If the associated
+  // task cannot be found it will be attributed to the browser process task.
+  virtual void UpdateAccumulatedStatsNetworkForRoute(int process_id,
+                                                     int route_id,
+                                                     int64_t recv_bytes,
+                                                     int64_t sent_bytes) = 0;
+
   // Returns true if the resource |type| usage calculation is enabled and
   // the implementation should refresh its value (this means that at least one
   // of the observers require this value). False otherwise.

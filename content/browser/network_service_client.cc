@@ -219,6 +219,7 @@ void NetworkServiceClient::OnDataUseUpdate(
     int64_t recv_bytes,
     int64_t sent_bytes) {
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
+      network::mojom::kBrowserProcessId, MSG_ROUTING_NONE,
       network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
 }
 

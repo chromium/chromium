@@ -182,6 +182,12 @@ TaskId TestTaskManager::GetTaskIdForWebContents(
   return -1;
 }
 
+void TestTaskManager::UpdateAccumulatedStatsNetworkForRoute(
+    int process_id,
+    int route_id,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {}
+
 base::TimeDelta TestTaskManager::GetRefreshTime() {
   return GetCurrentRefreshTime();
 }

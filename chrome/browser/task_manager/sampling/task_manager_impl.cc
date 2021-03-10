@@ -53,26 +53,7 @@ namespace {
 base::LazyInstance<TaskManagerImpl>::DestructorAtExit
     lazy_task_manager_instance = LAZY_INSTANCE_INITIALIZER;
 
-int64_t CalculateNewBytesTransferred(int64_t this_refresh_bytes,
-                                     int64_t last_refresh_bytes) {
-  // Network Service could have restarted between the refresh, causing the
-  // accumulator to be cleared.
-  if (this_refresh_bytes < last_refresh_bytes)
-    return this_refresh_bytes;
-
-  return this_refresh_bytes - last_refresh_bytes;
-}
-
 }  // namespace
-
-size_t BytesTransferredKey::Hasher::operator()(
-    const BytesTransferredKey& key) const {
-  return base::HashInts(key.child_id, key.route_id);
-}
-
-bool BytesTransferredKey::operator==(const BytesTransferredKey& other) const {
-  return child_id == other.child_id && route_id == other.route_id;
-}
 
 TaskManagerImpl::TaskManagerImpl()
     : on_background_data_ready_callback_(base::BindRepeating(
@@ -466,6 +447,24 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
   return task->task_id();
 }
 
+void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
+    int process_id,
+    int route_id,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  Task* task = GetTaskByRoute(process_id, route_id);
+  if (!task) {
+    // Orphaned/unaccounted activity is credited to the Browser process.
+    task = GetTaskByRoute(content::ChildProcessHost::kInvalidUniqueID,
+                          MSG_ROUTING_NONE);
+  }
+  if (!task)
+    return;
+  task->OnNetworkBytesRead(recv_bytes);
+  task->OnNetworkBytesSent(sent_bytes);
+}
+
 void TaskManagerImpl::TaskAdded(Task* task) {
   DCHECK(task);
 
@@ -530,43 +529,6 @@ void TaskManagerImpl::TaskUnresponsive(Task* task) {
   NotifyObserversOnTaskUnresponsive(task->task_id());
 }
 
-void TaskManagerImpl::OnTotalNetworkUsages(
-    std::vector<network::mojom::NetworkUsagePtr> total_network_usages) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  BytesTransferredMap new_total_network_usages_map;
-  for (const auto& entry : total_network_usages) {
-    BytesTransferredKey process_info = {entry->process_id, entry->routing_id};
-    BytesTransferredParam total_bytes_transferred = {
-        entry->total_bytes_received, entry->total_bytes_sent};
-    new_total_network_usages_map[process_info] = total_bytes_transferred;
-
-    auto last_refresh_usage =
-        last_refresh_total_network_usages_map_[process_info];
-    BytesTransferredParam new_bytes_transferred;
-    new_bytes_transferred.byte_read_count =
-        CalculateNewBytesTransferred(total_bytes_transferred.byte_read_count,
-                                     last_refresh_usage.byte_read_count);
-    new_bytes_transferred.byte_sent_count =
-        CalculateNewBytesTransferred(total_bytes_transferred.byte_sent_count,
-                                     last_refresh_usage.byte_sent_count);
-    DCHECK_GE(new_bytes_transferred.byte_read_count, 0);
-    DCHECK_GE(new_bytes_transferred.byte_sent_count, 0);
-
-    if (!UpdateTasksWithBytesTransferred(process_info, new_bytes_transferred)) {
-      // We can't match a task to the notification.  That might mean the
-      // tab that started a download was closed, or the request may have had
-      // no originating task associated with it in the first place.
-      //
-      // Orphaned/unaccounted activity is credited to the Browser process.
-      BytesTransferredKey browser_process_key = {
-          content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE};
-      UpdateTasksWithBytesTransferred(browser_process_key,
-                                      new_bytes_transferred);
-    }
-  }
-  last_refresh_total_network_usages_map_.swap(new_total_network_usages_map);
-}
-
 void TaskManagerImpl::OnVideoMemoryUsageStatsUpdate(
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -610,14 +572,6 @@ void TaskManagerImpl::Refresh() {
         ->RequestPrivateMemoryFootprint(base::kNullProcessId,
                                         std::move(callback));
   }
-
-  if (TaskManagerObserver::IsResourceRefreshEnabled(
-          REFRESH_TYPE_NETWORK_USAGE, enabled_resources_flags())) {
-    content::GetNetworkService()->GetTotalNetworkUsages(
-        base::BindOnce(&TaskManagerImpl::OnTotalNetworkUsages,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   for (auto& groups_itr : task_groups_by_proc_id_) {
     groups_itr.second->Refresh(gpu_memory_stats_,
                                GetCurrentRefreshTime(),
@@ -675,22 +629,6 @@ Task* TaskManagerImpl::GetTaskByRoute(int child_id, int route_id) const {
       return task;
   }
   return nullptr;
-}
-
-bool TaskManagerImpl::UpdateTasksWithBytesTransferred(
-    const BytesTransferredKey& key,
-    const BytesTransferredParam& param) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  Task* task = GetTaskByRoute(key.child_id, key.route_id);
-  if (task) {
-    task->OnNetworkBytesRead(param.byte_read_count);
-    task->OnNetworkBytesSent(param.byte_sent_count);
-    return true;
-  }
-
-  // Couldn't match the bytes to any existing task.
-  return false;
 }
 
 TaskGroup* TaskManagerImpl::GetTaskGroupByTaskId(TaskId task_id) const {

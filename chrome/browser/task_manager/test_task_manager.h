@@ -72,6 +72,10 @@ class TestTaskManager : public TaskManagerInterface {
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
+  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
+                                             int route_id,
+                                             int64_t recv_bytes,
+                                             int64_t sent_bytes) override;
 
   base::TimeDelta GetRefreshTime();
   int64_t GetEnabledFlags();

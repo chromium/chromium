@@ -587,7 +587,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       network::OriginPolicyState error_reason,
       content::NavigationHandle* handle) override;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
-  void OnNetworkServiceDataUseUpdate(int32_t network_traffic_annotation_id_hash,
+  void OnNetworkServiceDataUseUpdate(int process_id,
+                                     int routing_id,
+                                     int32_t network_traffic_annotation_id_hash,
                                      int64_t recv_bytes,
                                      int64_t sent_bytes) override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
