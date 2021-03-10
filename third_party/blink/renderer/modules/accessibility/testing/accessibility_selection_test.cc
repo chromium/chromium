@@ -312,7 +312,11 @@ class AXSelectionDeserializer final {
   }
 
   void HandleObject(const AXObject& object) {
-    for (const AXObject* child : object.ChildrenIncludingIgnored()) {
+    // Make a copy of the children, because they may be cleared when a sibling
+    // is invalidated and calls SetNeedsToUpdateChildren() on the parent.
+    const auto children = object.ChildrenIncludingIgnored();
+
+    for (const AXObject* child : children) {
       DCHECK(child);
       FindSelectionMarkers(*child);
     }

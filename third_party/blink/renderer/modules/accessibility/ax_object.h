@@ -779,6 +779,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // ARIA attributes.
   virtual ax::mojom::blink::Role DetermineAccessibilityRole() = 0;
+  void UpdateRoleForImage();  // Set role to image (leaf) or map (has children).
   ax::mojom::blink::Role DetermineAriaRoleAttribute() const;
   virtual ax::mojom::blink::Role AriaRoleAttribute() const;
   virtual bool HasAriaAttribute() const { return false; }
@@ -1081,8 +1082,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
   bool NeedsToUpdateChildren() const;
-  void SetNeedsToUpdateChildren();
-  virtual void ClearChildren();
+  void SetNeedsToUpdateChildren() const;
+  virtual void ClearChildren() const;
   void DetachFromParent() { parent_ = nullptr; }
   virtual void SelectedOptions(AXObjectVector&) const {}
 
@@ -1244,7 +1245,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Any parent, regardless of whether it's ignored or not included in the tree.
   mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
-  AXObjectVector children_;
+  mutable AXObjectVector children_;
   mutable bool children_dirty_;
   ax::mojom::blink::Role role_;
   ax::mojom::blink::Role aria_role_;
@@ -1373,10 +1374,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       ax::mojom::blink::StringAttribute attribute,
       const std::string& value,
       uint32_t max_len = kMaxStringAttributeLength) const;
-
-  // If this is an element that uses a child shadow root <slot>, detach the
-  // slot's parent.
-  void DetachSelectSlotChildFromParent();
 
   static unsigned number_of_live_ax_objects_;
 

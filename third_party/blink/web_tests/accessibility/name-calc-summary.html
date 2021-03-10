@@ -11,7 +11,9 @@
 <script>
 test(function(t) {
     var axDetails1 = accessibilityController.accessibleElementById("details1");
-    var axSummary1 = axDetails1.childAtIndex(0);
+    var axIgnoredContainer = axDetails1.childAtIndex(0);
+    assert_true(axIgnoredContainer.isIgnored);
+    var axSummary1 = axIgnoredContainer.childAtIndex(0);
     assert_equals(axSummary1.role, "AXRole: AXDisclosureTriangle");
     assert_equals(axSummary1.name, "Details");
     assert_equals(axSummary1.nameFrom, "contents");

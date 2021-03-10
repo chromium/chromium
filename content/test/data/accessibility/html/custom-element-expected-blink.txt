@@ -8,6 +8,7 @@ rootWebArea
 ++++++++++++inlineTextBox name='a'
 ++++++splitter horizontal name='Inside custom element'
 ++++++genericContainer ignored
-++++++++presentational ignored
-++++++++++staticText name='a'
-++++++++++++inlineTextBox name='a'
+++++++++genericContainer ignored
+++++++++++presentational ignored
+++++++++++++staticText name='a'
+++++++++++++++inlineTextBox name='a'

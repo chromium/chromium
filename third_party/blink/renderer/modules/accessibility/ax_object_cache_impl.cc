@@ -60,7 +60,9 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -244,9 +246,28 @@ bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
   return true;
 }
 
-bool IsShadowRootRelevantForAccessibility(const Node* node) {
-  if (IsA<HTMLSlotElement>(node) && AXObjectCacheImpl::UseAXMenuList()) {
-    // For the AXMenuList case:
+bool IsShadowContentRelevantForAccessibility(const Node* node) {
+  DCHECK(node->ContainingShadowRoot());
+  // All author shadow content is relevant.
+  if (!node->IsInUserAgentShadowRoot())
+    return true;
+
+  // All non-slot user agent shadow nodes are relevant.
+  if (!IsA<HTMLSlotElement>(node))
+    return true;
+
+  // A PDF plugin (when it has content) exposes a slot as its first child.
+  // This child is only relevant if it has contents. Marking others irrelevant
+  // keeps PDF plugin AX hierarchies as expected, otherwise there is an extra
+  // ignored Role::kGenericContainer sibling before the Role::kPdfRoot.
+  // TODO(accessibility) This should either be a more general rule about slots,
+  // or fixed in the PDF tests.
+  if (IsA<HTMLPlugInElement>(LayoutTreeBuilderTraversal::Parent(*node)))
+    return To<HTMLSlotElement>(node)->AssignedNodes().size();
+
+  // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
+  // for handling the user-agent shadow DOM exposed by a <select> element.
+  if (AXObjectCacheImpl::UseAXMenuList()) {
     // Don't use any shadow root descendants, because AXMenuList already
     // handles adding descendants and these would be redundant.
     // DOM traversal is still necessary for the <canvas> case.
@@ -257,8 +278,10 @@ bool IsShadowRootRelevantForAccessibility(const Node* node) {
         select_element = opt_group_element->OwnerSelectElement();
     }
 
-    return !select_element || !select_element->UsesMenuList() ||
-           select_element->IsInCanvasSubtree();
+    if (select_element) {
+      return !select_element->UsesMenuList() ||
+             select_element->IsInCanvasSubtree();
+    }
   }
 
   return true;
@@ -290,8 +313,8 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
   Node* node = layout_object.GetNode();
   DCHECK(node) << "Non-anonymous layout objects always have a node";
 
-  if (node->IsInUserAgentShadowRoot() &&
-      !IsShadowRootRelevantForAccessibility(node)) {
+  if (node->ContainingShadowRoot() &&
+      !IsShadowContentRelevantForAccessibility(node)) {
     return false;
   }
   // Menu list option and HTML area elements are indexed by DOM node, never by
@@ -360,8 +383,8 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   }
 
   // Node also not relevant -- truncate subtree here.
-  if (node->IsInUserAgentShadowRoot() &&
-      !IsShadowRootRelevantForAccessibility(node)) {
+  if (node->ContainingShadowRoot() &&
+      !IsShadowContentRelevantForAccessibility(node)) {
     return false;
   }
 
@@ -965,11 +988,17 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     return nullptr;
 
   if (!parent) {
-    LayoutObject* anonymous_text_parent = inline_text_box->GetLayoutObject();
-    DCHECK(anonymous_text_parent);
-    DCHECK(anonymous_text_parent->IsText());
-    parent = GetOrCreate(anonymous_text_parent);
-    DCHECK(parent) << "No parent for textbox: " << inline_text_box;
+    LayoutObject* layout_text_parent = inline_text_box->GetLayoutObject();
+    DCHECK(layout_text_parent);
+    DCHECK(layout_text_parent->IsText());
+    parent = GetOrCreate(layout_text_parent);
+    if (!parent) {
+      // Allowed to not have a parent if the text was irrelevant whitespace.
+      DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty())
+          << "No parent for non-whitespace inline textbox: "
+          << layout_text_parent;
+      return nullptr;
+    }
   }
 
   if (AXObject* obj = Get(inline_text_box)) {
@@ -1057,14 +1086,7 @@ void AXObjectCacheImpl::Remove(AXID ax_id) {
   if (!obj)
     return;
 
-  // Check for root web area with a parent, which is a popup document.
-  if (obj->RoleValue() == ax::mojom::blink::Role::kRootWebArea &&
-      obj->CachedParentObject()) {
-    // Removing a popup document root, must invalidate the parent's children.
-    // TODO(accessibility) Perhaps caller should do this, as in other cases.
-    DCHECK_NE(obj->GetDocument(), &GetDocument());
-    ChildrenChanged(obj->CachedParentObject());
-  }
+  ChildrenChanged(obj->CachedParentObject());
 
   obj->Detach();
   RemoveAXID(obj);
@@ -1565,7 +1587,18 @@ void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
   }
 }
 
+void AXObjectCacheImpl::ChildrenChanged(const AXObject* obj) {
+  ChildrenChanged(const_cast<AXObject*>(obj));
+}
+
 void AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
+  if (!obj)
+    return;
+
+  Node* node = obj->GetNode();
+  if (node && !nodes_with_pending_children_changed_.insert(node).is_new_entry)
+    return;
+
   DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, obj);
 }
 
@@ -1664,11 +1697,14 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       return;
     optional_node = obj->GetNode();
   }
-
   if (obj ? obj->IsDetached() : !optional_node)
     return;
 
 #if DCHECK_IS_ON()
+  if (obj && optional_node) {
+    DCHECK_EQ(obj->GetNode(), optional_node);
+    DCHECK_EQ(obj, Get(optional_node));
+  }
   Document* document = obj ? obj->GetDocument() : &optional_node->GetDocument();
   DCHECK(document);
   DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
@@ -1865,6 +1901,19 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
       if (!axid || !ObjectFromAXID(axid))
         continue;
     }
+
+#if DCHECK_IS_ON()
+    if (axid) {
+      AXObject* obj = ObjectFromAXID(axid);
+      if (obj) {
+        DCHECK(!obj->IsDetached());
+        if (node) {
+          DCHECK_EQ(node, obj->GetNode());
+          DCHECK_EQ(Get(node), obj);
+        }
+      }
+    }
+#endif
     base::OnceClosure& callback = tree_update->callback;
     // Insure the update is for the correct document.
     // If no node, this update must be from an AXObject with no DOM node,

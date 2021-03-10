@@ -17,10 +17,12 @@ rootWebArea focusable
 ++++++++++menuListOption focusable invisible name='Option 2' setSize=3 posInSet=2 selected=false
 ++++++++++menuListOption focusable invisible name='Option 3' setSize=3 posInSet=3 selected=false
 ++++++listBox focusable multiselectable setSize=3
-++++++++listBoxOption focusable name='Option 1' setSize=3 posInSet=1 selected=false
-++++++++listBoxOption focusable name='Option 2' setSize=3 posInSet=2 selected=false
-++++++++listBoxOption focusable name='Option 3' setSize=3 posInSet=3 selected=false
+++++++++genericContainer ignored
+++++++++++listBoxOption focusable name='Option 1' setSize=3 posInSet=1 selected=false
+++++++++++listBoxOption focusable name='Option 2' setSize=3 posInSet=2 selected=false
+++++++++++listBoxOption focusable name='Option 3' setSize=3 posInSet=3 selected=false
 ++++++listBox focusable setSize=3
-++++++++listBoxOption focusable name='Option 1' setSize=3 posInSet=1 selected=false
-++++++++listBoxOption focusable name='Option 2' setSize=3 posInSet=2 selected=false
-++++++++listBoxOption focusable name='Option 3' setSize=3 posInSet=3 selected=false
+++++++++genericContainer ignored
+++++++++++listBoxOption focusable name='Option 1' setSize=3 posInSet=1 selected=false
+++++++++++listBoxOption focusable name='Option 2' setSize=3 posInSet=2 selected=false
+++++++++++listBoxOption focusable name='Option 3' setSize=3 posInSet=3 selected=false

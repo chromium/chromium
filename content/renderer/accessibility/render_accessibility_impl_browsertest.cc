@@ -1062,7 +1062,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   WebAXObject input_checkbox = body.ChildAt(0);
   WebAXObject input_range = body.ChildAt(1);
   WebAXObject input_text = body.ChildAt(2);
-  WebAXObject option = body.ChildAt(3).ChildAt(0);
+  WebAXObject option = body.ChildAt(3).ChildAt(0).ChildAt(0);
   WebAXObject scroller = body.ChildAt(4);
   WebAXObject scroller_child = body.ChildAt(4).ChildAt(1);
   WebAXObject text_one = body.ChildAt(5).ChildAt(0);
