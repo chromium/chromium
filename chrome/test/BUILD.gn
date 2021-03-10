@@ -3916,6 +3916,7 @@ test("unit_tests") {
       "../browser/android/history_report/delta_file_commons_unittest.cc",
       "../browser/android/history_report/usage_reports_buffer_backend_unittest.cc",
       "../browser/android/locale/locale_template_url_loader_unittest.cc",
+      "../browser/android/metrics/android_incognito_session_durations_service_unittest.cc",
       "../browser/android/metrics/background_task_memory_metrics_emitter_unittest.cc",
       "../browser/android/oom_intervention/near_oom_monitor_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",

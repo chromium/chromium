@@ -14,6 +14,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
+#include "chrome/browser/android/metrics/android_incognito_session_durations_service.h"
+#include "chrome/browser/android/metrics/android_incognito_session_durations_service_factory.h"
 #include "chrome/browser/android/metrics/android_profile_session_durations_service.h"
 #include "chrome/browser/android/metrics/android_profile_session_durations_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -81,6 +83,11 @@ void UmaSessionStats::UmaResumeSession(JNIEnv* env,
       psd_service->OnAppEnterForeground(
           session_time_tracker_.session_start_time());
     }
+
+    auto* isd_service(AndroidIncognitoSessionDurationsServiceFactory::
+                          GetForActiveUserProfile());
+    if (isd_service)
+      isd_service->OnAppEnterForeground();
   }
 }
 
@@ -110,6 +117,11 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env,
         AndroidProfileSessionDurationsServiceFactory::GetForActiveUserProfile();
     if (psd_service)
       psd_service->OnAppEnterBackground(duration);
+
+    auto* isd_service(AndroidIncognitoSessionDurationsServiceFactory::
+                          GetForActiveUserProfile());
+    if (isd_service)
+      isd_service->OnAppEnterBackground();
 
     // Note: Keep the line below after |metrics->OnAppEnterBackground()|.
     // Otherwise, |ProvideCurrentSessionData()| may report a small timeslice of
