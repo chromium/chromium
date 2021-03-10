@@ -65,6 +65,8 @@ class FileSystemSigninDialogDelegate
   void DeleteDelegate() override;
   views::View* GetInitiallyFocusedView() override;
 
+  void OnCancellation();
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -77,7 +79,7 @@ class FileSystemSigninDialogDelegate
   std::unique_ptr<views::WebView> web_view_;
   std::unique_ptr<OAuth2AccessTokenFetcherImpl> token_fetcher_;
   AuthorizationCompletedCallback callback_;
-  base::WeakPtrFactory<FileSystemSigninDialogDelegate> factory_{this};
+  base::WeakPtrFactory<FileSystemSigninDialogDelegate> weak_factory_{this};
 };
 
 }  // namespace enterprise_connectors
