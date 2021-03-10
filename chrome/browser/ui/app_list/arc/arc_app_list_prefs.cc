@@ -621,18 +621,6 @@ arc::mojom::ArcResizeLockState ArcAppListPrefs::GetResizeLockState(
     return arc::mojom::ArcResizeLockState::UNDEFINED;
   }
 
-  // Return UNDEFINED until the Mojo connection has been established. This
-  // hides the resize lock setting and prevents Chrome and Android from having
-  // inconsistent states.
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager)
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->compatibility_mode(),
-      SetResizeLockState);
-  if (!instance)
-    return arc::mojom::ArcResizeLockState::UNDEFINED;
-
   return app_info->resize_lock_state;
 }
 
