@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
-import("//build/config/mac/base_rules.gni")
 import("//build/util/branding.gni")
 import("//build/util/version.gni")
 import("//chrome/installer/mac/mac_signing_sources.gni")
