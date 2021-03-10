@@ -123,7 +123,6 @@ if (enable_js_type_check) {
         "quota_internals:closure_compile",
         "read_later:closure_compile",
         "settings:closure_compile",
-        "settings:closure_compile_module",
         "signin:closure_compile",
         "sync_file_system_internals:closure_compile",
         "tab_search:closure_compile",

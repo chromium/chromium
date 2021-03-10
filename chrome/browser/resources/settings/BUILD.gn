@@ -365,81 +365,6 @@ grit("resources") {
 
 group("closure_compile") {
   deps = [
-    ":local_resources",
-    "a11y_page:closure_compile",
-    "controls:closure_compile",
-    "languages_page:closure_compile",
-    "people_page:closure_compile",
-    "prefs:closure_compile",
-    "privacy_sandbox:closure_compile",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [ "../../../test/data/webui/settings/chromeos:closure_compile" ]
-  }
-}
-
-js_type_check("local_resources") {
-  uses_legacy_modules = true
-  deps = [
-    ":extension_control_browser_proxy",
-    ":global_scroll_target_behavior",
-    ":lifetime_browser_proxy",
-    ":router",
-    ":search_settings",
-    ":setting_id_param_util",
-  ]
-}
-
-js_library("extension_control_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("global_scroll_target_behavior") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("lifetime_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("router") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("search_settings") {
-  deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:search_highlight_utils",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-js_library("setting_id_param_util") {
-  deps = [
-    ":router",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-# Polymer 3 related rules.
-
-group("closure_compile_module") {
-  deps = [
     ":closure_compile_local_module",
     "a11y_page:closure_compile_module",
     "about_page:closure_compile_module",
@@ -454,6 +379,7 @@ group("closure_compile_module") {
     "people_page:closure_compile_module",
     "prefs:closure_compile_module",
     "privacy_page:closure_compile_module",
+    "privacy_sandbox:closure_compile",
     "reset_page:closure_compile_module",
     "safety_check_page:closure_compile_module",
     "search_engines_page:closure_compile_module",

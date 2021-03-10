@@ -527,6 +527,7 @@ group("closure_compile") {
       "chromeos:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
+      "settings/chromeos:closure_compile",
     ]
   }
   if (!is_android) {

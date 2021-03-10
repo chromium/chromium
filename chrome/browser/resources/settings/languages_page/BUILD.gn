@@ -8,52 +8,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":languages",
-    ":languages_browser_proxy",
-  ]
-}
-
-js_library("languages_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages") {
-  deps = [
-    ":languages_browser_proxy",
-    ":languages_types",
-    "../prefs",
-    "../prefs:prefs_types",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:promise_resolver",
-  ]
-  externs_list = [
-    "$externs_path/input_method_private.js",
-    "$externs_path/language_settings_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/input_method_private_interface.js",
-    "$interfaces_path/language_settings_private_interface.js",
-  ]
-}
-
-js_library("languages_types") {
-  externs_list = [ "$externs_path/language_settings_private.js" ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = settings_closure_flags
@@ -68,6 +22,10 @@ js_type_check("closure_compile_module") {
     ":languages_subpage",
     ":languages_types",
   ]
+}
+
+js_library("languages_types") {
+  externs_list = [ "$externs_path/language_settings_private.js" ]
 }
 
 js_library("add_languages_dialog") {

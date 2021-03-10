@@ -7,39 +7,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../settings.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":pref_util",
-    ":prefs",
-    ":prefs_behavior",
-    ":prefs_types",
-  ]
-}
-
-js_library("pref_util") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("prefs") {
-  deps = [
-    ":pref_util",
-    ":prefs_behavior",
-    ":prefs_types",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-  extra_sources = [ "$interfaces_path/settings_private_interface.js" ]
-}
-
-js_library("prefs_behavior") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("prefs_types") {
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
