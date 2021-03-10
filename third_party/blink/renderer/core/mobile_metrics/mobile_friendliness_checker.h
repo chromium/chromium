@@ -7,12 +7,13 @@
 
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 class LocalFrameView;
 class LayoutObject;
-class Visitor;
 struct ViewportDescription;
 
 CORE_EXPORT extern const base::Feature kBadTapTargetsRatio;
