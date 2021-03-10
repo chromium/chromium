@@ -390,39 +390,9 @@ SiteProcessMap* GetSiteProcessMapForBrowserContext(BrowserContext* context) {
 class RendererSandboxedProcessLauncherDelegate
     : public SandboxedProcessLauncherDelegate {
  public:
-  RendererSandboxedProcessLauncherDelegate()
-#if defined(OS_WIN)
-      : renderer_code_integrity_enabled_(
-            GetContentClient()->browser()->IsRendererCodeIntegrityEnabled())
-#endif
-  {
-  }
+  RendererSandboxedProcessLauncherDelegate() = default;
 
   ~RendererSandboxedProcessLauncherDelegate() override = default;
-
-#if defined(OS_WIN)
-  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
-    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
-
-    const std::wstring& sid =
-        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
-            GetSandboxType());
-    if (!sid.empty())
-      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
-    ContentBrowserClient::ChildSpawnFlags flags(
-        ContentBrowserClient::ChildSpawnFlags::NONE);
-    if (renderer_code_integrity_enabled_)
-      flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
-    return GetContentClient()->browser()->PreSpawnChild(
-        policy, sandbox::policy::SandboxType::kRenderer, flags);
-  }
-
-  bool CetCompatible() override {
-    // Disable CET for renderer because v8 deoptimization swaps stacks in a
-    // non-compliant way.
-    return false;
-  }
-#endif  // OS_WIN
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
   ZygoteHandle GetZygote() override {
@@ -443,12 +413,74 @@ class RendererSandboxedProcessLauncherDelegate
   sandbox::policy::SandboxType GetSandboxType() override {
     return sandbox::policy::SandboxType::kRenderer;
   }
+};
 
 #if defined(OS_WIN)
+// NOTE: changes to this class need to be reviewed by the security team.
+class RendererSandboxedProcessLauncherDelegateWin
+    : public RendererSandboxedProcessLauncherDelegate {
+ public:
+  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line)
+      : renderer_code_integrity_enabled_(
+            GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
+    if (cmd_line->HasSwitch(switches::kJavaScriptFlags)) {
+      std::string js_flags =
+          cmd_line->GetSwitchValueASCII(switches::kJavaScriptFlags);
+      std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
+          js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      for (const auto& js_flag : js_flag_list) {
+        if (js_flag.as_string() == "--jitless") {
+          // If v8 is running jitless then there is no need for the ability to
+          // mark writable pages as executable to be available to the process.
+          dynamic_code_can_be_disabled_ = true;
+          break;
+        }
+      }
+    }
+  }
+
+  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
+    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
+
+    const std::wstring& sid =
+        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
+            GetSandboxType());
+    if (!sid.empty())
+      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
+
+    ContentBrowserClient::ChildSpawnFlags flags(
+        ContentBrowserClient::ChildSpawnFlags::NONE);
+    if (renderer_code_integrity_enabled_) {
+      flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
+
+      // If the renderer process is protected by code integrity, more
+      // mitigations become available.
+      if (dynamic_code_can_be_disabled_) {
+        sandbox::MitigationFlags mitigation_flags =
+            policy->GetDelayedProcessMitigations();
+        mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+        if (sandbox::SBOX_ALL_OK !=
+            policy->SetDelayedProcessMitigations(mitigation_flags)) {
+          return false;
+        }
+      }
+    }
+
+    return GetContentClient()->browser()->PreSpawnChild(
+        policy, sandbox::policy::SandboxType::kRenderer, flags);
+  }
+
+  bool CetCompatible() override {
+    // Disable CET for renderer because v8 deoptimization swaps stacks in a
+    // non-compliant way.
+    return false;
+  }
+
  private:
   const bool renderer_code_integrity_enabled_;
-#endif
+  bool dynamic_code_can_be_disabled_ = false;
 };
+#endif  // defined(OS_WIN)
 
 const char kSessionStorageHolderKey[] = "kSessionStorageHolderKey";
 
@@ -1796,12 +1828,20 @@ bool RenderProcessHostImpl::Init() {
       cmd_line->PrependWrapper(renderer_prefix);
     AppendRendererCommandLine(cmd_line.get());
 
+#if defined(OS_WIN)
+    std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
+        std::make_unique<RendererSandboxedProcessLauncherDelegateWin>(
+            cmd_line.get());
+#else
+    std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
+        std::make_unique<RendererSandboxedProcessLauncherDelegate>();
+#endif
     // Spawn the child process asynchronously to avoid blocking the UI thread.
     // As long as there's no renderer prefix, we can use the zygote process
     // at this stage.
     child_process_launcher_ = std::make_unique<ChildProcessLauncher>(
-        std::make_unique<RendererSandboxedProcessLauncherDelegate>(),
-        std::move(cmd_line), GetID(), this, std::move(mojo_invitation_),
+        std::move(sandbox_delegate), std::move(cmd_line), GetID(), this,
+        std::move(mojo_invitation_),
         base::BindRepeating(&RenderProcessHostImpl::OnMojoError, id_),
         GetV8SnapshotFilesToPreload());
     channel_->Pause();
