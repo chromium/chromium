@@ -383,11 +383,11 @@ public class CachedFeatureFlags {
     }
 
     private static String getPrefForFeatureFlag(String featureName) {
-        String grandfatheredPrefKey = sNonDynamicPrefKeys.get(featureName);
-        if (grandfatheredPrefKey == null) {
+        String legacyPrefKey = sNonDynamicPrefKeys.get(featureName);
+        if (legacyPrefKey == null) {
             return ChromePreferenceKeys.FLAGS_CACHED.createKey(featureName);
         } else {
-            return grandfatheredPrefKey;
+            return legacyPrefKey;
         }
     }
 
