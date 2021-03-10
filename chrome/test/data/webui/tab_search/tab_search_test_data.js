@@ -17,6 +17,7 @@ export function sampleData() {
             title: 'Google',
             url: 'https://www.google.com',
             lastActiveTimeTicks: {internalValue: BigInt(5)},
+            lastActiveElapsedText: '',
           },
           {
             index: 1,
@@ -24,6 +25,7 @@ export function sampleData() {
             title: 'Amazon',
             url: 'https://www.amazon.com',
             lastActiveTimeTicks: {internalValue: BigInt(4)},
+            lastActiveElapsedText: '',
           },
           {
             index: 2,
@@ -31,6 +33,7 @@ export function sampleData() {
             title: 'Apple',
             url: 'https://www.apple.com',
             lastActiveTimeTicks: {internalValue: BigInt(3)},
+            lastActiveElapsedText: '',
           },
         ],
       },
@@ -44,6 +47,7 @@ export function sampleData() {
             title: 'Bing',
             url: 'https://www.bing.com/',
             lastActiveTimeTicks: {internalValue: BigInt(2)},
+            lastActiveElapsedText: '',
           },
           {
             index: 1,
@@ -51,6 +55,7 @@ export function sampleData() {
             title: 'Yahoo',
             url: 'https://www.yahoo.com',
             lastActiveTimeTicks: {internalValue: BigInt(1)},
+            lastActiveElapsedText: '',
           },
           {
             index: 2,
@@ -58,6 +63,7 @@ export function sampleData() {
             title: 'Apple',
             url: 'https://www.apple.com/',
             lastActiveTimeTicks: {internalValue: BigInt(0)},
+            lastActiveElapsedText: '',
           },
         ],
       }
@@ -86,6 +92,7 @@ export function generateSampleTabsFromSiteNames(siteNames) {
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
       lastActiveTimeTicks: siteNames.length - i,
+      lastActiveElapsedText: '',
     };
   });
 }

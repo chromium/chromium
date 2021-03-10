@@ -42,6 +42,12 @@ export class TabSearchItem extends PolymerElement {
 
       /** @type {number} */
       index: Number,
+
+      /** @private {string} */
+      secondaryTextAriaLabel_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -78,10 +84,15 @@ export class TabSearchItem extends PolymerElement {
         this.data.hostnameHighlightRanges);
 
     // Show chrome:// if it's a chrome internal url
+    let secondaryLabel = this.data.hostname;
     if (new URL(this.data.tab.url).protocol === 'chrome:') {
       /** @type {!HTMLElement} */ (this.$.secondaryText)
           .prepend(document.createTextNode('chrome://'));
+      secondaryLabel = `chrome://${secondaryLabel}`;
     }
+
+    this.secondaryTextAriaLabel_ =
+        `${secondaryLabel} ${this.data.tab.lastActiveElapsedText}`;
   }
 
   /**

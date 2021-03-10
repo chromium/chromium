@@ -492,7 +492,8 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   ariaLabel_(tabData) {
-    return `${tabData.tab.title} ${tabData.hostname}`;
+    return `${tabData.tab.title} ${tabData.hostname}
+        ${tabData.tab.lastActiveElapsedText}`;
   }
 
   /**

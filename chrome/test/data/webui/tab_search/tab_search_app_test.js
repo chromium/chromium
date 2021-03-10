@@ -241,6 +241,7 @@ suite('TabSearchAppTest', () => {
       title: 'Example',
       url: 'https://example.com',
       lastActiveTimeTicks: {internalValue: BigInt(5)},
+      lastActiveElapsedText: '',
     });
     testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
     await flushTasks();
@@ -419,6 +420,7 @@ suite('TabSearchAppTest', () => {
         title: 'Google',
         url: 'https://www.google.com',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
+        lastActiveElapsedText: '',
       },
       {
         index: 1,
@@ -426,6 +428,7 @@ suite('TabSearchAppTest', () => {
         title: 'Bing',
         url: 'https://www.bing.com',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
+        lastActiveElapsedText: '',
         active: true,
       },
       {
@@ -434,6 +437,7 @@ suite('TabSearchAppTest', () => {
         title: 'Yahoo',
         url: 'https://www.yahoo.com',
         lastActiveTimeTicks: {internalValue: BigInt(3)},
+        lastActiveElapsedText: '',
       }
     ];
 

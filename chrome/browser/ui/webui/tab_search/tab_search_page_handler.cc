@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "ui/base/l10n/time_format.h"
 
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay =
@@ -37,7 +38,15 @@ constexpr char kFeedbackCategoryTag[] = "FromTabSearch";
 #else
 constexpr char kFeedbackCategoryTag[] = "FromTabSearchBrowser";
 #endif
+
+std::string GetLastActiveElapsedText(
+    const base::TimeTicks& last_active_time_ticks) {
+  const base::TimeDelta elapsed =
+      base::TimeTicks::Now() - last_active_time_ticks;
+  return base::UTF16ToUTF8(ui::TimeFormat::Simple(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
 }
+}  // namespace
 
 TabSearchPageHandler::TabSearchPageHandler(
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -213,7 +222,11 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
   }
 
   tab_data->show_icon = tab_renderer_data.show_icon;
-  tab_data->last_active_time_ticks = contents->GetLastActiveTime();
+
+  const base::TimeTicks last_active_time_ticks = contents->GetLastActiveTime();
+  tab_data->last_active_time_ticks = last_active_time_ticks;
+  tab_data->last_active_elapsed_text =
+      GetLastActiveElapsedText(last_active_time_ticks);
 
   return tab_data;
 }

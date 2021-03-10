@@ -52,8 +52,12 @@ struct Tab {
   // Whether the tab strip should show the icon.
   bool show_icon;
 
-  // Time ticks when the tab is last active.
+  // Time ticks when the tab is last active. This value is used to order open
+  // tabs by recency.
   mojo_base.mojom.TimeTicks last_active_time_ticks;
+
+  // String representing the elapsed time since the tab was last active.
+  string last_active_elapsed_text;
 };
 
 // Information about a recently closed tab.
@@ -65,8 +69,12 @@ struct RecentlyClosedTab {
   // TODO(crbug.com/1099917): Change this and elsewhere to use url.mojom.Url.
   string url;
 
-  // Time when the tab is last active.
+  // Elapsed time since the tab was last closed. This value is used to order
+  // closed tabs by recency.
   mojo_base.mojom.Time last_active_time_ticks;
+
+  // String representing the elapsed time since the tab was closed.
+  string last_active_elapsed_text;
 };
 
 // Collection of tab groups.

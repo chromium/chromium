@@ -58,9 +58,25 @@
     margin-bottom: 3px;
   }
 
-  #secondaryText {
+  #secondaryContainer {
     color: var(--cr-secondary-text-color);
+    display: flex;
     font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  #secondaryTimestamp {
+    flex-shrink: 0;
+  }
+
+  #secondaryTextAriaLabel {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
+
+  #separator {
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
   }
 
   cr-icon-button {
@@ -78,7 +94,14 @@
 <div class="favicon" style="background-image:[[faviconUrl_(data.tab)]]"></div>
 <div class="text-container">
   <div id="primaryText" title="[[data.tab.title]]"></div>
-  <div id="secondaryText"></div>
+  <div id="secondaryTextAriaLabel" title="[[secondaryTextAriaLabel_]]"></div>
+  <div id="secondaryContainer" aria-hidden="true">
+    <div id="secondaryText"></div>
+    <div id="separator">•</div>
+    <div id="secondaryTimestamp">
+      [[data.tab.lastActiveElapsedText]]
+    </div>
+  </div>
 </div>
 <div class="button-container">
   <cr-icon-button id="closeButton" aria-label="[[ariaLabel_(data.tab.title)]]"
