@@ -430,7 +430,13 @@ void AddEnterpriseEnrollmentWorkItems(const InstallerState& installer_state,
     cmd_line.AppendSwitch(switches::kVerboseLogging);
     InstallUtil::AppendModeAndChannelSwitches(&cmd_line);
 
-    AppCommand cmd(cmd_line.GetCommandLineString());
+    // The substitution for the insert sequence "%1" here is performed safely by
+    // Google Update rather than insecurely by the Windows shell. Disable the
+    // safety check for unsafe insert sequences since the right thing is
+    // happening. Do not blindly copy this pattern in new code. Check with a
+    // member of base/win/OWNERS if in doubt.
+    AppCommand cmd(cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
+
     // TODO(alito): For now setting this command as web accessible is required
     // by Google Update.  Could revisit this should Google Update change the
     // way permissions are handled for commands.

@@ -104,12 +104,13 @@ bool IsSwitchWithKey(CommandLine::StringPieceType string,
 #if defined(OS_WIN)
 // Quote a string as necessary for CommandLineToArgvW compatibility *on
 // Windows*.
-std::wstring QuoteForCommandLineToArgvW(const std::wstring& arg) {
+std::wstring QuoteForCommandLineToArgvW(const std::wstring& arg,
+                                        bool allow_unsafe_insert_sequences) {
   // Ensure that GetCommandLineString isn't used to generate command-line
-  // strings for the Windows shell by checking for Windows placeholders like
+  // strings for the Windows shell by checking for Windows insert sequences like
   // "%1". GetCommandLineStringForShell should be used instead to get a string
   // with the correct placeholder format for the shell.
-  DCHECK(arg.size() != 2 || arg[0] != L'%');
+  DCHECK(arg.size() != 2 || arg[0] != L'%' || allow_unsafe_insert_sequences);
 
   // We follow the quoting rules of CommandLineToArgvW.
   // http://msdn.microsoft.com/en-us/library/17w5ykft.aspx
@@ -533,10 +534,42 @@ void CommandLine::AppendSwitchesAndArguments(
   }
 }
 
+CommandLine::StringType CommandLine::GetArgumentsStringInternal(
+    bool allow_unsafe_insert_sequences) const {
+  StringType params;
+  // Append switches and arguments.
+  bool parse_switches = true;
+  for (size_t i = 1; i < argv_.size(); ++i) {
+    StringType arg = argv_[i];
+    StringType switch_string;
+    StringType switch_value;
+    parse_switches &= arg != kSwitchTerminator;
+    if (i > 1)
+      params.append(FILE_PATH_LITERAL(" "));
+    if (parse_switches && IsSwitch(arg, &switch_string, &switch_value)) {
+      params.append(switch_string);
+      if (!switch_value.empty()) {
+#if defined(OS_WIN)
+        switch_value = QuoteForCommandLineToArgvW(
+            switch_value, allow_unsafe_insert_sequences);
+#endif
+        params.append(kSwitchValueSeparator + switch_value);
+      }
+    } else {
+#if defined(OS_WIN)
+      arg = QuoteForCommandLineToArgvW(arg, allow_unsafe_insert_sequences);
+#endif
+      params.append(arg);
+    }
+  }
+  return params;
+}
+
 CommandLine::StringType CommandLine::GetCommandLineString() const {
   StringType string(argv_[0]);
 #if defined(OS_WIN)
-  string = QuoteForCommandLineToArgvW(string);
+  string = QuoteForCommandLineToArgvW(string,
+                                      /*allow_unsafe_insert_sequences=*/false);
 #endif
   StringType params(GetArgumentsString());
   if (!params.empty()) {
@@ -561,35 +594,24 @@ CommandLine::StringType CommandLine::GetCommandLineStringForShell() const {
          StringType(kSwitchPrefixes[0]) + kSingleArgument +
          FILE_PATH_LITERAL(" %1");
 }
+
+CommandLine::StringType
+CommandLine::GetCommandLineStringWithUnsafeInsertSequences() const {
+  StringType string(argv_[0]);
+  string = QuoteForCommandLineToArgvW(string,
+                                      /*allow_unsafe_insert_sequences=*/true);
+  StringType params(
+      GetArgumentsStringInternal(/*allow_unsafe_insert_sequences=*/true));
+  if (!params.empty()) {
+    string.append(FILE_PATH_LITERAL(" "));
+    string.append(params);
+  }
+  return string;
+}
 #endif  // defined(OS_WIN)
 
 CommandLine::StringType CommandLine::GetArgumentsString() const {
-  StringType params;
-  // Append switches and arguments.
-  bool parse_switches = true;
-  for (size_t i = 1; i < argv_.size(); ++i) {
-    StringType arg = argv_[i];
-    StringType switch_string;
-    StringType switch_value;
-    parse_switches &= arg != kSwitchTerminator;
-    if (i > 1)
-      params.append(FILE_PATH_LITERAL(" "));
-    if (parse_switches && IsSwitch(arg, &switch_string, &switch_value)) {
-      params.append(switch_string);
-      if (!switch_value.empty()) {
-#if defined(OS_WIN)
-        switch_value = QuoteForCommandLineToArgvW(switch_value);
-#endif
-        params.append(kSwitchValueSeparator + switch_value);
-      }
-    } else {
-#if defined(OS_WIN)
-      arg = QuoteForCommandLineToArgvW(arg);
-#endif
-      params.append(arg);
-    }
-  }
-  return params;
+  return GetArgumentsStringInternal(/*allow_unsafe_insert_sequences=*/false);
 }
 
 #if defined(OS_WIN)
