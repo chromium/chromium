@@ -9,35 +9,32 @@ option optimize_for = LITE_RUNTIME;
 option java_package = "sync_pb";
 package sync_pb;
 
-message SharedKey {
-  optional int32 epoch = 1;
-  optional bytes wrapped_key = 2;
-  optional bytes member_proof = 3;
-  optional bytes key_proof = 4;
-}
-
 message SharedMemberKey {
   optional int32 epoch = 1;
   optional bytes wrapped_key = 2;
   optional bytes member_proof = 3;
 }
 
+message RotationProof {
+  optional int32 new_epoch = 1;
+  optional bytes rotation_proof = 2;
+}
+
 message SecurityDomain {
   optional string name = 1;
-
-  message Member {
-    optional bytes public_key = 1;
-    repeated SharedKey keys = 2;
-  }
-
-  // TODO(crbug.com/1113598): remove this field once ListSecurityDomainsResponse
-  // is updated.
-  repeated Member members = 2;
 }
 
 message SecurityDomainMember {
   optional string name = 1;
   optional bytes public_key = 2;
+
+  message SecurityDomainMembership {
+    optional string security_domain = 1;
+    repeated SharedMemberKey keys = 3;
+    repeated RotationProof rotation_proofs = 4;
+  }
+
+  repeated SecurityDomainMembership memberships = 3;
 
   enum MemberType {
     MEMBER_TYPE_UNSPECIFIED = 0;
@@ -51,8 +48,4 @@ message JoinSecurityDomainsRequest {
   optional SecurityDomain security_domain = 1;
   optional SecurityDomainMember security_domain_member = 2;
   optional SharedMemberKey shared_member_key = 3;
-}
-
-message ListSecurityDomainsResponse {
-  repeated SecurityDomain security_domains = 1;
 }

@@ -117,12 +117,14 @@ class TrustedVaultConnectionImplTest : public testing::Test {
         /*content=*/std::string(), response_http_code);
   }
 
-  bool RespondToListSecurityDomainsRequest(
+  bool RespondToGetSecurityDomainMemberRequest(
       net::HttpStatusCode response_http_code) {
     // Allow request to reach |test_url_loader_factory_|.
     base::RunLoop().RunUntilIdle();
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        GetFullListSecurityDomainsURLForTesting(kTestURL).spec(),
+        GetFullGetSecurityDomainMemberURLForTesting(
+            kTestURL, MakeTestKeyPair()->public_key().ExportToBytes())
+            .spec(),
         /*content=*/std::string(), response_http_code);
   }
 
@@ -413,7 +415,8 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldSendListSecurityDomainsRequest) {
       pending_http_request->request;
   EXPECT_THAT(resource_request.method, Eq("GET"));
   EXPECT_THAT(resource_request.url,
-              Eq(GetFullListSecurityDomainsURLForTesting(kTestURL)));
+              Eq(GetFullGetSecurityDomainMemberURLForTesting(
+                  kTestURL, MakeTestKeyPair()->public_key().ExportToBytes())));
 }
 
 // TODO(crbug.com/1113598): add coverage for at least one successful case
@@ -433,7 +436,7 @@ TEST_F(TrustedVaultConnectionImplTest,
 
   EXPECT_CALL(callback, Run(Eq(TrustedVaultRequestStatus::kOtherError), _, _));
   EXPECT_TRUE(
-      RespondToListSecurityDomainsRequest(net::HTTP_INTERNAL_SERVER_ERROR));
+      RespondToGetSecurityDomainMemberRequest(net::HTTP_INTERNAL_SERVER_ERROR));
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
@@ -476,7 +479,7 @@ TEST_F(TrustedVaultConnectionImplTest, ShouldCancelListSecurityDomainsRequest) {
   request.reset();
   // Returned value isn't checked here, because the request can be cancelled
   // before reaching TestURLLoaderFactory.
-  RespondToListSecurityDomainsRequest(net::HTTP_OK);
+  RespondToGetSecurityDomainMemberRequest(net::HTTP_OK);
 }
 
 }  // namespace

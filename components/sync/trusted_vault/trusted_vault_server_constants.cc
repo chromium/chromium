@@ -4,6 +4,7 @@
 
 #include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 
+#include "base/base64url.h"
 #include "net/base/url_util.h"
 
 namespace syncer {
@@ -19,10 +20,18 @@ const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
 const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 const char kJoinSecurityDomainsURLPath[] =
     "users/me/securitydomains/chromesync:join";
-const char kListSecurityDomainsURLPathAndQuery[] = "/domain:list?view=1";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
+}
+
+std::string GetGetSecurityDomainMemberURLPathAndQuery(
+    base::span<const uint8_t> public_key) {
+  std::string encoded_public_key;
+  base::Base64UrlEncode(std::string(public_key.begin(), public_key.end()),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_public_key);
+  return kSecurityDomainMemberNamePrefix + encoded_public_key + "?view=2";
 }
 
 GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url) {
@@ -31,9 +40,12 @@ GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url) {
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 
-GURL GetFullListSecurityDomainsURLForTesting(const GURL& server_url) {
+GURL GetFullGetSecurityDomainMemberURLForTesting(
+    const GURL& server_url,
+    base::span<const uint8_t> public_key) {
   return net::AppendQueryParameter(
-      /*url=*/GURL(server_url.spec() + kListSecurityDomainsURLPathAndQuery),
+      /*url=*/GURL(server_url.spec() +
+                   GetGetSecurityDomainMemberURLPathAndQuery(public_key)),
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 

@@ -167,7 +167,8 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
   auto request = std::make_unique<TrustedVaultRequest>(
       TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
-           kListSecurityDomainsURLPathAndQuery),
+           GetGetSecurityDomainMemberURLPathAndQuery(
+               device_key_pair->public_key().ExportToBytes())),
       /*serialized_request_proto=*/base::nullopt);
 
   request->FetchAccessTokenAndSendRequest(

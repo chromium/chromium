@@ -17,7 +17,7 @@ namespace syncer {
 class SecureBoxKeyPair;
 
 // Helper class to extract and validate trusted vault keys from
-// ListSecurityDomainsResponse.
+// GetSecurityDomainMember response.
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
@@ -32,10 +32,10 @@ class DownloadKeysResponseHandler {
     // kSuccess is reported if extraction was successful and there are new
     // trusted vault keys.
     // kLocalDataObsolete is reported if it's impossible to extract keys due to
-    // data corruption or absence of SecurityDomain/Member or if there is no new
-    // keys.
+    // data corruption or absence of sync SecurityDomainMembership or if there
+    // is no new keys.
     // kOtherError is reported in case of http/network errors or if the response
-    // isn't valid serialized ListSecurityDomainsResponse proto.
+    // isn't valid serialized SecurityDomainMember proto.
     TrustedVaultRequestStatus status;
 
     // Contains new keys (e.g. keys are stored by the server, excluding last
