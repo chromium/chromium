@@ -87,6 +87,7 @@ public class BottomSheetOnboardingCoordinatorTest {
     private ChromeActivity mActivity;
     private BottomSheetController mBottomSheetController;
     private ScrimCoordinator mScrimCoordinator;
+    private OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
 
     @Before
     public void setUp() throws Exception {
@@ -97,6 +98,9 @@ public class BottomSheetOnboardingCoordinatorTest {
         mScrimCoordinator = mCustomTabActivityTestRule.getActivity()
                                     .getRootUiCoordinatorForTesting()
                                     .getScrimCoordinator();
+        mOnboardingCoordinatorFactory =
+                new OnboardingCoordinatorFactory(mActivity, mBottomSheetController,
+                        mActivity.getBrowserControlsManager(), mActivity.getCompositorViewHolder());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {
@@ -106,9 +110,8 @@ public class BottomSheetOnboardingCoordinatorTest {
     private BaseOnboardingCoordinator createCoordinator(
             String experimentIds, Map<String, String> parameters) {
         BaseOnboardingCoordinator coordinator =
-                OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
-                        parameters, mActivity, mBottomSheetController,
-                        mActivity.getBrowserControlsManager(), mActivity.getCompositorViewHolder());
+                mOnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                        experimentIds, parameters);
         coordinator.disableAnimationForTesting();
         return coordinator;
     }

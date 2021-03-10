@@ -13,27 +13,39 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import java.util.Map;
 
 /**
- * Onboarding coordinator factory to decide which onboarding subclass to use.
+ * Onboarding coordinator factory which facilitates the creation of onboarding coordinators.
  */
 public class OnboardingCoordinatorFactory {
-    /**
-     * Creates an onboarding coordinator ready to be shown in the bottom sheet.
-     */
-    public static BaseOnboardingCoordinator createBottomSheetOnboardingCoordinator(
-            String experimentIds, Map<String, String> parameters, Context context,
+    private final Context mContext;
+    private final BottomSheetController mBottomSheetController;
+    private final BrowserControlsStateProvider mBrowserControls;
+    private final CompositorViewHolder mCompositorViewHolder;
+
+    public OnboardingCoordinatorFactory(Context context,
             BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls,
             CompositorViewHolder compositorViewHolder) {
-        return new BottomSheetOnboardingCoordinator(experimentIds, parameters, context,
-                bottomSheetController, browserControls, compositorViewHolder,
-                bottomSheetController.getScrimCoordinator());
+        mContext = context;
+        mBottomSheetController = bottomSheetController;
+        mBrowserControls = browserControls;
+        mCompositorViewHolder = compositorViewHolder;
+    }
+
+    /**
+     * Creates an onboarding coordinator ready to be shown in the bottom sheet.
+     */
+    public BaseOnboardingCoordinator createBottomSheetOnboardingCoordinator(
+            String experimentIds, Map<String, String> parameters) {
+        return new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
+                mBottomSheetController, mBrowserControls, mCompositorViewHolder,
+                mBottomSheetController.getScrimCoordinator());
     }
 
     /**
      * Creates an onboarding coordinator that will appear as a standalong popup dialog.
      */
-    public static BaseOnboardingCoordinator createDialogOnboardingCoordinator(
-            String experimentIds, Map<String, String> parameters, Context context) {
-        return new DialogOnboardingCoordinator(experimentIds, parameters, context);
+    public BaseOnboardingCoordinator createDialogOnboardingCoordinator(
+            String experimentIds, Map<String, String> parameters) {
+        return new DialogOnboardingCoordinator(experimentIds, parameters, mContext);
     }
 }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,8 +45,9 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 BrowserControlsStateProvider browserControls,
                 CompositorViewHolder compositorViewHolder,
                 ActivityTabProvider activityTabProvider) {
-            super(context, bottomSheetController, browserControls, compositorViewHolder,
-                    activityTabProvider, bottomSheetController.getScrimCoordinator());
+            super(new OnboardingCoordinatorFactory(
+                          context, bottomSheetController, browserControls, compositorViewHolder),
+                    activityTabProvider);
         }
 
         @Override

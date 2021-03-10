@@ -54,6 +54,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName,
             @Nullable String originalDeeplink) {
+        OnboardingCoordinatorFactory onboardingCoordinatorFactory =
+                new OnboardingCoordinatorFactory(
+                        context, bottomSheetController, browserControls, compositorViewHolder);
         if (shouldStartTriggerScript(parameters)) {
             if (!AutofillAssistantPreferencesUtil.isProactiveHelpOn()) {
                 // Opt-out users who have disabled the proactive help Chrome setting.
@@ -85,13 +88,11 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             // Start trigger script and transition to regular flow on success.
             if (TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")
                     || !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))) {
-                AssistantTriggerScriptBridge triggerScriptBridge =
-                        new AssistantTriggerScriptBridge();
-                triggerScriptBridge.start(bottomSheetController, browserControls,
-                        compositorViewHolder, context, keyboardVisibilityDelegate,
-                        bottomInsetProvider, activityTabProvider, webContents,
-                        originalDeeplink != null ? originalDeeplink : initialUrl, parameters,
-                        experimentIds, new AssistantTriggerScriptBridge.Delegate() {
+                AssistantTriggerScriptBridge triggerScriptBridge = new AssistantTriggerScriptBridge(
+                        context, webContents, bottomSheetController, keyboardVisibilityDelegate,
+                        bottomInsetProvider, activityTabProvider, onboardingCoordinatorFactory);
+                triggerScriptBridge.start(originalDeeplink != null ? originalDeeplink : initialUrl,
+                        parameters, experimentIds, new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {
@@ -110,9 +111,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         }
 
         // Regular flow for starting without dedicated trigger script.
-        startAutofillAssistantRegular(bottomSheetController, browserControls, compositorViewHolder,
-                context, webContents, isChromeCustomTab, initialUrl, parameters, experimentIds,
-                callerAccount, userName);
+        startAutofillAssistantRegular(onboardingCoordinatorFactory, webContents, isChromeCustomTab,
+                initialUrl, parameters, experimentIds, callerAccount, userName);
     }
 
     /** Whether {@code parameters} indicate that a trigger script should be started. */
@@ -124,11 +124,11 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     /**
      * Starts a regular autofill assistant script. Shows the onboarding as necessary.
      */
-    private void startAutofillAssistantRegular(BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
-            Context context, @NonNull WebContents webContents, boolean isChromeCustomTab,
-            @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-            @Nullable String callerAccount, @Nullable String userName) {
+    private void startAutofillAssistantRegular(
+            OnboardingCoordinatorFactory onboardingCoordinatorFactory,
+            @NonNull WebContents webContents, boolean isChromeCustomTab, @NonNull String initialUrl,
+            Map<String, String> parameters, String experimentIds, @Nullable String callerAccount,
+            @Nullable String userName) {
         String intent = parameters.get(BaseOnboardingCoordinator.INTENT_IDENTFIER);
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
             AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN, intent);
@@ -139,9 +139,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         }
 
         BaseOnboardingCoordinator onboardingCoordinator =
-                OnboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(experimentIds,
-                        parameters, context, bottomSheetController, browserControls,
-                        compositorViewHolder);
+                onboardingCoordinatorFactory.createBottomSheetOnboardingCoordinator(
+                        experimentIds, parameters);
 
         // TODO(b/179648654): Consider to implement |onOnboardingUiChange| inside the coordinator.
         AutofillAssistantClient.onOnboardingUiChange(webContents, /* shown= */ true);
@@ -180,8 +179,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, CompositorViewHolder compositorViewHolder,
             ActivityTabProvider activityTabProvider) {
-        return new AutofillAssistantActionHandlerImpl(context, bottomSheetController,
-                browserControls, compositorViewHolder, activityTabProvider,
-                bottomSheetController.getScrimCoordinator());
+        return new AutofillAssistantActionHandlerImpl(
+                new OnboardingCoordinatorFactory(
+                        context, bottomSheetController, browserControls, compositorViewHolder),
+                activityTabProvider);
     }
 }
