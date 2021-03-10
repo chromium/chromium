@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.AllPages.PercentTotalBytesAds" units="%"
-    expires_after="2021-03-28">
+    expires_after="2022-03-28">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
