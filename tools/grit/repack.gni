@@ -53,7 +53,13 @@ template("repack") {
 
     script = "//tools/grit/pak_util.py"
 
-    inputs = invoker.sources
+    inputs = []
+    foreach(source, invoker.sources) {
+      inputs += [
+        source,
+        "${source}.info",
+      ]
+    }
     outputs = [
       invoker.output,
       "${invoker.output}.info",
