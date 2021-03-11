@@ -106,6 +106,7 @@ source_set("test_support") {
     "//ios/chrome/browser/sync",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }

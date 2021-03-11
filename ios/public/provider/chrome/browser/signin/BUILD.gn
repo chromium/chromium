@@ -72,6 +72,8 @@ source_set("constants") {
   sources = [
     "fake_chrome_identity_interaction_manager_constants.h",
     "fake_chrome_identity_interaction_manager_constants.mm",
+    "fake_chrome_identity_service_constants.h",
+    "fake_chrome_identity_service_constants.mm",
   ]
   deps = [ "//base" ]
 }
