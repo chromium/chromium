@@ -16,7 +16,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {
 
@@ -424,23 +423,6 @@ CompositorTimingHistory::CreateUMAReporter(UMACategory category) {
   return base::WrapUnique<CompositorTimingHistory::UMAReporter>(nullptr);
 }
 
-void CompositorTimingHistory::AsProtozeroInto(
-    perfetto::protos::pbzero::CompositorTimingHistory* state) const {
-  state->set_begin_main_frame_queue_critical_estimate_delta_us(
-      BeginMainFrameQueueDurationCriticalEstimate().InMicroseconds());
-  state->set_begin_main_frame_queue_not_critical_estimate_delta_us(
-      BeginMainFrameQueueDurationNotCriticalEstimate().InMicroseconds());
-  state->set_begin_main_frame_start_to_ready_to_commit_estimate_delta_us(
-      BeginMainFrameStartToReadyToCommitDurationEstimate().InMicroseconds());
-  state->set_commit_to_ready_to_activate_estimate_delta_us(
-      CommitToReadyToActivateDurationEstimate().InMicroseconds());
-  state->set_prepare_tiles_estimate_delta_us(
-      PrepareTilesDurationEstimate().InMicroseconds());
-  state->set_activate_estimate_delta_us(
-      ActivateDurationEstimate().InMicroseconds());
-  state->set_draw_estimate_delta_us(DrawDurationEstimate().InMicroseconds());
-}
-
 base::TimeTicks CompositorTimingHistory::Now() const {
   return base::TimeTicks::Now();
 }
@@ -509,6 +491,37 @@ base::TimeDelta CompositorTimingHistory::ActivateDurationEstimate() const {
 
 base::TimeDelta CompositorTimingHistory::DrawDurationEstimate() const {
   return draw_duration_history_.Percentile(kDrawEstimationPercentile);
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         BeginMainFrameQueueDurationCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameStartToReadyToCommitNotCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         BeginMainFrameQueueDurationNotCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameQueueToActivateCriticalEstimate() const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
+         ActivateDurationEstimate() +
+         BeginMainFrameQueueDurationCriticalEstimate();
+}
+
+base::TimeDelta
+CompositorTimingHistory::BeginMainFrameQueueToActivateNotCriticalEstimate()
+    const {
+  return BeginMainFrameStartToReadyToCommitDurationEstimate() +
+         CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
+         ActivateDurationEstimate() +
+         BeginMainFrameQueueDurationNotCriticalEstimate();
 }
 
 void CompositorTimingHistory::WillBeginImplFrame(

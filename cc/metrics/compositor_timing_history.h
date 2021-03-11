@@ -52,9 +52,6 @@ class CC_EXPORT CompositorTimingHistory {
 
   CompositorTimingHistory& operator=(const CompositorTimingHistory&) = delete;
 
-  void AsProtozeroInto(
-      perfetto::protos::pbzero::CompositorTimingHistory* state) const;
-
   // The main thread responsiveness depends heavily on whether or not the
   // on_critical_path flag is set, so we record response times separately.
   virtual base::TimeDelta BeginMainFrameQueueDurationCriticalEstimate() const;
@@ -67,6 +64,11 @@ class CC_EXPORT CompositorTimingHistory {
   virtual base::TimeDelta PrepareTilesDurationEstimate() const;
   virtual base::TimeDelta ActivateDurationEstimate() const;
   virtual base::TimeDelta DrawDurationEstimate() const;
+
+  base::TimeDelta BeginMainFrameStartToReadyToCommitCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameStartToReadyToCommitNotCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameQueueToActivateCriticalEstimate() const;
+  base::TimeDelta BeginMainFrameQueueToActivateNotCriticalEstimate() const;
 
   // State that affects when events should be expected/recorded/reported.
   void SetRecordingEnabled(bool enabled);
