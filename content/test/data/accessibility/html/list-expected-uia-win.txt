@@ -2,15 +2,15 @@ Document
 ++List
 ++++ListItem Name='tic'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='tic' IsControlElement=false
 ++++ListItem Name='tac'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='tac' IsControlElement=false
 ++++ListItem Name='toe'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='toe' IsControlElement=false
 ++List
 ++++ListItem Name='tic'

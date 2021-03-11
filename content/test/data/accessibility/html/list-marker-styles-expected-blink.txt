@@ -7,16 +7,16 @@ rootWebArea
 ++++++++++++inlineTextBox name='none'
 ++++++list
 ++++++++listItem listStyle=circle
-++++++++++listMarker name='◦ '
-++++++++++++staticText name='◦ '
-++++++++++++++inlineTextBox name='◦ '
+++++++++++listMarker name='%E2%97%A6 '
+++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++inlineTextBox name='%E2%97%A6 '
 ++++++++++staticText name='circle'
 ++++++++++++inlineTextBox name='circle'
 ++++++list
 ++++++++listItem listStyle=disc
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='disc'
 ++++++++++++inlineTextBox name='disc'
 ++++++list
@@ -27,9 +27,9 @@ rootWebArea
 ++++++++++++inlineTextBox name='image'
 ++++++list
 ++++++++listItem listStyle=square
-++++++++++listMarker name='■ '
-++++++++++++staticText name='■ '
-++++++++++++++inlineTextBox name='■ '
+++++++++++listMarker name='%E2%96%A0 '
+++++++++++++staticText name='%E2%96%A0 '
+++++++++++++++inlineTextBox name='%E2%96%A0 '
 ++++++++++staticText name='square'
 ++++++++++++inlineTextBox name='square'
 ++++++list
@@ -48,9 +48,9 @@ rootWebArea
 ++++++++++++inlineTextBox name='upper-roman'
 ++++++list
 ++++++++listItem listStyle=other
-++++++++++listMarker name='Ա. '
-++++++++++++staticText name='Ա. '
-++++++++++++++inlineTextBox name='Ա. '
+++++++++++listMarker name='%D4%B1. '
+++++++++++++staticText name='%D4%B1. '
+++++++++++++++inlineTextBox name='%D4%B1. '
 ++++++++++staticText name='armenian'
 ++++++++++++inlineTextBox name='armenian'
 ++++++list

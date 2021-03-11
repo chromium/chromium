@@ -1,14 +1,14 @@
 AXWebArea
 ++AXList AXSubrole=AXContentList
 ++++AXGroup AXDescription='Custom name'
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Item 1'
 ++++AXGroup
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Item 2'
 ++++AXGroup
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Item 3'

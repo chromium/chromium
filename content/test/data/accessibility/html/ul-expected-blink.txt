@@ -3,20 +3,20 @@ rootWebArea
 ++++genericContainer ignored
 ++++++list
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Item 1'
 ++++++++++++inlineTextBox name='Item 1'
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Item 2'
 ++++++++++++inlineTextBox name='Item 2'
 ++++++++listItem hierarchicalLevel=1
-++++++++++listMarker name='• '
-++++++++++++staticText name='• '
-++++++++++++++inlineTextBox name='• '
+++++++++++listMarker name='%E2%80%A2 '
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Item 3'
 ++++++++++++inlineTextBox name='Item 3'

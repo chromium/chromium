@@ -1,13 +1,13 @@
 [document web]
 ++[section]
-++++[math] name='𝐴 2 + 𝐵 2'
+++++[math] name='%F0%9D%90%B4 2 + %F0%9D%90%B5 2'
 ++++++[section]
-++++++++[static] name='𝐴'
+++++++++[static] name='%F0%9D%90%B4'
 ++++++[section]
 ++++++++[static] name='2'
 ++++++[section]
 ++++++++[static] name='+'
 ++++++[section]
-++++++++[static] name='𝐵'
+++++++++[static] name='%F0%9D%90%B5'
 ++++++[section]
 ++++++++[static] name='2'

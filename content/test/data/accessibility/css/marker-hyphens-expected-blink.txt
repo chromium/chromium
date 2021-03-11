@@ -3,45 +3,45 @@ rootWebArea
 ++++genericContainer ignored
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='foo­bar'
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%AD'
 ++++++++++++++inlineTextBox
 ++++++++++++++inlineTextBox name='bar'
 ++++++++listItem
 ++++++++++listMarker
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­'
-++++++++++++++inlineTextBox
-++++++++++++++inlineTextBox name='bar'
-++++++list
-++++++++listItem
-++++++++++listMarker name='foo­bar'
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­'
-++++++++++++++inlineTextBox
-++++++++++++++inlineTextBox name='bar'
-++++++++listItem
-++++++++++listMarker
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%AD'
 ++++++++++++++inlineTextBox
 ++++++++++++++inlineTextBox name='bar'
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='foo­bar'
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­bar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%AD'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
 ++++++++listItem
 ++++++++++listMarker
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­bar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%AD'
+++++++++++++++inlineTextBox
+++++++++++++++inlineTextBox name='bar'
 ++++++list
 ++++++++listItem
-++++++++++listMarker name='foo­bar'
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­bar'
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%ADbar'
 ++++++++listItem
 ++++++++++listMarker
-++++++++++++staticText name='foo­bar'
-++++++++++++++inlineTextBox name='foo­bar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%ADbar'
+++++++list
+++++++++listItem
+++++++++++listMarker name='foo%C2%ADbar'
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%ADbar'
+++++++++listItem
+++++++++++listMarker
+++++++++++++staticText name='foo%C2%ADbar'
+++++++++++++++inlineTextBox name='foo%C2%ADbar'

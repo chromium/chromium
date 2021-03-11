@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/escape.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 
@@ -165,7 +166,9 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     formatter->SetNodeFilters(scenario_.node_filters);
     std::string actual_contents =
         formatter->Format(GetRootAccessibilityNode(web_contents));
-    return base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
+    std::string escaped_contents = net::EscapeNonASCII(actual_contents);
+
+    return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   }
 

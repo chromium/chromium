@@ -1,21 +1,21 @@
 AXWebArea
 ++AXList
 ++++AXGroup
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXGroup
 ++++++++AXStaticText AXValue='One'
 ++++AXGroup
-++++++AXListMarker AXValue='•'
-++++++++AXStaticText AXValue='•'
+++++++AXListMarker AXValue='%E2%80%A2'
+++++++++AXStaticText AXValue='%E2%80%A2'
 ++++++AXGroup
 ++++++++AXStaticText AXValue='Two'
 ++++AXGroup
-++++++AXListMarker AXValue='• '
-++++++++AXStaticText AXValue='• '
+++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXStaticText AXValue='%E2%80%A2 '
 ++++++AXStaticText AXValue='Four'
 ++AXGroup
-++++AXListMarker AXValue='•'
-++++++AXStaticText AXValue='•'
+++++AXListMarker AXValue='%E2%80%A2'
+++++++AXStaticText AXValue='%E2%80%A2'
 ++++AXGroup
 ++++++AXStaticText AXValue='Three'

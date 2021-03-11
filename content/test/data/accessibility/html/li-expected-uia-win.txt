@@ -2,13 +2,13 @@ Document
 ++List
 ++++ListItem Name='Custom name'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='Item 1' IsControlElement=false
 ++++ListItem Name='Item 2'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='Item 2' IsControlElement=false
 ++++ListItem Name='Item 3'
 ++++++Group
-++++++++Text Name='• ' IsControlElement=false
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
 ++++++Text Name='Item 3' IsControlElement=false

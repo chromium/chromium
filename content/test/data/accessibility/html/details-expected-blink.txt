@@ -5,7 +5,7 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle collapsed name='details tag'
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='▸ '
+++++++++++++++staticText ignored name='%E2%96%B8 '
 ++++++++++++staticText name='details tag'
 ++++++++++++++inlineTextBox name='details tag'
 ++++++++genericContainer ignored invisible
@@ -14,7 +14,7 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++disclosureTriangle name='details tag open'
 ++++++++++++listMarker ignored
-++++++++++++++staticText ignored name='▾ '
+++++++++++++++staticText ignored name='%E2%96%BE '
 ++++++++++++staticText name='details tag open'
 ++++++++++++++inlineTextBox name='details tag open'
 ++++++++genericContainer ignored

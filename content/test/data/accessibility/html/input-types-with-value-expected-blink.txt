@@ -21,10 +21,10 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
-++++++++textField editable protected name='Password:' value='•••' editableRoot=true
+++++++++textField editable protected name='Password:' value='%E2%80%A2%E2%80%A2%E2%80%A2' editableRoot=true
 ++++++++++genericContainer editable
-++++++++++++staticText editable name='•••'
-++++++++++++++inlineTextBox name='•••'
+++++++++++++staticText editable name='%E2%80%A2%E2%80%A2%E2%80%A2'
+++++++++++++++inlineTextBox name='%E2%80%A2%E2%80%A2%E2%80%A2'
 ++++++labelText
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
