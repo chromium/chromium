@@ -7,14 +7,32 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
+#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 
 namespace optimization_guide {
 
+namespace {
+
+const char kPageTopicsModelMetadataTypeUrl[] =
+    "type.googleapis.com/"
+    "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
+
+}  // namespace
+
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider) {
+  proto::Any model_metadata;
+  model_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
+  proto::PageTopicsModelMetadata page_topics_model_metadata;
+  page_topics_model_metadata.add_supported_output(
+      proto::PAGE_TOPICS_SUPPORTED_OUTPUT_SENSITIVITY);
+  page_topics_model_metadata.add_supported_output(
+      proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
+  page_topics_model_metadata.SerializeToString(model_metadata.mutable_value());
+
   page_topics_model_executor_ = std::make_unique<BertModelExecutor>(
       optimization_guide_decider, proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
-      /*model_metadata=*/base::nullopt,
+      model_metadata,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }
@@ -49,7 +67,11 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
 
 base::Optional<int64_t>
 PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
-  // TODO(crbug/1177102): Extract this from |page_topics_model_executor|.
+  base::Optional<proto::PageTopicsModelMetadata> model_metadata =
+      page_topics_model_executor_->ParsedSupportedFeaturesForLoadedModel<
+          proto::PageTopicsModelMetadata>();
+  if (model_metadata)
+    return model_metadata->version();
   return base::nullopt;
 }
 

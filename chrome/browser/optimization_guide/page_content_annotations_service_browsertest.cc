@@ -15,6 +15,7 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -89,6 +90,12 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
         "chrome/test/data/optimization_guide");
     ASSERT_TRUE(embedded_test_server()->Start());
 
+    proto::Any any_metadata;
+    any_metadata.set_type_url(
+        "type.googleapis.com/com.foo.PageTopicsModelMetadata");
+    proto::PageTopicsModelMetadata page_topics_model_metadata;
+    page_topics_model_metadata.set_version(123);
+    page_topics_model_metadata.SerializeToString(any_metadata.mutable_value());
     base::FilePath source_root_dir;
     base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
     base::FilePath model_file_path =
@@ -99,8 +106,8 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
             .AppendASCII("bert_page_topics_model.tflite");
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->OverrideTargetModelFileForTesting(
-            proto::OPTIMIZATION_TARGET_PAGE_TOPICS,
-            /*model_metadata=*/base::nullopt, model_file_path);
+            proto::OPTIMIZATION_TARGET_PAGE_TOPICS, any_metadata,
+            model_file_path);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -137,9 +144,13 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   PageContentAnnotationsService* service =
       PageContentAnnotationsServiceFactory::GetForProfile(browser()->profile());
 
-  // TODO(crbug/1177102): Make sure this propagates from model if building with
-  // TFLite.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  base::Optional<int64_t> model_version = service->GetPageTopicsModelVersion();
+  EXPECT_TRUE(model_version.has_value());
+  EXPECT_EQ(123, *model_version);
+#else
   EXPECT_FALSE(service->GetPageTopicsModelVersion().has_value());
+#endif
 }
 
 }  // namespace optimization_guide

@@ -74,6 +74,7 @@ source_set("unit_tests") {
     sources += [
       "bert_model_executor_unittest.cc",
       "optimization_target_model_executor_unittest.cc",
+      "page_content_annotations_model_manager_unittest.cc",
     ]
   }
   deps = [

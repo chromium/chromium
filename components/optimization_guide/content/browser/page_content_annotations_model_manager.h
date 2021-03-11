@@ -36,6 +36,8 @@ class PageContentAnnotationsModelManager {
   base::Optional<int64_t> GetPageTopicsModelVersion() const;
 
  private:
+  friend class PageContentAnnotationsModelManagerTest;
+
   // Invoked when the page topics model has finished executing.
   void OnPageTopicsModelExecutionCompleted(
       PageContentAnnotatedCallback callback,
