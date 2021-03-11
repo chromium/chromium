@@ -155,7 +155,14 @@ class ProfileWindowCountBrowserTest
   Profile* profile_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
+// TODO(crbug.com/1186994): Test is flaky on Linux Dbg.
+#if defined(OS_LINUX) && !defined(NDEBUG)
+#define MAYBE_CountProfileWindows DISABLED_CountProfileWindows
+#else
+#define MAYBE_CountProfileWindows CountProfileWindows
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
+                       MAYBE_CountProfileWindows) {
   DCHECK_EQ(0, GetWindowCount());
 
   // Create a browser and check the count.
