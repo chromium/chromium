@@ -43,3 +43,5 @@ Local Modifications:
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) are defined. crbug.com/1163794
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - Exclude //build/config/mac:sdk_inputs dependency from iOS builds
+ - MultiprocessDeathTest.* (multiprocess_posix_test.cc) explicitly use the
+   "fast" gtest death-test style, rather than "threadsafe".

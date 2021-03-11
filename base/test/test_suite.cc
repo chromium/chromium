@@ -380,6 +380,21 @@ void TestSuite::InitializeFromCommandLine(int argc, wchar_t** argv) {
 void TestSuite::PreInitialize() {
   DCHECK(!is_initialized_);
 
+  // The default death_test_style of "fast" is a frequent source of subtle test
+  // flakiness. And on some platforms like macOS, use of system libraries after
+  // fork() but before exec() is unsafe. Using the threadsafe style by default
+  // alleviates these concerns.
+  //
+  // However, the threasafe style does not work reliably on Android, so that
+  // will keep the default of "fast". See https://crbug.com/815537,
+  // https://github.com/google/googletest/issues/1496, and
+  // https://github.com/google/googletest/issues/2093.
+  // TODO(danakj): Determine if all death tests should be skipped on Android
+  // (many already are, such as for DCHECK-death tests).
+#if !defined(OS_ANDROID)
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+#endif
+
 #if defined(OS_WIN)
   testing::GTEST_FLAG(catch_exceptions) = false;
 #endif

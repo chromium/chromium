@@ -798,6 +798,8 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
 
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
+  // Fails under "threadsafe" mode.
+  testing::GTEST_FLAG(death_test_style) = "fast";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
