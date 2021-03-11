@@ -5,28 +5,28 @@
 // Creates and iframe and appends it to the body element. Make sure the caller
 // has a body element!
 function createAdIframe() {
-    let frame = document.createElement('iframe');
-    document.body.appendChild(frame);
-    return frame;
+  const frame = document.createElement('iframe');
+  document.body.appendChild(frame);
+  return frame;
 }
 
 function createAdIframeWithSrc(src) {
-  let frame = document.createElement('iframe');
+  const frame = document.createElement('iframe');
   frame.src = src;
   document.body.appendChild(frame);
   return frame;
 }
 
 function createAdIframeAtRect(x, y, width, height) {
-  let frame = document.createElement('iframe');
-  frame.style.border = "0px none transparent";
-  frame.style.overflow = "hidden";
-  frame.style.position = "fixed";
+  const frame = document.createElement('iframe');
+  frame.style.border = '0px none transparent';
+  frame.style.overflow = 'hidden';
+  frame.style.position = 'fixed';
   frame.style.left = x;
   frame.style.top = y;
-  frame.scrolling = "no";
-  frame.frameborder="0";
-  frame.allowTransparency="true";
+  frame.scrolling = 'no';
+  frame.frameborder = '0';
+  frame.allowTransparency = 'true';
   frame.width = width;
   frame.height = height;
   document.body.appendChild(frame);
@@ -34,10 +34,10 @@ function createAdIframeAtRect(x, y, width, height) {
 }
 
 function createStickyAdIframeAtBottomOfViewport(width, height) {
-  let frame = document.createElement('iframe');
-  frame.style.position = "fixed";
-  frame.style.bottom = "0px";
-  frame.scrolling = "no";
+  const frame = document.createElement('iframe');
+  frame.style.position = 'fixed';
+  frame.style.bottom = '0px';
+  frame.scrolling = 'no';
   frame.width = width;
   frame.height = height;
   document.body.appendChild(frame);

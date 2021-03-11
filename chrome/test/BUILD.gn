@@ -629,11 +629,11 @@ if (is_android) {
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
       "$root_out_dir/browser_tests.pak",
+      "//components/test/data/ads_observer/",
       "//components/test/data/payments/",
       "//chrome/test/data/android/customtabs/",
       "//chrome/test/data/banners/",
       "//chrome/test/data/ssl/",
-      "//chrome/test/data/ads_observer/",
       "//content/test/data/",
     ]
   }
@@ -943,6 +943,7 @@ if (!is_android) {
       "//components/test/data/optimization_guide/",
       "//components/test/data/payments/",
       "//components/test/data/ad_tagging/",
+      "//components/test/data/ads_observer/",
       "//components/test/data/subresource_filter/",
       "//components/test/data/translate/",
       "//components/test/data/update_client/",
