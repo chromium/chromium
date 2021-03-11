@@ -987,10 +987,11 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
             EvalJs(shell()->web_contents(), "document.cookie"));
 }
 
+// TODO(crbug.com/1186584) Test is flaky.
 // Test that a cross-site navigation from prerendering browser context will
 // cancel prerendering.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       PrerenderedPageCrossSiteNavigation) {
+                       DISABLED_PrerenderedPageCrossSiteNavigation) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
