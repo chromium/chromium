@@ -661,12 +661,52 @@ TEST_F(CartServiceTest, TestDomainToNameMapping) {
 
 // Tests domain to cart URL mapping.
 TEST_F(CartServiceTest, TestDomainToCartURLMapping) {
-  EXPECT_EQ("https://www.amazon.com/gp/cart/view.html?ref_=nav_cart",
+  EXPECT_EQ("https://www.amazon.com/gp/cart/view.html",
             getDomainCartURL("amazon.com"));
 
-  EXPECT_EQ("https://cart.ebay.com", getDomainCartURL("ebay.com"));
+  EXPECT_EQ("https://cart.payments.ebay.com/", getDomainCartURL("ebay.com"));
 
   EXPECT_EQ("", getDomainCartURL("example.com"));
+}
+
+// Tests looking up cart URL and merchant name when adding cart.
+TEST_F(CartServiceTest, TestLookupCartInfo) {
+  CartDB* cart_db_ = service_->GetDB();
+  const char* amazon_domain = "amazon.com";
+  base::RunLoop run_loop[3];
+  cart_db::ChromeCartContentProto merchant_A_proto =
+      BuildProto(amazon_domain, kMockMerchantURLA);
+  service_->AddCart(amazon_domain, merchant_A_proto);
+  task_environment_.RunUntilIdle();
+
+  merchant_A_proto.set_merchant_cart_url(getDomainCartURL(amazon_domain));
+  merchant_A_proto.set_merchant(getDomainName(amazon_domain));
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result1 = {{amazon_domain, merchant_A_proto}};
+  cart_db_->LoadCart(
+      amazon_domain,
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), result1));
+  run_loop[1].Run();
+
+  // Use default value when no info can be found in the lookup table.
+  service_->DeleteCart(amazon_domain);
+  const char* fake_domain = "fake.com";
+  const char* fake_cart_url = "fake.com/cart";
+  cart_db::ChromeCartContentProto fake_proto =
+      BuildProto(fake_domain, fake_cart_url);
+  service_->AddCart(fake_domain, fake_proto);
+  task_environment_.RunUntilIdle();
+
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result2 = {{fake_domain, fake_proto}};
+  cart_db_->LoadCart(
+      fake_domain,
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), result2));
+  run_loop[2].Run();
 }
 
 class CartServiceTestWithFeature : public CartServiceTest {

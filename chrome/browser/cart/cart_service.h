@@ -112,7 +112,7 @@ class CartService : public history::HistoryServiceObserver,
                             std::vector<CartDB::KeyAndValue> proto_pairs);
   // A callback to handle adding a cart.
   void onAddCart(const std::string& domain,
-                 const cart_db::ChromeCartContentProto& proto,
+                 cart_db::ChromeCartContentProto proto,
                  bool success,
                  std::vector<CartDB::KeyAndValue> proto_pairs);
 

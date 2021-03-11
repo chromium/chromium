@@ -375,14 +375,22 @@ void CartService::SetCartRemovedStatus(
 }
 
 void CartService::onAddCart(const std::string& domain,
-                            const cart_db::ChromeCartContentProto& proto,
+                            cart_db::ChromeCartContentProto proto,
                             bool success,
                             std::vector<CartDB::KeyAndValue> proto_pairs) {
   if (!success) {
     return;
   }
+  std::string* merchant_name = domain_name_mapping_->FindStringKey(domain);
+  if (merchant_name) {
+    proto.set_merchant(*merchant_name);
+  }
+  std::string* cart_url = domain_cart_url_mapping_->FindStringKey(domain);
+  if (proto.product_image_urls().size() == 0 && cart_url) {
+    proto.set_merchant_cart_url(*cart_url);
+  }
   if (proto_pairs.size() == 0) {
-    cart_db_->AddCart(domain, proto,
+    cart_db_->AddCart(domain, std::move(proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -398,11 +406,11 @@ void CartService::onAddCart(const std::string& domain,
   if (proto.product_image_urls().size() == 0) {
     existing_proto.set_is_hidden(false);
     existing_proto.set_timestamp(proto.timestamp());
-    cart_db_->AddCart(domain, existing_proto,
+    cart_db_->AddCart(domain, std::move(existing_proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
   } else {
-    cart_db_->AddCart(domain, proto,
+    cart_db_->AddCart(domain, std::move(proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
   }

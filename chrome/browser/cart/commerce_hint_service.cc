@@ -22,38 +22,6 @@ namespace cart {
 
 namespace {
 
-const std::map<std::string, std::string>& GetDomainToTitle() {
-  static const base::NoDestructor<std::map<std::string, std::string>> table({
-      // TODO(crbug/1164236): add more known sites.
-      {"amazon.com", "Amazon"},
-      {"ebay.com", "eBay"},
-      {"etsy.com", "Etsy"},
-      {"amazon.co.uk", "Amazon"},
-      {"walmart.com", "Walmart"},
-      {"steampowered.com", "Steam"},
-      {"target.com", "Target"},
-      {"hm.com", "H&M"},
-      {"homedepot.com", "Home Depot"},
-      {"lowes.com", "Lowe's"},
-      {"bestbuy.com", "Best Buy"},
-  });
-  return *table;
-}
-
-const std::map<std::string, std::string>& GetDomainToCart() {
-  static const base::NoDestructor<std::map<std::string, std::string>> table({
-      // TODO(crbug/1164236): add more known sites.
-      {"walmart.com", "https://walmart.com/cart"},
-      {"amazon.com", "https://www.amazon.com/gp/cart/view.html"},
-      {"hm.com", "https://www2.hm.com/en_us/cart"},
-      {"ebay.com", "https://cart.payments.ebay.com/"},
-      {"etsy.com", "https://www.etsy.com/cart"},
-      {"bestbuy.com", "https://www.bestbuy.com/cart"},
-      {"homedepot.com", "https://www.homedepot.com/mycart/home"},
-  });
-  return *table;
-}
-
 // TODO(crbug/1164236): support multiple cart systems in the same domain.
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -148,27 +116,9 @@ void CommerceHintService::ConstructCartProto(
     cart_db::ChromeCartContentProto* proto,
     const GURL& potential_cart_url) {
   const std::string& domain = eTLDPlusOne(potential_cart_url);
-
-  std::string title;
-  const std::map<std::string, std::string>& domain_to_title =
-      GetDomainToTitle();
-  if (domain_to_title.count(domain) > 0) {
-    title = domain_to_title.at(domain);
-  } else {
-    title = domain;
-  }
-
-  std::string cart_url;
-  const std::map<std::string, std::string>& domain_to_cart = GetDomainToCart();
-  if (domain_to_cart.count(domain) > 0) {
-    cart_url = domain_to_cart.at(domain);
-  } else {
-    cart_url = potential_cart_url.spec();
-  }
-
-  proto->set_key(std::move(domain));
-  proto->set_merchant(std::move(title));
-  proto->set_merchant_cart_url(std::move(cart_url));
+  proto->set_key(domain);
+  proto->set_merchant(domain);
+  proto->set_merchant_cart_url(potential_cart_url.spec());
   proto->set_timestamp(base::Time::Now().ToDoubleT());
 }
 
