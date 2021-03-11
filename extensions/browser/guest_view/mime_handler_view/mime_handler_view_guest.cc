@@ -80,11 +80,8 @@ GuestViewBase* MimeHandlerViewGuest::Create(WebContents* owner_web_contents) {
 
 MimeHandlerViewGuest::MimeHandlerViewGuest(WebContents* owner_web_contents)
     : GuestView<MimeHandlerViewGuest>(owner_web_contents),
-      delegate_(
-          ExtensionsAPIClient::Get()->CreateMimeHandlerViewGuestDelegate(this)),
-      embedder_frame_process_id_(content::ChildProcessHost::kInvalidUniqueID),
-      embedder_frame_routing_id_(MSG_ROUTING_NONE),
-      embedder_widget_routing_id_(MSG_ROUTING_NONE) {}
+      delegate_(ExtensionsAPIClient::Get()->CreateMimeHandlerViewGuestDelegate(
+          this)) {}
 
 MimeHandlerViewGuest::~MimeHandlerViewGuest() {
   // Before attaching is complete, the instance ID is not valid.
@@ -106,12 +103,12 @@ MimeHandlerViewGuest::~MimeHandlerViewGuest() {
 
 content::RenderWidgetHost* MimeHandlerViewGuest::GetOwnerRenderWidgetHost() {
   DCHECK_NE(embedder_widget_routing_id_, MSG_ROUTING_NONE);
-  return content::RenderWidgetHost::FromID(embedder_frame_process_id_,
+  return content::RenderWidgetHost::FromID(embedder_frame_id_.child_id,
                                            embedder_widget_routing_id_);
 }
 
 content::SiteInstance* MimeHandlerViewGuest::GetOwnerSiteInstance() {
-  DCHECK_NE(embedder_frame_routing_id_, MSG_ROUTING_NONE);
+  DCHECK_NE(embedder_frame_id_.frame_routing_id, MSG_ROUTING_NONE);
   content::RenderFrameHost* rfh = GetEmbedderFrame();
   return rfh ? rfh->GetSiteInstance() : nullptr;
 }
@@ -120,12 +117,12 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() {
   return true;
 }
 
-void MimeHandlerViewGuest::SetEmbedderFrame(int process_id, int routing_id) {
-  DCHECK_NE(MSG_ROUTING_NONE, routing_id);
-  DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_routing_id_);
+void MimeHandlerViewGuest::SetEmbedderFrame(
+    content::GlobalFrameRoutingId frame_id) {
+  DCHECK_NE(MSG_ROUTING_NONE, frame_id.frame_routing_id);
+  DCHECK_EQ(MSG_ROUTING_NONE, embedder_frame_id_.frame_routing_id);
 
-  embedder_frame_process_id_ = process_id;
-  embedder_frame_routing_id_ = routing_id;
+  embedder_frame_id_ = frame_id;
 
   content::RenderFrameHost* rfh = GetEmbedderFrame();
 
@@ -349,8 +346,8 @@ bool MimeHandlerViewGuest::SaveFrame(const GURL& url,
 
 void MimeHandlerViewGuest::OnRenderFrameHostDeleted(int process_id,
                                                     int routing_id) {
-  if (process_id == embedder_frame_process_id_ &&
-      routing_id == embedder_frame_routing_id_) {
+  if (process_id == embedder_frame_id_.child_id &&
+      routing_id == embedder_frame_id_.frame_routing_id) {
     Destroy(/*also_delete=*/true);
   }
 }
@@ -472,8 +469,7 @@ void MimeHandlerViewGuest::FuseBeforeUnloadControl(
 }
 
 content::RenderFrameHost* MimeHandlerViewGuest::GetEmbedderFrame() {
-  return content::RenderFrameHost::FromID(embedder_frame_process_id_,
-                                          embedder_frame_routing_id_);
+  return content::RenderFrameHost::FromID(embedder_frame_id_);
 }
 
 base::WeakPtr<MimeHandlerViewGuest> MimeHandlerViewGuest::GetWeakPtr() {
