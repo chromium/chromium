@@ -671,7 +671,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
-    enum="BooleanEnabled" expires_after="2021-04-30">
+    enum="BooleanEnabled" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -683,30 +683,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaption.Duration.CaptionBubbleHidden"
-    units="ms" expires_after="2021-07-11">
-  <owner>abigailbklein@google.com</owner>
-  <owner>evliu@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Measures the duration of an audio stream with the caption bubble hidden.
-    Logged once on the destruction of the SpeechRecognitionRecognizerImpl.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.LiveCaption.Duration.CaptionBubbleVisible"
+<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}"
     units="ms" expires_after="2021-09-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Measures the duration of an audio stream with the caption bubble visible.
-    Logged once on the destruction of the SpeechRecognitionRecognizerImpl.
+    Measures how long SODA was running while the Live Caption UI was
+    {Visibility}. Logged once on the destruction of the
+    SpeechRecognitionRecognizerImpl.
   </summary>
+  <token key="Visibility">
+    <variant name="Hidden"
+        summary="hidden. This might be because it was closed by user or
+                 because there was an error passing transcriptions to the UI"/>
+    <variant name="Visible" summary="visible and showing transcriptions"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2021-04-30">
+    enum="BooleanEnabled" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -723,7 +719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.ExpandBubble"
-    enum="LiveCaptionExpandBubbleEvent" expires_after="2021-04-30">
+    enum="LiveCaptionExpandBubbleEvent" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -757,21 +753,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session"
-    enum="LiveCaptionSessionEvent" expires_after="2021-08-22">
+    enum="LiveCaptionSessionEvent" expires_after="2021-09-05">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Logged when there's a change in the lifetime of a Live Caption audio stream:
-    When a session started and captions began arriving from the service, when a
-    session ended because the audio stream finished, or when the session ended
-    because a user clicked the close button on the caption bubble.
+    Logged when the Live Caption bubble appears and disappears. Stream start
+    indicates when the bubble appears due to an audio session starting. Stream
+    end indicates when the bubble disappears due to a tab change, a navigation,
+    or the audio session ending and the bubble fading out due to inactivity.
+    Close button clicked indicates when the bubble disappears due to a user
+    clicking the close button on the caption bubble.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.UseSodaForLiveCaption"
-    enum="BooleanEnabled" expires_after="2021-07-18">
+    enum="BooleanEnabled" expires_after="2021-09-05">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

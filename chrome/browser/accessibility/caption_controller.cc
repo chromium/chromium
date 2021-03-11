@@ -67,6 +67,9 @@ void CaptionController::RegisterProfilePrefs(
 }
 
 void CaptionController::Init() {
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
+                            base::FeatureList::IsEnabled(media::kLiveCaption));
+
   // Hidden behind a feature flag.
   if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return;
@@ -78,8 +81,6 @@ void CaptionController::Init() {
     return;
 #endif
 
-  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
-                            base::FeatureList::IsEnabled(media::kLiveCaption));
   base::UmaHistogramBoolean(
       "Accessibility.LiveCaption.UseSodaForLiveCaption",
       base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
