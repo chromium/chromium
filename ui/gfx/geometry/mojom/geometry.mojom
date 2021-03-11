@@ -33,6 +33,7 @@ struct SizeF {
   float height;
 };
 
+[Stable]
 struct Rect {
   int32 x;
   int32 y;

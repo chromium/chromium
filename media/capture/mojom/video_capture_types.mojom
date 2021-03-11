@@ -7,6 +7,7 @@ module media.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+[Stable, Extensible]
 enum VideoCapturePixelFormat {
   UNKNOWN,
   I420,
@@ -41,24 +42,28 @@ enum VideoCapturePixelFormat {
   RGBAF16,
 };
 
+[Stable, Extensible]
 enum ResolutionChangePolicy {
   FIXED_RESOLUTION,
   FIXED_ASPECT_RATIO,
   ANY_WITHIN_LIMIT,
 };
 
+[Stable, Extensible]
 enum PowerLineFrequency {
   DEFAULT,
   HZ_50,
   HZ_60
 };
 
+[Stable, Extensible]
 enum VideoFacingMode {
   NONE,
   USER,
   ENVIRONMENT
 };
 
+[Stable, Extensible]
 enum VideoCaptureApi {
   LINUX_V4L2_SINGLE_PLANE,
   WIN_MEDIA_FOUNDATION,
@@ -75,12 +80,14 @@ enum VideoCaptureApi {
   UNKNOWN
 };
 
+[Stable, Extensible]
 enum VideoCaptureTransportType {
   // For MACOSX_AVFOUNDATION Api, identifies devices that are built-in or USB.
   MACOSX_USB_OR_BUILT_IN,
   OTHER_TRANSPORT
 };
 
+[Stable, Extensible]
 enum VideoCaptureBufferType {
   kSharedMemory,
 
@@ -96,12 +103,14 @@ enum VideoCaptureBufferType {
 };
 
 // Represents capture device's support for different controls.
+[Stable]
 struct VideoCaptureControlSupport {
   bool pan;
   bool tilt;
   bool zoom;
 };
 
+[Stable, Extensible]
 enum VideoCaptureError {
   kNone,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested,
@@ -231,6 +240,7 @@ enum VideoCaptureError {
   kCrosHalV3BufferManagerFailedToReserveBuffers,
 };
 
+[Stable, Extensible]
 enum VideoCaptureFrameDropReason {
   kNone,
   kDeviceClientFrameHasInvalidFormat,
@@ -260,12 +270,14 @@ enum VideoCaptureFrameDropReason {
   kRendererSinkFrameDelivererIsNotStarted
 };
 
+[Stable]
 struct VideoCaptureFormat {
   gfx.mojom.Size frame_size;
   float frame_rate;
   VideoCapturePixelFormat pixel_format;
 };
 
+[Stable]
 struct VideoCaptureParams {
   VideoCaptureFormat requested_format;
   VideoCaptureBufferType buffer_type;
@@ -289,6 +301,7 @@ struct VideoCaptureParams {
 // int::max used to signal no limit.
 //
 // |require_mapped_frame| reports that the consumer needs a cpu readable frame.
+[Stable]
 struct VideoFrameFeedback {
   double resource_utilization;
 
@@ -313,6 +326,7 @@ struct PlaneStrides {
 // |device_id| represents a unique id of a physical device. Since the same
 // physical device may be accessible through different APIs |capture_api|
 // disambiguates the API.
+[Stable]
 struct VideoCaptureDeviceDescriptor {
   string display_name;
   string device_id;
@@ -325,6 +339,7 @@ struct VideoCaptureDeviceDescriptor {
 
 // Bundles a VideoCaptureDeviceDescriptor with corresponding supported
 // video formats.
+[Stable]
 struct VideoCaptureDeviceInfo {
   VideoCaptureDeviceDescriptor descriptor;
   array<VideoCaptureFormat> supported_formats;
