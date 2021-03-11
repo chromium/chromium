@@ -4,6 +4,7 @@
 
 #include "content/common/android/cpu_time_metrics.h"
 
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -24,8 +25,12 @@ void WorkForOneCpuSec(base::WaitableEvent* event) {
   }
 }
 
+constexpr int32_t kAllocatorMemorySize = 64 << 10;  // 64 KiB
+
 TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   base::test::TaskEnvironment task_environment;
+  base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0,
+                                                        "CpuTimeMetricsTest");
   base::HistogramTester histograms;
   base::Thread thread1("StackSamplingProfiler");
 
@@ -73,10 +78,13 @@ TEST(CpuTimeMetricsTest, RecordsMetricsForeground) {
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
+  base::GlobalHistogramAllocator::ReleaseForTesting();
 }
 
 TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   base::test::TaskEnvironment task_environment;
+  base::GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0,
+                                                        "CpuTimeMetricsTest");
   base::HistogramTester histograms;
   base::Thread thread1("StackSamplingProfiler");
 
@@ -124,6 +132,7 @@ TEST(CpuTimeMetricsTest, RecordsMetricsBackground) {
   EXPECT_GE(thread_cpu_seconds, 1);
 
   thread1.Stop();
+  base::GlobalHistogramAllocator::ReleaseForTesting();
 }
 
 }  // namespace

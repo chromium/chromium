@@ -16,6 +16,7 @@
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/process/process_metrics.h"
@@ -373,6 +374,19 @@ class ProcessCpuTimeTaskObserver
 
     // This might overflow. We only care that it is different for each cycle.
     current_cycle_++;
+
+    // Skip reporting any values into histograms until histogram persistence is
+    // set up. Otherwise, we would create the histograms without persistence and
+    // lose data at process termination (particularly in child processes).
+    if (!base::GlobalHistogramAllocator::Get()) {
+      // If this is the first iteration, still initialize baseline values (e.g.
+      // idle time) for the approximate per-cpu breakdown, but don't record any
+      // values into histograms.
+      if (last_time_in_state_walltime_.is_null())
+        CollectAndReportApproxTimeInState(base::TimeDelta());
+      collection_in_progress_.store(false, std::memory_order_relaxed);
+      return;
+    }
 
     // GetCumulativeCPUUsage() may return a negative value if sampling failed.
     base::TimeDelta cumulative_cpu_time =
