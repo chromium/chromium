@@ -68965,6 +68965,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Closed"/>
 </enum>
 
+<enum name="SecurePaymentConfirmationEnrollDialogResult">
+  <int value="0" label="Closed"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Accepted"/>
+</enum>
+
+<enum name="SecurePaymentConfirmationEnrollDialogShown">
+  <int value="0" label="CouldNotShow"/>
+  <int value="1" label="Shown"/>
+</enum>
+
+<enum name="SecurePaymentConfirmationEnrollSystemPromptResult">
+  <int value="0" label="Canceled"/>
+  <int value="1" label="Accepted"/>
+</enum>
+
 <enum name="SecurePaymentConfirmationSystemPromptResult">
   <int value="0" label="Canceled"/>
   <int value="1" label="Accepted"/>

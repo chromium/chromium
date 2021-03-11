@@ -54,6 +54,8 @@ void PaymentCredential::DownloadIconAndShowUserPrompt(
   if (state_ != State::kIdle || !IsCurrentStateValid() || !instrument ||
       instrument->display_name.empty() ||
       !UrlUtil::IsOriginAllowedToUseWebPaymentApis(instrument->icon)) {
+    RecordFirstDialogShown(
+        SecurePaymentConfirmationEnrollDialogShown::kCouldNotShow);
     Reset();
     std::move(callback).Run(
         mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
@@ -67,6 +69,8 @@ void PaymentCredential::DownloadIconAndShowUserPrompt(
           ->GetWeakPtr();
   ui_controller_token_ = ui_controller_->GetTokenIfAvailable();
   if (!ui_controller_token_) {
+    RecordFirstDialogShown(
+        SecurePaymentConfirmationEnrollDialogShown::kCouldNotShow);
     Reset();
     std::move(callback).Run(
         mojom::PaymentCredentialUserPromptStatus::FAILED_TO_DOWNLOAD_ICON);
@@ -101,6 +105,9 @@ void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
     return;
   }
 
+  RecordFirstSystemPromptResult(
+      SecurePaymentConfirmationEnrollSystemPromptResult::kAccepted);
+
   storage_callback_ = std::move(callback);
   state_ = State::kStoringCredential;
   data_service_request_handle_ =
@@ -112,7 +119,12 @@ void PaymentCredential::StorePaymentCredentialAndHideUserPrompt(
 }
 
 void PaymentCredential::HideUserPrompt(HideUserPromptCallback callback) {
-  DCHECK_EQ(State::kMakingCredential, state_);
+  if (state_ == State::kMakingCredential) {
+    RecordFirstSystemPromptResult(
+        SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled);
+  } else {
+    NOTREACHED();
+  }
   DCHECK(IsCurrentStateValid());
 
   Reset();
@@ -130,6 +142,7 @@ void PaymentCredential::OnWebDataServiceRequestDone(
 
   auto callback = std::move(storage_callback_);
   Reset();
+
   std::move(callback).Run(
       static_cast<WDResult<bool>*>(result.get())->GetValue()
           ? mojom::PaymentCredentialStorageStatus::SUCCESS
@@ -213,6 +226,8 @@ void PaymentCredential::DidDownloadIcon(
       instrument_name.empty() ||
       request_id != pending_icon_download_request_id_.value() ||
       bitmaps.empty()) {
+    RecordFirstDialogShown(
+        SecurePaymentConfirmationEnrollDialogShown::kCouldNotShow);
     Reset();
     return;
   }
@@ -227,6 +242,7 @@ void PaymentCredential::DidDownloadIcon(
   encoded_icon_ =
       std::vector<uint8_t>(raw_data->front_as<uint8_t>(),
                            raw_data->front_as<uint8_t>() + raw_data->size());
+  RecordFirstDialogShown(SecurePaymentConfirmationEnrollDialogShown::kShown);
 
   state_ = State::kShowingUserPrompt;
   ui_controller_->ShowDialog(
@@ -236,8 +252,7 @@ void PaymentCredential::DidDownloadIcon(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PaymentCredential::OnUserResponseFromUI(
-    bool user_confirm_from_ui) {
+void PaymentCredential::OnUserResponseFromUI(bool user_confirm_from_ui) {
   if (state_ != State::kShowingUserPrompt || !IsCurrentStateValid() ||
       !user_confirm_from_ui) {
     Reset();
@@ -247,6 +262,22 @@ void PaymentCredential::OnUserResponseFromUI(
   state_ = State::kMakingCredential;
   std::move(prompt_callback_)
       .Run(mojom::PaymentCredentialUserPromptStatus::USER_CONFIRM_FROM_UI);
+}
+
+void PaymentCredential::RecordFirstDialogShown(
+    SecurePaymentConfirmationEnrollDialogShown shown) {
+  if (!is_dialog_shown_recorded_) {
+    is_dialog_shown_recorded_ = true;
+    RecordEnrollDialogShown(shown);
+  }
+}
+
+void PaymentCredential::RecordFirstSystemPromptResult(
+    SecurePaymentConfirmationEnrollSystemPromptResult result) {
+  if (!is_system_prompt_result_recorded_) {
+    is_system_prompt_result_recorded_ = true;
+    RecordEnrollSystemPromptResult(result);
+  }
 }
 
 void PaymentCredential::Reset() {
@@ -267,9 +298,21 @@ void PaymentCredential::Reset() {
                          FAILED_TO_DOWNLOAD_ICON);
     }
   }
+
   if (web_data_service_ && data_service_request_handle_) {
     web_data_service_->CancelRequest(data_service_request_handle_.value());
   }
+
+  if (state_ == State::kDownloadingIcon) {
+    RecordFirstDialogShown(
+        SecurePaymentConfirmationEnrollDialogShown::kCouldNotShow);
+  }
+
+  if (state_ == State::kMakingCredential) {
+    RecordFirstSystemPromptResult(
+        SecurePaymentConfirmationEnrollSystemPromptResult::kCanceled);
+  }
+
   data_service_request_handle_.reset();
   encoded_icon_.clear();
   pending_icon_download_request_id_.reset();
@@ -277,6 +320,8 @@ void PaymentCredential::Reset() {
   if (ui_controller_)
     ui_controller_->CloseDialog();
   ui_controller_.reset();
+  is_dialog_shown_recorded_ = false;
+  is_system_prompt_result_recorded_ = false;
   state_ = State::kIdle;
 }
 

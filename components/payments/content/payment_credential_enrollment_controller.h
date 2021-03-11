@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_credential_enrollment_model.h"
+#include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -94,6 +95,9 @@ class PaymentCredentialEnrollmentController
       content::NavigationHandle* navigation_handle) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
+  void RecordFirstCloseReason(
+      SecurePaymentConfirmationEnrollDialogResult result);
+
   content::GlobalFrameRoutingId initiator_frame_routing_id_;
 
   ResponseCallback response_callback_;
@@ -108,6 +112,8 @@ class PaymentCredentialEnrollmentController
 
   ObserverForTest* observer_for_test_ = nullptr;
   base::WeakPtr<ScopedToken> token_;
+
+  bool is_user_response_recorded_ = false;
 
   base::WeakPtrFactory<PaymentCredentialEnrollmentController> weak_ptr_factory_{
       this};

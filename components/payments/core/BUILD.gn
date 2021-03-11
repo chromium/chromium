@@ -59,6 +59,8 @@ static_library("core") {
     "payments_validators.h",
     "secure_payment_confirmation_instrument.cc",
     "secure_payment_confirmation_instrument.h",
+    "secure_payment_confirmation_metrics.cc",
+    "secure_payment_confirmation_metrics.h",
     "url_util.cc",
     "url_util.h",
   ]

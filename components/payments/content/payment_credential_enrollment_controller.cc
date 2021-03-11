@@ -54,6 +54,7 @@ void PaymentCredentialEnrollmentController::ShowDialog(
 #endif  // OS_ANDROID
   DCHECK(!view_);
 
+  is_user_response_recorded_ = false;
   initiator_frame_routing_id_ = initiator_frame_routing_id;
   response_callback_ = std::move(response_callback);
 
@@ -106,6 +107,8 @@ void PaymentCredentialEnrollmentController::ShowProcessingSpinner() {
 }
 
 void PaymentCredentialEnrollmentController::CloseDialog() {
+  RecordFirstCloseReason(SecurePaymentConfirmationEnrollDialogResult::kClosed);
+
   if (view_) {
     view_->HideDialog();
     view_.reset();
@@ -113,6 +116,9 @@ void PaymentCredentialEnrollmentController::CloseDialog() {
 }
 
 void PaymentCredentialEnrollmentController::OnCancel() {
+  RecordFirstCloseReason(
+      SecurePaymentConfirmationEnrollDialogResult::kCanceled);
+
   // Prevent use-after-move on `response_callback_` due to CloseDialog()
   // re-entering into OnCancel().
   ResponseCallback callback = std::move(response_callback_);
@@ -127,6 +133,9 @@ void PaymentCredentialEnrollmentController::OnCancel() {
 
 void PaymentCredentialEnrollmentController::OnConfirm() {
   DCHECK(web_contents());
+
+  RecordFirstCloseReason(
+      SecurePaymentConfirmationEnrollDialogResult::kAccepted);
 
   ShowProcessingSpinner();
 
@@ -172,6 +181,14 @@ void PaymentCredentialEnrollmentController::RenderFrameDeleted(
       render_frame_host ==
           content::RenderFrameHost::FromID(initiator_frame_routing_id_)) {
     CloseDialog();
+  }
+}
+
+void PaymentCredentialEnrollmentController::RecordFirstCloseReason(
+    SecurePaymentConfirmationEnrollDialogResult result) {
+  if (!is_user_response_recorded_ && view_) {
+    is_user_response_recorded_ = true;
+    RecordEnrollDialogResult(result);
   }
 }
 
