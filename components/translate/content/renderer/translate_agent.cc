@@ -108,7 +108,7 @@ void TranslateAgent::PrepareForUrl(const GURL& url) {
   ResetPage();
 }
 
-void TranslateAgent::PageCaptured(const base::string16& contents) {
+void TranslateAgent::PageCaptured(const std::u16string& contents) {
   // Get the document language as set by WebKit from the http-equiv
   // meta tag for "content-language".  This may or may not also
   // have a value derived from the actual Content-Language HTTP

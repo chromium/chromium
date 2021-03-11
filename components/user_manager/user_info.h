@@ -25,10 +25,10 @@ class USER_MANAGER_EXPORT UserInfo {
   virtual ~UserInfo();
 
   // Gets the display name for the user.
-  virtual base::string16 GetDisplayName() const = 0;
+  virtual std::u16string GetDisplayName() const = 0;
 
   // Gets the given name of the user.
-  virtual base::string16 GetGivenName() const = 0;
+  virtual std::u16string GetGivenName() const = 0;
 
   // Gets the display email address for the user.
   // The display email address might contains some periods in the email name

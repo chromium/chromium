@@ -40,10 +40,10 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Returns the title string to be displayed for the InfoBar.
   // Defaults to having not title. Currently only used on iOS.
-  virtual base::string16 GetTitleText() const;
+  virtual std::u16string GetTitleText() const;
 
   // Returns the message string to be displayed for the InfoBar.
-  virtual base::string16 GetMessageText() const = 0;
+  virtual std::u16string GetMessageText() const = 0;
 
   // Returns the elide behavior for the message string.
   // Not supported on Android.
@@ -54,7 +54,7 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
 
   // Returns the label for the specified button. The default implementation
   // returns "OK" for the OK button and "Cancel" for the Cancel button.
-  virtual base::string16 GetButtonLabel(InfoBarButton button) const;
+  virtual std::u16string GetButtonLabel(InfoBarButton button) const;
 
   // Returns whether or not the OK button will trigger a UAC elevation prompt on
   // Windows.

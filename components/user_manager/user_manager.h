@@ -82,17 +82,17 @@ class USER_MANAGER_EXPORT UserManager {
   // Data retrieved from user account.
   class UserAccountData {
    public:
-    UserAccountData(const base::string16& display_name,
-                    const base::string16& given_name,
+    UserAccountData(const std::u16string& display_name,
+                    const std::u16string& given_name,
                     const std::string& locale);
     ~UserAccountData();
-    const base::string16& display_name() const { return display_name_; }
-    const base::string16& given_name() const { return given_name_; }
+    const std::u16string& display_name() const { return display_name_; }
+    const std::u16string& given_name() const { return given_name_; }
     const std::string& locale() const { return locale_; }
 
    private:
-    const base::string16 display_name_;
-    const base::string16 given_name_;
+    const std::u16string display_name_;
+    const std::u16string given_name_;
     const std::string locale_;
 
     DISALLOW_COPY_AND_ASSIGN(UserAccountData);
@@ -224,7 +224,7 @@ class USER_MANAGER_EXPORT UserManager {
   // Saves user's displayed name in local state preferences.
   // Ignored If there is no such user.
   virtual void SaveUserDisplayName(const AccountId& account_id,
-                                   const base::string16& display_name) = 0;
+                                   const std::u16string& display_name) = 0;
 
   // Updates data upon User Account download.
   virtual void UpdateUserAccountData(const AccountId& account_id,
@@ -233,7 +233,7 @@ class USER_MANAGER_EXPORT UserManager {
   // Returns the display name for user |account_id| if it is known (was
   // previously set by a |SaveUserDisplayName| call).
   // Otherwise, returns an empty string.
-  virtual base::string16 GetUserDisplayName(
+  virtual std::u16string GetUserDisplayName(
       const AccountId& account_id) const = 0;
 
   // Saves user's displayed (non-canonical) email in local state preferences.
@@ -371,7 +371,7 @@ class USER_MANAGER_EXPORT UserManager {
   virtual const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const = 0;
 
   // Returns string from resources bundle.
-  virtual base::string16 GetResourceStringUTF16(int string_id) const = 0;
+  virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
 
   // Schedules CheckAndResolveLocale using given task runner and
   // |on_resolved_callback| as reply callback.

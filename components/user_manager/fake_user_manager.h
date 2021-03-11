@@ -65,7 +65,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   User* GetActiveUser() override;
   void SwitchActiveUser(const AccountId& account_id) override;
   void SaveUserDisplayName(const AccountId& account_id,
-                           const base::string16& display_name) override;
+                           const std::u16string& display_name) override;
   const AccountId& GetGuestAccountId() const override;
   bool IsFirstExecAfterBoot() const override;
   bool IsGuestAccountId(const AccountId& account_id) const override;
@@ -90,7 +90,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   }
   void SaveForceOnlineSignin(const AccountId& account_id,
                              bool force_online_signin) override {}
-  base::string16 GetUserDisplayName(const AccountId& account_id) const override;
+  std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override {}
   bool IsCurrentUserOwner() const override;
@@ -126,7 +126,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
-  base::string16 GetResourceStringUTF16(int string_id) const override;
+  std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;

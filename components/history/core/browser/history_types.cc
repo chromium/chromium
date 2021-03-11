@@ -195,7 +195,7 @@ QueryURLResult& QueryURLResult::operator=(QueryURLResult&&) noexcept = default;
 
 MostVisitedURL::MostVisitedURL() {}
 
-MostVisitedURL::MostVisitedURL(const GURL& url, const base::string16& title)
+MostVisitedURL::MostVisitedURL(const GURL& url, const std::u16string& title)
     : url(url), title(title) {}
 
 MostVisitedURL::MostVisitedURL(const MostVisitedURL& other) = default;
@@ -261,7 +261,7 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
                                        bool floc_allowed,
-                                       base::Optional<base::string16> title)
+                                       base::Optional<std::u16string> title)
     : url(url),
       time(time),
       context_id(context_id),

@@ -305,7 +305,7 @@ bool WebViewPlugin::WebViewHelper::CanUpdateLayout() {
 }
 
 void WebViewPlugin::WebViewHelper::SetToolTipText(
-    const base::string16& tooltip_text,
+    const std::u16string& tooltip_text,
     base::i18n::TextDirection hint) {
   if (plugin_->container_) {
     plugin_->container_->GetElement().SetAttribute(

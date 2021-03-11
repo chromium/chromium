@@ -95,7 +95,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
       model->AddFolder(model->other_node(), 0, ASCIIToUTF16("foo"));
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.word_phrase_query.reset(new base::string16);
+  query.word_phrase_query.reset(new std::u16string);
   // No nodes are returned for empty string.
   *query.word_phrase_query = ASCIIToUTF16("");
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
@@ -153,7 +153,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesUrl) {
 
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.url.reset(new base::string16);
+  query.url.reset(new std::u16string);
   *query.url = ASCIIToUTF16("https://www.google.com/");
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
@@ -189,7 +189,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesTitle) {
 
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.title.reset(new base::string16);
+  query.title.reset(new std::u16string);
   *query.title = ASCIIToUTF16("Google");
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
@@ -227,20 +227,20 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   QueryFields query;
 
   // Test all fields matching.
-  query.word_phrase_query.reset(new base::string16(ASCIIToUTF16("www")));
-  query.url.reset(new base::string16(ASCIIToUTF16("https://www.google.com/")));
-  query.title.reset(new base::string16(ASCIIToUTF16("Google")));
+  query.word_phrase_query.reset(new std::u16string(ASCIIToUTF16("www")));
+  query.url.reset(new std::u16string(ASCIIToUTF16("https://www.google.com/")));
+  query.title.reset(new std::u16string(ASCIIToUTF16("Google")));
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
   EXPECT_TRUE(nodes[0] == node1);
   nodes.clear();
 
-  std::unique_ptr<base::string16>* fields[] = {&query.word_phrase_query,
+  std::unique_ptr<std::u16string>* fields[] = {&query.word_phrase_query,
                                                &query.url, &query.title};
 
   // Test two fields matching.
   for (size_t i = 0; i < base::size(fields); i++) {
-    std::unique_ptr<base::string16> original_value(fields[i]->release());
+    std::unique_ptr<std::u16string> original_value(fields[i]->release());
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
     ASSERT_EQ(1U, nodes.size());
     EXPECT_TRUE(nodes[0] == node1);
@@ -250,8 +250,8 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 
   // Test two fields matching with one non-matching field.
   for (size_t i = 0; i < base::size(fields); i++) {
-    std::unique_ptr<base::string16> original_value(fields[i]->release());
-    fields[i]->reset(new base::string16(ASCIIToUTF16("fjdkslafjkldsa")));
+    std::unique_ptr<std::u16string> original_value(fields[i]->release());
+    fields[i]->reset(new std::u16string(ASCIIToUTF16("fjdkslafjkldsa")));
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
     ASSERT_EQ(0U, nodes.size());
     nodes.clear();
@@ -263,14 +263,14 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 #if !defined(OS_IOS)
 TEST_F(BookmarkUtilsTest, DISABLED_PasteBookmarkFromURL) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  const base::string16 url_text = ASCIIToUTF16("http://www.google.com/");
+  const std::u16string url_text = ASCIIToUTF16("http://www.google.com/");
   const BookmarkNode* new_folder = model->AddFolder(
       model->bookmark_bar_node(), 0, ASCIIToUTF16("New_Folder"));
 
   // Write blank text to clipboard.
   {
     ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(base::string16());
+    clipboard_writer.WriteText(std::u16string());
   }
   // Now we shouldn't be able to paste from the clipboard.
   EXPECT_FALSE(CanPasteFromClipboard(model.get(), new_folder));
@@ -326,8 +326,8 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
 // children of parent.
 TEST_F(BookmarkUtilsTest, DISABLED_MakeTitleUnique) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  const base::string16 url_text = ASCIIToUTF16("http://www.google.com/");
-  const base::string16 title_text = ASCIIToUTF16("foobar");
+  const std::u16string url_text = ASCIIToUTF16("http://www.google.com/");
+  const std::u16string title_text = ASCIIToUTF16("foobar");
   const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
 
   const BookmarkNode* node =
@@ -403,7 +403,7 @@ TEST_F(BookmarkUtilsTest, MAYBE_CutToClipboard) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->AddObserver(this);
 
-  base::string16 title(ASCIIToUTF16("foo"));
+  std::u16string title(ASCIIToUTF16("foo"));
   GURL url("http://foo.com");
   const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, title, url);
   const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
@@ -584,7 +584,7 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   EXPECT_TRUE(model->mobile_node()->children().empty());
   EXPECT_TRUE(managed_node->children().empty());
 
-  const base::string16 title = base::ASCIIToUTF16("Title");
+  const std::u16string title = base::ASCIIToUTF16("Title");
   const GURL url("http://google.com");
   model->AddURL(model->bookmark_bar_node(), 0, title, url);
   model->AddURL(model->other_node(), 0, title, url);

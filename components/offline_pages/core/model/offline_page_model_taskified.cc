@@ -407,7 +407,7 @@ void OfflinePageModelTaskified::OnCreateArchiveDone(
     ArchiverResult archiver_result,
     const GURL& saved_url,
     const base::FilePath& file_path,
-    const base::string16& title,
+    const std::u16string& title,
     int64_t file_size,
     const std::string& digest) {
   if (archiver_result != ArchiverResult::SUCCESSFULLY_CREATED) {

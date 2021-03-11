@@ -53,7 +53,7 @@ using CrxUpdateItem = update_client::CrxUpdateItem;
 struct ComponentInfo {
   ComponentInfo(const std::string& id,
                 const std::string& fingerprint,
-                const base::string16& name,
+                const std::u16string& name,
                 const base::Version& version);
   ComponentInfo(const ComponentInfo& other);
   ComponentInfo(ComponentInfo&& other);
@@ -61,7 +61,7 @@ struct ComponentInfo {
 
   const std::string id;
   const std::string fingerprint;
-  const base::string16 name;
+  const std::u16string name;
   const base::Version version;
 };
 

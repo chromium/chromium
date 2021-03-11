@@ -34,7 +34,7 @@ namespace url_formatter {
 // Returns the canonicalized scheme, or the empty string when |text| is only
 // whitespace.
 std::string SegmentURL(const std::string& text, url::Parsed* parts);
-base::string16 SegmentURL(const base::string16& text, url::Parsed* parts);
+std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts);
 
 // Attempts to fix common problems in user-typed text, making some "smart"
 // adjustments to obviously-invalid input where possible.

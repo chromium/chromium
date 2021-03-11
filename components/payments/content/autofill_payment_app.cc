@@ -96,7 +96,7 @@ bool AutofillPaymentApp::CanPreselect() const {
   return IsCompleteForPayment();
 }
 
-base::string16 AutofillPaymentApp::GetMissingInfoLabel() const {
+std::u16string AutofillPaymentApp::GetMissingInfoLabel() const {
   return GetCompletionMessageForCard(
       GetCompletionStatusForCard(credit_card_, app_locale_, billing_profiles_));
 }
@@ -131,11 +131,11 @@ std::string AutofillPaymentApp::GetId() const {
   return credit_card_.guid();
 }
 
-base::string16 AutofillPaymentApp::GetLabel() const {
+std::u16string AutofillPaymentApp::GetLabel() const {
   return credit_card_.NetworkAndLastFourDigits();
 }
 
-base::string16 AutofillPaymentApp::GetSublabel() const {
+std::u16string AutofillPaymentApp::GetSublabel() const {
   return credit_card_.GetInfo(
       autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), app_locale_);
 }
@@ -183,7 +183,7 @@ bool AutofillPaymentApp::HandlesPayerPhone() const {
 void AutofillPaymentApp::OnFullCardRequestSucceeded(
     const autofill::payments::FullCardRequest& /* full_card_request */,
     const autofill::CreditCard& card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   DCHECK(delegate_);
   credit_card_ = card;
   cvc_ = cvc;

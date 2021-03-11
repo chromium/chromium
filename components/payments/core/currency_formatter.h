@@ -37,7 +37,7 @@ class CurrencyFormatter {
   // return value may contain non-breaking space and is ready for display. In
   // the case of a failure in initialization of the formatter or during
   // formatter, this method will return |amount|.
-  base::string16 Format(const std::string& amount);
+  std::u16string Format(const std::string& amount);
 
   // Returns the formatted currency code (<= 6 characters including ellipsis if
   // applicable).

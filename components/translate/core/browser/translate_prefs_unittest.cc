@@ -107,9 +107,9 @@ class TranslatePrefsTest : public testing::Test {
 
   // Returns a vector of display names from the elements of the given
   // |language_list|.
-  std::vector<base::string16> ExtractDisplayNames(
+  std::vector<std::u16string> ExtractDisplayNames(
       const std::vector<TranslateLanguageInfo>& language_list) const {
-    std::vector<base::string16> output;
+    std::vector<std::u16string> output;
     for (const auto& item : language_list) {
       output.push_back(base::UTF8ToUTF16(item.display_name));
     }
@@ -305,9 +305,9 @@ TEST_F(TranslatePrefsTest, GetLanguageInfoListOutput) {
   language_list.clear();
   TranslatePrefs::GetLanguageInfoList("en-US", true /* translate_allowed */,
                                       &language_list);
-  const std::vector<base::string16> display_names =
+  const std::vector<std::u16string> display_names =
       ExtractDisplayNames(language_list);
-  std::vector<base::string16> sorted(display_names);
+  std::vector<std::u16string> sorted(display_names);
   l10n_util::SortVectorWithStringKey("en-US", &sorted, false);
 
   EXPECT_THAT(display_names, ElementsAreArray(sorted));

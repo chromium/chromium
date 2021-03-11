@@ -124,7 +124,7 @@ void InitAwareTileService::OnTileClicked(const std::string& tile_id) {
 
 void InitAwareTileService::OnQuerySelected(
     const base::Optional<std::string>& parent_tile_id,
-    const base::string16& query_text) {
+    const std::u16string& query_text) {
   if (IsReady()) {
     tile_service_->OnQuerySelected(std::move(parent_tile_id), query_text);
   } else if (!IsFailed()) {

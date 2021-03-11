@@ -41,7 +41,7 @@ class PageTextAgent
   // this class would like to get a page dump. If so, the returned callback
   // should be ran with the text, and |max_size| will be updated to a bigger
   // value iff this class wants more text than that.
-  base::OnceCallback<void(const base::string16&)>
+  base::OnceCallback<void(const std::u16string&)>
   MaybeRequestTextDumpOnLayoutEvent(blink::WebMeaningfulLayout event,
                                     uint32_t* max_size);
 
@@ -59,7 +59,7 @@ class PageTextAgent
  private:
   // Called when the text dump is done and it can be sent to |consumer|.
   void OnPageTextDump(mojo::PendingRemote<mojom::PageTextConsumer> consumer,
-                      const base::string16& content);
+                      const std::u16string& content);
 
   // Keeps track of the text dump events that have been requested. Entries are
   // only present between being added in |RequestPageTextDump| and

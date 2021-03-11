@@ -61,7 +61,7 @@ void TranslateInternalsHandler::GetLanguages(base::DictionaryValue* dict) {
 
   for (auto it = language_codes.begin(); it != language_codes.end(); ++it) {
     const std::string& lang_code = *it;
-    base::string16 lang_name =
+    std::u16string lang_name =
         l10n_util::GetDisplayNameForLocale(lang_code, app_locale, false);
     dict->SetString(lang_code, lang_name);
   }

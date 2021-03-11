@@ -79,7 +79,7 @@ TEST(LanguageDetectionModelTest, ReliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
-  base::string16 contents =
+  std::u16string contents =
       base::ASCIIToUTF16("This is a page apparently written in English.");
   std::string language = language_detection_model.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
@@ -101,7 +101,7 @@ TEST(LanguageDetectionModelTest, UnreliableLanguageDetermination) {
   bool is_prediction_reliable;
   float model_reliability_score = 0.0;
   std::string predicted_language;
-  base::string16 contents = base::ASCIIToUTF16("e");
+  std::u16string contents = base::ASCIIToUTF16("e");
   std::string language = language_detection_model.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,
       &is_prediction_reliable, model_reliability_score);
@@ -165,7 +165,7 @@ TEST(LanguageDetectionModelTest, LongTextLanguageDetemination) {
       "产品的简报和公告 提交该申请后无法进行更改 请确认您的选择是正确的 "
       "要更改您的国家 地区 请在此表的最上端更改您的";
 
-  base::string16 contents = base::UTF8ToUTF16(zh_content_string);
+  std::u16string contents = base::UTF8ToUTF16(zh_content_string);
   EXPECT_GE(contents.length(), 250u * 3u);
   std::string language = language_detection_model.DeterminePageLanguage(
       std::string("ja"), std::string(), contents, &predicted_language,

@@ -41,9 +41,9 @@ class SystemMediaControlsWin : public SystemMediaControls {
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override;
   void SetPlaybackStatus(PlaybackStatus status) override;
-  void SetTitle(const base::string16& title) override;
-  void SetArtist(const base::string16& artist) override;
-  void SetAlbum(const base::string16& album) override {}
+  void SetTitle(const std::u16string& title) override;
+  void SetArtist(const std::u16string& artist) override;
+  void SetAlbum(const std::u16string& album) override {}
   void SetThumbnail(const SkBitmap& bitmap) override;
   void ClearThumbnail() override;
   void ClearMetadata() override;

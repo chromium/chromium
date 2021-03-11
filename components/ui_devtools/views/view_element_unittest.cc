@@ -67,7 +67,7 @@ class NamedTestView : public views::View {
   METADATA_HEADER(NamedTestView);
 
   // For custom properties test.
-  base::string16 GetTooltipText(const gfx::Point& p) const override {
+  std::u16string GetTooltipText(const gfx::Point& p) const override {
     return base::ASCIIToUTF16("This is the tooltip");
   }
 

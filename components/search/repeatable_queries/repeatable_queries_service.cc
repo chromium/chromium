@@ -39,7 +39,7 @@ const size_t kMaxQueries = 2;
 bool JsonToRepeatableQueriesData(const base::Value& root_value,
                                  std::vector<RepeatableQuery>* data) {
   // 1st element is the query. 2nd element is the list of results.
-  base::string16 query;
+  std::u16string query;
   const base::ListValue* root_list = nullptr;
   const base::ListValue* results_list = nullptr;
   if (!root_value.GetAsList(&root_list) || !root_list->GetString(0, &query) ||
@@ -56,7 +56,7 @@ bool JsonToRepeatableQueriesData(const base::Value& root_value,
     return false;
   }
 
-  base::string16 suggestion;
+  std::u16string suggestion;
   for (size_t index = 0; results_list->GetString(index, &suggestion); ++index) {
     RepeatableQuery result;
     result.query = base::CollapseWhitespace(suggestion, false);
@@ -231,7 +231,7 @@ void RepeatableQueriesService::SigninStatusChanged() {
 }
 
 GURL RepeatableQueriesService::GetQueryDestinationURL(
-    const base::string16& query,
+    const std::u16string& query,
     const TemplateURL* search_provider) {
   DCHECK(search_provider);
 
@@ -491,7 +491,7 @@ void RepeatableQueriesService::DeletionResponseLoaded(
 }
 
 void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabase(
-    const base::string16& query) {
+    const std::u16string& query) {
   deletion_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -501,7 +501,7 @@ void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabase(
 }
 
 void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabaseTask(
-    const base::string16& query,
+    const std::u16string& query,
     history::URLDatabase* url_db) {
   // Fail if the in-memory URLDatabase is not available.
   if (!url_db)
@@ -519,10 +519,10 @@ void RepeatableQueriesService::NotifyObservers() {
   }
 }
 
-bool RepeatableQueriesService::IsQueryDeleted(const base::string16& query) {
+bool RepeatableQueriesService::IsQueryDeleted(const std::u16string& query) {
   return base::Contains(deleted_repeatable_queries_, query);
 }
 
-void RepeatableQueriesService::MarkQueryAsDeleted(const base::string16& query) {
+void RepeatableQueriesService::MarkQueryAsDeleted(const std::u16string& query) {
   deleted_repeatable_queries_.insert(query);
 }

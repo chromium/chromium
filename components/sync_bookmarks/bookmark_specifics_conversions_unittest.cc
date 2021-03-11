@@ -563,7 +563,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const base::string16 kTitle = base::ASCIIToUTF16("bar");
+  const std::u16string kTitle = base::ASCIIToUTF16("bar");
   const GURL kUrl = GURL("http://foo.com");
   const base::Time kCreationTime = base::Time::Now();
 
@@ -597,7 +597,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const base::string16 kTitle = base::ASCIIToUTF16("foobar");
+  const std::u16string kTitle = base::ASCIIToUTF16("foobar");
 
   auto meta_info_map = std::make_unique<bookmarks::BookmarkNode::MetaInfoMap>();
   const std::string kKey = "key";

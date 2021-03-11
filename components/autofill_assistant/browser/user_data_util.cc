@@ -18,7 +18,7 @@ namespace autofill_assistant {
 namespace {
 
 // TODO: Share this helper function with use_address_action.
-base::string16 GetProfileFullName(const autofill::AutofillProfile& profile) {
+std::u16string GetProfileFullName(const autofill::AutofillProfile& profile) {
   return autofill::data_util::JoinNameParts(
       profile.GetRawInfo(autofill::NAME_FIRST),
       profile.GetRawInfo(autofill::NAME_MIDDLE),

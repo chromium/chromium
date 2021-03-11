@@ -142,7 +142,7 @@ class IconCacherTestBase : public ::testing::Test {
 class IconCacherTestPopularSites : public IconCacherTestBase {
  protected:
   IconCacherTestPopularSites()
-      : site_(base::string16(),  // title, unused
+      : site_(std::u16string(),  // title, unused
               GURL("http://url.google/"),
               GURL("http://url.google/icon.png"),
               GURL("http://url.google/favicon.ico"),

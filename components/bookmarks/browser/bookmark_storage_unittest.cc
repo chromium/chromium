@@ -25,7 +25,7 @@ std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->ClearStore();
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-  model->AddURL(bookmark_bar, 0, base::string16(), GURL("http://url1.com"));
+  model->AddURL(bookmark_bar, 0, std::u16string(), GURL("http://url1.com"));
   return model;
 }
 

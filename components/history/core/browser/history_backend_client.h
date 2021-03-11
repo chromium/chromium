@@ -16,7 +16,7 @@ namespace history {
 
 struct URLAndTitle {
   GURL url;
-  base::string16 title;
+  std::u16string title;
 };
 
 class HistoryBackendClient {

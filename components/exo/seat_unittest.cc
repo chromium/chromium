@@ -146,7 +146,7 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
       0xe2, 0x9d, 0x84,       // SNOWFLAKE
       0xf0, 0x9f, 0x94, 0xa5  // FIRE
   };
-  base::string16 converted_data;
+  std::u16string converted_data;
   EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
                                 sizeof(data), &converted_data));
 
@@ -159,7 +159,7 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
 
   RunReadingTask();
 
-  base::string16 clipboard;
+  std::u16string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard, converted_data);
@@ -182,7 +182,7 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
       0xe2, 0x9d, 0x84,       // SNOWFLAKE
       0xf0, 0x9f, 0x94, 0xa5  // FIRE
   };
-  base::string16 converted_data;
+  std::u16string converted_data;
   EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
                                 sizeof(data), &converted_data));
 
@@ -194,7 +194,7 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
 
   RunReadingTask();
 
-  base::string16 clipboard;
+  std::u16string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard, converted_data);
@@ -211,7 +211,7 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
       0x44, 0x27,              // SNOWFLAKE
       0x3d, 0xd8, 0x25, 0xdd,  // FIRE
   };
-  base::string16 converted_data;
+  std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
   converted_data.push_back(0xdd25);
@@ -225,7 +225,7 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
 
   RunReadingTask();
 
-  base::string16 clipboard;
+  std::u16string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard, converted_data);
@@ -249,7 +249,7 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
       0x27, 0x44,              // SNOWFLAKE
       0xd8, 0x3d, 0xdd, 0x25,  // FIRE
   };
-  base::string16 converted_data;
+  std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
   converted_data.push_back(0xdd25);
@@ -263,7 +263,7 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
 
   RunReadingTask();
 
-  base::string16 clipboard;
+  std::u16string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard, converted_data);
@@ -292,7 +292,7 @@ TEST_F(SeatTest, SetSelectionTextEmptyString) {
 
   RunReadingTask();
 
-  base::string16 clipboard;
+  std::u16string clipboard;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard);
   EXPECT_EQ(clipboard.size(), 0u);

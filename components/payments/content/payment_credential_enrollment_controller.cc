@@ -47,7 +47,7 @@ PaymentCredentialEnrollmentController::
 void PaymentCredentialEnrollmentController::ShowDialog(
     content::GlobalFrameRoutingId initiator_frame_routing_id,
     std::unique_ptr<SkBitmap> instrument_icon,
-    const base::string16& instrument_name,
+    const std::u16string& instrument_name,
     ResponseCallback response_callback) {
 #if defined(OS_ANDROID)
   NOTREACHED();
@@ -76,7 +76,7 @@ void PaymentCredentialEnrollmentController::ShowDialog(
       web_contents()->GetBrowserContext()->IsOffTheRecord()
           ? l10n_util::GetStringUTF16(
                 IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION)
-          : base::string16());
+          : std::u16string());
 
   model_.set_accept_button_label(l10n_util::GetStringUTF16(
       IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL));

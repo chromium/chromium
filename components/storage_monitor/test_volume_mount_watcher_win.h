@@ -35,7 +35,7 @@ class TestVolumeMountWatcherWin : public VolumeMountWatcherWin {
 
   void AddDeviceForTesting(const base::FilePath& device_path,
                            const std::string& device_id,
-                           const base::string16& device_name,
+                           const std::u16string& device_name,
                            uint64_t total_size_in_bytes);
 
   void SetAttachedDevicesFake();

@@ -20,45 +20,45 @@ class AutofillProfile;
 namespace payments {
 
 // Helper function to create a shipping address label from an autofill profile.
-base::string16 GetShippingAddressLabelFromAutofillProfile(
+std::u16string GetShippingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale);
 
 // Helper function to create a billing address label from an autofill profile.
-base::string16 GetBillingAddressLabelFromAutofillProfile(
+std::u16string GetBillingAddressLabelFromAutofillProfile(
     const autofill::AutofillProfile& profile,
     const std::string& locale);
 
 // Gets the informational message to be displayed in the shipping address
 // selector view when there are no valid shipping options.
-base::string16 GetShippingAddressSelectorInfoMessage(
+std::u16string GetShippingAddressSelectorInfoMessage(
     PaymentShippingType shipping_type);
 
 // Gets the appropriate display string for the Shipping Address string for the
 // given PaymentShippingType.
-base::string16 GetShippingAddressSectionString(
+std::u16string GetShippingAddressSectionString(
     PaymentShippingType shipping_type);
 
 #if defined(OS_IOS)
 // Gets the appropriate display string for the Choose Shipping Address string
 // for the given PaymentShippingType.
-base::string16 GetChooseShippingAddressButtonLabel(
+std::u16string GetChooseShippingAddressButtonLabel(
     PaymentShippingType shipping_type);
 
 // Gets the appropriate display string for the Add Shipping Address string
 // for the given PaymentShippingType.
-base::string16 GetAddShippingAddressButtonLabel(
+std::u16string GetAddShippingAddressButtonLabel(
     PaymentShippingType shipping_type);
 
 // Gets the appropriate display string for the Choose Shipping Option string for
 // the given PaymentShippingType.
-base::string16 GetChooseShippingOptionButtonLabel(
+std::u16string GetChooseShippingOptionButtonLabel(
     PaymentShippingType shipping_type);
 #endif  // defined(OS_IOS)
 
 // Gets the appropriate display string for the Shipping Option string for the
 // given PaymentShippingType.
-base::string16 GetShippingOptionSectionString(
+std::u16string GetShippingOptionSectionString(
     PaymentShippingType shipping_type);
 
 }  // namespace payments

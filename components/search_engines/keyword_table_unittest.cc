@@ -215,7 +215,7 @@ TEST_F(KeywordTableTest, SanitizeURLs) {
   // previously saved into the database.
   sql::Statement s;
   GetStatement("UPDATE keywords SET url=? WHERE id=?", &s);
-  s.BindString16(0, base::string16());
+  s.BindString16(0, std::u16string());
   s.BindInt64(1, 2000);
   EXPECT_TRUE(s.Run());
 

@@ -33,7 +33,7 @@ class NotificationDelegate : public message_center::NotificationDelegate {
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     if (!click_callback_)
       return;
     click_callback_.Run(button_index);

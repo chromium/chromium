@@ -22,7 +22,7 @@ class ConfirmInfoBar : public InfoBarAndroid {
 
  protected:
   ConfirmInfoBarDelegate* GetDelegate();
-  base::string16 GetTextFor(ConfirmInfoBarDelegate::InfoBarButton button);
+  std::u16string GetTextFor(ConfirmInfoBarDelegate::InfoBarButton button);
 
   // InfoBarAndroid overrides.
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(

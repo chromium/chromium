@@ -69,19 +69,19 @@ void WriteStringToPickle(base::Pickle* pickle,
   }
 }
 
-// base::string16 version of WriteStringToPickle.
+// std::u16string version of WriteStringToPickle.
 //
 // TODO(akalin): Unify this, too.
 void WriteString16ToPickle(base::Pickle* pickle,
                            int* bytes_written,
                            int max_bytes,
-                           const base::string16& str) {
+                           const std::u16string& str) {
   int num_bytes = str.size() * sizeof(char16_t);
   if (*bytes_written + num_bytes < max_bytes) {
     *bytes_written += num_bytes;
     pickle->WriteString16(str);
   } else {
-    pickle->WriteString16(base::string16());
+    pickle->WriteString16(std::u16string());
   }
 }
 
@@ -154,7 +154,7 @@ void SerializedNavigationEntry::WriteToPickle(int max_size,
 
   // The |search_terms_| field was removed. Write an empty string to keep
   // backwards compatibility.
-  WriteString16ToPickle(pickle, &bytes_written, max_size, base::string16());
+  WriteString16ToPickle(pickle, &bytes_written, max_size, std::u16string());
 
   pickle->WriteInt(http_status_code_);
 
@@ -227,7 +227,7 @@ bool SerializedNavigationEntry::ReadFromPickle(base::PickleIterator* iterator) {
 
     // The |search_terms_| field was removed, but it still exists in the binary
     // format to keep backwards compatibility. Just get rid of it.
-    base::string16 search_terms;
+    std::u16string search_terms;
     ignore_result(iterator->ReadString16(&search_terms));
 
     if (!iterator->ReadInt(&http_status_code_))

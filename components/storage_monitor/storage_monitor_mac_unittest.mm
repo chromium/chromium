@@ -33,9 +33,9 @@ StorageInfo CreateStorageInfo(const std::string& device_id,
                               const std::string& model_name,
                               const base::FilePath& mount_point,
                               uint64_t size_bytes) {
-  return StorageInfo(
-      device_id, mount_point.value(), base::string16(), base::string16(),
-      base::UTF8ToUTF16(model_name), size_bytes);
+  return StorageInfo(device_id, mount_point.value(), std::u16string(),
+                     std::u16string(), base::UTF8ToUTF16(model_name),
+                     size_bytes);
 }
 
 }  // namespace

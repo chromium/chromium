@@ -221,7 +221,7 @@ CreateSecurityDescriptionForSafetyTip(
     security_description->summary = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE);
   } else {
-    const base::string16 safe_host =
+    const std::u16string safe_host =
         security_interstitials::common_string_util::GetFormattedHostName(
             safe_url);
     security_description->summary = l10n_util::GetStringFUTF16(
@@ -394,17 +394,17 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
 PageInfoUI::~PageInfoUI() = default;
 
 // static
-base::string16 PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
+std::u16string PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
   for (const PermissionsUIInfo& info : GetContentSettingsUIInfo()) {
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id);
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // static
-base::string16 PageInfoUI::PermissionActionToUIString(
+std::u16string PageInfoUI::PermissionActionToUIString(
     PageInfoUiDelegate* delegate,
     ContentSettingsType type,
     ContentSetting setting,
@@ -451,7 +451,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
     case content_settings::SETTING_SOURCE_NONE:
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   int button_text_id = button_text_ids[effective_setting];
 
@@ -466,7 +466,7 @@ base::string16 PageInfoUI::PermissionActionToUIString(
 }
 
 // static
-base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
+std::u16string PageInfoUI::PermissionDecisionReasonToUIString(
     PageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission,
     const GURL& url) {
@@ -506,7 +506,7 @@ base::string16 PageInfoUI::PermissionDecisionReasonToUIString(
     message_id = IDS_PAGE_INFO_PERMISSION_ADS_SUBTITLE;
 
   if (message_id == kInvalidResourceID)
-    return base::string16();
+    return std::u16string();
   return l10n_util::GetStringUTF16(message_id);
 }
 

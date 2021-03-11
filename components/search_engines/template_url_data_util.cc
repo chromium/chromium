@@ -28,8 +28,8 @@ base::StringPiece ToStringPiece(const char* str) {
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     const base::DictionaryValue& dict) {
   std::string search_url;
-  base::string16 keyword;
-  base::string16 short_name;
+  std::u16string keyword;
+  std::u16string short_name;
   dict.GetString(DefaultSearchManager::kURL, &search_url);
   dict.GetString(DefaultSearchManager::kKeyword, &keyword);
   dict.GetString(DefaultSearchManager::kShortName, &short_name);
@@ -211,8 +211,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     const base::DictionaryValue& engine) {
-  base::string16 name;
-  base::string16 keyword;
+  std::u16string name;
+  std::u16string keyword;
   std::string search_url;
   std::string favicon_url;
   std::string encoding;

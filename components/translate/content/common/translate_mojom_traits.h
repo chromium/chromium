@@ -64,7 +64,7 @@ struct StructTraits<translate::mojom::LanguageDetectionDetailsDataView,
     return r.adopted_language;
   }
 
-  static const base::string16& contents(
+  static const std::u16string& contents(
       const translate::LanguageDetectionDetails& r) {
     return r.contents;
   }

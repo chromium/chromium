@@ -105,7 +105,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
       bool has_no_translate_meta);
 
   void OnPageContents(base::TimeTicks capture_begin_time,
-                      const base::string16& contents);
+                      const std::u16string& contents);
 
   void OnPageContentsLanguage(
       mojo::Remote<language_detection::mojom::LanguageDetectionService>

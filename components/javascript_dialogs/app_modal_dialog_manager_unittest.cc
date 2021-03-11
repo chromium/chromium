@@ -86,7 +86,7 @@ TEST(AppModalDialogManagerTest, GetTitle) {
   };
 
   for (const auto& test_case : cases) {
-    base::string16 result = AppModalDialogManager::GetTitleImpl(
+    std::u16string result = AppModalDialogManager::GetTitleImpl(
         GURL(test_case.parent_url), GURL(test_case.alerting_url));
 #if defined(OS_ANDROID)
     EXPECT_EQ(test_case.expected_android, base::UTF16ToUTF8(result));

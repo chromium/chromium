@@ -387,7 +387,7 @@ void CheckTemplateUrlRefIsCryptographic(const TemplateURLRef& url_ref) {
 
   // Double parentheses around the string16 constructor to prevent the compiler
   // from parsing it as a function declaration.
-  TemplateURLRef::SearchTermsArgs search_term_args((base::string16()));
+  TemplateURLRef::SearchTermsArgs search_term_args((std::u16string()));
   GURL url(url_ref.ReplaceSearchTerms(search_term_args, search_terms_data));
   EXPECT_TRUE(url.is_empty() || url.SchemeIsCryptographic()) << url;
 }

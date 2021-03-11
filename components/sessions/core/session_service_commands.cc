@@ -651,7 +651,7 @@ bool CreateTabsAndWindows(
             tab_groups::TabGroupId::FromRawToken(group_token.value()),
             tab_groups);
 
-        base::string16 title;
+        std::u16string title;
         if (!iter.ReadString16(&title))
           return true;
 

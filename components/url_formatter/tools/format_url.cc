@@ -70,7 +70,7 @@ std::string SpoofCheckResultToString(IDNSpoofChecker::Result result) {
 // ASCII characters only. |unicode_domain| is the IDN conversion result
 // according to url_formatter. It can be either punycode or unicode.
 std::string GetSpoofCheckResult(const std::string& ascii_domain,
-                                const base::string16& unicode_domain) {
+                                const std::u16string& unicode_domain) {
   IDNConversionResult result =
       url_formatter::UnsafeIDNToUnicodeWithDetails(ascii_domain);
   std::string spoof_check_result =
@@ -106,7 +106,7 @@ void Convert(std::istream& input) {
     // ignored inside GetSpoofCheckResult(). This is because only the call to
     // UnsafeIDNToUnicodeWithDetails returns information about spoof check
     // results (a quirk of the url_formatter interface).
-    const base::string16 converted_hostname = url_formatter::IDNToUnicode(line);
+    const std::u16string converted_hostname = url_formatter::IDNToUnicode(line);
     const std::string spoof_check_result =
         GetSpoofCheckResult(line, converted_hostname);
     std::cout << line << ", " << converted_hostname << ", "

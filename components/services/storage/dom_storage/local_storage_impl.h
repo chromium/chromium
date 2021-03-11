@@ -92,7 +92,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Converts a string from the old storage format to the new storage format.
-  static std::vector<uint8_t> MigrateString(const base::string16& input);
+  static std::vector<uint8_t> MigrateString(const std::u16string& input);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.

@@ -10,7 +10,7 @@ TEST(CustomDictionaryTest, HandlesEmptyWordWithInvalidSubstring) {
   CustomDictionaryEngine engine;
   std::set<std::string> custom_words;
   engine.Init(custom_words);
-  EXPECT_FALSE(engine.SpellCheckWord(base::string16(), 15, 23));
+  EXPECT_FALSE(engine.SpellCheckWord(std::u16string(), 15, 23));
 }
 
 TEST(CustomDictionaryTest, Basic) {

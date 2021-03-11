@@ -51,7 +51,7 @@ class PageTextObserver : public content::WebContentsObserver,
 
     // The callback that is used to provide dumped page text.
     using TextDumpCallback =
-        base::RepeatingCallback<void(const base::string16&)>;
+        base::RepeatingCallback<void(const std::u16string&)>;
     TextDumpCallback callback;
 
     // The max size of the text dump in bytes. Note that the actual size

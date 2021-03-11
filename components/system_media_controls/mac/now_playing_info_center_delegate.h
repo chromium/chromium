@@ -25,9 +25,9 @@ class API_AVAILABLE(macos(10.13.1)) NowPlayingInfoCenterDelegate {
 
   // Part of the implementation of SystemMediaControls.
   void SetPlaybackStatus(SystemMediaControls::PlaybackStatus status);
-  void SetTitle(const base::string16& title);
-  void SetArtist(const base::string16& artist);
-  void SetAlbum(const base::string16& album);
+  void SetTitle(const std::u16string& title);
+  void SetArtist(const std::u16string& artist);
+  void SetAlbum(const std::u16string& album);
   void SetPosition(const media_session::MediaPosition& position);
   void ClearMetadata();
 

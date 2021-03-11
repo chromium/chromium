@@ -37,7 +37,7 @@ UILockBubbleView::UILockBubbleView(views::View* anchor_view)
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   views::Label* textLabel = AddChildView(
-      std::make_unique<views::Label>(base::string16(l10n_util::GetStringUTF16(
+      std::make_unique<views::Label>(std::u16string(l10n_util::GetStringUTF16(
           IDS_EXO_UI_LOCK_NOTIFICATION_BUBBLE_MESSAGE))));
   textLabel->SetEnabledColor(SK_ColorWHITE);
   textLabel->SetBackgroundColor(SK_ColorBLACK);

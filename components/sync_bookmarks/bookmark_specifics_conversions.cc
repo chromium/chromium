@@ -174,7 +174,7 @@ bool IsForbiddenTitleWithMaybeTrailingSpaces(const std::string& title) {
       base::TrimWhitespaceASCII(title, base::TrimPositions::TRIM_TRAILING));
 }
 
-base::string16 NodeTitleFromSpecifics(
+std::u16string NodeTitleFromSpecifics(
     const sync_pb::BookmarkSpecifics& specifics) {
   if (specifics.has_full_title()) {
     return base::UTF8ToUTF16(specifics.full_title());

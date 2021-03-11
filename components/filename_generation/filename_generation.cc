@@ -101,7 +101,7 @@ base::FilePath EnsureMimeExtension(const base::FilePath& name,
   return name;
 }
 
-base::FilePath GenerateFilename(const base::string16& title,
+base::FilePath GenerateFilename(const std::u16string& title,
                                 const GURL& url,
                                 bool can_save_as_complete,
                                 std::string contents_mime_type) {

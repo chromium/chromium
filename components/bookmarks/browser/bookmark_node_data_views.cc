@@ -58,7 +58,7 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
   } else {
     // See if there is a URL on the clipboard.
     GURL url;
-    base::string16 title;
+    std::u16string title;
     if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
                             &title))
       ReadFromTuple(url, title);

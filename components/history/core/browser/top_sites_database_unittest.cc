@@ -294,7 +294,7 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -315,7 +315,7 @@ TEST_F(TopSitesDatabaseTest, Recovery3) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);
@@ -397,7 +397,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
       // throw SQLITE_CORRUPT.  The corruption handler will recover the database
       // and poison the handle, so the outer call fails.
       EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-                db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+                db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
       ASSERT_TRUE(expecter.SawExpectedErrors());
     }
@@ -418,7 +418,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4) {
     VerifyTablesAndColumns(db.db_.get());
 
     EXPECT_EQ(TopSitesDatabase::kRankOfNonExistingURL,
-              db.GetURLRank(MostVisitedURL(Url1(), base::string16())));
+              db.GetURLRank(MostVisitedURL(Url1(), std::u16string())));
 
     MostVisitedURLList urls;
     db.GetSites(&urls);

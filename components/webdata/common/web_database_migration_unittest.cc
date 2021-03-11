@@ -350,11 +350,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     EXPECT_EQ(ASCIIToUTF16("1950 Charleston Rd.\n"
                            "(2nd floor)"),
               s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(ASCIIToUTF16("Mountain View"), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
     EXPECT_EQ(ASCIIToUTF16("94043"), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046731, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
@@ -367,11 +367,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     EXPECT_EQ(ASCIIToUTF16("Google!"), s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("1600 Amphitheatre Pkwy."),
               s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(ASCIIToUTF16("Mtn. View"), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("California"), s_profiles.ColumnString16(5));
     EXPECT_EQ(ASCIIToUTF16("94043-1234"), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046800, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
@@ -381,14 +381,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000003",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(1));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("\nOnly line 2???"), s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(4));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(5));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(8));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(4));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(5));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(6));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046834, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -397,14 +397,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000004",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(1));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(4));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(1));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(2));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("Texas"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(8));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(6));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046847, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -426,7 +426,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000002", s_phones.ColumnString(0));
-    EXPECT_EQ(base::string16(), s_phones.ColumnString16(1));
+    EXPECT_EQ(std::u16string(), s_phones.ColumnString16(1));
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000003", s_phones.ColumnString(0));
@@ -434,7 +434,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000004", s_phones.ColumnString(0));
-    EXPECT_EQ(base::string16(), s_phones.ColumnString16(1));
+    EXPECT_EQ(std::u16string(), s_phones.ColumnString16(1));
 
     EXPECT_FALSE(s_phones.Step());
   }
@@ -640,11 +640,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion55ToCurrent) {
               s_profiles.ColumnString(0));
     EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
     EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
@@ -678,7 +678,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion56ToCurrent) {
     ASSERT_TRUE(s_names.Step());
     EXPECT_EQ("B41FE6E0-B13E-2A2A-BF0B-29FCE2C3ADBD", s_names.ColumnString(0));
     EXPECT_EQ(ASCIIToUTF16("Jon"), s_names.ColumnString16(1));
-    EXPECT_EQ(base::string16(), s_names.ColumnString16(2));
+    EXPECT_EQ(std::u16string(), s_names.ColumnString16(2));
     EXPECT_EQ(ASCIIToUTF16("Smith"), s_names.ColumnString16(3));
   }
 
@@ -708,9 +708,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion56ToCurrent) {
     ASSERT_TRUE(s_names.Step());
     EXPECT_EQ("B41FE6E0-B13E-2A2A-BF0B-29FCE2C3ADBD", s_names.ColumnString(0));
     EXPECT_EQ(ASCIIToUTF16("Jon"), s_names.ColumnString16(1));
-    EXPECT_EQ(base::string16(), s_names.ColumnString16(2));
+    EXPECT_EQ(std::u16string(), s_names.ColumnString16(2));
     EXPECT_EQ(ASCIIToUTF16("Smith"), s_names.ColumnString16(3));
-    EXPECT_EQ(base::string16(), s_names.ColumnString16(4));
+    EXPECT_EQ(std::u16string(), s_names.ColumnString16(4));
 
     // No more entries expected.
     ASSERT_FALSE(s_names.Step());
@@ -1401,11 +1401,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
               s_profiles.ColumnString(0));
     EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
     EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
@@ -1619,11 +1619,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
               s_profiles.ColumnString(0));
     EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(3));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
     EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
     EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
-    EXPECT_EQ(base::string16(), s_profiles.ColumnString16(7));
+    EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),

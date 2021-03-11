@@ -39,7 +39,7 @@ NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
   // In case no description is found, create a description based on the
   // unknown extension type (i.e. if the extension is .qqq, the we create
   // a description "QQQ File (.qqq)").
-  base::string16 ext_name = base::UTF8ToUTF16(ext);
+  std::u16string ext_name = base::UTF8ToUTF16(ext);
   return l10n_util::GetNSStringF(IDS_APP_SAVEAS_EXTENSION_FORMAT,
                                  base::i18n::ToUpper(ext_name), ext_name);
 }
@@ -172,7 +172,7 @@ SelectFileDialogBridge::~SelectFileDialogBridge() {
 
 void SelectFileDialogBridge::Show(
     SelectFileDialogType type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     SelectFileTypeInfoPtr file_types,
     int file_type_index,

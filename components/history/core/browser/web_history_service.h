@@ -111,7 +111,7 @@ class WebHistoryService : public KeyedService {
   // The caller takes ownership of the returned Request. If it is destroyed, the
   // request is cancelled.
   std::unique_ptr<Request> QueryHistory(
-      const base::string16& text_query,
+      const std::u16string& text_query,
       const QueryOptions& options,
       QueryWebHistoryCallback callback,
       const net::PartialNetworkTrafficAnnotationTag&

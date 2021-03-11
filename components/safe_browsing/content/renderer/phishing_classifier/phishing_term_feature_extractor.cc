@@ -67,7 +67,7 @@ struct PhishingTermFeatureExtractor::ExtractionState {
   // The number of iterations we've done for the current extraction.
   int num_iterations;
 
-  ExtractionState(const base::string16& text, base::TimeTicks start_time_ticks)
+  ExtractionState(const std::u16string& text, base::TimeTicks start_time_ticks)
       : start_time(start_time_ticks), num_iterations(0) {
     std::unique_ptr<base::i18n::BreakIterator> i(new base::i18n::BreakIterator(
         text, base::i18n::BreakIterator::BREAK_WORD));
@@ -102,7 +102,7 @@ PhishingTermFeatureExtractor::~PhishingTermFeatureExtractor() {
 }
 
 void PhishingTermFeatureExtractor::ExtractFeatures(
-    const base::string16* page_text,
+    const std::u16string* page_text,
     FeatureMap* features,
     std::set<uint32_t>* shingle_hashes,
     DoneCallback done_callback) {

@@ -76,7 +76,7 @@ void OriginPolicyInterstitialPage::PopulateInterstitialStrings(
       {"tabTitle", IDS_ORIGIN_POLICY_TITLE},
   };
   // We interpolate _all_ strings with URL ($1) and origin ($2).
-  const std::vector<base::string16> message_params = {
+  const std::vector<std::u16string> message_params = {
       base::ASCIIToUTF16(request_url().spec()),
       base::ASCIIToUTF16(url::Origin::Create(request_url()).Serialize()),
   };

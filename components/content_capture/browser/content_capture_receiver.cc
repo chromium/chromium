@@ -145,7 +145,7 @@ void ContentCaptureReceiver::RemoveSession() {
   exponential_delay_ = 1;
 }
 
-void ContentCaptureReceiver::SetTitle(const base::string16& title) {
+void ContentCaptureReceiver::SetTitle(const std::u16string& title) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   frame_content_capture_data_.title = title;
   if (!has_session_)
@@ -192,7 +192,7 @@ ContentCaptureReceiver::GetContentCaptureSender() {
 
 const ContentCaptureFrame& ContentCaptureReceiver::GetContentCaptureFrame() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::string16 url = base::UTF8ToUTF16(rfh_->GetLastCommittedURL().spec());
+  std::u16string url = base::UTF8ToUTF16(rfh_->GetLastCommittedURL().spec());
   if (url == frame_content_capture_data_.url && has_session_)
     return frame_content_capture_data_;
 

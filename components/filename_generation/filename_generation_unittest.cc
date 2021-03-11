@@ -131,7 +131,7 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
 
 static const struct GenerateFilenameTestCase {
   const char* page_url;
-  const base::string16 page_title;
+  const std::u16string page_title;
   const base::FilePath::CharType* expected_name;
   bool ensure_html_extension;
 } kGenerateFilenameCases[] = {

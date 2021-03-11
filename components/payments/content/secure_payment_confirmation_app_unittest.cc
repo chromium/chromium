@@ -132,7 +132,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     on_instrument_details_error_called_ = true;
   }
 
-  base::string16 label_;
+  std::u16string label_;
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::string network_data_bytes_;
   std::string credential_id_bytes_;

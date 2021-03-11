@@ -32,7 +32,7 @@ class CustomLinksManager {
  public:
   struct Link {
     GURL url;
-    base::string16 title;
+    std::u16string title;
     bool is_most_visited = false;
 
     bool operator==(const Link& other) const {
@@ -61,7 +61,7 @@ class CustomLinksManager {
   // history is cleared. Returns false and does nothing if custom links is not
   // initialized, |url| is invalid, we're at the maximum number of links, or
   // |url| already exists in the list.
-  virtual bool AddLink(const GURL& url, const base::string16& title) = 0;
+  virtual bool AddLink(const GURL& url, const std::u16string& title) = 0;
   // Updates the URL and/or title of the link specified by |url|. The link will
   // no longer be considered Most Visited. Returns false and does nothing if
   // custom links is not initialized, either URL is invalid, |url| does not
@@ -69,7 +69,7 @@ class CustomLinksManager {
   // are empty.
   virtual bool UpdateLink(const GURL& url,
                           const GURL& new_url,
-                          const base::string16& new_title) = 0;
+                          const std::u16string& new_title) = 0;
   // Moves the specified link from its current index and inserts it at
   // |new_pos|. Returns false and does nothing if custom links is not
   // initialized, |url| is invalid, |url| does not exist in the list, or

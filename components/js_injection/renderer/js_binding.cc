@@ -35,7 +35,7 @@ gin::WrapperInfo JsBinding::kWrapperInfo = {gin::kEmbedderNativeGin};
 // static
 std::unique_ptr<JsBinding> JsBinding::Install(
     content::RenderFrame* render_frame,
-    const base::string16& js_object_name,
+    const std::u16string& js_object_name,
     JsCommunication* js_java_configurator) {
   CHECK(!js_object_name.empty())
       << "JavaScript wrapper name shouldn't be empty";
@@ -66,7 +66,7 @@ std::unique_ptr<JsBinding> JsBinding::Install(
 }
 
 JsBinding::JsBinding(content::RenderFrame* render_frame,
-                     const base::string16& js_object_name,
+                     const std::u16string& js_object_name,
                      JsCommunication* js_java_configurator)
     : render_frame_(render_frame),
       js_object_name_(js_object_name),
@@ -81,7 +81,7 @@ JsBinding::JsBinding(content::RenderFrame* render_frame,
 
 JsBinding::~JsBinding() = default;
 
-void JsBinding::OnPostMessage(const base::string16& message) {
+void JsBinding::OnPostMessage(const std::u16string& message) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
 
@@ -134,7 +134,7 @@ gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
 }
 
 void JsBinding::PostMessage(gin::Arguments* args) {
-  base::string16 message;
+  std::u16string message;
   if (!args->GetNext(&message)) {
     args->ThrowError();
     return;

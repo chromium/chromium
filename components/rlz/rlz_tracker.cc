@@ -142,8 +142,8 @@ void RecordProductEvents(bool first_run,
 }
 
 bool SendFinancialPing(const std::string& brand,
-                       const base::string16& lang,
-                       const base::string16& referral) {
+                       const std::u16string& lang,
+                       const std::u16string& referral) {
   rlz_lib::AccessPoint points[] = {RLZTracker::ChromeOmnibox(),
 #if !defined(OS_IOS)
                                    RLZTracker::ChromeHomePage(),
@@ -397,11 +397,11 @@ void RLZTracker::PingNowImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_) << "RLZTracker used before initialization";
   TRACE_EVENT0("RLZ", "RLZTracker::PingNowImpl");
-  base::string16 lang;
+  std::u16string lang;
   delegate_->GetLanguage(&lang);
   if (lang.empty())
     lang = base::ASCIIToUTF16("en");
-  base::string16 referral;
+  std::u16string referral;
   delegate_->GetReferral(&referral);
 
   if (!delegate_->IsBrandOrganic(brand_) &&
@@ -428,8 +428,8 @@ void RLZTracker::PingNowImpl() {
 }
 
 bool RLZTracker::SendFinancialPing(const std::string& brand,
-                                   const base::string16& lang,
-                                   const base::string16& referral) {
+                                   const std::u16string& lang,
+                                   const std::u16string& referral) {
   return ::rlz::SendFinancialPing(brand, lang, referral);
 }
 
@@ -528,7 +528,7 @@ bool* RLZTracker::GetAccessPointRecord(rlz_lib::AccessPoint point) {
 std::string RLZTracker::GetAccessPointHttpHeader(rlz_lib::AccessPoint point) {
   TRACE_EVENT0("RLZ", "RLZTracker::GetAccessPointHttpHeader");
   std::string extra_headers;
-  base::string16 rlz_string;
+  std::u16string rlz_string;
   RLZTracker::GetAccessPointRlz(point, &rlz_string);
   if (!rlz_string.empty()) {
     return base::StringPrintf("X-Rlz-String: %s\r\n",
@@ -542,7 +542,7 @@ std::string RLZTracker::GetAccessPointHttpHeader(rlz_lib::AccessPoint point) {
 // a successful ping, then we update the cached value.
 // static
 bool RLZTracker::GetAccessPointRlz(rlz_lib::AccessPoint point,
-                                   base::string16* rlz) {
+                                   std::u16string* rlz) {
   // This method is called during unit tests while the RLZTracker has not been
   // initialized, so check for the presence of a delegate and exit if there is
   // none registered.
@@ -555,7 +555,7 @@ bool RLZTracker::GetAccessPointRlz(rlz_lib::AccessPoint point,
 // GetAccessPointRlz() caches RLZ strings for all access points. If we had
 // a successful ping, then we update the cached value.
 bool RLZTracker::GetAccessPointRlzImpl(rlz_lib::AccessPoint point,
-                                       base::string16* rlz) {
+                                       std::u16string* rlz) {
   DCHECK(delegate_) << "RLZTracker used before initialization";
   // If the RLZ string for the specified access point is already cached,
   // simply return its value.
@@ -579,7 +579,7 @@ bool RLZTracker::GetAccessPointRlzImpl(rlz_lib::AccessPoint point,
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::string16 rlz_local(base::ASCIIToUTF16(str_rlz));
+  std::u16string rlz_local(base::ASCIIToUTF16(str_rlz));
   if (rlz)
     *rlz = rlz_local;
 
@@ -593,7 +593,7 @@ bool RLZTracker::ScheduleGetAccessPointRlz(rlz_lib::AccessPoint point) {
   if (!delegate_->IsOnUIThread())
     return false;
 
-  base::string16* not_used = nullptr;
+  std::u16string* not_used = nullptr;
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&RLZTracker::GetAccessPointRlz), point,

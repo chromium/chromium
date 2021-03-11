@@ -50,19 +50,19 @@ void NowPlayingInfoCenterDelegate::SetPlaybackStatus(
   StartTimer();
 }
 
-void NowPlayingInfoCenterDelegate::SetTitle(const base::string16& title) {
+void NowPlayingInfoCenterDelegate::SetTitle(const std::u16string& title) {
   [now_playing_info_center_delegate_cocoa_
       setTitle:base::SysUTF16ToNSString(title)];
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
-void NowPlayingInfoCenterDelegate::SetArtist(const base::string16& artist) {
+void NowPlayingInfoCenterDelegate::SetArtist(const std::u16string& artist) {
   [now_playing_info_center_delegate_cocoa_
       setArtist:base::SysUTF16ToNSString(artist)];
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 
-void NowPlayingInfoCenterDelegate::SetAlbum(const base::string16& album) {
+void NowPlayingInfoCenterDelegate::SetAlbum(const std::u16string& album) {
   [now_playing_info_center_delegate_cocoa_
       setAlbum:base::SysUTF16ToNSString(album)];
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];

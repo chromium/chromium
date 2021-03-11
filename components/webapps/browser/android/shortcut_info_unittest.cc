@@ -113,13 +113,13 @@ TEST_F(ShortcutInfoTest, UserTitleBecomesShortName) {
 // that ShortcutInfo::UpdateFromManifest() does not overwrite the current
 // ShortcutInfo::name and ShortcutInfo::short_name.
 TEST_F(ShortcutInfoTest, IgnoreEmptyNameAndShortName) {
-  base::string16 initial_name(base::ASCIIToUTF16("initial_name"));
-  base::string16 initial_short_name(base::ASCIIToUTF16("initial_short_name"));
+  std::u16string initial_name(base::ASCIIToUTF16("initial_name"));
+  std::u16string initial_short_name(base::ASCIIToUTF16("initial_short_name"));
 
   info_.name = initial_name;
   info_.short_name = initial_short_name;
   manifest_.display = blink::mojom::DisplayMode::kStandalone;
-  manifest_.name = base::string16();
+  manifest_.name = std::u16string();
   info_.UpdateFromManifest(manifest_);
 
   ASSERT_EQ(initial_name, info_.name);

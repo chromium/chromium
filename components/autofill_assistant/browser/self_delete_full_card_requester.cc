@@ -55,7 +55,7 @@ SelfDeleteFullCardRequester::~SelfDeleteFullCardRequester() = default;
 void SelfDeleteFullCardRequester::OnFullCardRequestSucceeded(
     const FullCardRequest& /* full_card_request */,
     const autofill::CreditCard& card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   std::move(callback_).Run(OkClientStatus(),
                            std::make_unique<autofill::CreditCard>(card), cvc);
   delete this;
@@ -85,7 +85,7 @@ void SelfDeleteFullCardRequester::OnFullCardRequestFailed(
   status.mutable_details()
       ->mutable_autofill_error_info()
       ->set_get_full_card_failure_type(error_type);
-  std::move(callback_).Run(status, nullptr, base::string16());
+  std::move(callback_).Run(status, nullptr, std::u16string());
   delete this;
 }
 }  // namespace autofill_assistant

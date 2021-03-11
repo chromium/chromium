@@ -179,7 +179,7 @@ void SystemMediaControlsWin::SetPlaybackStatus(PlaybackStatus status) {
   DCHECK(SUCCEEDED(hr));
 }
 
-void SystemMediaControlsWin::SetTitle(const base::string16& title) {
+void SystemMediaControlsWin::SetTitle(const std::u16string& title) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
   base::win::ScopedHString h_title =
@@ -188,7 +188,7 @@ void SystemMediaControlsWin::SetTitle(const base::string16& title) {
   DCHECK(SUCCEEDED(hr));
 }
 
-void SystemMediaControlsWin::SetArtist(const base::string16& artist) {
+void SystemMediaControlsWin::SetArtist(const std::u16string& artist) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
   base::win::ScopedHString h_artist =

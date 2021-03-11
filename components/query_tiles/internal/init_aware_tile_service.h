@@ -36,7 +36,7 @@ class InitAwareTileService : public TileService {
   void SetServerUrl(const std::string& base_url) override;
   void OnTileClicked(const std::string& tile_id) override;
   void OnQuerySelected(const base::Optional<std::string>& parent_tile_id,
-                       const base::string16& query_text) override;
+                       const std::u16string& query_text) override;
   Logger* GetLogger() override;
 
   void OnTileServiceInitialized(bool success);

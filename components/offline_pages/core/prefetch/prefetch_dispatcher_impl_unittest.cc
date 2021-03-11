@@ -335,9 +335,9 @@ class PrefetchDispatcherTest : public PrefetchRequestTestBase {
 
     ASSERT_TRUE(test_urls_.empty());
     test_urls_.push_back(
-        {"1", GURL("http://testurl.com/foo"), base::string16()});
+        {"1", GURL("http://testurl.com/foo"), std::u16string()});
     test_urls_.push_back(
-        {"2", GURL("https://testurl.com/bar"), base::string16()});
+        {"2", GURL("https://testurl.com/bar"), std::u16string()});
   }
 
   void BeginBackgroundTask();
@@ -562,7 +562,7 @@ TEST_F(PrefetchDispatcherTest,
 }
 
 TEST_F(PrefetchDispatcherTest, DispatcherReleasesBackgroundTask) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -609,7 +609,7 @@ TEST_F(PrefetchDispatcherTest, DispatcherReleasesBackgroundTask) {
 }
 
 TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -618,7 +618,7 @@ TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), base::string16());
+  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
   RunUntilIdle();
@@ -641,7 +641,7 @@ TEST_F(PrefetchDispatcherTest, RetryWithBackoffAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -650,7 +650,7 @@ TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), base::string16());
+  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -672,7 +672,7 @@ TEST_F(PrefetchDispatcherTest, RetryWithoutBackoffAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -681,7 +681,7 @@ TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
   RunUntilIdle();
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), base::string16());
+  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -718,7 +718,7 @@ TEST_F(PrefetchDispatcherTest, SuspendAfterFailedNetworkRequest) {
 }
 
 TEST_F(PrefetchDispatcherTest, SuspendRemovedAfterNewBackgroundTask) {
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url));
   RunUntilIdle();
@@ -744,7 +744,7 @@ TEST_F(PrefetchDispatcherTest, SuspendRemovedAfterNewBackgroundTask) {
   EXPECT_EQ(nullptr, GetBackgroundTask());
 
   // Trigger another request to make sure we have more work to do.
-  PrefetchURL prefetch_url2(kTestID, TestURL2(), base::string16());
+  PrefetchURL prefetch_url2(kTestID, TestURL2(), std::u16string());
   prefetch_dispatcher()->AddCandidatePrefetchURLs(
       kSuggestedArticlesNamespace, std::vector<PrefetchURL>(1, prefetch_url2));
 
@@ -827,7 +827,7 @@ TEST_F(PrefetchDispatcherTest, ThumbnailImageFetch_SeveralThumbnailDownloads) {
 TEST_F(PrefetchDispatcherTest, FeedNoNetworkRequestsAfterNewURLs) {
   suggestions_provider_->SetSuggestions({TestSuggestion1()});
 
-  PrefetchURL prefetch_url(kTestID, TestURL1(), base::string16());
+  PrefetchURL prefetch_url(kTestID, TestURL1(), std::u16string());
   prefetch_service()->NewSuggestionsAvailable();
   RunUntilIdle();
 

@@ -53,10 +53,10 @@ std::string TestGUID2() {
 ClientId TestClientID2() {
   return ClientId("Foo2", TestGUID2());
 }
-base::string16 TestTitle() {
+std::u16string TestTitle() {
   return base::UTF8ToUTF16("Hello");
 }
-base::string16 TestTitle2() {
+std::u16string TestTitle2() {
   return base::UTF8ToUTF16("Hello2");
 }
 base::FilePath TestFilePath() {

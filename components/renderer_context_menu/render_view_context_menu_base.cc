@@ -204,19 +204,19 @@ void RenderViewContextMenuBase::InitMenu() {
 }
 
 void RenderViewContextMenuBase::AddMenuItem(int command_id,
-                                            const base::string16& title) {
+                                            const std::u16string& title) {
   menu_model_.AddItem(command_id, title);
 }
 
 void RenderViewContextMenuBase::AddMenuItemWithIcon(
     int command_id,
-    const base::string16& title,
+    const std::u16string& title,
     const ui::ImageModel& icon) {
   menu_model_.AddItemWithIcon(command_id, title, icon);
 }
 
 void RenderViewContextMenuBase::AddCheckItem(int command_id,
-                                         const base::string16& title) {
+                                             const std::u16string& title) {
   menu_model_.AddCheckItem(command_id, title);
 }
 
@@ -225,8 +225,8 @@ void RenderViewContextMenuBase::AddSeparator() {
 }
 
 void RenderViewContextMenuBase::AddSubMenu(int command_id,
-                                       const base::string16& label,
-                                       ui::MenuModel* model) {
+                                           const std::u16string& label,
+                                           ui::MenuModel* model) {
   menu_model_.AddSubMenu(command_id, label, model);
 }
 
@@ -240,9 +240,9 @@ void RenderViewContextMenuBase::AddSubMenuWithStringIdAndIcon(
 }
 
 void RenderViewContextMenuBase::UpdateMenuItem(int command_id,
-                                           bool enabled,
-                                           bool hidden,
-                                           const base::string16& label) {
+                                               bool enabled,
+                                               bool hidden,
+                                               const std::u16string& label) {
   int index = menu_model_.GetIndexOfCommandId(command_id);
   if (index == -1)
     return;

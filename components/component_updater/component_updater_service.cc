@@ -49,7 +49,7 @@ namespace component_updater {
 
 ComponentInfo::ComponentInfo(const std::string& id,
                              const std::string& fingerprint,
-                             const base::string16& name,
+                             const std::u16string& name,
                              const base::Version& version)
     : id(id), fingerprint(fingerprint), name(name), version(version) {}
 ComponentInfo::ComponentInfo(const ComponentInfo& other) = default;

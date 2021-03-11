@@ -46,7 +46,7 @@ base::android::ScopedJavaLocalRef<jstring> CurrencyFormatterAndroid::Format(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& amount) {
-  base::string16 result =
+  std::u16string result =
       currency_formatter_->Format(ConvertJavaStringToUTF8(env, amount));
   return base::android::ConvertUTF16ToJavaString(env, result);
 }

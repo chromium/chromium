@@ -217,7 +217,7 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     return GetHeaderRow(view());
   }
 
-  const base::string16& accessible_name() const {
+  const std::u16string& accessible_name() const {
     return view()->accessible_name_;
   }
 
@@ -428,7 +428,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   EXPECT_CALL(container(), OnMediaSessionInfoChanged(_));
 
   auto* button = GetButtonForAction(MediaSessionAction::kPlay);
-  base::string16 tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -438,7 +438,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, PlayPauseButtonTooltipCheck) {
   session_info->is_controllable = true;
   GetItem()->MediaSessionInfoChanged(session_info.Clone());
 
-  base::string16 new_tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
   EXPECT_NE(tooltip, new_tooltip);
 }
@@ -1424,10 +1424,10 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, ForcedExpandedState) {
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, AllowsHidingOfAppIcon) {
   MediaNotificationViewImpl shows_icon(&container(), nullptr, nullptr,
-                                       base::string16(), kViewWidth,
+                                       std::u16string(), kViewWidth,
                                        /*should_show_icon=*/true);
   MediaNotificationViewImpl hides_icon(&container(), nullptr, nullptr,
-                                       base::string16(), kViewWidth,
+                                       std::u16string(), kViewWidth,
                                        /*should_show_icon=*/false);
 
   EXPECT_TRUE(

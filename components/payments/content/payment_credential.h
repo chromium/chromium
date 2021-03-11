@@ -106,7 +106,7 @@ class PaymentCredential : public mojom::PaymentCredential,
 
   bool IsCurrentStateValid() const;
 
-  void DidDownloadIcon(const base::string16 instrument_name,
+  void DidDownloadIcon(const std::u16string instrument_name,
                        int request_id,
                        int unused_http_status_code,
                        const GURL& unused_image_url,

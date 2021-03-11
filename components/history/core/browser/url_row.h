@@ -49,10 +49,8 @@ class URLRow {
   void set_url(const GURL& url) { url_ = url; }
   const GURL& url() const { return url_; }
 
-  const base::string16& title() const {
-    return title_;
-  }
-  void set_title(const base::string16& title) {
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) {
     // The title is frequently set to the same thing, so we don't bother
     // updating unless the string has changed.
     if (title != title_) {
@@ -131,7 +129,7 @@ class URLRow {
   // the constructor to make a new one.
   GURL url_;
 
-  base::string16 title_;
+  std::u16string title_;
 
   // Total number of times this URL has been visited.
   int visit_count_ = 0;

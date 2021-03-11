@@ -300,7 +300,7 @@ class PageInfo : public content::WebContentsObserver {
   void GetSafeBrowsingStatusByMaliciousContentStatus(
       security_state::MaliciousContentStatus malicious_content_status,
       PageInfo::SafeBrowsingStatus* status,
-      base::string16* details);
+      std::u16string* details);
 
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
@@ -357,7 +357,7 @@ class PageInfo : public content::WebContentsObserver {
   // Status of the connection to the website.
   SiteConnectionStatus site_connection_status_;
 
-  // TODO(markusheintz): Move the creation of all the base::string16 typed UI
+  // TODO(markusheintz): Move the creation of all the std::u16string typed UI
   // strings below to the corresponding UI code, in order to prevent
   // unnecessary UTF-8 string conversions.
 
@@ -365,7 +365,7 @@ class PageInfo : public content::WebContentsObserver {
   // Details about the website's identity. If the website's identity has been
   // verified then |identity_status_description_android_| contains who verified
   // the identity. This string will be displayed in the UI.
-  base::string16 identity_status_description_android_;
+  std::u16string identity_status_description_android_;
 #endif
 
   // Set when the user has explicitly bypassed an SSL error for this host or
@@ -379,13 +379,13 @@ class PageInfo : public content::WebContentsObserver {
   // connection |site_connection_details_| contains encryption details, like
   // encryption strength and ssl protocol version. This string will be
   // displayed in the UI.
-  base::string16 site_connection_details_;
+  std::u16string site_connection_details_;
 
   // For websites that provided an EV certificate |orgainization_name_|
   // contains the organization name of the certificate. In all other cases
   // |organization_name| is an empty string. This string will be displayed in
   // the UI.
-  base::string16 organization_name_;
+  std::u16string organization_name_;
 
   bool did_revoke_user_ssl_decisions_;
 

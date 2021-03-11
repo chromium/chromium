@@ -63,7 +63,7 @@ void RecordTimePeriodChange(TimePeriod period);
 // Constructs the text to be displayed by a counter from the given |result|.
 // Currently this can only be used for counters for which the Result is
 // defined in components/browsing_data/core/counters.
-base::string16 GetCounterTextFromResult(
+std::u16string GetCounterTextFromResult(
     const BrowsingDataCounter::Result* result);
 
 // Returns the preference that stores the time period.

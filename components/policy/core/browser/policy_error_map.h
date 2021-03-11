@@ -21,7 +21,7 @@ namespace policy {
 // Collects error messages and their associated policies.
 class POLICY_EXPORT PolicyErrorMap {
  public:
-  typedef std::multimap<std::string, base::string16> PolicyMapType;
+  typedef std::multimap<std::string, std::u16string> PolicyMapType;
   typedef PolicyMapType::const_iterator const_iterator;
 
   class PendingError;
@@ -84,7 +84,7 @@ class POLICY_EXPORT PolicyErrorMap {
 
   // Returns all the error messages stored for |policy|, separated by a white
   // space. Returns an empty string if there are no errors for |policy|.
-  base::string16 GetErrors(const std::string& policy);
+  std::u16string GetErrors(const std::string& policy);
 
   bool empty() const;
   size_t size();

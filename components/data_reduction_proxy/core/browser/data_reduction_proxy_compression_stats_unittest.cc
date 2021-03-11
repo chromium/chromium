@@ -205,7 +205,7 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
 
   // Verify the pref values in |dict| are equal to that in |compression_stats_|.
   void VerifyPrefs(base::DictionaryValue* dict) {
-    base::string16 dict_pref_string;
+    std::u16string dict_pref_string;
     int64_t dict_pref;
     int64_t service_pref;
 

@@ -99,11 +99,11 @@ void MediaControlsProgressView::UpdateProgress(
       duration >= base::TimeDelta::FromDays(1) ? base::DURATION_WIDTH_NARROW
                                                : base::DURATION_WIDTH_NUMERIC;
 
-  base::string16 elapsed_time;
+  std::u16string elapsed_time;
   bool elapsed_time_received = base::TimeDurationFormatWithSeconds(
       current_position, time_format, &elapsed_time);
 
-  base::string16 total_time;
+  std::u16string total_time;
   bool total_time_received =
       base::TimeDurationFormatWithSeconds(duration, time_format, &total_time);
 
@@ -164,12 +164,12 @@ const views::ProgressBar* MediaControlsProgressView::progress_bar_for_testing()
   return progress_bar_;
 }
 
-const base::string16& MediaControlsProgressView::progress_time_for_testing()
+const std::u16string& MediaControlsProgressView::progress_time_for_testing()
     const {
   return progress_time_->GetText();
 }
 
-const base::string16& MediaControlsProgressView::duration_for_testing() const {
+const std::u16string& MediaControlsProgressView::duration_for_testing() const {
   return duration_->GetText();
 }
 
@@ -177,11 +177,11 @@ void MediaControlsProgressView::SetBarProgress(double progress) {
   progress_bar_->SetValue(progress);
 }
 
-void MediaControlsProgressView::SetProgressTime(const base::string16& time) {
+void MediaControlsProgressView::SetProgressTime(const std::u16string& time) {
   progress_time_->SetText(time);
 }
 
-void MediaControlsProgressView::SetDuration(const base::string16& duration) {
+void MediaControlsProgressView::SetDuration(const std::u16string& duration) {
   duration_->SetText(duration);
 }
 

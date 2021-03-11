@@ -26,7 +26,7 @@ struct SecurePaymentConfirmationInstrument {
   // excessive copying.
   SecurePaymentConfirmationInstrument(std::vector<uint8_t> credential_id,
                                       const std::string& relying_party_id,
-                                      const base::string16& label,
+                                      const std::u16string& label,
                                       std::vector<uint8_t> icon);
 
   ~SecurePaymentConfirmationInstrument();
@@ -42,7 +42,7 @@ struct SecurePaymentConfirmationInstrument {
 
   std::vector<uint8_t> credential_id;
   std::string relying_party_id;
-  base::string16 label;
+  std::u16string label;
   std::vector<uint8_t> icon;
 };
 

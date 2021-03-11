@@ -46,8 +46,8 @@ class PermissionPromptAndroid : public permissions::PermissionPrompt,
   size_t PermissionCount() const;
   ContentSettingsType GetContentSettingType(size_t position) const;
   int GetIconId() const;
-  base::string16 GetTitleText() const;
-  base::string16 GetMessageText() const;
+  std::u16string GetTitleText() const;
+  std::u16string GetMessageText() const;
 
   const content::WebContents* web_contents() { return web_contents_; }
 

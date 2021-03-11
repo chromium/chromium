@@ -71,11 +71,11 @@ class HistoryAndBookmarkRow {
   const std::string& raw_url() const { return raw_url_; }
 
   // The title of page.
-  void set_title(const base::string16& title) {
+  void set_title(const std::u16string& title) {
     set_value_explicitly(TITLE);
     title_ = title;
   }
-  const base::string16& title() const { return title_; }
+  const std::u16string& title() const { return title_; }
 
   // The page's first visit time.
   void set_created(const base::Time created) {
@@ -148,7 +148,7 @@ class HistoryAndBookmarkRow {
   AndroidURLID id_;
   GURL url_;
   std::string raw_url_;
-  base::string16 title_;
+  std::u16string title_;
   base::Time created_;
   base::Time last_visit_time_;
   scoped_refptr<base::RefCountedMemory> favicon_;
@@ -190,8 +190,8 @@ class SearchRow {
     id_ = id;
   }
 
-  const base::string16& search_term() const { return search_term_; }
-  void set_search_term(const base::string16& search_term) {
+  const std::u16string& search_term() const { return search_term_; }
+  void set_search_term(const std::u16string& search_term) {
     set_value_explicitly(SearchRow::SEARCH_TERM);
     search_term_ = search_term;
   }
@@ -223,7 +223,7 @@ class SearchRow {
   void set_value_explicitly(ColumnID id) { values_set_.insert(id); }
 
   SearchTermID id_;
-  base::string16 search_term_;
+  std::u16string search_term_;
   base::Time search_time_;
   GURL url_;
   KeywordID keyword_id_;
@@ -255,7 +255,7 @@ struct SearchTermRow {
   // The unique id of the row.
   SearchTermID id;
   // The keyword.
-  base::string16 term;
+  std::u16string term;
   // The last visit time.
   base::Time last_visit_time;
 };

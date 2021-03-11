@@ -37,14 +37,14 @@ class MessageWrapper {
   // TODO(pavely): Reevaluate if propagating values to Java immediately is
   // really necessary. Alternatively we could collect all the values in native
   // and pass them to Java when enqueueing the message.
-  base::string16 GetTitle();
-  void SetTitle(const base::string16& title);
-  base::string16 GetDescription();
-  void SetDescription(const base::string16& description);
-  base::string16 GetPrimaryButtonText();
-  void SetPrimaryButtonText(const base::string16& primary_button_text);
-  base::string16 GetSecondaryActionText();
-  void SetSecondaryActionText(const base::string16& secondary_action_text);
+  std::u16string GetTitle();
+  void SetTitle(const std::u16string& title);
+  std::u16string GetDescription();
+  void SetDescription(const std::u16string& description);
+  std::u16string GetPrimaryButtonText();
+  void SetPrimaryButtonText(const std::u16string& primary_button_text);
+  std::u16string GetSecondaryActionText();
+  void SetSecondaryActionText(const std::u16string& secondary_action_text);
 
   // When setting a message icon use ResourceMapper::MapToJavaDrawableId to
   // translate from chromium resource_id to Android drawable resource_id.

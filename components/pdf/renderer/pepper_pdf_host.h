@@ -106,7 +106,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
                                     const std::string& message,
                                     const std::string& default_answer);
   int32_t OnHostMsgSetSelectedText(ppapi::host::HostMessageContext* context,
-                                   const base::string16& selected_text);
+                                   const std::u16string& selected_text);
   int32_t OnHostMsgSetLinkUnderCursor(ppapi::host::HostMessageContext* context,
                                       const std::string& url);
   int32_t OnHostMsgSetAccessibilityViewportInfo(

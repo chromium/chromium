@@ -1583,7 +1583,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
   surface->Commit();
   shell_surface->GetWidget()->Show();
 
-  const base::string16 window_title(base::ASCIIToUTF16("title"));
+  const std::u16string window_title(base::ASCIIToUTF16("title"));
   shell_surface->SetTitle(window_title);
   const aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   EXPECT_EQ(window_title, window->GetTitle());

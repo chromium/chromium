@@ -46,8 +46,8 @@ class MockTranslateInfoBarDelegate
 
   MOCK_CONST_METHOD0(num_languages, size_t());
   MOCK_CONST_METHOD1(language_code_at, std::string(size_t index));
-  MOCK_CONST_METHOD1(language_name_at, base::string16(size_t index));
-  MOCK_CONST_METHOD0(source_language_name, base::string16());
+  MOCK_CONST_METHOD1(language_name_at, std::u16string(size_t index));
+  MOCK_CONST_METHOD0(source_language_name, std::u16string());
   MOCK_CONST_METHOD0(ShouldAlwaysTranslate, bool());
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
@@ -60,17 +60,17 @@ class MockTranslateInfoBarDelegate
   MOCK_METHOD1(UpdateTargetLanguage, void(const std::string& language_code));
   MOCK_METHOD1(UpdateSourceLanguage, void(const std::string& language_code));
 
-  void GetLanguagesNames(std::vector<base::string16>* languages) const override;
+  void GetLanguagesNames(std::vector<std::u16string>* languages) const override;
   void GetLanguagesCodes(
       std::vector<std::string>* languages_codes) const override;
   void SetTranslateLanguagesForTest(
-      std::vector<std::pair<std::string, base::string16>> languages);
+      std::vector<std::pair<std::string, std::u16string>> languages);
 
   void SetContentLanguagesCodesForTest(std::vector<std::string> languages);
   void GetContentLanguagesCodes(std::vector<std::string>* codes) const override;
 
  private:
-  std::vector<std::pair<std::string, base::string16>> languages_;
+  std::vector<std::pair<std::string, std::u16string>> languages_;
   std::vector<std::string> content_languages_;
 };
 

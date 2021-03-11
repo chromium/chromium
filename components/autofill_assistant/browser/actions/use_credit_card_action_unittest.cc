@@ -81,7 +81,7 @@ class UseCreditCardActionTest : public testing::Test {
             [](const autofill::CreditCard* credit_card,
                base::OnceCallback<void(const ClientStatus&,
                                        std::unique_ptr<autofill::CreditCard>,
-                                       const base::string16&)> callback) {
+                                       const std::u16string&)> callback) {
               std::move(callback).Run(
                   credit_card ? OkClientStatus()
                               : ClientStatus(GET_FULL_CARD_FAILED),

@@ -132,17 +132,17 @@ int GetIDSForStoreStatus(CloudPolicyStore::Status status) {
 
 }  // namespace
 
-base::string16 FormatDeviceManagementStatus(DeviceManagementStatus status) {
+std::u16string FormatDeviceManagementStatus(DeviceManagementStatus status) {
   return l10n_util::GetStringUTF16(GetIDSForDMStatus(status));
 }
 
-base::string16 FormatValidationStatus(
+std::u16string FormatValidationStatus(
     CloudPolicyValidatorBase::Status validation_status) {
   return l10n_util::GetStringUTF16(
       GetIDSForValidationStatus(validation_status));
 }
 
-base::string16 FormatStoreStatus(
+std::u16string FormatStoreStatus(
     CloudPolicyStore::Status store_status,
     CloudPolicyValidatorBase::Status validation_status) {
   if (store_status == CloudPolicyStore::STATUS_VALIDATION_ERROR) {

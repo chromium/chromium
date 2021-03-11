@@ -74,7 +74,7 @@ TEST_F(IOSLanguageDetectionTabHelperObserverBridgeTest, OnLanguageDetermined) {
   const std::string kContentLanguage = "fr";
   const std::string kAdoptedLanguage = "es";
   const std::string kUndefined = "und";
-  const base::string16 kContents = base::ASCIIToUTF16("Bonjour");
+  const std::u16string kContents = base::ASCIIToUTF16("Bonjour");
 
   translate::LanguageDetectionDetails details;
   details.content_language = kContentLanguage;

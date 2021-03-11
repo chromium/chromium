@@ -171,7 +171,7 @@ TEST_F(SpellCheckProviderTest, ShouldNotUseBrowserSpellCheck) {
   local_feature.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
 
   FakeTextCheckingResult completion;
-  base::string16 text = base::ASCIIToUTF16("This is a test");
+  std::u16string text = base::ASCIIToUTF16("This is a test");
   provider_.RequestTextChecking(
       text, std::make_unique<FakeTextCheckingCompletion>(&completion));
 

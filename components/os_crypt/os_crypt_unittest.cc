@@ -44,8 +44,8 @@ class OSCryptTest : public testing::Test {
 };
 
 TEST_F(OSCryptTest, String16EncryptionDecryption) {
-  base::string16 plaintext;
-  base::string16 result;
+  std::u16string plaintext;
+  std::u16string result;
   std::string utf8_plaintext;
   std::string utf8_result;
   std::string ciphertext;

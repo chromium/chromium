@@ -35,7 +35,7 @@ class TestChooserContext : public ChooserContextBase {
            object.FindKey(kRequiredKey2);
   }
 
-  base::string16 GetObjectDisplayName(const base::Value& object) override {
+  std::u16string GetObjectDisplayName(const base::Value& object) override {
     return {};
   }
 };

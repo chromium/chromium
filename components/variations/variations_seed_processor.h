@@ -34,7 +34,7 @@ struct ClientFilterableState;
 class VariationsSeedProcessor {
  public:
   using UIStringOverrideCallback =
-      base::RepeatingCallback<void(uint32_t, const base::string16&)>;
+      base::RepeatingCallback<void(uint32_t, const std::u16string&)>;
 
   VariationsSeedProcessor();
   virtual ~VariationsSeedProcessor();

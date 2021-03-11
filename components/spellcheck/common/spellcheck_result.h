@@ -29,12 +29,12 @@ struct SpellCheckResult {
       Decoration d = SPELLING,
       int loc = 0,
       int len = 0,
-      const std::vector<base::string16>& rep = std::vector<base::string16>());
+      const std::vector<std::u16string>& rep = std::vector<std::u16string>());
 
   explicit SpellCheckResult(Decoration d,
                             int loc,
                             int len,
-                            const base::string16& rep);
+                            const std::u16string& rep);
 
   ~SpellCheckResult();
   SpellCheckResult(const SpellCheckResult&);
@@ -42,7 +42,7 @@ struct SpellCheckResult {
   Decoration decoration;
   int location;
   int length;
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   bool spelling_service_used = false;
 };
 

@@ -77,7 +77,7 @@ void InMemoryHistoryBackend::OnKeywordSearchTermUpdated(
     HistoryService* history_service,
     const URLRow& row,
     KeywordID keyword_id,
-    const base::string16& term) {
+    const std::u16string& term) {
   DCHECK(row.id());
   db_->InsertOrUpdateURLRowByID(row);
   db_->SetKeywordSearchTermsForURL(row.id(), keyword_id, term);

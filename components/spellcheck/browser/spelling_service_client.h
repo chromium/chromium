@@ -47,7 +47,7 @@ class SimpleURLLoader;
 //       ...
 //     }
 //
-//     void MyTextCheck(BrowserContext* context, const base::string16& text) {
+//     void MyTextCheck(BrowserContext* context, const std::u16string& text) {
 //        client_.reset(new SpellingServiceClient);
 //        client_->RequestTextCheck(context, 0, text,
 //            base::BindOnce(&MyClient::OnTextCheckComplete,
@@ -83,7 +83,7 @@ class SpellingServiceClient {
   };
   typedef base::OnceCallback<void(
       bool /* success */,
-      const base::string16& /* text */,
+      const std::u16string& /* text */,
       const std::vector<SpellCheckResult>& /* results */)>
       TextCheckCompleteCallback;
 
@@ -96,7 +96,7 @@ class SpellingServiceClient {
   // call |callback| when we receive a text-check response from the service.
   bool RequestTextCheck(content::BrowserContext* context,
                         ServiceType type,
-                        const base::string16& text,
+                        const std::u16string& text,
                         TextCheckCompleteCallback callback);
 
   // Returns whether the specified service is available for the given context.
@@ -121,7 +121,7 @@ class SpellingServiceClient {
     TextCheckCallbackData(
         std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
         TextCheckCompleteCallback callback,
-        base::string16 text);
+        std::u16string text);
     ~TextCheckCallbackData();
 
     // The URL loader used.
@@ -132,7 +132,7 @@ class SpellingServiceClient {
     TextCheckCompleteCallback callback;
 
     // The text checked by the Spelling service.
-    base::string16 text;
+    std::u16string text;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(TextCheckCallbackData);

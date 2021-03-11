@@ -14,14 +14,14 @@
 namespace tab_groups {
 
 TabGroupVisualData::TabGroupVisualData()
-    : TabGroupVisualData(base::string16(), TabGroupColorId::kGrey, false) {}
+    : TabGroupVisualData(std::u16string(), TabGroupColorId::kGrey, false) {}
 
-TabGroupVisualData::TabGroupVisualData(base::string16 title,
+TabGroupVisualData::TabGroupVisualData(std::u16string title,
                                        tab_groups::TabGroupColorId color,
                                        bool is_collapsed)
     : title_(std::move(title)), color_(color), is_collapsed_(is_collapsed) {}
 
-TabGroupVisualData::TabGroupVisualData(base::string16 title,
+TabGroupVisualData::TabGroupVisualData(std::u16string title,
                                        uint32_t color_int,
                                        bool is_collapsed)
     : title_(std::move(title)),

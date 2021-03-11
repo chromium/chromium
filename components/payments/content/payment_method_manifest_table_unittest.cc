@@ -224,7 +224,7 @@ TEST_F(PaymentMethodManifestTableTest, AddingInvalidInstrumentReturnsFalse) {
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(
       SecurePaymentConfirmationInstrument(
           CreateCredentialId(), "relying-party.example",
-          /*label=*/base::string16(), CreateIcon())));
+          /*label=*/std::u16string(), CreateIcon())));
 
   // Empty icon.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationInstrument(

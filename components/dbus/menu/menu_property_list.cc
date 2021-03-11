@@ -41,7 +41,7 @@ std::string ToDBusKeySym(ui::KeyboardCode code) {
 #endif
 #if defined(USE_X11)
   return base::UTF16ToUTF8(
-      base::string16(1, ui::GetUnicodeCharacterFromXKeySym(
+      std::u16string(1, ui::GetUnicodeCharacterFromXKeySym(
                             XKeysymForWindowsKeyCode(code, false))));
 #endif
   return {};
@@ -75,7 +75,7 @@ MenuItemProperties ComputeMenuPropertiesForMenuItem(ui::MenuModel* menu,
   // The dbusmenu interface has no concept of a "sublabel", "minor text", or
   // "minor icon" like MenuModel has.  Ignore these rather than trying to
   // merge them with the regular label and icon.
-  base::string16 label = menu->GetLabelAt(i);
+  std::u16string label = menu->GetLabelAt(i);
   if (!label.empty()) {
     properties["label"] = MakeDbusVariant(DbusString(
         ui::ConvertAcceleratorsFromWindowsStyle(base::UTF16ToUTF8(label))));

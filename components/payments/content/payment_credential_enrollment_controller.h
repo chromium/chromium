@@ -64,7 +64,7 @@ class PaymentCredentialEnrollmentController
 
   void ShowDialog(content::GlobalFrameRoutingId initiator_frame_routing_id,
                   std::unique_ptr<SkBitmap> instrument_icon,
-                  const base::string16& instrument_name,
+                  const std::u16string& instrument_name,
                   ResponseCallback response_callback);
   void CloseDialog();
   void ShowProcessingSpinner();

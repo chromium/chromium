@@ -90,16 +90,16 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
 TEST_F(InstallableManagerUnitTest, ManifestRequiresNonEmptyNameORShortName) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.name = base::string16();
+  manifest.name = std::u16string();
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
   manifest.name = base::ASCIIToUTF16("foo");
-  manifest.short_name = base::string16();
+  manifest.short_name = std::u16string();
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = base::string16();
+  manifest.name = std::u16string();
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_NAME_OR_SHORT_NAME, GetErrorCode());
 }

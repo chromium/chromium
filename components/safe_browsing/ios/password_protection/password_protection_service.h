@@ -33,7 +33,7 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   // |warning_text| is the displayed text. |completion_callback| should be
   // invoked when the user dismisses the UI.
   using ShowWarningCallback =
-      base::OnceCallback<void(const base::string16& warning_text,
+      base::OnceCallback<void(const std::u16string& warning_text,
                               WarningCompletionCallback completion_callback)>;
 
   virtual void MaybeStartProtectedPasswordEntryRequest(

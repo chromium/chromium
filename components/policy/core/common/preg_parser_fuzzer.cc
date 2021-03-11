@@ -30,7 +30,7 @@ struct Environment {
     logging::SetMinLogLevel(logging::LOG_FATAL);
   }
 
-  const base::string16 root;
+  const std::u16string root;
 };
 
 Environment* env = new Environment();

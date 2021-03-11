@@ -54,7 +54,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
 
   void RemoveSession();
 
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ContentCaptureReceiverTest, RenderFrameHostGone);

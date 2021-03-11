@@ -129,7 +129,7 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Returns the app name if the current page is installable, otherwise returns
   // the empty string.
-  static base::string16 GetInstallableWebAppName(
+  static std::u16string GetInstallableWebAppName(
       content::WebContents* web_contents);
 
   // Returns whether the page that would currently be installed by the
@@ -188,7 +188,7 @@ class AppBannerManager : public content::WebContentsObserver,
   InstallableWebAppCheckResult GetInstallableWebAppCheckResultForTesting();
 
   // Return the name of the app for this page.
-  virtual base::string16 GetAppName() const;
+  virtual std::u16string GetAppName() const;
 
   // Simple accessors:
   const blink::Manifest& manifest() { return manifest_; }
@@ -234,7 +234,7 @@ class AppBannerManager : public content::WebContentsObserver,
   // current device and the platform delivers apps considered replacements for
   // web apps.
   virtual bool IsSupportedNonWebAppPlatform(
-      const base::string16& platform) const = 0;
+      const std::u16string& platform) const = 0;
 
   // Returns whether |related_app| is already installed and considered a
   // replacement for the manifest's web app.

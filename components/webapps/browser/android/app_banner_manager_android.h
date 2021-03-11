@@ -94,7 +94,7 @@ class AppBannerManagerAndroid
                    a2hs_event_callback);
 
   // Returns the appropriate app name based on whether we have a native/web app.
-  base::string16 GetAppName() const override;
+  std::u16string GetAppName() const override;
 
  protected:
   // AppBannerManager overrides.
@@ -109,7 +109,7 @@ class AppBannerManagerAndroid
   base::WeakPtr<AppBannerManager> GetWeakPtr() override;
   void InvalidateWeakPtrs() override;
   bool IsSupportedNonWebAppPlatform(
-      const base::string16& platform) const override;
+      const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
@@ -156,7 +156,7 @@ class AppBannerManagerAndroid
   // query may not necessarily succeed (e.g. |id| doesn't map to anything), but
   // if this method returns NO_ERROR_DETECTED, only a native app banner
   // may be shown, and the web app banner flow will not be run.
-  InstallableStatusCode QueryNativeApp(const base::string16& platform,
+  InstallableStatusCode QueryNativeApp(const std::u16string& platform,
                                        const GURL& url,
                                        const std::string& id);
 
@@ -180,7 +180,7 @@ class AppBannerManagerAndroid
   std::string native_app_package_;
 
   // Title to display in the banner for native app.
-  base::string16 native_app_title_;
+  std::u16string native_app_title_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 };

@@ -102,7 +102,7 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
                       int tag,
                       size_t* misspelling_start,
                       size_t* misspelling_len,
-                      std::vector<base::string16>* optional_suggestions);
+                      std::vector<std::u16string>* optional_suggestions);
 
   // Overload of SpellCheckWord where the replacement suggestions are kept
   // separately per language, instead of combined into a single list. This is
@@ -132,13 +132,13 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
   // Returns true if |text| is correctly spelled, false otherwise.
   // If the spellchecker failed to initialize, always returns true.
   bool SpellCheckParagraph(
-      const base::string16& text,
+      const std::u16string& text,
       blink::WebVector<blink::WebTextCheckingResult>* results);
 
   // Requests to spellcheck the specified text in the background. This function
   // posts a background task and calls SpellCheckParagraph() in the task.
   void RequestTextChecking(
-      const base::string16& text,
+      const std::u16string& text,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 #endif
 
@@ -149,7 +149,7 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
   void CreateTextCheckingResults(
       ResultFilter filter,
       int line_offset,
-      const base::string16& line_text,
+      const std::u16string& line_text,
       const std::vector<SpellCheckResult>& spellcheck_results,
       blink::WebVector<blink::WebTextCheckingResult>* textcheck_results);
 
@@ -199,7 +199,7 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
 
    // Returns whether a word is in the script of one of the enabled spellcheck
    // languages.
-   bool IsWordInSupportedScript(const base::string16& word) const;
+   bool IsWordInSupportedScript(const std::u16string& word) const;
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
    // Posts delayed spellcheck task and clear it if any.

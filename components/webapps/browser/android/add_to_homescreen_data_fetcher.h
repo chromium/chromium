@@ -35,7 +35,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
    public:
     // Called when the homescreen icon title (and possibly information from the
     // web manifest) is available.
-    virtual void OnUserTitleAvailable(const base::string16& title,
+    virtual void OnUserTitleAvailable(const std::u16string& title,
                                       const GURL& url,
                                       bool is_webapk_compatible) = 0;
 

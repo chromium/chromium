@@ -57,14 +57,14 @@ class BookmarkClientMock : public TestBookmarkClient {
 // Minimal implementation of TitledUrlNode.
 class TestTitledUrlNode : public TitledUrlNode {
  public:
-  TestTitledUrlNode(const base::string16& title,
+  TestTitledUrlNode(const std::u16string& title,
                     const GURL& url,
-                    const base::string16& ancestor_title)
+                    const std::u16string& ancestor_title)
       : title_(title), url_(url), ancestor_title_(ancestor_title) {}
 
   ~TestTitledUrlNode() override = default;
 
-  const base::string16& GetTitledUrlNodeTitle() const override {
+  const std::u16string& GetTitledUrlNodeTitle() const override {
     return title_;
   }
 
@@ -76,9 +76,9 @@ class TestTitledUrlNode : public TitledUrlNode {
   }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   GURL url_;
-  base::string16 ancestor_title_;
+  std::u16string ancestor_title_;
 };
 
 class TitledUrlIndexTest : public testing::Test {
@@ -101,9 +101,9 @@ class TitledUrlIndexTest : public testing::Test {
   }
 
   TitledUrlNode* AddNode(
-      const base::string16& title,
+      const std::u16string& title,
       const GURL& url,
-      const base::string16& ancestor_title = base::string16()) {
+      const std::u16string& ancestor_title = std::u16string()) {
     owned_nodes_.push_back(
         std::make_unique<TestTitledUrlNode>(title, url, ancestor_title));
     index_->Add(owned_nodes_.back().get());
@@ -143,7 +143,7 @@ class TitledUrlIndexTest : public testing::Test {
     for (const std::string& expected_title : expected_titles) {
       bool found = false;
       for (size_t j = 0; j < matches.size(); ++j) {
-        const base::string16& title = matches[j].node->GetTitledUrlNodeTitle();
+        const std::u16string& title = matches[j].node->GetTitledUrlNodeTitle();
         if (UTF8ToUTF16(expected_title) == title) {
           matches.erase(matches.begin() + j);
           found = true;
@@ -580,7 +580,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
-    std::vector<base::string16> terms = base::SplitString(
+    std::vector<std::u16string> terms = base::SplitString(
         base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAllTermsForTesting(
@@ -615,7 +615,7 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
-    std::vector<base::string16> terms = base::SplitString(
+    std::vector<std::u16string> terms = base::SplitString(
         base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(

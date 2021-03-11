@@ -18,8 +18,8 @@ namespace syncer {
 
 namespace {
 
-base::string16 FormatTimeDelta(base::TimeDelta delta) {
-  base::string16 value;
+std::u16string FormatTimeDelta(base::TimeDelta delta) {
+  std::u16string value;
   bool ok =
       base::TimeDurationFormat(delta, base::DURATION_WIDTH_NARROW, &value);
   DCHECK(ok);

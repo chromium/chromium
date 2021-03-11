@@ -238,14 +238,14 @@ class FakeHomepageClient : public MostVisitedSites::HomepageClient {
 
   void SetHomepageUrl(GURL homepage_url) { homepage_url_ = homepage_url; }
 
-  void SetHomepageTitle(const base::Optional<base::string16>& homepage_title) {
+  void SetHomepageTitle(const base::Optional<std::u16string>& homepage_title) {
     homepage_title_ = homepage_title;
   }
 
  private:
   bool homepage_tile_enabled_;
   GURL homepage_url_;
-  base::Optional<base::string16> homepage_title_;
+  base::Optional<std::u16string> homepage_title_;
 };
 
 class FakeExploreSitesClient : public MostVisitedSites::ExploreSitesClient {
@@ -254,7 +254,7 @@ class FakeExploreSitesClient : public MostVisitedSites::ExploreSitesClient {
 
   GURL GetExploreSitesUrl() const override { return GURL(kTestExploreUrl); }
 
-  base::string16 GetExploreSitesTitle() const override {
+  std::u16string GetExploreSitesTitle() const override {
     return base::ASCIIToUTF16(kTestExploreTitle);
   }
 };
@@ -275,11 +275,11 @@ class MockCustomLinksManager : public CustomLinksManager {
   MOCK_METHOD0(Uninitialize, void());
   MOCK_CONST_METHOD0(IsInitialized, bool());
   MOCK_CONST_METHOD0(GetLinks, const std::vector<CustomLinksManager::Link>&());
-  MOCK_METHOD2(AddLink, bool(const GURL& url, const base::string16& title));
+  MOCK_METHOD2(AddLink, bool(const GURL& url, const std::u16string& title));
   MOCK_METHOD3(UpdateLink,
                bool(const GURL& url,
                     const GURL& new_url,
-                    const base::string16& new_title));
+                    const std::u16string& new_title));
   MOCK_METHOD2(ReorderLink, bool(const GURL& url, size_t new_pos));
   MOCK_METHOD1(DeleteLink, bool(const GURL& url));
   MOCK_METHOD0(UndoAction, bool());

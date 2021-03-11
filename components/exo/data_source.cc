@@ -102,9 +102,9 @@ int GetImageTypeRank(const std::string& mime_type) {
   return 2;
 }
 
-base::string16 CodepageToUTF16(const std::vector<uint8_t>& data,
+std::u16string CodepageToUTF16(const std::vector<uint8_t>& data,
                                const std::string& charset_input) {
-  base::string16 output;
+  std::u16string output;
   base::StringPiece piece(reinterpret_cast<const char*>(data.data()),
                           data.size());
   const char* charset = charset_input.c_str();
@@ -314,7 +314,7 @@ void DataSource::GetDataForPreferredMimeTypes(
 void DataSource::OnTextRead(ReadTextDataCallback callback,
                             const std::string& mime_type,
                             const std::vector<uint8_t>& data) {
-  base::string16 output = CodepageToUTF16(data, GetCharset(mime_type));
+  std::u16string output = CodepageToUTF16(data, GetCharset(mime_type));
   std::move(callback).Run(mime_type, std::move(output));
 }
 

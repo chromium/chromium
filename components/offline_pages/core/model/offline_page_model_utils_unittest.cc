@@ -39,7 +39,7 @@ TEST(OfflinePageModelUtilsTest, ToNamespaceEnum) {
 }
 
 struct GenerateUniqueFilenameTestCase {
-  const base::string16 page_title;
+  const std::u16string page_title;
   const GURL page_url;
   const base::FilePath::CharType* expected_basename;
 };

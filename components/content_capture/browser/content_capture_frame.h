@@ -23,13 +23,13 @@ struct ContentCaptureFrame {
   // unique ID.
   int64_t id = 0;
   // The url of frame.
-  base::string16 url;
+  std::u16string url;
   // The bounds of the frame.
   gfx::Rect bounds;
   // The content of this frame, might not always available.
   std::vector<ContentCaptureData> children;
   // The title of a page.
-  base::string16 title;
+  std::u16string title;
 
   bool operator==(const ContentCaptureFrame& other) const;
 

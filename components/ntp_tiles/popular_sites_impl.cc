@@ -121,7 +121,7 @@ PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
     const base::DictionaryValue* item;
     if (!list.GetDictionary(i, &item))
       continue;
-    base::string16 title;
+    std::u16string title;
     std::string url;
     if (!item->GetString("title", &title) || !item->GetString("url", &url))
       continue;
@@ -237,7 +237,7 @@ base::Value DefaultPopularSites() {
 
 }  // namespace
 
-PopularSites::Site::Site(const base::string16& title,
+PopularSites::Site::Site(const std::u16string& title,
                          const GURL& url,
                          const GURL& favicon_url,
                          const GURL& large_icon_url,

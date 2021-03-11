@@ -43,8 +43,8 @@ class MediaStorageUtilTest : public testing::Test {
 
   void ProcessAttach(const std::string& id,
                      const base::FilePath::StringType& location) {
-    StorageInfo info(id, location, base::string16(), base::string16(),
-                     base::string16(), 0);
+    StorageInfo info(id, location, std::u16string(), std::u16string(),
+                     std::u16string(), 0);
     monitor_->receiver()->ProcessAttach(info);
   }
 

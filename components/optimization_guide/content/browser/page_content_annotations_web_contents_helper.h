@@ -49,7 +49,7 @@ class PageContentAnnotationsWebContentsHelper
 
   // Callback invoked when a text dump has been received for the |visit|.
   void OnTextDumpReceived(const HistoryVisit& visit,
-                          const base::string16& test);
+                          const std::u16string& test);
 
   // Not owned. Guaranteed to outlive |this|.
   content::WebContents* web_contents_;

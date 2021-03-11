@@ -25,7 +25,7 @@ namespace {
 using base::WideToUTF16;
 using base::ASCIIToUTF16;
 
-const size_t kNpos = base::string16::npos;
+const size_t kNpos = std::u16string::npos;
 
 struct AdjustOffsetCase {
   size_t input_offset;
@@ -46,7 +46,7 @@ void VerboseExpect(size_t expected,
                    size_t actual,
                    const std::string& original_url,
                    size_t position,
-                   const base::string16& formatted_url) {
+                   const std::u16string& formatted_url) {
   EXPECT_EQ(expected, actual) << "Original URL: " << original_url
       << " (at char " << position << ")\nFormatted URL: " << formatted_url;
 }
@@ -62,15 +62,15 @@ void CheckAdjustedOffsets(const std::string& url_string,
     offsets.push_back(i);
   offsets.push_back(500000);  // Something larger than any input length.
   offsets.push_back(std::string::npos);
-  base::string16 formatted_url = FormatUrlWithOffsets(url, format_types,
-      unescape_rules, nullptr, nullptr, &offsets);
+  std::u16string formatted_url = FormatUrlWithOffsets(
+      url, format_types, unescape_rules, nullptr, nullptr, &offsets);
   for (size_t i = 0; i < url_length; ++i)
     VerboseExpect(output_offsets[i], offsets[i], url_string, i, formatted_url);
   VerboseExpect(formatted_url.length(), offsets[url_length], url_string,
                 url_length, formatted_url);
-  VerboseExpect(base::string16::npos, offsets[url_length + 1], url_string,
+  VerboseExpect(std::u16string::npos, offsets[url_length + 1], url_string,
                 500000, formatted_url);
-  VerboseExpect(base::string16::npos, offsets[url_length + 2], url_string,
+  VerboseExpect(std::u16string::npos, offsets[url_length + 2], url_string,
                 std::string::npos, formatted_url);
 }
 
@@ -385,9 +385,9 @@ TEST(UrlFormatterTest, FormatUrl) {
 
   for (size_t i = 0; i < base::size(tests); ++i) {
     size_t prefix_len;
-    base::string16 formatted = FormatUrl(
-        GURL(tests[i].input), tests[i].format_types, tests[i].escape_rules,
-        nullptr,  &prefix_len, nullptr);
+    std::u16string formatted =
+        FormatUrl(GURL(tests[i].input), tests[i].format_types,
+                  tests[i].escape_rules, nullptr, &prefix_len, nullptr);
     EXPECT_EQ(WideToUTF16(tests[i].output), formatted) << tests[i].description;
     EXPECT_EQ(tests[i].prefix_len, prefix_len) << tests[i].description;
   }
@@ -396,11 +396,11 @@ TEST(UrlFormatterTest, FormatUrl) {
 TEST(UrlFormatterTest, FormatUrlParsed) {
   // No unescape case.
   url::Parsed parsed;
-  base::string16 formatted =
+  std::u16string formatted =
       FormatUrl(GURL("http://\xE3\x82\xB0:\xE3\x83\xBC@xn--qcka1pmc.jp:8080/"
                      "%E3%82%B0/?q=%E3%82%B0#\xE3\x82\xB0"),
-                kFormatUrlOmitNothing, net::UnescapeRule::NONE,
-                &parsed, nullptr, nullptr);
+                kFormatUrlOmitNothing, net::UnescapeRule::NONE, &parsed,
+                nullptr, nullptr);
   EXPECT_EQ(
       WideToUTF16(L"http://%E3%82%B0:%E3%83%BC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
                   L"/%E3%82%B0/?q=%E3%82%B0#%E3%82%B0"),
@@ -551,7 +551,7 @@ TEST(UrlFormatterTest, FormatUrlRoundTripPathASCII) {
     GURL url(std::string("http://www.google.com/") +
              static_cast<char>(test_char));
     size_t prefix_len;
-    base::string16 formatted =
+    std::u16string formatted =
         FormatUrl(url, kFormatUrlOmitUsernamePassword,
                   net::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
     EXPECT_EQ(url.spec(), GURL(formatted).spec());
@@ -568,8 +568,9 @@ TEST(UrlFormatterTest, FormatUrlRoundTripPathEscaped) {
 
     GURL url(original_url);
     size_t prefix_len;
-    base::string16 formatted = FormatUrl(url, kFormatUrlOmitUsernamePassword,
-        net::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
+    std::u16string formatted =
+        FormatUrl(url, kFormatUrlOmitUsernamePassword,
+                  net::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
     EXPECT_EQ(url.spec(), GURL(formatted).spec());
   }
 }
@@ -581,7 +582,7 @@ TEST(UrlFormatterTest, FormatUrlRoundTripQueryASCII) {
     GURL url(std::string("http://www.google.com/?") +
              static_cast<char>(test_char));
     size_t prefix_len;
-    base::string16 formatted =
+    std::u16string formatted =
         FormatUrl(url, kFormatUrlOmitUsernamePassword,
                   net::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
     EXPECT_EQ(url.spec(), GURL(formatted).spec());
@@ -602,7 +603,7 @@ TEST(UrlFormatterTest, FormatUrlRoundTripQueryEscaped) {
 
     GURL url(original_url);
     size_t prefix_len;
-    base::string16 formatted =
+    std::u16string formatted =
         FormatUrl(url, kFormatUrlOmitUsernamePassword,
                   net::UnescapeRule::NORMAL, nullptr, &prefix_len, nullptr);
 

@@ -165,7 +165,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   // Suggested filename for the download. The suggestion can be overridden by
   // either a Content-Disposition response header or a |file_path|.
-  void set_suggested_name(const base::string16& suggested_name) {
+  void set_suggested_name(const std::u16string& suggested_name) {
     save_info_.suggested_name = suggested_name;
   }
 
@@ -287,7 +287,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
 
   const RequestHeadersType& request_headers() const { return request_headers_; }
   const base::FilePath& file_path() const { return save_info_.file_path; }
-  const base::string16& suggested_name() const {
+  const std::u16string& suggested_name() const {
     return save_info_.suggested_name;
   }
   int64_t offset() const { return save_info_.offset; }

@@ -58,15 +58,15 @@ void SystemMediaControlsMac::SetPlaybackStatus(PlaybackStatus status) {
   now_playing_info_center_delegate_.SetPlaybackStatus(status);
 }
 
-void SystemMediaControlsMac::SetTitle(const base::string16& title) {
+void SystemMediaControlsMac::SetTitle(const std::u16string& title) {
   now_playing_info_center_delegate_.SetTitle(title);
 }
 
-void SystemMediaControlsMac::SetArtist(const base::string16& artist) {
+void SystemMediaControlsMac::SetArtist(const std::u16string& artist) {
   now_playing_info_center_delegate_.SetArtist(artist);
 }
 
-void SystemMediaControlsMac::SetAlbum(const base::string16& album) {
+void SystemMediaControlsMac::SetAlbum(const std::u16string& album) {
   now_playing_info_center_delegate_.SetAlbum(album);
 }
 

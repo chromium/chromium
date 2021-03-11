@@ -21,12 +21,12 @@ namespace policy {
 
 namespace {
 
-const base::string16 GetLocalizedString(
+const std::u16string GetLocalizedString(
     PolicyMap::Entry::L10nLookupFunction lookup,
-    const std::map<int, base::Optional<std::vector<base::string16>>>&
+    const std::map<int, base::Optional<std::vector<std::u16string>>>&
         localized_string_ids) {
-  base::string16 result = base::string16();
-  base::string16 line_feed = base::UTF8ToUTF16("\n");
+  std::u16string result = std::u16string();
+  std::u16string line_feed = base::UTF8ToUTF16("\n");
   for (const auto& string_pairs : localized_string_ids) {
     if (string_pairs.second)
       result += l10n_util::GetStringFUTF16(
@@ -113,7 +113,7 @@ void PolicyMap::Entry::AddMessage(MessageType type, int message_id) {
 
 void PolicyMap::Entry::AddMessage(MessageType type,
                                   int message_id,
-                                  std::vector<base::string16>&& message_args) {
+                                  std::vector<std::u16string>&& message_args) {
   message_ids_[type].emplace(message_id, std::move(message_args));
 }
 
@@ -159,11 +159,11 @@ bool PolicyMap::Entry::HasMessage(MessageType type) const {
   return message_ids_.find(type) != message_ids_.end();
 }
 
-base::string16 PolicyMap::Entry::GetLocalizedMessages(
+std::u16string PolicyMap::Entry::GetLocalizedMessages(
     MessageType type,
     L10nLookupFunction lookup) const {
   if (!HasMessage(type)) {
-    return base::string16();
+    return std::u16string();
   }
   return GetLocalizedString(lookup, message_ids_.at(type));
 }
@@ -294,7 +294,7 @@ void PolicyMap::AddMessage(const std::string& policy,
 void PolicyMap::AddMessage(const std::string& policy,
                            MessageType type,
                            int message_id,
-                           std::vector<base::string16>&& message_args) {
+                           std::vector<std::u16string>&& message_args) {
   map_[policy].AddMessage(type, message_id, std::move(message_args));
 }
 

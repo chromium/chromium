@@ -526,7 +526,7 @@ class PdfAccessibilityTreeBuilder {
 
  private:
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box) {
-    base::string16 text = inline_text_box->GetString16Attribute(
+    std::u16string text = inline_text_box->GetString16Attribute(
         ax::mojom::StringAttribute::kName);
     base::i18n::BreakIterator iter(text, base::i18n::BreakIterator::BREAK_WORD);
     if (!iter.Init())

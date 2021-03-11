@@ -549,7 +549,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
 }
 
 void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
-                                                   const base::string16& str) {
+                                                   const std::u16string& str) {
   int resource_id = ui_string_overrider_.GetResourceIndex(resource_hash);
   if (resource_id == -1)
     return;

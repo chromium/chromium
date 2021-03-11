@@ -203,7 +203,7 @@ struct FeatureEntry {
 
   // Returns the human readable description for the option at |index|.
   // Only used for types that use |num_options|.
-  base::string16 DescriptionForOption(int index) const;
+  std::u16string DescriptionForOption(int index) const;
 
   // Returns the choice for the option at |index|. Only applicable for type
   // FEATURE_MULTI.

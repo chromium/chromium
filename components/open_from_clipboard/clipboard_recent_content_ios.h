@@ -41,7 +41,7 @@ class ClipboardRecentContentIOS : public ClipboardRecentContent {
 
   // ClipboardRecentContent implementation.
   base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<base::string16> GetRecentTextFromClipboard() override;
+  base::Optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,

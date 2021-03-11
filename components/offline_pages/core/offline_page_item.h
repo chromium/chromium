@@ -75,7 +75,7 @@ struct OfflinePageItem {
   // Number of times that the offline archive has been accessed.
   int access_count = 0;
   // The title of the page at the time it was saved.
-  base::string16 title;
+  std::u16string title;
   // Flags about the state and behavior of the offline page.
   Flags flags = NO_FLAG;
   // The original URL of the page if not empty. Otherwise, this is set to empty

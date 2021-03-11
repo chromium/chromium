@@ -88,7 +88,7 @@ class POLICY_EXPORT PolicyMap {
     // args.
     void AddMessage(MessageType type,
                     int message_id,
-                    std::vector<base::string16>&& message_args);
+                    std::vector<std::u16string>&& message_args);
 
     // Clear a message of a specific type given its l10n message ID.
     void ClearMessage(MessageType type, int message_id);
@@ -124,7 +124,7 @@ class POLICY_EXPORT PolicyMap {
 
     // Callback used to look up a localized string given its l10n message ID. It
     // should return a UTF-16 string.
-    typedef base::RepeatingCallback<base::string16(int message_id)>
+    typedef base::RepeatingCallback<std::u16string(int message_id)>
         L10nLookupFunction;
 
     // Returns true if there is any message for |type|.
@@ -132,7 +132,7 @@ class POLICY_EXPORT PolicyMap {
 
     // Returns localized messages as UTF-16 separated with LF characters. The
     // messages are organized according to message types (Warning, Error, etc).
-    base::string16 GetLocalizedMessages(MessageType type,
+    std::u16string GetLocalizedMessages(MessageType type,
                                         L10nLookupFunction lookup) const;
 
    private:
@@ -142,7 +142,7 @@ class POLICY_EXPORT PolicyMap {
 
     // Stores all message IDs separated by message types.
     std::map<MessageType,
-             std::map<int, base::Optional<std::vector<base::string16>>>>
+             std::map<int, base::Optional<std::vector<std::u16string>>>>
         message_ids_;
   };
 
@@ -211,7 +211,7 @@ class POLICY_EXPORT PolicyMap {
   void AddMessage(const std::string& policy,
                   MessageType type,
                   int message_id,
-                  std::vector<base::string16>&& message_args);
+                  std::vector<std::u16string>&& message_args);
 
   // Return True if the policy is set but its value is ignored because it does
   // not share the highest priority from its atomic group. Returns False if the

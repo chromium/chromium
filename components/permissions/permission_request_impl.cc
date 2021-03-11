@@ -40,7 +40,7 @@ RequestType PermissionRequestImpl::GetRequestType() const {
 }
 
 #if defined(OS_ANDROID)
-base::string16 PermissionRequestImpl::GetMessageText() const {
+std::u16string PermissionRequestImpl::GetMessageText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -84,7 +84,7 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
       break;
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   return l10n_util::GetStringFUTF16(
       message_id,
@@ -92,7 +92,7 @@ base::string16 PermissionRequestImpl::GetMessageText() const {
           GetOrigin(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
-base::string16 PermissionRequestImpl::GetQuietTitleText() const {
+std::u16string PermissionRequestImpl::GetQuietTitleText() const {
   if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
     return l10n_util::GetStringFUTF16(
         IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_TITLE,
@@ -101,10 +101,10 @@ base::string16 PermissionRequestImpl::GetQuietTitleText() const {
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 PermissionRequestImpl::GetQuietMessageText() const {
+std::u16string PermissionRequestImpl::GetQuietMessageText() const {
   if (content_settings_type_ == ContentSettingsType::NOTIFICATIONS) {
     return l10n_util::GetStringUTF16(
         IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
@@ -115,7 +115,7 @@ base::string16 PermissionRequestImpl::GetQuietMessageText() const {
 }
 #endif
 
-base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
+std::u16string PermissionRequestImpl::GetMessageTextFragment() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:
@@ -170,13 +170,13 @@ base::string16 PermissionRequestImpl::GetMessageTextFragment() const {
       break;
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   return l10n_util::GetStringUTF16(message_id);
 }
 
 #if !defined(OS_ANDROID)
-base::Optional<base::string16> PermissionRequestImpl::GetChipText() const {
+base::Optional<std::u16string> PermissionRequestImpl::GetChipText() const {
   int message_id;
   switch (content_settings_type_) {
     case ContentSettingsType::GEOLOCATION:

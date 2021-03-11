@@ -490,7 +490,7 @@ TEST_F(BookmarkModelTest, InitialState) {
 
 TEST_F(BookmarkModelTest, AddURL) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   const BookmarkNode* new_node = model_->AddURL(root, 0, title, url);
@@ -511,7 +511,7 @@ TEST_F(BookmarkModelTest, AddURL) {
 
 TEST_F(BookmarkModelTest, AddURLWithUnicodeTitle) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(base::WideToUTF16(
+  const std::u16string title(base::WideToUTF16(
       L"\u767e\u5ea6\u4e00\u4e0b\uff0c\u4f60\u5c31\u77e5\u9053"));
   const GURL url("https://www.baidu.com/");
 
@@ -533,7 +533,7 @@ TEST_F(BookmarkModelTest, AddURLWithUnicodeTitle) {
 TEST_F(BookmarkModelTest, AddURLWithWhitespaceTitle) {
   for (size_t i = 0; i < base::size(url_whitespace_test_cases); ++i) {
     const BookmarkNode* root = model_->bookmark_bar_node();
-    const base::string16 title(
+    const std::u16string title(
         ASCIIToUTF16(url_whitespace_test_cases[i].input_title));
     const GURL url("http://foo.com");
 
@@ -548,7 +548,7 @@ TEST_F(BookmarkModelTest, AddURLWithWhitespaceTitle) {
 
 TEST_F(BookmarkModelTest, AddURLWithCreationTimeAndMetaInfo) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const Time time = Time::Now() - TimeDelta::FromDays(1);
   BookmarkNode::MetaInfoMap meta_info;
@@ -576,7 +576,7 @@ TEST_F(BookmarkModelTest, AddURLWithCreationTimeAndMetaInfo) {
 
 TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const Time time = Time::Now() - TimeDelta::FromDays(1);
   BookmarkNode::MetaInfoMap meta_info;
@@ -590,7 +590,7 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
 
 TEST_F(BookmarkModelTest, AddURLToMobileBookmarks) {
   const BookmarkNode* root = model_->mobile_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   const BookmarkNode* new_node = model_->AddURL(root, 0, title, url);
@@ -610,7 +610,7 @@ TEST_F(BookmarkModelTest, AddURLToMobileBookmarks) {
 
 TEST_F(BookmarkModelTest, AddFolder) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
 
   const BookmarkNode* new_node = model_->AddFolder(root, 0, title);
   AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -634,7 +634,7 @@ TEST_F(BookmarkModelTest, AddFolder) {
 
 TEST_F(BookmarkModelTest, AddFolderWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   BookmarkNode::MetaInfoMap meta_info;
   const base::GUID guid = base::GUID::GenerateRandomV4();
 
@@ -647,7 +647,7 @@ TEST_F(BookmarkModelTest, AddFolderWithGUID) {
 TEST_F(BookmarkModelTest, AddFolderWithWhitespaceTitle) {
   for (size_t i = 0; i < base::size(title_whitespace_test_cases); ++i) {
     const BookmarkNode* root = model_->bookmark_bar_node();
-    const base::string16 title(
+    const std::u16string title(
         ASCIIToUTF16(title_whitespace_test_cases[i].input_title));
 
     const BookmarkNode* new_node = model_->AddFolder(root, i, title);
@@ -661,7 +661,7 @@ TEST_F(BookmarkModelTest, AddFolderWithWhitespaceTitle) {
 
 TEST_F(BookmarkModelTest, RemoveURL) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   model_->AddURL(root, 0, title, url);
   ClearCounts();
@@ -682,7 +682,7 @@ TEST_F(BookmarkModelTest, RemoveFolder) {
   ClearCounts();
 
   // Add a URL as a child.
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   model_->AddURL(folder, 0, title, url);
 
@@ -704,7 +704,7 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   ClearCounts();
 
   // Add a url to bookmark bar.
-  base::string16 title(ASCIIToUTF16("foo"));
+  std::u16string title(ASCIIToUTF16("foo"));
   GURL url("http://foo.com");
   const BookmarkNode* url_node =
       model_->AddURL(bookmark_bar_node, 0, title, url);
@@ -743,7 +743,7 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
 
 TEST_F(BookmarkModelTest, SetTitle) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  base::string16 title(ASCIIToUTF16("foo"));
+  std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://url.com");
   const BookmarkNode* node = model_->AddURL(root, 0, title, url);
 
@@ -770,7 +770,7 @@ TEST_F(BookmarkModelTest, SetTitle) {
 TEST_F(BookmarkModelTest, SetTitleWithWhitespace) {
   for (size_t i = 0; i < base::size(title_whitespace_test_cases); ++i) {
     const BookmarkNode* root = model_->bookmark_bar_node();
-    base::string16 title(ASCIIToUTF16("dummy"));
+    std::u16string title(ASCIIToUTF16("dummy"));
     const GURL url("http://foo.com");
     const BookmarkNode* node = model_->AddURL(root, 0, title, url);
 
@@ -785,7 +785,7 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const BookmarkNode* folder =
       model_->AddFolder(root, 0, ASCIIToUTF16("folder"));
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(folder, 0, title, url);
   ClearCounts();
@@ -816,7 +816,7 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
 
 TEST_F(BookmarkModelTest, SetURL) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(root, 0, title, url);
 
@@ -831,7 +831,7 @@ TEST_F(BookmarkModelTest, SetURL) {
 
 TEST_F(BookmarkModelTest, SetDateAdded) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(root, 0, title, url);
 
@@ -846,7 +846,7 @@ TEST_F(BookmarkModelTest, SetDateAdded) {
 
 TEST_F(BookmarkModelTest, Move) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(root, 0, title, url);
   const BookmarkNode* folder1 =
@@ -885,7 +885,7 @@ TEST_F(BookmarkModelTest, Move) {
 
 TEST_F(BookmarkModelTest, NonMovingMoveCall) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const base::Time old_date(base::Time::Now() - base::TimeDelta::FromDays(1));
 
@@ -905,7 +905,7 @@ TEST_F(BookmarkModelTest, MoveURLFromFolder) {
       model_->AddFolder(root, 0, ASCIIToUTF16("folder"));
   const BookmarkNode* folder2 =
       model_->AddFolder(root, 0, ASCIIToUTF16("golder"));
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(folder1, 0, title, url);
   ClearCounts();
@@ -965,7 +965,7 @@ TEST_F(BookmarkModelTest, MoveFolder) {
       model_->AddFolder(root, 1, ASCIIToUTF16("golder"));
   const BookmarkNode* folder3 =
       model_->AddFolder(folder1, 0, ASCIIToUTF16("holder"));
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(folder3, 0, title, url);
   ClearCounts();
@@ -1072,7 +1072,7 @@ TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
 // Tests that the bookmark_bar_node can still be returned even on Android in
 // case the last bookmark was added to it.
 TEST_F(BookmarkModelTest, ParentCanBeBookmarkBarOnAndroid) {
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   model_->AddURL(model_->bookmark_bar_node(), 0, title, url);
@@ -1082,7 +1082,7 @@ TEST_F(BookmarkModelTest, ParentCanBeBookmarkBarOnAndroid) {
 
 // Tests that adding a URL to a folder updates the last modified time.
 TEST_F(BookmarkModelTest, ParentForNewNodes) {
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   model_->AddURL(model_->other_node(), 0, title, url);
@@ -1091,7 +1091,7 @@ TEST_F(BookmarkModelTest, ParentForNewNodes) {
 
 // Tests that adding a URL to a folder updates the last modified time.
 TEST_F(BookmarkModelTest, ParentForNewMobileNodes) {
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   model_->AddURL(model_->mobile_node(), 0, title, url);
@@ -1188,7 +1188,7 @@ TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURL) {
 // Makes sure GetBookmarks removes duplicates.
 TEST_F(BookmarkModelTest, GetBookmarksWithDups) {
   const GURL url("http://foo.com/0");
-  const base::string16 title(ASCIIToUTF16("blah"));
+  const std::u16string title(ASCIIToUTF16("blah"));
   model_->AddURL(model_->bookmark_bar_node(), 0, title, url);
   model_->AddURL(model_->bookmark_bar_node(), 1, title, url);
 
@@ -1292,7 +1292,7 @@ TEST_F(BookmarkModelTest, NodeVisibility) {
 
 TEST_F(BookmarkModelTest, MobileNodeVisibleWithChildren) {
   const BookmarkNode* root = model_->mobile_node();
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
 
   model_->AddURL(root, 0, title, url);
@@ -1356,7 +1356,7 @@ TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURLSkipsManagedNodes) {
   // Reload the model with a managed node that is not editable by the user.
   BookmarkPermanentNode* managed_node = ReloadModelWithManagedNode();
 
-  const base::string16 title = base::ASCIIToUTF16("Title");
+  const std::u16string title = base::ASCIIToUTF16("Title");
   const BookmarkNode* user_parent = model_->other_node();
   const BookmarkNode* managed_parent = managed_node;
   const GURL url("http://google.com");
@@ -1399,7 +1399,7 @@ TEST_F(BookmarkModelTest, GetBookmarksMatching) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const BookmarkNode* folder =
       model_->AddFolder(root, 0, ASCIIToUTF16("folder"));
-  const base::string16 title(ASCIIToUTF16("foo"));
+  const std::u16string title(ASCIIToUTF16("foo"));
   const GURL url("http://foo.com");
   const BookmarkNode* node = model_->AddURL(folder, 0, title, url);
 
@@ -1426,7 +1426,7 @@ TEST_F(BookmarkModelTest, GetBookmarksMatching) {
 
 // Verifies that TitledUrlIndex is updated when a bookmark is removed.
 TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnRemove) {
-  const base::string16 title = base::ASCIIToUTF16("Title");
+  const std::u16string title = base::ASCIIToUTF16("Title");
   const GURL url("http://google.com");
   const BookmarkNode* root = model_->bookmark_bar_node();
 
@@ -1446,8 +1446,8 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnRemove) {
 
 // Verifies that TitledUrlIndex is updated when a bookmark's title changes.
 TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeTitle) {
-  const base::string16 initial_title = base::ASCIIToUTF16("Initial");
-  const base::string16 new_title = base::ASCIIToUTF16("New");
+  const std::u16string initial_title = base::ASCIIToUTF16("Initial");
+  const std::u16string new_title = base::ASCIIToUTF16("New");
   const GURL url("http://google.com");
   const BookmarkNode* root = model_->bookmark_bar_node();
 
@@ -1479,7 +1479,7 @@ TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeTitle) {
 
 // Verifies that TitledUrlIndex is updated when a bookmark's URL changes.
 TEST_F(BookmarkModelTest, TitledUrlIndexUpdatedOnChangeURL) {
-  const base::string16 title = base::ASCIIToUTF16("Title");
+  const std::u16string title = base::ASCIIToUTF16("Title");
   const GURL initial_url("http://initial");
   const GURL new_url("http://new");
   const BookmarkNode* root = model_->bookmark_bar_node();
@@ -1698,7 +1698,7 @@ class BookmarkModelFaviconTest : public testing::Test,
 // (e.g. http://www.google.com/favicon.ico).
 TEST_F(BookmarkModelFaviconTest, FaviconsChangedObserver) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  base::string16 kTitle(ASCIIToUTF16("foo"));
+  std::u16string kTitle(ASCIIToUTF16("foo"));
   GURL kPageURL1("http://www.google.com");
   GURL kPageURL2("http://www.google.ca");
   GURL kPageURL3("http://www.amazon.com");

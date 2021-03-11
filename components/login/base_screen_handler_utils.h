@@ -21,7 +21,7 @@
 namespace login {
 
 typedef std::vector<std::string> StringList;
-typedef std::vector<base::string16> String16List;
+typedef std::vector<std::u16string> String16List;
 
 template <typename T>
 struct LOGIN_EXPORT UnwrapConstRef {
@@ -37,8 +37,8 @@ bool LOGIN_EXPORT ParseValue(const base::Value* value, bool* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, int* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, double* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, std::string* out_value);
-bool LOGIN_EXPORT
-    ParseValue(const base::Value* value, base::string16* out_value);
+bool LOGIN_EXPORT ParseValue(const base::Value* value,
+                             std::u16string* out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value,
                              const base::DictionaryValue** out_value);
 bool LOGIN_EXPORT ParseValue(const base::Value* value, StringList* out_value);
@@ -57,7 +57,7 @@ base::Value LOGIN_EXPORT MakeValue(bool v);
 base::Value LOGIN_EXPORT MakeValue(int v);
 base::Value LOGIN_EXPORT MakeValue(double v);
 base::Value LOGIN_EXPORT MakeValue(const std::string& v);
-base::Value LOGIN_EXPORT MakeValue(const base::string16& v);
+base::Value LOGIN_EXPORT MakeValue(const std::u16string& v);
 base::Value LOGIN_EXPORT MakeValue(const AccountId& v);
 
 template <typename T>

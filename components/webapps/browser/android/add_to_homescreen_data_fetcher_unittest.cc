@@ -68,7 +68,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
     run_loop.Run();
   }
 
-  void OnUserTitleAvailable(const base::string16& title,
+  void OnUserTitleAvailable(const std::u16string& title,
                             const GURL& url,
                             bool is_webapk_compatible) override {
     // This should only be called once.
@@ -89,12 +89,12 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
       quit_closure_.Run();
   }
 
-  base::string16 title() const { return title_; }
+  std::u16string title() const { return title_; }
   bool is_webapk_compatible() const { return is_webapk_compatible_; }
   bool title_available() const { return title_available_; }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   bool is_webapk_compatible_;
   bool title_available_;
   bool data_available_;

@@ -773,7 +773,7 @@ void WebController::FillAddressForm(
 
 void WebController::FillCardForm(
     std::unique_ptr<autofill::CreditCard> card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   VLOG(3) << __func__ << " " << selector;

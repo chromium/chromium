@@ -14,7 +14,7 @@ namespace bookmarks {
 
 struct UrlAndTitle {
   GURL url;
-  base::string16 title;
+  std::u16string title;
 };
 
 }  // namespace bookmarks

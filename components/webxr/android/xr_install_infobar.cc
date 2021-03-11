@@ -41,12 +41,12 @@ int XrInstallInfoBar::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 XrInstallInfoBar::GetButtonLabel(InfoBarButton button) const {
+std::u16string XrInstallInfoBar::GetButtonLabel(InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(ok_button_id_);
 }
 
-base::string16 XrInstallInfoBar::GetMessageText() const {
+std::u16string XrInstallInfoBar::GetMessageText() const {
   return l10n_util::GetStringUTF16(message_id_);
 }
 

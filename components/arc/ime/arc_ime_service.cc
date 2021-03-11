@@ -387,7 +387,7 @@ void ArcImeService::ShowVirtualKeyboardIfEnabled() {
 void ArcImeService::OnCursorRectChangedWithSurroundingText(
     const gfx::Rect& rect,
     const gfx::Range& text_range,
-    const base::string16& text_in_range,
+    const std::u16string& text_in_range,
     const gfx::Range& selection_range,
     bool is_screen_coordinates) {
   if (!ShouldSendUpdateToInputMethod())
@@ -455,11 +455,11 @@ void ArcImeService::ClearCompositionText() {
   InvalidateSurroundingTextAndSelectionRange();
   if (has_composition_text_) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(base::string16());
+    ime_bridge_->SendInsertText(std::u16string());
   }
 }
 
-void ArcImeService::InsertText(const base::string16& text,
+void ArcImeService::InsertText(const std::u16string& text,
                                InsertTextCursorBehavior cursor_behavior) {
   // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   InvalidateSurroundingTextAndSelectionRange();
@@ -498,7 +498,7 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
 
   if (IsCharacterKeyEvent(&event)) {
     has_composition_text_ = false;
-    ime_bridge_->SendInsertText(base::string16(1, event.GetText()));
+    ime_bridge_->SendInsertText(std::u16string(1, event.GetText()));
   }
 }
 
@@ -527,7 +527,7 @@ bool ArcImeService::GetEditableSelectionRange(gfx::Range* range) const {
 }
 
 bool ArcImeService::GetTextFromRange(const gfx::Range& range,
-                                     base::string16* text) const {
+                                     std::u16string* text) const {
   // It's supposed that this method is called only from
   // InputMethod::OnCaretBoundsChanged(). In that method, the range obtained
   // from GetTextRange() is used as the argument of this method. To prevent an
@@ -700,7 +700,7 @@ void ArcImeService::SetOverrideDefaultDeviceScaleFactorForTesting(
 
 void ArcImeService::InvalidateSurroundingTextAndSelectionRange() {
   text_range_ = gfx::Range::InvalidRange();
-  text_in_range_ = base::string16();
+  text_in_range_ = std::u16string();
   selection_range_ = gfx::Range::InvalidRange();
 }
 

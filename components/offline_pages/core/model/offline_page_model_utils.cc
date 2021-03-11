@@ -63,7 +63,7 @@ std::string AddHistogramSuffix(const std::string& name_space,
 }
 
 base::FilePath GenerateUniqueFilenameForOfflinePage(
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& url,
     const base::FilePath& target_dir) {
   std::string kMHTMLMimeType = "multipart/related";

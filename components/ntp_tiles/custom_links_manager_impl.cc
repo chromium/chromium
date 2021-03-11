@@ -70,7 +70,7 @@ const std::vector<CustomLinksManager::Link>& CustomLinksManagerImpl::GetLinks()
 }
 
 bool CustomLinksManagerImpl::AddLink(const GURL& url,
-                                     const base::string16& title) {
+                                     const std::u16string& title) {
   if (!IsInitialized() || !url.is_valid() ||
       current_links_.size() == ntp_tiles::kMaxNumCustomLinks) {
     return false;
@@ -87,7 +87,7 @@ bool CustomLinksManagerImpl::AddLink(const GURL& url,
 
 bool CustomLinksManagerImpl::UpdateLink(const GURL& url,
                                         const GURL& new_url,
-                                        const base::string16& new_title) {
+                                        const std::u16string& new_title) {
   if (!IsInitialized() || !url.is_valid() ||
       (new_url.is_empty() && new_title.empty())) {
     return false;

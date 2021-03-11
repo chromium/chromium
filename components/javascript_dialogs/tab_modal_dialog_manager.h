@@ -99,7 +99,7 @@ class TabModalDialogManager
   void SetDialogShownCallbackForTesting(base::OnceClosure callback);
   bool IsShowingDialogForTesting() const;
   void ClickDialogButtonForTesting(bool accept,
-                                   const base::string16& user_input);
+                                   const std::u16string& user_input);
   using DialogDismissedCallback = base::OnceCallback<void(DismissalCause)>;
   void SetDialogDismissedCallbackForTesting(DialogDismissedCallback callback);
 
@@ -107,8 +107,8 @@ class TabModalDialogManager
   void RunJavaScriptDialog(content::WebContents* web_contents,
                            content::RenderFrameHost* render_frame_host,
                            content::JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override;
   void RunBeforeUnloadDialog(content::WebContents* web_contents,
@@ -117,7 +117,7 @@ class TabModalDialogManager
                              DialogClosedCallback callback) override;
   bool HandleJavaScriptDialog(content::WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override;
+                              const std::u16string* prompt_override) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
 
@@ -143,7 +143,7 @@ class TabModalDialogManager
   // open dialog.
   void CloseDialog(DismissalCause cause,
                    bool success,
-                   const base::string16& user_input);
+                   const std::u16string& user_input);
 
   // There can be at most one dialog (pending or not) being shown at any given
   // time on a tab. Depending on the type of the dialog, the variables

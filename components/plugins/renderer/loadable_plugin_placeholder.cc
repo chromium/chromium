@@ -88,7 +88,7 @@ void LoadablePluginPlaceholder::ReplacePlugin(blink::WebPlugin* new_plugin) {
   plugin()->Destroy();
 }
 
-void LoadablePluginPlaceholder::SetMessage(const base::string16& message) {
+void LoadablePluginPlaceholder::SetMessage(const std::u16string& message) {
   message_ = message;
   if (finished_loading_)
     UpdateMessage();

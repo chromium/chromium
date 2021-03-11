@@ -561,10 +561,12 @@ void AddLinkedSuggestionToList(const int error_code,
                                base::ListValue* suggestions_summary_list,
                                bool standalone_suggestion) {
   GURL learn_more_url;
-  base::string16 suggestion_string = standalone_suggestion ?
-      l10n_util::GetStringUTF16(
-          IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY_STANDALONE) :
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY);
+  std::u16string suggestion_string =
+      standalone_suggestion
+          ? l10n_util::GetStringUTF16(
+                IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY_STANDALONE)
+          : l10n_util::GetStringUTF16(
+                IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY);
 
   switch (error_code) {
     case net::ERR_TOO_MANY_REDIRECTS:
@@ -947,14 +949,14 @@ LocalizedError::PageState LocalizedError::GetPageState(
     options.suggestions &= ~SUGGEST_LEARNMORE;
   }
 
-  base::string16 failed_url_string(url_formatter::FormatUrl(
+  std::u16string failed_url_string(url_formatter::FormatUrl(
       failed_url, url_formatter::kFormatUrlOmitNothing,
       net::UnescapeRule::NORMAL, nullptr, nullptr, nullptr));
   // URLs are always LTR.
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&failed_url_string);
 
-  base::string16 host_name(url_formatter::IDNToUnicode(failed_url.host()));
+  std::u16string host_name(url_formatter::IDNToUnicode(failed_url.host()));
   if (failed_url.SchemeIsHTTPOrHTTPS())
     result.strings.SetString("title", host_name);
   else
@@ -1004,7 +1006,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
       l10n_util::GetStringUTF16(IDS_ERRORPAGE_NET_BUTTON_HIDE_DETAILS));
   result.strings.Set("summary", std::move(summary));
 
-  base::string16 error_string;
+  std::u16string error_string;
   if (error_domain == Error::kNetErrorDomain) {
     // Non-internationalized error string, for debugging Chrome itself.
     error_string = base::ASCIIToUTF16(net::ErrorToShortString(error_code));
@@ -1098,7 +1100,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   return result;
 }
 
-base::string16 LocalizedError::GetErrorDetails(const std::string& error_domain,
+std::u16string LocalizedError::GetErrorDetails(const std::string& error_domain,
                                                int error_code,
                                                bool is_secure_dns_network_error,
                                                bool is_post) {

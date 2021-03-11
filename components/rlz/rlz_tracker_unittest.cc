@@ -89,9 +89,9 @@ class TestRLZTrackerDelegate : public RLZTrackerDelegate {
 
   bool ShouldEnableZeroDelayForTesting() override { return true; }
 
-  bool GetLanguage(base::string16* language) override { return true; }
+  bool GetLanguage(std::u16string* language) override { return true; }
 
-  bool GetReferral(base::string16* referral) override { return true; }
+  bool GetReferral(std::u16string* referral) override { return true; }
 
   bool ClearReferral() override { return true; }
 
@@ -213,8 +213,8 @@ class TestRLZTracker : public RLZTracker {
 #endif
 
   bool SendFinancialPing(const std::string& brand,
-                         const base::string16& lang,
-                         const base::string16& referral) override {
+                         const std::u16string& lang,
+                         const std::u16string& referral) override {
     // Don't ping the server during tests, just pretend as if we did.
     EXPECT_FALSE(brand.empty());
     pinged_brands_.insert(brand);
@@ -875,7 +875,7 @@ TEST_F(RlzLibTest, GetAccessPointRlzOnIoThread) {
   // Set dummy RLZ string.
   rlz_lib::SetAccessPointRlz(RLZTracker::ChromeOmnibox(), kOmniboxRlzString);
 
-  base::string16 rlz;
+  std::u16string rlz;
 
   tracker_->set_assume_not_ui_thread(true);
   EXPECT_TRUE(RLZTracker::GetAccessPointRlz(RLZTracker::ChromeOmnibox(), &rlz));
@@ -886,7 +886,7 @@ TEST_F(RlzLibTest, GetAccessPointRlzNotOnIoThread) {
   // Set dummy RLZ string.
   rlz_lib::SetAccessPointRlz(RLZTracker::ChromeOmnibox(), kOmniboxRlzString);
 
-  base::string16 rlz;
+  std::u16string rlz;
 
   tracker_->set_assume_not_ui_thread(false);
   EXPECT_FALSE(
@@ -897,7 +897,7 @@ TEST_F(RlzLibTest, GetAccessPointRlzIsCached) {
   // Set dummy RLZ string.
   rlz_lib::SetAccessPointRlz(RLZTracker::ChromeOmnibox(), kOmniboxRlzString);
 
-  base::string16 rlz;
+  std::u16string rlz;
 
   tracker_->set_assume_not_ui_thread(false);
   EXPECT_FALSE(
@@ -923,7 +923,7 @@ TEST_F(RlzLibTest, PingUpdatesRlzCache) {
   rlz_lib::SetAccessPointRlz(RLZTracker::ChromeAppList(), kAppListRlzString);
 #endif  // !defined(OS_IOS)
 
-  base::string16 rlz;
+  std::u16string rlz;
 
   // Prime the cache.
   tracker_->set_assume_not_ui_thread(true);

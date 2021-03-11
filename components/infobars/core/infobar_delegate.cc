@@ -53,8 +53,8 @@ gfx::Image InfoBarDelegate::GetIcon() const {
                    icon_id);
 }
 
-base::string16 InfoBarDelegate::GetLinkText() const {
-  return base::string16();
+std::u16string InfoBarDelegate::GetLinkText() const {
+  return std::u16string();
 }
 
 GURL InfoBarDelegate::GetLinkURL() const {

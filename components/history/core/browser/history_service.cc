@@ -128,7 +128,7 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
 
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term) override {
+                                      const std::u16string& term) override {
     service_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&HistoryService::NotifyKeywordSearchTermUpdated,
@@ -214,7 +214,7 @@ void HistoryService::Shutdown() {
 
 void HistoryService::SetKeywordSearchTermsForURL(const GURL& url,
                                                  KeywordID keyword_id,
-                                                 const base::string16& term) {
+                                                 const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryService::SetKeywordSearchTermsForURL");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,7 +246,7 @@ void HistoryService::DeleteKeywordSearchTermForURL(const GURL& url) {
 }
 
 void HistoryService::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
-                                                  const base::string16& term) {
+                                                  const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryService::DeleteMatchingURLsForKeyword");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -379,7 +379,7 @@ void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {
 }
 
 void HistoryService::AddPageNoVisitForBookmark(const GURL& url,
-                                               const base::string16& title) {
+                                               const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryService::AddPageNoVisitForBookmark");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -392,7 +392,7 @@ void HistoryService::AddPageNoVisitForBookmark(const GURL& url,
 }
 
 void HistoryService::SetPageTitle(const GURL& url,
-                                  const base::string16& title) {
+                                  const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryService::SetPageTitle");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -425,7 +425,7 @@ void HistoryService::SetFlocAllowed(ContextID context_id,
 }
 
 void HistoryService::AddPageWithDetails(const GURL& url,
-                                        const base::string16& title,
+                                        const std::u16string& title,
                                         int visit_count,
                                         int typed_count,
                                         Time last_visit,
@@ -841,7 +841,7 @@ void HistoryService::RemoveDownloads(const std::set<uint32_t>& ids) {
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::QueryHistory(
-    const base::string16& text_query,
+    const std::u16string& text_query,
     const QueryOptions& options,
     QueryHistoryCallback callback,
     base::CancelableTaskTracker* tracker) {
@@ -1261,7 +1261,7 @@ void HistoryService::NotifyHistoryServiceBeingDeleted() {
 void HistoryService::NotifyKeywordSearchTermUpdated(
     const URLRow& row,
     KeywordID keyword_id,
-    const base::string16& term) {
+    const std::u16string& term) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (HistoryServiceObserver& observer : observers_)
     observer.OnKeywordSearchTermUpdated(this, row, keyword_id, term);

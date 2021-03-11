@@ -548,7 +548,7 @@ TypedURLSyncBridge::MergeResult TypedURLSyncBridge::MergeUrls(
   CHECK_EQ(sync_url.visits_size(), sync_url.visit_transitions_size());
 
   // Convert these values only once.
-  base::string16 sync_url_title(base::UTF8ToUTF16(sync_url.title()));
+  std::u16string sync_url_title(base::UTF8ToUTF16(sync_url.title()));
   base::Time sync_url_last_visit = base::Time::FromInternalValue(
       sync_url.visits(sync_url.visits_size() - 1));
 

@@ -37,7 +37,7 @@ JavaLanguageInfoWrapper TranslateUtils::GetTranslateLanguagesInJavaFormat(
     TranslateInfoBarDelegate* delegate) {
   DCHECK(delegate);
   JavaLanguageInfoWrapper result;
-  std::vector<base::string16> languages;
+  std::vector<std::u16string> languages;
   std::vector<std::string> codes;
   delegate->GetLanguagesNames(&languages);
   delegate->GetLanguagesCodes(&codes);

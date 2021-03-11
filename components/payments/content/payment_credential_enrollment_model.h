@@ -26,24 +26,24 @@ class PaymentCredentialEnrollmentModel {
       const PaymentCredentialEnrollmentModel& other) = delete;
 
   // Title, e.g. "Faster card verification in Chrome using Touch ID"
-  const base::string16& title() const { return title_; }
-  void set_title(const base::string16& title) { title_ = title; }
+  const std::u16string& title() const { return title_; }
+  void set_title(const std::u16string& title) { title_ = title; }
 
   // Description.
-  const base::string16& description() const { return description_; }
-  void set_description(const base::string16& description) {
+  const std::u16string& description() const { return description_; }
+  void set_description(const std::u16string& description) {
     description_ = description;
   }
 
   // Payment instrument name.
-  const base::string16& instrument_name() const { return instrument_name_; }
-  void set_instrument_name(const base::string16& instrument_name) {
+  const std::u16string& instrument_name() const { return instrument_name_; }
+  void set_instrument_name(const std::u16string& instrument_name) {
     instrument_name_ = instrument_name;
   }
 
   // Extra description text, used for additional incognito information.
-  const base::string16& extra_description() const { return extra_description_; }
-  void set_extra_description(const base::string16& extra_description) {
+  const std::u16string& extra_description() const { return extra_description_; }
+  void set_extra_description(const std::u16string& extra_description) {
     extra_description_ = extra_description;
   }
 
@@ -54,18 +54,18 @@ class PaymentCredentialEnrollmentModel {
   }
 
   // Label for the accept button, e.g. "Use Touch ID".
-  const base::string16& accept_button_label() const {
+  const std::u16string& accept_button_label() const {
     return accept_button_label_;
   }
-  void set_accept_button_label(const base::string16& accept_button_label) {
+  void set_accept_button_label(const std::u16string& accept_button_label) {
     accept_button_label_ = accept_button_label;
   }
 
   // Label for the cancel button, e.g. "Cancel".
-  const base::string16& cancel_button_label() const {
+  const std::u16string& cancel_button_label() const {
     return cancel_button_label_;
   }
-  void set_cancel_button_label(const base::string16& cancel_button_label) {
+  void set_cancel_button_label(const std::u16string& cancel_button_label) {
     cancel_button_label_ = cancel_button_label;
   }
 
@@ -102,15 +102,15 @@ class PaymentCredentialEnrollmentModel {
   base::WeakPtr<PaymentCredentialEnrollmentModel> GetWeakPtr();
 
  private:
-  base::string16 title_;
-  base::string16 description_;
-  base::string16 instrument_name_;
-  base::string16 extra_description_;
+  std::u16string title_;
+  std::u16string description_;
+  std::u16string instrument_name_;
+  std::u16string extra_description_;
 
   std::unique_ptr<SkBitmap> instrument_icon_;
 
-  base::string16 accept_button_label_;
-  base::string16 cancel_button_label_;
+  std::u16string accept_button_label_;
+  std::u16string cancel_button_label_;
 
   bool progress_bar_visible_ = false;
 

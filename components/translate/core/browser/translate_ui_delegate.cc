@@ -120,7 +120,7 @@ TranslateUIDelegate::TranslateUIDelegate(
   // Preparing for the alphabetical order in the locale.
   std::unique_ptr<icu::Collator> collator = CreateCollator(locale);
   for (std::string& language_code : language_codes) {
-    base::string16 language_name =
+    std::u16string language_name =
         l10n_util::GetDisplayNameForLocale(language_code, locale, true);
     languages_.emplace_back(std::move(language_code), std::move(language_name));
   }
@@ -163,7 +163,7 @@ TranslateUIDelegate::TranslateUIDelegate(
   if (add_unknown_language_option) {
     //  Experiment in place to replace the "Unknown" string with "Detected
     //  Language".
-    base::string16 unknown_language_string =
+    std::u16string unknown_language_string =
         base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption)
             ? l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE)
             : l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE);
@@ -270,9 +270,9 @@ std::string TranslateUIDelegate::GetLanguageCodeAt(size_t index) const {
   return languages_[index].first;
 }
 
-base::string16 TranslateUIDelegate::GetLanguageNameAt(size_t index) const {
+std::u16string TranslateUIDelegate::GetLanguageNameAt(size_t index) const {
   if (index == kNoIndex)
-    return base::string16();
+    return std::u16string();
   DCHECK_LT(index, GetNumberOfLanguages());
   return languages_[index].second;
 }

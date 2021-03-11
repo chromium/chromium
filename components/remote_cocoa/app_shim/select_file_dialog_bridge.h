@@ -36,7 +36,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT SelectFileDialogBridge
 
   // mojom::SelectFileDialog:
   void Show(mojom::SelectFileDialogType type,
-            const base::string16& title,
+            const std::u16string& title,
             const base::FilePath& default_path,
             mojom::SelectFileTypeInfoPtr file_types,
             int file_type_index,

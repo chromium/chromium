@@ -447,7 +447,7 @@ void ScriptExecutor::GetFullCard(const autofill::CreditCard* credit_card,
 void ScriptExecutor::OnGetFullCard(GetFullCardCallback callback,
                                    const ClientStatus& status,
                                    std::unique_ptr<autofill::CreditCard> card,
-                                   const base::string16& cvc) {
+                                   const std::u16string& cvc) {
   delegate_->EnterState(AutofillAssistantState::RUNNING);
   std::move(callback).Run(status, std::move(card), cvc);
 }
@@ -529,7 +529,7 @@ void ScriptExecutor::FillAddressForm(
 
 void ScriptExecutor::FillCardForm(
     std::unique_ptr<autofill::CreditCard> card,
-    const base::string16& cvc,
+    const std::u16string& cvc,
     const Selector& selector,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   delegate_->GetWebController()->FillCardForm(std::move(card), cvc, selector,

@@ -1267,7 +1267,7 @@ void NativeWidgetNSWindowBridge::MakeFirstResponder() {
   [window_ makeFirstResponder:bridged_view_];
 }
 
-void NativeWidgetNSWindowBridge::SetWindowTitle(const base::string16& title) {
+void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
   NSString* new_title = base::SysUTF16ToNSString(title);
   [window_ setTitle:new_title];
 }

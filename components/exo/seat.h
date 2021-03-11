@@ -145,7 +145,7 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                   base::OnceClosure callback,
                   const std::string& mime_type,
-                  base::string16 data);
+                  std::u16string data);
   void OnRTFRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                  base::OnceClosure callback,
                  const std::string& mime_type,
@@ -153,7 +153,7 @@ class Seat : public aura::client::FocusChangeObserver,
   void OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                   base::OnceClosure callback,
                   const std::string& mime_type,
-                  base::string16 data);
+                  std::u16string data);
   void OnImageRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                    base::OnceClosure callback,
                    const std::string& mime_type,

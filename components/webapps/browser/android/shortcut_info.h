@@ -22,8 +22,8 @@ namespace webapps {
 
 // https://wicg.github.io/web-share-target/level-2/#sharetargetfiles-and-its-members
 struct ShareTargetParamsFile {
-  base::string16 name;
-  std::vector<base::string16> accept;
+  std::u16string name;
+  std::vector<std::u16string> accept;
   ShareTargetParamsFile();
   ShareTargetParamsFile(const ShareTargetParamsFile& other);
   ~ShareTargetParamsFile();
@@ -31,9 +31,9 @@ struct ShareTargetParamsFile {
 
 // https://wicg.github.io/web-share-target/#dom-sharetargetparams
 struct ShareTargetParams {
-  base::string16 title;
-  base::string16 text;
-  base::string16 url;
+  std::u16string title;
+  std::u16string text;
+  std::u16string url;
   std::vector<ShareTargetParamsFile> files;
   ShareTargetParams();
   ShareTargetParams(const ShareTargetParams& other);
@@ -128,11 +128,11 @@ struct ShortcutInfo {
   GURL manifest_url;
   GURL url;
   GURL scope;
-  base::string16 user_title;
-  base::string16 name;
-  base::string16 short_name;
-  base::string16 description;
-  std::vector<base::string16> categories;
+  std::u16string user_title;
+  std::u16string name;
+  std::u16string short_name;
+  std::u16string description;
+  std::vector<std::u16string> categories;
   blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kBrowser;
   device::mojom::ScreenOrientationLockType orientation =
       device::mojom::ScreenOrientationLockType::DEFAULT;

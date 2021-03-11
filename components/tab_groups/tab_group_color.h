@@ -40,7 +40,7 @@ enum class TabGroupColorId {
   // Next value: 8
 };
 
-using ColorLabelMap = base::flat_map<TabGroupColorId, base::string16>;
+using ColorLabelMap = base::flat_map<TabGroupColorId, std::u16string>;
 
 // Returns a map of TabGroupColorIds to their string labels.
 // When reading color IDs from disk, always verify against the keys in this

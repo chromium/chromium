@@ -112,7 +112,7 @@ DialogOriginRelationship GetDialogOriginRelationship(
 }  // namespace
 
 TabModalDialogManager::~TabModalDialogManager() {
-  CloseDialog(DismissalCause::kTabHelperDestroyed, false, base::string16());
+  CloseDialog(DismissalCause::kTabHelperDestroyed, false, std::u16string());
 }
 
 void TabModalDialogManager::BrowserActiveStateChanged() {
@@ -123,7 +123,7 @@ void TabModalDialogManager::BrowserActiveStateChanged() {
 }
 
 void TabModalDialogManager::CloseDialogWithReason(DismissalCause reason) {
-  CloseDialog(reason, false, base::string16());
+  CloseDialog(reason, false, std::u16string());
 }
 
 void TabModalDialogManager::SetDialogShownCallbackForTesting(
@@ -137,7 +137,7 @@ bool TabModalDialogManager::IsShowingDialogForTesting() const {
 
 void TabModalDialogManager::ClickDialogButtonForTesting(
     bool accept,
-    const base::string16& user_input) {
+    const std::u16string& user_input) {
   DCHECK(!!dialog_);
   CloseDialog(DismissalCause::kDialogButtonClicked, accept, user_input);
 }
@@ -151,8 +151,8 @@ void TabModalDialogManager::RunJavaScriptDialog(
     content::WebContents* alerting_web_contents,
     content::RenderFrameHost* render_frame_host,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
   DCHECK_EQ(alerting_web_contents,
@@ -190,7 +190,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
   }
 
   // Close any dialog already showing.
-  CloseDialog(DismissalCause::kSubsequentDialogShown, false, base::string16());
+  CloseDialog(DismissalCause::kSubsequentDialogShown, false, std::u16string());
 
   bool make_pending = false;
   if (!delegate_->IsWebContentsForemost() &&
@@ -205,7 +205,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
       case content::JAVASCRIPT_DIALOG_TYPE_ALERT: {
         // When an alert fires in the background, make the callback so that the
         // render process can continue.
-        std::move(callback).Run(true, base::string16());
+        std::move(callback).Run(true, std::u16string());
         callback.Reset();
 
         delegate_->SetTabNeedsAttention(true);
@@ -239,15 +239,15 @@ void TabModalDialogManager::RunJavaScriptDialog(
   const int kMessageTextMaxRows = 24;
   const int kMessageTextMaxCols = 80;
   const size_t kDefaultPromptMaxSize = 2000;
-  base::string16 truncated_message_text;
+  std::u16string truncated_message_text;
   gfx::ElideRectangleString(message_text, kMessageTextMaxRows,
                             kMessageTextMaxCols, false,
                             &truncated_message_text);
-  base::string16 truncated_default_prompt_text;
+  std::u16string truncated_default_prompt_text;
   gfx::ElideString(default_prompt_text, kDefaultPromptMaxSize,
                    &truncated_default_prompt_text);
 
-  base::string16 title = GetAppModalDialogManager()->GetTitle(
+  std::u16string title = GetAppModalDialogManager()->GetTitle(
       alerting_web_contents, alerting_frame_url);
   dialog_callback_ = std::move(callback);
   dialog_type_ = dialog_type;
@@ -262,7 +262,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
                        DismissalCause::kDialogButtonClicked),
         base::BindOnce(&TabModalDialogManager::CloseDialog,
                        base::Unretained(this), DismissalCause::kDialogClosed,
-                       false, base::string16()));
+                       false, std::u16string()));
   } else {
     DCHECK(!pending_dialog_);
     dialog_ = delegate_->CreateNewDialog(
@@ -273,7 +273,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
                        DismissalCause::kDialogButtonClicked),
         base::BindOnce(&TabModalDialogManager::CloseDialog,
                        base::Unretained(this), DismissalCause::kDialogClosed,
-                       false, base::string16()));
+                       false, std::u16string()));
   }
 
   delegate_->WillRunDialog();
@@ -320,7 +320,7 @@ void TabModalDialogManager::RunBeforeUnloadDialog(
 bool TabModalDialogManager::HandleJavaScriptDialog(
     content::WebContents* web_contents,
     bool accept,
-    const base::string16* prompt_override) {
+    const std::u16string* prompt_override) {
   if (dialog_ || pending_dialog_) {
     CloseDialog(DismissalCause::kHandleDialogCalled, accept,
                 prompt_override ? *prompt_override : dialog_->GetUserInput());
@@ -334,7 +334,7 @@ bool TabModalDialogManager::HandleJavaScriptDialog(
 
 void TabModalDialogManager::CancelDialogs(content::WebContents* web_contents,
                                           bool reset_state) {
-  CloseDialog(DismissalCause::kCancelDialogsCalled, false, base::string16());
+  CloseDialog(DismissalCause::kCancelDialogsCalled, false, std::u16string());
 
   // Cancel any app-modal dialogs being run by the app-modal dialog system.
   return GetAppModalDialogManager()->CancelDialogs(web_contents, reset_state);
@@ -355,7 +355,7 @@ void TabModalDialogManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Close the dialog if the user started a new navigation. This allows reloads
   // and history navigations to proceed.
-  CloseDialog(DismissalCause::kTabNavigated, false, base::string16());
+  CloseDialog(DismissalCause::kTabNavigated, false, std::u16string());
 }
 
 TabModalDialogManager::TabModalDialogManager(
@@ -393,17 +393,17 @@ void TabModalDialogManager::HandleTabSwitchAway(DismissalCause cause) {
     // When the user switches tabs, make the callback so that the render process
     // can continue.
     if (dialog_callback_) {
-      std::move(dialog_callback_).Run(true, base::string16());
+      std::move(dialog_callback_).Run(true, std::u16string());
       dialog_callback_.Reset();
     }
   } else {
-    CloseDialog(cause, false, base::string16());
+    CloseDialog(cause, false, std::u16string());
   }
 }
 
 void TabModalDialogManager::CloseDialog(DismissalCause cause,
                                         bool success,
-                                        const base::string16& user_input) {
+                                        const std::u16string& user_input) {
   if (!dialog_ && !pending_dialog_)
     return;
 

@@ -54,7 +54,7 @@ class RepeatableQuery {
   }
 
   // Repeatable query suggestion.
-  base::string16 query;
+  std::u16string query;
 
   // The URL to navigate to when the suggestion is selected.
   GURL destination_url;
@@ -122,7 +122,7 @@ class RepeatableQueriesService : public KeyedService {
 
   // Returns the server destination URL for |query| with |search_provider|.
   // |search_provider| may not be nullptr.
-  GURL GetQueryDestinationURL(const base::string16& query,
+  GURL GetQueryDestinationURL(const std::u16string& query,
                               const TemplateURL* search_provider);
 
   // Returns the resolved deletion URL for the given relative deletion URL.
@@ -145,8 +145,8 @@ class RepeatableQueriesService : public KeyedService {
   void GetRepeatableQueriesFromURLDatabase();
 
   // Deletes |query| from the in-memory URLDatabase.
-  void DeleteRepeatableQueryFromURLDatabase(const base::string16& query);
-  void DeleteRepeatableQueryFromURLDatabaseTask(const base::string16& query,
+  void DeleteRepeatableQueryFromURLDatabase(const std::u16string& query);
+  void DeleteRepeatableQueryFromURLDatabaseTask(const std::u16string& query,
                                                 history::URLDatabase* url_db);
 
   // Deletes the query with |deletion_url| from the server.
@@ -156,8 +156,8 @@ class RepeatableQueriesService : public KeyedService {
 
   void NotifyObservers();
 
-  bool IsQueryDeleted(const base::string16& query);
-  void MarkQueryAsDeleted(const base::string16& query);
+  bool IsQueryDeleted(const std::u16string& query);
+  void MarkQueryAsDeleted(const std::u16string& query);
 
   history::HistoryService* history_service_;
 
@@ -178,7 +178,7 @@ class RepeatableQueriesService : public KeyedService {
   // Used to ensure the deleted repeatable queries won't be suggested again.
   // This does not need to be persisted across sessions as the queries do get
   // deleted on the server as well as on the device, whichever is applicable.
-  std::set<base::string16> deleted_repeatable_queries_;
+  std::set<std::u16string> deleted_repeatable_queries_;
 
   std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders_;
 

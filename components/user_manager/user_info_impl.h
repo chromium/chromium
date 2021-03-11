@@ -23,8 +23,8 @@ class USER_MANAGER_EXPORT UserInfoImpl : public UserInfo {
   ~UserInfoImpl() override;
 
   // UserInfo:
-  base::string16 GetDisplayName() const override;
-  base::string16 GetGivenName() const override;
+  std::u16string GetDisplayName() const override;
+  std::u16string GetGivenName() const override;
   std::string GetDisplayEmail() const override;
   const AccountId& GetAccountId() const override;
   const gfx::ImageSkia& GetImage() const override;

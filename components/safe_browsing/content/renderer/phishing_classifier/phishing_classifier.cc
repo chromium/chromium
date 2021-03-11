@@ -82,7 +82,7 @@ bool PhishingClassifier::is_ready() const {
   return !!scorer_;
 }
 
-void PhishingClassifier::BeginClassification(const base::string16* page_text,
+void PhishingClassifier::BeginClassification(const std::u16string* page_text,
                                              DoneCallback done_callback) {
   DCHECK(is_ready());
 

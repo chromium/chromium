@@ -160,7 +160,7 @@ void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
     return;
   }
 
-  std::vector<base::string16> source_ids;
+  std::vector<std::u16string> source_ids;
   source_ids.reserve(sources.size());
   for (const auto& source : sources)
     source_ids.push_back(base::UTF8ToUTF16(source.id()));

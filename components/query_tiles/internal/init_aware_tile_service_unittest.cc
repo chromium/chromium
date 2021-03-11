@@ -49,7 +49,7 @@ class MockInitializableTileService : public InitializableTileService {
   MOCK_METHOD(void, OnTileClicked, (const std::string&), (override));
   MOCK_METHOD(void,
               OnQuerySelected,
-              (const base::Optional<std::string>&, const base::string16&),
+              (const base::Optional<std::string>&, const std::u16string&),
               (override));
 
   // Callback stubs.

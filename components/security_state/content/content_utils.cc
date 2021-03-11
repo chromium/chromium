@@ -138,7 +138,7 @@ void ExplainCertificateSecurity(
       net::IsCertStatusError(visible_security_state.cert_status);
 
   if (is_cert_status_error) {
-    base::string16 error_string = base::UTF8ToUTF16(net::ErrorToString(
+    std::u16string error_string = base::UTF8ToUTF16(net::ErrorToString(
         net::MapCertStatusToNetError(visible_security_state.cert_status)));
 
     content::SecurityStyleExplanation explanation(
@@ -154,13 +154,13 @@ void ExplainCertificateSecurity(
     // If the certificate does not have errors and is not using SHA1, then add
     // an explanation that the certificate is valid.
 
-    base::string16 issuer_name;
+    std::u16string issuer_name;
     if (visible_security_state.certificate) {
       // This results in the empty string if there is no relevant display name.
       issuer_name = base::UTF8ToUTF16(
           visible_security_state.certificate->issuer().GetDisplayName());
     } else {
-      issuer_name = base::string16();
+      issuer_name = std::u16string();
     }
     if (issuer_name.empty()) {
       issuer_name.assign(
@@ -225,16 +225,16 @@ void ExplainConnectionSecurity(
       visible_security_state.connection_status);
   net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
                                &is_tls13, cipher_suite);
-  const base::string16 protocol_name = base::ASCIIToUTF16(protocol);
-  const base::string16 cipher_name = base::ASCIIToUTF16(cipher);
-  const base::string16 cipher_full_name =
+  const std::u16string protocol_name = base::ASCIIToUTF16(protocol);
+  const std::u16string cipher_name = base::ASCIIToUTF16(cipher);
+  const std::u16string cipher_full_name =
       (mac == nullptr) ? cipher_name
                        : l10n_util::GetStringFUTF16(IDS_CIPHER_WITH_MAC,
                                                     base::ASCIIToUTF16(cipher),
                                                     base::ASCIIToUTF16(mac));
 
   // Include the key exchange group (previously known as curve) if specified.
-  base::string16 key_exchange_name;
+  std::u16string key_exchange_name;
   if (is_tls13) {
     key_exchange_name = base::ASCIIToUTF16(
         SSL_get_curve_name(visible_security_state.key_exchange_group));

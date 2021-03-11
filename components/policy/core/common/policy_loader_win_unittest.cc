@@ -94,7 +94,7 @@ bool InstallValue(const base::Value& value,
     }
 
     case base::Value::Type::STRING: {
-      base::string16 str_value;
+      std::u16string str_value;
       if (!value.GetAsString(&str_value))
         return false;
       return key.WriteValue(name.c_str(), base::as_wcstr(str_value)) ==

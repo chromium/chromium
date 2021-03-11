@@ -326,7 +326,7 @@ struct VisibleVisitCountToHostResult {
 // Holds the per-URL information of the most visited query.
 struct MostVisitedURL {
   MostVisitedURL();
-  MostVisitedURL(const GURL& url, const base::string16& title);
+  MostVisitedURL(const GURL& url, const std::u16string& title);
   MostVisitedURL(const MostVisitedURL& other);
   MostVisitedURL(MostVisitedURL&& other) noexcept;
   ~MostVisitedURL();
@@ -338,7 +338,7 @@ struct MostVisitedURL {
   }
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
 };
 
 // FilteredURL -----------------------------------------------------------------
@@ -363,7 +363,7 @@ struct FilteredURL {
   ~FilteredURL();
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
   double score = 0.0;
   ExtendedInfo extended_info;
 };
@@ -392,7 +392,7 @@ struct HistoryAddPageArgs {
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
                      bool floc_allowed,
-                     base::Optional<base::string16> title = base::nullopt);
+                     base::Optional<std::u16string> title = base::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -414,7 +414,7 @@ struct HistoryAddPageArgs {
   // Indicates whether this URL visit can be included in FLoC computation. See
   // VisitRow::floc_allowed for details.
   bool floc_allowed;
-  base::Optional<base::string16> title;
+  base::Optional<std::u16string> title;
 };
 
 // TopSites -------------------------------------------------------------------

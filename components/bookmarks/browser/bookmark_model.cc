@@ -352,7 +352,7 @@ const gfx::Image& BookmarkModel::GetFavicon(const BookmarkNode* node) {
 }
 
 void BookmarkModel::SetTitle(const BookmarkNode* node,
-                             const base::string16& title) {
+                             const std::u16string& title) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(node);
 
@@ -577,7 +577,7 @@ void BookmarkModel::GetBookmarks(std::vector<UrlAndTitle>* bookmarks) {
 const BookmarkNode* BookmarkModel::AddFolder(
     const BookmarkNode* parent,
     size_t index,
-    const base::string16& title,
+    const std::u16string& title,
     const BookmarkNode::MetaInfoMap* meta_info,
     base::Optional<base::GUID> guid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -603,7 +603,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
 const BookmarkNode* BookmarkModel::AddURL(
     const BookmarkNode* parent,
     size_t index,
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info,
     base::Optional<base::Time> creation_time,
@@ -714,7 +714,7 @@ void BookmarkModel::ResetDateFolderModified(const BookmarkNode* node) {
 }
 
 std::vector<TitledUrlMatch> BookmarkModel::GetBookmarksMatching(
-    const base::string16& query,
+    const std::u16string& query,
     size_t max_count,
     query_parser::MatchingAlgorithm matching_algorithm,
     bool match_ancestor_titles) {

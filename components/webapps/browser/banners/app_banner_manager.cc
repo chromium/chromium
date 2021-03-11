@@ -276,7 +276,7 @@ bool AppBannerManager::ShouldDeferToRelatedNonWebApp() const {
   for (const auto& related_app : manifest_.related_applications) {
     if (manifest_.prefer_related_applications &&
         IsSupportedNonWebAppPlatform(
-            related_app.platform.value_or(base::string16()))) {
+            related_app.platform.value_or(std::u16string()))) {
       return true;
     }
     if (IsRelatedNonWebAppInstalled(related_app))
@@ -290,8 +290,8 @@ std::string AppBannerManager::GetAppIdentifier() {
   return manifest_.start_url.spec();
 }
 
-base::string16 AppBannerManager::GetAppName() const {
-  return manifest_.name.value_or(base::string16());
+std::u16string AppBannerManager::GetAppName() const {
+  return manifest_.name.value_or(std::u16string());
 }
 
 std::string AppBannerManager::GetBannerType() {
@@ -731,16 +731,16 @@ bool AppBannerManager::IsRunning() const {
 }
 
 // static
-base::string16 AppBannerManager::GetInstallableWebAppName(
+std::u16string AppBannerManager::GetInstallableWebAppName(
     content::WebContents* web_contents) {
   AppBannerManager* manager = FromWebContents(web_contents);
   if (!manager)
-    return base::string16();
+    return std::u16string();
   switch (manager->installable_web_app_check_result_) {
     case InstallableWebAppCheckResult::kUnknown:
     case InstallableWebAppCheckResult::kNo:
     case InstallableWebAppCheckResult::kNoAlreadyInstalled:
-      return base::string16();
+      return std::u16string();
     case InstallableWebAppCheckResult::kByUserRequest:
     case InstallableWebAppCheckResult::kPromotable:
       return manager->GetAppName();

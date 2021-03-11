@@ -435,7 +435,7 @@ void UserManagerBase::SaveForceOnlineSignin(const AccountId& account_id,
 }
 
 void UserManagerBase::SaveUserDisplayName(const AccountId& account_id,
-                                          const base::string16& display_name) {
+                                          const std::u16string& display_name) {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
   if (User* user = FindUserAndModify(account_id)) {
@@ -452,10 +452,10 @@ void UserManagerBase::SaveUserDisplayName(const AccountId& account_id,
   }
 }
 
-base::string16 UserManagerBase::GetUserDisplayName(
+std::u16string UserManagerBase::GetUserDisplayName(
     const AccountId& account_id) const {
   const User* user = FindUser(account_id);
-  return user ? user->display_name() : base::string16();
+  return user ? user->display_name() : std::u16string();
 }
 
 void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
@@ -503,7 +503,7 @@ void UserManagerBase::UpdateUserAccountData(
   SaveUserDisplayName(account_id, account_data.display_name());
 
   if (User* user = FindUserAndModify(account_id)) {
-    base::string16 given_name = account_data.given_name();
+    std::u16string given_name = account_data.given_name();
     user->set_given_name(given_name);
     if (!IsUserNonCryptohomeDataEphemeral(account_id)) {
       DictionaryPrefUpdate given_name_update(GetLocalState(), kUserGivenName);
@@ -828,13 +828,13 @@ void UserManagerBase::EnsureUsersLoaded() {
 
   for (auto* user : users_) {
     auto& account_id = user->GetAccountId();
-    base::string16 display_name;
+    std::u16string display_name;
     if (prefs_display_names->GetStringWithoutPathExpansion(
             account_id.GetUserEmail(), &display_name)) {
       user->set_display_name(display_name);
     }
 
-    base::string16 given_name;
+    std::u16string given_name;
     if (prefs_given_names->GetStringWithoutPathExpansion(
             account_id.GetUserEmail(), &given_name)) {
       user->set_given_name(given_name);

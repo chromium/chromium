@@ -992,7 +992,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
         base::PickleIterator iter(*pickle);
         base::Optional<base::Token> group_token = ReadTokenFromPickle(&iter);
-        base::string16 title;
+        std::u16string title;
         uint32_t color_int;
         if (!iter.ReadString16(&title)) {
           break;

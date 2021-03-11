@@ -534,7 +534,7 @@ void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {
 void MediaNotificationViewModernImpl::CreateMediaButton(
     views::View* parent_view,
     MediaSessionAction action,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   auto button =
       views::CreateVectorImageButton(views::Button::PressedCallback());
   button->SetCallback(

@@ -138,9 +138,9 @@ void LanguageDetectionController::OnTextRetrieved(
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score = 0.0;
-  base::string16 text = text_content && text_content->is_string()
+  std::u16string text = text_content && text_content->is_string()
                             ? base::UTF8ToUTF16(text_content->GetString())
-                            : base::string16();
+                            : std::u16string();
   std::string language = translate::DeterminePageLanguage(
       http_content_language, html_lang,
       GetStringByClippingLastWord(text, translate::kMaxIndexChars),

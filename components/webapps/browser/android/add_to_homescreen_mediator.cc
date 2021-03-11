@@ -146,7 +146,7 @@ void AddToHomescreenMediator::SetIcon(const SkBitmap& display_icon,
                                        need_to_add_padding);
 }
 
-void AddToHomescreenMediator::SetWebAppInfo(const base::string16& user_title,
+void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
                                             const GURL& url,
                                             bool is_webapk) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -162,7 +162,7 @@ void AddToHomescreenMediator::SetWebAppInfo(const base::string16& user_title,
 }
 
 void AddToHomescreenMediator::OnUserTitleAvailable(
-    const base::string16& user_title,
+    const std::u16string& user_title,
     const GURL& url,
     bool is_webapk_compatible) {
   SetWebAppInfo(user_title, url, is_webapk_compatible);

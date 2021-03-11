@@ -732,7 +732,7 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
   options->SetIntKey("pageNumber", base::checked_cast<int>(page_number));
   options->SetIntKey("totalPages", base::checked_cast<int>(total_pages));
   options->SetStringKey("url", params.url);
-  base::string16 title = source_frame.GetDocument().Title().Utf16();
+  std::u16string title = source_frame.GetDocument().Title().Utf16();
   options->SetStringKey("title", title.empty() ? params.title : title);
   options->SetStringKey("headerTemplate", params.header_template);
   options->SetStringKey("footerTemplate", params.footer_template);

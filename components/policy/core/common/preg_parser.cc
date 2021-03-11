@@ -123,7 +123,7 @@ bool ReadField32(const uint8_t** cursor, const uint8_t* end, uint32_t* data) {
 // Reads a string field from a file.
 bool ReadFieldString(const uint8_t** cursor,
                      const uint8_t* end,
-                     base::string16* str) {
+                     std::u16string* str) {
   int current = -1;
   while ((current = NextChar(cursor, end)) > 0x0000)
     *str += current;
@@ -142,7 +142,7 @@ bool DecodePRegStringValue(const std::vector<uint8_t>& data,
   }
 
   const char16_t* chars = reinterpret_cast<const char16_t*>(data.data());
-  base::string16 utf16_str;
+  std::u16string utf16_str;
   std::transform(chars, chars + len - 1, std::back_inserter(utf16_str),
                  base::ByteSwapToLE16);
   // Note: UTF16ToUTF8() only checks whether all chars are valid code points,
@@ -198,7 +198,7 @@ bool DecodePRegValue(uint32_t type,
 
 // Returns true if the registry key |key_name| belongs to the sub-tree specified
 // by the key |root|.
-bool KeyRootEquals(const base::string16& key_name, const base::string16& root) {
+bool KeyRootEquals(const std::u16string& key_name, const std::u16string& root) {
   if (root.empty())
     return true;
 
@@ -215,13 +215,13 @@ bool KeyRootEquals(const base::string16& key_name, const base::string16& root) {
 // by |key_name|. Creates sub-dictionaries if necessary. Also handles special
 // action triggers, see |kActionTrigger*|, that can, for instance, remove an
 // existing value.
-void HandleRecord(const base::string16& key_name,
-                  const base::string16& value,
+void HandleRecord(const std::u16string& key_name,
+                  const std::u16string& value,
                   uint32_t type,
                   const std::vector<uint8_t>& data,
                   RegistryDict* dict) {
   // Locate/create the dictionary to place the value in.
-  std::vector<base::string16> path;
+  std::vector<std::u16string> path;
 
   std::vector<base::StringPiece16> key_name_components =
       base::SplitStringPiece(key_name, kRegistryPathSeparator,
@@ -301,7 +301,7 @@ const char kPRegFileHeader[8] = {'P',    'R',    'e',    'g',
                                  '\x01', '\x00', '\x00', '\x00'};
 
 bool ReadFile(const base::FilePath& file_path,
-              const base::string16& root,
+              const std::u16string& root,
               RegistryDict* dict,
               PolicyLoadStatusSampler* status) {
   base::MemoryMappedFile mapped_file;
@@ -318,7 +318,7 @@ bool ReadFile(const base::FilePath& file_path,
 
 POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
                                     size_t preg_data_size,
-                                    const base::string16& root,
+                                    const std::u16string& root,
                                     RegistryDict* dict,
                                     PolicyLoadStatusSampler* status,
                                     const std::string& debug_name) {
@@ -354,8 +354,8 @@ POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
       break;
 
     // Read the record fields.
-    base::string16 key_name;
-    base::string16 value;
+    std::u16string key_name;
+    std::u16string value;
     uint32_t type = 0;
     uint32_t size = 0;
     std::vector<uint8_t> data;

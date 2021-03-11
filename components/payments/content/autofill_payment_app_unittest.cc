@@ -168,7 +168,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_Expired) {
   card.SetExpirationYear(2016);  // Expired.
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_TRUE(app.IsCompleteForPayment());
-  EXPECT_EQ(base::string16(), app.GetMissingInfoLabel());
+  EXPECT_EQ(std::u16string(), app.GetMissingInfoLabel());
 }
 
 // A local card with no name is not a valid app for payment.
@@ -176,7 +176,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoName) {
   autofill::CreditCard& card = local_credit_card();
   card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
                base::ASCIIToUTF16(""), "en-US");
-  base::string16 missing_info;
+  std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAYMENTS_NAME_ON_CARD_REQUIRED),
@@ -187,7 +187,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoName) {
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoNumber) {
   autofill::CreditCard& card = local_credit_card();
   card.SetNumber(base::ASCIIToUTF16(""));
-  base::string16 missing_info;
+  std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -200,7 +200,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoNumber) {
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoBillinbAddressId) {
   autofill::CreditCard& card = local_credit_card();
   card.set_billing_address_id("");
-  base::string16 missing_info;
+  std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(
@@ -213,7 +213,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoBillinbAddressId) {
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_InvalidBillinbAddressId) {
   autofill::CreditCard& card = local_credit_card();
   card.set_billing_address_id("InvalidBillingAddressId");
-  base::string16 missing_info;
+  std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(
@@ -229,7 +229,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_IncompleteBillinbAddress) {
   billing_profiles()[0] = &incomplete_profile;
   autofill::CreditCard& card = local_credit_card();
   card.set_billing_address_id(incomplete_profile.guid());
-  base::string16 missing_info;
+  std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(
@@ -268,7 +268,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_ExpiredMaskedCard) {
   card.SetExpirationYear(2016);  // Expired.
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_TRUE(app.IsCompleteForPayment());
-  EXPECT_EQ(base::string16(), app.GetMissingInfoLabel());
+  EXPECT_EQ(std::u16string(), app.GetMissingInfoLabel());
 }
 
 // An expired card is a valid app for canMakePayment.

@@ -65,7 +65,7 @@ class SecurityInterstitialPage {
   virtual int GetHTMLTemplateId();
 
   // Returns the formatted host name for the request url.
-  base::string16 GetFormattedHostName() const;
+  std::u16string GetFormattedHostName() const;
 
   content::WebContents* web_contents() const;
   GURL request_url() const;

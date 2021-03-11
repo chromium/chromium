@@ -46,7 +46,7 @@ std::vector<uint8_t> StringPieceToUint8Vector(base::StringPiece s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
 
-std::vector<uint8_t> String16ToUint8Vector(const base::string16& s) {
+std::vector<uint8_t> String16ToUint8Vector(const std::u16string& s) {
   auto bytes = base::as_bytes(base::make_span(s));
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
@@ -171,9 +171,9 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
   std::string namespace_id2 = base::GenerateGUID();
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = base::ASCIIToUTF16("key");
+  std::u16string value = base::ASCIIToUTF16("value");
+  std::u16string key2 = base::ASCIIToUTF16("key2");
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 

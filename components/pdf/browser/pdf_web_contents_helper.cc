@@ -235,8 +235,8 @@ bool PDFWebContentsHelper::ShouldShowQuickMenu() {
   return false;
 }
 
-base::string16 PDFWebContentsHelper::GetSelectedText() {
-  return base::string16();
+std::u16string PDFWebContentsHelper::GetSelectedText() {
+  return std::u16string();
 }
 
 void PDFWebContentsHelper::InitTouchSelectionClientManager() {

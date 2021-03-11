@@ -202,11 +202,11 @@ class HistoryService : public KeyedService {
   // Adds an entry for the specified url without creating a visit. This should
   // only be used when bookmarking a page, otherwise the row leaks in the
   // history db (it never gets cleaned).
-  void AddPageNoVisitForBookmark(const GURL& url, const base::string16& title);
+  void AddPageNoVisitForBookmark(const GURL& url, const std::u16string& title);
 
   // Sets the title for the given page. The page should be in history. If it
   // is not, this operation is ignored.
-  void SetPageTitle(const GURL& url, const base::string16& title);
+  void SetPageTitle(const GURL& url, const std::u16string& title);
 
   // Updates the history database with a page's ending time stamp information.
   // The page can be identified by the combination of the context id, the
@@ -251,7 +251,7 @@ class HistoryService : public KeyedService {
   // history_types.h).  If empty, all results matching the given options
   // will be returned.
   base::CancelableTaskTracker::TaskId QueryHistory(
-      const base::string16& text_query,
+      const std::u16string& text_query,
       const QueryOptions& options,
       QueryHistoryCallback callback,
       base::CancelableTaskTracker* tracker);
@@ -456,7 +456,7 @@ class HistoryService : public KeyedService {
   // id of the url, keyword_id the id of the keyword and term the search term.
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    KeywordID keyword_id,
-                                   const base::string16& term);
+                                   const std::u16string& term);
 
   // Deletes all search terms for the specified keyword.
   void DeleteAllSearchTermsForKeyword(KeywordID keyword_id);
@@ -467,7 +467,7 @@ class HistoryService : public KeyedService {
   // Deletes all URL and search term entries matching the given |term| and
   // |keyword_id|.
   void DeleteMatchingURLsForKeyword(KeywordID keyword_id,
-                                    const base::string16& term);
+                                    const std::u16string& term);
 
   // Bookmarks -----------------------------------------------------------------
 
@@ -532,7 +532,7 @@ class HistoryService : public KeyedService {
   // visit using the |last_visit| timestamp, and a PageTransition type of LINK,
   // if |visit_source| != SYNCED.
   void AddPageWithDetails(const GURL& url,
-                          const base::string16& title,
+                          const std::u16string& title,
                           int visit_count,
                           int typed_count,
                           base::Time last_visit,
@@ -650,7 +650,7 @@ class HistoryService : public KeyedService {
   // |keyword_id| associated with a URL and search term.
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
-                                      const base::string16& term);
+                                      const std::u16string& term);
 
   // Notify all HistoryServiceObservers registered that keyword search term is
   // deleted. |url_id| is the id of the url row.

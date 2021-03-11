@@ -47,7 +47,7 @@ class TemplateURLFetcher : public KeyedService {
   // TemplateURL in the model for |keyword|, or we're already downloading an
   // OSDD for this keyword, no download is started.
   //
-  void ScheduleDownload(const base::string16& keyword,
+  void ScheduleDownload(const std::u16string& keyword,
                         const GURL& osdd_url,
                         const GURL& favicon_url,
                         const url::Origin& initiator,

@@ -138,7 +138,7 @@ class ContentCaptureReceiverManagerHelper
   }
 
   const std::vector<int64_t>& removed_ids() const { return removed_ids_; }
-  const base::string16& updated_title() const { return updated_title_; }
+  const std::u16string& updated_title() const { return updated_title_; }
 
   void Reset() { removed_sessions_.clear(); }
 
@@ -156,7 +156,7 @@ class ContentCaptureReceiverManagerHelper
   std::vector<int64_t> removed_ids_;
   std::vector<ContentCaptureSession> removed_sessions_;
   SessionRemovedTestHelper* session_removed_test_helper_;
-  base::string16 updated_title_;
+  std::u16string updated_title_;
 };
 
 }  // namespace
@@ -552,7 +552,7 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
 
   // Capture content, then update the title.
   DidCaptureContent(test_data(), /*first_data=*/true);
-  base::string16 title2 = base::ASCIIToUTF16("title 2");
+  std::u16string title2 = base::ASCIIToUTF16("title 2");
   receiver->SetTitle(title2);
   // A task should be scheduled.
   EXPECT_TRUE(receiver->notify_title_update_callback_);

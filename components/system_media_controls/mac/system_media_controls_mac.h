@@ -37,9 +37,9 @@ class API_AVAILABLE(macos(10.13.1)) SystemMediaControlsMac
   void SetIsStopEnabled(bool value) override;
   void SetIsSeekToEnabled(bool value) override;
   void SetPlaybackStatus(PlaybackStatus status) override;
-  void SetTitle(const base::string16& title) override;
-  void SetArtist(const base::string16& artist) override;
-  void SetAlbum(const base::string16& album) override;
+  void SetTitle(const std::u16string& title) override;
+  void SetArtist(const std::u16string& artist) override;
+  void SetAlbum(const std::u16string& album) override;
   void SetThumbnail(const SkBitmap& bitmap) override {}
   void SetPosition(const media_session::MediaPosition& position) override;
   void ClearThumbnail() override {}

@@ -80,7 +80,7 @@ class TranslateUIDelegate {
   std::string GetLanguageCodeAt(size_t index) const;
 
   // Returns the displayable name for the language at |index|.
-  base::string16 GetLanguageNameAt(size_t index) const;
+  std::u16string GetLanguageNameAt(size_t index) const;
 
   // Translatable content languages.
   void GetContentLanguagesCodes(
@@ -166,7 +166,7 @@ class TranslateUIDelegate {
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // ISO code (en, fr...) -> displayable name in the current locale
-  typedef std::pair<std::string, base::string16> LanguageNamePair;
+  typedef std::pair<std::string, std::u16string> LanguageNamePair;
 
   // The list supported languages for translation.
   // The languages are sorted alphabetically based on the displayable name.

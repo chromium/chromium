@@ -132,8 +132,8 @@ DomainInfo GetDomainInfo(const GURL& url);
 // Returns true if the Levenshtein distance between |str1| and |str2| is at most
 // one. This has O(max(n,m)) complexity as opposed to O(n*m) of the usual edit
 // distance computation.
-bool IsEditDistanceAtMostOne(const base::string16& str1,
-                             const base::string16& str2);
+bool IsEditDistanceAtMostOne(const std::u16string& str1,
+                             const std::u16string& str2);
 
 // Returns whether |navigated_domain| and |matched_domain| are likely to be edit
 // distance false positives, and thus the user should *not* be warned.

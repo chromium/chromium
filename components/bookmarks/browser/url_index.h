@@ -55,7 +55,7 @@ class UrlIndex : public HistoryBookmarkModel {
   // Mutation of bookmark node fields that are exposed to HistoryBookmarkModel,
   // which means must acquire a lock. Must be called from the UI thread.
   void SetUrl(BookmarkNode* node, const GURL& url);
-  void SetTitle(BookmarkNode* node, const base::string16& title);
+  void SetTitle(BookmarkNode* node, const std::u16string& title);
 
   // Returns the nodes whose icon_url is |icon_url|.
   void GetNodesWithIconUrl(const GURL& icon_url,

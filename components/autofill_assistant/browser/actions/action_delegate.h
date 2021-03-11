@@ -174,7 +174,7 @@ class ActionDelegate {
   using GetFullCardCallback =
       base::OnceCallback<void(const ClientStatus& status,
                               std::unique_ptr<autofill::CreditCard> card,
-                              const base::string16& cvc)>;
+                              const std::u16string& cvc)>;
 
   // Asks for the full card information for |credit_card|. Might require the
   // user entering CVC.
@@ -192,7 +192,7 @@ class ActionDelegate {
   // |cvc|. Return result asynchronously through |callback|.
   virtual void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
-      const base::string16& cvc,
+      const std::u16string& cvc,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 

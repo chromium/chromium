@@ -57,7 +57,7 @@ class TileService : public KeyedService, public base::SupportsUserData {
   // the Id of the parent tile, if it exists.
   virtual void OnQuerySelected(
       const base::Optional<std::string>& parent_tile_id,
-      const base::string16& query_text) = 0;
+      const std::u16string& query_text) = 0;
 
   // Returns a Logger instance that is meant to be used by logging and debug UI
   // components in the larger system.

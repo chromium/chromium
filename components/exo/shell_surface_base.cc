@@ -375,7 +375,7 @@ void ShellSurfaceBase::Activate() {
   widget_->Activate();
 }
 
-void ShellSurfaceBase::SetTitle(const base::string16& title) {
+void ShellSurfaceBase::SetTitle(const std::u16string& title) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetTitle", "title",
                base::UTF16ToUTF8(title));
   WidgetDelegate::SetTitle(title);

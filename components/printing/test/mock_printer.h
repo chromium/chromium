@@ -152,8 +152,8 @@ class MockPrinter {
 
   // Used for displaying headers and footers.
   bool display_header_footer_;
-  base::string16 title_;
-  base::string16 url_;
+  std::u16string title_;
+  std::u16string url_;
 
   // Used for generating invalid settings.
   bool use_invalid_settings_;

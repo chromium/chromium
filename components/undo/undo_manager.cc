@@ -68,13 +68,13 @@ void UndoManager::Redo() {
   Undo(&performing_redo_, &redo_actions_);
 }
 
-base::string16 UndoManager::GetUndoLabel() const {
+std::u16string UndoManager::GetUndoLabel() const {
   return l10n_util::GetStringUTF16(
       undo_actions_.empty() ? IDS_BOOKMARK_BAR_UNDO
                             : undo_actions_.back()->get_undo_label_id());
 }
 
-base::string16 UndoManager::GetRedoLabel() const {
+std::u16string UndoManager::GetRedoLabel() const {
   return l10n_util::GetStringUTF16(
       redo_actions_.empty() ? IDS_BOOKMARK_BAR_REDO
                             : redo_actions_.back()->get_redo_label_id());

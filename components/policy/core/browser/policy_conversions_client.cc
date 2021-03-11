@@ -181,7 +181,7 @@ Value PolicyConversionsClient::GetPolicyValue(
                                            !policy_has_unmerged_source));
   }
 
-  base::string16 error;
+  std::u16string error;
   if (!known_policy_schema.has_value()) {
     // We don't know what this policy is. This is an important error to
     // show.
@@ -193,7 +193,7 @@ Value PolicyConversionsClient::GetPolicyValue(
         PolicyMap::MessageType::kError,
         base::BindRepeating(&l10n_util::GetStringUTF16));
     auto error_map_errors =
-        errors ? errors->GetErrors(policy_name) : base::string16();
+        errors ? errors->GetErrors(policy_name) : std::u16string();
     if (policy_map_errors.empty())
       error = error_map_errors;
     else if (error_map_errors.empty())
@@ -206,13 +206,13 @@ Value PolicyConversionsClient::GetPolicyValue(
   if (!error.empty())
     value.SetKey("error", Value(error));
 
-  base::string16 warning = policy.GetLocalizedMessages(
+  std::u16string warning = policy.GetLocalizedMessages(
       PolicyMap::MessageType::kWarning,
       base::BindRepeating(&l10n_util::GetStringUTF16));
   if (!warning.empty())
     value.SetKey("warning", Value(warning));
 
-  base::string16 info = policy.GetLocalizedMessages(
+  std::u16string info = policy.GetLocalizedMessages(
       PolicyMap::MessageType::kInfo,
       base::BindRepeating(&l10n_util::GetStringUTF16));
   if (!info.empty())

@@ -140,7 +140,7 @@ int PermissionPromptAndroid::GetIconId() const {
   return IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA;
 }
 
-base::string16 PermissionPromptAndroid::GetMessageText() const {
+std::u16string PermissionPromptAndroid::GetMessageText() const {
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
   if (requests.size() == 1) {

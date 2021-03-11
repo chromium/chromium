@@ -118,7 +118,7 @@ std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
 std::string LanguageDetectionModel::DeterminePageLanguage(
     const std::string& code,
     const std::string& html_lang,
-    const base::string16& contents,
+    const std::u16string& contents,
     std::string* predicted_language,
     bool* is_prediction_reliable,
     float& prediction_reliability_score) const {

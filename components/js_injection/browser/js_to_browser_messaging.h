@@ -43,7 +43,7 @@ class JsToBrowserMessaging : public mojom::JsToBrowserMessaging {
   void OnBackForwardCacheStateChanged();
 
   // mojom::JsToBrowserMessaging implementation.
-  void PostMessage(const base::string16& message,
+  void PostMessage(const std::u16string& message,
                    std::vector<blink::MessagePortDescriptor> ports) override;
   void SetBrowserToJsMessaging(
       mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>

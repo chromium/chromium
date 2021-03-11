@@ -25,10 +25,10 @@ class TabModalDialogManagerDelegate {
   // Factory function for creating a tab modal view.
   virtual base::WeakPtr<TabModalDialogView> CreateNewDialog(
       content::WebContents* alerting_web_contents,
-      const base::string16& title,
+      const std::u16string& title,
       content::JavaScriptDialogType dialog_type,
-      const base::string16& message_text,
-      const base::string16& default_prompt_text,
+      const std::u16string& message_text,
+      const std::u16string& default_prompt_text,
       content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
       base::OnceClosure dialog_closed_callback) = 0;
 

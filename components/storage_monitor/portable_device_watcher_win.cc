@@ -642,7 +642,7 @@ void PortableDeviceWatcherWin::OnDidHandleDeviceAttachEvent(
     // partition identifier to the model name. E.g.: "Nexus 7 (s10001)"
     std::wstring model_name(name + L" (" + storage_iter->object_temporary_id +
                             L')');
-    StorageInfo info(storage_id, location, base::string16(), base::string16(),
+    StorageInfo info(storage_id, location, std::u16string(), std::u16string(),
                      base::WideToUTF16(model_name), 0);
     storage_map_[storage_id] = info;
     if (storage_notifications_) {

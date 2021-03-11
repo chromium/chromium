@@ -37,7 +37,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
  public:
   PageTextChunkConsumer(mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
                         uint32_t max_size,
-                        base::OnceCallback<void(base::string16)> on_complete)
+                        base::OnceCallback<void(std::u16string)> on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
         receiver_(this, std::move(receiver)) {
@@ -53,7 +53,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 
   // mojom::PageTextConsumer:
   void OnChunksEnd() override { OnComplete(); }
-  void OnTextDumpChunk(const base::string16& chunk) override {
+  void OnTextDumpChunk(const std::u16string& chunk) override {
     // Calling |OnComplete| will reset the mojo pipe and callback together, so
     // this method should not be called when there is not a callback.
     DCHECK(on_complete_);
@@ -88,12 +88,12 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
   // deleted (in stack with the callback).
-  base::OnceCallback<void(base::string16)> on_complete_;
+  base::OnceCallback<void(std::u16string)> on_complete_;
   mojo::Receiver<mojom::PageTextConsumer> receiver_;
 
   // All chunks that have been read from the data pipe. These will be
   // concatenated together and passed to |on_complete_|.
-  std::vector<base::string16> read_chunks_;
+  std::vector<std::u16string> read_chunks_;
 
   base::WeakPtrFactory<PageTextChunkConsumer> weak_factory_{this};
 };
@@ -203,7 +203,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   void OnPageTextAsString(scoped_refptr<RequestMediator> self,
                           mojom::TextDumpEvent event,
-                          const base::string16 page_text) {
+                          const std::u16string page_text) {
     for (const auto& request : requests_) {
       if (request->events.find(event) != request->events.end()) {
         request->callback.Run(page_text);

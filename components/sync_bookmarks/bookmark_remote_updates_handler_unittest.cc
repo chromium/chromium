@@ -1915,11 +1915,11 @@ TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
 
   // Create 3 nodes using remote update.
   const bookmarks::BookmarkNode* node1 = bookmark_model->AddFolder(
-      bookmark_bar_node, /*index=*/0, /*title=*/base::string16());
+      bookmark_bar_node, /*index=*/0, /*title=*/std::u16string());
   const bookmarks::BookmarkNode* node2 = bookmark_model->AddFolder(
-      bookmark_bar_node, /*index=*/1, /*title=*/base::string16());
+      bookmark_bar_node, /*index=*/1, /*title=*/std::u16string());
   const bookmarks::BookmarkNode* node3 = bookmark_model->AddFolder(
-      bookmark_bar_node, /*index=*/2, /*title=*/base::string16());
+      bookmark_bar_node, /*index=*/2, /*title=*/std::u16string());
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());

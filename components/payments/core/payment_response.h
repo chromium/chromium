@@ -51,17 +51,17 @@ class PaymentResponse {
   // If the request_payer_name flag was set to true in the PaymentOptions passed
   // to the PaymentRequest constructor, this will be the name provided by the
   // user.
-  base::string16 payer_name;
+  std::u16string payer_name;
 
   // If the request_payer_email flag was set to true in the PaymentOptions
   // passed to the PaymentRequest constructor, this will be the email address
   // chosen by the user.
-  base::string16 payer_email;
+  std::u16string payer_email;
 
   // If the request_payer_phone flag was set to true in the PaymentOptions
   // passed to the PaymentRequest constructor, this will be the phone number
   // chosen by the user.
-  base::string16 payer_phone;
+  std::u16string payer_phone;
 };
 
 }  // namespace payments

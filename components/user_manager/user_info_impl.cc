@@ -15,11 +15,11 @@ UserInfoImpl::UserInfoImpl() : account_id_(StubAccountId()) {}
 UserInfoImpl::~UserInfoImpl() {
 }
 
-base::string16 UserInfoImpl::GetDisplayName() const {
+std::u16string UserInfoImpl::GetDisplayName() const {
   return base::UTF8ToUTF16("stub-user");
 }
 
-base::string16 UserInfoImpl::GetGivenName() const {
+std::u16string UserInfoImpl::GetGivenName() const {
   return base::UTF8ToUTF16("Stub");
 }
 

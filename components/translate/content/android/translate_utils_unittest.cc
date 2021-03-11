@@ -73,11 +73,11 @@ TEST_F(TranslateUtilsTest, GetJavaContentLangaugesEmpty) {
 // translate languages (names, codes and hashcodes are as expected, no native
 // names).
 TEST_F(TranslateUtilsTest, GetJavaLangauges) {
-  std::vector<std::pair<std::string, base::string16>> translate_languages = {
+  std::vector<std::pair<std::string, std::u16string>> translate_languages = {
       {"en", base::UTF8ToUTF16("English")},
       {"de", base::UTF8ToUTF16("German")},
       {"pl", base::UTF8ToUTF16("Polish")}};
-  std::vector<base::string16> expectedLanguageNames = {
+  std::vector<std::u16string> expectedLanguageNames = {
       base::UTF8ToUTF16("English"), base::UTF8ToUTF16("German"),
       base::UTF8ToUTF16("Polish")};
   std::vector<int> expectedHashCodes = {metrics::MetricsLog::Hash("en"),
@@ -90,7 +90,7 @@ TEST_F(TranslateUtilsTest, GetJavaLangauges) {
       TranslateUtils::GetTranslateLanguagesInJavaFormat(env_, delegate_);
 
   // Test language names are as expected.
-  std::vector<base::string16> actual_language_names;
+  std::vector<std::u16string> actual_language_names;
   base::android::AppendJavaStringArrayToStringVector(
       env_, contentLanguages.java_languages, &actual_language_names);
   EXPECT_THAT(actual_language_names,

@@ -93,7 +93,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
   EXPECT_EQ(POLICY_SOURCE_CLOUD, entry->source);
   std::string error_string = base::StrCat({"Validation error: ", kTestError});
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
-      static_cast<base::string16 (*)(int)>(&base::NumberToString16));
+      static_cast<std::u16string (*)(int)>(&base::NumberToString16));
   EXPECT_EQ(
       base::UTF8ToUTF16(error_string),
       entry->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
@@ -108,7 +108,7 @@ TEST_F(PolicyMapTest, SetAndGet) {
   EXPECT_EQ(POLICY_LEVEL_RECOMMENDED, entry->level);
   EXPECT_EQ(POLICY_SCOPE_MACHINE, entry->scope);
   EXPECT_EQ(POLICY_SOURCE_ENTERPRISE_DEFAULT, entry->source);
-  EXPECT_EQ(base::string16(), entry->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry->GetLocalizedMessages(
                                   PolicyMap::MessageType::kError, lookup));
   EXPECT_FALSE(entry->external_data_fetcher);
 }
@@ -118,8 +118,8 @@ TEST_F(PolicyMapTest, AddMessage_Error) {
   SetPolicy(&map, kTestPolicyName1, base::Value(0));
   PolicyMap::Entry* entry1 = map.GetMutable(kTestPolicyName1);
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
-      static_cast<base::string16 (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(base::string16(), entry1->GetLocalizedMessages(
+      static_cast<std::u16string (*)(int)>(&base::NumberToString16));
+  EXPECT_EQ(std::u16string(), entry1->GetLocalizedMessages(
                                   PolicyMap::MessageType::kError, lookup));
   map.AddMessage(kTestPolicyName1, PolicyMap::MessageType::kError, 1234);
   EXPECT_EQ(
@@ -168,9 +168,9 @@ TEST_F(PolicyMapTest, AddMessage_Error) {
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kError, lookup));
 
   // Ensure other message types are empty
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kWarning, lookup));
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kInfo, lookup));
 }
 
@@ -179,8 +179,8 @@ TEST_F(PolicyMapTest, AddMessage_Warning) {
   SetPolicy(&map, kTestPolicyName1, base::Value(0));
   PolicyMap::Entry* entry1 = map.GetMutable(kTestPolicyName1);
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
-      static_cast<base::string16 (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(base::string16(), entry1->GetLocalizedMessages(
+      static_cast<std::u16string (*)(int)>(&base::NumberToString16));
+  EXPECT_EQ(std::u16string(), entry1->GetLocalizedMessages(
                                   PolicyMap::MessageType::kWarning, lookup));
   entry1->AddMessage(PolicyMap::MessageType::kWarning, 1234);
   EXPECT_EQ(
@@ -229,9 +229,9 @@ TEST_F(PolicyMapTest, AddMessage_Warning) {
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kWarning, lookup));
 
   // Ensure other message types are empty
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kError, lookup));
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kInfo, lookup));
 }
 
@@ -240,8 +240,8 @@ TEST_F(PolicyMapTest, AddMessage_Info) {
   SetPolicy(&map, kTestPolicyName1, base::Value(0));
   PolicyMap::Entry* entry1 = map.GetMutable(kTestPolicyName1);
   PolicyMap::Entry::L10nLookupFunction lookup = base::BindRepeating(
-      static_cast<base::string16 (*)(int)>(&base::NumberToString16));
-  EXPECT_EQ(base::string16(), entry1->GetLocalizedMessages(
+      static_cast<std::u16string (*)(int)>(&base::NumberToString16));
+  EXPECT_EQ(std::u16string(), entry1->GetLocalizedMessages(
                                   PolicyMap::MessageType::kInfo, lookup));
   entry1->AddMessage(PolicyMap::MessageType::kInfo, 1234);
   EXPECT_EQ(
@@ -290,9 +290,9 @@ TEST_F(PolicyMapTest, AddMessage_Info) {
       entry2->GetLocalizedMessages(PolicyMap::MessageType::kInfo, lookup));
 
   // Ensure other message types are empty
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kError, lookup));
-  EXPECT_EQ(base::string16(), entry2->GetLocalizedMessages(
+  EXPECT_EQ(std::u16string(), entry2->GetLocalizedMessages(
                                   PolicyMap::MessageType::kWarning, lookup));
 }
 

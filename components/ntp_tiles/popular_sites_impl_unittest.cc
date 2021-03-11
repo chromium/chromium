@@ -62,7 +62,7 @@ using TestPopularSiteVector = std::vector<TestPopularSite>;
 using TestPopularSection = std::pair<SectionType, TestPopularSiteVector>;
 using TestPopularSectionVector = std::vector<TestPopularSection>;
 
-::testing::Matcher<const base::string16&> Str16Eq(const std::string& s) {
+::testing::Matcher<const std::u16string&> Str16Eq(const std::string& s) {
   return ::testing::Eq(base::UTF8ToUTF16(s));
 }
 

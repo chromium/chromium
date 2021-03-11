@@ -40,7 +40,7 @@ InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
 void InstallableAmbientBadgeInfoBarDelegate::Create(
     content::WebContents* web_contents,
     base::WeakPtr<Client> weak_client,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url) {
@@ -62,7 +62,7 @@ void InstallableAmbientBadgeInfoBarDelegate::AddToHomescreen() {
   weak_client_->AddToHomescreenFromBadge();
 }
 
-const base::string16 InstallableAmbientBadgeInfoBarDelegate::GetMessageText()
+const std::u16string InstallableAmbientBadgeInfoBarDelegate::GetMessageText()
     const {
   if (!base::FeatureList::IsEnabled(features::kAddToHomescreenMessaging))
     return l10n_util::GetStringFUTF16(IDS_AMBIENT_BADGE_INSTALL, app_name_);
@@ -88,7 +88,7 @@ bool InstallableAmbientBadgeInfoBarDelegate::GetIsPrimaryIconMaskable() const {
 
 InstallableAmbientBadgeInfoBarDelegate::InstallableAmbientBadgeInfoBarDelegate(
     base::WeakPtr<Client> weak_client,
-    const base::string16& app_name,
+    const std::u16string& app_name,
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url)

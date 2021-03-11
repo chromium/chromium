@@ -28,7 +28,7 @@ namespace test_data {
 extern const int kIndex;
 extern const int kUniqueID;
 extern const int kReferrerPolicy;
-extern const base::string16 kTitle;
+extern const std::u16string kTitle;
 extern const std::string kEncodedPageState;
 extern const ui::PageTransition kTransitionType;
 extern const bool kHasPostData;

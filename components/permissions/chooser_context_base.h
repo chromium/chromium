@@ -108,7 +108,7 @@ class ChooserContextBase : public KeyedService {
   virtual bool IsValidObject(const base::Value& object) = 0;
 
   // Gets the human-readable name for a given object.
-  virtual base::string16 GetObjectDisplayName(const base::Value& object) = 0;
+  virtual std::u16string GetObjectDisplayName(const base::Value& object) = 0;
 
  protected:
   // TODO(odejesush): Use this method in all derived classes instead of using a

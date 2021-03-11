@@ -348,7 +348,7 @@ TEST_F(ShellSurfaceTest, SetTitle) {
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
-  shell_surface->SetTitle(base::string16(base::ASCIIToUTF16("test")));
+  shell_surface->SetTitle(std::u16string(base::ASCIIToUTF16("test")));
   surface->Attach(buffer.get());
   surface->Commit();
 

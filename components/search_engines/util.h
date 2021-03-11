@@ -22,12 +22,12 @@ class WDTypedResult;
 
 // Returns the short name of the default search engine, or the empty string if
 // none is set.
-base::string16 GetDefaultSearchEngineName(TemplateURLService* service);
+std::u16string GetDefaultSearchEngineName(TemplateURLService* service);
 
 // Returns a GURL that searches for |terms| using the default search engine of
 // |service|.
 GURL GetDefaultSearchURLForSearchTerms(TemplateURLService* service,
-                                       const base::string16& terms);
+                                       const std::u16string& terms);
 
 // Returns matching URL from |template_urls| or NULL.
 TemplateURL* FindURLByPrepopulateID(

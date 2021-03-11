@@ -81,7 +81,7 @@ class OfflinePageArchiver {
       base::OnceCallback<void(ArchiverResult /* result */,
                               const GURL& /* url */,
                               const base::FilePath& /* file_path */,
-                              const base::string16& /* title */,
+                              const std::u16string& /* title */,
                               int64_t /* file_size */,
                               const std::string& /* digest */)>;
 

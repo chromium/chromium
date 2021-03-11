@@ -39,14 +39,14 @@ class PermissionRequestImpl : public PermissionRequest {
   // PermissionRequest:
   RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
-  base::string16 GetMessageText() const override;
-  base::string16 GetQuietTitleText() const override;
-  base::string16 GetQuietMessageText() const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetQuietTitleText() const override;
+  std::u16string GetQuietMessageText() const override;
 #endif
 #if !defined(OS_ANDROID)
-  base::Optional<base::string16> GetChipText() const override;
+  base::Optional<std::u16string> GetChipText() const override;
 #endif
-  base::string16 GetMessageTextFragment() const override;
+  std::u16string GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;

@@ -23,11 +23,11 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
 
 ConfirmInfoBar::~ConfirmInfoBar() = default;
 
-base::string16 ConfirmInfoBar::GetTextFor(
+std::u16string ConfirmInfoBar::GetTextFor(
     ConfirmInfoBarDelegate::InfoBarButton button) {
   ConfirmInfoBarDelegate* delegate = GetDelegate();
   return (delegate->GetButtons() & button) ? delegate->GetButtonLabel(button)
-                                           : base::string16();
+                                           : std::u16string();
 }
 
 ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {

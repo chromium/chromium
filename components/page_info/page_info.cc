@@ -211,7 +211,7 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
 void ReportAnyInsecureContent(
     const security_state::VisibleSecurityState& visible_security_state,
     PageInfo::SiteConnectionStatus* connection_status,
-    base::string16* connection_details) {
+    std::u16string* connection_details) {
   bool displayed_insecure_content =
       visible_security_state.displayed_mixed_content;
   bool ran_insecure_content = visible_security_state.ran_mixed_content;
@@ -256,7 +256,7 @@ void ReportAnyInsecureContent(
   }
 }
 
-base::string16 GetSimpleSiteName(const GURL& url) {
+std::u16string GetSimpleSiteName(const GURL& url) {
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
@@ -676,7 +676,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       } else {
         // Non-EV OK HTTPS page.
         site_identity_status_ = SITE_IDENTITY_STATUS_CERT;
-        base::string16 issuer_name(
+        std::u16string issuer_name(
             UTF8ToUTF16(certificate_->issuer().GetDisplayName()));
         if (issuer_name.empty()) {
           issuer_name.assign(l10n_util::GetStringUTF16(
@@ -712,7 +712,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
       site_identity_status_ = SITE_IDENTITY_STATUS_ERROR;
     }
 #if defined(OS_ANDROID)
-    const base::string16 bullet = UTF8ToUTF16("\n • ");
+    const std::u16string bullet = UTF8ToUTF16("\n • ");
     std::vector<ssl_errors::ErrorInfo> errors;
     ssl_errors::ErrorInfo::GetErrorsForCertStatus(
         certificate_, visible_security_state.cert_status, url, &errors);
@@ -735,7 +735,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   if (visible_security_state.malicious_content_status !=
       security_state::MALICIOUS_CONTENT_STATUS_NONE) {
     // The site has been flagged by Safe Browsing. Takes precedence over TLS.
-    base::string16 safe_browsing_details;
+    std::u16string safe_browsing_details;
     GetSafeBrowsingStatusByMaliciousContentStatus(
         visible_security_state.malicious_content_status, &safe_browsing_status_,
         &safe_browsing_details);
@@ -786,7 +786,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   // weakly encrypted connections.
   site_connection_status_ = SITE_CONNECTION_STATUS_UNKNOWN;
 
-  base::string16 subject_name(GetSimpleSiteName(url));
+  std::u16string subject_name(GetSimpleSiteName(url));
   if (subject_name.empty()) {
     subject_name.assign(
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY));
@@ -1049,7 +1049,7 @@ std::vector<ContentSettingsType> PageInfo::GetAllPermissionsForTesting() {
 void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(
     security_state::MaliciousContentStatus malicious_content_status,
     PageInfo::SafeBrowsingStatus* status,
-    base::string16* details) {
+    std::u16string* details) {
   switch (malicious_content_status) {
     case security_state::MALICIOUS_CONTENT_STATUS_NONE:
       NOTREACHED();

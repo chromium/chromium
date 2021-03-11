@@ -329,7 +329,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
   DCHECK(_bridge);
-  base::string16 newTooltipText;
+  std::u16string newTooltipText;
 
   _bridge->host()->GetTooltipTextAt(locationInContent, &newTooltipText);
   if (newTooltipText != _lastTooltipText) {
@@ -1290,7 +1290,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
          [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]);
 
   bool result = NO;
-  base::string16 text;
+  std::u16string text;
   if (_bridge)
     _bridge->text_input_host()->GetSelectionText(&result, &text);
   if (!result)
@@ -1324,7 +1324,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // See https://crbug.com/888782.
   if (range.location == NSNotFound)
     range.length = 0;
-  base::string16 substring;
+  std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   if (_bridge) {
     _bridge->text_input_host()->GetAttributedSubstringForRange(

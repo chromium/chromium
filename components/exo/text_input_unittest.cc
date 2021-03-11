@@ -35,7 +35,7 @@ class MockTextInputDelegate : public TextInput::Delegate {
   MOCK_METHOD0(Deactivated, void());
   MOCK_METHOD1(OnVirtualKeyboardVisibilityChanged, void(bool));
   MOCK_METHOD1(SetCompositionText, void(const ui::CompositionText&));
-  MOCK_METHOD1(Commit, void(const base::string16&));
+  MOCK_METHOD1(Commit, void(const std::u16string&));
   MOCK_METHOD1(SetCursor, void(const gfx::Range&));
   MOCK_METHOD1(DeleteSurroundingText, void(const gfx::Range&));
   MOCK_METHOD1(SendKey, void(const ui::KeyEvent&));
@@ -263,7 +263,7 @@ TEST_F(TextInputTest, CommitCompositionText) {
 }
 
 TEST_F(TextInputTest, Commit) {
-  base::string16 s = base::ASCIIToUTF16("commit text");
+  std::u16string s = base::ASCIIToUTF16("commit text");
 
   EXPECT_CALL(*delegate(), Commit(s)).Times(1);
   text_input()->InsertText(
@@ -295,7 +295,7 @@ TEST_F(TextInputTest, InsertCharNormalKey) {
   char16_t ch = 'x';
   ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
 
-  EXPECT_CALL(*delegate(), Commit(base::string16(1, ch))).Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string(1, ch))).Times(1);
   EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
   text_input()->InsertChar(ev);
 }
@@ -305,10 +305,10 @@ TEST_F(TextInputTest, SurroundingText) {
   EXPECT_FALSE(text_input()->GetTextRange(&range));
   EXPECT_FALSE(text_input()->GetCompositionTextRange(&range));
   EXPECT_FALSE(text_input()->GetEditableSelectionRange(&range));
-  base::string16 got_text;
+  std::u16string got_text;
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
-  base::string16 text = base::UTF8ToUTF16("surrounding\xE3\x80\x80text");
+  std::u16string text = base::UTF8ToUTF16("surrounding\xE3\x80\x80text");
   text_input()->SetSurroundingText(text, 11, 12);
 
   EXPECT_TRUE(text_input()->GetTextRange(&range));
@@ -337,7 +337,7 @@ TEST_F(TextInputTest, SurroundingText) {
 }
 
 TEST_F(TextInputTest, GetTextRange) {
-  base::string16 text = base::UTF8ToUTF16("surrounding text");
+  std::u16string text = base::UTF8ToUTF16("surrounding text");
   text_input()->SetSurroundingText(text, 11, 12);
 
   SetCompositionText("composition");
@@ -354,7 +354,7 @@ TEST_F(TextInputTest, GetTextRange) {
       {gfx::Range(22, 25), "tex"},
   };
   for (auto& c : kTestCases) {
-    base::string16 result;
+    std::u16string result;
     EXPECT_TRUE(text_input()->GetTextFromRange(c.range, &result))
         << c.range.ToString();
     EXPECT_EQ(base::UTF8ToUTF16(c.expected), result) << c.range.ToString();

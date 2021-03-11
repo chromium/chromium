@@ -40,13 +40,9 @@ class PageUsageData {
     return url_;
   }
 
-  void SetTitle(const base::string16& s) {
-    title_ = s;
-  }
+  void SetTitle(const std::u16string& s) { title_ = s; }
 
-  const base::string16& GetTitle() const {
-    return title_;
-  }
+  const std::u16string& GetTitle() const { return title_; }
 
   void SetScore(double v) {
     score_ = v;
@@ -59,7 +55,7 @@ class PageUsageData {
  private:
   SegmentID id_;
   GURL url_;
-  base::string16 title_;
+  std::u16string title_;
 
   double score_;
 };

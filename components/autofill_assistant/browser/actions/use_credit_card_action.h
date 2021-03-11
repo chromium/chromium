@@ -46,7 +46,7 @@ class UseCreditCardAction : public Action {
   // Called after getting full credit card with its cvc.
   void OnGetFullCard(const ClientStatus& status,
                      std::unique_ptr<autofill::CreditCard> card,
-                     const base::string16& cvc);
+                     const std::u16string& cvc);
 
   // Called when the form credit card has been filled.
   void ExecuteFallback(const ClientStatus& status);

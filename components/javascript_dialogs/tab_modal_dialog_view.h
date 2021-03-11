@@ -22,7 +22,7 @@ class TabModalDialogView {
   virtual void CloseDialogWithoutCallback() = 0;
 
   // Returns the current value of the user input for a prompt dialog.
-  virtual base::string16 GetUserInput() = 0;
+  virtual std::u16string GetUserInput() = 0;
 };
 
 }  // namespace javascript_dialogs

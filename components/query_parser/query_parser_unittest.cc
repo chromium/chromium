@@ -24,7 +24,7 @@ class QueryParserTest : public testing::Test {
 // Test helper: Convert a user query string in 8-bit (for hardcoding
 // convenience) to a SQLite query string.
 std::string QueryParserTest::QueryToString(const std::string& query) {
-  base::string16 sqlite_query;
+  std::u16string sqlite_query;
   QueryParser::ParseQuery(base::UTF8ToUTF16(query), MatchingAlgorithm::DEFAULT,
                           &sqlite_query);
   return base::UTF16ToUTF8(sqlite_query);
@@ -81,7 +81,7 @@ TEST_F(QueryParserTest, NumWords) {
   };
 
   for (size_t i = 0; i < base::size(data); ++i) {
-    base::string16 query_string;
+    std::u16string query_string;
     EXPECT_EQ(
         data[i].expected_word_count,
         QueryParser::ParseQuery(base::UTF8ToUTF16(data[i].input),
@@ -153,7 +153,7 @@ TEST_F(QueryParserTest, ParseQueryWords) {
     { "\"foo bar\" a", "foo", "bar", "a", 3 },
   };
   for (size_t i = 0; i < base::size(data); ++i) {
-    std::vector<base::string16> results;
+    std::vector<std::u16string> results;
     QueryParser::ParseQueryWords(base::UTF8ToUTF16(data[i].text),
                                  MatchingAlgorithm::DEFAULT, &results);
     ASSERT_EQ(data[i].word_count, results.size());

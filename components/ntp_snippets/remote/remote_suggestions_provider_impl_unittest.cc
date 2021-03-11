@@ -591,7 +591,7 @@ TEST_F(RemoteSuggestionsProviderImplTest, Full) {
 }
 
 TEST_F(RemoteSuggestionsProviderImplTest, CategoryTitle) {
-  const base::string16 test_default_title =
+  const std::u16string test_default_title =
       base::UTF8ToUTF16(kTestJsonDefaultCategoryTitle);
 
   // Don't send an initial response -- we want to test what happens without any

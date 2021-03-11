@@ -12,7 +12,7 @@ namespace performance_manager {
 base::Value TimeDeltaFromNowToValue(base::TimeTicks time_ticks) {
   base::TimeDelta delta = base::TimeTicks::Now() - time_ticks;
 
-  base::string16 out;
+  std::u16string out;
   bool succeeded = TimeDurationFormat(delta, base::DURATION_WIDTH_WIDE, &out);
   DCHECK(succeeded);
 

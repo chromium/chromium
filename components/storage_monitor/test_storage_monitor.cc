@@ -101,9 +101,8 @@ bool TestStorageMonitor::GetStorageInfoForPath(
       is_removable ? StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM
                    : StorageInfo::FIXED_MASS_STORAGE,
       path.AsUTF8Unsafe());
-  *device_info =
-      StorageInfo(device_id, path.value(), base::string16(), base::string16(),
-                  base::string16(), 0);
+  *device_info = StorageInfo(device_id, path.value(), std::u16string(),
+                             std::u16string(), std::u16string(), 0);
   return true;
 }
 

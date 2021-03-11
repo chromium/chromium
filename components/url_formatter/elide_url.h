@@ -38,7 +38,7 @@ namespace url_formatter {
 // as an LTR string (using base::i18n::WrapStringWithLTRFormatting()) so that it
 // is displayed properly in an RTL context. Please refer to
 // http://crbug.com/6487 for more information.
-base::string16 ElideUrl(const GURL& url,
+std::u16string ElideUrl(const GURL& url,
                         const gfx::FontList& font_list,
                         float available_pixel_width);
 
@@ -47,7 +47,7 @@ base::string16 ElideUrl(const GURL& url,
 // but after that, will leading-elide the domain name to fit the width.
 // Example: http://sub.domain.com ---> "...domain.com", or "...b.domain.com"
 // depending on the width.
-base::string16 ElideHost(const GURL& host_url,
+std::u16string ElideHost(const GURL& host_url,
                          const gfx::FontList& font_list,
                          float available_pixel_width);
 #endif  // !defined(OS_ANDROID)
@@ -81,7 +81,7 @@ enum class SchemeDisplay {
 // For example, in Chrome's Page Info Bubble, there are icons and strings
 // indicating origin (non-)security. But in the HTTP Basic Auth prompt (for
 // example), the scheme may be the only indicator.
-base::string16 FormatUrlForSecurityDisplay(
+std::u16string FormatUrlForSecurityDisplay(
     const GURL& origin,
     const SchemeDisplay scheme_display = SchemeDisplay::SHOW);
 
@@ -95,7 +95,7 @@ base::string16 FormatUrlForSecurityDisplay(
 //
 // Generally, prefer SchemeDisplay::SHOW to omitting the scheme unless there is
 // plenty of indication as to whether the origin is secure elsewhere in the UX.
-base::string16 FormatOriginForSecurityDisplay(
+std::u16string FormatOriginForSecurityDisplay(
     const url::Origin& origin,
     const SchemeDisplay scheme_display = SchemeDisplay::SHOW);
 

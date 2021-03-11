@@ -66,7 +66,7 @@ static const base::FilePath kTestFilePath =
     base::FilePath(FILE_PATH_LITERAL("foo/bar.mhtml"));
 static const int kFileSize = 1000;
 static const base::Time kTestCreationTime = base::Time::Now();
-static const base::string16 kTestTitle = base::ASCIIToUTF16("test title");
+static const std::u16string kTestTitle = base::ASCIIToUTF16("test title");
 
 void GetItemAndVerify(const base::Optional<OfflineItem>& expected,
                       const base::Optional<OfflineItem>& actual) {

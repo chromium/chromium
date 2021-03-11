@@ -107,7 +107,7 @@ base::Optional<GURL> ClipboardRecentContentIOS::GetRecentURLFromClipboard() {
   return converted_url;
 }
 
-base::Optional<base::string16>
+base::Optional<std::u16string>
 ClipboardRecentContentIOS::GetRecentTextFromClipboard() {
   NSString* text_from_pasteboard = [implementation_ recentTextFromClipboard];
   if (!text_from_pasteboard) {

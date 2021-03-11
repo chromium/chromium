@@ -57,7 +57,7 @@ class LocalizedError {
       const std::string& locale);
 
   // Returns a description of the encountered error.
-  static base::string16 GetErrorDetails(const std::string& error_domain,
+  static std::u16string GetErrorDetails(const std::string& error_domain,
                                         int error_code,
                                         bool is_secure_dns_network_error,
                                         bool is_post);

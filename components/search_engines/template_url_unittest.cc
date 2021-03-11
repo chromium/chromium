@@ -25,7 +25,7 @@
 using base::ASCIIToUTF16;
 
 namespace {
-bool IsLowerCase(const base::string16& str) {
+bool IsLowerCase(const std::u16string& str) {
   return str == base::i18n::ToLower(str);
 }
 }
@@ -78,7 +78,7 @@ TEST_F(TemplateURLTest, TestValidWithComplete) {
 TEST_F(TemplateURLTest, URLRefTestSearchTerms) {
   struct SearchTermsCase {
     const char* url;
-    const base::string16 terms;
+    const std::u16string terms;
     const std::string output;
   } search_term_cases[] = {
     { "http://foo{searchTerms}", ASCIIToUTF16("sea rch/bar"),
@@ -386,14 +386,12 @@ TEST_F(TemplateURLTest, URLRefTestEncoding2) {
 TEST_F(TemplateURLTest, URLRefTestSearchTermsUsingTermsData) {
   struct SearchTermsCase {
     const char* url;
-    const base::string16 terms;
+    const std::u16string terms;
     const char* output;
-  } search_term_cases[] = {
-    { "{google:baseURL}{language}{searchTerms}", base::string16(),
-      "http://example.com/e/en" },
-    { "{google:baseSuggestURL}{searchTerms}", base::string16(),
-      "http://example.com/complete/" }
-  };
+  } search_term_cases[] = {{"{google:baseURL}{language}{searchTerms}",
+                            std::u16string(), "http://example.com/e/en"},
+                           {"{google:baseSuggestURL}{searchTerms}",
+                            std::u16string(), "http://example.com/complete/"}};
 
   TestingSearchTermsData search_terms_data("http://example.com/e/");
   TemplateURLData data;
@@ -414,7 +412,7 @@ TEST_F(TemplateURLTest, URLRefTestSearchTermsUsingTermsData) {
 TEST_F(TemplateURLTest, URLRefTermToWide) {
   struct ToWideCase {
     const char* encoded_search_term;
-    const base::string16 expected_decoded_term;
+    const std::u16string expected_decoded_term;
   } to_wide_cases[] = {
     {"hello+world", ASCIIToUTF16("hello world")},
     // Test some big-5 input.
@@ -449,7 +447,7 @@ TEST_F(TemplateURLTest, URLRefTermToWide) {
 TEST_F(TemplateURLTest, DisplayURLToURLRef) {
   struct TestData {
     const std::string url;
-    const base::string16 expected_result;
+    const std::u16string expected_result;
   } test_data[] = {
     { "http://foo{searchTerms}x{inputEncoding}y{outputEncoding}a",
       ASCIIToUTF16("http://foo%sx{inputEncoding}y{outputEncoding}a") },
@@ -527,7 +525,7 @@ TEST_F(TemplateURLTest, ReplaceSearchTerms) {
 TEST_F(TemplateURLTest, ReplaceArbitrarySearchTerms) {
   struct TestData {
     const std::string encoding;
-    const base::string16 search_term;
+    const std::u16string search_term;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
@@ -561,7 +559,7 @@ TEST_F(TemplateURLTest, ReplaceArbitrarySearchTerms) {
 TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
   struct TestData {
     const std::vector<std::string> encodings;
-    const base::string16 search_term;
+    const std::u16string search_term;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
@@ -610,7 +608,7 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsMultipleEncodings) {
 // Tests replacing assisted query stats (AQS) in various scenarios.
 TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     const std::string aqs;
     const std::string base_url;
     const std::string url;
@@ -667,23 +665,20 @@ TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
 // Tests replacing cursor position.
 TEST_F(TemplateURLTest, ReplaceCursorPosition) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     size_t cursor_position;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
-    { ASCIIToUTF16("foo"),
-      base::string16::npos,
-      "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
-      "http://www.google.com/?foo&" },
-    { ASCIIToUTF16("foo"),
-      2,
-      "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
-      "http://www.google.com/?foo&cp=2&" },
-    { ASCIIToUTF16("foo"),
-      15,
-      "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
-      "http://www.google.com/?foo&cp=15&" },
+      {ASCIIToUTF16("foo"), std::u16string::npos,
+       "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
+       "http://www.google.com/?foo&"},
+      {ASCIIToUTF16("foo"), 2,
+       "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
+       "http://www.google.com/?foo&cp=2&"},
+      {ASCIIToUTF16("foo"), 15,
+       "{google:baseURL}?{searchTerms}&{google:cursorPosition}",
+       "http://www.google.com/?foo&cp=15&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");
@@ -704,7 +699,7 @@ TEST_F(TemplateURLTest, ReplaceCursorPosition) {
 // Tests replacing input type (&oit=).
 TEST_F(TemplateURLTest, ReplaceInputType) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     metrics::OmniboxInputType input_type;
     const std::string url;
     const std::string expected_result;
@@ -735,7 +730,7 @@ TEST_F(TemplateURLTest, ReplaceInputType) {
 // Tests replacing omnibox focus type (&oft=).
 TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     OmniboxFocusType focus_type;
     const std::string url;
     const std::string expected_result;
@@ -769,7 +764,7 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
 // Tests replacing prefetch source (&pf=).
 TEST_F(TemplateURLTest, ReplaceIsPrefetch) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     bool is_prefetch;
     const std::string url;
     const std::string expected_result;
@@ -800,7 +795,7 @@ TEST_F(TemplateURLTest, ReplaceIsPrefetch) {
 // Tests replacing currentPageUrl.
 TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
   struct TestData {
-    const base::string16 search_term;
+    const std::u16string search_term;
     const std::string current_page_url;
     const std::string url;
     const std::string expected_result;
@@ -839,7 +834,7 @@ TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
 TEST_F(TemplateURLTest, PlayAPIAttribution) {
   const struct TestData {
     const char* url;
-    base::string16 terms;
+    std::u16string terms;
     bool created_from_play_api;
     const char* output;
   } test_data[] = {{"http://foo/?q={searchTerms}", ASCIIToUTF16("bar"), false,
@@ -864,19 +859,19 @@ TEST_F(TemplateURLTest, PlayAPIAttribution) {
 TEST_F(TemplateURLTest, Suggestions) {
   struct TestData {
     const int accepted_suggestion;
-    const base::string16 original_query_for_suggestion;
+    const std::u16string original_query_for_suggestion;
     const std::string expected_result;
   } test_data[] = {
-    { TemplateURLRef::NO_SUGGESTIONS_AVAILABLE, base::string16(),
-      "http://bar/foo?q=foobar" },
-    { TemplateURLRef::NO_SUGGESTIONS_AVAILABLE, ASCIIToUTF16("foo"),
-      "http://bar/foo?q=foobar" },
-    { TemplateURLRef::NO_SUGGESTION_CHOSEN, base::string16(),
-      "http://bar/foo?q=foobar" },
-    { TemplateURLRef::NO_SUGGESTION_CHOSEN, ASCIIToUTF16("foo"),
-      "http://bar/foo?q=foobar" },
-    { 0, base::string16(), "http://bar/foo?oq=&q=foobar" },
-    { 1, ASCIIToUTF16("foo"), "http://bar/foo?oq=foo&q=foobar" },
+      {TemplateURLRef::NO_SUGGESTIONS_AVAILABLE, std::u16string(),
+       "http://bar/foo?q=foobar"},
+      {TemplateURLRef::NO_SUGGESTIONS_AVAILABLE, ASCIIToUTF16("foo"),
+       "http://bar/foo?q=foobar"},
+      {TemplateURLRef::NO_SUGGESTION_CHOSEN, std::u16string(),
+       "http://bar/foo?q=foobar"},
+      {TemplateURLRef::NO_SUGGESTION_CHOSEN, ASCIIToUTF16("foo"),
+       "http://bar/foo?q=foobar"},
+      {0, std::u16string(), "http://bar/foo?oq=&q=foobar"},
+      {1, ASCIIToUTF16("foo"), "http://bar/foo?oq=foo&q=foobar"},
   };
   TemplateURLData data;
   data.SetURL("http://bar/foo?{google:originalQueryForSuggestion}"
@@ -899,7 +894,7 @@ TEST_F(TemplateURLTest, Suggestions) {
 }
 
 TEST_F(TemplateURLTest, RLZ) {
-  base::string16 rlz_string = search_terms_data_.GetRlzParameterValue(false);
+  std::u16string rlz_string = search_terms_data_.GetRlzParameterValue(false);
 
   TemplateURLData data;
   data.SetURL("http://bar/?{google:RLZ}{searchTerms}");
@@ -914,7 +909,7 @@ TEST_F(TemplateURLTest, RLZ) {
 }
 
 TEST_F(TemplateURLTest, RLZFromAppList) {
-  base::string16 rlz_string = search_terms_data_.GetRlzParameterValue(true);
+  std::u16string rlz_string = search_terms_data_.GetRlzParameterValue(true);
 
   TemplateURLData data;
   data.SetURL("http://bar/?{google:RLZ}{searchTerms}");
@@ -1133,7 +1128,7 @@ TEST_F(TemplateURLTest, SearchClient) {
   const std::string base_url_str("http://google.com/?");
   const std::string terms_str("{searchTerms}&{google:searchClient}");
   const std::string full_url_str = base_url_str + terms_str;
-  const base::string16 terms(ASCIIToUTF16(terms_str));
+  const std::u16string terms(ASCIIToUTF16(terms_str));
   search_terms_data_.set_google_base_url(base_url_str);
 
   TemplateURLData data;
@@ -1222,7 +1217,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURL) {
   data.alternate_urls.push_back(
       "http://google.com/alt/?ext=foo&q={searchTerms}#ref=bar");
   TemplateURL url(data);
-  base::string16 result;
+  std::u16string result;
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/?q=something"), search_terms_data_, &result));
@@ -1259,16 +1254,16 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURL) {
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.ca/?q=something"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.ca/?q=something&q=anything"),
       search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/foo/?q=foo"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("https://google.com/?q=foo"), search_terms_data_, &result));
@@ -1276,7 +1271,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURL) {
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com:8080/?q=foo"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/?q=1+2+3&b=456"), search_terms_data_, &result));
@@ -1299,19 +1294,19 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURL) {
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/alt/?q="), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/alt/?#q="), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/alt/?q=#q="), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/alt/?q=123#q="), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://google.com/alt/?q=#q=123"), search_terms_data_, &result));
@@ -1322,7 +1317,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURLPath) {
   TemplateURLData data;
   data.SetURL("http://term-in-path.com/begin/{searchTerms}/end");
   TemplateURL url(data);
-  base::string16 result;
+  std::u16string result;
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://term-in-path.com/begin/something/end"),
@@ -1343,15 +1338,15 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromURLPath) {
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://term-in-path.com/about"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://term-in-path.com/begin"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 
   EXPECT_FALSE(url.ExtractSearchTermsFromURL(
       GURL("http://term-in-path.com/end"), search_terms_data_, &result));
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
 }
 
 // Checks that the ExtractSearchTermsFromURL function works correctly
@@ -1362,7 +1357,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromUTF8URL) {
   data.alternate_urls.push_back("http://utf-8.ru/#q={searchTerms}");
   data.alternate_urls.push_back("http://utf-8.ru/path/{searchTerms}");
   TemplateURL url(data);
-  base::string16 result;
+  std::u16string result;
 
   // Russian text encoded with UTF-8.
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
@@ -1401,7 +1396,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromNonUTF8URL) {
   data.alternate_urls.push_back("http://windows-1251.ru/path/{searchTerms}");
   data.input_encodings.push_back("windows-1251");
   TemplateURL url(data);
-  base::string16 result;
+  std::u16string result;
 
   // Russian text encoded with Windows-1251.
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
@@ -1438,7 +1433,7 @@ TEST_F(TemplateURLTest, ExtractSearchTermsWithPrefixAndSuffix) {
   data.alternate_urls.push_back(
       "http://www.example.com/chromium-{searchTerms}@chromium.org/info");
   TemplateURL url(data);
-  base::string16 result;
+  std::u16string result;
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
       GURL("http://www.example.com/?q=chromium-dev@chromium.org"),
@@ -1969,7 +1964,7 @@ TEST_F(TemplateURLTest, InvalidateCachedValues) {
   data.alternate_urls.push_back("{google:baseURL}s#q={searchTerms}");
   TemplateURL url(data);
   TemplateURLRef::SearchTermsArgs search_terms_args(ASCIIToUTF16("X"));
-  base::string16 search_terms;
+  std::u16string search_terms;
 
   EXPECT_TRUE(url.HasGoogleBaseURLs(search_terms_data_));
   EXPECT_EQ("http://www.google.com/search?q=X",
@@ -2050,7 +2045,7 @@ TEST_F(TemplateURLTest, PathWildcard) {
   TemplateURL url(data);
 
   // Test extracting search terms from a URL.
-  base::string16 search_terms;
+  std::u16string search_terms;
   url.ExtractSearchTermsFromURL(GURL("https://www.google.com/search?q=testing"),
                                 search_terms_data_, &search_terms);
   EXPECT_EQ(base::ASCIIToUTF16("testing"), search_terms);

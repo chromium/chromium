@@ -91,7 +91,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     content::WebContents* web_contents_to_observe,
     const std::string& effective_relying_party_identity,
     std::unique_ptr<SkBitmap> icon,
-    const base::string16& label,
+    const std::u16string& label,
     std::vector<uint8_t> credential_id,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -180,9 +180,9 @@ bool SecurePaymentConfirmationApp::CanPreselect() const {
   return true;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
+std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
@@ -203,12 +203,12 @@ std::string SecurePaymentConfirmationApp::GetId() const {
   return encoded_credential_id_;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetLabel() const {
+std::u16string SecurePaymentConfirmationApp::GetLabel() const {
   return label_;
 }
 
-base::string16 SecurePaymentConfirmationApp::GetSublabel() const {
-  return base::string16();
+std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
+  return std::u16string();
 }
 
 const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {

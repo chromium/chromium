@@ -35,7 +35,7 @@ struct NormalizedKeywordSearchTermVisit {
                      int recency_decay_unit_sec,
                      double frequency_exponent) const;
 
-  base::string16 normalized_term;     // The search term, in lower case and with
+  std::u16string normalized_term;     // The search term, in lower case and with
                                       // extra whitespaces collapsed.
   int visits{0};                      // The visit count.
   base::Time most_recent_visit_time;  // The time of the most recent visit.
@@ -47,8 +47,8 @@ struct KeywordSearchTermVisit {
   KeywordSearchTermVisit();
   ~KeywordSearchTermVisit();
 
-  base::string16 term;  // The search term that was used.
-  base::string16 normalized_term;  // The search term, in lower case and with
+  std::u16string term;             // The search term that was used.
+  std::u16string normalized_term;  // The search term, in lower case and with
                                    // extra whitespaces collapsed.
   int visits;  // The visit count.
   base::Time time;  // The time of the most recent visit.
@@ -62,8 +62,8 @@ struct KeywordSearchTermRow {
 
   KeywordID keyword_id;  // ID of the keyword.
   URLID url_id;  // ID of the url.
-  base::string16 term;  // The search term that was used.
-  base::string16 normalized_term;  // The search term, in lower case and with
+  std::u16string term;             // The search term that was used.
+  std::u16string normalized_term;  // The search term, in lower case and with
                                    // extra whitespaces collapsed.
 };
 

@@ -132,7 +132,7 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeNode(
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
   std::string id = base::NumberToString(node->id());
   value->SetString(kIdKey, id);
-  const base::string16& title = node->GetTitle();
+  const std::u16string& title = node->GetTitle();
   value->SetString(kNameKey, title);
   const std::string& guid = node->guid().AsLowercaseString();
   value->SetString(kGuidKey, guid);
@@ -295,7 +295,7 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
 
   maximum_id_ = std::max(maximum_id_, id);
 
-  base::string16 title;
+  std::u16string title;
   value.GetString(kNameKey, &title);
 
   base::GUID guid;
@@ -476,7 +476,7 @@ void BookmarkCodec::UpdateChecksum(const std::string& str) {
   base::MD5Update(&md5_context_, str);
 }
 
-void BookmarkCodec::UpdateChecksum(const base::string16& str) {
+void BookmarkCodec::UpdateChecksum(const std::u16string& str) {
   base::MD5Update(&md5_context_,
                   base::StringPiece(
                       reinterpret_cast<const char*>(str.data()),
@@ -484,7 +484,7 @@ void BookmarkCodec::UpdateChecksum(const base::string16& str) {
 }
 
 void BookmarkCodec::UpdateChecksumWithUrlNode(const std::string& id,
-                                              const base::string16& title,
+                                              const std::u16string& title,
                                               const std::string& url) {
   DCHECK(base::IsStringUTF8(url));
   UpdateChecksum(id);
@@ -494,7 +494,7 @@ void BookmarkCodec::UpdateChecksumWithUrlNode(const std::string& id,
 }
 
 void BookmarkCodec::UpdateChecksumWithFolderNode(const std::string& id,
-                                                 const base::string16& title) {
+                                                 const std::u16string& title) {
   UpdateChecksum(id);
   UpdateChecksum(title);
   UpdateChecksum(kTypeFolder);

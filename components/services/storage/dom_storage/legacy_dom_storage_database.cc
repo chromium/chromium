@@ -53,8 +53,8 @@ void LegacyDomStorageDatabase::ReadAllValues(
   DCHECK(statement.is_valid());
 
   while (statement.Step()) {
-    base::string16 key = statement.ColumnString16(0);
-    base::string16 value;
+    std::u16string key = statement.ColumnString16(0);
+    std::u16string value;
     statement.ColumnBlobAsString16(1, &value);
     (*result)[key] = base::NullableString16(value, false);
   }
@@ -90,7 +90,7 @@ bool LegacyDomStorageDatabase::CommitChanges(
   auto it = changes.begin();
   for (; it != changes.end(); ++it) {
     sql::Statement statement;
-    base::string16 key = it->first;
+    std::u16string key = it->first;
     base::NullableString16 value = it->second;
     if (value.is_null()) {
       statement.Assign(db_->GetCachedStatement(

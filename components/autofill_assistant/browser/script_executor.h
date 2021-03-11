@@ -166,7 +166,7 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
-      const base::string16& cvc,
+      const std::u16string& cvc,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void RetrieveElementFormAndFieldData(
@@ -457,7 +457,7 @@ class ScriptExecutor : public ActionDelegate,
   void OnGetFullCard(GetFullCardCallback callback,
                      const ClientStatus& status,
                      std::unique_ptr<autofill::CreditCard> card,
-                     const base::string16& cvc);
+                     const std::u16string& cvc);
   void OnChosen(UserAction::Callback callback,
                 std::unique_ptr<TriggerContext> context);
   void OnWaitForDocumentReadyState(

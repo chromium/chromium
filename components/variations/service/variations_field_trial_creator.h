@@ -160,7 +160,7 @@ class VariationsFieldTrialCreator {
 
   // Overrides the string resource specified by |hash| with |str| in the
   // resource bundle.
-  void OverrideUIString(uint32_t hash, const base::string16& str);
+  void OverrideUIString(uint32_t hash, const std::u16string& str);
 
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
@@ -196,7 +196,7 @@ class VariationsFieldTrialCreator {
 
   // Caches the UI strings which need to be overridden in the resource bundle.
   // These strings are cached before the resource bundle is initialized.
-  std::unordered_map<int, base::string16> overridden_strings_map_;
+  std::unordered_map<int, std::u16string> overridden_strings_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

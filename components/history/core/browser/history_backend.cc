@@ -169,7 +169,7 @@ constexpr int kDSTRoundingOffsetHours = 4;
 
 }  // namespace
 
-base::string16 FormatUrlForRedirectComparison(const GURL& url) {
+std::u16string FormatUrlForRedirectComparison(const GURL& url) {
   url::Replacements<char> remove_port;
   remove_port.ClearPort();
   return url_formatter::FormatUrl(
@@ -913,7 +913,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     VisitSource visit_source,
     bool should_increment_typed_count,
     bool floc_allowed,
-    base::Optional<base::string16> title) {
+    base::Optional<std::u16string> title) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
   URLID url_id = db_->GetRowForURL(url, &url_info);
@@ -1042,7 +1042,7 @@ bool HistoryBackend::IsExpiredVisitTime(const base::Time& time) {
 }
 
 void HistoryBackend::SetPageTitle(const GURL& url,
-                                  const base::string16& title) {
+                                  const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::SetPageTitle");
 
   if (!db_)
@@ -1087,7 +1087,7 @@ void HistoryBackend::SetPageTitle(const GURL& url,
 }
 
 void HistoryBackend::AddPageNoVisitForBookmark(const GURL& url,
-                                               const base::string16& title) {
+                                               const std::u16string& title) {
   TRACE_EVENT0("browser", "HistoryBackend::AddPageNoVisitForBookmark");
 
   if (!db_)
@@ -1314,7 +1314,7 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToURL(const GURL& url,
 
 void HistoryBackend::SetKeywordSearchTermsForURL(const GURL& url,
                                                  KeywordID keyword_id,
-                                                 const base::string16& term) {
+                                                 const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryBackend::SetKeywordSearchTermsForURL");
 
   if (!db_)
@@ -1360,7 +1360,7 @@ void HistoryBackend::DeleteKeywordSearchTermForURL(const GURL& url) {
 }
 
 void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
-                                                  const base::string16& term) {
+                                                  const std::u16string& term) {
   TRACE_EVENT0("browser", "HistoryBackend::DeleteMatchingURLsForKeyword");
 
   if (!db_)
@@ -1452,7 +1452,7 @@ void HistoryBackend::RemoveDownloads(const std::set<uint32_t>& ids) {
   DCHECK_GE(ids.size(), num_downloads_deleted);
 }
 
-QueryResults HistoryBackend::QueryHistory(const base::string16& text_query,
+QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
                                           const QueryOptions& options) {
   QueryResults query_results;
   base::TimeTicks beginning_time = base::TimeTicks::Now();
@@ -1515,7 +1515,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
 }
 
 // Text-based querying of history.
-void HistoryBackend::QueryHistoryText(const base::string16& text_query,
+void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                       const QueryOptions& options,
                                       QueryResults* result) {
   URLRows text_matches;

@@ -54,7 +54,7 @@ void CheckValuesMatch(LegacyDomStorageDatabase* db,
 
   LegacyDomStorageValuesMap::const_iterator it = values_read.begin();
   for (; it != values_read.end(); ++it) {
-    base::string16 key = it->first;
+    std::u16string key = it->first;
     base::NullableString16 value = it->second;
     base::NullableString16 expected_value = expected.find(key)->second;
     EXPECT_EQ(expected_value.string(), value.string());
@@ -63,13 +63,13 @@ void CheckValuesMatch(LegacyDomStorageDatabase* db,
 }
 
 void CreateMapWithValues(LegacyDomStorageValuesMap* values) {
-  base::string16 kCannedKeys[] = {ASCIIToUTF16("test"), ASCIIToUTF16("company"),
+  std::u16string kCannedKeys[] = {ASCIIToUTF16("test"), ASCIIToUTF16("company"),
                                   ASCIIToUTF16("date"), ASCIIToUTF16("empty")};
   base::NullableString16 kCannedValues[] = {
       base::NullableString16(ASCIIToUTF16("123"), false),
       base::NullableString16(ASCIIToUTF16("Google"), false),
       base::NullableString16(ASCIIToUTF16("18-01-2012"), false),
-      base::NullableString16(base::string16(), false)};
+      base::NullableString16(std::u16string(), false)};
   for (unsigned i = 0; i < sizeof(kCannedKeys) / sizeof(kCannedKeys[0]); i++)
     (*values)[kCannedKeys[i]] = kCannedValues[i];
 }
@@ -223,7 +223,7 @@ TEST(LegacyDomStorageDatabaseTest, TestSimpleRemoveOneValue) {
   LegacyDomStorageDatabase db(MakeFilesystemProxy());
 
   ASSERT_TRUE(db.LazyOpen(true));
-  const base::string16 kCannedKey = ASCIIToUTF16("test");
+  const std::u16string kCannedKey = ASCIIToUTF16("test");
   const base::NullableString16 kCannedValue(ASCIIToUTF16("data"), false);
   LegacyDomStorageValuesMap expected;
   expected[kCannedKey] = kCannedValue;

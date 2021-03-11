@@ -45,7 +45,7 @@ class MockTileManager : public TileManager {
   MOCK_METHOD(void, OnTileClicked, (const std::string&));
   MOCK_METHOD(void,
               OnQuerySelected,
-              (const base::Optional<std::string>&, const base::string16&));
+              (const base::Optional<std::string>&, const std::u16string&));
 };
 
 class MockTileServiceScheduler : public TileServiceScheduler {

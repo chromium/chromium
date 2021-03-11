@@ -16,7 +16,7 @@ base::Optional<GURL> FakeClipboardRecentContent::GetRecentURLFromClipboard() {
   return clipboard_url_content_;
 }
 
-base::Optional<base::string16>
+base::Optional<std::u16string>
 FakeClipboardRecentContent::GetRecentTextFromClipboard() {
   if (suppress_content_)
     return base::nullopt;
@@ -102,7 +102,7 @@ void FakeClipboardRecentContent::SetClipboardURL(const GURL& url,
   suppress_content_ = false;
 }
 
-void FakeClipboardRecentContent::SetClipboardText(const base::string16& text,
+void FakeClipboardRecentContent::SetClipboardText(const std::u16string& text,
                                                   base::TimeDelta content_age) {
   clipboard_url_content_ = base::nullopt;
   clipboard_text_content_ = text;

@@ -176,7 +176,7 @@ class Seat::RefCountedScopedClipboardWriter
 void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
-                      base::string16 data) {
+                      std::u16string data) {
   writer->WriteText(std::move(data));
   std::move(callback).Run();
 }
@@ -193,7 +193,7 @@ void Seat::OnRTFRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
 void Seat::OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
-                      base::string16 data) {
+                      std::u16string data) {
   writer->WriteHTML(std::move(data), std::string());
   std::move(callback).Run();
 }

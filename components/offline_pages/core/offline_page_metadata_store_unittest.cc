@@ -531,7 +531,7 @@ OfflinePageItem MakeOfflinePageItem(sql::Statement* statement) {
   GURL url(statement->ColumnString(10));
   base::FilePath path(
       store_utils::FromDatabaseFilePath(statement->ColumnString(11)));
-  base::string16 title = statement->ColumnString16(12);
+  std::u16string title = statement->ColumnString16(12);
   GURL original_url(statement->ColumnString(13));
   std::string request_origin = statement->ColumnString(14);
   std::string digest = statement->ColumnString(15);

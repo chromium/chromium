@@ -31,7 +31,7 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   ~SendTabToSelfInfoBarDelegate() override;
 
   // Returns the message to be shown in the infobar.
-  base::string16 GetInfobarMessage() const;
+  std::u16string GetInfobarMessage() const;
 
   // Opens a tab to the url of the shared |entry_|.
   void OpenTab();

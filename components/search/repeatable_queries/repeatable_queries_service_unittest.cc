@@ -159,7 +159,7 @@ class TestRepeatableQueriesService : public RepeatableQueriesService {
     RepeatableQueriesService::FlushForTesting(std::move(flushed));
   }
 
-  GURL GetQueryDestinationURL(const base::string16& query,
+  GURL GetQueryDestinationURL(const std::u16string& query,
                               const TemplateURL* search_provider) {
     return RepeatableQueriesService::GetQueryDestinationURL(query,
                                                             search_provider);

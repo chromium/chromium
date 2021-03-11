@@ -480,9 +480,9 @@ struct BatchCollector : public leveldb::WriteBatch::Handler {
 };
 
 TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = base::ASCIIToUTF16("key");
+  std::u16string value = base::ASCIIToUTF16("value");
+  std::u16string key2 = base::ASCIIToUTF16("key2");
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
   LegacyDomStorageValuesMap data;

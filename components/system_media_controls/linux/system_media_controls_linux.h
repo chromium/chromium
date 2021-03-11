@@ -58,9 +58,9 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
   void SetPlaybackStatus(PlaybackStatus value) override;
-  void SetTitle(const base::string16& value) override;
-  void SetArtist(const base::string16& value) override;
-  void SetAlbum(const base::string16& value) override;
+  void SetTitle(const std::u16string& value) override;
+  void SetArtist(const std::u16string& value) override;
+  void SetAlbum(const std::u16string& value) override;
   void SetThumbnail(const SkBitmap& bitmap) override {}
   void ClearThumbnail() override {}
   void ClearMetadata() override;

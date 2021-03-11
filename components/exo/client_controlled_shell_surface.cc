@@ -589,7 +589,7 @@ void ClientControlledShellSurface::SetFrameButtons(
 }
 
 void ClientControlledShellSurface::SetExtraTitle(
-    const base::string16& extra_title) {
+    const std::u16string& extra_title) {
   TRACE_EVENT1("exo", "ClientControlledShellSurface::SetExtraTitle",
                "extra_title", base::UTF16ToUTF8(extra_title));
 
@@ -1035,7 +1035,7 @@ void ClientControlledShellSurface::InitializeWindowState(
   UpdateFrameWidth();
   if (initial_orientation_lock_ != ash::OrientationLockType::kAny)
     SetOrientationLock(initial_orientation_lock_);
-  if (initial_extra_title_ != base::string16())
+  if (initial_extra_title_ != std::u16string())
     SetExtraTitle(initial_extra_title_);
 
   // Register Client controlled accelerators.

@@ -83,7 +83,7 @@ PopupBlockedInfoBarDelegate::PopupBlockedInfoBarDelegate(
       setting_info.source != content_settings::SETTING_SOURCE_POLICY;
 }
 
-base::string16 PopupBlockedInfoBarDelegate::GetMessageText() const {
+std::u16string PopupBlockedInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetPluralStringFUTF16(IDS_POPUPS_BLOCKED_INFOBAR_TEXT,
                                           num_popups_);
 }
@@ -97,7 +97,7 @@ int PopupBlockedInfoBarDelegate::GetButtons() const {
   return buttons;
 }
 
-base::string16 PopupBlockedInfoBarDelegate::GetButtonLabel(
+std::u16string PopupBlockedInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   switch (button) {
     case BUTTON_OK:
@@ -108,7 +108,7 @@ base::string16 PopupBlockedInfoBarDelegate::GetButtonLabel(
       NOTREACHED();
       break;
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool PopupBlockedInfoBarDelegate::Accept() {

@@ -30,9 +30,9 @@ class XrInstallInfoBar : public ConfirmInfoBarDelegate {
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
 
  private:
   // Called when the OK button is pressed. If this function returns true, the

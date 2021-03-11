@@ -55,7 +55,7 @@ std::string FormatDateTimeProto(const DateTimeProto& date_time) {
 }
 
 // This logic is from NameInfo::FullName.
-base::string16 FullName(const autofill::AutofillProfile& profile) {
+std::u16string FullName(const autofill::AutofillProfile& profile) {
   return autofill::data_util::JoinNameParts(
       profile.GetRawInfo(autofill::NAME_FIRST),
       profile.GetRawInfo(autofill::NAME_MIDDLE),

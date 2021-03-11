@@ -138,7 +138,7 @@ bool HasUnsafeMiddleDot(const icu::UnicodeString& label_string,
 }
 
 bool IsSubdomainOf(base::StringPiece16 hostname,
-                   const base::string16& top_domain) {
+                   const std::u16string& top_domain) {
   DCHECK_NE(hostname, top_domain);
   DCHECK(!hostname.empty());
   DCHECK(!top_domain.empty());
@@ -544,7 +544,7 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
     DCHECK(!skeleton.empty());
     TopDomainEntry matching_top_domain = LookupSkeletonInTopDomains(skeleton);
     if (!matching_top_domain.domain.empty()) {
-      const base::string16 top_domain =
+      const std::u16string top_domain =
           base::UTF8ToUTF16(matching_top_domain.domain);
       // Return an empty result if hostname is a top domain itself, or a
       // subdomain of top domain. This prevents subdomains of top domains from

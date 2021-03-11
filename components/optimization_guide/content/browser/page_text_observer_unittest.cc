@@ -56,7 +56,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   bool was_called() const { return was_called_; }
 
-  const base::Optional<base::string16>& text() const { return text_; }
+  const base::Optional<std::u16string>& text() const { return text_; }
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -66,7 +66,7 @@ class TestConsumer : public PageTextObserver::Consumer {
   }
 
  private:
-  void OnGotTextDump(const base::string16& text) {
+  void OnGotTextDump(const std::u16string& text) {
     text_ = text;
     if (on_page_text_closure_) {
       std::move(on_page_text_closure_).Run();
@@ -79,7 +79,7 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   base::OnceClosure on_page_text_closure_;
 
-  base::Optional<base::string16> text_;
+  base::Optional<std::u16string> text_;
 };
 
 class FakePageTextService : public mojom::PageTextService {
@@ -100,7 +100,7 @@ class FakePageTextService : public mojom::PageTextService {
   // called.
   void SetRemoteResponsesForEvent(
       mojom::TextDumpEvent event,
-      const std::vector<base::Optional<base::string16>> responses) {
+      const std::vector<base::Optional<std::u16string>> responses) {
     responses_.emplace(event, responses);
   }
 
@@ -118,7 +118,7 @@ class FakePageTextService : public mojom::PageTextService {
     mojo::Remote<mojom::PageTextConsumer> consumer_remote;
     consumer_remote.Bind(std::move(consumer));
 
-    for (const base::Optional<base::string16>& resp : responses_iter->second) {
+    for (const base::Optional<std::u16string>& resp : responses_iter->second) {
       if (resp) {
         consumer_remote->OnTextDumpChunk(*resp);
       } else {
@@ -135,7 +135,7 @@ class FakePageTextService : public mojom::PageTextService {
   // For each event, a sequence of responses to send on the next page dump
   // request. If an element has a value, |OnTextDumpChunk| is called with the
   // text chunk. If an element does not have a value, |OnChunksEnd| is called.
-  std::map<mojom::TextDumpEvent, std::vector<base::Optional<base::string16>>>
+  std::map<mojom::TextDumpEvent, std::vector<base::Optional<std::u16string>>>
       responses_;
 };
 

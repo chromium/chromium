@@ -24,7 +24,7 @@ namespace history {
 struct PrepopulatedPage {
   PrepopulatedPage();
   PrepopulatedPage(const GURL& url,
-                   const base::string16& title,
+                   const std::u16string& title,
                    int favicon_id,
                    SkColor color);
 

@@ -57,7 +57,7 @@ class LanguageDetectionModel {
   // |is_prediction_reliable|, and |prediction_reliability_score|.
   std::string DeterminePageLanguage(const std::string& code,
                                     const std::string& html_lang,
-                                    const base::string16& contents,
+                                    const std::u16string& contents,
                                     std::string* predicted_language,
                                     bool* is_prediction_reliable,
                                     float& prediction_reliability_score) const;

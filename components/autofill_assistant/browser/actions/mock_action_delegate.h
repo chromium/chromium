@@ -119,7 +119,7 @@ class MockActionDelegate : public ActionDelegate {
 
   void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
-      const base::string16& cvc,
+      const std::u16string& cvc,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback) override {
     OnFillCardForm(card.get(), cvc, selector, callback);
@@ -143,7 +143,7 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD4(OnFillCardForm,
                void(const autofill::CreditCard* card,
-                    const base::string16& cvc,
+                    const std::u16string& cvc,
                     const Selector& selector,
                     base::OnceCallback<void(const ClientStatus&)>& callback));
 

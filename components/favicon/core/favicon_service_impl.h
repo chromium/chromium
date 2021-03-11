@@ -99,7 +99,7 @@ class FaviconServiceImpl : public FaviconService {
   void SetImportedFavicons(
       const favicon_base::FaviconUsageDataList& favicon_usage) override;
   void AddPageNoVisitForBookmark(const GURL& url,
-                                 const base::string16& title) override;
+                                 const std::u16string& title) override;
   void MergeFavicon(const GURL& page_url,
                     const GURL& icon_url,
                     favicon_base::IconType icon_type,

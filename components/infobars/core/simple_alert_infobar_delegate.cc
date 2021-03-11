@@ -15,7 +15,7 @@ void SimpleAlertInfoBarDelegate::Create(
     infobars::InfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
     const gfx::VectorIcon* vector_icon,
-    const base::string16& message,
+    const std::u16string& message,
     bool auto_expire,
     bool should_animate) {
   infobar_manager->AddInfoBar(infobar_manager->CreateConfirmInfoBar(
@@ -27,7 +27,7 @@ void SimpleAlertInfoBarDelegate::Create(
 SimpleAlertInfoBarDelegate::SimpleAlertInfoBarDelegate(
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
     const gfx::VectorIcon* vector_icon,
-    const base::string16& message,
+    const std::u16string& message,
     bool auto_expire,
     bool should_animate)
     : infobar_identifier_(infobar_identifier),
@@ -56,7 +56,7 @@ bool SimpleAlertInfoBarDelegate::ShouldAnimate() const {
   return should_animate_ && ConfirmInfoBarDelegate::ShouldAnimate();
 }
 
-base::string16 SimpleAlertInfoBarDelegate::GetMessageText() const {
+std::u16string SimpleAlertInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 

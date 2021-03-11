@@ -18,7 +18,7 @@ LanguageDetectionServiceImpl::LanguageDetectionServiceImpl(
 LanguageDetectionServiceImpl::~LanguageDetectionServiceImpl() = default;
 
 void LanguageDetectionServiceImpl::DetermineLanguage(
-    const ::base::string16& text,
+    const ::std::u16string& text,
     DetermineLanguageCallback callback) {
   bool is_model_reliable = false;
   float model_reliability_score = 0.0;

@@ -56,9 +56,9 @@ url::Component UTF8ComponentToUTF16Component(
       text_utf8.substr(0, component_utf8.begin);
   std::string component_string =
       text_utf8.substr(component_utf8.begin, component_utf8.len);
-  base::string16 before_component_string_16 =
+  std::u16string before_component_string_16 =
       base::UTF8ToUTF16(before_component_string);
-  base::string16 component_string_16 = base::UTF8ToUTF16(component_string);
+  std::u16string component_string_16 = base::UTF8ToUTF16(component_string);
   url::Component component_16(before_component_string_16.length(),
                               component_string_16.length());
   return component_16;
@@ -84,10 +84,10 @@ void UTF8PartsToUTF16Parts(const std::string& text_utf8,
   parts->ref = UTF8ComponentToUTF16Component(text_utf8, parts_utf8.ref);
 }
 
-base::TrimPositions TrimWhitespace(const base::string16& input,
+base::TrimPositions TrimWhitespace(const std::u16string& input,
                                    base::TrimPositions positions,
                                    std::string* output) {
-  base::string16 output16;
+  std::u16string output16;
   base::TrimPositions result =
       base::TrimWhitespace(input, positions, &output16);
   *output = base::UTF16ToUTF8(output16);
@@ -531,7 +531,7 @@ std::string SegmentURL(const std::string& text, url::Parsed* parts) {
   return SegmentURLInternal(&mutable_text, parts);
 }
 
-base::string16 SegmentURL(const base::string16& text, url::Parsed* parts) {
+std::u16string SegmentURL(const std::u16string& text, url::Parsed* parts) {
   std::string text_utf8 = base::UTF16ToUTF8(text);
   url::Parsed parts_utf8;
   std::string scheme_utf8 = SegmentURL(text_utf8, &parts_utf8);

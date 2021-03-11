@@ -27,14 +27,14 @@ struct TestCase {
     const wchar_t* expected_words;
 };
 
-base::string16 GetRulesForLanguage(const std::string& language) {
+std::u16string GetRulesForLanguage(const std::string& language) {
   SpellcheckCharAttribute attribute;
   attribute.SetDefaultLanguage(language);
   return attribute.GetRuleSet(true);
 }
 
 WordIteratorStatus GetNextNonSkippableWord(SpellcheckWordIterator* iterator,
-                                           base::string16* word_string,
+                                           std::u16string* word_string,
                                            size_t* word_start,
                                            size_t* word_length) {
   WordIteratorStatus status = SpellcheckWordIterator::IS_SKIPPABLE;
@@ -163,17 +163,17 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
     SpellcheckCharAttribute attributes;
     attributes.SetDefaultLanguage(kTestCases[i].language);
 
-    base::string16 input(base::WideToUTF16(kTestText));
+    std::u16string input(base::WideToUTF16(kTestText));
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes,
                                     kTestCases[i].allow_contraction));
     EXPECT_TRUE(iterator.SetText(input.c_str(), input.length()));
 
-    std::vector<base::string16> expected_words = base::SplitString(
-        base::WideToUTF16(kTestCases[i].expected_words),
-        base::string16(1, ' '), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string> expected_words = base::SplitString(
+        base::WideToUTF16(kTestCases[i].expected_words), std::u16string(1, ' '),
+        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    base::string16 actual_word;
+    std::u16string actual_word;
     size_t actual_start, actual_len;
     size_t index = 0;
     for (SpellcheckWordIterator::WordIteratorStatus status =
@@ -200,7 +200,7 @@ TEST(SpellcheckWordIteratorTest, RuleSetConsistency) {
   attributes.SetDefaultLanguage("en-US");
 
   const wchar_t kTestText[] = L"\x1791\x17c1\x002e";
-  base::string16 input(base::WideToUTF16(kTestText));
+  std::u16string input(base::WideToUTF16(kTestText));
 
   SpellcheckWordIterator iterator;
   EXPECT_TRUE(iterator.Initialize(&attributes, true));
@@ -209,7 +209,7 @@ TEST(SpellcheckWordIteratorTest, RuleSetConsistency) {
   // When SpellcheckWordIterator uses an inconsistent ICU ruleset, the following
   // iterator.GetNextWord() calls get stuck in an infinite loop. Therefore, this
   // test succeeds if this call returns without timeouts.
-  base::string16 actual_word;
+  std::u16string actual_word;
   size_t actual_start, actual_len;
   WordIteratorStatus status = GetNextNonSkippableWord(
       &iterator, &actual_word, &actual_start, &actual_len);
@@ -268,12 +268,12 @@ TEST(SpellcheckWordIteratorTest, TreatNumbersAsWordCharacters) {
     SpellcheckCharAttribute attributes;
     attributes.SetDefaultLanguage(kTestCases[i].language);
 
-    base::string16 input_word(base::WideToUTF16(kTestCases[i].text));
+    std::u16string input_word(base::WideToUTF16(kTestCases[i].text));
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes, true));
     EXPECT_TRUE(iterator.SetText(input_word.c_str(), input_word.length()));
 
-    base::string16 actual_word;
+    std::u16string actual_word;
     size_t actual_start, actual_len;
     WordIteratorStatus status = GetNextNonSkippableWord(
         &iterator, &actual_word, &actual_start, &actual_len);
@@ -312,13 +312,13 @@ TEST(SpellcheckWordIteratorTest, TypographicalApostropheIsPartOfWord) {
     SpellcheckCharAttribute attributes;
     attributes.SetDefaultLanguage(kTestCases[i].language);
 
-    base::string16 input_word(base::WideToUTF16(kTestCases[i].input));
-    base::string16 expected_word(base::WideToUTF16(kTestCases[i].expected));
+    std::u16string input_word(base::WideToUTF16(kTestCases[i].input));
+    std::u16string expected_word(base::WideToUTF16(kTestCases[i].expected));
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes, true));
     EXPECT_TRUE(iterator.SetText(input_word.c_str(), input_word.length()));
 
-    base::string16 actual_word;
+    std::u16string actual_word;
     size_t actual_start, actual_len;
     WordIteratorStatus status = GetNextNonSkippableWord(
         &iterator, &actual_word, &actual_start, &actual_len);
@@ -355,7 +355,7 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsEnglish) {
   // A string containing the English word "foo", followed by two Khmer
   // characters, the English word "Can", and then two Russian characters and
   // punctuation.
-  base::string16 text(
+  std::u16string text(
       base::WideToUTF16(L"foo \x1791\x17C1 Can \x041C\x0438..."));
   BreakIterator iter(text, GetRulesForLanguage("en-US"));
   ASSERT_TRUE(iter.Init());
@@ -406,7 +406,7 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsEnglish) {
 TEST(SpellcheckWordIteratorTest, FindSkippableWordsRussian) {
   // A string containing punctuation followed by two Russian characters, the
   // English word "Can", and then two Khmer characters.
-  base::string16 text(base::WideToUTF16(L".;\x041C\x0438 Can \x1791\x17C1  "));
+  std::u16string text(base::WideToUTF16(L".;\x041C\x0438 Can \x1791\x17C1  "));
   BreakIterator iter(text, GetRulesForLanguage("ru-RU"));
   ASSERT_TRUE(iter.Init());
 
@@ -456,7 +456,7 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsRussian) {
 TEST(SpellcheckWordIteratorTest, FindSkippableWordsKhmer) {
   // A string containing two Russian characters followed by two, three, and
   // two-character Khmer words, and then English characters and punctuation.
-  base::string16 text(base::WideToUTF16(
+  std::u16string text(base::WideToUTF16(
       L"\x041C\x0438 \x178F\x17BE\x179B\x17C4\x1780\x1798\x1780zoo. ,"));
   BreakIterator iter(text, GetRulesForLanguage("km"));
   ASSERT_TRUE(iter.Init());
@@ -545,7 +545,7 @@ TEST(SpellcheckCharAttributeTest, IsTextInSameScript) {
   for (const auto& testcase : kLanguagesWithSampleText) {
     SpellcheckCharAttribute attribute;
     attribute.SetDefaultLanguage(testcase.language);
-    base::string16 sample_text(base::WideToUTF16(testcase.sample_text));
+    std::u16string sample_text(base::WideToUTF16(testcase.sample_text));
     EXPECT_TRUE(attribute.IsTextInSameScript(sample_text))
         << "Language \"" << testcase.language
         << "\" fails to identify that sample text in same language is in same "
@@ -556,7 +556,7 @@ TEST(SpellcheckCharAttributeTest, IsTextInSameScript) {
     for (const auto& other_script : kLanguagesWithSampleText) {
       if (testcase.language == other_script.language)
         continue;
-      base::string16 other_sample_text(
+      std::u16string other_sample_text(
           base::WideToUTF16(other_script.sample_text));
       EXPECT_FALSE(attribute.IsTextInSameScript(other_sample_text))
           << "Language \"" << testcase.language

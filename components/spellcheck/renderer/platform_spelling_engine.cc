@@ -39,7 +39,7 @@ bool PlatformSpellingEngine::IsEnabled() {
 // Synchronously query against the platform's spellchecker.
 // TODO(groby): We might want async support here, too. Ideally,
 // all engines share a similar path for async requests.
-bool PlatformSpellingEngine::CheckSpelling(const base::string16& word_to_check,
+bool PlatformSpellingEngine::CheckSpelling(const std::u16string& word_to_check,
                                            int tag) {
   bool word_correct = false;
   GetOrBindSpellCheckHost().CheckSpelling(word_to_check, tag, &word_correct);
@@ -50,8 +50,8 @@ bool PlatformSpellingEngine::CheckSpelling(const base::string16& word_to_check,
 // TODO(groby): We might want async support here, too. Ideally,
 // all engines share a similar path for async requests.
 void PlatformSpellingEngine::FillSuggestionList(
-    const base::string16& wrong_word,
-    std::vector<base::string16>* optional_suggestions) {
+    const std::u16string& wrong_word,
+    std::vector<std::u16string>* optional_suggestions) {
   GetOrBindSpellCheckHost().FillSuggestionList(wrong_word,
                                                optional_suggestions);
 }

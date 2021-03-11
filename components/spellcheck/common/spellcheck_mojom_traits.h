@@ -33,7 +33,7 @@ struct StructTraits<spellcheck::mojom::SpellCheckResultDataView,
     return result.length;
   }
 
-  static const std::vector<base::string16>& replacements(
+  static const std::vector<std::u16string>& replacements(
       const SpellCheckResult& result) {
     return result.replacements;
   }

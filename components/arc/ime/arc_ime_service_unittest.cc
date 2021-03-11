@@ -42,7 +42,7 @@ class FakeArcImeBridge : public ArcImeBridge {
   void SendSelectionRange(const gfx::Range& selection_range) override {
     selection_range_ = selection_range;
   }
-  void SendInsertText(const base::string16& text) override {
+  void SendInsertText(const std::u16string& text) override {
     count_send_insert_text_++;
   }
   void SendExtendSelectionAndDelete(size_t before, size_t after) override {
@@ -401,11 +401,11 @@ TEST_F(ArcImeServiceTest, RootWindowChange) {
 TEST_F(ArcImeServiceTest, GetTextFromRange) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
-  const base::string16 text = base::ASCIIToUTF16("abcdefghijklmn");
+  const std::u16string text = base::ASCIIToUTF16("abcdefghijklmn");
   // Assume the cursor is between 'c' and 'd'.
   const uint32_t cursor_pos = 3;
   const gfx::Range text_range(cursor_pos - 1, cursor_pos + 1);
-  const base::string16 text_in_range = text.substr(cursor_pos - 1, 2);
+  const std::u16string text_in_range = text.substr(cursor_pos - 1, 2);
   const gfx::Range selection_range(cursor_pos, cursor_pos);
 
   instance_->OnCursorRectChangedWithSurroundingText(
@@ -416,7 +416,7 @@ TEST_F(ArcImeServiceTest, GetTextFromRange) {
   instance_->GetTextRange(&temp);
   EXPECT_EQ(text_range, temp);
 
-  base::string16 temp_str;
+  std::u16string temp_str;
   instance_->GetTextFromRange(text_range, &temp_str);
   EXPECT_EQ(text_in_range, temp_str);
 
@@ -526,14 +526,14 @@ TEST_F(ArcImeServiceTest, SetComposingRegion) {
   EXPECT_EQ(gfx::Range(), fake_arc_ime_bridge_->composing_range());
 
   instance_->OnCursorRectChangedWithSurroundingText(
-      gfx::Rect(), gfx::Range(0, 100), base::string16(100, 'a'),
+      gfx::Rect(), gfx::Range(0, 100), std::u16string(100, 'a'),
       gfx::Range(0, 0), false);
   instance_->SetCompositionFromExistingText(composing_range, {});
   EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
 
   // Ignore it if the range is outside of text range.
   instance_->OnCursorRectChangedWithSurroundingText(
-      gfx::Rect(), gfx::Range(0, 100), base::string16(100, 'a'),
+      gfx::Rect(), gfx::Range(0, 100), std::u16string(100, 'a'),
       gfx::Range(0, 0), false);
   instance_->SetCompositionFromExistingText(gfx::Range(50, 101), {});
   EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());

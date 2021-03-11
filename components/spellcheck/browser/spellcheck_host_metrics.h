@@ -60,7 +60,7 @@ class SpellCheckHostMetrics {
 
   // Collects status of spellchecking enabling state, which is
   // to be uploaded via UMA
-  void RecordCheckedWordStats(const base::string16& word, bool misspell);
+  void RecordCheckedWordStats(const std::u16string& word, bool misspell);
 
   // Collects a histogram for misspelled word replacement
   // to be uploaded via UMA

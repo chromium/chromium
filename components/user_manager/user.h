@@ -81,8 +81,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
   // UserInfo
   std::string GetDisplayEmail() const override;
-  base::string16 GetDisplayName() const override;
-  base::string16 GetGivenName() const override;
+  std::u16string GetDisplayName() const override;
+  std::u16string GetGivenName() const override;
   const gfx::ImageSkia& GetImage() const override;
   const AccountId& GetAccountId() const override;
 
@@ -122,7 +122,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool IsKioskType() const;
 
   // The displayed user name.
-  base::string16 display_name() const { return display_name_; }
+  std::u16string display_name() const { return display_name_; }
 
   // If the user has to use SAML to log in.
   bool using_saml() const { return using_saml_; }
@@ -246,11 +246,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
                     int image_index,
                     bool is_loading);
 
-  void set_display_name(const base::string16& display_name) {
+  void set_display_name(const std::u16string& display_name) {
     display_name_ = display_name;
   }
 
-  void set_given_name(const base::string16& given_name) {
+  void set_given_name(const std::u16string& given_name) {
     given_name_ = given_name;
   }
 
@@ -286,8 +286,8 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 
  private:
   AccountId account_id_;
-  base::string16 display_name_;
-  base::string16 given_name_;
+  std::u16string display_name_;
+  std::u16string given_name_;
   // User email for display, which may include capitals and non-significant
   // periods. For example, "John.Steinbeck@gmail.com" is a display email, but
   // "johnsteinbeck@gmail.com" is the canonical form. Defaults to

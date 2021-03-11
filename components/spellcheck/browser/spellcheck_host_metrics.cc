@@ -48,7 +48,7 @@ void SpellCheckHostMetrics::RecordEnabledStats(bool enabled) {
     RecordCustomWordCountStats(static_cast<size_t>(-1));
 }
 
-void SpellCheckHostMetrics::RecordCheckedWordStats(const base::string16& word,
+void SpellCheckHostMetrics::RecordCheckedWordStats(const std::u16string& word,
                                                    bool misspell) {
   spellchecked_word_count_++;
   if (misspell) {

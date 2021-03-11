@@ -408,14 +408,14 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
   return true;
 }
 
-bool URLDatabase::GetTextMatches(const base::string16& query,
+bool URLDatabase::GetTextMatches(const std::u16string& query,
                                  URLRows* results) {
   return GetTextMatchesWithAlgorithm(
       query, query_parser::MatchingAlgorithm::DEFAULT, results);
 }
 
 bool URLDatabase::GetTextMatchesWithAlgorithm(
-    const base::string16& query,
+    const std::u16string& query,
     query_parser::MatchingAlgorithm algorithm,
     URLRows* results) {
   query_parser::QueryNodeVector query_nodes;
@@ -427,17 +427,17 @@ bool URLDatabase::GetTextMatchesWithAlgorithm(
 
   while (statement.Step()) {
     query_parser::QueryWordVector query_words;
-    base::string16 url = base::i18n::ToLower(statement.ColumnString16(1));
+    std::u16string url = base::i18n::ToLower(statement.ColumnString16(1));
     query_parser::QueryParser::ExtractQueryWords(url, &query_words);
     GURL gurl(url);
     if (gurl.is_valid()) {
       // Decode punycode to match IDN.
-      base::string16 ascii = base::ASCIIToUTF16(gurl.host());
-      base::string16 utf = url_formatter::IDNToUnicode(gurl.host());
+      std::u16string ascii = base::ASCIIToUTF16(gurl.host());
+      std::u16string utf = url_formatter::IDNToUnicode(gurl.host());
       if (ascii != utf)
         query_parser::QueryParser::ExtractQueryWords(utf, &query_words);
     }
-    base::string16 title = base::i18n::ToLower(statement.ColumnString16(2));
+    std::u16string title = base::i18n::ToLower(statement.ColumnString16(2));
     query_parser::QueryParser::ExtractQueryWords(title, &query_words);
 
     if (query_parser::QueryParser::DoesQueryMatch(query_words, query_nodes)) {
@@ -498,7 +498,7 @@ bool URLDatabase::DropKeywordSearchTermsTable() {
 
 bool URLDatabase::SetKeywordSearchTermsForURL(URLID url_id,
                                               KeywordID keyword_id,
-                                              const base::string16& term) {
+                                              const std::u16string& term) {
   DCHECK(url_id && keyword_id && !term.empty());
 
   sql::Statement exist_statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
@@ -547,7 +547,7 @@ bool URLDatabase::GetKeywordSearchTermRow(URLID url_id,
 }
 
 bool URLDatabase::GetKeywordSearchTermRows(
-    const base::string16& term,
+    const std::u16string& term,
     std::vector<KeywordSearchTermRow>* rows) {
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
@@ -581,7 +581,7 @@ void URLDatabase::DeleteAllSearchTermsForKeyword(
 
 void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
-    const base::string16& prefix,
+    const std::u16string& prefix,
     int max_count,
     std::vector<KeywordSearchTermVisit>* matches) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
@@ -602,10 +602,10 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
 
   // NOTE: Keep these CollapseWhitespace() and ToLower() calls in sync with
   // search_provider.cc.
-  base::string16 normalized_prefix =
+  std::u16string normalized_prefix =
       base::CollapseWhitespace(base::i18n::ToLower(prefix), false);
   // This magic gives us a prefix search.
-  base::string16 next_prefix = normalized_prefix;
+  std::u16string next_prefix = normalized_prefix;
   next_prefix.back() = next_prefix.back() + 1;
   statement.BindInt64(0, keyword_id);
   statement.BindString16(1, normalized_prefix);
@@ -684,7 +684,7 @@ URLDatabase::GetMostRecentNormalizedKeywordSearchTerms(
   return visits;
 }
 
-bool URLDatabase::DeleteKeywordSearchTerm(const base::string16& term) {
+bool URLDatabase::DeleteKeywordSearchTerm(const std::u16string& term) {
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "DELETE FROM keyword_search_terms WHERE term=?"));
   statement.BindString16(0, term);
@@ -694,7 +694,7 @@ bool URLDatabase::DeleteKeywordSearchTerm(const base::string16& term) {
 
 bool URLDatabase::DeleteKeywordSearchTermForNormalizedTerm(
     KeywordID keyword_id,
-    const base::string16& normalized_term) {
+    const std::u16string& normalized_term) {
   sql::Statement statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "DELETE FROM keyword_search_terms WHERE "

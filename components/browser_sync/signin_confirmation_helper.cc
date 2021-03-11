@@ -83,7 +83,7 @@ void SigninConfirmationHelper::CheckHasHistory(int max_entries) {
   history::QueryOptions opts;
   opts.max_count = max_entries;
   history_service_->QueryHistory(
-      base::string16(), opts,
+      std::u16string(), opts,
       base::BindOnce(&SigninConfirmationHelper::OnHistoryQueryResults,
                      base::Unretained(this), max_entries),
       &task_tracker_);

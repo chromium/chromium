@@ -62,14 +62,14 @@ class ManagedBookmarksTracker {
   void Init(BookmarkPermanentNode* managed_node);
 
  private:
-  base::string16 GetBookmarksFolderTitle() const;
+  std::u16string GetBookmarksFolderTitle() const;
 
   void ReloadManagedBookmarks();
 
   void UpdateBookmarks(const BookmarkNode* folder, const base::ListValue* list);
   static bool LoadBookmark(const base::ListValue* list,
                            size_t index,
-                           base::string16* title,
+                           std::u16string* title,
                            GURL* url,
                            const base::ListValue** children);
 

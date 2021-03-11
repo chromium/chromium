@@ -65,7 +65,7 @@ bool ExtractResultCards(blink::WebElement node, mojom::ResultGroupPtr& group) {
       continue;
     }
 
-    base::string16 title;
+    std::u16string title;
     blink::WebElementCollection inner_divs =
         link_anchor.GetElementsByHTMLTagName("div");
     if (inner_divs.IsNull()) {
@@ -86,7 +86,7 @@ bool ExtractResultCards(blink::WebElement node, mojom::ResultGroupPtr& group) {
     }
     auto result = mojom::SearchResult::New();
     result->link = url;
-    base::string16 trimmed_title;
+    std::u16string trimmed_title;
     base::TrimWhitespace(title, base::TRIM_ALL, &trimmed_title);
     result->title = base::UTF16ToUTF8(trimmed_title);
     group->results.push_back(std::move(result));

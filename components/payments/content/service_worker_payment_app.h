@@ -81,13 +81,13 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
-  base::string16 GetMissingInfoLabel() const override;
+  std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
   void RecordUse() override;
   bool NeedsInstallation() const override;
   std::string GetId() const override;
-  base::string16 GetLabel() const override;
-  base::string16 GetSublabel() const override;
+  std::u16string GetLabel() const override;
+  std::u16string GetSublabel() const override;
   bool IsValidForModifier(
       const std::string& method,
       bool supported_networks_specified,

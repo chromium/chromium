@@ -147,11 +147,11 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
   if (!device.get())
     return storage_info;
 
-  base::string16 volume_label = base::UTF8ToUTF16(
+  std::u16string volume_label = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kLabel));
-  base::string16 vendor_name = base::UTF8ToUTF16(
+  std::u16string vendor_name = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kVendor));
-  base::string16 model_name = base::UTF8ToUTF16(
+  std::u16string model_name = base::UTF8ToUTF16(
       device::UdevDeviceGetPropertyValue(device.get(), kModel));
 
   std::string unique_id = MakeDeviceUniqueId(device.get());

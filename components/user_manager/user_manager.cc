@@ -39,8 +39,8 @@ void UserManager::UserSessionStateObserver::ActiveUserHashChanged(
 UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
 UserManager::UserAccountData::UserAccountData(
-    const base::string16& display_name,
-    const base::string16& given_name,
+    const std::u16string& display_name,
+    const std::u16string& given_name,
     const std::string& locale)
     : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 

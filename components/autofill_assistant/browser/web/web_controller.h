@@ -123,7 +123,7 @@ class WebController {
   // |cvc|.
   virtual void FillCardForm(
       std::unique_ptr<autofill::CreditCard> card,
-      const base::string16& cvc,
+      const std::u16string& cvc,
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
@@ -301,7 +301,7 @@ class WebController {
 
     // Data for filling card form.
     std::unique_ptr<autofill::CreditCard> card;
-    base::string16 cvc;
+    std::u16string cvc;
   };
 
   // RAII object that sets the action state to "running" when the object is

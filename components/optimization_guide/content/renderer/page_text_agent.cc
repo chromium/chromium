@@ -45,7 +45,7 @@ void PageTextAgent::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
-base::OnceCallback<void(const base::string16&)>
+base::OnceCallback<void(const std::u16string&)>
 PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
     blink::WebMeaningfulLayout event,
     uint32_t* max_size) {
@@ -76,7 +76,7 @@ PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
 
 void PageTextAgent::OnPageTextDump(
     mojo::PendingRemote<mojom::PageTextConsumer> pending_consumer,
-    const base::string16& content) {
+    const std::u16string& content) {
   mojo::Remote<mojom::PageTextConsumer> consumer;
   consumer.Bind(std::move(pending_consumer));
 
@@ -88,7 +88,7 @@ void PageTextAgent::OnPageTextDump(
     // Either mojo will end up making a copy of the string (if passed a const
     // ref), or we will. Might as well just do it now to make this less complex,
     // but std::move it.
-    base::string16 chunk = content.substr(i, chunk_size);
+    std::u16string chunk = content.substr(i, chunk_size);
     consumer->OnTextDumpChunk(std::move(chunk));
   }
   consumer->OnChunksEnd();

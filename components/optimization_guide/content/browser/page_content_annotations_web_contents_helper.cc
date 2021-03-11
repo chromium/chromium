@@ -65,7 +65,7 @@ PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
 
 void PageContentAnnotationsWebContentsHelper::OnTextDumpReceived(
     const HistoryVisit& visit,
-    const base::string16& text) {
+    const std::u16string& text) {
   page_content_annotations_service_->Annotate(visit, base::UTF16ToUTF8(text));
 }
 

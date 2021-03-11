@@ -177,13 +177,13 @@ std::string User::GetDisplayEmail() const {
   return display_email();
 }
 
-base::string16 User::GetDisplayName() const {
+std::u16string User::GetDisplayName() const {
   // Fallback to the email account name in case display name haven't been set.
   return display_name_.empty() ? base::UTF8ToUTF16(GetAccountName(true))
                                : display_name_;
 }
 
-base::string16 User::GetGivenName() const {
+std::u16string User::GetGivenName() const {
   return given_name_;
 }
 

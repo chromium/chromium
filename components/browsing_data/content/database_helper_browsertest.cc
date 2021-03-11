@@ -49,8 +49,8 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
     base::RunLoop run_loop;
     db_tracker->task_runner()->PostTaskAndReply(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          base::string16 db_name = base::ASCIIToUTF16("db");
-          base::string16 description = base::ASCIIToUTF16("db_description");
+          std::u16string db_name = base::ASCIIToUTF16("db");
+          std::u16string description = base::ASCIIToUTF16("db_description");
           int64_t size;
           db_tracker->DatabaseOpened(kTestIdentifier1, db_name, description, 1,
                                      &size);

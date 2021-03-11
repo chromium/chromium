@@ -124,7 +124,7 @@ bool ReadString(base::ScopedFD fd, std::string* out) {
   return true;
 }
 
-bool ReadString16(base::ScopedFD fd, base::string16* out) {
+bool ReadString16(base::ScopedFD fd, std::u16string* out) {
   std::array<char, 128> buffer;
   char* it = buffer.begin();
   while (it != buffer.end()) {
@@ -134,7 +134,7 @@ bool ReadString16(base::ScopedFD fd, base::string16* out) {
       break;
     it += result;
   }
-  *out = base::string16(reinterpret_cast<char16_t*>(buffer.data()),
+  *out = std::u16string(reinterpret_cast<char16_t*>(buffer.data()),
                         (it - buffer.begin()) / sizeof(char16_t));
   return true;
 }
@@ -145,7 +145,7 @@ TEST_F(DataOfferTest, SetTextDropData) {
   source_actions.insert(DndAction::kMove);
 
   ui::OSExchangeData data;
-  data.SetString(base::string16(base::ASCIIToUTF16("Test data")));
+  data.SetString(std::u16string(base::ASCIIToUTF16("Test data")));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -203,7 +203,7 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
   ReadString(std::move(read), &result);
   EXPECT_EQ(result, html_data);
 
-  base::string16 result16;
+  std::u16string result16;
   EXPECT_TRUE(base::CreatePipe(&read, &write));
   data_offer.Receive("text/html;charset=utf-16", std::move(write));
   ReadString16(std::move(read), &result16);
@@ -265,7 +265,7 @@ TEST_F(DataOfferTest, ReceiveString) {
   base::ScopedFD write_pipe_16;
   ASSERT_TRUE(base::CreatePipe(&read_pipe_16, &write_pipe_16));
   data_offer.Receive("text/plain;charset=utf-16", std::move(write_pipe_16));
-  base::string16 result_16;
+  std::u16string result_16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe_16), &result_16));
   EXPECT_EQ(base::ASCIIToUTF16("Test data"), result_16);
 
@@ -291,7 +291,7 @@ TEST_F(DataOfferTest, ReceiveHTML) {
   base::ScopedFD write_pipe_16;
   ASSERT_TRUE(base::CreatePipe(&read_pipe_16, &write_pipe_16));
   data_offer.Receive("text/html;charset=utf-16", std::move(write_pipe_16));
-  base::string16 result_16;
+  std::u16string result_16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe_16), &result_16));
   EXPECT_EQ(base::ASCIIToUTF16("Test HTML data"), result_16);
 
@@ -395,7 +395,7 @@ TEST_F(DataOfferTest,
   urls.push_back(GURL(""));
   data_exchange_delegate.RunSendPickleCallback(urls);
 
-  base::string16 result;
+  std::u16string result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
   EXPECT_EQ(base::ASCIIToUTF16(""), result);
 }
@@ -439,7 +439,7 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   // Read as utf-16.
   ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
   data_offer.Receive("text/plain;charset=utf-16", std::move(write_pipe));
-  base::string16 result16;
+  std::u16string result16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result16));
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
 }
@@ -474,7 +474,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
 
   ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
   data_offer.Receive("text/html;charset=utf-16", std::move(write_pipe));
-  base::string16 result16;
+  std::u16string result16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result16));
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
 }

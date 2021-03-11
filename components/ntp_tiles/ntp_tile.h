@@ -20,7 +20,7 @@ namespace ntp_tiles {
 
 // A suggested site shown on the New Tab Page.
 struct NTPTile {
-  base::string16 title;
+  std::u16string title;
   GURL url;
   TileTitleSource title_source;
   TileSource source;

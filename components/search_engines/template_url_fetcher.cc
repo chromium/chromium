@@ -62,7 +62,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 class TemplateURLFetcher::RequestDelegate {
  public:
   RequestDelegate(TemplateURLFetcher* fetcher,
-                  const base::string16& keyword,
+                  const std::u16string& keyword,
                   const GURL& osdd_url,
                   const GURL& favicon_url,
                   const url::Origin& initiator,
@@ -78,7 +78,7 @@ class TemplateURLFetcher::RequestDelegate {
   GURL url() const { return osdd_url_; }
 
   // Keyword to use.
-  base::string16 keyword() const { return keyword_; }
+  std::u16string keyword() const { return keyword_; }
 
  private:
   void OnTemplateURLParsed(std::unique_ptr<TemplateURL> template_url);
@@ -88,7 +88,7 @@ class TemplateURLFetcher::RequestDelegate {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   TemplateURLFetcher* fetcher_;
   std::unique_ptr<TemplateURL> template_url_;
-  base::string16 keyword_;
+  std::u16string keyword_;
   const GURL osdd_url_;
   const GURL favicon_url_;
 
@@ -99,7 +99,7 @@ class TemplateURLFetcher::RequestDelegate {
 
 TemplateURLFetcher::RequestDelegate::RequestDelegate(
     TemplateURLFetcher* fetcher,
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const GURL& osdd_url,
     const GURL& favicon_url,
     const url::Origin& initiator,
@@ -232,7 +232,7 @@ TemplateURLFetcher::~TemplateURLFetcher() {
 }
 
 void TemplateURLFetcher::ScheduleDownload(
-    const base::string16& keyword,
+    const std::u16string& keyword,
     const GURL& osdd_url,
     const GURL& favicon_url,
     const url::Origin& initiator,

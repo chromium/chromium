@@ -109,7 +109,7 @@ class FaviconService : public CoreFaviconService, public LargeFaviconProvider {
   // See HistoryService::AddPageNoVisitForBookmark(). Adds an entry for the
   // specified url in the history service without creating a visit.
   virtual void AddPageNoVisitForBookmark(const GURL& url,
-                                         const base::string16& title) = 0;
+                                         const std::u16string& title) = 0;
 
   // Set the favicon for |page_url| for |icon_type| in the thumbnail database.
   // Unlike SetFavicons(), this method will not delete preexisting bitmap data

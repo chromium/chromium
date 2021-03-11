@@ -716,18 +716,18 @@ bool TestingLegacySessionStorageDatabase::ReadMap(
       break;
     }
     // Key is of the form "map-<mapid>-<key>".
-    base::string16 key16 =
+    std::u16string key16 =
         base::UTF8ToUTF16(key.substr(map_start_key.length()));
     if (only_keys) {
       (*result)[key16] = base::NullableString16();
     } else {
       // Convert the raw data stored in std::string (it->value()) to raw data
-      // stored in base::string16.
+      // stored in std::u16string.
       size_t len = it->value().size() / sizeof(char16_t);
       const char16_t* data_ptr =
           reinterpret_cast<const char16_t*>(it->value().data());
       (*result)[key16] =
-          base::NullableString16(base::string16(data_ptr, len), false);
+          base::NullableString16(std::u16string(data_ptr, len), false);
     }
   }
   return true;
@@ -743,7 +743,7 @@ void TestingLegacySessionStorageDatabase::WriteValuesToMap(
     if (value.is_null()) {
       batch->Delete(key);
     } else {
-      // Convert the raw data stored in base::string16 to raw data stored in
+      // Convert the raw data stored in std::u16string to raw data stored in
       // std::string.
       const char* data = reinterpret_cast<const char*>(value.string().data());
       size_t size = value.string().size() * 2;

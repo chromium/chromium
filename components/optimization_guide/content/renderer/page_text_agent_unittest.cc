@@ -27,7 +27,7 @@ class TestConsumer : public mojom::PageTextConsumer {
   TestConsumer() = default;
   ~TestConsumer() override = default;
 
-  base::string16 text() const { return base::StrCat(chunks_); }
+  std::u16string text() const { return base::StrCat(chunks_); }
   bool on_chunks_end_called() const { return on_chunks_end_called_; }
   size_t num_chunks() const { return chunks_.size(); }
 
@@ -36,7 +36,7 @@ class TestConsumer : public mojom::PageTextConsumer {
   }
 
   // mojom::PageTextConsumer:
-  void OnTextDumpChunk(const base::string16& chunk) override {
+  void OnTextDumpChunk(const std::u16string& chunk) override {
     ASSERT_FALSE(on_chunks_end_called_);
     chunks_.push_back(chunk);
   }
@@ -45,7 +45,7 @@ class TestConsumer : public mojom::PageTextConsumer {
 
  private:
   mojo::Receiver<mojom::PageTextConsumer> receiver_{this};
-  std::vector<base::string16> chunks_;
+  std::vector<std::u16string> chunks_;
   bool on_chunks_end_called_ = false;
 };
 
@@ -178,7 +178,7 @@ TEST_F(PageTextAgentTest, LongTextOnChunkEdge) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  base::string16 text(1 << 16, 'a');
+  std::u16string text(1 << 16, 'a');
   std::move(callback).Run(text);
   RunUntilIdle();
 
@@ -212,7 +212,7 @@ TEST_F(PageTextAgentTest, LongTextOffOfChunkEdge) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  base::string16 text((1 << 15) + 3, 'a');
+  std::u16string text((1 << 15) + 3, 'a');
   std::move(callback).Run(text);
   RunUntilIdle();
 

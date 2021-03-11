@@ -129,7 +129,7 @@ TEST_F(WindowsSpellCheckerTest, RequestTextCheck) {
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     const auto& test_case = kTestCases[i];
-    const base::string16 word(base::ASCIIToUTF16(test_case.text_to_check));
+    const std::u16string word(base::ASCIIToUTF16(test_case.text_to_check));
 
     // Check if the suggested words occur.
     win_spell_checker_->RequestTextCheck(
@@ -148,13 +148,13 @@ TEST_F(WindowsSpellCheckerTest, RequestTextCheck) {
     ASSERT_EQ(1u, spell_check_results_.size())
         << "RequestTextCheckTests case " << i << ": Wrong number of results";
 
-    const std::vector<base::string16>& suggestions =
+    const std::vector<std::u16string>& suggestions =
         spell_check_results_.front().replacements;
-    const base::string16 suggested_word(
+    const std::u16string suggested_word(
         base::ASCIIToUTF16(test_case.expected_suggestion));
     auto position =
         std::find_if(suggestions.begin(), suggestions.end(),
-                     [&](const base::string16& suggestion) {
+                     [&](const std::u16string& suggestion) {
                        return suggestion.compare(suggested_word) == 0;
                      });
 

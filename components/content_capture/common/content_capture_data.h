@@ -37,7 +37,7 @@ struct ContentCaptureData {
   // For frame, this is the URL of the frame.
   // For scrollable area, this is not used.
   // For text, this is the text value.
-  base::string16 value;
+  std::u16string value;
   // The bounds of the frame or the content.
   gfx::Rect bounds;
   // The children content, only available for frame or scrollable area.

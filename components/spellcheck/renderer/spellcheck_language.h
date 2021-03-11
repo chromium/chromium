@@ -67,7 +67,7 @@ class SpellcheckLanguage {
       int tag,
       size_t* skip_or_misspelling_start,
       size_t* skip_or_misspelling_len,
-      std::vector<base::string16>* optional_suggestions);
+      std::vector<std::u16string>* optional_suggestions);
 
   // Initialize |spellcheck_| if that hasn't happened yet.
   bool InitializeIfNeeded();
@@ -77,7 +77,7 @@ class SpellcheckLanguage {
 
   // Returns true if all the characters in a text string are in the script
   // associated with this spellcheck language.
-  bool IsTextInSameScript(const base::string16& text) const;
+  bool IsTextInSameScript(const std::u16string& text) const;
 
  private:
   friend class SpellCheckTest;
@@ -85,7 +85,7 @@ class SpellcheckLanguage {
 
   // Returns whether or not the given word is a contraction of valid words
   // (e.g. "word:word").
-  bool IsValidContraction(const base::string16& word, int tag);
+  bool IsValidContraction(const std::u16string& word, int tag);
 
   // Represents character attributes used for filtering out characters which
   // are not supported by this SpellCheck object.

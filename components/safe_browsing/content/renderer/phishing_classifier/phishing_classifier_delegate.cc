@@ -161,7 +161,7 @@ void PhishingClassifierDelegate::DidFinishSameDocumentNavigation() {
   CancelPendingClassification(NAVIGATE_WITHIN_PAGE);
 }
 
-void PhishingClassifierDelegate::PageCaptured(base::string16* page_text,
+void PhishingClassifierDelegate::PageCaptured(std::u16string* page_text,
                                               bool preliminary_capture) {
   RecordEvent(SBPhishingClassifierEvent::kPageTextCaptured);
 

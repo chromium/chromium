@@ -55,9 +55,9 @@ class QuotaPermissionRequest : public PermissionRequest {
   // PermissionRequest:
   RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
 #endif
-  base::string16 GetMessageTextFragment() const override;
+  std::u16string GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;
@@ -92,7 +92,7 @@ RequestType QuotaPermissionRequest::GetRequestType() const {
 }
 
 #if defined(OS_ANDROID)
-base::string16 QuotaPermissionRequest::GetMessageText() const {
+std::u16string QuotaPermissionRequest::GetMessageText() const {
   // If the site requested larger quota than this threshold, show a different
   // message to the user.
   return l10n_util::GetStringFUTF16(
@@ -102,7 +102,7 @@ base::string16 QuotaPermissionRequest::GetMessageText() const {
 }
 #endif
 
-base::string16 QuotaPermissionRequest::GetMessageTextFragment() const {
+std::u16string QuotaPermissionRequest::GetMessageTextFragment() const {
   return l10n_util::GetStringUTF16(IDS_REQUEST_QUOTA_PERMISSION_FRAGMENT);
 }
 

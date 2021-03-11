@@ -47,7 +47,7 @@ class PageInfoDelegate {
   virtual void OnUserActionOnPasswordUi(
       content::WebContents* web_contents,
       safe_browsing::WarningAction action) = 0;
-  virtual base::string16 GetWarningDetailText() = 0;
+  virtual std::u16string GetWarningDetailText() = 0;
 #endif
   // Get permission status for the permission associated with ContentSetting of
   // type |type|.
@@ -84,7 +84,7 @@ class PageInfoDelegate {
   virtual security_state::VisibleSecurityState GetVisibleSecurityState() = 0;
 #if defined(OS_ANDROID)
   // Gets the name of the embedder.
-  virtual const base::string16 GetClientApplicationName() = 0;
+  virtual const std::u16string GetClientApplicationName() = 0;
 #endif
 };
 

@@ -50,7 +50,7 @@ class TextInput : public ui::TextInputClient,
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 
     // Commit |text| to the current text input session.
-    virtual void Commit(const base::string16& text) = 0;
+    virtual void Commit(const std::u16string& text) = 0;
 
     // Set the cursor position. The range should be in bytes offset.
     virtual void SetCursor(const gfx::Range& selection) = 0;
@@ -89,7 +89,7 @@ class TextInput : public ui::TextInputClient,
   void Resync();
 
   // Sets the surrounding text in the app.
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           uint32_t cursor_pos,
                           uint32_t anchor);
 
@@ -108,7 +108,7 @@ class TextInput : public ui::TextInputClient,
   void SetCompositionText(const ui::CompositionText& composition) override;
   uint32_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
-  void InsertText(const base::string16& text,
+  void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override;
   void InsertChar(const ui::KeyEvent& event) override;
   ui::TextInputType GetTextInputType() const override;
@@ -127,7 +127,7 @@ class TextInput : public ui::TextInputClient,
   bool SetEditableSelectionRange(const gfx::Range& range) override;
   bool DeleteRange(const gfx::Range& range) override;
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override;
+                        std::u16string* text) const override;
   void OnInputMethodChanged() override;
   bool ChangeTextDirectionAndLayoutAlignment(
       base::i18n::TextDirection direction) override;
@@ -163,7 +163,7 @@ class TextInput : public ui::TextInputClient,
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
   ui::CompositionText composition_;
-  base::string16 surrounding_text_;
+  std::u16string surrounding_text_;
   base::Optional<gfx::Range> cursor_pos_;
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
 

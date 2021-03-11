@@ -29,7 +29,7 @@ void CheckSpellingServiceCallCount(size_t actual, size_t expected) {
   EXPECT_EQ(actual, expected);
 }
 
-void CheckProviderText(base::string16 expected, base::string16 actual) {
+void CheckProviderText(std::u16string expected, std::u16string actual) {
   // On Windows, if the native spell checker integration is enabled,
   // CallSpellingService() is not used, so the fake provider's |text_| is never
   // assigned. Don't assert the text in that case.
@@ -51,7 +51,7 @@ TEST_F(SpellCheckProviderTest, MultiLineText) {
   // Verify that the SpellCheckProvider class does not spellcheck empty text.
   provider_.ResetResult();
   provider_.RequestTextChecking(
-      base::string16(),
+      std::u16string(),
       std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(completion.completion_count_, 1U);
   EXPECT_TRUE(provider_.text_.empty());
@@ -154,14 +154,14 @@ TEST_F(SpellCheckProviderTest, CancelUnnecessaryRequests) {
 TEST_F(SpellCheckProviderTest, CompleteNecessaryRequests) {
   FakeTextCheckingResult completion;
 
-  base::string16 text = ASCIIToUTF16("Icland is an icland ");
+  std::u16string text = ASCIIToUTF16("Icland is an icland ");
   provider_.RequestTextChecking(
       text, std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(0U, completion.cancellation_count_) << "Should finish checking \""
                                                 << text << "\"";
 
   const int kSubstringLength = 18;
-  base::string16 substring = text.substr(0, kSubstringLength);
+  std::u16string substring = text.substr(0, kSubstringLength);
   provider_.RequestTextChecking(
       substring, std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(0U, completion.cancellation_count_) << "Should finish checking \""

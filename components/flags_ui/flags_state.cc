@@ -499,7 +499,7 @@ void FlagsState::RemoveFlagsSwitches(
     const auto& switch_name = entry.first;
     const auto& switch_added_values = entry.second;
 
-    // The below is either a std::string or a base::string16 based on platform.
+    // The below is either a std::string or a std::u16string based on platform.
     const auto& existing_value = (*switch_list)[switch_name];
 #if defined(OS_WIN)
     const std::string existing_value_utf8 = base::WideToUTF8(existing_value);

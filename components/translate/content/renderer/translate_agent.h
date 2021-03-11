@@ -40,7 +40,7 @@ class TranslateAgent : public content::RenderFrameObserver,
   ~TranslateAgent() override;
 
   // Informs us that the page's text has been extracted.
-  void PageCaptured(const base::string16& contents);
+  void PageCaptured(const std::u16string& contents);
 
   // Lets the translation system know that we are preparing to navigate to
   // the specified URL. If there is anything that can or should be done before

@@ -54,7 +54,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
       content::WebContents* web_contents_to_observe,
       const std::string& effective_relying_party_identity,
       std::unique_ptr<SkBitmap> icon,
-      const base::string16& label,
+      const std::u16string& label,
       std::vector<uint8_t> credential_id,
       const url::Origin& merchant_origin,
       base::WeakPtr<PaymentRequestSpec> spec,
@@ -72,13 +72,13 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   bool IsCompleteForPayment() const override;
   uint32_t GetCompletenessScore() const override;
   bool CanPreselect() const override;
-  base::string16 GetMissingInfoLabel() const override;
+  std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
   void RecordUse() override;
   bool NeedsInstallation() const override;
   std::string GetId() const override;
-  base::string16 GetLabel() const override;
-  base::string16 GetSublabel() const override;
+  std::u16string GetLabel() const override;
+  std::u16string GetSublabel() const override;
   const SkBitmap* icon_bitmap() const override;
   bool IsValidForModifier(
       const std::string& method,
@@ -110,7 +110,7 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
   const std::string effective_relying_party_identity_;
   const std::unique_ptr<SkBitmap> icon_;
-  const base::string16 label_;
+  const std::u16string label_;
   const std::vector<uint8_t> credential_id_;
   const std::string encoded_credential_id_;
   const url::Origin merchant_origin_;

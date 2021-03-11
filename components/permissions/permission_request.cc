@@ -19,17 +19,17 @@ ContentSettingsType PermissionRequest::GetContentSettingsType() const {
 }
 
 #if !defined(OS_ANDROID)
-base::Optional<base::string16> PermissionRequest::GetChipText() const {
+base::Optional<std::u16string> PermissionRequest::GetChipText() const {
   return base::nullopt;
 }
 #endif
 
 #if defined(OS_ANDROID)
-base::string16 PermissionRequest::GetQuietTitleText() const {
-  return base::string16();
+std::u16string PermissionRequest::GetQuietTitleText() const {
+  return std::u16string();
 }
 
-base::string16 PermissionRequest::GetQuietMessageText() const {
+std::u16string PermissionRequest::GetQuietMessageText() const {
   return GetMessageText();
 }
 #endif

@@ -28,7 +28,7 @@ class HistoryClientFakeBookmarks : public HistoryClient {
 
   void ClearAllBookmarks();
   void AddBookmark(const GURL& url);
-  void AddBookmarkWithTitle(const GURL& url, const base::string16& title);
+  void AddBookmarkWithTitle(const GURL& url, const std::u16string& title);
   void DelBookmark(const GURL& url);
   bool IsBookmarked(const GURL& url);
 

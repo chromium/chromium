@@ -35,7 +35,7 @@ std::string DetermineTextLanguage(const std::string& utf8_text,
 // in |model_reliability_score|.
 std::string DeterminePageLanguage(const std::string& code,
                                   const std::string& html_lang,
-                                  const base::string16& contents,
+                                  const std::u16string& contents,
                                   std::string* model_detected_language,
                                   bool* is_model_reliable,
                                   float& model_reliability_score);

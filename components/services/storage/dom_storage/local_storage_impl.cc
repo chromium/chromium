@@ -742,7 +742,7 @@ bool LocalStorageImpl::OnMemoryDump(
 
 // static
 std::vector<uint8_t> LocalStorageImpl::MigrateString(
-    const base::string16& input) {
+    const std::u16string& input) {
   // TODO(mek): Deduplicate this somehow with the code in
   // LocalStorageCachedArea::String16ToUint8Vector.
   bool is_8bit = true;

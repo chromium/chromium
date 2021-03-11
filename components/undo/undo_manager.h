@@ -66,8 +66,8 @@ class UndoManager {
   size_t undo_count() const { return undo_actions_.size(); }
   size_t redo_count() const { return redo_actions_.size(); }
 
-  base::string16 GetUndoLabel() const;
-  base::string16 GetRedoLabel() const;
+  std::u16string GetUndoLabel() const;
+  std::u16string GetRedoLabel() const;
 
   void AddUndoOperation(std::unique_ptr<UndoOperation> operation);
 

@@ -107,11 +107,8 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
       storage_monitor::StorageInfo::MakeDeviceId(
           storage_monitor::StorageInfo::MAC_IMAGE_CAPTURE,
           base::SysNSStringToUTF8([cameraDevice UUIDString])),
-      std::string(),
-      base::SysNSStringToUTF16([cameraDevice name]),
-      base::string16(),
-      base::string16(),
-      0);
+      std::string(), base::SysNSStringToUTF16([cameraDevice name]),
+      std::u16string(), std::u16string(), 0);
   _notifications->ProcessAttach(info);
 }
 

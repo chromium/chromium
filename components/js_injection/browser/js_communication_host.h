@@ -52,7 +52,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
   // Native side AddDocumentStartJavaScript, returns an error message if the
   // parameters didn't pass necessary checks.
   AddScriptResult AddDocumentStartJavaScript(
-      const base::string16& script,
+      const std::u16string& script,
       const std::vector<std::string>& allowed_origin_rules);
 
   bool RemoveDocumentStartJavaScript(int script_id);
@@ -62,16 +62,16 @@ class JsCommunicationHost : public content::WebContentsObserver {
   // can be used by script on the page to send and receive messages. Returns
   // an empty string on success. On failure, the return string gives the error
   // message.
-  base::string16 AddWebMessageHostFactory(
+  std::u16string AddWebMessageHostFactory(
       std::unique_ptr<WebMessageHostFactory> factory,
-      const base::string16& js_object_name,
+      const std::u16string& js_object_name,
       const std::vector<std::string>& allowed_origin_rules);
 
   // Returns the factory previously registered under the specified name.
-  void RemoveWebMessageHostFactory(const base::string16& js_object_name);
+  void RemoveWebMessageHostFactory(const std::u16string& js_object_name);
 
   struct RegisteredFactory {
-    base::string16 js_name;
+    std::u16string js_name;
     OriginMatcher allowed_origin_rules;
     WebMessageHostFactory* factory = nullptr;
   };

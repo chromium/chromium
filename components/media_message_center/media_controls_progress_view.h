@@ -38,13 +38,13 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   const views::ProgressBar* progress_bar_for_testing() const;
-  const base::string16& progress_time_for_testing() const;
-  const base::string16& duration_for_testing() const;
+  const std::u16string& progress_time_for_testing() const;
+  const std::u16string& duration_for_testing() const;
 
  private:
   void SetBarProgress(double progress);
-  void SetProgressTime(const base::string16& time);
-  void SetDuration(const base::string16& duration);
+  void SetProgressTime(const std::u16string& time);
+  void SetDuration(const std::u16string& duration);
 
   void HandleSeeking(const gfx::Point& location);
 

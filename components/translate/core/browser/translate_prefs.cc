@@ -410,9 +410,9 @@ void TranslatePrefs::GetLanguageInfoList(
     collator.reset();
   }
   // Map of [display name -> language code].
-  std::map<base::string16, std::string,
-           l10n_util::StringComparator<base::string16>>
-      language_map(l10n_util::StringComparator<base::string16>(collator.get()));
+  std::map<std::u16string, std::string,
+           l10n_util::StringComparator<std::u16string>>
+      language_map(l10n_util::StringComparator<std::u16string>(collator.get()));
 
   // Build the list of display names and the language map.
   for (std::string& code : language_codes) {
@@ -434,11 +434,11 @@ void TranslatePrefs::GetLanguageInfoList(
     TranslateLanguageInfo language;
     language.code = std::move(entry.second);
 
-    base::string16 adjusted_display_name = entry.first;
+    std::u16string adjusted_display_name = entry.first;
     base::i18n::AdjustStringForLocaleDirection(&adjusted_display_name);
     language.display_name = base::UTF16ToUTF8(adjusted_display_name);
 
-    base::string16 adjusted_native_display_name =
+    std::u16string adjusted_native_display_name =
         l10n_util::GetDisplayNameForLocale(language.code, language.code, false);
     base::i18n::AdjustStringForLocaleDirection(&adjusted_native_display_name);
     language.native_display_name =

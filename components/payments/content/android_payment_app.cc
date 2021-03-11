@@ -81,9 +81,9 @@ bool AndroidPaymentApp::CanPreselect() const {
   return true;
 }
 
-base::string16 AndroidPaymentApp::GetMissingInfoLabel() const {
+std::u16string AndroidPaymentApp::GetMissingInfoLabel() const {
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool AndroidPaymentApp::HasEnrolledInstrument() const {
@@ -102,12 +102,12 @@ std::string AndroidPaymentApp::GetId() const {
   return description_->package;
 }
 
-base::string16 AndroidPaymentApp::GetLabel() const {
-  return base::string16();
+std::u16string AndroidPaymentApp::GetLabel() const {
+  return std::u16string();
 }
 
-base::string16 AndroidPaymentApp::GetSublabel() const {
-  return base::string16();
+std::u16string AndroidPaymentApp::GetSublabel() const {
+  return std::u16string();
 }
 
 const SkBitmap* AndroidPaymentApp::icon_bitmap() const {

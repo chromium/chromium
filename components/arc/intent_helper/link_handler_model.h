@@ -24,7 +24,7 @@ namespace arc {
 
 // This struct describes the UI presentation of a single link handler.
 struct LinkHandlerInfo {
-  base::string16 name;
+  std::u16string name;
   gfx::Image icon;
   // An opaque identifier for this handler (which happens to correlate to the
   // index in |handlers_|.

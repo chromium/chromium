@@ -58,7 +58,7 @@ std::string RenderOutputHtml(const std::string& base_url,
     const ChromeSuggestion& suggestion = profile.suggestions(i);
     base::TimeDelta remaining_time =
         base::TimeDelta::FromMicroseconds(suggestion.expiry_ts() - now);
-    base::string16 remaining_time_formatted = ui::TimeFormat::Detailed(
+    std::u16string remaining_time_formatted = ui::TimeFormat::Detailed(
         ui::TimeFormat::Format::FORMAT_DURATION,
         ui::TimeFormat::Length::LENGTH_LONG, -1, remaining_time);
     std::string line;

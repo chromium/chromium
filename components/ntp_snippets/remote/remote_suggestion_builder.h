@@ -83,11 +83,11 @@ class FetchedCategoryBuilder {
 
  private:
   base::Optional<Category> category_;
-  base::Optional<base::string16> title_;
+  base::Optional<std::u16string> title_;
   base::Optional<ContentSuggestionsCardLayout> card_layout_;
   base::Optional<ContentSuggestionsAdditionalAction> additional_action_;
   base::Optional<bool> show_if_empty_;
-  base::Optional<base::string16> no_suggestions_message_;
+  base::Optional<std::u16string> no_suggestions_message_;
   base::Optional<std::vector<RemoteSuggestionBuilder>> suggestion_builders_;
 };
 

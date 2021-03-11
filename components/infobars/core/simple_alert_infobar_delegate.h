@@ -29,7 +29,7 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
       infobars::InfoBarManager* infobar_manager,
       infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
       const gfx::VectorIcon* vector_icon,
-      const base::string16& message,
+      const std::u16string& message,
       bool auto_expire = true,
       bool should_animate = true);
 
@@ -37,7 +37,7 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
   SimpleAlertInfoBarDelegate(
       infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
       const gfx::VectorIcon* vector_icon,
-      const base::string16& message,
+      const std::u16string& message,
       bool auto_expire,
       bool should_animate);
   ~SimpleAlertInfoBarDelegate() override;
@@ -47,12 +47,12 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   bool ShouldAnimate() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier_;
   const gfx::VectorIcon* vector_icon_;
-  base::string16 message_;
+  std::u16string message_;
   bool auto_expire_;  // Should it expire automatically on navigation?
   bool should_animate_;
 

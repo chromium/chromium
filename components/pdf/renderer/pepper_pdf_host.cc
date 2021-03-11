@@ -231,7 +231,7 @@ int32_t PepperPDFHost::OnHostMsgSaveAs(
 
 int32_t PepperPDFHost::OnHostMsgSetSelectedText(
     ppapi::host::HostMessageContext* context,
-    const base::string16& selected_text) {
+    const std::u16string& selected_text) {
   content::PepperPluginInstance* instance =
       host_->GetPluginInstance(pp_instance());
   if (!instance)

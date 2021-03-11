@@ -23,7 +23,7 @@ std::string GetDeviceIdFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 
 // Helper function to get device label from storage information.
-base::string16 GetDeviceLabelFromStorageInfo(
+std::u16string GetDeviceLabelFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 
 }  // namespace storage_monitor

@@ -159,7 +159,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 
   for (const auto& permission : permissions_to_display) {
     if (base::Contains(user_specified_settings_to_display, permission)) {
-      base::string16 setting_title =
+      std::u16string setting_title =
           PageInfoUI::PermissionTypeToUIString(permission);
 
       Java_PageInfoController_addPermissionSection(
@@ -171,7 +171,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   }
 
   for (const auto& chosen_object : chosen_object_info_list) {
-    base::string16 object_title =
+    std::u16string object_title =
         presenter_->GetChooserContextFromUIInfo(chosen_object->ui_info)
             ->GetObjectDisplayName(chosen_object->chooser_object->value);
 

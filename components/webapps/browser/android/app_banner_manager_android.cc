@@ -358,7 +358,7 @@ bool AppBannerManagerAndroid::ShouldPerformInstallableNativeAppCheck() {
   // Ensure there is at least one related app specified that is supported on
   // the current platform.
   for (const auto& application : manifest_.related_applications) {
-    if (base::EqualsASCII(application.platform.value_or(base::string16()),
+    if (base::EqualsASCII(application.platform.value_or(std::u16string()),
                           kPlatformPlay))
       return true;
   }
@@ -370,8 +370,8 @@ void AppBannerManagerAndroid::PerformInstallableNativeAppCheck() {
   InstallableStatusCode code = NO_ERROR_DETECTED;
   for (const auto& application : manifest_.related_applications) {
     std::string id =
-        base::UTF16ToUTF8(application.id.value_or(base::string16()));
-    code = QueryNativeApp(application.platform.value_or(base::string16()),
+        base::UTF16ToUTF8(application.id.value_or(std::u16string()));
+    code = QueryNativeApp(application.platform.value_or(std::u16string()),
                           application.url, id);
     if (code == NO_ERROR_DETECTED)
       return;
@@ -382,7 +382,7 @@ void AppBannerManagerAndroid::PerformInstallableNativeAppCheck() {
 }
 
 InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
-    const base::string16& platform,
+    const std::u16string& platform,
     const GURL& url,
     const std::string& id) {
   if (!base::EqualsASCII(platform, kPlatformPlay))
@@ -458,12 +458,12 @@ void AppBannerManagerAndroid::OnNativeAppIconFetched(const SkBitmap& bitmap) {
   SendBannerPromptRequest();
 }
 
-base::string16 AppBannerManagerAndroid::GetAppName() const {
+std::u16string AppBannerManagerAndroid::GetAppName() const {
   if (native_app_data_.is_null()) {
     // Prefer the short name if it's available. It's guaranteed that at least
     // one of these is non-empty.
-    base::string16 short_name = manifest_.short_name.value_or(base::string16());
-    return short_name.empty() ? manifest_.name.value_or(base::string16())
+    std::u16string short_name = manifest_.short_name.value_or(std::u16string());
+    return short_name.empty() ? manifest_.name.value_or(std::u16string())
                               : short_name;
   }
 
@@ -520,7 +520,7 @@ void AppBannerManagerAndroid::HideAmbientBadge() {
 }
 
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(
-    const base::string16& platform) const {
+    const std::u16string& platform) const {
   // TODO(https://crbug.com/949430): Implement for Android apps.
   return false;
 }

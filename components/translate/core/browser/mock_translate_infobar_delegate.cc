@@ -14,14 +14,14 @@ MockLanguageModel::GetLanguages() {
 }
 
 void MockTranslateInfoBarDelegate::SetTranslateLanguagesForTest(
-    std::vector<std::pair<std::string, base::string16>> languages) {
+    std::vector<std::pair<std::string, std::u16string>> languages) {
   for (auto pair : languages) {
     languages_.push_back(pair);
   }
 }
 
 void MockTranslateInfoBarDelegate::GetLanguagesNames(
-    std::vector<base::string16>* names) const {
+    std::vector<std::u16string>* names) const {
   for (auto& entry : languages_) {
     names->push_back(entry.second);
   }

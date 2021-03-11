@@ -304,7 +304,7 @@ void remote_surface_set_title(wl_client* client,
                               wl_resource* resource,
                               const char* title) {
   GetUserDataAs<ShellSurfaceBase>(resource)->SetTitle(
-      base::string16(base::UTF8ToUTF16(title)));
+      std::u16string(base::UTF8ToUTF16(title)));
 }
 
 void remote_surface_set_top_inset(wl_client* client,
@@ -531,7 +531,7 @@ void remote_surface_set_extra_title(wl_client* client,
                                     wl_resource* resource,
                                     const char* extra_title) {
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetExtraTitle(
-      base::string16(base::UTF8ToUTF16(extra_title)));
+      std::u16string(base::UTF8ToUTF16(extra_title)));
 }
 
 ash::OrientationLockType OrientationLock(uint32_t orientation_lock) {

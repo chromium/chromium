@@ -43,7 +43,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     UploadInfo(const std::string& local_id,
                const base::Time& capture_time,
                State state,
-               const base::string16& file_size);
+               const std::u16string& file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
     UploadInfo(const UploadInfo& upload_info);
     ~UploadInfo();
@@ -65,7 +65,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     std::string source;
 
     // Formatted file size for locally stored data.
-    base::string16 file_size;
+    std::u16string file_size;
   };
 
   UploadList();

@@ -22,7 +22,7 @@ SendTabToSelfInfoBarDelegate::Create(content::WebContents* web_contents,
 
 SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() {}
 
-base::string16 SendTabToSelfInfoBarDelegate::GetInfobarMessage() const {
+std::u16string SendTabToSelfInfoBarDelegate::GetInfobarMessage() const {
   // TODO(crbug.com/944602): Define real string.
   NOTIMPLEMENTED();
   return base::UTF8ToUTF16("Open");

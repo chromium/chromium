@@ -17,7 +17,7 @@ namespace test_data {
 const int kIndex = 3;
 const int kUniqueID = 50;
 const int kReferrerPolicy = 0;
-const base::string16 kTitle = base::ASCIIToUTF16("title");
+const std::u16string kTitle = base::ASCIIToUTF16("title");
 const std::string kEncodedPageState = "page state";
 const ui::PageTransition kTransitionType =
     ui::PageTransitionFromInt(

@@ -69,7 +69,7 @@ std::string FeatureEntry::NameForOption(int index) const {
          base::NumberToString(index);
 }
 
-base::string16 FeatureEntry::DescriptionForOption(int index) const {
+std::u16string FeatureEntry::DescriptionForOption(int index) const {
   DCHECK(type == FeatureEntry::MULTI_VALUE ||
          type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          type == FeatureEntry::FEATURE_VALUE ||

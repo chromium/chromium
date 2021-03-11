@@ -116,14 +116,14 @@ const std::string& GetEncryptionKeyInternal() {
 }  // namespace
 
 // static
-bool OSCrypt::EncryptString16(const base::string16& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 // static
 bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              base::string16* plaintext) {
+                              std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;

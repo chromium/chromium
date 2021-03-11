@@ -27,7 +27,7 @@ class LanguageDetectionServiceImpl : public mojom::LanguageDetectionService {
 
  private:
   // chrome::mojom::LanguageDetectionService override.
-  void DetermineLanguage(const ::base::string16& text,
+  void DetermineLanguage(const ::std::u16string& text,
                          DetermineLanguageCallback callback) override;
 
   mojo::Receiver<mojom::LanguageDetectionService> receiver_;

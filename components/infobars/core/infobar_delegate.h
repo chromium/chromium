@@ -226,7 +226,7 @@ class InfoBarDelegate {
 
   // Returns the text of the link to be displayed, if any. Otherwise returns
   // an empty string.
-  virtual base::string16 GetLinkText() const;
+  virtual std::u16string GetLinkText() const;
 
   // Returns the URL the link should navigate to.
   virtual GURL GetLinkURL() const;

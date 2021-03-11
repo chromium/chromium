@@ -127,7 +127,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
     MediaNotificationContainer* container,
     base::WeakPtr<MediaNotificationItem> item,
     std::unique_ptr<views::View> header_row_controls_view,
-    const base::string16& default_app_name,
+    const std::u16string& default_app_name,
     int notification_width,
     bool should_show_icon,
     base::Optional<NotificationTheme> theme)
@@ -164,7 +164,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   title_artist_row_ = main_row_->AddChildView(std::move(title_artist_row));
 
   auto title_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
+      std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_PRIMARY);
   const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
   title_label->SetFontList(base_font_list.Derive(
@@ -175,7 +175,7 @@ MediaNotificationViewImpl::MediaNotificationViewImpl(
   title_label_ = title_artist_row_->AddChildView(std::move(title_label));
 
   auto artist_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
+      std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_PRIMARY);
   artist_label->SetLineHeight(is_cros_ ? kCrOSArtistLineHeight
                                        : kTitleArtistLineHeight);
@@ -508,7 +508,7 @@ views::Button* MediaNotificationViewImpl::GetHeaderRowForTesting() const {
   return header_row_;
 }
 
-base::string16 MediaNotificationViewImpl::GetSourceTitleForTesting() const {
+std::u16string MediaNotificationViewImpl::GetSourceTitleForTesting() const {
   return header_row_ ? header_row_->app_name_for_testing()  // IN-TEST
                      : cros_header_label_->GetText();
 }
@@ -611,7 +611,7 @@ void MediaNotificationViewImpl::UpdateViewForExpandedState() {
 
 void MediaNotificationViewImpl::CreateMediaButton(
     MediaSessionAction action,
-    const base::string16& accessible_name) {
+    const std::u16string& accessible_name) {
   auto button =
       views::CreateVectorImageButton(views::Button::PressedCallback());
   button->SetCallback(

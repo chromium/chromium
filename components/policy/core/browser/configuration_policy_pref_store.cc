@@ -29,7 +29,7 @@ void LogErrors(std::unique_ptr<PolicyErrorMap> errors,
                PoliciesSet future_policies) {
   DCHECK(errors->IsReady());
   for (auto& pair : *errors) {
-    base::string16 policy = base::ASCIIToUTF16(pair.first);
+    std::u16string policy = base::ASCIIToUTF16(pair.first);
     DLOG(WARNING) << "Policy " << policy << ": " << pair.second;
   }
   for (const auto& policy : deprecated_policies) {

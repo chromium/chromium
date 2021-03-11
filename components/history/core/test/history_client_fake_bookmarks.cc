@@ -21,7 +21,7 @@ class FakeBookmarkDatabase
   FakeBookmarkDatabase() {}
 
   void ClearAllBookmarks();
-  void AddBookmarkWithTitle(const GURL& url, const base::string16& title);
+  void AddBookmarkWithTitle(const GURL& url, const std::u16string& title);
   void DelBookmark(const GURL& url);
 
   bool IsBookmarked(const GURL& url);
@@ -33,7 +33,7 @@ class FakeBookmarkDatabase
   ~FakeBookmarkDatabase() {}
 
   base::Lock lock_;
-  std::map<GURL, base::string16> bookmarks_;
+  std::map<GURL, std::u16string> bookmarks_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBookmarkDatabase);
 };
@@ -44,7 +44,7 @@ void FakeBookmarkDatabase::ClearAllBookmarks() {
 }
 
 void FakeBookmarkDatabase::AddBookmarkWithTitle(const GURL& url,
-                                                const base::string16& title) {
+                                                const std::u16string& title) {
   base::AutoLock with_lock(lock_);
   bookmarks_.insert(std::make_pair(url, title));
 }
@@ -124,12 +124,12 @@ void HistoryClientFakeBookmarks::ClearAllBookmarks() {
 }
 
 void HistoryClientFakeBookmarks::AddBookmark(const GURL& url) {
-  bookmarks_->AddBookmarkWithTitle(url, base::string16());
+  bookmarks_->AddBookmarkWithTitle(url, std::u16string());
 }
 
 void HistoryClientFakeBookmarks::AddBookmarkWithTitle(
     const GURL& url,
-    const base::string16& title) {
+    const std::u16string& title) {
   bookmarks_->AddBookmarkWithTitle(url, title);
 }
 

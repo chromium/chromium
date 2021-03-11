@@ -677,9 +677,9 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
 TEST_F(LocalStorageImplTest, Migration) {
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  base::string16 key = base::ASCIIToUTF16("key");
-  base::string16 value = base::ASCIIToUTF16("value");
-  base::string16 key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = base::ASCIIToUTF16("key");
+  std::u16string value = base::ASCIIToUTF16("value");
+  std::u16string key2 = base::ASCIIToUTF16("key2");
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 
@@ -751,7 +751,7 @@ TEST_F(LocalStorageImplTest, Migration) {
 }
 
 static std::string EncodeKeyAsUTF16(const std::string& origin,
-                                    const base::string16& key) {
+                                    const std::u16string& key) {
   std::string result = '_' + origin + '\x00' + '\x00';
   std::copy(
       reinterpret_cast<const char*>(key.data()),
