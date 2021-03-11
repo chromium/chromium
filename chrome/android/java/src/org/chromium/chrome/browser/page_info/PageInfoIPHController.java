@@ -37,14 +37,18 @@ public class PageInfoIPHController {
         mStatusView = statusView;
     }
 
-    /** Called when a permission prompt was shown. */
-    public void onPermissionDialogShown() {
+    /**
+     * Called when a permission prompt was shown.
+     * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
+     */
+    public void onPermissionDialogShown(int iphTimeout) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         tracker.notifyEvent(EventConstants.PERMISSION_REQUEST_SHOWN);
 
         mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(
                 mStatusView.getContext().getResources(), FeatureConstants.PAGE_INFO_FEATURE,
                 R.string.page_info_iph, R.string.page_info_iph)
+                                                    .setAutoDismissTimeout(iphTimeout)
                                                     .setAnchorView(mStatusView)
                                                     .build());
     }
