@@ -99,6 +99,10 @@ void MediaStreamAudioTrack::SetContentHint(
     sink->OnContentHintChanged(content_hint);
 }
 
+int MediaStreamAudioTrack::NumPreferredChannels() const {
+  return deliverer_.NumPreferredChannels();
+}
+
 void* MediaStreamAudioTrack::GetClassIdentifier() const {
   return nullptr;
 }

@@ -20,9 +20,8 @@ const char kAgcStartupMinVolume[] = "agc-startup-min-volume";
 
 namespace features {
 
-// Enables multi channel capture audio to be processed without
-// downmixing in the WebRTC audio processing module when running in the renderer
-// process.
+// Enables multichannel capture audio to be processed without downmixing in the
+// WebRTC audio processing module.
 const base::Feature kWebRtcEnableCaptureMultiChannelApm{
     "WebRtcEnableCaptureMultiChannelApm", base::FEATURE_DISABLED_BY_DEFAULT};
 

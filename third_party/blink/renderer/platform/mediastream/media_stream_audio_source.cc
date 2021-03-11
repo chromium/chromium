@@ -256,4 +256,8 @@ base::SingleThreadTaskRunner* MediaStreamAudioSource::GetTaskRunner() const {
   return task_runner_.get();
 }
 
+int MediaStreamAudioSource::NumPreferredChannels() const {
+  return deliverer_.NumPreferredChannels();
+}
+
 }  // namespace blink
