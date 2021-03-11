@@ -5953,6 +5953,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="EnterpriseDevicePolicyDeviceIdValidity" separator=".">
+  <obsolete>
+    Removed in M91 since the data is no longer required.
+  </obsolete>
   <suffix name="InitialStore"
       label="the initial device policy stored during enrollment"/>
   <suffix name="Update"

@@ -397,6 +397,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Enterprise.DevicePolicyDeviceIdValidity"
     enum="EnterprisePolicyDeviceIdValidity" expires_after="M85">
+  <obsolete>
+    Removed in M91 since the data is no longer required.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="EnterpriseDevicePolicyDeviceIdValidity" -->
 
   <owner>emaxx@chromium.org</owner>

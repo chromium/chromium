@@ -103,8 +103,7 @@ void DeviceCloudPolicyStoreChromeOS::Store(
   DeviceCloudPolicyValidator::StartValidation(
       std::move(validator),
       base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated,
-                     weak_factory_.GetWeakPtr(),
-                     /*is_initial=*/false));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreChromeOS::Load() {
@@ -135,8 +134,7 @@ void DeviceCloudPolicyStoreChromeOS::InstallInitialPolicy(
   DeviceCloudPolicyValidator::StartValidation(
       std::move(validator),
       base::BindOnce(&DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated,
-                     weak_factory_.GetWeakPtr(),
-                     /*is_initial=*/true));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void DeviceCloudPolicyStoreChromeOS::DeviceSettingsUpdated() {
@@ -167,7 +165,6 @@ DeviceCloudPolicyStoreChromeOS::CreateValidator(
 }
 
 void DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
-    bool is_initial,
     DeviceCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
@@ -175,11 +172,6 @@ void DeviceCloudPolicyStoreChromeOS::OnPolicyToStoreValidated(
     NotifyStoreError();
     return;
   }
-
-  RecordDeviceIdValidityMetric(
-      is_initial ? "Enterprise.DevicePolicyDeviceIdValidity.InitialStore"
-                 : "Enterprise.DevicePolicyDeviceIdValidity.Update",
-      *validator->policy_data(), *install_attributes_);
 
   device_settings_service_->Store(
       std::move(validator->policy()),

@@ -68,9 +68,7 @@ class DeviceCloudPolicyStoreChromeOS
 
   // Called on completion on the policy validation prior to storing policy.
   // Starts the actual store operation.
-  // |is_initial| is whether the policy store is for the initial installation.
-  void OnPolicyToStoreValidated(bool is_initial,
-                                DeviceCloudPolicyValidator* validator);
+  void OnPolicyToStoreValidated(DeviceCloudPolicyValidator* validator);
 
   // Handles store completion operations updates status.
   void OnPolicyStored();
