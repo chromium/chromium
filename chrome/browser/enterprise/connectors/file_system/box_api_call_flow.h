@@ -153,6 +153,38 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
   base::WeakPtrFactory<BoxWholeFileUploadApiCallFlow> factory_{this};
 };
 
+// Helper for starting an upload session to designated Chrome downloads folder
+// in Box.
+class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
+ public:
+  using Callback = base::OnceCallback<void(bool, int, base::Value)>;
+  BoxCreateUploadSessionApiCallFlow(Callback callback,
+                                    const std::string& folder_id,
+                                    const size_t file_size,
+                                    const std::string& file_name);
+  ~BoxCreateUploadSessionApiCallFlow() override;
+
+ protected:
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  std::string CreateApiCallBody() override;
+  bool IsExpectedSuccessCode(int code) const override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessApiCallFailure(int net_error,
+                             const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+
+ private:
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+
+  Callback callback_;
+  const std::string folder_id_;
+  const size_t file_size_;
+  const std::string file_name_;
+  base::WeakPtrFactory<BoxCreateUploadSessionApiCallFlow> factory_{this};
+};
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_FLOW_H_

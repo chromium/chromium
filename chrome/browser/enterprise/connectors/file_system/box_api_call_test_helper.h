@@ -7,25 +7,34 @@
 
 namespace enterprise_connectors {
 
-// Expected url's for each of the Box mini classes
+// Expected url's for each of the Box mini classes for whole file upload.
 extern const char kFileSystemBoxFindFolderUrl[];
 extern const char kFileSystemBoxCreateFolderUrl[];
 extern const char kFileSystemBoxWholeFileUploadUrl[];
 
 // Expected responses for calls to Box endpoints; used for
-// network::TestURLLoaderFactory Expected response from
-// kFileSystemBoxFindFolderUrl
+// network::TestURLLoaderFactory.
+
+// Expected response from kFileSystemBoxFindFolderUrl.
 extern const char kFileSystemBoxFindFolderResponseBody[];
-// Expected folder id extracted from kFileSystemBoxFindFolderResponseBody
+// Expected folder id extracted from kFileSystemBoxFindFolderResponseBody.
 extern const char kFileSystemBoxFindFolderResponseFolderId[];
 // Expected response from kFileSystemBoxFindFolderUrl when there is no matching
-// folder
+// folder.
 extern const char kFileSystemBoxFindFolderResponseEmptyEntriesList[];
-// Expected response from kFileSystemBoxCreateFolderUrl
+// Expected response from kFileSystemBoxCreateFolderUrl.
 extern const char kFileSystemBoxCreateFolderResponseBody[];
-// Expected folder id extracted from kFileSystemBoxCreateFolderResponseBody
+// Expected folder id extracted from kFileSystemBoxCreateFolderResponseBody.
 extern const char kFileSystemBoxCreateFolderResponseFolderId[];
 
+// Expected url's for each of the Box mini classes for chunked file upload.
+extern const char kFileSystemBoxChunkedUploadCreateSessionUrl[];
+extern const char kFileSystemBoxChunkedUploadPartUploadUrl[];
+extern const char kFileSystemBoxChunkedUploadAbortUrl[];
+extern const char kFileSystemBoxChunkedUploadCommitUrl[];
+
+// Expected response from kFileSystemBoxChunkedUploadCreateSessionUrl.
+extern const char kFileSystemBoxCreateUploadSessionResponseBody[];
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_BOX_API_CALL_TEST_HELPER_H_

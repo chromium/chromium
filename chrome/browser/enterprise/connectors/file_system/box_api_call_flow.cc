@@ -57,6 +57,10 @@ std::string GetMimeType(base::FilePath file_path) {
   return file_type;
 }
 
+base::Value CreateEmptyDict() {
+  return base::Value(base::Value::Type::DICTIONARY);
+}
+
 base::Value CreateSingleFieldDict(const std::string& key,
                                   const std::string& value) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -415,6 +419,96 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
   // TODO(1165972): decide whether to queue up the file to retry later, or also
   // delete like in ProcessApiCallSuccess()
   std::move(callback_).Run(false, response_code);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ChunkedUpload: CreateUploadSession
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/post-files-upload-sessions/
+
+BoxCreateUploadSessionApiCallFlow::BoxCreateUploadSessionApiCallFlow(
+    Callback callback,
+    const std::string& folder_id,
+    const size_t file_size,
+    const std::string& file_name)
+    : callback_(std::move(callback)),
+      folder_id_(folder_id),
+      file_size_(file_size),
+      file_name_(file_name) {}
+
+BoxCreateUploadSessionApiCallFlow::~BoxCreateUploadSessionApiCallFlow() =
+    default;
+
+GURL BoxCreateUploadSessionApiCallFlow::CreateApiCallUrl() {
+  return GURL("https://upload.box.com/api/2.0/files/upload_sessions/");
+}
+
+std::string BoxCreateUploadSessionApiCallFlow::CreateApiCallBody() {
+  base::Value val(base::Value::Type::DICTIONARY);
+  val.SetStringKey("folder_id", folder_id_);
+  val.SetIntKey("file_size", file_size_);  // TODO(https://crbug.com/1187152)
+  val.SetStringKey("file_name", file_name_);
+
+  bool file_big_enough = file_size_ > kChunkFileUploadMinSize;
+  CHECK_EQ(file_big_enough, true);
+
+  std::string body;
+  base::JSONWriter::Write(val, &body);
+  return body;
+}
+
+bool BoxCreateUploadSessionApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_CREATED;
+}
+
+void BoxCreateUploadSessionApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  CHECK_EQ(response_code, net::HTTP_CREATED);
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *body, base::BindOnce(&BoxCreateUploadSessionApiCallFlow::OnJsonParsed,
+                            factory_.GetWeakPtr()));
+}
+
+void BoxCreateUploadSessionApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession failed. Error code "
+             << response_code << "; headers: " << head->headers->raw_headers();
+  if (!body->empty()) {
+    LOG(ERROR) << "Body: " << *body;
+  }
+  std::move(callback_).Run(false, response_code, CreateEmptyDict());
+}
+
+void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession succeeded but unable "
+                  "to parse response";
+    std::move(callback_).Run(false, net::HTTP_CREATED, CreateEmptyDict());
+    return;
+  }
+
+  auto* session_endpoints = result.value->FindPath("session_endpoints");
+  bool valid_endpoints = session_endpoints &&
+                         session_endpoints->FindPath("upload_part") &&
+                         session_endpoints->FindPath("commit") &&
+                         session_endpoints->FindPath("abort");
+  if (!valid_endpoints) {
+    LOG(ERROR) << "[BoxApiCallFlow] CreateUploadSession succeeded but "
+                  "some endpoints returned are invalid: "
+               << *result.value;
+  }
+  std::move(callback_).Run(
+      valid_endpoints, net::HTTP_CREATED,
+      session_endpoints ? std::move(*session_endpoints) : CreateEmptyDict());
 }
 
 }  // namespace enterprise_connectors
