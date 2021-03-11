@@ -175,8 +175,8 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "a11y_page/a11y_page.js",
-    "a11y_page/captions_subpage.m.js",
-    "a11y_page/live_caption_section.m.js",
+    "a11y_page/captions_subpage.js",
+    "a11y_page/live_caption_section.js",
     "about_page/about_page.js",
     "appearance_page/appearance_fonts_page.js",
     "appearance_page/appearance_page.js",
@@ -570,7 +570,7 @@ js_library("site_favicon") {
 group("polymer3_elements") {
   public_deps = [
     # Sub-folder targets
-    "a11y_page:polymer3_elements",
+    "a11y_page:web_components",
     "about_page:web_components",
     "appearance_page:web_components",
     "autofill_page:web_components",

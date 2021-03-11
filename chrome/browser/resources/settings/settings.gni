@@ -59,6 +59,7 @@ settings_closure_flags =
     ]
 
 settings_migrated_imports = [
+  "chrome/browser/resources/settings/a11y_page/captions_subpage.html",
   "chrome/browser/resources/settings/about_page/about_page_browser_proxy.html",
   "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html",
   "chrome/browser/resources/settings/controls/controlled_button.html",

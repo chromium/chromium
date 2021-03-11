@@ -14,12 +14,12 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_shared_css.m.js';
 
 // <if expr="not is_macosx and not chromeos">
-import './captions_subpage.m.js';
+import './captions_subpage.js';
 import '../settings_page/settings_subpage.js';
 // </if>
 
 // <if expr="is_win or is_macosx">
-import './live_caption_section.m.js';
+import './live_caption_section.js';
 // </if>
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';

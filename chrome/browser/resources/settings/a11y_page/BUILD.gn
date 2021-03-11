@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -12,8 +12,8 @@ js_type_check("closure_compile_module") {
   deps = [
     ":a11y_page",
     ":captions_browser_proxy",
-    ":captions_subpage.m",
-    ":live_caption_section.m",
+    ":captions_subpage",
+    ":live_caption_section",
   ]
 }
 
@@ -32,8 +32,7 @@ js_library("captions_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-js_library("captions_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/a11y_page/captions_subpage.m.js" ]
+js_library("captions_subpage") {
   deps = [
     "../appearance_page:fonts_browser_proxy",
     "../controls:settings_dropdown_menu",
@@ -42,11 +41,9 @@ js_library("captions_subpage.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":captions_subpage_module" ]
 }
 
-js_library("live_caption_section.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/a11y_page/live_caption_section.m.js" ]
+js_library("live_caption_section") {
   deps = [
     "../controls:settings_toggle_button",
     "../prefs:prefs_behavior.m",
@@ -54,40 +51,12 @@ js_library("live_caption_section.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
-  extra_deps = [ ":live_caption_section_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":a11y_page_module",
-    ":captions_subpage_module",
-    ":live_caption_section_module",
+html_to_js("web_components") {
+  js_files = [
+    "a11y_page.js",
+    "captions_subpage.js",
+    "live_caption_section.js",
   ]
-}
-
-polymer_modulizer("a11y_page") {
-  js_file = "a11y_page.js"
-  html_file = "a11y_page.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("captions_subpage") {
-  js_file = "captions_subpage.js"
-  html_file = "captions_subpage.html"
-  html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports + [
-                   "chrome/browser/resources/settings/controls/settings_dropdown_menu.html|DropdownMenuOptionList",
-                   "chrome/browser/resources/settings/appearance_page/fonts_browser_proxy.html|FontsBrowserProxy, FontsBrowserProxyImpl, FontsData",
-                 ]
-  namespace_rewrites = settings_namespace_rewrites
-}
-
-polymer_modulizer("live_caption_section") {
-  js_file = "live_caption_section.js"
-  html_file = "live_caption_section.html"
-  html_type = "dom-module"
-  migrated_imports = settings_migrated_imports
-  auto_imports = settings_auto_imports
-  namespace_rewrites = settings_namespace_rewrites
 }

@@ -10,7 +10,17 @@
  * other versions of Windows.
  */
 
-(function() {
+import '//resources/cr_elements/shared_style_css.m.js';
+import '../controls/settings_toggle_button.js';
+import '../settings_shared_css.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {PrefsBehavior} from '../prefs/prefs_behavior.m.js';
+
 
 /**
  * |name| is the display name of a language, ex. German.
@@ -32,6 +42,8 @@ let LiveCaptionLanguageList;
 
 Polymer({
   is: 'settings-live-caption',
+
+  _template: html`{__html_template__}`,
 
   behaviors: [
     I18nBehavior,
@@ -169,4 +181,3 @@ Polymer({
     }
   },
 });
-})();
