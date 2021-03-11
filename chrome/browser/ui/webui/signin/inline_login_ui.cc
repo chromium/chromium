@@ -181,10 +181,10 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddResourcePaths(kResources);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"title", IDS_CHROME_SIGNIN_TITLE},
     {"accessibleCloseButtonLabel", IDS_SIGNIN_ACCESSIBLE_CLOSE_BUTTON},
     {"accessibleBackButtonLabel", IDS_SIGNIN_ACCESSIBLE_BACK_BUTTON},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
     {"ok", IDS_APP_OK},
     {"accountManagerDialogWelcomeTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
@@ -198,6 +198,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
     {"accountManagerErrorCannotAddAccountBody",
      IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
+#else
+    {"title", IDS_CHROME_SIGNIN_TITLE},
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
