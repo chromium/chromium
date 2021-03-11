@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "weblayer/browser/download_manager_delegate_impl.h"
@@ -68,6 +69,8 @@ class BrowserContextImpl : public content::BrowserContext {
 
   PrefService* pref_service() const { return user_pref_service_.get(); }
 
+  SimpleFactoryKey* simple_factory_key() { return &simple_factory_key_; }
+
  private:
   class WebLayerVariationsClient;
 
@@ -81,6 +84,11 @@ class BrowserContextImpl : public content::BrowserContext {
 
   ProfileImpl* const profile_impl_;
   base::FilePath path_;
+  // In Chrome, a SimpleFactoryKey is used as a minimal representation of a
+  // BrowserContext used before full browser mode has started. WebLayer doesn't
+  // have an incomplete mode, so this is just a member variable for
+  // compatibility with components that expect a SimpleFactoryKey.
+  SimpleFactoryKey simple_factory_key_;
   // ResourceContext needs to be deleted on the IO thread in general (and in
   // particular due to the destruction of the safebrowsing mojo interface
   // that has been added in ContentBrowserClient::ExposeInterfacesToRenderer

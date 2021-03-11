@@ -27,6 +27,7 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "weblayer/browser/content_browser_client_impl.h"
 #include "weblayer/common/content_client_impl.h"
 #include "weblayer/common/weblayer_paths.h"
@@ -156,8 +157,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kWebXr,
     ::features::kWebXrArModule,
     ::features::kWebXrHitTest,
-    // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
-    ::features::kBackgroundFetch,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
     ::features::kNotificationTriggers,
@@ -181,6 +180,10 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kWebOTP,
 #endif
   };
+
+  // TODO(crbug.com/1057770): make Background Fetch work with WebLayer.
+  if (!BackgroundFetchDelegateFactory::IsEnabled())
+    disabled_features.push_back(::features::kBackgroundFetch);
 
 #if defined(OS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=

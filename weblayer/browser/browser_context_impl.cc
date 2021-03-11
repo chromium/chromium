@@ -35,6 +35,8 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_sync/background_sync_controller_factory.h"
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
@@ -95,6 +97,7 @@ BrowserContextImpl::BrowserContextImpl(ProfileImpl* profile_impl,
                                        const base::FilePath& path)
     : profile_impl_(profile_impl),
       path_(path),
+      simple_factory_key_(path, path.empty()),
       resource_context_(new ResourceContextImpl()),
       download_delegate_(BrowserContext::GetDownloadManager(this)) {
   CreateUserPrefService();
@@ -195,7 +198,7 @@ BrowserContextImpl::GetClientHintsControllerDelegate() {
 
 content::BackgroundFetchDelegate*
 BrowserContextImpl::GetBackgroundFetchDelegate() {
-  return nullptr;
+  return BackgroundFetchDelegateFactory::GetForBrowserContext(this);
 }
 
 content::BackgroundSyncController*

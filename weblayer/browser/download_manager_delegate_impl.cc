@@ -123,6 +123,10 @@ bool DownloadManagerDelegateImpl::InterceptDownloadIfApplicable(
     int64_t content_length,
     bool is_transient,
     content::WebContents* web_contents) {
+  // Don't intercept transient downloads (such as Background Fetches).
+  if (is_transient)
+    return false;
+
   // If there's no DownloadDelegate, the download is simply dropped.
   auto* delegate = GetDelegate(web_contents);
   if (!delegate)

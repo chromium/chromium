@@ -117,6 +117,7 @@ android_library("java") {
   sources = [
     "org/chromium/weblayer_private/ActionModeCallback.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
+    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
     "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
@@ -222,7 +223,9 @@ android_library("java") {
     "//components/content_settings/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
+    "//components/download/internal/background_service:internal_java",
     "//components/download/internal/common:internal_java",
+    "//components/download/network:network_java",
     "//components/embedder_support/android:application_java",
     "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
@@ -418,6 +421,7 @@ generate_jni("test_jni") {
 generate_jni("jni") {
   sources = [
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
+    "org/chromium/weblayer_private/BackgroundFetchHelper.java",
     "org/chromium/weblayer_private/BrowserControlsContainerView.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserList.java",

@@ -54,6 +54,10 @@
           </intent-filter>
       </activity>
 
+      <!-- Enable BGF, which is still in development. Don't enable this in production apps. -->
+      <meta-data
+          android:name="org.chromium.weblayer.ENABLE_BACKGROUND_FETCH" android:value="true"/>
+
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
                        android:value="{{ weblayer_package }}"/>
