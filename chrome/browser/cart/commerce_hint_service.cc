@@ -76,6 +76,21 @@ class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
     service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL());
   }
 
+  void OnVisitCart() override {
+    VLOG(1) << "Received OnVisitCart in the browser process";
+    service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL());
+  }
+
+  void OnVisitCheckout() override {
+    VLOG(1) << "Received OnVisitCheckout in the browser process";
+    service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
+  }
+
+  void OnPurchase() override {
+    VLOG(1) << "Received OnPurchase in the browser process";
+    service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
+  }
+
  private:
   base::WeakPtr<CommerceHintService> service_;
 };
@@ -104,6 +119,10 @@ void CommerceHintService::OnAddToCart(const GURL& url) {
   service_->LoadCart(eTLDPlusOne(url),
                      base::BindOnce(&CommerceHintService::AddCartToDB,
                                     weak_factory_.GetWeakPtr(), url));
+}
+
+void CommerceHintService::OnRemoveCart(const GURL& url) {
+  service_->DeleteCart(eTLDPlusOne(url));
 }
 
 void CommerceHintService::AddCartToDB(

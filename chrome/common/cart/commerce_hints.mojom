@@ -9,4 +9,13 @@ module cart.mojom;
 interface CommerceHintObserver {
   // Add-to-cart action is detected.
   OnAddToCart();
+
+  // Shopping cart page is visited.
+  OnVisitCart();
+
+  // Checkout page is visited.
+  OnVisitCheckout();
+
+  // Purchase action is detected.
+  OnPurchase();
 };

@@ -31,6 +31,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   cart_db::ChromeCartContentProto proto;
   proto.set_key(domain);
   proto.set_merchant_cart_url(cart_url);
+  proto.set_timestamp(base::Time::Now().ToDoubleT());
   return proto;
 }
 
@@ -51,6 +52,10 @@ const ShoppingCarts kEmptyExpected = {};
 
 std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     const net::test_server::HttpRequest& request) {
+  // This should be served from test data.
+  if (request.relative_url == "/purchase.html")
+    return nullptr;
+
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content("dummy");
   response->set_content_type("text/html");
@@ -73,6 +78,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     // This is necessary to test non-localhost domains. See |NavigateToURL|.
     host_resolver()->AddRule("*", "127.0.0.1");
 
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/cart/");
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&BasicResponse));
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -166,6 +173,44 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   SendXHR("/add-to-cart", "product: 123");
 
   WaitForCartCount(kExpectedExample);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
+  NavigateToURL("https://www.walmart.com/cart");
+
+  WaitForCartCount(kExpectedExample);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
+  service_->AddCart(kMockExample, kMockExampleProto);
+  WaitForCartCount(kExpectedExample);
+
+  NavigateToURL("https://www.walmart.com/");
+  NavigateToURL("https://www.walmart.com/123/checkout/456");
+  WaitForCartCount(kEmptyExpected);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
+  service_->AddCart(kMockAmazon, kMockAmazonProto);
+  WaitForCartCount(kExpectedAmazon);
+
+  NavigateToURL("http://amazon.com/");
+  NavigateToURL(
+      "http://amazon.com/gp/buy/spc/handlers/static-submit-decoupled.html");
+  WaitForCartCount(kEmptyExpected);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
+  service_->AddCart(kMockExample, kMockExampleProto);
+  WaitForCartCount(kExpectedExample);
+
+  NavigateToURL("https://www.walmart.com/purchase.html");
+
+  std::string script = "document.getElementById('submit').click()";
+  ASSERT_TRUE(ExecJs(web_contents(), script));
+  content::TestNavigationObserver load_observer(web_contents());
+  load_observer.WaitForNavigationFinished();
+  WaitForCartCount(kEmptyExpected);
 }
 
 }  // namespace

@@ -21,6 +21,7 @@ class CommerceHintService
       mojo::PendingReceiver<mojom::CommerceHintObserver> receiver);
   content::WebContents* WebContents();
   void OnAddToCart(const GURL& url);
+  void OnRemoveCart(const GURL& url);
 
  private:
   explicit CommerceHintService(content::WebContents* web_contents);
