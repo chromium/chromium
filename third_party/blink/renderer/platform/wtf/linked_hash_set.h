@@ -41,6 +41,8 @@ namespace WTF {
 //
 // Unlike ListHashSet, this container supports WeakMember<T>.
 //
+// LinkedHashSet iterators are invalidated by mutation of the collection.
+//
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,

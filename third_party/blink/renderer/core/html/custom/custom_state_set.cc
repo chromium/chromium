@@ -10,10 +10,45 @@
 
 namespace blink {
 
+class CustomStateIterationSource : public CustomStateSet::IterationSource {
+ public:
+  explicit CustomStateIterationSource(CustomStateSet& states)
+      : states_(states) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(states_);
+    CustomStateSet::IterationSource::Trace(visitor);
+  }
+
+  bool Next(ScriptState*,
+            String& out_key,
+            String& out_value,
+            ExceptionState&) override {
+    if (index_ >= states_->list_.size())
+      return false;
+    String value = states_->list_[index_++];
+    out_key = value;
+    out_value = value;
+    return true;
+  }
+
+  void DidEraseAt(wtf_size_t erased_index) {
+    // If index_ is N and an item between 0 and N-1 was erased, decrement
+    // index_ in order that Next() will return an item which was at N.
+    if (erased_index < index_)
+      --index_;
+  }
+
+ private:
+  Member<CustomStateSet> states_;
+  wtf_size_t index_ = 0;
+};
+
 CustomStateSet::CustomStateSet(Element& element) : element_(element) {}
 
 void CustomStateSet::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
+  visitor->Trace(iterators_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -42,27 +77,30 @@ void CustomStateSet::add(const String& value, ExceptionState& exception_state) {
   // 2. Invoke the default add operation, which the setlike<DOMString> would
   // have if CustomStateSet interface had no add(value) operation, with value
   // argument.
-  set_.insert(value);
+  if (!list_.Contains(value))
+    list_.push_back(value);
 
   InvalidateStyle();
 }
 
 uint32_t CustomStateSet::size() const {
-  return set_.size();
+  return list_.size();
 }
 
 void CustomStateSet::clearForBinding(ScriptState*, ExceptionState&) {
-  set_.clear();
+  list_.clear();
   InvalidateStyle();
 }
 
 bool CustomStateSet::deleteForBinding(ScriptState*,
                                       const String& value,
                                       ExceptionState&) {
-  auto iter = set_.find(value);
-  if (iter == set_.cend())
+  wtf_size_t index = list_.Find(value);
+  if (index == WTF::kNotFound)
     return false;
-  set_.erase(iter);
+  list_.EraseAt(index);
+  for (auto& iterator : iterators_)
+    iterator->DidEraseAt(index);
   InvalidateStyle();
   return true;
 }
@@ -74,41 +112,15 @@ bool CustomStateSet::hasForBinding(ScriptState*,
 }
 
 bool CustomStateSet::Has(const String& value) const {
-  return set_.Contains(value);
+  return list_.Contains(value);
 }
-
-class CustomStateIterationSource : public CustomStateSet::IterationSource {
- public:
-  explicit CustomStateIterationSource(CustomStateSet& states)
-      : states_(states), iterator_(states.set_.begin()) {}
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(states_);
-    CustomStateSet::IterationSource::Trace(visitor);
-  }
-
-  bool Next(ScriptState*,
-            String& out_key,
-            String& out_value,
-            ExceptionState&) override {
-    if (iterator_ == states_->set_.end())
-      return false;
-    String value = *iterator_;
-    ++iterator_;
-    out_key = value;
-    out_value = value;
-    return true;
-  }
-
- private:
-  Member<CustomStateSet> states_;
-  LinkedHashSet<String>::const_iterator iterator_;
-};
 
 CustomStateSet::IterationSource* CustomStateSet::StartIteration(
     ScriptState*,
     ExceptionState&) {
-  return MakeGarbageCollected<CustomStateIterationSource>(*this);
+  auto* iterator = MakeGarbageCollected<CustomStateIterationSource>(*this);
+  iterators_.insert(iterator);
+  return iterator;
 }
 
 void CustomStateSet::InvalidateStyle() const {
