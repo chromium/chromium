@@ -259,6 +259,7 @@ class TestWebContentsPresentationManager
   MOCK_CONST_METHOD0(HasDefaultPresentationRequest, bool());
   MOCK_CONST_METHOD0(GetDefaultPresentationRequest,
                      const content::PresentationRequest&());
+  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
 
   void OnPresentationResponse(
       const content::PresentationRequest& presentation_request,

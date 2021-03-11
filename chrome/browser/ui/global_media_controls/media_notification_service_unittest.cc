@@ -154,6 +154,7 @@ class MockWebContentsPresentationManager
                void(const content::PresentationRequest&,
                     media_router::mojom::RoutePresentationConnectionPtr,
                     const media_router::RouteRequestResult&));
+  MOCK_METHOD0(GetMediaRoutes, std::vector<media_router::MediaRoute>());
 
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();

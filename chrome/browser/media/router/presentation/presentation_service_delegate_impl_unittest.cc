@@ -7,12 +7,13 @@
 #include "base/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/media_router_factory.h"
+#include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/presentation/local_presentation_manager.h"
 #include "components/media_router/browser/presentation/local_presentation_manager_factory.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -121,10 +122,11 @@ class MockLocalPresentationManager : public LocalPresentationManager {
   MOCK_METHOD2(UnregisterLocalPresentationController,
                void(const std::string& presentation_id,
                     const content::GlobalFrameRoutingId& render_frame_id));
-  MOCK_METHOD2(OnLocalPresentationReceiverCreated,
+  MOCK_METHOD3(OnLocalPresentationReceiverCreated,
                void(const PresentationInfo& presentation_info,
                     const content::ReceiverConnectionAvailableCallback&
-                        receiver_callback));
+                        receiver_callback,
+                    content::WebContents* receiver_web_contents));
   MOCK_METHOD1(OnLocalPresentationReceiverTerminated,
                void(const std::string& presentation_id));
   MOCK_METHOD1(IsLocalPresentation, bool(const std::string& presentation_id));
@@ -453,6 +455,7 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
 }
 
 TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
+  const MediaRoute::Id route_id("routeId");
   content::WebContentsTester::For(GetWebContents())
       ->NavigateAndCommit(frame_url_);
 
@@ -484,7 +487,7 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionSuccess(_))
       .Times(1);
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromSuccess(
-      MediaRoute("routeId", source1_, "mediaSinkId", "description", true, true),
+      MediaRoute(route_id, source1_, "mediaSinkId", "description", true, true),
       kPresentationId);
   std::move(route_response_callback).Run(/** connection */ nullptr, *result);
 
@@ -493,9 +496,44 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
   auto callback = mock_callback.Get();
   PresentationInfo connection(presentation_url1_, kPresentationId);
   EXPECT_CALL(*router_,
-              OnAddPresentationConnectionStateChangedCallbackInvoked(callback));
+              OnAddPresentationConnectionStateChangedCallbackInvoked(_));
   delegate_impl_->ListenForConnectionStateChange(
       main_frame_process_id_, main_frame_routing_id_, connection, callback);
+
+  EXPECT_CALL(mock_callback, Run(_));
+  router_->NotifyPresentationConnectionStateChange(
+      route_id, blink::mojom::PresentationConnectionState::TERMINATED);
+}
+
+TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
+  EXPECT_TRUE(delegate_impl_->GetMediaRoutes().empty());
+
+  // Start a session.
+  content::PresentationRequest request(
+      content::GlobalFrameRoutingId(main_frame_process_id_,
+                                    main_frame_routing_id_),
+      {presentation_url1_}, frame_origin_);
+  MediaRoute media_route("differentRouteId1", source1_, "mediaSinkId", "", true,
+                         true);
+  std::unique_ptr<RouteRequestResult> result =
+      RouteRequestResult::FromSuccess(media_route, kPresentationId);
+  delegate_impl_->OnPresentationResponse(request,
+                                         /** connection */ nullptr, *result);
+  EXPECT_EQ(delegate_impl_->GetMediaRoutes().size(), 1u);
+  EXPECT_EQ(delegate_impl_->GetMediaRoutes()[0], media_route);
+
+  base::MockCallback<content::PresentationConnectionStateChangedCallback>
+      mock_callback;
+  PresentationInfo connection(presentation_url1_, kPresentationId);
+  delegate_impl_->ListenForConnectionStateChange(
+      main_frame_process_id_, main_frame_routing_id_, connection,
+      mock_callback.Get());
+
+  // Terminate the session.
+  router_->NotifyPresentationConnectionStateChange(
+      media_route.media_route_id(),
+      blink::mojom::PresentationConnectionState::TERMINATED);
+  EXPECT_TRUE(delegate_impl_->GetMediaRoutes().empty());
 }
 
 TEST_F(PresentationServiceDelegateImplTest, Reset) {

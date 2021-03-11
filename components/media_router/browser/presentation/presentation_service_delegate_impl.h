@@ -119,6 +119,7 @@ class PresentationServiceDelegateImpl
   void OnPresentationResponse(const content::PresentationRequest& request,
                               mojom::RoutePresentationConnectionPtr connection,
                               const RouteRequestResult& result) override;
+  std::vector<MediaRoute> GetMediaRoutes() override;
   base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() override;
 
   // Returns the WebContents that owns this instance.
@@ -215,6 +216,15 @@ class PresentationServiceDelegateImpl
   void NotifyDefaultPresentationChanged(
       const content::PresentationRequest* request);
   void NotifyMediaRoutesChanged();
+
+  // Invoked by the MR when a Presentation Connection state changes in a frame.
+  // It calls |RemovePresentation()| when the connection is closed/terminated.
+  void OnConnectionStateChanged(
+      const content::GlobalFrameRoutingId& render_frame_host_id,
+      const blink::mojom::PresentationInfo& connection,
+      const content::PresentationConnectionStateChangedCallback&
+          state_changed_cb,
+      const content::PresentationConnectionStateChangeInfo& info);
 
   // References to the WebContents that owns this instance, and associated
   // browser profile's MediaRouter instance.

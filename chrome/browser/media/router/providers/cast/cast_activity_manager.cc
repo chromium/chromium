@@ -401,7 +401,16 @@ void CastActivityManager::RemoveActivity(
     ActivityMap::iterator activity_it,
     PresentationConnectionState state,
     PresentationConnectionCloseReason close_reason) {
+  // Keep a copy of route id so it does not get deleted.
+  std::string route_id(activity_it->first);
   RemoveActivityWithoutNotification(activity_it, state, close_reason);
+  if (state == PresentationConnectionState::CLOSED) {
+    media_router_->OnPresentationConnectionClosed(
+        route_id, close_reason,
+        /* message */ "Activity removed from CastActivityManager.");
+  } else {
+    media_router_->OnPresentationConnectionStateChanged(route_id, state);
+  }
   NotifyAllOnRoutesUpdated();
 }
 

@@ -73,6 +73,8 @@ class WebContentsPresentationManager {
       mojom::RoutePresentationConnectionPtr connection,
       const RouteRequestResult& result) = 0;
 
+  virtual std::vector<MediaRoute> GetMediaRoutes() = 0;
+
   virtual base::WeakPtr<WebContentsPresentationManager> GetWeakPtr() = 0;
 
  protected:
