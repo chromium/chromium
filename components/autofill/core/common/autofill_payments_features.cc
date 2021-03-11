@@ -73,7 +73,7 @@ const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
 // When enabled, offer data will be retrieved during downstream and shown in
 // the dropdown list.
 const base::Feature kAutofillEnableOffersInDownstream{
-    "kAutofillEnableOffersInDownstream", base::FEATURE_DISABLED_BY_DEFAULT};
+    "kAutofillEnableOffersInDownstream", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled and user is signed in, a footer indicating user's e-mail address
 // and profile picture will appear at the bottom of SaveCardInfoBar.

@@ -48,7 +48,7 @@ const base::Feature kSyncAllowWalletDataInTransportModeWithCustomPassphrase{
 
 // Controls whether to enable syncing of Autofill Wallet offer data.
 const base::Feature kSyncAutofillWalletOfferData{
-    "SyncAutofillWalletOfferData", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncAutofillWalletOfferData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable syncing of Wi-Fi configurations.
 const base::Feature kSyncWifiConfigurations{"SyncWifiConfigurations",
