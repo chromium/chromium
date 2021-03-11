@@ -13905,9 +13905,29 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="SSL.MixedContentShown">
+  <obsolete>
+    Replaced by SSL.MixedContentShown2. Removed in 03/2021.
+  </obsolete>
   <owner>carlosil@chromium.org</owner>
   <summary>
     Logged when mixed content is displayed on a site.
+  </summary>
+  <metric name="Type">
+    <summary>
+      A value of the MixedContentType enum, detailing the type of mixed content
+      included on the site.
+    </summary>
+  </metric>
+</event>
+
+<event name="SSL.MixedContentShown2">
+  <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Logged when mixed content is loaded, differentiated by blockable,
+    optionally-blockable mixed content, and mixed forms. Also tracks when a site
+    with a valid certificate loads a subresource with an invalid certificate.
+    Replaced SSL.MixedContentShown.
   </summary>
   <metric name="Type">
     <summary>

@@ -475,7 +475,10 @@ bool MixedContentChecker::ShouldBlockFetch(
       if (allowed) {
         if (content_settings_client)
           content_settings_client->PassiveInsecureContentFound(url);
-        local_frame_host.DidDisplayInsecureContent();
+        // Only notify embedder about loads that would create CSP reports (i.e.
+        // filter out preloads).
+        if (reporting_disposition == ReportingDisposition::kReport)
+          local_frame_host.DidDisplayInsecureContent();
       }
       break;
 
@@ -509,8 +512,12 @@ bool MixedContentChecker::ShouldBlockFetch(
         }
       }
       if (allowed) {
-        notifier.NotifyInsecureContentRan(KURL(security_origin->ToString()),
-                                          url);
+        // Only notify embedder about loads that would create CSP reports (i.e.
+        // filter out preloads).
+        if (reporting_disposition == ReportingDisposition::kReport) {
+          notifier.NotifyInsecureContentRan(KURL(security_origin->ToString()),
+                                            url);
+        }
         UseCounter::Count(frame->GetDocument(),
                           WebFeature::kMixedContentBlockableAllowed);
       }
@@ -519,7 +526,7 @@ bool MixedContentChecker::ShouldBlockFetch(
 
     case mojom::blink::MixedContentContextType::kShouldBeBlockable:
       allowed = !strict_mode;
-      if (allowed)
+      if (allowed && reporting_disposition == ReportingDisposition::kReport)
         local_frame_host.DidDisplayInsecureContent();
       break;
     case mojom::blink::MixedContentContextType::kNotMixedContent:

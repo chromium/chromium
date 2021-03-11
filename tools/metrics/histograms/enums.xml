@@ -51338,11 +51338,11 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MixedContentType">
-  <int value="0" label="Display Mixed Content"/>
-  <int value="1" label="Display Content with Certificate Errors"/>
+  <int value="0" label="Optionally Blockable Mixed Content"/>
+  <int value="1" label="Optionally Blockable Content with Certificate Errors"/>
   <int value="2" label="Mixed Content Form"/>
-  <int value="3" label="Scripting Mixed Content"/>
-  <int value="4" label="Scripting Content with Certificate Errors"/>
+  <int value="3" label="Blockable Mixed Content"/>
+  <int value="4" label="Blockable Content with Certificate Errors"/>
 </enum>
 
 <enum name="MixedFormInterstitialTriggeredState">

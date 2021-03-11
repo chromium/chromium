@@ -14907,8 +14907,25 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SSL.MixedContentShown" enum="MixedContentType"
     expires_after="2021-08-22">
+  <obsolete>
+    Replaced by SSL.MixedContentShown2, which does not log the *WithCertErrors
+    buckets when the main frame load also has certificate errors. Removed in
+    03/2021.
+  </obsolete>
   <owner>carlosil@chromium.org</owner>
   <summary>Tracks when mixed content is displayed or run.</summary>
+</histogram>
+
+<histogram name="SSL.MixedContentShown2" enum="MixedContentType"
+    expires_after="2021-08-22">
+  <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks when mixed content is loaded, differentiated by blockable,
+    optionally-blockable mixed content, and mixed forms. Also tracks when a site
+    with a valid certificate loads a subresource with an invalid certificate.
+    Replaced SSL.MixedContentShown.
+  </summary>
 </histogram>
 
 <histogram name="SSL.NonWebbyMixedContentLoaded" enum="Boolean"

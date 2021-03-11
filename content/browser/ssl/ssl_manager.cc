@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/common/content_client.h"
+#include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -42,12 +43,12 @@ const char kSSLManagerKeyName[] = "content_ssl_manager";
 // Used to log type of mixed content displayed/ran, matches histogram enum
 // (MixedContentType). DO NOT REORDER.
 enum class MixedContentType {
-  kDisplayMixedContent = 0,
-  kDisplayWithCertErrors = 1,
+  kOptionallyBlockableMixedContent = 0,
+  kOptionallyBlockableWithCertErrors = 1,
   kMixedForm = 2,
-  kScriptingMixedContent = 3,
-  kScriptingWithCertErrors = 4,
-  kMaxValue = kScriptingWithCertErrors,
+  kBlockableMixedContent = 3,
+  kBlockableWithCertErrors = 4,
+  kMaxValue = kBlockableWithCertErrors,
 };
 
 void OnAllowCertificate(SSLErrorHandler* handler,
@@ -99,8 +100,8 @@ class SSLManagerSet : public base::SupportsUserData::Data {
 void LogMixedContentMetrics(MixedContentType type,
                             ukm::SourceId source_id,
                             ukm::UkmRecorder* recorder) {
-  UMA_HISTOGRAM_ENUMERATION("SSL.MixedContentShown", type);
-  ukm::builders::SSL_MixedContentShown(source_id)
+  UMA_HISTOGRAM_ENUMERATION("SSL.MixedContentShown2", type);
+  ukm::builders::SSL_MixedContentShown2(source_id)
       .SetType(static_cast<int64_t>(type))
       .Record(recorder);
 }
@@ -215,8 +216,8 @@ void SSLManager::DidDisplayMixedContent() {
     WebContentsImpl* contents = static_cast<WebContentsImpl*>(
         controller_->delegate()->GetWebContents());
     ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
-    LogMixedContentMetrics(MixedContentType::kDisplayMixedContent, source_id,
-                           ukm::UkmRecorder::Get());
+    LogMixedContentMetrics(MixedContentType::kOptionallyBlockableMixedContent,
+                           source_id, ukm::UkmRecorder::Get());
   }
   UpdateLastCommittedEntry(SSLStatus::DISPLAYED_INSECURE_CONTENT, 0);
 }
@@ -239,14 +240,18 @@ void SSLManager::DidDisplayContentWithCertErrors() {
   NavigationEntryImpl* entry = controller_->GetLastCommittedEntry();
   if (!entry)
     return;
-  // Only record information about subresources with cert errors if the
-  // main page is HTTPS with a certificate.
+
   if (entry->GetURL().SchemeIsCryptographic() && entry->GetSSL().certificate) {
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        controller_->delegate()->GetWebContents());
-    ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
-    LogMixedContentMetrics(MixedContentType::kDisplayWithCertErrors, source_id,
-                           ukm::UkmRecorder::Get());
+    // Only record information about subresources with cert errors if the
+    // main page is HTTPS with a valid certificate.
+    if (!net::IsCertStatusError(entry->GetSSL().cert_status)) {
+      WebContentsImpl* contents = static_cast<WebContentsImpl*>(
+          controller_->delegate()->GetWebContents());
+      ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
+      LogMixedContentMetrics(
+          MixedContentType::kOptionallyBlockableWithCertErrors, source_id,
+          ukm::UkmRecorder::Get());
+    }
     UpdateLastCommittedEntry(SSLStatus::DISPLAYED_CONTENT_WITH_CERT_ERRORS, 0);
   }
 }
@@ -260,7 +265,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
     WebContentsImpl* contents = static_cast<WebContentsImpl*>(
         controller_->delegate()->GetWebContents());
     ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
-    LogMixedContentMetrics(MixedContentType::kScriptingMixedContent, source_id,
+    LogMixedContentMetrics(MixedContentType::kBlockableMixedContent, source_id,
                            ukm::UkmRecorder::Get());
   }
 
@@ -282,11 +287,14 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
   if (!entry)
     return;
 
-  if (entry->GetURL().SchemeIsCryptographic() && entry->GetSSL().certificate) {
+  // Only record information about subresources with cert errors if the
+  // main page is HTTPS with a valid certificate.
+  if (entry->GetURL().SchemeIsCryptographic() && entry->GetSSL().certificate &&
+      !net::IsCertStatusError(entry->GetSSL().cert_status)) {
     WebContentsImpl* contents = static_cast<WebContentsImpl*>(
         controller_->delegate()->GetWebContents());
     ukm::SourceId source_id = contents->GetMainFrame()->GetPageUkmSourceId();
-    LogMixedContentMetrics(MixedContentType::kScriptingWithCertErrors,
+    LogMixedContentMetrics(MixedContentType::kBlockableWithCertErrors,
                            source_id, ukm::UkmRecorder::Get());
   }
 
