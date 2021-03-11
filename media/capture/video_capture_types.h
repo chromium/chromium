@@ -192,7 +192,8 @@ enum class VideoCaptureError {
   kCrosHalV3DeviceContextDuplicatedClient = 123,
   kDesktopCaptureDeviceMacFailedStreamCreate = 124,
   kDesktopCaptureDeviceMacFailedStreamStart = 125,
-  kMaxValue = 125
+  kCrosHalV3BufferManagerFailedToReserveBuffers = 126,
+  kMaxValue = 126
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

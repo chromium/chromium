@@ -228,6 +228,7 @@ enum VideoCaptureError {
   kCrosHalV3DeviceContextDuplicatedClient,
   kDesktopCaptureDeviceMacFailedStreamCreate,
   kDesktopCaptureDeviceMacFailedStreamStart,
+  kCrosHalV3BufferManagerFailedToReserveBuffers,
 };
 
 enum VideoCaptureFrameDropReason {

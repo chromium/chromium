@@ -714,6 +714,10 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart:
       return media::mojom::VideoCaptureError::
           kDesktopCaptureDeviceMacFailedStreamStart;
+    case media::VideoCaptureError::
+        kCrosHalV3BufferManagerFailedToReserveBuffers:
+      return media::mojom::VideoCaptureError::
+          kCrosHalV3BufferManagerFailedToReserveBuffers;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1270,6 +1274,11 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kDesktopCaptureDeviceMacFailedStreamStart:
       *output =
           media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kCrosHalV3BufferManagerFailedToReserveBuffers:
+      *output = media::VideoCaptureError::
+          kCrosHalV3BufferManagerFailedToReserveBuffers;
       return true;
   }
   NOTREACHED();
