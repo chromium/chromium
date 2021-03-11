@@ -52,7 +52,8 @@ static double pow10(double x) {
   return fdlibm::expf(x * 2.30258509299404568402);
 }
 
-Biquad::Biquad() : has_sample_accurate_values_(false) {
+Biquad::Biquad(unsigned render_quantum_frames)
+    : has_sample_accurate_values_(false) {
 #if defined(OS_MAC)
   // Allocate two samples more for filter history
   input_buffer_.Allocate(kBiquadBufferSize + 2);
@@ -61,11 +62,11 @@ Biquad::Biquad() : has_sample_accurate_values_(false) {
 
   // Allocate enough space for the a-rate filter coefficients to handle a
   // rendering quantum of 128 frames.
-  b0_.Allocate(audio_utilities::kRenderQuantumFrames);
-  b1_.Allocate(audio_utilities::kRenderQuantumFrames);
-  b2_.Allocate(audio_utilities::kRenderQuantumFrames);
-  a1_.Allocate(audio_utilities::kRenderQuantumFrames);
-  a2_.Allocate(audio_utilities::kRenderQuantumFrames);
+  b0_.Allocate(render_quantum_frames);
+  b1_.Allocate(render_quantum_frames);
+  b2_.Allocate(render_quantum_frames);
+  a1_.Allocate(render_quantum_frames);
+  a2_.Allocate(render_quantum_frames);
 
   // Initialize as pass-thru (straight-wire, no filter effect)
   SetNormalizedCoefficients(0, 1, 0, 0, 1, 0, 0);

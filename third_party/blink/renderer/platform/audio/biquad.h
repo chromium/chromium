@@ -49,7 +49,7 @@ class PLATFORM_EXPORT Biquad final {
   DISALLOW_NEW();
 
  public:
-  Biquad();
+  explicit Biquad(unsigned render_quantum_frames);
   ~Biquad();
 
   void Process(const float* source_p,
