@@ -237,35 +237,28 @@ template("test") {
     # everything added via additional_manifests
     if (!defined(invoker.manifest)) {
       if (!defined(invoker.additional_manifests)) {
-        manifest = "//build/config/fuchsia/tests-with-exec.cmx"
+        manifest_fragments = [ "//build/config/fuchsia/tests-with-exec.cmx" ]
       } else {
-        manifest = "//build/config/fuchsia/test/minimum_capabilities.test-cmx"
+        manifest_fragments =
+            [ "//build/config/fuchsia/test/minimum_capabilities.test-cmx" ]
       }
     } else {
-      manifest = invoker.manifest
+      manifest_fragments = [ invoker.manifest ]
     }
 
     if (defined(invoker.additional_manifests)) {
-      combined_manifest = "${target_name}.test-cmx"
-      cmc_merge(combined_manifest) {
-        sources = [ manifest ]
-        sources += invoker.additional_manifests
-        output_name = target_name
-      }
-      manifest = "${target_out_dir}/${combined_manifest}"
+      manifest_fragments += invoker.additional_manifests
     }
-
     if (use_clang_coverage) {
-      component_with_coverage_manifest = "${target_name}-coverage.test-cmx"
-      cmc_merge(component_with_coverage_manifest) {
-        sources = [
-          "//build/config/fuchsia/add_DebugData_service.test-cmx",
-          manifest,
-        ]
-        output_name = target_name
-      }
-      manifest = "${target_out_dir}/${component_with_coverage_manifest}"
+      manifest_fragments +=
+          [ "//build/config/fuchsia/add_DebugData_service.test-cmx" ]
     }
+    combined_manifest = "${target_name}.test-cmx"
+    cmc_merge(combined_manifest) {
+      sources = manifest_fragments
+      output_name = target_name
+    }
+    manifest = "${target_out_dir}/${combined_manifest}"
 
     fuchsia_package_runner(target_name) {
       is_test_exe = true
@@ -285,13 +278,7 @@ template("test") {
     cr_fuchsia_package(_pkg_target) {
       binary = ":$_exec_target"
       package_name_override = _output_name
-      deps = []
-      if (use_clang_coverage) {
-        deps += [ ":$component_with_coverage_manifest" ]
-      }
-      if (defined(invoker.additional_manifests)) {
-        deps += [ ":$combined_manifest" ]
-      }
+      deps = [ ":$combined_manifest" ]
     }
 
     executable(_exec_target) {
