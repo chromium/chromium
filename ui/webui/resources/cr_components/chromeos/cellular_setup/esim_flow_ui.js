@@ -27,6 +27,23 @@ cr.define('cellular_setup', function() {
   };
 
   /**
+   * The reason that caused the user to exit the ESim Setup flow.
+   * These values are persisted to logs. Entries should not be renumbered
+   * and numeric values should never be reused.
+   * @enum{number}
+   */
+  /* #export */ const ESimSetupFlowResult = {
+    SUCCESS: 0,
+    INSTALL_FAIL: 1,
+    CANCELLED_NEEDS_CONFIRMATION_CODE: 2,
+    CANCELLED_INVALID_ACTIVATION_CODE: 3,
+    ERROR_FETCHING_PROFILES: 4,
+    CANCELLED_WITHOUT_ERROR: 5,
+    CANCELLED_NO_PROFILES: 6,
+    NO_NETWORK: 7,
+  };
+
+  /**
    * Root element for the eSIM cellular setup flow. This element interacts with
    * the CellularSetup service to carry out the esim activation flow.
    */
@@ -122,6 +139,18 @@ cr.define('cellular_setup', function() {
     /** @private {?chromeos.cellularSetup.mojom.EuiccRemote} */
     euicc_: null,
 
+    /** @private {boolean} */
+    hasFailedFetchingProfiles_: false,
+
+    /** @private {?chromeos.cellularSetup.mojom.ProfileInstallResult} */
+    lastProfileInstallResult_: null,
+
+    /**
+     * If there are no active network connections of any type.
+     * @private {boolean}
+     */
+    isOffline_: false,
+
     listeners: {
       'activation-code-updated': 'onActivationCodeUpdated_',
       'forward-navigation-requested': 'onForwardNavigationRequested_',
@@ -132,6 +161,72 @@ cr.define('cellular_setup', function() {
     /** @override */
     created() {
       this.eSimManagerRemote_ = cellular_setup.getESimManagerRemote();
+      const networkConfig =
+          network_config.MojoInterfaceProviderImpl.getInstance()
+              .getMojoServiceRemote();
+
+      const filter = {
+        filter: chromeos.networkConfig.mojom.FilterType.kActive,
+        limit: chromeos.networkConfig.mojom.NO_LIMIT,
+        networkType: chromeos.networkConfig.mojom.NetworkType.kAll,
+      };
+      networkConfig.getNetworkStateList(filter).then(response => {
+        this.onActiveNetworksChanged(response.result);
+      });
+    },
+
+    /** @override */
+    detached() {
+      let resultCode = null;
+
+      const ProfileInstallResult =
+          chromeos.cellularSetup.mojom.ProfileInstallResult;
+
+      switch (this.lastProfileInstallResult_) {
+        case ProfileInstallResult.kSuccess:
+          resultCode = ESimSetupFlowResult.SUCCESS;
+          break;
+        case ProfileInstallResult.kFailure:
+          resultCode = ESimSetupFlowResult.INSTALL_FAIL;
+          break;
+        case ProfileInstallResult.kErrorNeedsConfirmationCode:
+          resultCode = ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE;
+          break;
+        case ProfileInstallResult.kErrorInvalidActivationCode:
+          resultCode = ESimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE;
+          break;
+        default:
+          // Handles case when no profile installation was attempted.
+          if (this.hasFailedFetchingProfiles_) {
+            resultCode = ESimSetupFlowResult.ERROR_FETCHING_PROFILES;
+          } else if (this.pendingProfiles_ && !this.pendingProfiles_.length) {
+            resultCode = ESimSetupFlowResult.CANCELLED_NO_PROFILES;
+          } else {
+            resultCode = ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR;
+          }
+          break;
+      }
+
+      if (this.isOffline_ && resultCode !== ProfileInstallResult.kSuccess) {
+        resultCode = ESimSetupFlowResult.NO_NETWORK;
+      }
+
+      assert(resultCode !== null);
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Network.Cellular.ESim.CellularSetupResult', resultCode,
+          Object.keys(ESimSetupFlowResult).length);
+    },
+
+    /**
+     * NetworkListenerBehavior override
+     * Used to determine if there is an online network connection.
+     * @param {!Array<chromeos.networkConfig.mojom.NetworkStateProperties>}
+     *     activeNetworks
+     */
+    onActiveNetworksChanged(activeNetworks) {
+      this.isOffline_ = !activeNetworks.some(
+          (network) => network.connectionState ===
+              chromeos.networkConfig.mojom.ConnectionStateType.kOnline);
     },
 
     initSubflow() {
@@ -154,7 +249,8 @@ cr.define('cellular_setup', function() {
           await euicc.requestPendingProfiles();
       if (requestPendingProfilesResponse.result ===
           chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-        console.error(
+        this.hasFailedFetchingProfiles_ = true;
+        console.warn(
             'Error requesting pending profiles: ',
             requestPendingProfilesResponse);
       }
@@ -183,6 +279,7 @@ cr.define('cellular_setup', function() {
      *     response
      */
     handleProfileInstallResponse_(response) {
+      this.lastProfileInstallResult_ = response.result;
       if (response.result ===
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorNeedsConfirmationCode) {

@@ -9,14 +9,39 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {ESimPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
+// #import {ESimPageName, ESimSetupFlowResult} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 // #import {assertEquals, assertTrue} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
+// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
+  class MockMetricsPrivate {
+    constructor() {
+      this.cellularSetupResultDict = {};
+    }
+
+    recordEnumerationValue(histogramName, eSimSetupFlowResult, enumSize) {
+      assertEquals(histogramName, 'Network.Cellular.ESim.CellularSetupResult');
+      if (eSimSetupFlowResult in this.cellularSetupResultDict) {
+        this.cellularSetupResultDict[eSimSetupFlowResult]++;
+        return;
+      }
+      this.cellularSetupResultDict[eSimSetupFlowResult] = 1;
+    }
+
+    getSetupResultMetricCount(metricEnum) {
+      if (metricEnum in this.cellularSetupResultDict) {
+        return this.cellularSetupResultDict[metricEnum];
+      }
+      return 0;
+    }
+  }
+
   let eSimPage;
   let eSimManagerRemote;
   let ironPages;
@@ -25,8 +50,10 @@ suite('CrComponentsEsimFlowUiTest', function() {
   let activationCodePage;
   let confirmationCodePage;
   let finalPage;
+  let networkConfigRemote;
 
   let focusDefaultButtonEventFired = false;
+  let wifiGuidPrefix = 'wifi';
 
   async function flushAsync() {
     Polymer.dom.flush();
@@ -34,7 +61,57 @@ suite('CrComponentsEsimFlowUiTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
+  /** @param {ESimSetupFlowResult} eSimSetupFlowResult */
+  function endFlowAndVerifyResult(eSimSetupFlowResult) {
+    const resultCount =
+        chrome.metricsPrivate.getSetupResultMetricCount(eSimSetupFlowResult);
+    eSimPage.remove();
+    Polymer.dom.flush();
+    assertEquals(
+        chrome.metricsPrivate.getSetupResultMetricCount(eSimSetupFlowResult),
+        resultCount + 1);
+  }
+
+  /** Adds an actively online wifi network and esim network. */
+  function addOnlineWifiNetwork() {
+    const onlineNetwork = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, wifiGuidPrefix);
+    onlineNetwork.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
+    networkConfigRemote.addNetworksForTest([onlineNetwork]);
+    network_config.MojoInterfaceProviderImpl.getInstance().remote_ =
+        networkConfigRemote;
+  }
+
+  /** Takes actively online network offline. */
+  function takeWifiNetworkOffline() {
+    networkConfigRemote.setNetworkConnectionStateForTest(
+        wifiGuidPrefix + '_guid',
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected);
+  }
+
+  test('Error fetching profiles', async function() {
+    eSimManagerRemote.addEuiccForTest(0);
+    const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
+    const euicc = availableEuiccs.euiccs[0];
+
+    activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
+    activationCodePage.initBarcodeDetector();
+
+    euicc.setRequestPendingProfilesResult(
+        chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
+    eSimPage.initSubflow();
+
+    await flushAsync();
+    endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
+  });
+
   setup(function() {
+    networkConfigRemote = new FakeNetworkConfig();
+
+    addOnlineWifiNetwork();
+
+    chrome.metricsPrivate = new MockMetricsPrivate();
     eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
     cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
 
@@ -212,6 +289,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
       assertTrue(activationCodePage.$$('#scanSuccessContainer').hidden);
       assertFalse(activationCodePage.$$('#scanFailureContainer').hidden);
+
+      endFlowAndVerifyResult(
+          ESimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE);
     });
 
     test('Valid activation code', async function() {
@@ -219,6 +299,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test('Valid confirmation code', async function() {
@@ -237,6 +319,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test('Invalid confirmation code', async function() {
@@ -256,6 +340,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should still be at confirmation code page with input showing error.
       assertConfirmationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
       assertTrue(confirmationCodeInput.invalid);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
     });
 
     test('Navigate backwards from confirmation code', async function() {
@@ -280,6 +366,21 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Navigating backwards should return false since we're at the beginning.
       assertFalse(eSimPage.attemptBackwardNavigation());
       await flushAsync();
+
+      endFlowAndVerifyResult(
+          ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+    });
+
+    test('End flow before installation attempted', async function() {
+      await flushAsync();
+      endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_NO_PROFILES);
+    });
+
+    test('No available network before installation', async function() {
+      takeWifiNetworkOffline();
+      await flushAsync();
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
     });
   });
 
@@ -299,6 +400,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should go directly to final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test('Unsuccessful install', async function() {
@@ -309,6 +412,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should go directly to final page.
       await assertFinalPageAndPressDoneButton(true);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
     });
 
     test('Valid confirmation code', async function() {
@@ -327,6 +432,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test('Invalid confirmation code', async function() {
@@ -346,6 +453,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should still be at confirmation code page with input showing error.
       assertConfirmationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
       assertTrue(confirmationCodeInput.invalid);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
     });
 
     test('Navigate backwards from confirmation code', async function() {
@@ -362,6 +471,23 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Navigating backwards should return false since we're at the beginning.
       assertFalse(eSimPage.attemptBackwardNavigation());
       await flushAsync();
+
+      endFlowAndVerifyResult(
+          ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
+    });
+
+    test('End flow before single profile fetched', function() {
+      // Note that if there is only a single profile, it is automatically
+      // installed. If the fetch is not complete by the time the user exits the
+      // dialog, a |CANCELLED_WITHOUT_ERROR| is emitted.
+      endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+    });
+
+    test('No available network after installation', async function() {
+      takeWifiNetworkOffline();
+      await flushAsync();
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
   });
 
@@ -407,6 +533,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should now be at the final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test(
@@ -448,6 +576,9 @@ suite('CrComponentsEsimFlowUiTest', function() {
           // Navigating backwards should return false since we're at the
           // beginning.
           assertFalse(eSimPage.attemptBackwardNavigation());
+
+          endFlowAndVerifyResult(
+              ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
         });
 
     async function selectProfile() {
@@ -469,6 +600,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Should now be at the final page.
       await assertFinalPageAndPressDoneButton(false);
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test('Select profile with valid confirmation code flow', async function() {
@@ -491,6 +624,8 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
       assertFocusDefaultButtonEventFired();
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.SUCCESS);
     });
 
     test(
@@ -519,6 +654,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
           // Navigating backwards should return false since we're at the
           // beginning.
           assertFalse(eSimPage.attemptBackwardNavigation());
+
+          endFlowAndVerifyResult(
+              ESimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
         });
+
+
+    test('End flow before installation attempted', async function() {
+      await flushAsync();
+      endFlowAndVerifyResult(ESimSetupFlowResult.CANCELLED_WITHOUT_ERROR);
+    });
+
+    test('No available network before installation', async function() {
+      takeWifiNetworkOffline();
+      await flushAsync();
+
+      endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
+    });
   });
 });

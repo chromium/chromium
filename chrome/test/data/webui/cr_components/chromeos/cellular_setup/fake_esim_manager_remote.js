@@ -160,6 +160,8 @@ cr.define('cellular_setup', function() {
       for (let i = 0; i < numProfiles; i++) {
         this.addProfile();
       }
+      this.requestPendingProfilesResult_ =
+          chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess;
     }
 
     /**
@@ -178,7 +180,7 @@ cr.define('cellular_setup', function() {
      */
     requestPendingProfiles() {
       return Promise.resolve({
-        result: chromeos.cellularSetup.mojom.ESimOperationResult.kSuccess,
+        result: this.requestPendingProfilesResult_,
       });
     }
 
@@ -218,6 +220,13 @@ cr.define('cellular_setup', function() {
             this.profileInstallResult_ :
             chromeos.cellularSetup.mojom.ProfileInstallResult.kSuccess,
       });
+    }
+
+    /**
+     * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
+     */
+    setRequestPendingProfilesResult(result) {
+      this.requestPendingProfilesResult_ = result;
     }
 
     /**
