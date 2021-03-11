@@ -4,6 +4,8 @@
 
 #include "content/common/process_visibility_tracker.h"
 
+#include "components/power_scheduler/power_mode_arbiter.h"
+
 namespace content {
 
 // static
@@ -12,7 +14,10 @@ ProcessVisibilityTracker* ProcessVisibilityTracker::GetInstance() {
   return instance.get();
 }
 
-ProcessVisibilityTracker::ProcessVisibilityTracker() = default;
+ProcessVisibilityTracker::ProcessVisibilityTracker()
+    : power_mode_visibility_voter_(
+          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
+              "PowerModeVoter.Visibility")) {}
 
 ProcessVisibilityTracker::~ProcessVisibilityTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
@@ -40,6 +45,10 @@ void ProcessVisibilityTracker::OnProcessVisibilityChanged(bool visible) {
     return;
 
   is_visible_ = visible;
+
+  power_mode_visibility_voter_->VoteFor(
+      *is_visible_ ? power_scheduler::PowerMode::kIdle
+                   : power_scheduler::PowerMode::kBackground);
 
   for (ProcessVisibilityObserver& observer : observers_)
     observer.OnVisibilityChanged(*is_visible_);

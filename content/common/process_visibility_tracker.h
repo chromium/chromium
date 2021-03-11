@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "components/power_scheduler/power_mode_voter.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -43,6 +44,7 @@ class CONTENT_EXPORT ProcessVisibilityTracker {
 
   base::Optional<bool> is_visible_;
   base::ObserverList<ProcessVisibilityObserver> observers_;
+  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_visibility_voter_;
   SEQUENCE_CHECKER(main_thread_);
 };
 
