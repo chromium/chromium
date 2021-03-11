@@ -21,11 +21,6 @@ namespace policy {
 
 namespace {
 
-constexpr char kUMADeviceIsIdle[] =
-    "Enterprise.RemoteCommand.RemoteSession.DeviceIsIdle";
-constexpr char kUMAIdlenessOverride[] =
-    "Enterprise.RemoteCommand.RemoteSession.IdlenessOverride";
-
 // Job parameters fields:
 
 // Job requires that UI was idle for at least this period of time
@@ -207,9 +202,6 @@ void DeviceCommandStartCRDSessionJob::RunImpl(
   }
 
   bool device_is_idle = delegate_->GetIdlenessPeriod() >= idleness_cutoff_;
-
-  UMA_HISTOGRAM_BOOLEAN(kUMADeviceIsIdle, device_is_idle);
-  UMA_HISTOGRAM_BOOLEAN(kUMAIdlenessOverride, idleness_cutoff_.is_zero());
 
   if (!device_is_idle) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(

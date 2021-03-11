@@ -1331,6 +1331,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.RemoteCommand.RemoteSession.DeviceIsIdle"
     enum="Boolean" expires_after="2020-03-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>antrim@chromium.org</owner>
   <summary>
     When an enterprise admin attempts to establish a remote session to a device
@@ -1341,6 +1344,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.RemoteCommand.RemoteSession.IdlenessOverride"
     enum="Boolean" expires_after="2020-03-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>antrim@chromium.org</owner>
   <summary>
     When an enterprise admin attempts to establish a remote session to a device
