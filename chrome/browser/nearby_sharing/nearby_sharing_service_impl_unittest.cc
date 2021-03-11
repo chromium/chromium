@@ -956,6 +956,10 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   bool IsBoundToProcess() { return service_->process_reference_ != nullptr; }
 
+  void SetRecentNearbyProcessShutdownCount(int count) {
+    service_->recent_nearby_process_unexpected_shutdown_count_ = count;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   // We need to ensure that |network_notifier_| is created and destroyed after
@@ -3956,7 +3960,8 @@ TEST_F(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
   service_.reset();
 }
 
-using ServiceRestartTestParams = std::tuple<bool, NearbyProcessShutdownReason>;
+using ServiceRestartTestParams =
+    std::tuple<bool, NearbyProcessShutdownReason, int>;
 
 class NearbySharingServiceRestartTest
     : public NearbySharingServiceImplTest,
@@ -3965,8 +3970,10 @@ class NearbySharingServiceRestartTest
 TEST_P(NearbySharingServiceRestartTest, RestartsServiceWhenAppropriate) {
   bool is_enabled = std::get<0>(GetParam());
   NearbyProcessShutdownReason shutdown_reason = std::get<1>(GetParam());
+  int recent_shutdown_count = std::get<2>(GetParam());
 
   SetIsEnabled(is_enabled);
+  SetRecentNearbyProcessShutdownCount(recent_shutdown_count);
 
   bool expected_to_restart;
 
@@ -3979,7 +3986,10 @@ TEST_P(NearbySharingServiceRestartTest, RestartsServiceWhenAppropriate) {
 
     case NearbyProcessShutdownReason::kCrash:
     case NearbyProcessShutdownReason::kMojoPipeDisconnection:
-      expected_to_restart = is_enabled;
+      expected_to_restart =
+          is_enabled && recent_shutdown_count <=
+                            NearbySharingServiceImpl::
+                                kMaxRecentNearbyProcessUnexpectedShutdownCount;
       break;
   }
 
@@ -3996,6 +4006,12 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Bool(),
         testing::Values(NearbyProcessShutdownReason::kNormal,
                         NearbyProcessShutdownReason::kCrash,
-                        NearbyProcessShutdownReason::kMojoPipeDisconnection)));
+                        NearbyProcessShutdownReason::kMojoPipeDisconnection),
+        testing::Values(0,
+                        NearbySharingServiceImpl::
+                                kMaxRecentNearbyProcessUnexpectedShutdownCount -
+                            1,
+                        NearbySharingServiceImpl::
+                            kMaxRecentNearbyProcessUnexpectedShutdownCount)));
 
 }  // namespace NearbySharingServiceUnitTests

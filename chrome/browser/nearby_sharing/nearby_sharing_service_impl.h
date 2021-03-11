@@ -69,6 +69,10 @@ class NearbySharingServiceImpl
       public ash::SessionObserver,
       public PowerClient::Observer {
  public:
+  // The number of unexpected nearby process shutdowns that we allow during a
+  // fixed window before deciding not to restart the process.
+  static constexpr int kMaxRecentNearbyProcessUnexpectedShutdownCount = 4;
+
   explicit NearbySharingServiceImpl(
       PrefService* prefs,
       NotificationDisplayService* notification_display_service,
@@ -319,6 +323,10 @@ class NearbySharingServiceImpl
   void RestartNearbyProcessIfAppropriate(
       chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
+  bool ShouldRestartNearbyProcess(
+      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason
+          shutdown_reason);
+  void ClearRecentNearbyProcessUnexpectedShutdownCount();
   void BindToNearbyProcess();
   sharing::mojom::NearbySharingDecoder* GetNearbySharingDecoder();
 
@@ -474,6 +482,9 @@ class NearbySharingServiceImpl
   base::Time scanning_start_timestamp_;
   // True when we are advertising with a device name visible to everyone.
   bool in_high_visibility = false;
+
+  int recent_nearby_process_unexpected_shutdown_count_ = 0;
+  base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
