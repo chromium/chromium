@@ -2242,6 +2242,9 @@ TEST_P(AnimationCompositorAnimationsTest,
       <use id="use" href="#rect-useref" class="animate"/>
       <use id="use-offset" href="#rect-useref" x="10" class="animate"/>
     </svg>
+    <svg id="svg-zoomed" class="animate" style="zoom: 1.5">
+      <rect id="rect-zoomed" class="animate"/>
+    </svg>
   )HTML");
 
   auto CanStartAnimation = [&](const char* id) -> bool {
@@ -2260,6 +2263,9 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
   EXPECT_TRUE(CanStartAnimation("use"));
   EXPECT_FALSE(CanStartAnimation("use-offset"));
+
+  EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
+  EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
 
   To<SVGElement>(GetDocument().getElementById("rect"))
       ->SetWebAnimatedAttribute(

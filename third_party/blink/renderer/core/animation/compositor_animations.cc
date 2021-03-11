@@ -868,8 +868,9 @@ CompositorAnimations::CheckCanStartTransformAnimationOnCompositorForSVG(
     if (layout_object->IsSVGViewportContainer()) {
       // Nested SVG doesn't support transforms for now.
       reasons |= kTransformRelatedPropertyCannotBeAcceleratedOnTarget;
-    } else if (layout_object->IsSVGForeignObject() &&
-               layout_object->StyleRef().EffectiveZoom() != 1) {
+    } else if (layout_object->StyleRef().EffectiveZoom() != 1) {
+      // TODO(crbug.com/1186312): Composited transform animation with non-1
+      // effective zoom is incorrectly scaled for now.
       // TODO(crbug.com/1134775): If a foreignObject's effect zoom is not 1,
       // its transform node contains an additional scale which would be removed
       // by composited animation.
