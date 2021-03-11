@@ -1728,6 +1728,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records how the omnibox was focused.</summary>
 </histogram>
 
+<histogram name="Android.OpenHistoryFromMenu.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-02-02">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the clicks on History menu item separately for each profile type in
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Android.PackageStats.CacheSize" units="MB" expires_after="M86">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
