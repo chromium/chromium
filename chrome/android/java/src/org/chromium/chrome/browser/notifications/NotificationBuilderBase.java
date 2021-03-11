@@ -526,8 +526,7 @@ public abstract class NotificationBuilderBase {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     static boolean shouldUseCompat() {
-        // TODO(crbug.com/697104): Enable this via a flag.
-        return false;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.USE_NOTIFICATION_COMPAT_BUILDER);
     }
 
     /**

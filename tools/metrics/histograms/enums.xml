@@ -43570,6 +43570,7 @@ from previous Chrome versions.
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989134646" label="PhoneHubUseBle:disabled"/>
   <int value="-1988840552" label="WebViewExtraHeadersSameOriginOnly:disabled"/>
+  <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
@@ -46533,6 +46534,7 @@ from previous Chrome versions.
   <int value="682549212" label="ash-enable-cursor-motion-blur"/>
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="684806628" label="TranslateLanguageByULP:disabled"/>
+  <int value="685406951" label="UseNotificationCompatBuilder:disabled"/>
   <int value="685916283" label="enable-zip-archiver-on-file-manager"/>
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>
   <int value="688254068" label="AppCache:enabled"/>

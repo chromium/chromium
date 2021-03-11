@@ -3348,6 +3348,12 @@ const char kUpdateMenuTypeInlineUpdateDownloadCanceled[] =
 const char kUpdateMenuTypeInlineUpdateInstallFailed[] =
     "Inline Update Error: Install Failed";
 
+const char kUseNotificationCompatBuilderName[] =
+    "Use NotificationCompat.Builder for Web Notifications";
+const char kUseNotificationCompatBuilderDescription[] =
+    "This enables using NotificationCompat.Builder instead of "
+    "Notification.Builder to create Web Notifications.";
+
 const char kUserMediaScreenCapturingName[] = "Screen Capture API";
 const char kUserMediaScreenCapturingDescription[] =
     "Allows sites to request a video stream of your screen.";
