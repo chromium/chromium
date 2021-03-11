@@ -3195,23 +3195,6 @@
             ]
         }
     ],
-    "ExtensionSettingsOverriddenDialogs": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtensionSettingsOverriddenDialogs"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedActionsUpload": [
         {
             "platforms": [
