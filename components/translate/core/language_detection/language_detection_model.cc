@@ -27,6 +27,14 @@ struct sort_category {
 // experimentation.
 constexpr float kDefaultReliabilityThreshold = .7;
 
+// The number of characters to sample and provide as a buffer to the model
+// for determining its language.
+constexpr int kTextSampleLength = 250;
+
+// The number of samples of |kTextSampleLength| to evaluate the model when
+// determining the language of the page content.
+constexpr int kNumTextSamples = 3;
+
 }  // namespace
 
 namespace {
@@ -94,6 +102,19 @@ bool LanguageDetectionModel::IsAvailable() const {
   return lang_detection_model_ != nullptr;
 }
 
+std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
+    const std::string& sampled_str) const {
+  DCHECK(IsAvailable());
+  std::vector<tflite::task::core::Category> categories =
+      lang_detection_model_->Classify(sampled_str);
+  std::sort(categories.begin(), categories.end(), sort_category());
+
+  if (categories.empty())
+    return std::make_pair(translate::kUnknownLanguageCode, 0.0);
+
+  return std::make_pair(categories[0].class_name, categories[0].score);
+}
+
 std::string LanguageDetectionModel::DeterminePageLanguage(
     const std::string& code,
     const std::string& html_lang,
@@ -113,19 +134,39 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
   if (!lang_detection_model_)
     return translate::kUnknownLanguageCode;
 
-  std::vector<tflite::task::core::Category> categories =
-      lang_detection_model_->Classify(base::UTF16ToUTF8(contents));
-  std::sort(categories.begin(), categories.end(), sort_category());
+  std::vector<std::pair<std::string, float>> model_predictions;
+  // First evaluate the model on the entire contents based on the model's
+  // implementation, for v1 it is the first 128 tokens that are unicode
+  // "letters". We do not need to have the model's length in sync with
+  // the sampling logic for v1 as 128 tokens is unlikely to be changed.
+  model_predictions.emplace_back(
+      DetectTopLanguage(base::UTF16ToUTF8(contents)));
+  if (contents.length() > kNumTextSamples * kTextSampleLength) {
+    // Strings with UTF-8 have different widths so substr should be performed on
+    // the UTF16 strings to ensure alignment and then convert down to UTF-8
+    // strings for model evaluation.
+    std::string sampled_str = base::UTF16ToUTF8(contents.substr(
+        contents.length() - kTextSampleLength, kTextSampleLength));
+    // Evaluate on the last |kTextSampleLength| characters.
+    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
 
-  if (categories.empty())
-    return translate::kUnknownLanguageCode;
+    // Sample and evaluate on the middle |kTextSampleLength| characters.
+    sampled_str = base::UTF16ToUTF8(
+        contents.substr(contents.length() / 2, kTextSampleLength));
+    model_predictions.emplace_back(DetectTopLanguage(sampled_str));
+  }
 
-  prediction_reliability_score = categories[0].score;
+  const auto top_language_result = std::max_element(
+      model_predictions.begin(), model_predictions.end(),
+      [](auto& left, auto& right) { return left.second < right.second; });
+
+  prediction_reliability_score = top_language_result->second;
+
   bool is_reliable =
       prediction_reliability_score > kDefaultReliabilityThreshold;
 
   std::string final_prediction = translate::FilterDetectedLanguage(
-      base::UTF16ToUTF8(contents), categories[0].class_name, is_reliable);
+      base::UTF16ToUTF8(contents), top_language_result->first, is_reliable);
   *predicted_language = final_prediction;
   *is_prediction_reliable = is_reliable;
   language::ToTranslateLanguageSynonym(&final_prediction);
