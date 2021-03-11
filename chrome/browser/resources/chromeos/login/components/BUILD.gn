@@ -58,6 +58,16 @@ js_library("fake_oobe") {
   ]
 }
 
+# This is special file to be used as a substitute of Authenticaor object for
+# closure compilation until OOBE migrates to modules.
+js_library("fake_authenticator") {
+  deps = [ "//ui/webui/resources/js:cr" ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
 js_library("login_screen_behavior") {
   deps = [
     ":display_manager_types",

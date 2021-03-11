@@ -20,6 +20,7 @@ grit("resources") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    ":closure_compile_local_with_externs",
     "components:closure_compile",
     "screens/login:closure_compile",
     "screens/oobe:closure_compile",
@@ -60,6 +61,15 @@ js_type_check("closure_compile_local") {
     ":sync_consent",
     ":user_creation",
   ]
+}
+
+# Authenticator dependency transitively adds lots of types that
+# are not properly handled in other screens yet. This separate target
+# allows to avoid errors. OOBE should migrate to full type usage in the future.
+# TODO(crbug.com/1187024): Make all oobe elements compile with externs.
+js_type_check("closure_compile_local_with_externs") {
+  uses_legacy_modules = true
+  deps = [ ":gaia_dialog" ]
 }
 
 ###############################
@@ -153,6 +163,17 @@ js_library("fingerprint_setup") {
 }
 
 js_library("gaia_buttons") {
+}
+
+js_library("gaia_dialog") {
+  deps = [
+    "components:fake_authenticator",
+    "components/oobe_content_dialog:oobe_content_dialog",
+    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_dialog_host_behavior:oobe_dialog_host_behavior",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "//ui/webui/resources/js:cr",
+  ]
 }
 
 js_library("gaia_header") {

@@ -7,7 +7,6 @@
  * authenticator.js and SAML notice handling.
  */
 
-// TODO(https://crbug.com/1171232): Make it compiled by closure.
 Polymer({
   is: 'gaia-dialog',
 
@@ -142,10 +141,7 @@ Polymer({
    * @type {!cr.login.Authenticator|undefined}
    * @private
    */
-  authenticator_: {
-    type: Object,
-    value: undefined,
-  },
+  authenticator_: undefined,
 
   getAuthenticator() {
     return this.authenticator_;
