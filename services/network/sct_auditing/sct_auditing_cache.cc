@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_cache.h"
 
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -28,8 +28,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
-#include "services/network/network_context.h"
-#include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -128,12 +126,11 @@ SCTAuditingCache::~SCTAuditingCache() {
 }
 
 void SCTAuditingCache::MaybeEnqueueReport(
-    NetworkContext* context,
     const net::HostPortPair& host_port_pair,
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  if (!enabled_ || !context->is_sct_auditing_enabled())
+  if (!enabled_)
     return;
 
   auto report = std::make_unique<sct_auditing::SCTClientReport>();

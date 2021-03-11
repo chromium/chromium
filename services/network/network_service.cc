@@ -82,7 +82,7 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-#include "services/network/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
 
 namespace network {

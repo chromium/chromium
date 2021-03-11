@@ -259,8 +259,8 @@ component("network_service") {
     sources += [
       "expect_ct_reporter.cc",
       "expect_ct_reporter.h",
-      "sct_auditing_cache.cc",
-      "sct_auditing_cache.h",
+      "sct_auditing/sct_auditing_cache.cc",
+      "sct_auditing/sct_auditing_cache.h",
     ]
     deps += [
       "//components/certificate_transparency",
@@ -427,7 +427,7 @@ source_set("tests") {
   if (is_ct_supported) {
     sources += [
       "expect_ct_reporter_unittest.cc",
-      "sct_auditing_cache_unittest.cc",
+      "sct_auditing/sct_auditing_cache_unittest.cc",
     ]
     deps += [ "//components/certificate_transparency" ]
   }

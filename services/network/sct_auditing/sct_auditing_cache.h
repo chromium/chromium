@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SCT_AUDITING_CACHE_H_
-#define SERVICES_NETWORK_SCT_AUDITING_CACHE_H_
+#ifndef SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
+#define SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 
 #include <map>
 #include <string>
@@ -17,25 +17,25 @@
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request.h"
-#include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "url/gurl.h"
 
 namespace net {
 class X509Certificate;
 }
 
 namespace network {
-class NetworkContext;
 
 // SCTAuditingCache tracks SCTs seen during CT verification. The cache supports
 // a configurable sample rate to reduce load, and deduplicates SCTs seen more
 // than once. The cache evicts least-recently-used entries after it reaches its
 // capacity.
 //
-// The SCTAuditingCache also handles sending reports to a specified report URL
-// using a specific NetworkContext. These are configured by the embedder via the
-// network service's ConfigureSCTAuditing() API.
+// The SCTAuditingCache also handles sending reports to a specified report URI
+// using a specified URLLoaderFactory (for a specific NetworkContext). These
+// are configured by the embedder via the network service's
+// ConfigureSCTAuditing() API.
 //
 // A single SCTAuditingCache should be shared among all contexts that want to
 // deduplicate reports and use a single sampling mechanism. Currently, one
@@ -55,7 +55,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // to determine whether to send a report. This means we sample a subset of
   // *certificates* rather than a subset of *connections*.
   void MaybeEnqueueReport(
-      NetworkContext* context,
       const net::HostPortPair& host_port_pair,
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
@@ -64,9 +63,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   sct_auditing::SCTClientReport* GetPendingReport(
       const net::SHA256HashValue& cache_key);
 
-  // Sends the report associated with `cache_key` to `report_uri` (which is
-  // specified by the embedder). When the request completes (on success or
-  // failure), `callback` will be called with the response details.
+  // Sends the report associated with `cache_key` to the configured report URI.
   void SendReport(const net::SHA256HashValue& cache_key);
 
   void ClearCache();
@@ -111,4 +108,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_SCT_AUDITING_CACHE_H_
+#endif  // SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
