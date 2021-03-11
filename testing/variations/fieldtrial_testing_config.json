@@ -2799,26 +2799,6 @@
             ]
         }
     ],
-    "DisableOffSequenceTaskCancelation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "DisableOffSequenceTaskCancelation",
-                    "disable_features": [
-                        "AllowOffSequenceTaskCancelation"
-                    ]
-                }
-            ]
-        }
-    ],
     "DiscardableMemoryExperiments": [
         {
             "platforms": [
