@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.pseudotab;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -350,6 +351,9 @@ public class PseudoTab {
                         // Skip restoring of non-selected NTP to match the real restoration logic.
                         if (ReturnToChromeExperimentsUtil.isCanonicalizedNTPUrl(url)
                                 && !isStandardActiveIndex) {
+                            return;
+                        } else if (TextUtils.isEmpty(url)) {
+                            // Skip restoring of empty Tabs.
                             return;
                         }
                         PseudoTab tab = PseudoTab.fromTabId(id);

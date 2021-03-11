@@ -684,6 +684,9 @@ public class TabPersistentStore {
                     && !tabToRestore.fromMerge) {
                 Log.i(TAG, "Skipping restore of non-selected NTP.");
                 return;
+            } else if (TextUtils.isEmpty(tabToRestore.url)) {
+                Log.i(TAG, "Skipping restore of empty Tabs.");
+                return;
             }
 
             Log.w(TAG, "Failed to restore TabState; creating Tab with last known URL.");
