@@ -93,6 +93,11 @@ class ESimProfile : public mojom::ESimProfile {
   void OnPendingProfileInstallResult(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       HermesResponseStatus status);
+  void OnNewProfileEnableSuccess(const std::string& service_path);
+  void OnNewProfileConnectSuccess();
+  void OnNewProfileConnectFailure(
+      const std::string& error_name,
+      std::unique_ptr<base::DictionaryValue> error_data);
   void OnProfileUninstallResult(bool success);
   void OnESimOperationResult(ESimOperationResultCallback callback,
                              HermesResponseStatus status);

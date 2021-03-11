@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/fake_network_connection_handler.h"
@@ -56,23 +57,19 @@ class EuiccTest : public ESimTestBase {
       const std::string& confirmation_code,
       bool wait_for_connect,
       bool fail_connect) {
-    mojom::ProfileInstallResult install_result;
-    mojo::PendingRemote<mojom::ESimProfile> esim_profile;
+    mojom::ProfileInstallResult out_install_result;
+    mojo::PendingRemote<mojom::ESimProfile> out_esim_profile;
 
     base::RunLoop run_loop;
     euicc->InstallProfileFromActivationCode(
         activation_code, confirmation_code,
-        base::BindOnce(
-            [](mojom::ProfileInstallResult* out_install_result,
-               mojo::PendingRemote<mojom::ESimProfile>* out_esim_profile,
-               base::OnceClosure quit_closure,
-               mojom::ProfileInstallResult install_result,
-               mojo::PendingRemote<mojom::ESimProfile> esim_profile) {
-              *out_install_result = install_result;
-              *out_esim_profile = std::move(esim_profile);
-              std::move(quit_closure).Run();
-            },
-            &install_result, &esim_profile, run_loop.QuitClosure()));
+        base::BindLambdaForTesting(
+            [&](mojom::ProfileInstallResult install_result,
+                mojo::PendingRemote<mojom::ESimProfile> esim_profile) {
+              out_install_result = install_result;
+              out_esim_profile = std::move(esim_profile);
+              run_loop.Quit();
+            }));
 
     if (wait_for_connect) {
       base::RunLoop().RunUntilIdle();
@@ -91,7 +88,7 @@ class EuiccTest : public ESimTestBase {
     }
 
     run_loop.Run();
-    return std::make_pair(install_result, std::move(esim_profile));
+    return std::make_pair(out_install_result, std::move(out_esim_profile));
   }
 };
 
@@ -174,7 +171,7 @@ TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {
       HermesProfileClient::Get()->GetProperties(profile_path);
   InstallResultPair result_pair = InstallProfileFromActivationCode(
       euicc, dbus_properties->activation_code().value(),
-      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
       /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
   ASSERT_TRUE(result_pair.second.is_valid());

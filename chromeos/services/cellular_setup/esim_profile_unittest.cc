@@ -6,8 +6,10 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/services/cellular_setup/esim_test_base.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,25 +18,6 @@ namespace chromeos {
 namespace cellular_setup {
 
 namespace {
-
-mojom::ProfileInstallResult InstallProfile(
-    const mojo::Remote<mojom::ESimProfile>& esim_profile,
-    const std::string& confirmation_code) {
-  mojom::ProfileInstallResult install_result;
-
-  base::RunLoop run_loop;
-  esim_profile->InstallProfile(
-      confirmation_code, base::BindOnce(
-                             [](mojom::ProfileInstallResult* out_install_result,
-                                base::OnceClosure quit_closure,
-                                mojom::ProfileInstallResult install_result) {
-                               *out_install_result = install_result;
-                               std::move(quit_closure).Run();
-                             },
-                             &install_result, run_loop.QuitClosure()));
-  run_loop.Run();
-  return install_result;
-}
 
 mojom::ESimOperationResult UninstallProfile(
     const mojo::Remote<mojom::ESimProfile>& esim_profile) {
@@ -139,6 +122,41 @@ class ESimProfileTest : public ESimTestBase {
     }
     return mojo::Remote<mojom::ESimProfile>();
   }
+
+  mojom::ProfileInstallResult InstallProfile(
+      const mojo::Remote<mojom::ESimProfile>& esim_profile,
+      bool wait_for_connect,
+      bool fail_connect) {
+    mojom::ProfileInstallResult out_install_result;
+
+    base::RunLoop run_loop;
+    esim_profile->InstallProfile(
+        /*confirmation_code=*/std::string(),
+        base::BindLambdaForTesting(
+            [&](mojom::ProfileInstallResult install_result) {
+              out_install_result = install_result;
+              run_loop.Quit();
+            }));
+
+    if (wait_for_connect) {
+      base::RunLoop().RunUntilIdle();
+      EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
+      if (fail_connect) {
+        network_connection_handler()
+            ->connect_calls()
+            .back()
+            .InvokeErrorCallback("fake_error_name", /*error_data=*/nullptr);
+      } else {
+        network_connection_handler()
+            ->connect_calls()
+            .back()
+            .InvokeSuccessCallback();
+      }
+    }
+
+    run_loop.Run();
+    return out_install_result;
+  }
 };
 
 TEST_F(ESimProfileTest, GetProperties) {
@@ -175,13 +193,16 @@ TEST_F(ESimProfileTest, InstallProfile) {
   mojo::Remote<mojom::ESimProfile> esim_profile = GetESimProfileForIccid(
       ESimTestBase::kTestEid, dbus_properties->iccid().value());
   ASSERT_TRUE(esim_profile.is_bound());
-  mojom::ProfileInstallResult install_result = InstallProfile(esim_profile, "");
+  mojom::ProfileInstallResult install_result = InstallProfile(
+      esim_profile, /*wait_for_connect=*/false, /*fail_connect=*/false);
   EXPECT_EQ(mojom::ProfileInstallResult::kErrorNeedsConfirmationCode,
             install_result);
 
   // Verify that installing pending profile returns proper results
   // and updates esim_profile properties.
-  install_result = InstallProfile(esim_profile, "");
+  install_result = InstallProfile(esim_profile, /*wait_for_connect=*/true,
+                                  /*fail_connect=*/false);
+  // Wait for property changes to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, install_result);
   mojom::ESimProfilePropertiesPtr mojo_properties =
@@ -189,6 +210,25 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
   EXPECT_NE(mojo_properties->state, mojom::ProfileState::kPending);
   EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+}
+
+TEST_F(ESimProfileTest, InstallConnectFailure) {
+  HermesEuiccClient::TestInterface* euicc_test =
+      HermesEuiccClient::Get()->GetTestInterface();
+  dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
+      dbus::ObjectPath(ESimTestBase::kTestEuiccPath),
+      hermes::profile::State::kPending, "", /*service_only=*/false);
+  base::RunLoop().RunUntilIdle();
+  HermesProfileClient::Properties* dbus_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  mojo::Remote<mojom::ESimProfile> esim_profile = GetESimProfileForIccid(
+      ESimTestBase::kTestEid, dbus_properties->iccid().value());
+
+  // Verify that connect failures returns error code properly.
+  mojom::ProfileInstallResult install_result =
+      InstallProfile(esim_profile, /*wait_for_connect=*/true,
+                     /*fail_connect=*/true);
+  EXPECT_EQ(mojom::ProfileInstallResult::kFailure, install_result);
 }
 
 TEST_F(ESimProfileTest, UninstallProfile) {
