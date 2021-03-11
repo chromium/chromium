@@ -4433,6 +4433,81 @@ void AXNodeObject::SelectionChanged() {
   }
 }
 
+//
+// Notifications that this object may have changed.
+//
+
+void AXNodeObject::HandleAriaExpandedChanged() {
+  // Find if a parent of this object should handle aria-expanded changes.
+  AXObject* container_parent = this->ParentObject();
+  while (container_parent) {
+    bool found_parent = false;
+
+    switch (container_parent->RoleValue()) {
+      case ax::mojom::blink::Role::kLayoutTable:
+      case ax::mojom::blink::Role::kTree:
+      case ax::mojom::blink::Role::kTreeGrid:
+      case ax::mojom::blink::Role::kGrid:
+      case ax::mojom::blink::Role::kTable:
+        found_parent = true;
+        break;
+      default:
+        break;
+    }
+
+    if (found_parent)
+      break;
+
+    container_parent = container_parent->ParentObject();
+  }
+
+  // Post that the row count changed.
+  if (container_parent) {
+    AXObjectCache().PostNotification(container_parent,
+                                     ax::mojom::blink::Event::kRowCountChanged);
+  }
+
+  // Post that the specific row either collapsed or expanded.
+  AccessibilityExpanded expanded = IsExpanded();
+  if (!expanded)
+    return;
+
+  if (RoleValue() == ax::mojom::blink::Role::kRow ||
+      RoleValue() == ax::mojom::blink::Role::kTreeItem) {
+    ax::mojom::blink::Event notification =
+        ax::mojom::blink::Event::kRowExpanded;
+    if (expanded == kExpandedCollapsed)
+      notification = ax::mojom::blink::Event::kRowCollapsed;
+
+    AXObjectCache().PostNotification(this, notification);
+  } else {
+    AXObjectCache().PostNotification(this,
+                                     ax::mojom::blink::Event::kExpandedChanged);
+  }
+}
+
+void AXNodeObject::HandleActiveDescendantChanged() {
+  if (!GetLayoutObject() || !GetNode() || !GetDocument())
+    return;
+
+  Node* focused_node = GetDocument()->FocusedElement();
+  if (focused_node == GetNode()) {
+    AXObject* active_descendant = ActiveDescendant();
+    if (active_descendant && active_descendant->IsSelectedFromFocus()) {
+      // In single selection containers, selection follows focus, so a selection
+      // changed event must be fired. This ensures the AT is notified that the
+      // selected state has changed, so that it does not read "unselected" as
+      // the user navigates through the items.
+      AXObjectCache().HandleAriaSelectedChangedWithCleanLayout(
+          active_descendant->GetNode());
+    }
+
+    // Mark this node dirty. AXEventGenerator will automatically infer
+    // that the active descendant changed.
+    AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this, false);
+  }
+}
+
 AXObject* AXNodeObject::ErrorMessage() const {
   // Check for aria-errormessage.
   Element* existing_error_message =

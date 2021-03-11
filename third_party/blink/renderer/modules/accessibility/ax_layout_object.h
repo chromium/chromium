@@ -105,9 +105,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   bool CanHaveChildren() const override;
 
-  // Notifications that this object may have changed.
-  void HandleActiveDescendantChanged() override;
-  void HandleAriaExpandedChanged() override;
   // Called when autofill/autocomplete state changes on a form control.
   void HandleAutofillStateChanged(WebAXAutofillState state) override;
 
