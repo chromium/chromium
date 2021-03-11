@@ -688,11 +688,8 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
 
   mouse_down_ = event.Event();
 
-  if (RuntimeEnabledFeatures::TextFragmentIdentifiersEnabled(
-          frame_->DomWindow())) {
-    if (frame_->View())
-      frame_->View()->DismissFragmentAnchor();
-  }
+  if (frame_->View())
+    frame_->View()->DismissFragmentAnchor();
 
   if (frame_->GetDocument()->IsSVGDocument() &&
       frame_->GetDocument()->AccessSVGExtensions().ZoomAndPanEnabled()) {

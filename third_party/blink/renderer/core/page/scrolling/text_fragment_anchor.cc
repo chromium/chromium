@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 
+#include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -457,6 +458,10 @@ void TextFragmentAnchor::DidFinishSearch() {
 }
 
 bool TextFragmentAnchor::Dismiss() {
+  if (base::FeatureList::IsEnabled(
+          shared_highlighting::kSharedHighlightingV2)) {
+    return false;
+  }
   // To decrease the likelihood of the user dismissing the highlight before
   // seeing it, we only dismiss the anchor after search_finished_, at which
   // point we've scrolled it into view or the user has started scrolling the
