@@ -5946,16 +5946,7 @@ IN_PROC_BROWSER_TEST_P(
     // navigations are always classified as client redirects. So, they start
     // with the previous page's URL in the redirect chain.
     EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
-    if (CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
-      // If we change RenderFrameHosts, the previous page's URL can't be
-      // obtained from the new renderer's DocumentLoader - we will incorrectly
-      // get an empty URL in its place, which will be rewritten by the URL
-      // filters to "about:blank#blocked".
-      // TODO(https://crbug.com/1171210): Fix this.
-      EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kBlockedURL));
-    } else {
-      EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
-    }
+    EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
     EXPECT_EQ(entry->GetRedirectChain()[1], url_2);
 
     // No replaced entry because it's not a "real" client-side redirect.
@@ -6021,7 +6012,6 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
   {
-    auto* old_rfh = shell()->web_contents()->GetMainFrame();
     // Renderer-initiated cross-site navigation.
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
 
@@ -6034,17 +6024,7 @@ IN_PROC_BROWSER_TEST_P(
     // navigations are always classified as client redirects. So, they start
     // with the previous page's URL in the redirect chain.
     EXPECT_EQ(entry->GetRedirectChain().size(), 2u);
-    auto* new_rfh = shell()->web_contents()->GetMainFrame();
-    if (old_rfh != new_rfh) {
-      // If we change RenderFrameHosts, the previous page's URL can't be
-      // obtained from the new renderer's DocumentLoader - we will incorrectly
-      // get an empty URL in its place, which will be rewritten by the URL
-      // filters to "about:blank#blocked".
-      // TODO(https://crbug.com/1171210): Fix this.
-      EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kBlockedURL));
-    } else {
-      EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
-    }
+    EXPECT_EQ(entry->GetRedirectChain()[0], start_url);
     EXPECT_EQ(entry->GetRedirectChain()[1], url_2);
 
     // No replaced entry because it's not a "real" client-side redirect.
@@ -6250,15 +6230,7 @@ IN_PROC_BROWSER_TEST_P(
     // On renderer-initiated reloads with no redirects, the redirect chain
     // contains the reloaded page's URL twice.
     EXPECT_EQ(frame_entry->redirect_chain().size(), 2u);
-    if (ShouldCreateNewHostForSameSiteSubframe()) {
-      // If we change RenderFrameHosts, the previous page's URL can't be
-      // obtained from the new renderer's DocumentLoader - we will incorrectly
-      // get an about:blank URL in its place.
-      // TODO(https://crbug.com/1171210): Fix this.
-      EXPECT_EQ(frame_entry->redirect_chain()[0], GURL(url::kAboutBlankURL));
-    } else {
-      EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
-    }
+    EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
     EXPECT_EQ(frame_entry->redirect_chain()[1], iframe_url);
   }
 
@@ -6274,18 +6246,14 @@ IN_PROC_BROWSER_TEST_P(
         controller.GetLastCommittedEntry()->GetFrameEntry(iframe);
     EXPECT_EQ(iframe_url, frame_entry->url());
 
-    // On subframe browser-initiated reloads, the redirect chain only contains
-    // the original URL once.
-    // This should've contained three copies of `iframe_url`,because the browser
-    // actually sent the previous FNE's redirect chain at commit, containing the
-    // two entries seen above. The renderer should've added one more entry of
-    // `iframe_url` (as the current document URL) and sent that back to the
-    // browser, but the renderer actually thought that the redirect chain is
-    // empty (because it checked for the redirect_response array, instead of the
-    // redirects array). So we end up with a redirect chain of size 1.
-    // TODO(https://crbug.com/1171225): Fix this.
-    EXPECT_EQ(frame_entry->redirect_chain().size(), 1u);
+    // On subframe browser-initiated reloads, the redirect chain contains three
+    // copies of `iframe_url`, because we reused the previous FNE's redirect
+    // chain at commit, containing the two entries seen above, and we added one
+    // more entry of `iframe_url` (as the current document URL).
+    EXPECT_EQ(frame_entry->redirect_chain().size(), 3u);
     EXPECT_EQ(frame_entry->redirect_chain()[0], iframe_url);
+    EXPECT_EQ(frame_entry->redirect_chain()[1], iframe_url);
+    EXPECT_EQ(frame_entry->redirect_chain()[2], iframe_url);
   }
 }
 
@@ -6327,11 +6295,9 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(url_2, entry->GetURL());
 
     // On renderer-initiated cross-site navigations with no redirects that end
-    // up in error pages, the redirect chain contains the error page URL.
-    // TODO(https://crbug.com/1171237): This should be the commit URL (url_2)
-    // instead.
+    // up in error pages, the redirect chain contains the final URL.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-    EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+    EXPECT_EQ(entry->GetRedirectChain()[0], url_2);
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
@@ -6351,9 +6317,9 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(url_3, entry->GetURL());
 
     // On browser-initiated cross-site navigations with no redirects that end
-    // up in error pages, the redirect chain contains the error page URL.
+    // up in error pages, the redirect chain contains the final URL.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-    EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+    EXPECT_EQ(entry->GetRedirectChain()[0], url_3);
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
@@ -6385,12 +6351,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(fail_url, entry->GetURL());
 
   // On navigations that end up in error pages, the redirect chain only
-  // contains the error page URL, even if the navigation went through server
+  // contains the final URL, even if the navigation went through server
   // redirects.
-  // TODO(https://crbug.com/1171237): This should be the commit URL (fail_url)
-  // instead.
   EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-  EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+  EXPECT_EQ(entry->GetRedirectChain()[0], fail_url);
 
   // No replaced entry because it's not a client-side redirect.
   EXPECT_FALSE(entry->GetReplacedEntryData().has_value());
@@ -6446,12 +6410,10 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(fail_url, entry->GetURL());
 
     // On navigations that end up in error pages, the redirect chain only
-    // contains the error page URL, even if the navigation went through client
+    // contains the final URL, even if the navigation went through client
     // and server redirects.
-    // TODO(https://crbug.com/1171237): This should be the commit URL (fail_url)
-    // instead.
     EXPECT_EQ(entry->GetRedirectChain().size(), 1u);
-    EXPECT_EQ(entry->GetRedirectChain()[0], GURL(kUnreachableWebDataURL));
+    EXPECT_EQ(entry->GetRedirectChain()[0], fail_url);
 
     // No replaced entry because it's not a client-side redirect.
     EXPECT_FALSE(entry->GetReplacedEntryData().has_value());

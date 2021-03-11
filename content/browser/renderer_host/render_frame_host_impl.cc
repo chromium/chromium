@@ -8726,9 +8726,6 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // banned URLs into the navigation controller in the first place.
   process->FilterURL(false, &params->url);
   process->FilterURL(true, &params->referrer->url);
-  for (auto& redirect : params->redirects) {
-    process->FilterURL(false, &redirect);
-  }
 
   // Without this check, the renderer can trick the browser into using
   // filenames it can't access in a future session restore.
@@ -8861,12 +8858,25 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // WebContentsObservers.
     DCHECK(is_initial_empty_commit || is_same_document_navigation);
 
+    // Fill the redirect chain for the NavigationRequest. Since this is only for
+    // initial empty commits or same-document navigation, we should just push
+    // the client-redirect URL (if it is a client redirect) and the final URL.
+    std::vector<GURL> redirects;
+    if (is_same_document_navigation &&
+        same_document_params->is_client_redirect) {
+      // If it is a same-document navigation, it might be a client redirect, in
+      // which case we should put the previous URL at the front of the redirect
+      // chain.
+      redirects.push_back(GetLastCommittedURL());
+    }
+    redirects.push_back(params->url);
+
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, params->redirects, params->url, params->page_state,
+        params->gesture, redirects, params->url, params->page_state,
         is_same_document_navigation,
         same_document_params &&
             same_document_params->is_history_api_navigation);
@@ -10021,7 +10031,7 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_server_redirect",
                         request->WasServerRedirect());
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "redirects_size",
-                          params.redirects.size());
+                          request->GetRedirectChain().size());
 
   SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "entry_offset",
                           request->GetNavigationEntryOffset());

@@ -1329,7 +1329,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     // Note: Error pages must commit in a unique origin. So it is left unset.
     params->url_is_unreachable = true;
   } else {
-    params->redirects.push_back(navigation_url_);
     params->should_update_history = true;
     if (same_document) {
       params->sandbox_flags = current_rfh->active_sandbox_flags();

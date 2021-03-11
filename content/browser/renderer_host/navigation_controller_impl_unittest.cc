@@ -1402,8 +1402,12 @@ TEST_F(NavigationControllerTest, RedirectsAreNotResetByCommit) {
   navigation->Redirect(url2);
   navigation->Commit();
   NavigationEntryImpl* committed_entry = controller.GetLastCommittedEntry();
-  ASSERT_EQ(1U, committed_entry->GetRedirectChain().size());
-  EXPECT_EQ(url2, committed_entry->GetRedirectChain()[0]);
+
+  // The navigation started out trying to get to |url1|, but got redirected to
+  // |url2|, so they're both in the redirect chain.
+  ASSERT_EQ(2U, committed_entry->GetRedirectChain().size());
+  EXPECT_EQ(url1, committed_entry->GetRedirectChain()[0]);
+  EXPECT_EQ(url2, committed_entry->GetRedirectChain()[1]);
 }
 
 // Tests that webkit preferences are updated when user agent override changes.
@@ -2297,7 +2301,6 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
-  params->redirects.push_back(url2);
 
   // This should NOT generate a new entry, nor prune the list.
   LoadCommittedDetailsObserver observer(contents());
@@ -2322,7 +2325,6 @@ TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   params->should_update_history = true;
   params->post_id = -1;
   params->gesture = NavigationGesture::NavigationGestureAuto;
-  params->redirects.push_back(url);
   main_test_rfh()->SendRendererInitiatedNavigationRequest(
       url, false /* has_user_gesture */);
   main_test_rfh()->PrepareForCommit();
@@ -3006,7 +3008,6 @@ TEST_F(NavigationControllerTest,
   params->method = "GET";
   params->post_id = -1;
   params->should_update_history = true;
-  params->redirects.push_back(different_origin_url);
   main_test_rfh()->SendRendererInitiatedNavigationRequest(different_origin_url,
                                                           false);
   main_test_rfh()->PrepareForCommit();
@@ -4113,7 +4114,6 @@ TEST_F(NavigationControllerTest, PushStateUpdatesTitleAndFavicon) {
   params->method = "GET";
   params->should_update_history = true;
   params->post_id = -1;
-  params->redirects.push_back(kUrl2);
   main_test_rfh()->SendNavigateWithParams(std::move(params), true);
 
   // The title should immediately be visible on the new NavigationEntry.

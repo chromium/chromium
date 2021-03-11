@@ -268,7 +268,6 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   params->origin = url::Origin::Create(params->url);
   params->referrer = blink::mojom::Referrer::New();
   params->transition = ui::PAGE_TRANSITION_TYPED;
-  params->redirects = std::vector<GURL>();
   params->should_update_history = false;
   params->did_create_new_entry = true;
   params->gesture = NavigationGestureUser;

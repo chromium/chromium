@@ -1685,8 +1685,15 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
   // Finally, add the current URL to the vector of redirects.
   // Note: for NavigationRequests created at commit time, the current URL has
   // been added to |commit_params_->redirects|, so don't add it a second time.
-  if (!is_for_commit)
-    redirect_chain_.push_back(common_params_->url);
+  if (!is_for_commit) {
+    if (!common_params_->base_url_for_data_url.is_empty()) {
+      // If this is a loadDataWithBaseURL/loadDataAsStringWithBaseUrl
+      // navigation, use the base URL instead of the data: URL used for commit.
+      redirect_chain_.push_back(common_params_->base_url_for_data_url);
+    } else {
+      redirect_chain_.push_back(common_params_->url);
+    }
+  }
 
   // Mirrors the logic in RenderFrameImpl::SendDidCommitProvisionalLoad.
   if (common_params_->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
@@ -2307,13 +2314,17 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {
-  // If the navigation resulted in an error we should return the URL used to
-  // commit, even if the navigation went through redirects. This is to preserve
-  // the previous behavior where we use the redirect chain from the renderer to
-  // get the original request URL. When we commit an error page, the redirect
-  // chain in the renderer only contains the commit URL.
-  if (net_error_ != net::OK)
+  // If the navigation resulted in an error or this is a loadData navigation we
+  // should return the URL used to commit, even if the navigation went through
+  // redirects. This is to preserve the previous behavior where we use the
+  // edirect chain from the renderer to get the original request URL. When we
+  // commit an error page or a loadDataWithBaseURL/loadDataAsStringWithBaseUrl
+  // navigation, the redirect chain in the renderer only contains the commit
+  // URL.
+  if (net_error_ != net::OK ||
+      NavigationRequest::IsLoadDataWithBaseURL(*common_params_)) {
     return GetURL();
+  }
 
   // Otherwise, return the first URL in the redirect chain. If the navigation
   // is started by a client redirect, this will be the URL of the document that
@@ -3424,6 +3435,10 @@ void NavigationRequest::CommitErrorPage(
   // define our own flags, preferably the strictest ones instead.
   ComputeSandboxFlagsToCommit(/*response_head=*/nullptr,
                               /*required_csp=*/nullptr);
+
+  // On failed navigations, the redirect chain should only contain the last URL.
+  redirect_chain_.clear();
+  redirect_chain_.push_back(GetURL());
 
   ReadyToCommitNavigation(true);
   // Use a separate cache shard, and no cookies, for error pages.

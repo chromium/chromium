@@ -1477,9 +1477,9 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
         params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
         params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
-        Referrer(*params.referrer), initiator_origin, params.redirects,
-        params.page_state, params.method, params.post_id,
-        nullptr /* blob_url_loader_factory */,
+        Referrer(*params.referrer), initiator_origin,
+        request->GetRedirectChain(), params.page_state, params.method,
+        params.post_id, nullptr /* blob_url_loader_factory */,
         nullptr /* web_bundle_navigation_info */,
         request->GetSubresourceWebBundleNavigationInfo(),
         // We will set the document policies later in this function.
@@ -1606,7 +1606,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   frame_entry->set_frame_unique_name(rfh->frame_tree_node()->unique_name());
   frame_entry->set_item_sequence_number(params.item_sequence_number);
   frame_entry->set_document_sequence_number(params.document_sequence_number);
-  frame_entry->set_redirect_chain(params.redirects);
+  frame_entry->set_redirect_chain(request->GetRedirectChain());
   frame_entry->SetPageState(params.page_state);
   frame_entry->set_method(params.method);
   frame_entry->set_post_id(params.post_id);
@@ -1839,7 +1839,7 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
       params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
+      Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
@@ -1900,7 +1900,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       rfh->frame_tree_node()->unique_name(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
       params.url, (params.url_is_unreachable) ? nullptr : &params.origin,
-      Referrer(*params.referrer), initiator_origin, params.redirects,
+      Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()
@@ -1986,7 +1986,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
       rfh->frame_tree_node(), params.item_sequence_number,
       params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
       params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
+      Referrer(*params.referrer), initiator_origin, request->GetRedirectChain(),
       params.page_state, params.method, params.post_id,
       nullptr /* blob_url_loader_factory */,
       request->web_bundle_navigation_info()

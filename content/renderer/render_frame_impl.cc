@@ -4260,7 +4260,8 @@ void RenderFrameImpl::DidFinishLoad() {
 void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::WebHistoryCommitType commit_type,
     bool content_initiated,
-    bool is_history_api_navigation) {
+    bool is_history_api_navigation,
+    bool is_client_redirect) {
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation", "id",
                routing_id_);
@@ -4276,6 +4277,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   auto same_document_params =
       mojom::DidCommitSameDocumentNavigationParams::New();
   same_document_params->is_history_api_navigation = is_history_api_navigation;
+  same_document_params->is_client_redirect = is_client_redirect;
   DidCommitNavigationInternal(
       commit_type, transition, network::mojom::WebSandboxFlags(),
       blink::ParsedPermissionsPolicy(),     // permissions_policy_header
@@ -4812,8 +4814,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   if (GURL(frame_document.BaseURL()) != params->url)
     params->base_url = frame_document.BaseURL();
 
-  GetRedirectChain(document_loader, &params->redirects);
-
   // TODO(https://crbug.com/1158101): Reconsider how we calculate
   // should_update_history.
   params->should_update_history =
@@ -4840,8 +4840,13 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // If the page contained a client redirect (meta refresh, document.loc...),
   // set the referrer appropriately.
   if (document_loader->IsClientRedirect()) {
+    // TODO(https://crbug.com/1131832): Remove referrer from
+    // DidCommitProvisionalLoadParams, which also removes the need to save the
+    // redirect chain in the renderer.
+    std::vector<GURL> redirects;
+    GetRedirectChain(document_loader, &redirects);
     params->referrer = blink::mojom::Referrer::New(
-        params->redirects[0], document_loader->GetReferrerPolicy());
+        redirects[0], document_loader->GetReferrerPolicy());
   } else {
     params->referrer = blink::mojom::Referrer::New(
         blink::WebStringToGURL(document_loader->Referrer()),

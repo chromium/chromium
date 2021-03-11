@@ -382,13 +382,15 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     HistoryItem* item,
     WebHistoryCommitType commit_type,
     bool content_initiated,
-    bool is_history_api_navigation) {
+    bool is_history_api_navigation,
+    bool is_client_redirect) {
   bool should_create_history_entry = commit_type == kWebStandardCommit;
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
   if (web_frame_->Client()) {
     web_frame_->Client()->DidFinishSameDocumentNavigation(
-        commit_type, content_initiated, is_history_api_navigation);
+        commit_type, content_initiated, is_history_api_navigation,
+        is_client_redirect);
   }
 }
 

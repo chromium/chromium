@@ -72,12 +72,6 @@ struct DidCommitProvisionalLoadParams {
   // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK)
   PageTransition transition;
 
-  // Lists the redirects that occurred on the way to the current page. This
-  // vector has the same format as reported by the WebDataSource in the glue,
-  // with the current page being the last one in the list (so even when
-  // there's no redirect, there will be one entry in the list.
-  array<url.mojom.Url> redirects;
-
   // Set to false if we want to update the session history but not update
   // the browser history.  E.g., on unreachable urls.
   bool should_update_history = false;
@@ -188,6 +182,10 @@ struct DidCommitSameDocumentNavigationParams {
   // TODO(crbug.com/1131832): Port SameDocumentNavigationSource enum to mojo
   // and use that instead of bool here.
   bool is_history_api_navigation = false;
+
+  // Whether the navigation is a result of a client redirect (e.g. a
+  // script-initiated navigation) or not (e.g. a link click).
+  bool is_client_redirect = false;
 };
 
 interface NavigationClient {

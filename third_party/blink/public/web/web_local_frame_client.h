@@ -415,8 +415,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // named anchor or a PopState event may have been dispatched.
   virtual void DidFinishSameDocumentNavigation(WebHistoryCommitType,
                                                bool content_initiated,
-                                               bool is_history_api_navigation) {
-  }
+                                               bool is_history_api_navigation,
+                                               bool is_client_redirect) {}
 
   // Called when a RenderFrame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}

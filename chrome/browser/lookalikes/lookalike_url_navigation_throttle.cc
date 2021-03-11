@@ -256,11 +256,15 @@ void LookalikeUrlNavigationThrottle::PerformChecksDeferred(
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
     const std::vector<DomainInfo>& engaged_sites) {
-  DCHECK_EQ(
+  // The last URL in the redirect chain must be the same as the commit URL,
+  // or the navigation is a loadData navigation (where the base URL is saved in
+  // the redirect chain, instead of the commit URL).
+  const GURL& last_url_in_redirect_chain =
       navigation_handle()
           ->GetRedirectChain()[navigation_handle()->GetRedirectChain().size() -
-                               1],
-      navigation_handle()->GetURL());
+                               1];
+  DCHECK(last_url_in_redirect_chain == navigation_handle()->GetURL() ||
+         !navigation_handle()->GetBaseURLForDataURL().is_empty());
 
   // Check for two lookalikes -- at the beginning and end of the redirect chain.
   const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
