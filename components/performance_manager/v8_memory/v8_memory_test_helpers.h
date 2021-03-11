@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
 #include <string>
 #include <vector>

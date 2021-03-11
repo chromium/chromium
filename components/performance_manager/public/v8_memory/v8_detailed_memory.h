@@ -5,24 +5,16 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_V8_MEMORY_V8_DETAILED_MEMORY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_V8_MEMORY_V8_DETAILED_MEMORY_H_
 
-#include <vector>
+#include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "components/performance_manager/public/graph/graph_registered.h"
-#include "components/performance_manager/public/graph/node_data_describer.h"
-#include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/render_process_host_id.h"
-#include "content/public/browser/global_routing_id.h"
-#include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
 namespace performance_manager {
 
@@ -32,28 +24,29 @@ class ExecutionContext;
 
 class Graph;
 class FrameNode;
+class ProcessNode;
 class WorkerNode;
 
 namespace v8_memory {
 
-// A decorator that queries each renderer process for the amount of memory used
-// by V8 in each frame.
+// Classes that query each renderer process for the amount of memory used by V8
+// in each frame.
 //
 // To start sampling create a V8DetailedMemoryRequest object that specifies how
 // often to request a memory measurement. Delete the object when you no longer
 // need measurements. Measurement involves some overhead so choose the lowest
-// sampling frequency your use case needs. The decorator will use the highest
-// sampling frequency that any caller requests, and stop measurements entirely
-// when no more V8DetailedMemoryRequest objects exist.
+// sampling frequency your use case needs. Performance Manager will use the
+// highest sampling frequency that any caller requests, and stop measurements
+// entirely when no more request objects exist.
 //
-// When measurements are available the decorator attaches them to
+// When measurements are available Performance Manager attaches them to
 // V8DetailedMemoryExecutionContextData and V8DetailedMemoryProcessData objects
-// that can be retrieved with V8DetailedMemoryExecutionContextData::ForFrameNode
-// ForWorkerNode and ForExecutionContext, and V8DetailedMemoryProcessData::
-// ForProcessNode. V8DetailedMemoryProcessData objects can be cleaned up when
-// V8DetailedMemoryRequest objects are deleted so callers must save the
-// measurements they are interested in before releasing their
-// V8DetailedMemoryRequest.
+// that can be retrieved with V8DetailedMemoryExecutionContextData's
+// ForFrameNode, ForWorkerNode and ForExecutionContext, and
+// V8DetailedMemoryProcessData's ForProcessNode.  V8DetailedMemoryProcessData
+// objects can be cleaned up when V8DetailedMemoryRequest objects are deleted
+// so callers must save the measurements they are interested in before
+// releasing their V8DetailedMemoryRequest.
 //
 // Callers can be notified when a request is available by implementing
 // V8DetailedMemoryObserver.
@@ -62,7 +55,7 @@ namespace v8_memory {
 // V8DetailedMemoryProcessData must all be accessed on the graph sequence, and
 // V8DetailedMemoryObserver::OnV8MemoryMeasurementAvailable will be called on
 // this sequence. To request memory measurements from another sequence use the
-// V8DetailedMemoryRequestAnySeq and V8DetailedMemoryObserverAnySeq wrappers.
+// wrappers in v8_detailed_memory_any_seq.h.
 //
 // Usage:
 //
@@ -128,159 +121,6 @@ namespace v8_memory {
 //     std::unique_ptr<V8DetailedMemoryRequest> request_;
 //     std::unique_ptr<Observer> observer_;
 //   };
-//
-// Same, but from the another thread:
-//
-//   class Observer : public V8DetailedMemoryObserverAnySeq {
-//    public:
-//     // Called on the same sequence for each process.
-//     void OnV8MemoryMeasurementAvailable(
-//         RenderProcessHostId process_id,
-//         const V8DetailedMemoryProcessData& process_data,
-//         const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data)
-//         override {
-//       const auto* process = RenderProcessHost::FromID(process_id.value());
-//       if (!process) {
-//         // Process was deleted after measurement arrived on the PM sequence.
-//         return;
-//       }
-//       LOG(INFO) << "Process " << process->GetID() <<
-//           " reported " << process_data.detached_v8_bytes_used() <<
-//           " bytes of V8 memory that wasn't associated with a frame.";
-//       LOG(INFO) << "Process " << process_node->GetProcessId() <<
-//           " reported " << data->shared_v8_bytes_used() <<
-//           " bytes of V8 memory that are shared between all frames";
-//       for (std::pair<
-//             content::GlobalFrameRoutingId,
-//             V8DetailedMemoryExecutionContextData
-//           > frame_and_data : frame_data) {
-//         const auto* frame = RenderFrameHost::FromID(frame_and_data.first);
-//         if (!frame) {
-//           // Frame was deleted after measurement arrived on the PM sequence.
-//           continue;
-//         }
-//         LOG(INFO) << "Frame " << frame->GetFrameToken() <<
-//             " using " << token_and_data.second.v8_bytes_used() <<
-//             " bytes of V8 memory in its main world.";
-//       }
-//     }
-//   };
-//
-//  class MemoryMonitor {
-//    public:
-//     MemoryMonitor() {
-//       Start();
-//     }
-//
-//     void Start() {
-//       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-//
-//       // Creating a V8DetailedMemoryRequest with the |graph| parameter
-//       // automatically starts measurements.
-//       request_ = std::make_unique<V8DetailedMemoryRequestAnySeq>(
-//           base::TimeDelta::FromMinutes(2));
-//       observer_ = std::make_unique<Observer>();
-//       request_->AddObserver(observer_.get());
-//     }
-//
-//     void Stop() {
-//       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-//
-//       // |observer_| must be removed from |request_| before deleting it.
-//       // Afterwards they can be deleted in any order.
-//       request_->RemoveObserver(observer_.get());
-//       observer_.reset();
-//
-//       // Measurements stop when |request_| is deleted.
-//       request_.reset();
-//     }
-//
-//    private:
-//     std::unique_ptr<V8DetailedMemoryRequestAnySeq> request_;
-//     std::unique_ptr<Observer> observer_;
-//
-//     SEQUENCE_CHECKER(sequence_checker_);
-//   };
-
-class V8DetailedMemoryObserver;
-class V8DetailedMemoryProcessData;
-class V8DetailedMemoryRequest;
-class V8DetailedMemoryRequestAnySeq;
-class V8DetailedMemoryRequestOneShot;
-class V8DetailedMemoryRequestOneShotAnySeq;
-
-class V8DetailedMemoryDecorator
-    : public GraphOwned,
-      public GraphRegisteredImpl<V8DetailedMemoryDecorator>,
-      public ProcessNode::ObserverDefaultImpl,
-      public NodeDataDescriberDefaultImpl {
- public:
-  // A priority queue of memory requests. The decorator will hold a global
-  // queue of requests that measure every process, and each ProcessNode will
-  // have a queue of requests that measure only that process.
-  class MeasurementRequestQueue;
-
-  V8DetailedMemoryDecorator();
-  ~V8DetailedMemoryDecorator() override;
-
-  V8DetailedMemoryDecorator(const V8DetailedMemoryDecorator&) = delete;
-  V8DetailedMemoryDecorator& operator=(const V8DetailedMemoryDecorator&) =
-      delete;
-
-  // GraphOwned implementation.
-  void OnPassedToGraph(Graph* graph) override;
-  void OnTakenFromGraph(Graph* graph) override;
-
-  // ProcessNodeObserver overrides.
-  void OnProcessNodeAdded(const ProcessNode* process_node) override;
-  void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
-
-  // NodeDataDescriber overrides.
-  base::Value DescribeFrameNodeData(const FrameNode* node) const override;
-  base::Value DescribeProcessNodeData(const ProcessNode* node) const override;
-
-  // Returns the next measurement request that should be scheduled.
-  const V8DetailedMemoryRequest* GetNextRequest() const;
-
-  // Returns the next measurement request with mode kBounded or
-  // kEagerForTesting that should be scheduled.
-  const V8DetailedMemoryRequest* GetNextBoundedRequest() const;
-
-  // Implementation details below this point.
-
-  // V8DetailedMemoryRequest objects register themselves with the decorator.
-  // If |process_node| is null, the request will be sent to every renderer
-  // process, otherwise it will be sent only to |process_node|.
-  void AddMeasurementRequest(base::PassKey<V8DetailedMemoryRequest>,
-                             V8DetailedMemoryRequest* request,
-                             const ProcessNode* process_node = nullptr);
-  void RemoveMeasurementRequest(base::PassKey<V8DetailedMemoryRequest>,
-                                V8DetailedMemoryRequest* request);
-
-  // Internal helper class that can call NotifyObserversOnMeasurementAvailable
-  // when a measurement is received.
-  class ObserverNotifier;
-  void NotifyObserversOnMeasurementAvailable(
-      base::PassKey<ObserverNotifier>,
-      const ProcessNode* process_node) const;
-
- private:
-  using RequestQueueCallback =
-      base::RepeatingCallback<void(MeasurementRequestQueue*)>;
-
-  // Runs the given |callback| for every MeasurementRequestQueue (global and
-  // per-process).
-  void ApplyToAllRequestQueues(RequestQueueCallback callback) const;
-
-  void UpdateProcessMeasurementSchedules() const;
-
-  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
-
-  std::unique_ptr<MeasurementRequestQueue> measurement_requests_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-};
 
 //////////////////////////////////////////////////////////////////////////////
 // The following classes report results from memory measurements.
@@ -406,6 +246,11 @@ class V8DetailedMemoryObserver : public base::CheckedObserver {
 //////////////////////////////////////////////////////////////////////////////
 // The following classes create requests for memory measurements.
 
+class V8DetailedMemoryDecorator;
+class V8DetailedMemoryRequestAnySeq;
+class V8DetailedMemoryRequestOneShot;
+class V8DetailedMemoryRequestQueue;
+
 class V8DetailedMemoryRequest {
  public:
   enum class MeasurementMode {
@@ -500,16 +345,15 @@ class V8DetailedMemoryRequest {
                           MeasurementMode mode,
                           base::OnceClosure on_owner_unregistered_closure);
 
-  // V8DetailedMemoryDecorator::MeasurementRequestQueue calls
-  // OnOwnerUnregistered for all requests in the queue when the owning
-  // decorator or process node is removed from the graph.
-  void OnOwnerUnregistered(
-      base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>);
+  // A V8DetailedMemoryRequestQueue calls OnOwnerUnregistered for all requests
+  // in the queue when the owning decorator or process node is removed from the
+  // graph.
+  void OnOwnerUnregistered(base::PassKey<V8DetailedMemoryRequestQueue>);
 
-  // V8DetailedMemoryDecorator::MeasurementRequestQueue calls
-  // NotifyObserversOnMeasurementAvailable when a measurement is received.
+  // A V8DetailedMemoryRequestQueue calls NotifyObserversOnMeasurementAvailable
+  // when a measurement is received.
   void NotifyObserversOnMeasurementAvailable(
-      base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
+      base::PassKey<V8DetailedMemoryRequestQueue>,
       const ProcessNode* process_node) const;
 
  private:
@@ -543,6 +387,8 @@ class V8DetailedMemoryRequest {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+class V8DetailedMemoryRequestOneShotAnySeq;
 
 class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
  public:
@@ -628,179 +474,14 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
 };
 
 //////////////////////////////////////////////////////////////////////////////
-// The following classes are wrappers that can be called from outside the PM
-// sequence.
-
-// Observer that can be created on any sequence, and will be notified on that
-// sequence when measurements are available. Register the observer through
-// V8DetailedMemoryRequestAnySeq::AddObserver. The
-// V8DetailedMemoryRequestAnySeq must live on the same sequence as the
-// observer.
-class V8DetailedMemoryObserverAnySeq : public base::CheckedObserver {
- public:
-  // TODO(crbug.com/1096617): Should use ExecutionContext tokens here. We should
-  // potentially also split "main" content from "isolated world" content, and
-  // have a detailed V8ContextToken map for those who care about all the
-  // details.
-  using FrameDataMap = base::flat_map<content::GlobalFrameRoutingId,
-                                      V8DetailedMemoryExecutionContextData>;
-
-  // Called on the observer's sequence when a measurement is available for the
-  // process with ID |render_process_host_id|. The notification includes the
-  // measurement data for the process and each frame that had a result in that
-  // process at the time of the measurement, so that the implementer doesn't
-  // need to return to the PM sequence to read it.
-  virtual void OnV8MemoryMeasurementAvailable(
-      RenderProcessHostId render_process_host_id,
-      const V8DetailedMemoryProcessData& process_data,
-      const FrameDataMap& frame_data) = 0;
-};
-
-// Wrapper that can instantiate a V8DetailedMemoryRequest from any sequence.
-class V8DetailedMemoryRequestAnySeq {
- public:
-  using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
-
-  // Creates a memory measurement request that will be sent repeatedly with at
-  // least |min_time_between_requests| between each measurement. The request
-  // will be sent to the process with ID |process_to_measure|, which must be a
-  // renderer process, or to all renderer processes if |process_to_measure| is
-  // nullopt. The process will perform the measurement during a GC as determined
-  // by |mode|.
-  explicit V8DetailedMemoryRequestAnySeq(
-      const base::TimeDelta& min_time_between_requests,
-      MeasurementMode mode = MeasurementMode::kDefault,
-      base::Optional<RenderProcessHostId> process_to_measure = base::nullopt);
-  ~V8DetailedMemoryRequestAnySeq();
-
-  V8DetailedMemoryRequestAnySeq(const V8DetailedMemoryRequestAnySeq&) = delete;
-  V8DetailedMemoryRequestAnySeq& operator=(
-      const V8DetailedMemoryRequestAnySeq&) = delete;
-
-  // Returns whether |observer| is in |observers_|.
-  bool HasObserver(V8DetailedMemoryObserverAnySeq* observer);
-
-  // Adds an observer that was created on the same sequence as the
-  // V8DetailedMemoryRequestAnySeq.
-  void AddObserver(V8DetailedMemoryObserverAnySeq* observer);
-
-  // Removes an observer that was added with AddObserver.
-  void RemoveObserver(V8DetailedMemoryObserverAnySeq* observer);
-
-  // Implementation details below this point.
-
-  // V8DetailedMemoryRequest calls NotifyObserversOnMeasurementAvailable when
-  // a measurement is received.
-  void NotifyObserversOnMeasurementAvailable(
-      base::PassKey<V8DetailedMemoryRequest>,
-      RenderProcessHostId render_process_host_id,
-      const V8DetailedMemoryProcessData& process_data,
-      const V8DetailedMemoryObserverAnySeq::FrameDataMap& frame_data) const;
-
- private:
-  void InitializeWrappedRequest(
-      const base::TimeDelta& min_time_between_requests,
-      MeasurementMode mode,
-      base::Optional<base::WeakPtr<ProcessNode>> process_to_measure);
-
-  std::unique_ptr<V8DetailedMemoryRequest> request_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ObserverList<V8DetailedMemoryObserverAnySeq, /*check_empty=*/true>
-      observers_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // This object can live on any sequence but all methods and the destructor
-  // must be called from that sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<V8DetailedMemoryRequestAnySeq> weak_factory_{this};
-};
-
-// Wrapper that can instantiate a V8DetailedMemoryRequestOneShot from any
-// sequence.
-class V8DetailedMemoryRequestOneShotAnySeq {
- public:
-  using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
-
-  using FrameDataMap = V8DetailedMemoryObserverAnySeq::FrameDataMap;
-
-  // A callback that will be called on the request's sequence with the results
-  // of the measurement. |process_id| will always match the value passed to
-  // the V8DetailedMemoryRequestOneShotAnySeq constructor.
-  using MeasurementCallback =
-      base::OnceCallback<void(RenderProcessHostId process_id,
-                              const V8DetailedMemoryProcessData& process_data,
-                              const FrameDataMap& frame_data)>;
-
-  explicit V8DetailedMemoryRequestOneShotAnySeq(
-      MeasurementMode mode = MeasurementMode::kDefault);
-
-  V8DetailedMemoryRequestOneShotAnySeq(
-      RenderProcessHostId process_id,
-      MeasurementCallback callback,
-      MeasurementMode mode = MeasurementMode::kDefault);
-
-  ~V8DetailedMemoryRequestOneShotAnySeq();
-
-  V8DetailedMemoryRequestOneShotAnySeq(
-      const V8DetailedMemoryRequestOneShotAnySeq&) = delete;
-  V8DetailedMemoryRequestOneShotAnySeq& operator=(
-      const V8DetailedMemoryRequestOneShotAnySeq&) = delete;
-
-  void StartMeasurement(RenderProcessHostId process_id,
-                        MeasurementCallback callback);
-
- private:
-  void InitializeWrappedRequest(MeasurementCallback callback,
-                                MeasurementMode mode,
-                                base::WeakPtr<ProcessNode>);
-
-  // Called on the PM sequence when a measurement is available.
-  // |sequence_bound_callback| will wrap the callback passed to the
-  // constructor, so it is both called and freed on the request's sequence.
-  static void OnMeasurementAvailable(
-      base::SequenceBound<MeasurementCallback> sequence_bound_callback,
-      const ProcessNode* process_node,
-      const V8DetailedMemoryProcessData* process_data);
-
-  MeasurementMode mode_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The wrapped request. Must only be accessed from the PM sequence.
-  std::unique_ptr<V8DetailedMemoryRequestOneShot> request_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // This object can live on any sequence but all methods and the destructor
-  // must be called from that sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<V8DetailedMemoryRequestOneShotAnySeq> weak_factory_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
-};
-
-//////////////////////////////////////////////////////////////////////////////
 // The following internal functions are exposed in the header for testing.
 
 namespace internal {
-
-// A callback that will bind a V8DetailedMemoryReporter interface to
-// communicate with the given process. Exposed so that it can be overridden to
-// implement the interface with a test fake.
-using BindV8DetailedMemoryReporterCallback = base::RepeatingCallback<void(
-    mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>,
-    RenderProcessHostProxy)>;
-
-// Sets a callback that will be used to bind the V8DetailedMemoryReporter
-// interface. The callback is owned by the caller and must live until this
-// function is called again with nullptr.
-void SetBindV8DetailedMemoryReporterCallbackForTesting(
-    BindV8DetailedMemoryReporterCallback* callback);
 
 // Enables or disables MeasurementMode::kEagerModeForTesting. Creating eager
 // measurement requests can have a high performance penalty so this should only
 // be enabled in tests.
 void SetEagerMemoryMeasurementEnabledForTesting(bool enable);
-
-// Destroys the V8DetailedMemoryDecorator. Exposed for testing.
-void DestroyV8DetailedMemoryDecoratorForTesting(Graph* graph);
 
 }  // namespace internal
 

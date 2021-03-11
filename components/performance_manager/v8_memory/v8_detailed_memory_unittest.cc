@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory_any_seq.h"
 
 #include <memory>
 #include <tuple>

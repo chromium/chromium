@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
+#include "components/performance_manager/public/v8_memory/v8_detailed_memory_any_seq.h"
+#include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
 #include <utility>
 #include <vector>
@@ -36,11 +38,11 @@ namespace performance_manager {
 
 namespace v8_memory {
 
-class V8DetailedMemoryDecorator::MeasurementRequestQueue {
+class V8DetailedMemoryRequestQueue {
  public:
-  MeasurementRequestQueue() = default;
+  V8DetailedMemoryRequestQueue() = default;
 
-  ~MeasurementRequestQueue();
+  ~V8DetailedMemoryRequestQueue();
 
   const V8DetailedMemoryRequest* GetNextRequest() const;
   const V8DetailedMemoryRequest* GetNextBoundedRequest() const;
@@ -245,8 +247,7 @@ class NodeAttachedProcessData
 
   void ScheduleNextMeasurement();
 
-  V8DetailedMemoryDecorator::MeasurementRequestQueue&
-  process_measurement_requests() {
+  V8DetailedMemoryRequestQueue& process_measurement_requests() {
     return process_measurement_requests_;
   }
 
@@ -264,8 +265,8 @@ class NodeAttachedProcessData
   const ProcessNode* const process_node_;
 
   // Measurement requests that will be sent to this process only.
-  V8DetailedMemoryDecorator::MeasurementRequestQueue
-      process_measurement_requests_ GUARDED_BY_CONTEXT(sequence_checker_);
+  V8DetailedMemoryRequestQueue process_measurement_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Remote<blink::mojom::V8DetailedMemoryReporter> resource_usage_reporter_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -704,7 +705,7 @@ void V8DetailedMemoryRequest::RemoveObserver(
 }
 
 void V8DetailedMemoryRequest::OnOwnerUnregistered(
-    base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>) {
+    base::PassKey<V8DetailedMemoryRequestQueue>) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   decorator_ = nullptr;
   if (on_owner_unregistered_closure_)
@@ -712,7 +713,7 @@ void V8DetailedMemoryRequest::OnOwnerUnregistered(
 }
 
 void V8DetailedMemoryRequest::NotifyObserversOnMeasurementAvailable(
-    base::PassKey<V8DetailedMemoryDecorator::MeasurementRequestQueue>,
+    base::PassKey<V8DetailedMemoryRequestQueue>,
     const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* process_data =
@@ -974,7 +975,7 @@ V8DetailedMemoryProcessData* V8DetailedMemoryProcessData::GetOrCreateForTesting(
 // V8DetailedMemoryDecorator
 
 V8DetailedMemoryDecorator::V8DetailedMemoryDecorator()
-    : measurement_requests_(std::make_unique<MeasurementRequestQueue>()) {}
+    : measurement_requests_(std::make_unique<V8DetailedMemoryRequestQueue>()) {}
 
 V8DetailedMemoryDecorator::~V8DetailedMemoryDecorator() = default;
 
@@ -999,7 +1000,7 @@ void V8DetailedMemoryDecorator::OnTakenFromGraph(Graph* graph) {
   DCHECK_EQ(graph, graph_);
 
   ApplyToAllRequestQueues(
-      base::BindRepeating(&MeasurementRequestQueue::OnOwnerUnregistered));
+      base::BindRepeating(&V8DetailedMemoryRequestQueue::OnOwnerUnregistered));
   UpdateProcessMeasurementSchedules();
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
@@ -1101,7 +1102,7 @@ void V8DetailedMemoryDecorator::RemoveMeasurementRequest(
   ApplyToAllRequestQueues(base::BindRepeating(
       // Raw pointers are safe because this callback is synchronous.
       [](V8DetailedMemoryRequest* request, size_t* removal_count,
-         MeasurementRequestQueue* queue) {
+         V8DetailedMemoryRequestQueue* queue) {
         (*removal_count) += queue->RemoveMeasurementRequest(request);
       },
       request, &removal_count));
@@ -1138,13 +1139,13 @@ void V8DetailedMemoryDecorator::NotifyObserversOnMeasurementAvailable(
   measurement_requests_->NotifyObserversOnMeasurementAvailable(process_node);
 }
 
-V8DetailedMemoryDecorator::MeasurementRequestQueue::~MeasurementRequestQueue() {
+V8DetailedMemoryRequestQueue::~V8DetailedMemoryRequestQueue() {
   DCHECK(bounded_measurement_requests_.empty());
   DCHECK(lazy_measurement_requests_.empty());
 }
 
-const V8DetailedMemoryRequest*
-V8DetailedMemoryDecorator::MeasurementRequestQueue::GetNextRequest() const {
+const V8DetailedMemoryRequest* V8DetailedMemoryRequestQueue::GetNextRequest()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ChooseHigherPriorityRequest(GetNextBoundedRequest(),
                                      lazy_measurement_requests_.empty()
@@ -1153,15 +1154,14 @@ V8DetailedMemoryDecorator::MeasurementRequestQueue::GetNextRequest() const {
 }
 
 const V8DetailedMemoryRequest*
-V8DetailedMemoryDecorator::MeasurementRequestQueue::GetNextBoundedRequest()
-    const {
+V8DetailedMemoryRequestQueue::GetNextBoundedRequest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return bounded_measurement_requests_.empty()
              ? nullptr
              : bounded_measurement_requests_.front();
 }
 
-void V8DetailedMemoryDecorator::MeasurementRequestQueue::AddMeasurementRequest(
+void V8DetailedMemoryRequestQueue::AddMeasurementRequest(
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
@@ -1185,8 +1185,7 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::AddMeasurementRequest(
   measurement_requests.push_back(request);
 }
 
-size_t
-V8DetailedMemoryDecorator::MeasurementRequestQueue::RemoveMeasurementRequest(
+size_t V8DetailedMemoryRequestQueue::RemoveMeasurementRequest(
     V8DetailedMemoryRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request);
@@ -1196,30 +1195,29 @@ V8DetailedMemoryDecorator::MeasurementRequestQueue::RemoveMeasurementRequest(
                      request);
 }
 
-void V8DetailedMemoryDecorator::MeasurementRequestQueue::
-    NotifyObserversOnMeasurementAvailable(
-        const ProcessNode* process_node) const {
+void V8DetailedMemoryRequestQueue::NotifyObserversOnMeasurementAvailable(
+    const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Raw pointers are safe because the callback is synchronous.
   ApplyToAllRequests(base::BindRepeating(
       [](const ProcessNode* process_node, V8DetailedMemoryRequest* request) {
         request->NotifyObserversOnMeasurementAvailable(
-            base::PassKey<MeasurementRequestQueue>(), process_node);
+            base::PassKey<V8DetailedMemoryRequestQueue>(), process_node);
       },
       process_node));
 }
 
-void V8DetailedMemoryDecorator::MeasurementRequestQueue::OnOwnerUnregistered() {
+void V8DetailedMemoryRequestQueue::OnOwnerUnregistered() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplyToAllRequests(base::BindRepeating([](V8DetailedMemoryRequest* request) {
-    request->OnOwnerUnregistered(base::PassKey<MeasurementRequestQueue>());
+    request->OnOwnerUnregistered(base::PassKey<V8DetailedMemoryRequestQueue>());
   }));
   bounded_measurement_requests_.clear();
   lazy_measurement_requests_.clear();
 }
 
-void V8DetailedMemoryDecorator::MeasurementRequestQueue::Validate() {
+void V8DetailedMemoryRequestQueue::Validate() {
 #if DCHECK_IS_ON()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto check_invariants =
@@ -1241,7 +1239,7 @@ void V8DetailedMemoryDecorator::MeasurementRequestQueue::Validate() {
 #endif
 }
 
-void V8DetailedMemoryDecorator::MeasurementRequestQueue::ApplyToAllRequests(
+void V8DetailedMemoryRequestQueue::ApplyToAllRequests(
     base::RepeatingCallback<void(V8DetailedMemoryRequest*)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // First collect all requests to notify. The callback may add or remove
