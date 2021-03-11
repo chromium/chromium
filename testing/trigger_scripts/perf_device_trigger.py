@@ -55,6 +55,7 @@ import sys
 import tempfile
 import urllib
 import logging
+import random
 
 import base_test_triggerer
 
@@ -123,7 +124,31 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
       # each config represents exactly one bot in the perf swarming pool.
       for index in range(len(self.indices_to_trigger(args))):
         configs.append((index, index))
+    if args.use_dynamic_shards:
+      return self._select_config_indices_with_dynamic_sharding(verbose)
     return self._select_config_indices_with_soft_affinity(args, verbose)
+
+  def _select_config_indices_with_dynamic_sharding(self, verbose):
+    alive_bot_ids = [
+        bot_id for bot_id, b in self._eligible_bots_by_ids.iteritems()
+        if b.is_alive()
+    ]
+    trigger_count = len(alive_bot_ids)
+
+    indexes = range(trigger_count)
+    random.shuffle(indexes)
+    selected_config = [
+        (indexes[i], self._find_bot_config_index(alive_bot_ids[i]))
+        for i in range(trigger_count)
+    ]
+    selected_config.sort()
+
+    if verbose:
+      for shard_index, bot_id in selected_config:
+        print('Shard %d\n\tBot: %s' % (shard_index, bot_id))
+
+    return selected_config
+
 
   def _select_config_indices_with_soft_affinity(self, args, verbose):
     trigger_count = len(self.indices_to_trigger(args))
@@ -309,6 +334,10 @@ def main():
   # Setup args for common contract of base class
   parser = base_test_triggerer.BaseTestTriggerer.setup_parser_contract(
       argparse.ArgumentParser(description=__doc__))
+  parser.add_argument('--use-dynamic-shards', type=bool, default=None,
+                      help='Ignore --shards and the existing shard map. Will '
+                           'generate a shard map at run time and use as much '
+                           'device as possible.')
   args, remaining = parser.parse_known_args()
 
   triggerer = PerfDeviceTriggerer(args, remaining)
