@@ -956,10 +956,6 @@ extern const char kClickedUpdateMenuItem[];
 extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 #endif
 
-extern const char kOriginTrialPublicKey[];
-extern const char kOriginTrialDisabledFeatures[];
-extern const char kOriginTrialDisabledTokens[];
-
 extern const char kComponentUpdatesEnabled[];
 
 #if defined(OS_ANDROID)

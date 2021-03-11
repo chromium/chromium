@@ -8,6 +8,8 @@ source_set("origin_trials") {
     "features.h",
     "origin_trial_policy_impl.cc",
     "origin_trial_policy_impl.h",
+    "pref_names.cc",
+    "pref_names.h",
   ]
   deps = [
     "//base",

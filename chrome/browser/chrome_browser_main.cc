@@ -114,6 +114,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/google/core/common/google_util.h"
@@ -595,17 +596,19 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(embedder_support::kOriginTrialPublicKey)) {
     std::string new_public_key =
-        local_state->GetString(prefs::kOriginTrialPublicKey);
+        local_state->GetString(embedder_support::prefs::kOriginTrialPublicKey);
     if (!new_public_key.empty()) {
       command_line->AppendSwitchASCII(
           embedder_support::kOriginTrialPublicKey,
-          local_state->GetString(prefs::kOriginTrialPublicKey));
+          local_state->GetString(
+              embedder_support::prefs::kOriginTrialPublicKey));
     }
   }
   if (!command_line->HasSwitch(
           embedder_support::kOriginTrialDisabledFeatures)) {
     const base::ListValue* override_disabled_feature_list =
-        local_state->GetList(prefs::kOriginTrialDisabledFeatures);
+        local_state->GetList(
+            embedder_support::prefs::kOriginTrialDisabledFeatures);
     if (override_disabled_feature_list) {
       std::vector<base::StringPiece> disabled_features;
       base::StringPiece disabled_feature;
@@ -624,8 +627,8 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
     }
   }
   if (!command_line->HasSwitch(embedder_support::kOriginTrialDisabledTokens)) {
-    const base::ListValue* disabled_token_list =
-        local_state->GetList(prefs::kOriginTrialDisabledTokens);
+    const base::ListValue* disabled_token_list = local_state->GetList(
+        embedder_support::prefs::kOriginTrialDisabledTokens);
     if (disabled_token_list) {
       std::vector<base::StringPiece> disabled_tokens;
       base::StringPiece disabled_token;
