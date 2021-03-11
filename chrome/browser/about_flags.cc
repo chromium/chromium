@@ -4406,6 +4406,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDisableCGIParamMatchingName,
      flag_descriptions::kOmniboxDisableCGIParamMatchingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDisableCGIParamMatching)},
+    {"omnibox-double-space-keyword-triggering",
+     flag_descriptions::kOmniboxDoubleSpaceKeywordTriggeringName,
+     flag_descriptions::kOmniboxDoubleSpaceKeywordTriggeringDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kDoubleSpaceKeywordTriggering)},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 

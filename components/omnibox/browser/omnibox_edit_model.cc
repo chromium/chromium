@@ -1493,7 +1493,8 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   // Entering keyword mode by space is disabled if the keyword button is
   // enabled, so do not set |allow_exact_keyword_match_| in that case.
   allow_exact_keyword_match_ =
-      !OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
+      (OmniboxFieldTrial::GetKeywordSpaceTrigger() !=
+       OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED) &&
       state_changes.text_differs && allow_keyword_ui_change &&
       !state_changes.just_deleted_text && no_selection &&
       CreatedKeywordSearchByInsertingSpaceInMiddle(
@@ -1681,10 +1682,19 @@ bool OmniboxEditModel::MaybeAcceptKeywordBySpace(
     const base::string16& new_text) {
   // Entering keyword mode by space is disabled when the keyword button is
   // enabled, so do not accept keyword.
-  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
+  if (OmniboxFieldTrial::GetKeywordSpaceTrigger() ==
+      OmniboxFieldTrial::SPACE_TRIGGERING_DISABLED)
     return false;
 
   size_t keyword_length = new_text.length() - 1;
+  if (OmniboxFieldTrial::GetKeywordSpaceTrigger() ==
+      OmniboxFieldTrial::DOUBLE_SPACE_TRIGGERS_KEYWORD) {
+    // Check if the second character after a keyword is a space.  The first
+    // character is checked as usual below.
+    if (!IsSpaceCharForAcceptingKeyword(new_text[keyword_length]))
+      return false;
+    keyword_length--;
+  }
   return is_keyword_hint_ && (keyword_.length() == keyword_length) &&
          IsSpaceCharForAcceptingKeyword(new_text[keyword_length]) &&
          !new_text.compare(0, keyword_length, keyword_, 0, keyword_length) &&

@@ -953,6 +953,9 @@ extern const char kOmniboxDisplayTitleForCurrentUrlDescription[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsName[];
 extern const char kOmniboxDefaultTypedNavigationsToHttpsDescription[];
 
+extern const char kOmniboxDoubleSpaceKeywordTriggeringName[];
+extern const char kOmniboxDoubleSpaceKeywordTriggeringDescription[];
+
 extern const char kOmniboxExperimentalSuggestScoringName[];
 extern const char kOmniboxExperimentalSuggestScoringDescription[];
 

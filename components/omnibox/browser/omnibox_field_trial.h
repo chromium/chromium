@@ -446,6 +446,17 @@ int UnelideURLOnHoverThresholdMs();
 // suggestions.
 bool ShouldDisableCGIParamMatching();
 
+enum KeywordSpaceTrigger {
+  SPACE_TRIGGERING_DISABLED = 0,
+  SINGLE_SPACE_TRIGGERS_KEYWORD = 1,
+  DOUBLE_SPACE_TRIGGERS_KEYWORD = 2,
+};
+
+// Returns whether space triggering is disabled (keyword search button is
+// enabled), triggered by single space (default), or double space (double space
+// keyword triggering is enabled).
+KeywordSpaceTrigger GetKeywordSpaceTrigger();
+
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
 

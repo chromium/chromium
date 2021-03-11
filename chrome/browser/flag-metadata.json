@@ -3821,6 +3821,11 @@
     "expiry_milestone": 76
   },
   {
+    "name": "omnibox-double-space-keyword-triggering",
+    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "omnibox-drive-suggestions",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

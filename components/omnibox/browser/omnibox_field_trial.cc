@@ -877,6 +877,16 @@ bool OmniboxFieldTrial::ShouldDisableCGIParamMatching() {
   return base::FeatureList::IsEnabled(omnibox::kDisableCGIParamMatching);
 }
 
+OmniboxFieldTrial::KeywordSpaceTrigger
+OmniboxFieldTrial::GetKeywordSpaceTrigger() {
+  if (base::FeatureList::IsEnabled(omnibox::kDoubleSpaceKeywordTriggering))
+    return DOUBLE_SPACE_TRIGGERS_KEYWORD;
+  else if (IsKeywordSearchButtonEnabled())
+    return SPACE_TRIGGERING_DISABLED;
+  else
+    return SINGLE_SPACE_TRIGGERS_KEYWORD;
+}
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";
