@@ -306,7 +306,9 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           l10n_util::GetStringUTF16(version_info::IsOfficialBuild()
                                         ? IDS_VERSION_UI_OFFICIAL
                                         : IDS_VERSION_UI_UNOFFICIAL),
-          base::UTF8ToUTF16(chrome::GetChannelName()),
+          // Extended stable channel is not supported on Chrome OS Ash.
+          base::UTF8ToUTF16(
+              chrome::GetChannelName(chrome::WithExtendedStable(false))),
           l10n_util::GetStringUTF16(VersionUI::VersionProcessorVariation())));
   html_source->AddString(
       "aboutProductCopyright",

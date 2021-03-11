@@ -454,7 +454,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   params.SetString("clientVersion", version_info::GetVersionNumber());
   if (!platform_version->empty())
     params.SetString("platformVersion", *platform_version);
-  params.SetString("releaseChannel", chrome::GetChannelName());
+  // Extended stable channel is not supported on Chrome OS Ash.
+  params.SetString("releaseChannel",
+                   chrome::GetChannelName(chrome::WithExtendedStable(false)));
   params.SetString("endpointGen", kEndpointGen);
 
   std::string email_domain;

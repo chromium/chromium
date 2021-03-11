@@ -285,7 +285,9 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.SetStringKey("eduCoexistenceId", GetOrCreateEduCoexistenceUserId());
   params.SetStringKey("platformVersion",
                       base::SysInfo::OperatingSystemVersion());
-  params.SetStringKey("releaseChannel", chrome::GetChannelName());
+  // Extended stable channel is not supported on Chrome OS Ash.
+  params.SetStringKey("releaseChannel", chrome::GetChannelName(
+                                            chrome::WithExtendedStable(false)));
   params.SetStringKey("deviceId", GetDeviceIdForActiveUserProfile());
 
   params.SetDoubleKey("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
