@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+
+#include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
@@ -155,8 +157,8 @@ TEST_F(CartHandlerTest, DISABLED_TestEnableFakeData) {
   features.InitAndEnableFeatureWithParameters(
       ntp_features::kNtpChromeCartModule,
       {{"NtpChromeCartModuleDataParam", "fake"}});
-  service_->AddCart(kFakeMerchantKey, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
   task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;
@@ -175,8 +177,8 @@ TEST_F(CartHandlerTest, TestDisableFakeData) {
   base::RunLoop run_loop;
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(ntp_features::kNtpChromeCartModule);
-  service_->AddCart(kFakeMerchantKey, kFakeProto);
-  service_->AddCart(kMockMerchantBKey, kMockProtoB);
+  service_->AddCart(kFakeMerchantKey, base::nullopt, kFakeProto);
+  service_->AddCart(kMockMerchantBKey, base::nullopt, kMockProtoB);
   task_environment_.RunUntilIdle();
 
   std::vector<chrome_cart::mojom::MerchantCartPtr> carts;

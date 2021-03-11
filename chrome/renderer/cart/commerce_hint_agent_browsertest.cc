@@ -50,7 +50,11 @@ void UnblockOnProfileCreation(base::RunLoop* run_loop,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kMockExample[] = "walmart.com";
-const char kMockExampleURL[] = "https://www.walmart.com/cart";
+const char kMockExampleFallbackURL[] = "https://www.walmart.com/cart";
+const char kMockExampleURL[] = "http://www.walmart.com/mycart";
+
+const cart_db::ChromeCartContentProto kMockExampleProtoFallbackCart =
+    BuildProto(kMockExample, kMockExampleFallbackURL);
 const cart_db::ChromeCartContentProto kMockExampleProto =
     BuildProto(kMockExample, kMockExampleURL);
 const char kMockAmazon[] = "amazon.com";
@@ -60,6 +64,8 @@ const cart_db::ChromeCartContentProto kMockAmazonProto =
 
 using ShoppingCarts =
     std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+const ShoppingCarts kExpectedExampleFallbackCart = {
+    {kMockExample, kMockExampleProtoFallbackCart}};
 const ShoppingCarts kExpectedExample = {{kMockExample, kMockExampleProto}};
 const ShoppingCarts kExpectedAmazon = {{kMockAmazon, kMockAmazonProto}};
 const ShoppingCarts kEmptyExpected = {};
@@ -158,7 +164,11 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     if (same_size) {
       for (size_t i = 0; i < expected.size(); i++) {
         EXPECT_EQ(found[i].first, expected[i].first);
-        EXPECT_EQ(found[i].second.merchant_cart_url(),
+        GURL::Replacements remove_port;
+        remove_port.ClearPort();
+        EXPECT_EQ(GURL(found[i].second.merchant_cart_url())
+                      .ReplaceComponents(remove_port)
+                      .spec(),
                   expected[i].second.merchant_cart_url());
       }
     }
@@ -176,32 +186,45 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL) {
   NavigateToURL("https://www.walmart.com/");
   NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
 
-  WaitForCartCount(kExpectedExample);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByForm) {
   NavigateToURL("https://www.walmart.com/");
   SendXHR("/wp-admin/admin-ajax.php", "action: woocommerce_add_to_cart");
 
-  WaitForCartCount(kExpectedExample);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL_XHR) {
   NavigateToURL("https://www.walmart.com/");
   SendXHR("/add-to-cart", "product: 123");
 
-  WaitForCartCount(kExpectedExample);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
-  NavigateToURL("https://www.walmart.com/cart");
+  NavigateToURL("https://www.walmart.com/mycart");
 
+  WaitForCartCount(kExpectedExample);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
+  NavigateToURL("https://www.walmart.com/");
+  NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
+  WaitForCartCount(kExpectedExampleFallbackCart);
+
+  NavigateToURL("https://www.walmart.com/mycart");
+  WaitForCartCount(kExpectedExample);
+
+  NavigateToURL("https://www.walmart.com/");
+  NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExample);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
-  service_->AddCart(kMockExample, kMockExampleProto);
-  WaitForCartCount(kExpectedExample);
+  service_->AddCart(kMockExample, base::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 
   NavigateToURL("https://www.walmart.com/");
   NavigateToURL("https://www.walmart.com/123/checkout/456");
@@ -209,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
-  service_->AddCart(kMockAmazon, kMockAmazonProto);
+  service_->AddCart(kMockAmazon, base::nullopt, kMockAmazonProto);
   WaitForCartCount(kExpectedAmazon);
 
   NavigateToURL("http://amazon.com/");
@@ -219,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByForm) {
-  service_->AddCart(kMockExample, kMockExampleProto);
-  WaitForCartCount(kExpectedExample);
+  service_->AddCart(kMockExample, base::nullopt, kMockExampleProto);
+  WaitForCartCount(kExpectedExampleFallbackCart);
 
   NavigateToURL("https://www.walmart.com/purchase.html");
 
@@ -253,8 +276,9 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, NonSignInUser) {
   WaitForCartCount(kEmptyExpected);
 
   signin::SetPrimaryAccount(identity_manager, "user@gmail.com");
-  NavigateToURL("https://www.walmart.com/cart");
-  WaitForCartCount(kExpectedExample);
+  NavigateToURL("https://www.walmart.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
@@ -285,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   run_loop.Run();
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
 
-  NavigateToURL("https://www.walmart.com/cart");
-  WaitForCartCount(kExpectedExample);
+  NavigateToURL("https://www.walmart.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kExpectedExampleFallbackCart);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
