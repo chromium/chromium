@@ -254,8 +254,6 @@ TEST_F(HeartbeatSchedulerTest, StoreResetDuringRegistration) {
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
   task_runner_->RunPendingTasks();
   testing::Mock::VerifyAndClearExpectations(&gcm_driver_);
-  histogram_tester_.ExpectTotalCount(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, 0);
 }
 
 TEST_F(HeartbeatSchedulerTest, StoreResetAfterRegistration) {
@@ -324,9 +322,6 @@ TEST_F(HeartbeatSchedulerTest, ChangeHeartbeatFrequency) {
   gcm_driver_.CompleteSend(
       kHeartbeatGCMAppID, message.id, gcm::GCMClient::SERVER_ERROR);
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
-  histogram_tester_.ExpectUniqueSample(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, /*failure*/ false,
-      /*amount*/ 1);
   CheckPendingTaskDelay(scheduler_.last_heartbeat(),
                         base::TimeDelta::FromMilliseconds(new_delay));
 }
@@ -350,9 +345,6 @@ TEST_F(HeartbeatSchedulerTest, DisableHeartbeats) {
   // Complete sending a message - we should queue up the next heartbeat.
   gcm_driver_.CompleteSend(
       kHeartbeatGCMAppID, message.id, gcm::GCMClient::SUCCESS);
-  histogram_tester_.ExpectUniqueSample(
-      policy::HeartbeatScheduler::kHeartbeatSignalHistogram, /*success*/ true,
-      /*amount*/ 1);
 
   // Should have a new heartbeat task posted.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());

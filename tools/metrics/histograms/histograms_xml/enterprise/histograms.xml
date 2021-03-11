@@ -999,6 +999,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.HeartbeatSignalSuccess" enum="BooleanSuccess"
     expires_after="2020-08-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
   <owner>igorcov@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
