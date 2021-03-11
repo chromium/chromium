@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
@@ -18,7 +17,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_thread.h"
@@ -31,7 +29,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/bindings_policy.h"
@@ -45,8 +42,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
 
@@ -55,28 +50,6 @@
 #endif
 
 namespace headless {
-
-namespace {
-
-void UpdatePrefsFromSystemSettings(blink::RendererPreferences* prefs) {
-#if defined(OS_LINUX) || defined(OS_WIN)
-  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
-#endif
-
-  // The values were copied from chrome/browser/renderer_preferences_util.cc.
-#if defined(USE_AURA)
-  prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
-#endif
-  if (::features::IsFormControlsRefreshEnabled()) {
-#if defined(OS_MAC)
-    prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
-#else
-    prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
-#endif
-  }
-}
-
-}  // namespace
 
 // static
 HeadlessWebContentsImpl* HeadlessWebContentsImpl::From(
@@ -329,7 +302,6 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
   HeadlessPrintManager::CreateForWebContents(web_contents_.get());
 // TODO(weili): Add support for printing OOPIFs.
 #endif
-  UpdatePrefsFromSystemSettings(web_contents_->GetMutableRendererPrefs());
   web_contents_->GetMutableRendererPrefs()->accept_languages =
       browser_context->options()->accept_language();
   web_contents_->GetMutableRendererPrefs()->hinting =
