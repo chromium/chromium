@@ -9,7 +9,7 @@ DISTRO=debian
 DIST=sid
 
 # Keep the "experimental" repo before the "sid" repo.  There are some packages
-# that are currently only available in experimental like libgtk-4-0, but if it
+# that are currently only available in experimental like libgtk-4-1, but if it
 # were to be placed first, experimental (unreleased) versions of other packages
 # like libc6 would take precedence over the sid (released) versions.  While this
 # may be useful for certain kinds of development, the standard sysroots should
@@ -19,7 +19,7 @@ DIST=sid
 # It will be needed until gnome keyring is removed (http://crbug.com/466975 and
 # http://crbug.com/355223).
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian"
-ARCHIVE_TIMESTAMP=20210115T203459Z
+ARCHIVE_TIMESTAMP=20210309T203820Z
 APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ stretch main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ sid main"
@@ -162,8 +162,6 @@ DEBIAN_PACKAGES="\
   libgssrpc4
   libgtk-3-0
   libgtk-3-dev
-  libgtk-4-0
-  libgtk-4-dev
   libgtk2.0-0
   libgudev-1.0-0
   libharfbuzz-dev
@@ -200,6 +198,7 @@ DEBIAN_PACKAGES="\
   liblz4-1
   liblzma5
   liblzo2-2
+  libmd0
   libminizip-dev
   libminizip1
   libmount-dev
@@ -268,7 +267,6 @@ DEBIAN_PACKAGES="\
   libsoup-gnome2.4-1
   libsoup2.4-1
   libspa-0.2-dev
-  libspa-lib-0.1-dev
   libspeechd-dev
   libspeechd2
   libsqlite3-0
@@ -298,6 +296,7 @@ DEBIAN_PACKAGES="\
   libvorbisenc2
   libvpx-dev
   libvpx6
+  libvulkan-dev
   libvulkan1
   libwacom2
   libwayland-client0
@@ -395,6 +394,8 @@ DEBIAN_PACKAGES="\
 "
 
 DEBIAN_PACKAGES_AMD64="
+  libgtk-4-1
+  libgtk-4-dev
   liblsan0
   libtsan0
 "
@@ -403,6 +404,8 @@ DEBIAN_PACKAGES_X86="
   libasan6
   libcilkrts5
   libdrm-intel1
+  libgtk-4-1
+  libgtk-4-dev
   libitm1
   libmpx2
   libquadmath0
@@ -416,6 +419,8 @@ DEBIAN_PACKAGES_ARM="
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
+  libgtk-4-1
+  libgtk-4-dev
   libubsan1
 "
 
@@ -425,6 +430,8 @@ DEBIAN_PACKAGES_ARM64="
   libdrm-freedreno1
   libdrm-tegra0
   libgmp10
+  libgtk-4-1
+  libgtk-4-dev
   libitm1
   liblsan0
   libthai0
@@ -438,6 +445,8 @@ DEBIAN_PACKAGES_ARMEL="
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
+  libgtk-4-1
+  libgtk-4-dev
   libubsan1
 "
 
