@@ -183,6 +183,40 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     std::move(closure).Run();
   }
 
+  void WaitForCarts(const ShoppingCarts& expected) {
+    satisfied_ = false;
+    while (true) {
+      base::RunLoop().RunUntilIdle();
+      base::RunLoop run_loop;
+      service_->LoadAllActiveCarts(base::BindOnce(
+          &CommerceHintAgentTest::CheckCarts, base::Unretained(this),
+          run_loop.QuitClosure(), expected));
+      run_loop.Run();
+      if (satisfied_)
+        break;
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    }
+  }
+
+  void CheckCarts(base::OnceClosure closure,
+                  ShoppingCarts expected,
+                  bool result,
+                  ShoppingCarts found) {
+    bool same_size = found.size() == expected.size();
+    satisfied_ = same_size;
+    if (same_size) {
+      for (size_t i = 0; i < expected.size(); i++) {
+        satisfied_ &= found[i].first == expected[i].first;
+        GURL::Replacements remove_port;
+        remove_port.ClearPort();
+        satisfied_ &= GURL(found[i].second.merchant_cart_url())
+                          .ReplaceComponents(remove_port)
+                          .spec() == expected[i].second.merchant_cart_url();
+      }
+    }
+    std::move(closure).Run();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   CartService* service_;
   bool satisfied_;
@@ -232,23 +266,17 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForCartCount(kExpectedExample);
 }
 
-#if defined(OS_LINUX)
-#define MAYBE_CartPriority DISABLED_CartPriority
-#else
-#define MAYBE_CartPriority CartPriority
-#endif
-// Flaky on Linux (crbug.com/1182801)
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_CartPriority) {
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
   NavigateToURL("https://www.walmart.com/");
   NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExampleFallbackCart);
 
   NavigateToURL("https://www.walmart.com/mycart");
-  WaitForCartCount(kExpectedExample);
+  WaitForCarts(kExpectedExample);
 
   NavigateToURL("https://www.walmart.com/");
   NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
-  WaitForCartCount(kExpectedExample);
+  WaitForCarts(kExpectedExample);
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
