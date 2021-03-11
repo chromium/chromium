@@ -775,29 +775,12 @@ void RTCVideoDecoderStreamAdapter::OnDecoderChanged(
 
   base::AutoLock auto_lock(lock_);
 
-  if (decoder->IsPlatformDecoder()) {
-    decoder_info_.implementation_name = "ExternalDecoder";
-    decoder_info_.is_hardware_accelerated = true;
-    return;
-  }
-
-  // Translate software decoders to look like rtc-provided ones, to make it
-  // easier for clients to detect.
-  switch (demuxer_stream_->video_decoder_config().codec()) {
-    case media::VideoCodec::kCodecVP8:
-    case media::VideoCodec::kCodecVP9:
-      decoder_info_.implementation_name = "libvpx (DecoderStream)";
-      break;
-    case media::VideoCodec::kCodecAV1:
-      decoder_info_.implementation_name = "libaom (DecoderStream)";
-      break;
-    case media::VideoCodec::kCodecH264:
-      decoder_info_.implementation_name = "FFmpeg (DecoderStream)";
-      break;
-    default:
-      decoder_info_.implementation_name = "unknown";
-  }
-  decoder_info_.is_hardware_accelerated = false;
+  decoder_info_.is_hardware_accelerated = decoder->IsPlatformDecoder();
+  decoder_info_.implementation_name =
+      decoder->IsPlatformDecoder()
+          ? "ExternalDecoder"
+          : media::GetDecoderName(decoder->GetDecoderType()) +
+                " (DecoderStream)";
 }
 
 }  // namespace blink
