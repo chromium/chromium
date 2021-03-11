@@ -365,6 +365,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       GURL(kSettingsSyncURL), GetApplicationContext()->GetApplicationLocale());
   NSString* text = self.customizeSyncLabel.text;
 
+  // TODO(crbug.com/1184151): Move to use AttributedStringFromStringWithLink.
   const StringWithTag parsedString = ParseStringWithLink(text);
   DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
   self.customizeSyncLabel.text = parsedString.string;

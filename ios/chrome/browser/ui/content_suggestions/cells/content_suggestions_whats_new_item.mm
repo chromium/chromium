@@ -7,7 +7,6 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/check_op.h"
-#include "base/ios/ns_range.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -162,31 +161,22 @@ const CGFloat kIconTopMargin = 10;
   promoLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   promoLabel.numberOfLines = 0;
 
-  const StringWithTag parsedString = ParseStringWithLink(text);
-  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
-
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-
-  // Sets the styling to mimic a link.
-  UIColor* linkColor = [UIColor colorNamed:kBlueColor];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:linkColor
-                         range:parsedString.range];
-  [attributedText addAttribute:NSUnderlineStyleAttributeName
-                         value:@(NSUnderlineStyleSingle)
-                         range:parsedString.range];
-  [attributedText addAttribute:NSUnderlineColorAttributeName
-                         value:linkColor
-                         range:parsedString.range];
-
   // Sets the line spacing on the attributed string.
-  NSInteger strLength = parsedString.string.length;
   NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
   [style setLineSpacing:kLabelLineSpacing];
-  [attributedText addAttribute:NSParagraphStyleAttributeName
-                         value:style
-                         range:NSMakeRange(0, strLength)];
+  NSDictionary* textAttributes = @{
+    NSParagraphStyleAttributeName : style,
+  };
+
+  // Sets the styling to mimic a link.
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle),
+    NSUnderlineColorAttributeName : [UIColor colorNamed:kBlueColor],
+  };
+
+  NSAttributedString* attributedText =
+      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
 
   [promoLabel setAttributedText:attributedText];
 }

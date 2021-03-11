@@ -106,6 +106,7 @@
   // before being added to the controller because modifying the label text
   // clears all added links.
   if (URL.is_valid()) {
+    // TODO(crbug.com/1184151): Move to use AttributedStringFromStringWithLink.
     const StringWithTag parsedString = ParseStringWithLink(self.textLabel.text);
     DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
     self.textLabel.text = parsedString.string;

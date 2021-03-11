@@ -45,6 +45,21 @@ StringWithTags ParseStringWithLinks(NSString* text) {
   return ParseStringWithTags(text, kBeginLinkTag, kEndLinkTag);
 }
 
+NSAttributedString* AttributedStringFromStringWithLink(
+    NSString* text,
+    NSDictionary* text_attributes,
+    NSDictionary* link_attributes) {
+  StringWithTag parsed_string = ParseStringWithLink(text);
+  NSMutableAttributedString* attributed_string =
+      [[NSMutableAttributedString alloc] initWithString:parsed_string.string
+                                             attributes:text_attributes];
+
+  DCHECK(parsed_string.range.location != NSNotFound);
+  [attributed_string setAttributes:link_attributes range:parsed_string.range];
+
+  return attributed_string;
+}
+
 StringWithTag ParseStringWithTag(NSString* text,
                                  NSString* begin_tag,
                                  NSString* end_tag) {

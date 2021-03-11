@@ -7,6 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #include "base/ios/ns_range.h"
+#include "base/test/gtest_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -18,6 +20,125 @@
 namespace {
 
 using StringUtilTest = PlatformTest;
+
+TEST_F(StringUtilTest, AttributedStringFromStringWithLink) {
+  struct TestCase {
+    NSString* input;
+    NSDictionary* textAttributes;
+    NSDictionary* linkAttributes;
+    NSString* expectedString;
+    NSRange expectedRange;
+  };
+
+  const TestCase kAllTestCases[] = {
+      TestCase{@"Text with valid BEGIN_LINK link END_LINK and spaces.", @{},
+               @{NSLinkAttributeName : @"google.com"},
+               @"Text with valid link and spaces.", NSRange{16, 4}},
+      TestCase{
+          @"Text with valid BEGIN_LINK link END_LINK and spaces.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{}, @"Text with valid link and spaces.", NSRange{16, 4}},
+      TestCase{
+          @"Text with valid BEGIN_LINK link END_LINK and spaces.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+          @"Text with valid link and spaces.",
+          NSRange{16, 4},
+      },
+      TestCase{
+          @"Text with valid BEGIN_LINKlinkEND_LINK and no spaces.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+          @"Text with valid link and no spaces.",
+          NSRange{16, 4},
+      },
+  };
+
+  for (const TestCase& test_case : kAllTestCases) {
+    const NSAttributedString* result = AttributedStringFromStringWithLink(
+        test_case.input, test_case.textAttributes, test_case.linkAttributes);
+    EXPECT_NSEQ(result.string, test_case.expectedString);
+
+    // Text at index 0 has text attributes applied until the link location.
+    NSRange textRange;
+    NSDictionary* resultTextAttributes = [result attributesAtIndex:0
+                                                    effectiveRange:&textRange];
+    EXPECT_TRUE(NSEqualRanges(NSMakeRange(0, test_case.expectedRange.location),
+                              textRange));
+    EXPECT_NSEQ(test_case.textAttributes, resultTextAttributes);
+
+    // Text at index |expectedRange.location| has link attributes applied.
+    NSRange linkRange;
+    NSDictionary* resultLinkAttributes =
+        [result attributesAtIndex:test_case.expectedRange.location
+                   effectiveRange:&linkRange];
+    EXPECT_TRUE(NSEqualRanges(test_case.expectedRange, linkRange));
+    EXPECT_NSEQ(test_case.linkAttributes, resultLinkAttributes);
+  }
+}
+
+TEST_F(StringUtilTest, AttributedStringFromStringWithLinkFailures) {
+  struct TestCase {
+    NSString* input;
+    NSDictionary* textAttributes;
+    NSDictionary* linkAttributes;
+  };
+
+  const TestCase kAllTestCases[] = {
+      TestCase{
+          @"Text without link.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+      },
+      TestCase{
+          @"Text with BEGIN_LINK and no end link.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+      },
+      TestCase{
+          @"Text with no begin link and END_LINK.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+      },
+      TestCase{
+          @"Text with END_LINK before BEGIN_LINK.",
+          @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+          @{NSLinkAttributeName : @"google.com"},
+      },
+
+  };
+
+  for (const TestCase& test_case : kAllTestCases) {
+    EXPECT_CHECK_DEATH(AttributedStringFromStringWithLink(
+        test_case.input, test_case.textAttributes, test_case.linkAttributes));
+  }
+}
+
+TEST_F(StringUtilTest, AttributedStringFromStringWithLinkWithEmptyLink) {
+  struct TestCase {
+    NSString* input;
+    NSDictionary* textAttributes;
+    NSDictionary* linkAttributes;
+    NSString* expectedString;
+  };
+  const TestCase test_case = TestCase {
+    @"Text with empty link BEGIN_LINK END_LINK.",
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]},
+        @{NSLinkAttributeName : @"google.com"}, @"Text with empty link .",
+  };
+
+  const NSAttributedString* result = AttributedStringFromStringWithLink(
+      test_case.input, test_case.textAttributes, test_case.linkAttributes);
+  EXPECT_NSEQ(result.string, test_case.expectedString);
+
+  // Text attributes apply to the full range of the result string.
+  NSRange textRange;
+  NSDictionary* resultTextAttributes = [result attributesAtIndex:0
+                                                  effectiveRange:&textRange];
+  EXPECT_TRUE(NSEqualRanges(NSMakeRange(0, test_case.expectedString.length),
+                            textRange));
+  EXPECT_NSEQ(test_case.textAttributes, resultTextAttributes);
+}
 
 TEST_F(StringUtilTest, ParseStringWithLink) {
   struct TestCase {

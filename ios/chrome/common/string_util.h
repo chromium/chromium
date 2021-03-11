@@ -37,6 +37,17 @@ struct StringWithTags {
 };
 
 // Parses a string with an embedded link inside, delineated by "BEGIN_LINK" and
+// "END_LINK". Returns an attributed string with the text set as the parsed
+// string with given |text_attributes| and the link range with
+// |link_attributes|. The function asserts that there is one link.
+NSAttributedString* AttributedStringFromStringWithLink(
+    NSString* text,
+    NSDictionary* text_attributes,
+    NSDictionary* link_attributes);
+
+// Deprecated.
+// Prefer |AttributedStringFromStringWithLink|. Do not use LabelLinkController.
+// Parses a string with an embedded link inside, delineated by "BEGIN_LINK" and
 // "END_LINK". Returns the string without the delimiters. The function
 // asserts that there is at most one link.
 StringWithTag ParseStringWithLink(NSString* text);

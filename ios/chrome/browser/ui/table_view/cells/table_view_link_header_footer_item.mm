@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
-#include "base/ios/ns_range.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
@@ -109,26 +108,22 @@ CGFloat HorizontalPadding() {
 }
 
 - (void)setText:(NSString*)text {
-  const StringWithTag parsedString = ParseStringWithLink(text);
-  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:UIColor.cr_secondaryLabelColor
-                         range:fullRange];
+  NSDictionary* textAttributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle],
+    NSForegroundColorAttributeName : UIColor.cr_secondaryLabelColor
+  };
 
-  [attributedText
-      addAttribute:NSFontAttributeName
-             value:[UIFont
-                       preferredFontForTextStyle:kTableViewSublabelFontStyle]
-             range:fullRange];
-
-  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
-    NSURL* URL = net::NSURLWithGURL(self.linkURL);
-    id linkValue = URL ? URL : @"";
-    [attributedText addAttribute:NSLinkAttributeName
-                           value:linkValue
-                           range:parsedString.range];
+  NSAttributedString* attributedText;
+  if (self.linkURL.is_empty()) {
+    attributedText =
+        [[NSMutableAttributedString alloc] initWithString:text
+                                               attributes:textAttributes];
+  } else {
+    NSDictionary* linkAttributes =
+        @{NSLinkAttributeName : net::NSURLWithGURL(self.linkURL)};
+    attributedText = AttributedStringFromStringWithLink(text, textAttributes,
+                                                        linkAttributes);
   }
 
   self.textView.attributedText = attributedText;

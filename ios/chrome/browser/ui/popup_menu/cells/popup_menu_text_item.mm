@@ -30,26 +30,21 @@ const CGFloat kMaxHeight = 100;
 
 NSMutableAttributedString* GetAttributedString(NSString* imageName,
                                                NSString* message) {
-  // Add a space to have a distance with the leading icon.
-  const StringWithTag parsedString =
-      ParseStringWithLink([@" " stringByAppendingString:message]);
-
-  NSDictionary* generalAttributes = @{
+  NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
-
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string
-                                             attributes:generalAttributes];
 
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSFontAttributeName :
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
   };
-  [attributedString setAttributes:linkAttributes range:parsedString.range];
+
+  // Add a space to have a distance with the leading icon.
+  NSAttributedString* attributedString = AttributedStringFromStringWithLink(
+      [@" " stringByAppendingString:message], textAttributes, linkAttributes);
 
   // Create the leading enterprise icon.
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
@@ -63,12 +58,11 @@ NSMutableAttributedString* GetAttributedString(NSString* imageName,
   CGFloat verticalOffset = roundf(capHeight - height) / 2.f;
   attachment.bounds = CGRectMake(0, verticalOffset, height, height);
 
-  NSAttributedString* attachmentString =
-      [NSAttributedString attributedStringWithAttachment:attachment];
+  NSMutableAttributedString* outputString = [[NSAttributedString
+      attributedStringWithAttachment:attachment] mutableCopy];
+  [outputString appendAttributedString:attributedString];
 
-  [attributedString insertAttributedString:attachmentString atIndex:0];
-
-  return attributedString;
+  return outputString;
 }
 
 }  // namespace

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
-#include "base/ios/ns_range.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -160,7 +159,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
     return nil;
 
   NSString* message;
-  GURL linkURL;
+  NSDictionary* textAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+  };
 
   switch (_currentState) {
     case PasswordCheckState::kRunning:
@@ -178,8 +181,14 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
       if ([self canUseAccountPasswordCheckup]) {
         message = l10n_util::GetNSString(
             IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
-        linkURL = password_manager::GetPasswordCheckupURL(
-            password_manager::PasswordCheckupReferrer::kPasswordCheck);
+        NSDictionary* linkAttributes = @{
+          NSLinkAttributeName :
+              net::NSURLWithGURL(password_manager::GetPasswordCheckupURL(
+                  password_manager::PasswordCheckupReferrer::kPasswordCheck))
+        };
+
+        return AttributedStringFromStringWithLink(message, textAttributes,
+                                                  linkAttributes);
       } else {
         message =
             l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
@@ -189,7 +198,8 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
       message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
       break;
   }
-  return [self configureTextWithLink:message link:linkURL];
+  return [[NSMutableAttributedString alloc] initWithString:message
+                                                attributes:textAttributes];
 }
 
 #pragma mark - PasswordCheckObserver
@@ -258,33 +268,6 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes =
 - (BOOL)canUseAccountPasswordCheckup {
   return _authService->IsAuthenticated() && _syncService->IsSyncEnabled() &&
          !_syncService->IsEncryptEverythingEnabled();
-}
-
-// Configures text for Error Info Popover.
-- (NSAttributedString*)configureTextWithLink:(NSString*)text link:(GURL)link {
-  const StringWithTag parsedString = ParseStringWithLink(text);
-
-  NSRange fullRange = NSMakeRange(0, parsedString.string.length);
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-  [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:[UIColor colorNamed:kTextSecondaryColor]
-                         range:fullRange];
-
-  [attributedText
-      addAttribute:NSFontAttributeName
-             value:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-             range:fullRange];
-
-  if (parsedString.range != NSMakeRange(NSNotFound, 0)) {
-    NSURL* URL = net::NSURLWithGURL(link);
-    id linkValue = URL ? URL : @"";
-    [attributedText addAttribute:NSLinkAttributeName
-                           value:linkValue
-                           range:parsedString.range];
-  }
-
-  return attributedText;
 }
 
 #pragma mark - PasswordStoreObserver

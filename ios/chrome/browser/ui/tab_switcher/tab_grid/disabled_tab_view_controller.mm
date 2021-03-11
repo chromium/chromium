@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
 
-#include "base/ios/ns_range.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -53,7 +52,7 @@ NSString* GetTitleString(TabGridPage page) {
 }
 
 // Creates an attribute string with link for the body message.
-NSMutableAttributedString* GetBodyString(TabGridPage page) {
+NSAttributedString* GetBodyString(TabGridPage page) {
   int messageID;
   switch (page) {
     case TabGridPageIncognitoTabs:
@@ -68,12 +67,8 @@ NSMutableAttributedString* GetBodyString(TabGridPage page) {
   }
 
   NSString* fullText = l10n_util::GetNSString(messageID);
-  const StringWithTag parsedString = ParseStringWithLink(fullText);
-  DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
 
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:parsedString.string];
-
+  // Sets the styling to mimic a link.
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSLinkAttributeName :
@@ -82,9 +77,8 @@ NSMutableAttributedString* GetBodyString(TabGridPage page) {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
     NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
   };
-  [attributedString setAttributes:linkAttributes range:parsedString.range];
 
-  return attributedString;
+  return AttributedStringFromStringWithLink(fullText, @{}, linkAttributes);
 }
 
 }  // namespace
