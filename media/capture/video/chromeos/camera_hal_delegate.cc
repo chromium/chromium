@@ -463,6 +463,13 @@ void CameraHalDelegate::EnableVirtualDevice(const std::string& device_id,
   }
 }
 
+void CameraHalDelegate::DisableAllVirtualDevices() {
+  base::AutoLock lock(enable_virtual_device_lock_);
+  for (auto& it : enable_virtual_device_) {
+    it.second = false;
+  }
+}
+
 const VendorTagInfo* CameraHalDelegate::GetVendorTagInfoByName(
     const std::string& full_name) {
   return vendor_tag_ops_delegate_.GetInfoByName(full_name);

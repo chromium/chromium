@@ -93,6 +93,8 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   void EnableVirtualDevice(const std::string& device_id, bool enable);
 
+  void DisableAllVirtualDevices();
+
  private:
   friend class base::RefCountedThreadSafe<CameraHalDelegate>;
 

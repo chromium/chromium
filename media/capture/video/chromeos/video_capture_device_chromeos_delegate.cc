@@ -138,6 +138,7 @@ void VideoCaptureDeviceChromeOSDelegate::Shutdown() {
     DCHECK(!camera_device_ipc_thread_.IsRunning());
     screen_observer_delegate_->RemoveObserver();
     power_manager_client_proxy_->Shutdown();
+    camera_hal_delegate_->DisableAllVirtualDevices();
     std::move(cleanup_callback_).Run();
   }
 }
