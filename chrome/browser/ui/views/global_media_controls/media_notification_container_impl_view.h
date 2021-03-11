@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
+#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -32,6 +33,7 @@ class ImageButton;
 class SlideOutController;
 }  // namespace views
 
+class CastMediaNotificationItem;
 class MediaNotificationDeviceSelectorView;
 class MediaNotificationContainerObserver;
 class MediaNotificationService;
@@ -53,6 +55,7 @@ class MediaNotificationContainerImplView
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,
       MediaNotificationService* service,
+      GlobalMediaControlsEntryPoint entry_point,
       base::Optional<media_message_center::NotificationTheme> theme =
           base::nullopt);
   MediaNotificationContainerImplView(
@@ -137,25 +140,19 @@ class MediaNotificationContainerImplView
  private:
   class DismissButton;
 
+  void AddStopCastButton(CastMediaNotificationItem* item);
+  void StopCasting(CastMediaNotificationItem* item);
   void UpdateDismissButtonIcon();
-
   void UpdateDismissButtonBackground();
-
   void UpdateDismissButtonVisibility();
-
   void DismissNotification();
-
   void CreateDragImageWidget();
-
   // Updates the forced expanded state of |view_|.
   void ForceExpandedState();
-
   // Notify observers that we've been clicked.
   void ContainerClicked();
-
   // True if we should handle the given mouse event for dragging purposes.
   bool ShouldHandleMouseEvent(const ui::MouseEvent& event, bool is_press);
-
   void OnSizeChanged();
 
   const std::string id_;
@@ -221,6 +218,7 @@ class MediaNotificationContainerImplView
   MediaNotificationService* const service_;
 
   const bool is_cros_;
+  const GlobalMediaControlsEntryPoint entry_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_IMPL_VIEW_H_

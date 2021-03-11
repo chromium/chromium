@@ -3780,6 +3780,7 @@ static_library("ui") {
       "views/fullscreen_control/fullscreen_control_view.h",
       "views/global_error_bubble_view.cc",
       "views/global_error_bubble_view.h",
+      "views/global_media_controls/global_media_controls_types.h",
       "views/global_media_controls/media_dialog_view.cc",
       "views/global_media_controls/media_dialog_view.h",
       "views/global_media_controls/media_dialog_view_observer.h",

@@ -36330,11 +36330,23 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="kGLImplementationEGLANGLE"/>
 </enum>
 
+<enum name="GlobalMediaControlsCastActionAndEntryPoint">
+  <int value="0" label="Casting started via toolbar icon"/>
+  <int value="1" label="Casting started via Presentation API"/>
+  <int value="2" label="Casting stopped via toolbar icon"/>
+  <int value="3" label="Casting stopped via Presentation API"/>
+</enum>
+
 <enum name="GlobalMediaControlsDismissReason">
   <int value="0" label="User dismissed notification"/>
   <int value="1" label="Inactive timeout"/>
   <int value="2" label="Tab closed"/>
   <int value="3" label="Media session stopped"/>
+</enum>
+
+<enum name="GlobalMediaControlsEntryPoint">
+  <int value="0" label="Toolbar icon"/>
+  <int value="1" label="Presentation API"/>
 </enum>
 
 <enum name="GoogleCaptchaEvent">
@@ -50489,6 +50501,7 @@ Called by update_use_counter_css.py.-->
   <int value="9" label="Scrub To"/>
   <int value="10" label="Enter picture in picture"/>
   <int value="11" label="Exit picture in picture"/>
+  <int value="12" label="Switch audio device"/>
 </enum>
 
 <enum name="MediaSessionActionSource">

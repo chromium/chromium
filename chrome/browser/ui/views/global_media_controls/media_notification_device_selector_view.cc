@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_message_center/media_notification_item.h"
 #include "media/audio/audio_device_description.h"
+#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
@@ -82,11 +84,13 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
     std::unique_ptr<media_router::CastDialogController> controller,
     const std::string& current_device_id,
     const SkColor& foreground_color,
-    const SkColor& background_color)
+    const SkColor& background_color,
+    GlobalMediaControlsEntryPoint entry_point)
     : delegate_(delegate),
       current_device_id_(current_device_id),
       foreground_color_(foreground_color),
-      background_color_(background_color) {
+      background_color_(background_color),
+      entry_point_(entry_point) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -390,9 +394,27 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
                           media_router::MediaCastMode::PRESENTATION));
     cast_controller_->StartCasting(sink.id,
                                    media_router::MediaCastMode::PRESENTATION);
-
-    // TODO(muyaoxu):Add metrics to record start casting usage.
+    RecordStartCastingMetrics();
   }
+}
+
+void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics() {
+  GlobalMediaControlsCastActionAndEntryPoint action;
+  switch (entry_point_) {
+    case GlobalMediaControlsEntryPoint::kToolbarIcon:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStartViaToolbarIcon;
+      break;
+    case GlobalMediaControlsEntryPoint::kPresentation:
+      action =
+          GlobalMediaControlsCastActionAndEntryPoint::kStartViaPresentation;
+      break;
+    case GlobalMediaControlsEntryPoint::kSystemTray:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStartViaSystemTray;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
+      action);
 }
 
 BEGIN_METADATA(MediaNotificationDeviceSelectorView, views::View)

@@ -14,6 +14,7 @@
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
+#include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -27,7 +28,7 @@ class Profile;
 namespace views {
 class Label;
 class ToggleButton;
-}
+}  // namespace views
 
 // Dialog that shows media controls that control the active media session.
 class MediaDialogView : public views::BubbleDialogDelegateView,
@@ -42,7 +43,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   static views::Widget* ShowDialog(views::View* anchor_view,
                                    MediaNotificationService* service,
-                                   Profile* profile);
+                                   Profile* profile,
+                                   GlobalMediaControlsEntryPoint entry_point);
   static void HideDialog();
   static bool IsShowing();
 
@@ -83,9 +85,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class MediaDialogViewBrowserTest;
-  explicit MediaDialogView(views::View* anchor_view,
-                           MediaNotificationService* service,
-                           Profile* profile);
+  MediaDialogView(views::View* anchor_view,
+                  MediaNotificationService* service,
+                  Profile* profile,
+                  GlobalMediaControlsEntryPoint entry_point);
   ~MediaDialogView() override;
 
   static MediaDialogView* instance_;
@@ -125,6 +128,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   NewBadgeLabel* live_caption_title_new_badge_ = nullptr;
   views::Label* live_caption_title_ = nullptr;
   views::ToggleButton* live_caption_button_ = nullptr;
+  const GlobalMediaControlsEntryPoint entry_point_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_

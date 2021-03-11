@@ -41,7 +41,8 @@ class OverlayMediaNotificationViewTest : public ChromeViewsTestBase {
     manager_ = std::make_unique<MockOverlayMediaNotificationsManager>();
 
     auto notification = std::make_unique<MediaNotificationContainerImplView>(
-        kTestNotificationId, nullptr, nullptr);
+        kTestNotificationId, nullptr, nullptr,
+        GlobalMediaControlsEntryPoint::kToolbarIcon);
     notification->PopOut();
 
     overlay_ = std::make_unique<OverlayMediaNotificationView>(

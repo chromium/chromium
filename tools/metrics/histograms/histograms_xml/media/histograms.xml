@@ -1992,6 +1992,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.EntryPoint"
+    enum="GlobalMediaControlsEntryPoint" expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the entry point whenever the user opens the Global Media Controls
+    UI.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.InteractionDelayAfterPause"
     units="ms" expires_after="2021-08-29">
   <owner>steimel@chromium.org</owner>
@@ -2815,14 +2826,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Notification.Cast.StartStop"
+    enum="GlobalMediaControlsCastActionAndEntryPoint"
+    expires_after="2022-02-01">
+  <owner>takumif@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when the user starts or stops a Cast session. Records the action
+    and how the Global Media Controls UI was opened.
+  </summary>
+</histogram>
+
 <histogram name="Media.Notification.Cast.UserAction" enum="MediaSessionAction"
     expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    The action (e.g. pause) that a user clicked on a Cast media notification
-    (including ones for Cast sessions).
+    Records the type of the action (e.g. pause) whenever the user makes an
+    action on a Cast media notification. Starting and stopping casting is
+    recorded in Media.Notification.Cast.StartStop.
   </summary>
 </histogram>
 

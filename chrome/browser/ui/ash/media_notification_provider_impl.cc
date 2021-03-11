@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
@@ -60,6 +61,8 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
                                                 separator_thickness));
   active_session_view_ = notification_list_view.get();
   service_->SetDialogDelegate(this);
+  base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
+                                GlobalMediaControlsEntryPoint::kSystemTray);
   return std::move(notification_list_view);
 }
 
@@ -84,7 +87,8 @@ MediaNotificationContainerImpl* MediaNotificationProviderImpl::ShowMediaSession(
     return nullptr;
 
   auto container = std::make_unique<MediaNotificationContainerImplView>(
-      id, item, service_, color_theme_);
+      id, item, service_, GlobalMediaControlsEntryPoint::kSystemTray,
+      color_theme_);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
   observed_containers_[id] = container_ptr;

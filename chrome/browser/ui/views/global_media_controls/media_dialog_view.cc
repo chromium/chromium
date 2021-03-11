@@ -55,12 +55,14 @@ MediaDialogView* MediaDialogView::instance_ = nullptr;
 bool MediaDialogView::has_been_opened_ = false;
 
 // static
-views::Widget* MediaDialogView::ShowDialog(views::View* anchor_view,
-                                           MediaNotificationService* service,
-                                           Profile* profile) {
+views::Widget* MediaDialogView::ShowDialog(
+    views::View* anchor_view,
+    MediaNotificationService* service,
+    Profile* profile,
+    GlobalMediaControlsEntryPoint entry_point) {
   DCHECK(!instance_);
   DCHECK(service);
-  instance_ = new MediaDialogView(anchor_view, service, profile);
+  instance_ = new MediaDialogView(anchor_view, service, profile, entry_point);
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(instance_);
@@ -68,6 +70,8 @@ views::Widget* MediaDialogView::ShowDialog(views::View* anchor_view,
 
   base::UmaHistogramBoolean("Media.GlobalMediaControls.RepeatUsage",
                             has_been_opened_);
+  base::UmaHistogramEnumeration("Media.GlobalMediaControls.EntryPoint",
+                                entry_point);
   has_been_opened_ = true;
 
   return widget;
@@ -95,8 +99,8 @@ bool MediaDialogView::IsShowing() {
 MediaNotificationContainerImpl* MediaDialogView::ShowMediaSession(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  auto container =
-      std::make_unique<MediaNotificationContainerImplView>(id, item, service_);
+  auto container = std::make_unique<MediaNotificationContainerImplView>(
+      id, item, service_, entry_point_);
   MediaNotificationContainerImplView* container_ptr = container.get();
   container_ptr->AddObserver(this);
   observed_containers_[id] = container_ptr;
@@ -205,12 +209,14 @@ const MediaNotificationListView* MediaDialogView::GetListViewForTesting()
 
 MediaDialogView::MediaDialogView(views::View* anchor_view,
                                  MediaNotificationService* service,
-                                 Profile* profile)
+                                 Profile* profile,
+                                 GlobalMediaControlsEntryPoint entry_point)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
       service_(service),
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(
-          AddChildView(std::make_unique<MediaNotificationListView>())) {
+          AddChildView(std::make_unique<MediaNotificationListView>())),
+      entry_point_(entry_point) {
   // Enable layer based clipping to ensure children using layers are clipped
   // appropriately.
   SetPaintClientToLayer(true);

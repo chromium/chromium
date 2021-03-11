@@ -43,8 +43,9 @@ class MediaNotificationListViewTest : public ChromeViewsTestBase {
 
   void ShowNotification(const std::string& id) {
     list_view_->ShowNotification(
-        id, std::make_unique<MediaNotificationContainerImplView>(id, nullptr,
-                                                                 nullptr));
+        id,
+        std::make_unique<MediaNotificationContainerImplView>(
+            id, nullptr, nullptr, GlobalMediaControlsEntryPoint::kToolbarIcon));
   }
 
   void HideNotification(const std::string& id) {

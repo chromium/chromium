@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -91,6 +93,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     MediaNotificationService* service,
+    GlobalMediaControlsEntryPoint entry_point,
     base::Optional<media_message_center::NotificationTheme> theme)
     : views::Button(base::BindRepeating(
           [](MediaNotificationContainerImplView* view) {
@@ -104,7 +107,8 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       foreground_color_(kDefaultForegroundColor),
       background_color_(kDefaultBackgroundColor),
       service_(service),
-      is_cros_(theme.has_value()) {
+      is_cros_(theme.has_value()),
+      entry_point_(entry_point) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
@@ -174,41 +178,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   view_ = swipeable_container_->AddChildView(std::move(view));
   if (is_cast_notification &&
       media_router::GlobalMediaControlsCastStartStopEnabled()) {
-    stop_button_strip_ = AddChildView(std::make_unique<views::View>());
-    auto* stop_cast_button_strip_layout =
-        stop_button_strip_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal,
-            kStopCastButtonStripInsets));
-    stop_cast_button_strip_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-    stop_cast_button_strip_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-    stop_button_strip_->SetBackground(
-        views::CreateSolidBackground(background_color_));
-    stop_button_strip_->SetPreferredSize(kStopCastButtonStripSize);
-
-    stop_cast_button_ =
-        stop_button_strip_->AddChildView(std::make_unique<views::LabelButton>(
-            base::BindRepeating(
-                [](CastMediaNotificationItem* cast_item) {
-                  media_router::MediaRouterFactory::GetApiForBrowserContext(
-                      cast_item->profile())
-                      ->TerminateRoute(cast_item->route_id());
-                },
-                base::Unretained(cast_item)),
-            l10n_util::GetStringUTF16(
-                IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
-    stop_cast_button_->SetInkDropMode(InkDropMode::ON);
-    stop_cast_button_->SetHasInkDropActionOnClick(true);
-    stop_cast_button_->SetInkDropBaseColor(foreground_color_);
-    stop_cast_button_->SetInkDropLargeCornerRadius(
-        kStopCastButtonStripSize.height());
-    stop_cast_button_->SetEnabledTextColors(foreground_color_);
-    stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    stop_cast_button_->SetBorder(views::CreatePaddedBorder(
-        views::CreateRoundedRectBorder(1, kStopCastButtonStripSize.height() / 2,
-                                       foreground_color_),
-        kStopCastButtonBorderInsets));
+    AddStopCastButton(cast_item);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -221,7 +191,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     auto audio_device_selector_view =
         std::make_unique<MediaNotificationDeviceSelectorView>(
             this, std::move(cast_controller), audio_sink_id_, foreground_color_,
-            background_color_);
+            background_color_, entry_point_);
     audio_device_selector_view_ =
         AddChildView(std::move(audio_device_selector_view));
     view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
@@ -518,6 +488,65 @@ MediaNotificationContainerImplView::GetDismissButtonForTesting() {
 views::Button*
 MediaNotificationContainerImplView::GetStopCastingButtonForTesting() {
   return stop_cast_button_;
+}
+
+void MediaNotificationContainerImplView::AddStopCastButton(
+    CastMediaNotificationItem* cast_item) {
+  DCHECK(cast_item);
+  stop_button_strip_ = AddChildView(std::make_unique<views::View>());
+  auto* stop_cast_button_strip_layout =
+      stop_button_strip_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          kStopCastButtonStripInsets));
+  stop_cast_button_strip_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  stop_cast_button_strip_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  stop_button_strip_->SetBackground(
+      views::CreateSolidBackground(background_color_));
+  stop_button_strip_->SetPreferredSize(kStopCastButtonStripSize);
+
+  stop_cast_button_ =
+      stop_button_strip_->AddChildView(std::make_unique<views::LabelButton>(
+          base::BindRepeating(&MediaNotificationContainerImplView::StopCasting,
+                              base::Unretained(this),
+                              base::Unretained(cast_item)),
+          l10n_util::GetStringUTF16(
+              IDS_GLOBAL_MEDIA_CONTROLS_STOP_CASTING_BUTTON_LABEL)));
+  stop_cast_button_->SetInkDropMode(InkDropMode::ON);
+  stop_cast_button_->SetHasInkDropActionOnClick(true);
+  stop_cast_button_->SetInkDropBaseColor(foreground_color_);
+  stop_cast_button_->SetInkDropLargeCornerRadius(
+      kStopCastButtonStripSize.height());
+  stop_cast_button_->SetEnabledTextColors(foreground_color_);
+  stop_cast_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
+  stop_cast_button_->SetBorder(views::CreatePaddedBorder(
+      views::CreateRoundedRectBorder(1, kStopCastButtonStripSize.height() / 2,
+                                     foreground_color_),
+      kStopCastButtonBorderInsets));
+}
+
+void MediaNotificationContainerImplView::StopCasting(
+    CastMediaNotificationItem* cast_item) {
+  media_router::MediaRouterFactory::GetApiForBrowserContext(
+      cast_item->profile())
+      ->TerminateRoute(cast_item->route_id());
+
+  GlobalMediaControlsCastActionAndEntryPoint action;
+  switch (entry_point_) {
+    case GlobalMediaControlsEntryPoint::kToolbarIcon:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaToolbarIcon;
+      break;
+    case GlobalMediaControlsEntryPoint::kPresentation:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaPresentation;
+      break;
+    case GlobalMediaControlsEntryPoint::kSystemTray:
+      action = GlobalMediaControlsCastActionAndEntryPoint::kStopViaSystemTray;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
+      action);
 }
 
 void MediaNotificationContainerImplView::UpdateDismissButtonIcon() {
