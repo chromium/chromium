@@ -27,7 +27,7 @@ constexpr int kSaveDelayMs = 1000;
 constexpr int kExternalMetricsIntervalMins = 10;
 
 // Directory containing serialized event protos to read.
-constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/";
+constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
 
 }  // namespace
 
