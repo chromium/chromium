@@ -11,7 +11,10 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+
+namespace em = enterprise_management;
 
 namespace policy {
 namespace {
@@ -20,12 +23,17 @@ const base::FilePath::CharType kPolicyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy");
 const base::FilePath::CharType kKeyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy Signing Key");
+constexpr base::FilePath::StringPieceType kExternalPolicyCache =
+    FILE_PATH_LITERAL("PolicyFetchResponse");
+constexpr base::FilePath::StringPieceType kExternalPolicyInfo =
+    FILE_PATH_LITERAL("CachedPolicyInfo");
 }  // namespace
 
 MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
     const DMToken& machine_dm_token,
     const std::string& machine_client_id,
     const base::FilePath& external_policy_path,
+    const base::FilePath& external_policy_info_path,
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
     bool cloud_policy_has_priority,
@@ -35,7 +43,8 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
           key_path,
           base::BindRepeating(
               &MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies,
-              external_policy_path),
+              external_policy_path,
+              external_policy_info_path),
           background_task_runner,
           PolicyScope::POLICY_SCOPE_MACHINE,
           cloud_policy_has_priority ? PolicySource::POLICY_SOURCE_PRIORITY_CLOUD
@@ -50,16 +59,36 @@ std::unique_ptr<MachineLevelUserCloudPolicyStore>
 MachineLevelUserCloudPolicyStore::Create(
     const DMToken& machine_dm_token,
     const std::string& machine_client_id,
-    const base::FilePath& external_policy_path,
+    const base::FilePath& external_policy_dir,
     const base::FilePath& policy_dir,
     bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
+  base::FilePath external_policy_path;
+  base::FilePath external_policy_info_path;
+  if (!external_policy_dir.empty()) {
+    external_policy_path =
+        external_policy_dir
+            .AppendASCII(policy::dm_protocol::
+                             kChromeMachineLevelUserCloudPolicyTypeBase64)
+            .Append(kExternalPolicyCache);
+    external_policy_info_path = external_policy_dir.Append(kExternalPolicyInfo);
+  }
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id, external_policy_path,
-      policy_cache_file, key_cache_file, cloud_policy_has_priority,
-      background_task_runner);
+      external_policy_info_path, policy_cache_file, key_cache_file,
+      cloud_policy_has_priority, background_task_runner);
+}
+
+bool IsResultKeyEqual(const PolicyLoadResult& default_result,
+                      const PolicyLoadResult& external_result) {
+  return default_result.key.signing_key() ==
+             external_result.key.signing_key() &&
+         default_result.key.signing_key_signature() ==
+             external_result.key.signing_key_signature() &&
+         default_result.key.verification_key() ==
+             external_result.key.verification_key();
 }
 
 void MachineLevelUserCloudPolicyStore::LoadImmediately() {
@@ -87,15 +116,21 @@ void MachineLevelUserCloudPolicyStore::Load() {
 // static
 PolicyLoadResult
 MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
-    const base::FilePath& path,
+    const base::FilePath& policy_cache_path,
+    const base::FilePath& policy_info_path,
     PolicyLoadResult default_cached_policy_load_result) {
-  // Loads cached cloud policies by an external provider.
   PolicyLoadResult external_policy_cache_load_result =
-      DesktopCloudPolicyStore::LoadPolicyFromDisk(path, base::FilePath());
+      LoadExternalCachedPolicies(policy_cache_path, policy_info_path);
   if (external_policy_cache_load_result.status != policy::LOAD_RESULT_SUCCESS)
     return default_cached_policy_load_result;
 
-  external_policy_cache_load_result.skip_key_signature_validation = true;
+  // If default key is missing or not matches the external one, enable key
+  // rotation mode to re-fetch public key again.
+  if (!IsResultKeyEqual(default_cached_policy_load_result,
+                        external_policy_cache_load_result)) {
+    external_policy_cache_load_result.doing_key_rotation = true;
+  }
+
   if (default_cached_policy_load_result.status != policy::LOAD_RESULT_SUCCESS)
     return external_policy_cache_load_result;
 
@@ -109,6 +144,37 @@ MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
     return external_policy_cache_load_result;
   }
   return default_cached_policy_load_result;
+}
+
+// static
+PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
+    const base::FilePath& policy_cache_path,
+    const base::FilePath& policy_info_path) {
+  // Loads cached cloud policies by an external provider.
+  PolicyLoadResult policy_cache_load_result =
+      DesktopCloudPolicyStore::LoadPolicyFromDisk(policy_cache_path,
+                                                  base::FilePath());
+  PolicyLoadResult policy_info_load_result =
+      DesktopCloudPolicyStore::LoadPolicyFromDisk(policy_info_path,
+                                                  base::FilePath());
+
+  // External policy source doesn't provide full components policies data hence
+  // browser will rely on the local cache which requires public key to verify
+  // them.
+  // Load the key and signature of the key from Extennal policy info file and
+  // use it to verify all Chrome and components policies. The browser will
+  // redownload the policeis in case of validation failure.
+  VLOG(1) << (policy_info_load_result.policy.has_new_public_key()
+                  ? "External policy has public key."
+                  : "External policy doesn't have public key.");
+  policy_cache_load_result.key.set_signing_key(
+      policy_info_load_result.policy.new_public_key());
+  policy_cache_load_result.key.set_signing_key_signature(
+      policy_info_load_result.policy
+          .new_public_key_verification_signature_deprecated());
+  policy_cache_load_result.key.set_verification_key(GetPolicyVerificationKey());
+
+  return policy_cache_load_result;
 }
 
 std::unique_ptr<UserCloudPolicyValidator>

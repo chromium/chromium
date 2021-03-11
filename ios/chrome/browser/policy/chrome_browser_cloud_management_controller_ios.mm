@@ -41,7 +41,7 @@ int ChromeBrowserCloudManagementControllerIOS::GetUserDataDirKey() {
 }
 
 base::FilePath
-ChromeBrowserCloudManagementControllerIOS::GetExternalPolicyPath() {
+ChromeBrowserCloudManagementControllerIOS::GetExternalPolicyDir() {
   // External policies are not supported on iOS.
   return base::FilePath();
 }

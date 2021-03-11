@@ -61,8 +61,6 @@ namespace {
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr base::FilePath::StringPieceType kCachedPolicyDirname =
     FILE_PATH_LITERAL("Policies");
-constexpr base::FilePath::StringPieceType kCachedPolicyFilename =
-    FILE_PATH_LITERAL("PolicyFetchResponse");
 #endif
 
 }  // namespace
@@ -194,17 +192,14 @@ int ChromeBrowserCloudManagementControllerDesktop::GetUserDataDirKey() {
 }
 
 base::FilePath
-ChromeBrowserCloudManagementControllerDesktop::GetExternalPolicyPath() {
+ChromeBrowserCloudManagementControllerDesktop::GetExternalPolicyDir() {
   base::FilePath external_policy_path;
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::PathService::Get(base::DIR_PROGRAM_FILESX86, &external_policy_path);
 
   external_policy_path =
       external_policy_path.Append(install_static::kCompanyPathName)
-          .Append(kCachedPolicyDirname)
-          .AppendASCII(
-              policy::dm_protocol::kChromeMachineLevelUserCloudPolicyTypeBase64)
-          .Append(kCachedPolicyFilename);
+          .Append(kCachedPolicyDirname);
 #endif
 
   return external_policy_path;

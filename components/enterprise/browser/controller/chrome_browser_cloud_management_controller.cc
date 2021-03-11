@@ -135,7 +135,7 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
   base::FilePath policy_dir =
       user_data_dir.Append(ChromeBrowserCloudManagementController::kPolicyDir);
 
-  base::FilePath external_policy_path = delegate_->GetExternalPolicyPath();
+  base::FilePath external_policy_path = delegate_->GetExternalPolicyDir();
 
   std::unique_ptr<MachineLevelUserCloudPolicyStore> policy_store =
       MachineLevelUserCloudPolicyStore::Create(

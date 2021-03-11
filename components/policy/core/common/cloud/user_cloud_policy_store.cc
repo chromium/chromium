@@ -221,11 +221,10 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       // Found policy on disk - need to validate it before it can be used.
       std::unique_ptr<em::PolicyFetchResponse> cloud_policy(
           new em::PolicyFetchResponse(result.policy));
-      std::unique_ptr<em::PolicySigningKey> key;
-      if (!result.skip_key_signature_validation)
-        key = std::make_unique<em::PolicySigningKey>(result.key);
+      std::unique_ptr<em::PolicySigningKey> key =
+          std::make_unique<em::PolicySigningKey>(result.key);
 
-      bool doing_key_rotation = false;
+      bool doing_key_rotation = result.doing_key_rotation;
       if (key && (!key->has_verification_key() ||
                   key->verification_key() != GetPolicyVerificationKey())) {
         // The cached key didn't match our current key, so we're doing a key

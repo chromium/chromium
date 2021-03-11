@@ -80,7 +80,7 @@ class ChromeBrowserCloudManagementController
     // Returns the platform-specific file path, if any, of the browser policy
     // cache file that is fetched by external binaries. For example, on Windows,
     // the external policy cache is fetched by Google Update.
-    virtual base::FilePath GetExternalPolicyPath() = 0;
+    virtual base::FilePath GetExternalPolicyDir() = 0;
 
     // Returns a RepeatingCallback to get the platform-specific
     // NetworkConnectionTracker.

@@ -26,7 +26,7 @@ class ChromeBrowserCloudManagementControllerIOS
   // ChromeBrowserCloudManagementController::Delegate implementation.
   void SetDMTokenStorageDelegate() override;
   int GetUserDataDirKey() override;
-  base::FilePath GetExternalPolicyPath() override;
+  base::FilePath GetExternalPolicyDir() override;
   NetworkConnectionTrackerGetter CreateNetworkConnectionTrackerGetter()
       override;
   void InitializeOAuthTokenFactory(
