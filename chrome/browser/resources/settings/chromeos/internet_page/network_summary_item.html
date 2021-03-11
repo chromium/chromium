@@ -59,7 +59,9 @@
         </div>
 
         <template is="dom-if" if="[[showSimInfo_(deviceState)]]" restamp>
-          <network-siminfo device-state="[[deviceState]]" on-click="doNothing_">
+          <network-siminfo
+              network-state="[[activeNetworkState]]"
+              device-state="[[deviceState]]">
           </network-siminfo>
         </template>
 
