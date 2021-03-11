@@ -1020,7 +1020,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           base::OnTaskRunnerDeleter(base::CreateSequencedTaskRunner(
               {ServiceWorkerContext::GetCoreThreadId()}))),
       frame_token_(frame_token),
-      keep_alive_timeout_(base::TimeDelta::FromSeconds(30)),
+      keep_alive_timeout_(base::TimeDelta::FromSeconds(
+                              kKeepAliveHandleFactoryTimeoutInSeconds)),
       subframe_unload_timeout_(RenderViewHostImpl::kUnloadTimeout),
       media_device_id_salt_base_(
           BrowserContext::CreateRandomMediaDeviceIDSalt()),

@@ -280,6 +280,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   using IsClipboardPasteContentAllowedCallback =
       ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
 
+  // Exposed as a public constant to share with other entities that need to
+  // accommodate frame/process shutdown delays.
+  static const int kKeepAliveHandleFactoryTimeoutInSeconds = 30;
+
   // An accessibility reset is only allowed to prevent very rare corner cases
   // or race conditions where the browser and renderer get out of sync. If
   // this happens more than this many times, kill the renderer.

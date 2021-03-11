@@ -919,8 +919,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // When we are notified a BrowsingInstance has destructed, delay cleanup by
   // this amount to allow outstanding IO thread requests to complete. May be set
-  // to different values in tests.
-  int64_t browsing_instance_cleanup_delay_in_seconds_ = 10;
+  // to different values in tests. Note: the value is chosen to be slightly
+  // longer than the KeepAliveHandleFactory delay of 30 seconds, with the aim of
+  // covering the maximum time needed by any IncrementKeepAliveRefCount callers.
+  // TODO(wjmaclean): we know the IncrementKeepAliveRefCount API needs
+  // improvement, and with it the BrowsingInstance cleanup here can also be
+  // improved.
+  int64_t browsing_instance_cleanup_delay_in_seconds_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };
