@@ -203,12 +203,9 @@ class PrerenderHost::WebContentsPageHolder
     // Activate the prerendered contents.
     WebContentsDelegate* delegate = current_web_contents->GetDelegate();
     DCHECK(delegate);
+    DCHECK(web_contents_);
     DCHECK(GetMainFrame()->frame_tree()->is_prerendering());
     GetMainFrame()->frame_tree()->ActivatePrerenderedFrameTree();
-
-    DCHECK(web_contents_);
-    auto* successor_web_contents =
-        static_cast<WebContentsImpl*>(web_contents_.get());
 
     // Tentatively use Portal's activation function.
     // TODO(https://crbug.com/1132746): Replace this with the MPArch.
@@ -218,11 +215,6 @@ class PrerenderHost::WebContentsPageHolder
 
     // Stop loading on the predecessor WebContents.
     predecessor_web_contents->Stop();
-
-    // Notify the renderer of activation to update the prerendering state and
-    // dispatch the prerenderingchange event.
-    successor_web_contents->NotifyPrerenderingPageActivated();
-
     return true;
   }
 

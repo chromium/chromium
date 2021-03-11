@@ -234,6 +234,11 @@ crbug.com/1093466 virtual/portals/wpt_internal/portals/* [ Pass ]
 crbug.com/1126305 wpt_internal/prerender/* [ Skip ]
 crbug.com/1126305 virtual/prerender/wpt_internal/prerender/* [ Pass ]
 
+# This test currently fails since prerendering activation isn't fully plumbed
+# into the renderer yet.
+crbug.com/1183320 virtual/prerender/wpt_internal/prerender/state_and_event.html [ Timeout ]
+
+
 crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-iframe-root.html [ Pass Failure ]
 crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-root.html [ Pass Failure ]
 crbug.com/1185506 external/wpt/css/css-backgrounds/background-margin-transformed-root.html [ Pass Failure ]
