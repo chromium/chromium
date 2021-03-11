@@ -198,7 +198,7 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
     // kIPHReadingListEntryPointFeature:
     FeaturePromoBubbleParams params;
     params.body_string_specifier = IDS_READING_LIST_ENTRY_POINT_PROMO;
-    params.arrow = views::BubbleBorder::TOP_LEFT;
+    params.arrow = views::BubbleBorder::TOP_RIGHT;
 
     RegisterFeature(feature_engagement::kIPHReadingListEntryPointFeature,
                     params, base::BindRepeating(GetReadingListStarView));

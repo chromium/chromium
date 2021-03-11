@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -51,6 +52,7 @@ class StarView : public PageActionIconView,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
+  bool IsCommandIdAlerted(int command_id) const override;
 
   Browser* const browser_;
 
@@ -58,6 +60,9 @@ class StarView : public PageActionIconView,
   std::unique_ptr<StarMenuModel> menu_model_;
 
   BooleanPrefMember edit_bookmarks_enabled_;
+
+  base::Optional<FeaturePromoController::PromoHandle>
+      reading_list_entry_point_promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_

@@ -17,12 +17,14 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/star_menu_model.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
@@ -99,6 +101,15 @@ void StarView::OnExecuting(PageActionIconView::ExecuteSource execute_source) {
 void StarView::ExecuteCommand(ExecuteSource source) {
   OnExecuting(source);
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    FeaturePromoController* feature_promo_controller =
+        browser_->window()->GetFeaturePromoController();
+    if (feature_promo_controller &&
+        feature_promo_controller->BubbleIsShowing(
+            feature_engagement::kIPHReadingListEntryPointFeature)) {
+      reading_list_entry_point_promo_handle_ =
+          feature_promo_controller->CloseBubbleAndContinuePromo(
+              feature_engagement::kIPHReadingListEntryPointFeature);
+    }
     menu_model_ = std::make_unique<StarMenuModel>(
         this, GetActive(), chrome::CanMoveActiveTabToReadLater(browser_),
         chrome::IsCurrentTabUnreadInReadLater(browser_));
@@ -157,7 +168,13 @@ void StarView::MenuClosed(ui::SimpleMenuModel* source) {
       !GetBubble()->GetWidget()->IsVisible()) {
     SetHighlighted(false);
   }
+  reading_list_entry_point_promo_handle_.reset();
   menu_runner_.reset();
+}
+
+bool StarView::IsCommandIdAlerted(int command_id) const {
+  return command_id == StarMenuModel::CommandMoveToReadLater &&
+         reading_list_entry_point_promo_handle_;
 }
 
 BEGIN_METADATA(StarView, PageActionIconView)
