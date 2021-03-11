@@ -137,6 +137,36 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   run_loop.Run();
 }
 
+// Regression test for crbug.com/1183939. Ensures unicode mime types take
+// priority over text/plain when reading text.
+TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
+  auto* data_offer = data_device_manager_->data_device()->OnDataOffer();
+  data_offer->OnOffer(kMimeTypeText,
+                      ToClipboardData(std::string("ascii_text")));
+  data_offer->OnOffer(kMimeTypeTextUtf8,
+                      ToClipboardData(std::string("utf8_text")));
+  data_device_manager_->data_device()->OnSelection(data_offer);
+  Sync();
+
+  base::RunLoop run_loop;
+  auto callback = base::BindOnce(
+      [](base::OnceClosure quit_closure,
+         const base::Optional<PlatformClipboard::Data>& data) {
+        std::string str(data->get()->front_as<const char>(),
+                        data->get()->size());
+        EXPECT_EQ("utf8_text", str);
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure());
+
+  PlatformClipboard::DataMap read_data_;
+  clipboard_->RequestClipboardData(ClipboardBuffer::kCopyPaste,
+                                   kMimeTypeTextUtf8, &read_data_,
+                                   std::move(callback));
+  Sync();
+  run_loop.Run();
+}
+
 TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
   // When no data offer is advertised and client requests clipboard data
   // from the server, the response callback should be gracefully called with

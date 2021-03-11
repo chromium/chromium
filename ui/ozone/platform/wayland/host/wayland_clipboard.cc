@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -82,11 +83,12 @@ class ClipboardImpl final : public Clipboard,
             ui::PlatformClipboard::DataMap* data_map,
             ui::PlatformClipboard::RequestDataClosure callback) final {
     DCHECK(data_map);
-    received_data_ = data_map;
-    read_clipboard_closure_ = std::move(callback);
-
-    if (GetDevice()->RequestSelectionData(mime_type))
+    if (GetDevice()->RequestSelectionData(GetMimeTypeForRequest(mime_type))) {
+      requested_mime_type_ = mime_type;
+      received_data_ = data_map;
+      read_clipboard_closure_ = std::move(callback);
       return true;
+    }
     SetData(base::MakeRefCounted<base::RefCountedBytes>(), mime_type);
     return false;
   }
@@ -108,7 +110,7 @@ class ClipboardImpl final : public Clipboard,
     } else {
       offered_data_ = *data;
       source_ = manager_->CreateSource(this);
-      source_->Offer(GetMimeTypes());
+      source_->Offer(GetOfferedMimeTypes());
       GetDevice()->SetSelectionSource(source_.get());
     }
   }
@@ -125,7 +127,7 @@ class ClipboardImpl final : public Clipboard,
  private:
   DataDevice* GetDevice() { return manager_->GetDevice(); }
 
-  std::vector<std::string> GetMimeTypes() {
+  std::vector<std::string> GetOfferedMimeTypes() {
     std::vector<std::string> mime_types;
     for (const auto& data : offered_data_) {
       mime_types.push_back(data.first);
@@ -135,20 +137,33 @@ class ClipboardImpl final : public Clipboard,
     return mime_types;
   }
 
+  std::string GetMimeTypeForRequest(const std::string& mime_type) {
+    if (mime_type != ui::kMimeTypeText)
+      return mime_type;
+    // Prioritize unicode for text data.
+    for (const auto& t : GetDevice()->GetAvailableMimeTypes()) {
+      if (t == ui::kMimeTypeTextUtf8 || t == ui::kMimeTypeLinuxString ||
+          t == ui::kMimeTypeLinuxUtf8String || t == ui::kMimeTypeLinuxText) {
+        return t;
+      }
+    }
+    return mime_type;
+  }
+
   void SetData(ui::PlatformClipboard::Data contents,
                const std::string& mime_type) {
     if (!received_data_)
       return;
 
-    DCHECK(contents);
-    (*received_data_)[mime_type] = contents;
+    CHECK(contents);
+    CHECK_EQ(GetMimeTypeForRequest(requested_mime_type_), mime_type);
 
-    if (!read_clipboard_closure_.is_null()) {
-      auto it = received_data_->find(mime_type);
-      DCHECK(it != received_data_->end());
-      std::move(read_clipboard_closure_).Run(it->second);
-    }
+    (*received_data_)[requested_mime_type_] = contents;
+    if (!read_clipboard_closure_.is_null())
+      std::move(read_clipboard_closure_).Run(contents);
+
     received_data_ = nullptr;
+    requested_mime_type_.clear();
   }
 
   // WaylandDataDeviceBase::SelectionDelegate:
@@ -200,6 +215,9 @@ class ClipboardImpl final : public Clipboard,
   // Stores the callback to be invoked upon data reading from clipboard.
   ui::PlatformClipboard::RequestDataClosure read_clipboard_closure_;
 
+  // Last mime type requested to be read from the clipboard.
+  std::string requested_mime_type_;
+
   // Notifies when clipboard sequence must change. Can be empty if not set.
   ui::PlatformClipboard::SequenceNumberUpdateCb update_sequence_cb_;
 };
@@ -207,7 +225,6 @@ class ClipboardImpl final : public Clipboard,
 }  // namespace wl
 
 namespace ui {
-
 WaylandClipboard::WaylandClipboard(WaylandConnection* connection,
                                    WaylandDataDeviceManager* manager)
     : connection_(connection),
