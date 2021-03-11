@@ -19,7 +19,7 @@ interface SensorService {
   GetDeviceNames@0() => (array<string> names);
 
   // Binds the request to the specified device.
-  GetDeviceByName@1(string name, SensorDevice& request);
+  GetDeviceByName@1(string name, pending_receiver<SensorDevice> receiver);
 };
 
 // SensorDevice provides an interface to interact with a sensor device.
