@@ -232,7 +232,13 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForCartCount(kExpectedExample);
 }
 
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, CartPriority) {
+#if defined(OS_LINUX)
+#define MAYBE_CartPriority DISABLED_CartPriority
+#else
+#define MAYBE_CartPriority CartPriority
+#endif
+// Flaky on Linux (crbug.com/1182801)
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MAYBE_CartPriority) {
   NavigateToURL("https://www.walmart.com/");
   NavigateToURL("https://www.walmart.com/add-to-cart?product=1");
   WaitForCartCount(kExpectedExampleFallbackCart);
