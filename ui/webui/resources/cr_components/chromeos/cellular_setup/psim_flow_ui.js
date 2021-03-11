@@ -27,6 +27,23 @@ cr.define('cellularSetup', function() {
   };
 
   /**
+   * The reason that caused the user to exit the PSim Setup flow.
+   * These values are persisted to logs. Entries should not be renumbered
+   * and numeric values should never be reused.
+   * @enum{number}
+   */
+  /* #export */ const PSimSetupFlowResult = {
+    SUCCESS: 0,
+    CANCELLED: 1,
+    CANCELLED_NO_SIM: 2,
+    CANCELLED_COLD_SIM_DEFER: 3,
+    CANCELLED_CARRIER_PORTAL: 4,
+    CANCELLED_PORTAL_ERROR: 5,
+    CARRIER_PORTAL_TIMEOUT: 6,
+    NETWORK_ERROR: 7,
+  };
+
+  /**
    * @param {!cellularSetup.PSimUIState} state
    * @return {?number} The time delta, in ms, for the timeout corresponding to
    *     |state|. If no timeout is applicable for this state, null is returned.
@@ -179,9 +196,60 @@ cr.define('cellularSetup', function() {
      */
     carrierPortalHandler_: null,
 
+
+    /**
+     * Whether there was a carrier portal error.
+     * @private {boolean}
+     */
+    didCarrierPortalResultFail_: false,
+
     /** @override */
     created() {
       this.cellularSetupRemote_ = cellular_setup.getCellularSetupRemote();
+    },
+
+    /** @override */
+    detached() {
+      let resultCode = null;
+      switch (this.state_) {
+        case PSimUIState.IDLE:
+        case PSimUIState.STARTING_ACTIVATION:
+          resultCode = PSimSetupFlowResult.CANCELLED;
+          break;
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
+          resultCode = PSimSetupFlowResult.CANCELLED_COLD_SIM_DEFER;
+          break;
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+          resultCode = PSimSetupFlowResult.CANCELLED_NO_SIM;
+          break;
+        case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
+          resultCode = PSimSetupFlowResult.CANCELLED;
+          break;
+        case PSimUIState.TIMEOUT_PORTAL_LOAD:
+          resultCode = PSimSetupFlowResult.CARRIER_PORTAL_TIMEOUT;
+          break;
+        case PSimUIState.WAITING_FOR_USER_PAYMENT:
+          resultCode = PSimSetupFlowResult.CANCELLED_CARRIER_PORTAL;
+          break;
+        case PSimUIState.ACTIVATION_SUCCESS:
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
+        case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+        case PSimUIState.ALREADY_ACTIVATED:
+          resultCode = PSimSetupFlowResult.SUCCESS;
+          break;
+        case PSimUIState.ACTIVATION_FAILURE:
+          resultCode = this.didCarrierPortalResultFail_ ?
+              PSimSetupFlowResult.CANCELLED_PORTAL_ERROR :
+              PSimSetupFlowResult.NETWORK_ERROR;
+          break;
+        default:
+          assertNotReached();
+      }
+
+      assert(resultCode !== null);
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Network.Cellular.PSim.CellularSetupResult', resultCode,
+          Object.keys(PSimSetupFlowResult).length);
     },
 
     /**
@@ -459,6 +527,7 @@ cr.define('cellularSetup', function() {
      */
     onCarrierPortalResult_(event) {
       const success = event.detail;
+      this.didCarrierPortalResultFail_ = !success;
       this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
                               PSimUIState.ACTIVATION_FAILURE;
     },

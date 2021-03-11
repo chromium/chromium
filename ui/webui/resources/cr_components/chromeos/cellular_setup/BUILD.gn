@@ -195,6 +195,7 @@ js_library("psim_flow_ui.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":psim_flow_ui_module" ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("esim_flow_ui.m") {

@@ -158,6 +158,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.PSim.SetupFlowResult"
+    enum="PSimSetupFlowResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Tracks the result of the physical SIM card setup flow when the setup dialog
+    closes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.PSim.Usage.Count" enum="NetworkCellularUsage"
     expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>

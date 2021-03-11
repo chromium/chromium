@@ -63715,6 +63715,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="PROXY_HAS_RULES"/>
 </enum>
 
+<enum name="PSimSetupFlowResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="CANCELLED"/>
+  <int value="2" label="CANCELLED_NO_SIM"/>
+  <int value="3" label="CANCELLED_COLD_SIM_DEFER"/>
+  <int value="4" label="CANCELLED_CARRIER_PORTAL"/>
+  <int value="5" label="CANCELLED_PORTAL_ERROR"/>
+  <int value="6" label="CARRIER_PORTAL_TIMEOUT"/>
+  <int value="7" label="TIMEOUT_FINISH_ACTIVATION"/>
+  <int value="8" label="NETWORK_ERROR"/>
+</enum>
+
 <enum name="PsmHashDanceDifferentResultsComparison">
   <int value="0" label="Hash dance true and PSM false"/>
   <int value="1" label="PSM true and Hash dance false"/>
