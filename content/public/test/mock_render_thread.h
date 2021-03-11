@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"

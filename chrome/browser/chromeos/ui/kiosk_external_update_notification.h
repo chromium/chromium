@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_
 #define CHROME_BROWSER_CHROMEOS_UI_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

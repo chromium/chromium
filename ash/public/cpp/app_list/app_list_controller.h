@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"

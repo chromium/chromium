@@ -12,6 +12,7 @@
 
 #include <sddl.h>
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"

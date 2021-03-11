@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

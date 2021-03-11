@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

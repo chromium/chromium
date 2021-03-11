@@ -4,6 +4,8 @@
 
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"

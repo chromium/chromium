@@ -4,6 +4,8 @@
 
 #include "ash/child_accounts/parent_access_controller_impl.h"
 
+#include <string>
+
 #include "ash/login/login_screen_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"

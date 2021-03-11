@@ -7,6 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"

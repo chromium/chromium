@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CORE_BASIC_CARD_RESPONSE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "components/payments/core/payment_address.h"

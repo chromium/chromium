@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HOVER_BUTTON_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/hover_button.h"

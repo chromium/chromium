@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/set_time_dialog.h"
 
+#include <string>
+
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
 #include "chrome/common/url_constants.h"

@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"

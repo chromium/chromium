@@ -5,6 +5,7 @@
 #ifndef UI_GFX_FONT_FALLBACK_H_
 #define UI_GFX_FONT_FALLBACK_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEB_UI_TEST_HANDLER_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/document_provider.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"

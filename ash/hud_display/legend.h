@@ -5,6 +5,7 @@
 #ifndef ASH_HUD_DISPLAY_LEGEND_H_
 #define ASH_HUD_DISPLAY_LEGEND_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"

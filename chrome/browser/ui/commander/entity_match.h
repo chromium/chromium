@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COMMANDER_ENTITY_MATCH_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

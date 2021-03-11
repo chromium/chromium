@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/vr/gvr_input_delegate.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

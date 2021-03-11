@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
 #define ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 

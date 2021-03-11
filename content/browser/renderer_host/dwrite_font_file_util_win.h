@@ -9,6 +9,7 @@
 #include <dwrite_2.h>
 #include <dwrite_3.h>
 #include <set>
+#include <string>
 
 #include "base/location.h"
 #include "base/strings/string16.h"

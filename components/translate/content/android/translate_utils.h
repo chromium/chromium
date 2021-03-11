@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_ANDROID_TRANSLATE_UTILS_H_
 #define COMPONENTS_TRANSLATE_CONTENT_ANDROID_TRANSLATE_UTILS_H_
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string16.h"

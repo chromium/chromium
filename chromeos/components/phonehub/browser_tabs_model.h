@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_H_
 
 #include <ostream>
+#include <string>
 
 #include "base/optional.h"
 #include "base/strings/string16.h"

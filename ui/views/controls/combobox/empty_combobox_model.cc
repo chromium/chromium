@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/combobox/empty_combobox_model.h"
 
+#include <string>
+
 #include "base/notreached.h"
 #include "base/strings/string16.h"
 

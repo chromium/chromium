@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

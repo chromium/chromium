@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "base/macros.h"

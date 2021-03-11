@@ -9,6 +9,7 @@
 
 #include <algorithm>  // Silence broken lint check
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

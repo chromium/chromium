@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <winhttp.h>
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/strings/string16.h"
 

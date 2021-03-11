@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
 #include "chrome/chrome_elf/third_party_dlls/beacon.h"
 

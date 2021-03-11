@@ -6,6 +6,7 @@
 #define ASH_DISPLAY_DISPLAY_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "base/strings/string16.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 // TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/shipping_option_view_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"

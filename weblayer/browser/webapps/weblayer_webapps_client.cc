@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/webapps/weblayer_webapps_client.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"

@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"

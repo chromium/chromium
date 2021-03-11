@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_H_
 
+#include <string>
 #include <unordered_set>
 #include <vector>
 

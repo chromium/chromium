@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"

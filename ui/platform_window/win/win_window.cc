@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/string_util_win.h"

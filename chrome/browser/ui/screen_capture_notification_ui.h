@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SCREEN_CAPTURE_NOTIFICATION_UI_H_
 #define CHROME_BROWSER_UI_SCREEN_CAPTURE_NOTIFICATION_UI_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

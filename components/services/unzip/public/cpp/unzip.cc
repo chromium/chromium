@@ -4,6 +4,7 @@
 
 #include "components/services/unzip/public/cpp/unzip.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

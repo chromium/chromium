@@ -5,6 +5,8 @@
 #ifndef HEADLESS_LIB_HEADLESS_CRASH_REPORTER_CLIENT_H_
 #define HEADLESS_LIB_HEADLESS_CRASH_REPORTER_CLIENT_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_WIN_UI_UI_H_
 #define CHROME_UPDATER_WIN_UI_UI_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

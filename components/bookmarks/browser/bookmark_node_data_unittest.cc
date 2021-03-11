@@ -5,6 +5,7 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"

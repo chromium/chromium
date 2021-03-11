@@ -4,6 +4,8 @@
 
 #include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"

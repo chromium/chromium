@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

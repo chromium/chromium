@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_util.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

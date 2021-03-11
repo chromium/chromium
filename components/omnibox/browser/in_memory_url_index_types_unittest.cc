@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/stl_util.h"
 #include "base/strings/string16.h"

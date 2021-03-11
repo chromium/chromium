@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/observer_list.h"

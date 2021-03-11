@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"

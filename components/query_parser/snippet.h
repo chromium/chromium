@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

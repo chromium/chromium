@@ -5,6 +5,7 @@
 #include "extensions/browser/requirements_checker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"

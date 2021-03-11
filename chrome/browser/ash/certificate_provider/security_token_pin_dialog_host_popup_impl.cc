@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host_popup_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

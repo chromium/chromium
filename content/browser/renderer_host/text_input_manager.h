@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 

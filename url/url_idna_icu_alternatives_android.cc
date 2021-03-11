@@ -4,6 +4,8 @@
 
 #include <string.h>
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string16.h"

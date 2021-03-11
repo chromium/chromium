@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

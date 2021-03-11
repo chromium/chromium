@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_PROXY_H_
 #define COMPONENTS_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_PROXY_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace content {

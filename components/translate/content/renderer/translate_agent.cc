@@ -5,6 +5,7 @@
 #include "components/translate/content/renderer/translate_agent.h"
 
 #include <stddef.h>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

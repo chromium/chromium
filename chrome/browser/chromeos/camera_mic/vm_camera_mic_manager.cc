@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
 
+#include <string>
 #include <tuple>
 #include <utility>
 

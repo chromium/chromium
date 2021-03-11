@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/base_paths_win.h"

@@ -4,6 +4,8 @@
 
 #include "ash/system/network/auto_connect_notifier.h"
 
+#include <string>
+
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"

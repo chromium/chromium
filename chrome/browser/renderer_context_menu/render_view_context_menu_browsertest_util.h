@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"

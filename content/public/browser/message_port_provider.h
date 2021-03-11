@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MESSAGE_PORT_PROVIDER_H_
 #define CONTENT_PUBLIC_BROWSER_MESSAGE_PORT_PROVIDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_H_
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/profile_import.mojom.h"

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_OBSERVER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

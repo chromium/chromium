@@ -6,6 +6,7 @@
 
 #include <jni.h>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/android/build_info.h"

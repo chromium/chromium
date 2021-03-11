@@ -5,6 +5,8 @@
 #ifndef ASH_HUD_DISPLAY_TAB_STRIP_H_
 #define ASH_HUD_DISPLAY_TAB_STRIP_H_
 
+#include <string>
+
 #include "ash/hud_display/hud_constants.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"

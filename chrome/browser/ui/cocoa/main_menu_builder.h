@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"

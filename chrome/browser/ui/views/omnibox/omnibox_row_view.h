@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_ROW_VIEW_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/views/metadata/metadata_header_macros.h"

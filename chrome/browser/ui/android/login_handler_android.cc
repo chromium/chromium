@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include <memory>
+#include <string>
 
 #include "base/logging.h"
 #include "base/optional.h"

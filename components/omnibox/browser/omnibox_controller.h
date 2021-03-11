@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"

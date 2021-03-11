@@ -8,6 +8,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_WIN_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/string16.h"

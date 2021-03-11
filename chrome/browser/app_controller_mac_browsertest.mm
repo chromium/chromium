@@ -10,6 +10,8 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"

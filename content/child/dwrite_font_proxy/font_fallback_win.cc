@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"

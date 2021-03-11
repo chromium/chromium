@@ -6,6 +6,7 @@
 #define PRINTING_PRINT_DIALOG_GTK_INTERFACE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "printing/printing_context_linux.h"

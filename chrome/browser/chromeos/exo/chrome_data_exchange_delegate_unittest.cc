@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/exo/chrome_data_exchange_delegate.h"
 
+#include <string>
+
 #include "ash/public/cpp/app_types.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"

@@ -5,6 +5,7 @@
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

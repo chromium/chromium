@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"

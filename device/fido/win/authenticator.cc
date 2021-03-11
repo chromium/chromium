@@ -5,6 +5,7 @@
 #include "device/fido/win/authenticator.h"
 
 #include <windows.h>
+#include <string>
 #include <utility>
 #include <vector>
 

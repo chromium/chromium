@@ -4,6 +4,7 @@
 
 #include "components/media_router/browser/android/media_router_dialog_controller_android.h"
 
+#include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

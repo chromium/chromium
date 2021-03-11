@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/kerberos_accounts_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"

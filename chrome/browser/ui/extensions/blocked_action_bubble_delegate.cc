@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/blocked_action_bubble_delegate.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

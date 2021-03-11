@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/auto_reset.h"

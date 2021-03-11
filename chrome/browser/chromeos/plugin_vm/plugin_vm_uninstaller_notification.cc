@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_uninstaller_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"

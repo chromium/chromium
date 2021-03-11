@@ -4,6 +4,8 @@
 
 #include "base/android/timezone_utils.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/TimezoneUtils_jni.h"

@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"

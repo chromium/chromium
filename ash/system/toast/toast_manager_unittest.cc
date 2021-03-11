@@ -4,6 +4,8 @@
 
 #include "ash/system/toast/toast_manager_impl.h"
 
+#include <string>
+
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"

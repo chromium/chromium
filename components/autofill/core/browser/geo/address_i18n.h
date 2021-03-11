@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ADDRESS_I18N_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"

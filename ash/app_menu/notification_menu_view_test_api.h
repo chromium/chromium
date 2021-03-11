@@ -5,6 +5,8 @@
 #ifndef ASH_APP_MENU_NOTIFICATION_MENU_VIEW_TEST_API_H_
 #define ASH_APP_MENU_NOTIFICATION_MENU_VIEW_TEST_API_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

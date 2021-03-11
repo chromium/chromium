@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_H_
 #define CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

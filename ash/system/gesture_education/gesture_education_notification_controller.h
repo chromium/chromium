@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_GESTURE_EDUCATION_GESTURE_EDUCATION_NOTIFICATION_CONTROLLER_H_
 #define ASH_SYSTEM_GESTURE_EDUCATION_GESTURE_EDUCATION_NOTIFICATION_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"

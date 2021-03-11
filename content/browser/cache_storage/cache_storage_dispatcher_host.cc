@@ -4,6 +4,8 @@
 
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"

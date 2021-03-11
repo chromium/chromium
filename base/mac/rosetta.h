@@ -5,6 +5,7 @@
 #ifndef BASE_MAC_ROSETTA_H_
 #define BASE_MAC_ROSETTA_H_
 
+#include <string>
 #include <vector>
 
 #include "base/base_export.h"

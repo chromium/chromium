@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FONT_FAMILY_CACHE_H_
 #define CHROME_BROWSER_FONT_FAMILY_CACHE_H_
 
+#include <string>
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"

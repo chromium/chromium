@@ -5,6 +5,8 @@
 #ifndef ASH_HUD_DISPLAY_GRID_H_
 #define ASH_HUD_DISPLAY_GRID_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"

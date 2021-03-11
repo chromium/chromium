@@ -12,6 +12,7 @@
 #define UI_BASE_ACCELERATORS_ACCELERATOR_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/component_export.h"

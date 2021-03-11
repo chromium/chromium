@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_SHELF_TOOLTIP_DELEGATE_H_
 #define ASH_SHELF_SHELF_TOOLTIP_DELEGATE_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"

@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/model/offline_page_model_taskified.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

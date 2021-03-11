@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_NIGHT_LIGHT_NIGHT_LIGHT_CLIENT_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/night_light_controller.h"
 #include "base/macros.h"

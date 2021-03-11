@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_SETTINGS_RESET_PROMPT_DIALOG_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/ui_base_types.h"

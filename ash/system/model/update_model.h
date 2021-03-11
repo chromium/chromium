@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 #define ASH_SYSTEM_MODEL_UPDATE_MODEL_H_
 
+#include <string>
+
 #include "ash/public/cpp/update_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"

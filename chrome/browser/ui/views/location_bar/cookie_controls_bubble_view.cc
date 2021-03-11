@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls_bubble_view.h"
 
 #include <memory>
+#include <string>
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"

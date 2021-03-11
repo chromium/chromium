@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

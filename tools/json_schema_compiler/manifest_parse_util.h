@@ -5,6 +5,7 @@
 #ifndef TOOLS_JSON_SCHEMA_COMPILER_MANIFEST_PARSE_UTIL_H_
 #define TOOLS_JSON_SCHEMA_COMPILER_MANIFEST_PARSE_UTIL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/check.h"

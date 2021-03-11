@@ -9,6 +9,7 @@
 #include <fileapi.h>
 
 #include <memory>
+#include <string>
 #include <tuple>
 
 #include "base/file_version_info.h"

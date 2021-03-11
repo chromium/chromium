@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"

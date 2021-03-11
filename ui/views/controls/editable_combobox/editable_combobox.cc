@@ -5,6 +5,7 @@
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"

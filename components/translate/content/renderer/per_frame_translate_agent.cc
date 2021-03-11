@@ -4,6 +4,8 @@
 
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"

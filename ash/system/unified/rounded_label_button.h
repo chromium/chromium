@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_UNIFIED_ROUNDED_LABEL_BUTTON_H_
 #define ASH_SYSTEM_UNIFIED_ROUNDED_LABEL_BUTTON_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/label_button.h"

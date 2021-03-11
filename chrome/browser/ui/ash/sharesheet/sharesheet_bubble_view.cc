@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"

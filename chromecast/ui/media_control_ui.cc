@@ -5,6 +5,7 @@
 #include "chromecast/ui/media_control_ui.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/bind.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,8 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_BLUETOOTH_BLUETOOTH_UTILS_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_BLUETOOTH_BLUETOOTH_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"

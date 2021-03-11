@@ -4,6 +4,7 @@
 
 #include <cerrno>
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"

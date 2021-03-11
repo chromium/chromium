@@ -4,6 +4,8 @@
 
 #include "chromeos/settings/system_settings_provider.h"
 
+#include <string>
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/string16.h"

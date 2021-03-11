@@ -6,6 +6,7 @@
 #define COMPONENTS_JS_INJECTION_BROWSER_JS_COMMUNICATION_HOST_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/optional.h"

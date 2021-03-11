@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/speech_recognizer.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/strings/string16.h"

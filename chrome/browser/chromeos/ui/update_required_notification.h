@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_UI_UPDATE_REQUIRED_NOTIFICATION_H_
 #define CHROME_BROWSER_CHROMEOS_UI_UPDATE_REQUIRED_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"

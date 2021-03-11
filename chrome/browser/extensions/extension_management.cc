@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_management.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

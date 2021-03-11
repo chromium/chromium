@@ -4,6 +4,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"

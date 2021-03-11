@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"

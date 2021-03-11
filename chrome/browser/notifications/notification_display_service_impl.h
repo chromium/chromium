@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"

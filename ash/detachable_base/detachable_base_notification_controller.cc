@@ -5,6 +5,7 @@
 #include "ash/detachable_base/detachable_base_notification_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/detachable_base/detachable_base_handler.h"

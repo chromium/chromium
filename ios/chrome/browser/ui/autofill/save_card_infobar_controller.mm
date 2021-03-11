@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"

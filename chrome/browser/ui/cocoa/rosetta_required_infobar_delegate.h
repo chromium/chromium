@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_ROSETTA_REQUIRED_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_COCOA_ROSETTA_REQUIRED_INFOBAR_DELEGATE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"

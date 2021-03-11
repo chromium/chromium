@@ -6,6 +6,7 @@
 #define CHROMECAST_UI_MEDIA_OVERLAY_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"

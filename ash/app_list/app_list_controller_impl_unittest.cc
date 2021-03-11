@@ -5,6 +5,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 
 #include <set>
+#include <string>
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/test/app_list_test_helper.h"

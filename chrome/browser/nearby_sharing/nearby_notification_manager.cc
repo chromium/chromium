@@ -4,6 +4,8 @@
 
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 
+#include <string>
+
 #include "ash/public/cpp/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"

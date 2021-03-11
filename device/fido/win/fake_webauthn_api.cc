@@ -4,6 +4,8 @@
 
 #include "device/fido/win/fake_webauthn_api.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"

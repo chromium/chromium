@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

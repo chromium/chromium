@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NATIVE_WEB_KEYBOARD_EVENT_H_
 #define CONTENT_PUBLIC_BROWSER_NATIVE_WEB_KEYBOARD_EVENT_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/passwords/credential_leak_dialog_view_android.h"
 #include <cstdint>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"

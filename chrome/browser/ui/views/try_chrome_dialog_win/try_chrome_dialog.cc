@@ -8,6 +8,7 @@
 
 #include <shellapi.h>
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

@@ -4,6 +4,8 @@
 
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 
+#include <string>
+
 #include "base/json/json_reader.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"

@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/system_tray_test_api.h"
 
+#include <string>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/select_to_speak_tray.h"

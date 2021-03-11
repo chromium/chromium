@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_CLASSIC_WIN_FAKE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "device/bluetooth/bluetooth_classic_win.h"

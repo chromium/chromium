@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_UI_FRAME_FRAME_HEADER_H_
 #define CHROMEOS_UI_FRAME_FRAME_HEADER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/optional.h"

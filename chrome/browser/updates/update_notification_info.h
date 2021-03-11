@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UPDATES_UPDATE_NOTIFICATION_INFO_H_
 #define CHROME_BROWSER_UPDATES_UPDATE_NOTIFICATION_INFO_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace updates {

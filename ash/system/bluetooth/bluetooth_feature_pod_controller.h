@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_FEATURE_POD_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"

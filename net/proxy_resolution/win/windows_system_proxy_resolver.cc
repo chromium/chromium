@@ -5,6 +5,7 @@
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
 
 #include <cwchar>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

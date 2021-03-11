@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COMMANDER_FUZZY_FINDER_H_
 #define CHROME_BROWSER_UI_COMMANDER_FUZZY_FINDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

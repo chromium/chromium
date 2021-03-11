@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_BUTTON_DRAG_UTILS_H_
 #define UI_VIEWS_BUTTON_DRAG_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/views/views_export.h"
 

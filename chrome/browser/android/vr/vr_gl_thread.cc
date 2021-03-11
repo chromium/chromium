@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/vr/vr_gl_thread.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

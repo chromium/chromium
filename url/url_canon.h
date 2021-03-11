@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "base/strings/string16.h"

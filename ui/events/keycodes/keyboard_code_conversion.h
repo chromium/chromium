@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
 #include "ui/events/events_base_export.h"

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"

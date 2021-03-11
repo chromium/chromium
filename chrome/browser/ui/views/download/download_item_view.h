@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"

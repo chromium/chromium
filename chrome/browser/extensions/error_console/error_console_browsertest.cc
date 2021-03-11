@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/run_loop.h"

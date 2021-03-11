@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_SYSTEM_TRAY_TEST_API_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "base/strings/string16.h"

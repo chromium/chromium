@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_WEBAUTHN_HOVER_BUTTON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/hover_button.h"

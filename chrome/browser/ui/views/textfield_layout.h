@@ -8,6 +8,7 @@
 #include "base/strings/string16.h"
 
 #include <memory>
+#include <string>
 
 namespace ui {
 class ComboboxModel;

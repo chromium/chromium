@@ -7,6 +7,8 @@
 
 #include <wtypes.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace cloud_print {

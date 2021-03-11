@@ -5,6 +5,7 @@
 #ifndef SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_SESSION_MOJOM_TRAITS_H_
 #define SERVICES_MEDIA_SESSION_PUBLIC_CPP_MEDIA_SESSION_MOJOM_TRAITS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"

@@ -5,6 +5,7 @@
 
 #include "components/update_client/updater_state.h"
 
+#include <string>
 #include <utility>
 
 #include "base/enterprise_util.h"

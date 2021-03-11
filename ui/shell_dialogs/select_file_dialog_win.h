@@ -6,6 +6,7 @@
 #define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_WIN_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

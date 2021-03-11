@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"

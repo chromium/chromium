@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <map>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"

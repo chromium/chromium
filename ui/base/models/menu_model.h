@@ -5,6 +5,8 @@
 #ifndef UI_BASE_MODELS_MENU_MODEL_H_
 #define UI_BASE_MODELS_MENU_MODEL_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"

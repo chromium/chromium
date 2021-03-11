@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/bind.h"
 #include "base/macros.h"

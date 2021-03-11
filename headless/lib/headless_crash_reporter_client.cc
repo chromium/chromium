@@ -4,6 +4,7 @@
 
 #include "headless/lib/headless_crash_reporter_client.h"
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"

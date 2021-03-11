@@ -4,6 +4,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 

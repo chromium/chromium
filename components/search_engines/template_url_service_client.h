@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_H_
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/search_engines/template_url_id.h"
 

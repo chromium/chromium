@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/optional.h"

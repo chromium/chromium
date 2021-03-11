@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_PUBLIC_URL_BAR_CONTROLLER_H_
 #define WEBLAYER_PUBLIC_URL_BAR_CONTROLLER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/security_state/core/security_state.h"
 

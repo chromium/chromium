@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/mock_pac_file_fetcher.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"

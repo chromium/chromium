@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

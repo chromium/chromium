@@ -4,6 +4,8 @@
 #ifndef UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 #define UI_BASE_WIN_ACCESSIBILITY_MISC_UTILS_H_
 
+#include <string>
+
 #include "base/win/atl.h"  // Must be before UIAutomationCore.h
 
 #include <UIAutomationCore.h>

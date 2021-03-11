@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/tpm_firmware_update_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/macros.h"

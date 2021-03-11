@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/components/web_app_data_retriever.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

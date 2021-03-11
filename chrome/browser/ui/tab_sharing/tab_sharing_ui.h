@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 #define CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_UI_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 

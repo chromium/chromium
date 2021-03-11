@@ -5,6 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

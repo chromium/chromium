@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARE_ACTION_H_
 #define CHROME_BROWSER_SHARESHEET_SHARE_ACTION_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"

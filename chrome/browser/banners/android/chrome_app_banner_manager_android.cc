@@ -4,6 +4,8 @@
 
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"

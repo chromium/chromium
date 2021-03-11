@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"

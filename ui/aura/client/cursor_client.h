@@ -5,6 +5,8 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"

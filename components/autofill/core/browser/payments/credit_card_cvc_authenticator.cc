@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "build/build_config.h"

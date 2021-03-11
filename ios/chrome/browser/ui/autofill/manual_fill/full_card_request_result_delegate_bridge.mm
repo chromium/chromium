@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
 
+#include <string>
+
 #include "base/containers/adapters.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_manager.h"

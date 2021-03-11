@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"

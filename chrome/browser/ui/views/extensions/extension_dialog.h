@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_DIALOG_H_
 
 #include <memory>
+#include <string>
 
 #include "base/logging.h"
 #include "base/macros.h"

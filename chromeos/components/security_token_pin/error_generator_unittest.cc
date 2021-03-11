@@ -4,6 +4,8 @@
 
 #include "chromeos/components/security_token_pin/error_generator.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/security_token_pin/constants.h"

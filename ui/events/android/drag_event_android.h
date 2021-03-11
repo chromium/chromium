@@ -6,6 +6,7 @@
 #define UI_EVENTS_ANDROID_DRAG_EVENT_ANDROID_H_
 
 #include <jni.h>
+#include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"

@@ -4,6 +4,8 @@
 
 #include "ash/ambient/ui/media_string_view.h"
 
+#include <string>
+
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"

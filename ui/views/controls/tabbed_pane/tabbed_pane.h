@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_TABBED_PANE_TABBED_PANE_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"

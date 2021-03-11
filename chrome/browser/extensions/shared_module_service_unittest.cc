@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/shared_module_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/memory/ref_counted.h"

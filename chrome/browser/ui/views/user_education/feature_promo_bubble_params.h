@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_PARAMS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/optional.h"
 #include "base/strings/string16.h"

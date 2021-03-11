@@ -9,6 +9,7 @@
 #include <psapi.h>
 
 #include <cstring>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"

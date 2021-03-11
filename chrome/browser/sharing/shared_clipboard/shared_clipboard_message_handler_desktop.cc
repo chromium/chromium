@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

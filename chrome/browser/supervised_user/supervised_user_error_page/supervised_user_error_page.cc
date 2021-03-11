@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/notreached.h"

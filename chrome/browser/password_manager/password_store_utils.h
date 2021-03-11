@@ -7,6 +7,8 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
 
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"

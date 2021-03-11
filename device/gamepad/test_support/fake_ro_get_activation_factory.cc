@@ -5,6 +5,8 @@
 #include <wrl.h>
 #include <wrl/event.h>
 
+#include <string>
+
 #include "base/notreached.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"

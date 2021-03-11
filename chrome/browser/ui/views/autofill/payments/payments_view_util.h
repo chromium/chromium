@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_PAYMENTS_VIEW_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"

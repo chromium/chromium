@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_INCOGNITO_INFO_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_INCOGNITO_INFO_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "extensions/common/api/incognito.h"

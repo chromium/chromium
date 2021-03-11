@@ -11,6 +11,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_READER_MODE_READER_MODE_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_READER_MODE_READER_MODE_ICON_VIEW_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"

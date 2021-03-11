@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FOLDER_UPLOAD_CONFIRMATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FOLDER_UPLOAD_CONFIRMATION_VIEW_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/shell_dialogs/selected_file_info.h"

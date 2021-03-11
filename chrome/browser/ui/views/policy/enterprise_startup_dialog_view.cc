@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/policy/enterprise_startup_dialog_view.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

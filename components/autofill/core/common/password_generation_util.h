@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_GENERATION_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_GENERATION_UTIL_H_
 
+#include <string>
+
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/form_data.h"

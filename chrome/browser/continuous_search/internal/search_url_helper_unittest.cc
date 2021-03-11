@@ -4,6 +4,8 @@
 
 #include "chrome/browser/continuous_search/internal/search_url_helper.h"
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"

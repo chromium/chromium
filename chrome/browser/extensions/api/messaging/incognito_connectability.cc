@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/lazy_instance.h"

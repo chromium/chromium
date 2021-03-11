@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_UNIFIED_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_DETAILED_VIEW_CONTROLLER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace views {

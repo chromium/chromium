@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/common/autofill_payments_features.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"

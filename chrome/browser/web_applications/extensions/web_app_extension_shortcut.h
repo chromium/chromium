@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_EXTENSIONS_WEB_APP_EXTENSION_SHORTCUT_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"

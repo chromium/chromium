@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_dialog_view.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"

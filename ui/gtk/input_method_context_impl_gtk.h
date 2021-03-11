@@ -5,6 +5,8 @@
 #ifndef UI_GTK_INPUT_METHOD_CONTEXT_IMPL_GTK_H_
 #define UI_GTK_INPUT_METHOD_CONTEXT_IMPL_GTK_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/glib/glib_integers.h"

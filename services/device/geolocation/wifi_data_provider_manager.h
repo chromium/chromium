@@ -16,6 +16,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_PROVIDER_MANAGER_H_
 
 #include <set>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"

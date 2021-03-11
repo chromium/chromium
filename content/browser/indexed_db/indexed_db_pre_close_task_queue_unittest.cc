@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

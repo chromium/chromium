@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_IMPORTER_IMPORTED_BOOKMARK_ENTRY_H_
 #define CHROME_COMMON_IMPORTER_IMPORTED_BOOKMARK_ENTRY_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

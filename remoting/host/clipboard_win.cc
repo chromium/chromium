@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"

@@ -5,6 +5,7 @@
 #include "ui/views/examples/flex_layout_example.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"

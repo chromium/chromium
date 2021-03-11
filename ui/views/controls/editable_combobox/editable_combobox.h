@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_EDITABLE_COMBOBOX_EDITABLE_COMBOBOX_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"

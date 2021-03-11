@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/util/i18n_string.h"
 
+#include <string>
+
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"

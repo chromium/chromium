@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "ui/message_center/public/cpp/notification.h"

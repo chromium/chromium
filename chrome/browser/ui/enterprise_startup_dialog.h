@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ENTERPRISE_STARTUP_DIALOG_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/optional.h"

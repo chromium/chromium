@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/bind.h"

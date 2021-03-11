@@ -5,6 +5,8 @@
 #ifndef NET_PROXY_RESOLUTION_DHCP_PAC_FILE_FETCHER_H_
 #define NET_PROXY_RESOLUTION_DHCP_PAC_FILE_FETCHER_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

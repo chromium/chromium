@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 

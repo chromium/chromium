@@ -4,6 +4,8 @@
 
 #include "chromeos/components/scanning/scanning_handler.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "chromeos/components/scanning/scanning_paths_provider.h"

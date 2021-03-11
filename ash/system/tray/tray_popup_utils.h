@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TRAY_TRAY_POPUP_UTILS_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/login_status.h"
 #include "ash/system/tray/tray_constants.h"

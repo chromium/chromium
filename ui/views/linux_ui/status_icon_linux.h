@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
 #define UI_VIEWS_LINUX_UI_STATUS_ICON_LINUX_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/views/views_export.h"
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"

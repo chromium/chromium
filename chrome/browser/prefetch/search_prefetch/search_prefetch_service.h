@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_
 
 #include <map>
+#include <string>
 
 #include "base/callback.h"
 #include "base/callback_list.h"

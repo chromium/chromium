@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"

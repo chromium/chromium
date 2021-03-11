@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DOWNLOAD_DRAG_DOWNLOAD_UTIL_H_
 #define CONTENT_BROWSER_DOWNLOAD_DRAG_DOWNLOAD_UTIL_H_
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/web_apps_chromeos.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 

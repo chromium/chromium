@@ -4,6 +4,8 @@
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

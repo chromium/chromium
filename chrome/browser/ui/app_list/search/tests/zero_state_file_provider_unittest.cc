@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/zero_state_file_provider.h"
 
+#include <string>
+
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"

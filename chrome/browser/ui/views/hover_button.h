@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_
 
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_PAGE_INFO_H_
 #define COMPONENTS_PAGE_INFO_PAGE_INFO_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

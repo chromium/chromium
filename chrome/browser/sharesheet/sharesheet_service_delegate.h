@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_SERVICE_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/strings/string16.h"

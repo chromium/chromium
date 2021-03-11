@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace chromeos {

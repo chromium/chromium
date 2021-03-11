@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_IMAGE_MODEL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

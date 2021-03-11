@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <string>
 
 #include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"

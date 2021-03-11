@@ -4,6 +4,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/accessibility/accessibility_observer.h"

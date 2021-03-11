@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_TOAST_DIALOG_VIEW_H_
 #define CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_TOAST_DIALOG_VIEW_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

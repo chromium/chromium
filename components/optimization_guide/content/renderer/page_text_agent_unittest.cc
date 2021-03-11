@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/optional.h"

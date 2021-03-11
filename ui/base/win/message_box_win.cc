@@ -4,6 +4,8 @@
 
 #include "ui/base/win/message_box_win.h"
 
+#include <string>
+
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"

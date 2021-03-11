@@ -5,6 +5,8 @@
 #ifndef NET_PROXY_RESOLUTION_PAC_FILE_DATA_H_
 #define NET_PROXY_RESOLUTION_PAC_FILE_DATA_H_
 
+#include <string>
+
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "net/base/net_export.h"

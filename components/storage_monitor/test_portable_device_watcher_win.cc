@@ -6,6 +6,7 @@
 
 #include "components/storage_monitor/test_portable_device_watcher_win.h"
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

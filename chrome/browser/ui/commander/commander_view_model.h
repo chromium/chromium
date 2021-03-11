@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COMMANDER_COMMANDER_VIEW_MODEL_H_
 #define CHROME_BROWSER_UI_COMMANDER_COMMANDER_VIEW_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

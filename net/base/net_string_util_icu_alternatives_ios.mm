@@ -4,6 +4,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <string>
+
 #include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/numerics/safe_conversions.h"

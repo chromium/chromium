@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

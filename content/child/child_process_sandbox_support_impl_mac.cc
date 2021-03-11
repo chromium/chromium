@@ -4,6 +4,7 @@
 
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

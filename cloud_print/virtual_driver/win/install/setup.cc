@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <iomanip>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"

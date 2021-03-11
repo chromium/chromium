@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/ui/system_proxy_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/location.h"
 #include "base/strings/string16.h"

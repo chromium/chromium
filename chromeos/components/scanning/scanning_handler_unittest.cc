@@ -5,6 +5,7 @@
 #include "chromeos/components/scanning/scanning_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

@@ -5,6 +5,7 @@
 #include "services/device/time_zone_monitor/time_zone_monitor_android.h"
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/timezone_utils.h"  // nogncheck

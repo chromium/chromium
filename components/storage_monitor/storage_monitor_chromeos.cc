@@ -4,6 +4,7 @@
 
 #include "components/storage_monitor/storage_monitor_chromeos.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

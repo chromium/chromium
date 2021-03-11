@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_STATUS_ICONS_STATUS_TRAY_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

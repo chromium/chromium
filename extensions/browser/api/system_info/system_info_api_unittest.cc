@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/system_info/system_info_api.h"
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string16.h"

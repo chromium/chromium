@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/omnibox_metrics_provider.h"
 
+#include <string>
 #include <vector>
 
 #include "base/bind.h"

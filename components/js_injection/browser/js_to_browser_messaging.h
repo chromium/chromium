@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_JS_INJECTION_BROWSER_JS_TO_BROWSER_MESSAGING_H_
 #define COMPONENTS_JS_INJECTION_BROWSER_JS_TO_BROWSER_MESSAGING_H_
 
+#include <string>
 #include <vector>
 
 #include "base/check.h"

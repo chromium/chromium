@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_GRAMMAR_SERVICE_CLIENT_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_GRAMMAR_SERVICE_CLIENT_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"

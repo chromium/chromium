@@ -5,6 +5,7 @@
 #include "ash/system/power/peripheral_battery_listener.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/shell.h"
 #include "ash/system/power/peripheral_battery_notifier.h"

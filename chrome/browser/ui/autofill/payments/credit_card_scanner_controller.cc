@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/check.h"

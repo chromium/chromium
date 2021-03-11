@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ATTESTATION_PLATFORM_VERIFICATION_DIALOG_H_
 #define CHROME_BROWSER_CHROMEOS_ATTESTATION_PLATFORM_VERIFICATION_DIALOG_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

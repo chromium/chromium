@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"

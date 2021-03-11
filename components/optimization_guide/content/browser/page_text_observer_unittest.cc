@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/content/browser/page_text_observer.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/optional.h"

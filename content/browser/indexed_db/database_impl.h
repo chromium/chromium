@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INDEXED_DB_DATABASE_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

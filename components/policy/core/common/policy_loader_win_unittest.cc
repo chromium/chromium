@@ -13,6 +13,7 @@
 #include <cstring>
 #include <functional>
 #include <iterator>
+#include <string>
 #include <utility>
 #include <vector>
 

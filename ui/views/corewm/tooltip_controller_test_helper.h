@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_COREWM_TOOLTIP_CONTROLLER_TEST_HELPER_H_
 #define UI_VIEWS_COREWM_TOOLTIP_CONTROLLER_TEST_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/view.h"

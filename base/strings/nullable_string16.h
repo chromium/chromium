@@ -6,6 +6,7 @@
 #define BASE_STRINGS_NULLABLE_STRING16_H_
 
 #include <iosfwd>
+#include <string>
 
 #include "base/base_export.h"
 #include "base/optional.h"

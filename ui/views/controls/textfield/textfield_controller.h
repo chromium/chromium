@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_CONTROLLER_H_
 
 #include <set>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "ui/base/clipboard/clipboard_buffer.h"

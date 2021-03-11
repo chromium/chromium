@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_STATUS_BUBBLE_VIEWS_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace content {

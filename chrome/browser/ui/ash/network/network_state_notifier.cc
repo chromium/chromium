@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/network/network_state_notifier.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/location.h"

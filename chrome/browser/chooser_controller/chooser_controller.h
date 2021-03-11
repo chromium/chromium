@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
 #define CHROME_BROWSER_CHOOSER_CONTROLLER_CHOOSER_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

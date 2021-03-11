@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_TRAY_DETAILED_VIEW_DELEGATE_H_
 #define ASH_SYSTEM_TRAY_DETAILED_VIEW_DELEGATE_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "base/optional.h"

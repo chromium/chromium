@@ -4,6 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
+#include <string>
+
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"

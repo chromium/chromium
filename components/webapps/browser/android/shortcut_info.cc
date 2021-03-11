@@ -4,6 +4,8 @@
 
 #include "components/webapps/browser/android/shortcut_info.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

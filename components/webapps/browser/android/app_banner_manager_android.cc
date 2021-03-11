@@ -5,6 +5,7 @@
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 
 #include <limits>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"

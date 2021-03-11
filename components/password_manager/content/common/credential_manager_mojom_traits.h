@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CONTENT_COMMON_CREDENTIAL_MANAGER_MOJOM_TRAITS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CONTENT_COMMON_CREDENTIAL_MANAGER_MOJOM_TRAITS_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "components/password_manager/core/common/credential_manager_types.h"

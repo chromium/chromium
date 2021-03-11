@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_PASSWORD_EDIT_DELEGATE_H_
 #define CHROME_BROWSER_ANDROID_PASSWORD_EDIT_DELEGATE_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

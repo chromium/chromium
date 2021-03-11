@@ -8,6 +8,7 @@
 // the case of redirects. It may also mean problems with the history system.
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"

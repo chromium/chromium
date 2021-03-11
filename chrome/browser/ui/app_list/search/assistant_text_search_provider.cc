@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/assistant/util/deep_link_util.h"

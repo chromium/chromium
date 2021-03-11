@@ -5,6 +5,7 @@
 #include "chrome/browser/win/chrome_elf_init.h"
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"

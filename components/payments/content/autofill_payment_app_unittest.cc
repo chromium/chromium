@@ -5,6 +5,7 @@
 #include "components/payments/content/autofill_payment_app.h"
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

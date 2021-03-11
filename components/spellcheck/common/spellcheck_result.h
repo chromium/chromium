@@ -6,6 +6,7 @@
 #define COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_RESULT_H_
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

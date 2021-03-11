@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_ZERO_STATE_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_ZERO_STATE_PROVIDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

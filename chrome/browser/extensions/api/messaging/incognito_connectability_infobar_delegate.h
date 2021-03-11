@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_MESSAGING_INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_MESSAGING_INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"

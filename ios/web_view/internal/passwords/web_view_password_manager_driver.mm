@@ -4,6 +4,8 @@
 
 #import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

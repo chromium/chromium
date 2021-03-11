@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_MOCK_CHROME_CLEANER_PROCESS_WIN_H_
 
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"

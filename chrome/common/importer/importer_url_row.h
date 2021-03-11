@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_IMPORTER_IMPORTER_URL_ROW_H_
 #define CHROME_COMMON_IMPORTER_IMPORTER_URL_ROW_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "url/gurl.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/task_manager/sampling/task_group.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

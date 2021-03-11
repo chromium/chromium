@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
 #define CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SHARING_DIALOG_DATA_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

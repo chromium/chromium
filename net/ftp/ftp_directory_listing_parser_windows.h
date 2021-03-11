@@ -5,6 +5,7 @@
 #ifndef NET_FTP_FTP_DIRECTORY_LISTING_PARSER_WINDOWS_H_
 #define NET_FTP_FTP_DIRECTORY_LISTING_PARSER_WINDOWS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

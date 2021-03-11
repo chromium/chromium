@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 
 #include <algorithm>
+#include <string>
 #include <unordered_set>
 #include <utility>
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"

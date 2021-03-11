@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/address_form_label_formatter.h"
 
+#include <string>
 #include <vector>
 
 #include "base/guid.h"

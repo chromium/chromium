@@ -4,6 +4,7 @@
 
 #include "content/browser/notifications/blink_notification_service_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

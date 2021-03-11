@@ -4,6 +4,8 @@
 
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"

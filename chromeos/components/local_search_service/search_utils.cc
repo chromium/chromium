@@ -4,6 +4,7 @@
 
 #include "chromeos/components/local_search_service/search_utils.h"
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_NETWORK_ACTIVE_NETWORK_ICON_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"

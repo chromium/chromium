@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 
 #include <map>
+#include <string>
 #include <utility>
 #include <vector>
 

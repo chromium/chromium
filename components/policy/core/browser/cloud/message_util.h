@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_CLOUD_MESSAGE_UTIL_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_CLOUD_MESSAGE_UTIL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"

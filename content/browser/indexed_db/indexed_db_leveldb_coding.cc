@@ -7,6 +7,7 @@
 #include <iterator>
 #include <limits>
 #include <sstream>
+#include <string>
 #include <utility>
 
 #include "base/big_endian.h"

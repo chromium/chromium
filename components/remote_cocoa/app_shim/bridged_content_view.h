@@ -7,6 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"

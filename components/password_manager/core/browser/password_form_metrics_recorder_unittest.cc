@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
 #include "base/strings/string16.h"

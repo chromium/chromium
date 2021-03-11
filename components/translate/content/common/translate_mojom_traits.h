@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_TRANSLATE_CONTENT_COMMON_TRANSLATE_MOJOM_TRAITS_H_
 #define COMPONENTS_TRANSLATE_CONTENT_COMMON_TRANSLATE_MOJOM_TRAITS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/translate/content/common/translate.mojom-shared.h"

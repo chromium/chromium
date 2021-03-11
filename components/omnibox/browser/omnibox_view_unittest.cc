@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <string>
 #include <utility>
 
 #include "base/callback_helpers.h"

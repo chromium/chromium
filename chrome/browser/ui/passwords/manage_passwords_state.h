@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"

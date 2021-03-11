@@ -5,6 +5,8 @@
 #ifndef CHROME_CREDENTIAL_PROVIDER_GAIACP_CREDENTIAL_PROVIDER_BROKER_WIN_H_
 #define CHROME_CREDENTIAL_PROVIDER_GAIACP_CREDENTIAL_PROVIDER_BROKER_WIN_H_
 
+#include <string>
+
 #include "chrome/credential_provider/gaiacp/mojom/gaia_credential_provider_win_hid.mojom.h"
 
 #include "base/strings/string16.h"

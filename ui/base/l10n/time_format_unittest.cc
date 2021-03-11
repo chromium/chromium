@@ -4,6 +4,8 @@
 
 #include "ui/base/l10n/time_format.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

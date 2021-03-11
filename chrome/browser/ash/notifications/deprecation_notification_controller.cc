@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"

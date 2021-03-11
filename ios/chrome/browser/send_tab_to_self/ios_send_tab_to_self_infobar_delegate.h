@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SEND_TAB_TO_SELF_IOS_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

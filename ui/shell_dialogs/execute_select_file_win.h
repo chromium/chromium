@@ -5,6 +5,7 @@
 #ifndef UI_SHELL_DIALOGS_EXECUTE_SELECT_FILE_WIN_H_
 #define UI_SHELL_DIALOGS_EXECUTE_SELECT_FILE_WIN_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 

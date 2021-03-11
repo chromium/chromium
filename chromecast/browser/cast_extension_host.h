@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_BROWSER_CAST_EXTENSION_HOST_H_
 #define CHROMECAST_BROWSER_CAST_EXTENSION_HOST_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "content/public/browser/notification_observer.h"

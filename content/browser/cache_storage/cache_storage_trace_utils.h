@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_TRACE_UTILS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

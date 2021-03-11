@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"

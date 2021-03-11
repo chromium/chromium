@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_UTILS_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_TRANSPORT_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 

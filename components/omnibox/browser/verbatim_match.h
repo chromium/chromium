@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_VERBATIM_MATCH_H_
 #define COMPONENTS_OMNIBOX_BROWSER_VERBATIM_MATCH_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"

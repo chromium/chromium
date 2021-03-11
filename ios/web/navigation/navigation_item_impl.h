@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "ios/web/navigation/error_retry_state_machine.h"

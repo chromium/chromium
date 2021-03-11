@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCHED_PAGES_NOTIFIER_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCHED_PAGES_NOTIFIER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"

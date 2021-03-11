@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLERS_REPLACEMENT_APPS_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_REPLACEMENT_APPS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"

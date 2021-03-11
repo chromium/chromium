@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/payments/core/payment_currency_amount.h"
 

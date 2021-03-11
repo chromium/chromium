@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_WEB_CONTENTS_FORCED_TITLE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"

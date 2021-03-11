@@ -5,6 +5,7 @@
 #include "components/enterprise/browser/reporting/report_generator.h"
 
 #include <set>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/string16.h"

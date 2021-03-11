@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_PLUGIN_METRICS_PROVIDER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

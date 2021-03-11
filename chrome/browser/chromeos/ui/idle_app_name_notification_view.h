@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_UI_IDLE_APP_NAME_NOTIFICATION_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

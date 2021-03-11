@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_AGENT_H_
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"

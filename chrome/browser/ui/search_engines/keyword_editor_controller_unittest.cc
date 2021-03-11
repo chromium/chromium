@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/search_engines/keyword_editor_controller.h"
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

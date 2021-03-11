@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"

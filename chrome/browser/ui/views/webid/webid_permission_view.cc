@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/webid_permission_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/strings/string16.h"

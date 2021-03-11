@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"

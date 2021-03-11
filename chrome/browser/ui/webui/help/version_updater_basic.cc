@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/help/version_updater_basic.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 

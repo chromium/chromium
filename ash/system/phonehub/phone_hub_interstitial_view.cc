@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/phone_hub_interstitial_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"

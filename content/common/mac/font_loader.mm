@@ -8,6 +8,7 @@
 #include <CoreText/CoreText.h>
 
 #include <limits>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NTP_TILES_CUSTOM_LINKS_MANAGER_H_
 #define COMPONENTS_NTP_TILES_CUSTOM_LINKS_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"

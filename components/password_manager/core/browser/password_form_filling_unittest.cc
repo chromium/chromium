@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_form_filling.h"
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"

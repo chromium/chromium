@@ -14,6 +14,8 @@
 #include <userenv.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"

@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"

@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_UI_MEDIA_OVERLAY_H_
 #define CHROMECAST_UI_MEDIA_OVERLAY_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace chromecast {

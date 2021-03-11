@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

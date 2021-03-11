@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
 
+#include <string>
+
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
 #include "base/strings/string16.h"

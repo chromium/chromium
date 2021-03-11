@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_
 #define ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace gfx {

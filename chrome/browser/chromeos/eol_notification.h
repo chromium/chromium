@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EOL_NOTIFICATION_H_
 #define CHROME_BROWSER_CHROMEOS_EOL_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"

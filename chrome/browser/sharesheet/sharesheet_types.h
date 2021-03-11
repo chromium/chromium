@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_TYPES_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

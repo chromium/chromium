@@ -5,6 +5,8 @@
 #ifndef UI_CHROMEOS_DEVICETYPE_UTILS_H_
 #define UI_CHROMEOS_DEVICETYPE_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/chromeos/ui_chromeos_export.h"
 

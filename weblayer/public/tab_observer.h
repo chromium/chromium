@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_PUBLIC_TAB_OBSERVER_H_
 #define WEBLAYER_PUBLIC_TAB_OBSERVER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 class GURL;

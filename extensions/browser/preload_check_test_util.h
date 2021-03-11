@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_PRELOAD_CHECK_TEST_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

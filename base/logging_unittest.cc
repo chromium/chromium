@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <sstream>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"

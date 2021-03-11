@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_TRANSLATE_TRANSLATE_BUBBLE_TEST_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 class TranslateBubbleModel;

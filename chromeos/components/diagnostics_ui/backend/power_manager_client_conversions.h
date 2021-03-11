@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_POWER_MANAGER_CLIENT_CONVERSIONS_H_
 #define CHROMEOS_COMPONENTS_DIAGNOSTICS_UI_BACKEND_POWER_MANAGER_CLIENT_CONVERSIONS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chromeos/components/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"

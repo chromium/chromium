@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"

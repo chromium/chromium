@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ostream>
 #include <sstream>
+#include <string>
 
 #include "base/json/json_writer.h"
 #include "base/strings/string16.h"

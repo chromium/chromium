@@ -6,6 +6,7 @@
 #define CONTENT_SHELL_BROWSER_SHELL_PLATFORM_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string16.h"

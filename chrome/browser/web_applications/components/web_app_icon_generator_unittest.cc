@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
 
+#include <string>
 #include <vector>
 
 #include "base/containers/contains.h"

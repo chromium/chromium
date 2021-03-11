@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_IMPL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"

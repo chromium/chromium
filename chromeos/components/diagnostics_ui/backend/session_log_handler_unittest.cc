@@ -5,6 +5,7 @@
 #include "chromeos/components/diagnostics_ui/backend/session_log_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

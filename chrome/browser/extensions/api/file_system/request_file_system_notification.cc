@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 
+#include <string>
 #include <utility>
 
 #include "base/callback.h"

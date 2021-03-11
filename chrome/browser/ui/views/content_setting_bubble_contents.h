@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"

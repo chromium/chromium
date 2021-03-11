@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_PROMPT_PERMISSIONS_H_
 #define CHROME_BROWSER_EXTENSIONS_INSTALL_PROMPT_PERMISSIONS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_EXTENSIONS_API_SYSTEM_INDICATOR_SYSTEM_INDICATOR_HANDLER_H_
 #define CHROME_COMMON_EXTENSIONS_API_SYSTEM_INDICATOR_SYSTEM_INDICATOR_HANDLER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "extensions/common/extension.h"

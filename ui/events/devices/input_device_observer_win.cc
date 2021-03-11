@@ -4,6 +4,7 @@
 
 #include "ui/events/devices/input_device_observer_win.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

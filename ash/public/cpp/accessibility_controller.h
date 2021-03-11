@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/accelerators.h"

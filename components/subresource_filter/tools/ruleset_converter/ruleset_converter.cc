@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "base/check.h"
 #include "base/files/file_util.h"

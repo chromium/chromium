@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_confirmation_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback_helpers.h"

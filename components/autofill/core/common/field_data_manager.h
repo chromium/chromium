@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_FIELD_DATA_MANAGER_H_
 
 #include <map>
+#include <string>
 
 #include "base/optional.h"
 #include "base/strings/string16.h"

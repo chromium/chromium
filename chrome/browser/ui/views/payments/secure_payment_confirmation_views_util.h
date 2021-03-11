@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_SECURE_PAYMENT_CONFIRMATION_VIEWS_UTIL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 

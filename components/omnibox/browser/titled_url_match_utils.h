@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_TITLED_URL_MATCH_UTILS_H_
 #define COMPONENTS_OMNIBOX_BROWSER_TITLED_URL_MATCH_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"

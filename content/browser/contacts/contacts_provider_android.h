@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_ANDROID_H_
 #define CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_ANDROID_H_
 
+#include <string>
+
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string16.h"

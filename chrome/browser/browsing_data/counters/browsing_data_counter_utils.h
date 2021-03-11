@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_COUNTERS_BROWSING_DATA_COUNTER_UTILS_H_
 #define CHROME_BROWSER_BROWSING_DATA_COUNTERS_BROWSING_DATA_COUNTER_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"

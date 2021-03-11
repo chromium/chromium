@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/strings/string16.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/vr/autocomplete_controller.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"

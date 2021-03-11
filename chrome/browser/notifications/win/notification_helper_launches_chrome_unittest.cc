@@ -15,6 +15,7 @@
 // to make notification_helper_unittests.exe have data dependency on chrome.exe.
 
 #include <memory>
+#include <string>
 
 #include <NotificationActivationCallback.h>
 #include <wrl/client.h>

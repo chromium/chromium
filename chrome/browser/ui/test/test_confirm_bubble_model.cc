@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/test/test_confirm_bubble_model.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 

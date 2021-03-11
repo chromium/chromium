@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <map>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

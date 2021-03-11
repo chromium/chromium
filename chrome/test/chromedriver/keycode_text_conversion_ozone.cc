@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversion_utils.h"

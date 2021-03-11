@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_no_sinks_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

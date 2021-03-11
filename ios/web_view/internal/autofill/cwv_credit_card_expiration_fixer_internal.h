@@ -7,6 +7,8 @@
 
 #import "ios/web_view/public/cwv_credit_card_expiration_fixer.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string16.h"

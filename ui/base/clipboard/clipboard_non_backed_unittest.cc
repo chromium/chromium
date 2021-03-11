@@ -5,6 +5,7 @@
 #include "ui/base/clipboard/clipboard_non_backed.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

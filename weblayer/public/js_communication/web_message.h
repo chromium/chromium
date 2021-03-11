@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_PUBLIC_JS_COMMUNICATION_WEB_MESSAGE_H_
 #define WEBLAYER_PUBLIC_JS_COMMUNICATION_WEB_MESSAGE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace weblayer {

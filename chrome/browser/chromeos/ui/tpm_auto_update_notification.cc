@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/ui/tpm_auto_update_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/string16.h"

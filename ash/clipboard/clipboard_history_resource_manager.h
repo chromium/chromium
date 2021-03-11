@@ -5,6 +5,7 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_RESOURCE_MANAGER_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_RESOURCE_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/ash_export.h"

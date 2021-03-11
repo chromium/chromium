@@ -9,6 +9,8 @@
 #ifndef NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 #define NET_PROXY_RESOLUTION_PAC_FILE_FETCHER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"

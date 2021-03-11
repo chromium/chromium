@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 #define COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace js_injection {

@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_SPEECH_RECOGNITION_MANAGER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"

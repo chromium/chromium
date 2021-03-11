@@ -7,6 +7,8 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 // Truncates the clipboard text returned in order to improve performance and

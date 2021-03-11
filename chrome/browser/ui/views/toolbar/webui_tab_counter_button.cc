@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_tab_counter_button.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"

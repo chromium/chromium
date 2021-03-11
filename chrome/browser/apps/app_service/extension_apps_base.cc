@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/extension_apps.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 

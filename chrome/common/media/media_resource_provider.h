@@ -5,6 +5,8 @@
 #ifndef CHROME_COMMON_MEDIA_MEDIA_RESOURCE_PROVIDER_H_
 #define CHROME_COMMON_MEDIA_MEDIA_RESOURCE_PROVIDER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "media/base/localized_strings.h"
 

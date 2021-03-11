@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_NTP_TILES_NTP_TILE_H_
 #define COMPONENTS_NTP_TILES_NTP_TILE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"

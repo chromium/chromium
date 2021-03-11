@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_CREDENTIAL_ENROLLMENT_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_CREDENTIAL_ENROLLMENT_DIALOG_VIEW_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "components/payments/content/payment_credential_enrollment_view.h"

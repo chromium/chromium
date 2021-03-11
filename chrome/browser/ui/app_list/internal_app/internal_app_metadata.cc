@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"

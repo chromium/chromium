@@ -5,6 +5,8 @@
 #ifndef SERVICES_SERVICE_MANAGER_SERVICE_PROCESS_HOST_H_
 #define SERVICES_SERVICE_MANAGER_SERVICE_PROCESS_HOST_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/optional.h"

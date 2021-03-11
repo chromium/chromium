@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <memory>
+#include <string>
 
 #include "base/check_op.h"
 #include "base/strings/string16.h"

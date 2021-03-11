@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <set>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"

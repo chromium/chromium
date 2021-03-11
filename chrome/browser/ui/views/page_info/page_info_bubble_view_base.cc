@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "components/page_info/page_info_ui.h"

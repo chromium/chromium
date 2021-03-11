@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_
 #define COMPONENTS_PAGE_INFO_PAGE_INFO_DELEGATE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDITOR_H_
 #define CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EDITOR_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 

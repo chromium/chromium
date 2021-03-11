@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"

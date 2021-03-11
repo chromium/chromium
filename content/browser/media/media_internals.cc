@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <tuple>
 #include <utility>
 

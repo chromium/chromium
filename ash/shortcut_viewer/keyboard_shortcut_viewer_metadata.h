@@ -5,6 +5,7 @@
 #ifndef ASH_SHORTCUT_VIEWER_KEYBOARD_SHORTCUT_VIEWER_METADATA_H_
 #define ASH_SHORTCUT_VIEWER_KEYBOARD_SHORTCUT_VIEWER_METADATA_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/shortcut_viewer/ksv_export.h"

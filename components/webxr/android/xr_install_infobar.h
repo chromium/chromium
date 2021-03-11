@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
 #define COMPONENTS_WEBXR_ANDROID_XR_INSTALL_INFOBAR_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

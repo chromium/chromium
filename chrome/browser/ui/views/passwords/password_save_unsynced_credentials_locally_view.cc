@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_save_unsynced_credentials_locally_view.h"
 
 #include <numeric>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"

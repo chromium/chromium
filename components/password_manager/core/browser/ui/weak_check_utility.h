@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_WEAK_CHECK_UTILITY_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_WEAK_CHECK_UTILITY_H_
 
+#include <string>
+
 #include "base/containers/flat_set.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_STATE_FACTORY_H_
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_STATE_FACTORY_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string16.h"

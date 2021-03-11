@@ -5,6 +5,8 @@
 #ifndef PDF_DOCUMENT_ATTACHMENT_INFO_H_
 #define PDF_DOCUMENT_ATTACHMENT_INFO_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace chrome_pdf {

@@ -5,6 +5,8 @@
 #ifndef UI_GFX_BIDI_LINE_ITERATOR_H_
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
+#include <string>
+
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,7 @@
 #include "chrome/updater/win/net/network_winhttp.h"
 
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

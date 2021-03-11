@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/run_loop.h"

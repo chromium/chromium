@@ -4,6 +4,8 @@
 
 #import <Foundation/NSUserNotification.h>
 
+#include <string>
+
 #include "base/mac/mac_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"

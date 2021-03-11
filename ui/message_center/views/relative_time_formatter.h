@@ -5,6 +5,8 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_RELATIVE_TIME_FORMATTER_H_
 #define UI_MESSAGE_CENTER_VIEWS_RELATIVE_TIME_FORMATTER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "ui/message_center/message_center_export.h"

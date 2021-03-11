@@ -4,6 +4,8 @@
 
 #include "components/webxr/android/xr_install_infobar.h"
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "printing/backend/print_backend.h"

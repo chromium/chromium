@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"

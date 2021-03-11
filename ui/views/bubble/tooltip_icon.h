@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_TOOLTIP_ICON_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"

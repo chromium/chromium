@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/save_password_progress_logger.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"

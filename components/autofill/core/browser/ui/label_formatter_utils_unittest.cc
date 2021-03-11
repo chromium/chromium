@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"

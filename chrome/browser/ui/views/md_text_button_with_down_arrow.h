@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 #define CHROME_BROWSER_UI_VIEWS_MD_TEXT_BUTTON_WITH_DOWN_ARROW_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/md_text_button.h"

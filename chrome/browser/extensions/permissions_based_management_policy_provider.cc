@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/permissions_based_management_policy_provider.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"

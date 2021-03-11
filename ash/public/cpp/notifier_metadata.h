@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_NOTIFIER_METADATA_H_
 #define ASH_PUBLIC_CPP_NOTIFIER_METADATA_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/image/image_skia.h"

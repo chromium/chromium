@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"

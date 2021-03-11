@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"

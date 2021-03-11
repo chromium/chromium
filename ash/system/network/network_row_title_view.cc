@@ -4,6 +4,8 @@
 
 #include "ash/system/network/network_row_title_view.h"
 
+#include <string>
+
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_JAVASCRIPT_DIALOGS_TAB_MODAL_DIALOG_VIEW_H_
 #define COMPONENTS_JAVASCRIPT_DIALOGS_TAB_MODAL_DIALOG_VIEW_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace javascript_dialogs {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/public/ash_interfaces.h"

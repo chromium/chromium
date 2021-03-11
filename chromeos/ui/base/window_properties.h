@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_UI_BASE_WINDOW_PROPERTIES_H_
 #define CHROMEOS_UI_BASE_WINDOW_PROPERTIES_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"

@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_UTIL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"

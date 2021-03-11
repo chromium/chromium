@@ -4,6 +4,7 @@
 
 #include "ash/system/power/peripheral_battery_listener.h"
 
+#include <string>
 #include <vector>
 
 #include "ash/power/hid_battery_util.h"

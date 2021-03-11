@@ -6,6 +6,7 @@
 #define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_PROVIDER_TEST_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

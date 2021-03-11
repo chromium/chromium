@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "android_webview/browser/aw_autofill_client.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/conflicts/enumerate_shell_extensions.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

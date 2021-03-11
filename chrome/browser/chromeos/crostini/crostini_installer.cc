@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/crostini/crostini_installer.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"

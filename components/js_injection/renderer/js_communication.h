@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_JS_INJECTION_RENDERER_JS_COMMUNICATION_H_
 #define COMPONENTS_JS_INJECTION_RENDERER_JS_COMMUNICATION_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

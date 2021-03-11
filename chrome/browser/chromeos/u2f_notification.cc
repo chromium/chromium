@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/u2f_notification.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"

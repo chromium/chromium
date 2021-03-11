@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_ENROLLMENT_MODEL_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_CREDENTIAL_ENROLLMENT_MODEL_H_
 
+#include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkBitmap.h"

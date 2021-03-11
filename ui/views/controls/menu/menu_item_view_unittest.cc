@@ -5,6 +5,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

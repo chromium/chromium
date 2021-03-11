@@ -5,6 +5,7 @@
 #include "chrome/browser/printing/print_job.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

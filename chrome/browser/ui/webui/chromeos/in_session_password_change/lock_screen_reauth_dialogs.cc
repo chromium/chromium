@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"

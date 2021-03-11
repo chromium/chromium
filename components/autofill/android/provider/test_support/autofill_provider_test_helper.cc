@@ -4,6 +4,8 @@
 
 #include "components/autofill/android/provider/test_support/jni_headers/AutofillProviderTestHelper_jni.h"
 
+#include <string>
+
 #include "base/android/jni_array.h"
 #include "base/base64.h"
 #include "base/strings/string16.h"

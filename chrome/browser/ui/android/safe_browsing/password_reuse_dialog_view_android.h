@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_ANDROID_SAFE_BROWSING_PASSWORD_REUSE_DIALOG_VIEW_ANDROID_H_
 
 #include <jni.h>
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string16.h"
 

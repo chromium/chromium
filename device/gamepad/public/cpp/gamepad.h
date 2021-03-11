@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <cstdint>
+#include <string>
 
 #include <limits>
 

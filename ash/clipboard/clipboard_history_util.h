@@ -5,6 +5,8 @@
 #ifndef ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

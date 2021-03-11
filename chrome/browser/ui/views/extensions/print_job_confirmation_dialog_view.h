@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_PRINT_JOB_CONFIRMATION_DIALOG_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"

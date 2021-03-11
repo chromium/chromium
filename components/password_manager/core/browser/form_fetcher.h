@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FORM_FETCHER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"

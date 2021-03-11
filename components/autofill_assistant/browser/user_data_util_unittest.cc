@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"

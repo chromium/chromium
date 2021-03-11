@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_COCOA_H_
 
 #import <Cocoa/Cocoa.h>
+#include <string>
 #include <vector>
 
 #import "base/mac/scoped_nsobject.h"

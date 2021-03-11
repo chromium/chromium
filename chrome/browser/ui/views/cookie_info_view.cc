@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <string>
 #include <utility>
 
 #include "base/i18n/time_formatting.h"

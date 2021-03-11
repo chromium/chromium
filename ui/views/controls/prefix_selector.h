@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #if defined(OS_WIN)
+#include <string>
 #include <vector>
 #endif
 

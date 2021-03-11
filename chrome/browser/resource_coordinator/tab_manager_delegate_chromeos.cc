@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/app_types.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/renderer_context_menu/render_view_context_menu_views.h"
 
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"

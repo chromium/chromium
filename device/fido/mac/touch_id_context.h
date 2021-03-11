@@ -8,6 +8,8 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/mac/scoped_cftyperef.h"

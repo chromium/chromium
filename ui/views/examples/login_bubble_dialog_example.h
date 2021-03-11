@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_EXAMPLES_LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

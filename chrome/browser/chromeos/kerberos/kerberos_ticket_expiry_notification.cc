@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/kerberos/kerberos_ticket_expiry_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"

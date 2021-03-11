@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/common/data_util.h"
 
+#include <string>
 #include <vector>
 
 #include "base/check.h"

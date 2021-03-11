@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARESHEET_SHARESHEET_ACTION_CACHE_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

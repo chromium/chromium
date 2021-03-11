@@ -4,6 +4,8 @@
 
 #include "components/suggestions/webui/suggestions_source.h"
 
+#include <string>
+
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"

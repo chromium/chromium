@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/lock_screen_apps/lock_screen_profile_creator_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
 #define CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 // Displays an error to the user when the ProcessSingleton cannot acquire the

@@ -5,6 +5,8 @@
 #ifndef UI_BASE_MODELS_COMBOBOX_MODEL_H_
 #define UI_BASE_MODELS_COMBOBOX_MODEL_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/strings/string16.h"
 

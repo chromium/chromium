@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/unpacked_installer.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

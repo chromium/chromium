@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 #define CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_PERMISSIONS_SERVICE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string16.h"

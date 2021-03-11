@@ -6,6 +6,7 @@
 #define UI_BASE_MODELS_DIALOG_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/component_export.h"

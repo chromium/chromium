@@ -7,6 +7,8 @@
 #import <CoreText/CoreText.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#include <string>
+
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/ios/device_util.h"

@@ -7,6 +7,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include <string>
+
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 

@@ -5,6 +5,7 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_BUBBLE_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_BUBBLE_VIEW_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

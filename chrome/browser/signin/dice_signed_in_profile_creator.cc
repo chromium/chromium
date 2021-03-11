@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"

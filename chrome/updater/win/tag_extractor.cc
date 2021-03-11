@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "base/numerics/checked_math.h"

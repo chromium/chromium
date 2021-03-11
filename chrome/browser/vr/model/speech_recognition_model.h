@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_VR_MODEL_SPEECH_RECOGNITION_MODEL_H_
 #define CHROME_BROWSER_VR_MODEL_SPEECH_RECOGNITION_MODEL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_base_export.h"
 

@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/path_service.h"

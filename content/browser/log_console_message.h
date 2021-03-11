@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_LOG_CONSOLE_MESSAGE_H_
 #define CONTENT_BROWSER_LOG_CONSOLE_MESSAGE_H_
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/strings/string16.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"

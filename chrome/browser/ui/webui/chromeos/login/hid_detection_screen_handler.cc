@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"

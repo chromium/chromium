@@ -5,6 +5,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ui/ambient_view_ids.h"

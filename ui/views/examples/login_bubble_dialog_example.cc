@@ -5,6 +5,7 @@
 #include "ui/views/examples/login_bubble_dialog_example.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

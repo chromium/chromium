@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/signin/signin_error_notifier_ash.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/public/cpp/notification_utils.h"

@@ -4,6 +4,8 @@
 
 #include "ash/shelf/shelf_tooltip_manager.h"
 
+#include <string>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"

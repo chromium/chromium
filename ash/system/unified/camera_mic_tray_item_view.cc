@@ -5,6 +5,7 @@
 #include "ash/system/unified/camera_mic_tray_item_view.h"
 
 #include <algorithm>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/media_controller.h"

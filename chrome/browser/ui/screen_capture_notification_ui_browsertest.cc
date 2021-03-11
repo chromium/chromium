@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/macros.h"

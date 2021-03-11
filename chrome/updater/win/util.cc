@@ -9,6 +9,8 @@
 #include <windows.h>
 #include <wtsapi32.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

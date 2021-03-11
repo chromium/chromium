@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_API_BLUETOOTH_BLUETOOTH_MANIFEST_DATA_H_
 #define EXTENSIONS_COMMON_API_BLUETOOTH_BLUETOOTH_MANIFEST_DATA_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

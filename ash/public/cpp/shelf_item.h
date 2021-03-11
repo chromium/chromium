@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_SHELF_ITEM_H_
 #define ASH_PUBLIC_CPP_SHELF_ITEM_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"

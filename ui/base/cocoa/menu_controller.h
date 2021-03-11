@@ -7,6 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/string16.h"

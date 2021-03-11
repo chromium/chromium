@@ -4,6 +4,8 @@
 
 #include "ash/hud_display/hud_settings_view.h"
 
+#include <string>
+
 #include "ash/hud_display/hud_display.h"
 #include "ash/hud_display/hud_properties.h"
 #include "ash/shell.h"

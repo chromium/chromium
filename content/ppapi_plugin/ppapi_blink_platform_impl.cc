@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <string>
 
 #include "base/notreached.h"
 #include "base/strings/string16.h"

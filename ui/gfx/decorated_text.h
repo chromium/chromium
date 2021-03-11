@@ -5,6 +5,7 @@
 #ifndef UI_GFX_DECORATED_TEXT_H_
 #define UI_GFX_DECORATED_TEXT_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

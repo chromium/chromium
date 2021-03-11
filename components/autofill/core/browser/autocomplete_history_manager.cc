@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/child_accounts/time_limits/app_time_controller.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"

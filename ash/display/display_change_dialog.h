@@ -5,6 +5,8 @@
 #ifndef ASH_DISPLAY_DISPLAY_CHANGE_DIALOG_H_
 #define ASH_DISPLAY_DISPLAY_CHANGE_DIALOG_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_H_
 
+#include <string>
+
 #include "components/autofill/core/browser/proto/states.pb.h"
 
 #include "base/i18n/case_conversion.h"

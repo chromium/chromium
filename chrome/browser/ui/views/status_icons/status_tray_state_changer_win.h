@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"

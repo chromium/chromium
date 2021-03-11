@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/optional.h"

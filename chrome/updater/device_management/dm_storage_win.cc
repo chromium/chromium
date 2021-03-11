@@ -4,6 +4,8 @@
 
 #include "chrome/updater/device_management/dm_storage.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/registry.h"

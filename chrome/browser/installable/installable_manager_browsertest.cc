@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/installable/installable_manager.h"
 
+#include <string>
 #include <tuple>
 
 #include "base/bind.h"

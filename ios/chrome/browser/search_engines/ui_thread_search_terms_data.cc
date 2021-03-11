@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/strings/string16.h"
 #include "components/google/core/common/google_util.h"

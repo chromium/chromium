@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"

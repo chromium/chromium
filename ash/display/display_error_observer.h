@@ -5,6 +5,8 @@
 #ifndef ASH_DISPLAY_DISPLAY_ERROR_OBSERVER_H_
 #define ASH_DISPLAY_DISPLAY_ERROR_OBSERVER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"

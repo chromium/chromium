@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/policy/system_proxy_manager.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"

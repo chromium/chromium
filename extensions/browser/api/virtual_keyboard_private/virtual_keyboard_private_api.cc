@@ -5,6 +5,7 @@
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

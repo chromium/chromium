@@ -4,6 +4,8 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"

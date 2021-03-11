@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_ADDRESS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

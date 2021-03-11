@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/payment_method_view_controller.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

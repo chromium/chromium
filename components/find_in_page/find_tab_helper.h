@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FIND_IN_PAGE_FIND_TAB_HELPER_H_
 #define COMPONENTS_FIND_IN_PAGE_FIND_TAB_HELPER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_notification_details.h"

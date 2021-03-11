@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_REQUEST_H_
 #define COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_REQUEST_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_request.h"

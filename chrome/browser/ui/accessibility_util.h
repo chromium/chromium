@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ACCESSIBILITY_UTIL_H_
 #define CHROME_BROWSER_UI_ACCESSIBILITY_UTIL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 // Announces |message| as an accessibility alert in the currently active normal

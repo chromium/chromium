@@ -4,6 +4,8 @@
 
 #include "components/bookmarks/browser/titled_url_match.h"
 
+#include <string>
+
 #include "base/check_op.h"
 #include "base/strings/string16.h"
 

@@ -5,6 +5,8 @@
 #ifndef NET_BASE_LOAD_STATES_H__
 #define NET_BASE_LOAD_STATES_H__
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace net {

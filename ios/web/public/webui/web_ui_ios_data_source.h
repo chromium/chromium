@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_DATA_SOURCE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/strings/string16.h"

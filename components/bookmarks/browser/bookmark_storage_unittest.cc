@@ -4,6 +4,8 @@
 
 #include "components/bookmarks/browser/bookmark_storage.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

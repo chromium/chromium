@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/x11/ozone_platform_x11.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/message_loop/message_pump_type.h"

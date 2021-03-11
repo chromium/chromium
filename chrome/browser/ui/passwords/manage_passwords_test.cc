@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

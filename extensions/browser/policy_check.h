@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_POLICY_CHECK_H_
 #define EXTENSIONS_BROWSER_POLICY_CHECK_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "extensions/browser/preload_check.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIMPLE_MESSAGE_BOX_H_
 #define CHROME_BROWSER_UI_SIMPLE_MESSAGE_BOX_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/strings/string16.h"

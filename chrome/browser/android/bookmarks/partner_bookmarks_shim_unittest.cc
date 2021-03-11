@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

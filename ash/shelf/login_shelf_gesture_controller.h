@@ -5,6 +5,8 @@
 #ifndef ASH_SHELF_LOGIN_SHELF_GESTURE_CONTROLLER_H_
 #define ASH_SHELF_LOGIN_SHELF_GESTURE_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/shelf/drag_handle.h"
 #include "base/callback.h"

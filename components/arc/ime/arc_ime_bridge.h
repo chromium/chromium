@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
 #define COMPONENTS_ARC_IME_ARC_IME_BRIDGE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

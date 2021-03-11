@@ -5,6 +5,7 @@
 #ifndef ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 #define ASH_SEARCH_BOX_SEARCH_BOX_VIEW_BASE_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/search_box/search_box_constants.h"

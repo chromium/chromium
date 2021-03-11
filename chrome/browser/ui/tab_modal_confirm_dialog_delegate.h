@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"

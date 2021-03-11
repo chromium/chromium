@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"

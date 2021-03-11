@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
 
+#include <string>
+
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string16.h"
 #include "base/time/default_tick_clock.h"

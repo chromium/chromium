@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COMMANDER_COMMANDER_BACKEND_H_
 #define CHROME_BROWSER_UI_COMMANDER_COMMANDER_BACKEND_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 

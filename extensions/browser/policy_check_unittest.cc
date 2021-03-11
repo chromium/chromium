@@ -4,6 +4,7 @@
 
 #include "extensions/browser/policy_check.h"
 
+#include <string>
 #include <vector>
 
 #include "base/memory/ref_counted.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_NOTIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_NOTIFICATION_DELEGATE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 class ReadingListNotificationDelegate {

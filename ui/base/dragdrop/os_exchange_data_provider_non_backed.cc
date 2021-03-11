@@ -5,6 +5,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 
 #include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/files/file_path.h"

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"

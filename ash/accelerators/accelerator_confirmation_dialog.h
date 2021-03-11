@@ -5,6 +5,8 @@
 #ifndef ASH_ACCELERATORS_ACCELERATOR_CONFIRMATION_DIALOG_H_
 #define ASH_ACCELERATORS_ACCELERATOR_CONFIRMATION_DIALOG_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

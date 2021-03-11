@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/check.h"

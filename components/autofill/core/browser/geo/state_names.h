@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_STATE_NAMES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_STATE_NAMES_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace autofill {

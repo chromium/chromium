@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_POSITION_CACHE_IMPL_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

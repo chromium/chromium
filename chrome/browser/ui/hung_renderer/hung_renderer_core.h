@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HUNG_RENDERER_HUNG_RENDERER_CORE_H_
 #define CHROME_BROWSER_UI_HUNG_RENDERER_HUNG_RENDERER_CORE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

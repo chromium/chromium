@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

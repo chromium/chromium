@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/android/policy_converter.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 

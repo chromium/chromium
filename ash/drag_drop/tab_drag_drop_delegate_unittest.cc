@@ -5,6 +5,7 @@
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

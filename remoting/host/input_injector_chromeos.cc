@@ -5,6 +5,7 @@
 #include "remoting/host/input_injector_chromeos.h"
 
 #include <set>
+#include <string>
 #include <utility>
 
 #include "ash/shell.h"

@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_MESSAGE_HANDLER_H_
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_MESSAGE_HANDLER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace base {

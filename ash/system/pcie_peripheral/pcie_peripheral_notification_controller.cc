@@ -4,6 +4,8 @@
 
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 
+#include <string>
+
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"

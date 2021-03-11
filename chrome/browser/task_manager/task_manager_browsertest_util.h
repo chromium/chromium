@@ -13,6 +13,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace task_manager {

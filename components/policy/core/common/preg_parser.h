@@ -11,6 +11,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_PREG_PARSER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

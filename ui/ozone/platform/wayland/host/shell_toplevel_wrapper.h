@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_TOPLEVEL_WRAPPER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_TOPLEVEL_WRAPPER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

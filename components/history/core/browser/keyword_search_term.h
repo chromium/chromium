@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/keyword_id.h"

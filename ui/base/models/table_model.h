@@ -5,6 +5,7 @@
 #ifndef UI_BASE_MODELS_TABLE_MODEL_H_
 #define UI_BASE_MODELS_TABLE_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"

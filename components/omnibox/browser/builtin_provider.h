@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_BUILTIN_PROVIDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"

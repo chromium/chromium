@@ -8,6 +8,7 @@
 #include <xcb/xcbext.h>
 
 #include <algorithm>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"

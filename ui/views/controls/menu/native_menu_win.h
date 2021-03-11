@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_NATIVE_MENU_WIN_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

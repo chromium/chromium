@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/i18n/case_conversion.h"

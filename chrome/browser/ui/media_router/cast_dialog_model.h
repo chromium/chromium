@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_MODEL_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_CAST_DIALOG_MODEL_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"

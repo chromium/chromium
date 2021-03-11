@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APP_RUN_ON_OS_LOGIN_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/mojo/drag_mojom_traits.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"

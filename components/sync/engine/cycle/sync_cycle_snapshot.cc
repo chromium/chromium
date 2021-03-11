@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
+#include <string>
 #include <utility>
 
 #include "base/base64.h"

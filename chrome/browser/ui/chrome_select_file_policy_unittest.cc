@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"

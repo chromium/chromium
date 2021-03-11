@@ -5,6 +5,8 @@
 #ifndef UI_SHELL_DIALOGS_FAKE_SELECT_FILE_DIALOG_H_
 #define UI_SHELL_DIALOGS_FAKE_SELECT_FILE_DIALOG_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"

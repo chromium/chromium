@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_GEOLOCATION_WIFI_DATA_H_
 
 #include <set>
+#include <string>
 
 #include "base/strings/string16.h"
 

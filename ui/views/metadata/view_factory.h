@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

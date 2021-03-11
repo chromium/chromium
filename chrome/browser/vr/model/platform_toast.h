@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_VR_MODEL_PLATFORM_TOAST_H_
 #define CHROME_BROWSER_VR_MODEL_PLATFORM_TOAST_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 

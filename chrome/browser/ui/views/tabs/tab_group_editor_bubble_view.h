@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_VIEW_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"

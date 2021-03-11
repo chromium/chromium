@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/reporting/browser_report_generator_desktop.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"

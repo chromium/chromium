@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOGIN_PASSWORD_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_PASSWORD_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/animated_rounded_image_view.h"

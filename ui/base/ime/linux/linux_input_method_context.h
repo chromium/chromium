@@ -5,6 +5,8 @@
 #ifndef UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 #define UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/strings/string16.h"
 #include "ui/base/ime/text_input_type.h"

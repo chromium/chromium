@@ -4,6 +4,8 @@
 
 #include "ui/events/keycodes/platform_key_map_win.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "testing/gtest/include/gtest/gtest.h"

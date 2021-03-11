@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_PAGE_USAGE_DATA_H__
 #define COMPONENTS_HISTORY_CORE_BROWSER_PAGE_USAGE_DATA_H__
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"

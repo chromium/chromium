@@ -7,6 +7,8 @@
 #include <pango/pango-attributes.h>
 #include <stddef.h>
 
+#include <string>
+
 #include "base/i18n/char_iterator.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string16.h"

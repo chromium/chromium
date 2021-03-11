@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_PRELOAD_CHECK_H_
 
 #include <set>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"

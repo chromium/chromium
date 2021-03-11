@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NTP_NEW_TAB_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NTP_NEW_TAB_UI_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "components/prefs/pref_change_registrar.h"

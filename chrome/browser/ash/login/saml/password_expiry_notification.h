@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_EXPIRY_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_EXPIRY_NOTIFICATION_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 

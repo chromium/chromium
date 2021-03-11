@@ -5,6 +5,7 @@
 #include "device/fido/win/type_conversions.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/containers/span.h"

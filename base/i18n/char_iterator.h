@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/i18n/base_i18n_export.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"

@@ -5,6 +5,7 @@
 #include "ash/system/locale/locale_update_controller_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/notification_utils.h"

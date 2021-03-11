@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/legacy_chrome_policy_migrator.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string16.h"

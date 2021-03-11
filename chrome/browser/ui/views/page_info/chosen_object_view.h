@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/metadata/metadata_header_macros.h"

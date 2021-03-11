@@ -5,6 +5,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 
 #include <set>
+#include <string>
 
 #include "base/bind.h"
 #include "base/command_line.h"

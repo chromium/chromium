@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_api.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 

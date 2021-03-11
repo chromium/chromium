@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_ADD_TO_HOMESCREEN_MEDIATOR_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"

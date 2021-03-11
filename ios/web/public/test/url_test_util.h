@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_PUBLIC_TEST_URL_TEST_UTIL_H_
 #define IOS_WEB_PUBLIC_TEST_URL_TEST_UTIL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 class GURL;

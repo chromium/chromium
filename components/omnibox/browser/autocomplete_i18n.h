@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_I18N_H_
 #define COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_I18N_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 

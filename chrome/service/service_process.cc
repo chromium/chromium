@@ -5,6 +5,7 @@
 #include "chrome/service/service_process.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 

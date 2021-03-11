@@ -8,6 +8,7 @@
 #include "services/device/usb/usb_service.h"
 
 #include <list>
+#include <string>
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"

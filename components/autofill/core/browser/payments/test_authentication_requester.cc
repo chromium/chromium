@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"

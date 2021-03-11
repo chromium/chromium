@@ -26,6 +26,8 @@ To create this simple dialog, you would need to add the following files:
 #ifndef LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 #define LOGIN_BUBBLE_DIALOG_EXAMPLE_H_
 
+#include <string>
+
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 

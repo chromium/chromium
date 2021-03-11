@@ -4,6 +4,8 @@
 
 #include "services/preferences/tracked/registry_hash_store_contents_win.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string16.h"

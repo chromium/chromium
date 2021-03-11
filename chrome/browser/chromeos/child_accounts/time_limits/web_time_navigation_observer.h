@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 #define CHROME_BROWSER_CHROMEOS_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_NAVIGATION_OBSERVER_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

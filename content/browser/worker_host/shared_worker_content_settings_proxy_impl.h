@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_SHARED_WORKER_CONTENT_SETTINGS_PROXY_IMPL_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "content/common/content_export.h"

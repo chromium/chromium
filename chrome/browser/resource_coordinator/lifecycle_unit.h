@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_H_
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"

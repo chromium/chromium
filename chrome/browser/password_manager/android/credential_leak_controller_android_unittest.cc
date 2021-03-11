@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

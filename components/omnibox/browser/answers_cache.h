@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <list>
+#include <string>
 
 #include "base/strings/string16.h"
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/welcome/bookmark_item.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/values.h"
 

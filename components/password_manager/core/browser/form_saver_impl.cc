@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/form_saver_impl.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

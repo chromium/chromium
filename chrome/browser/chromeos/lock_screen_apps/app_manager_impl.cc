@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/lock_screen_apps/app_manager_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "apps/launcher.h"

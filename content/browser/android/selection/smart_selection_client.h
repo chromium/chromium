@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/jni_weak_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

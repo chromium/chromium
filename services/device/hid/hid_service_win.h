@@ -20,6 +20,7 @@ extern "C" {
 // clang-format on
 
 #include <string>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

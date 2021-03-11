@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_REWRITER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ADDRESS_REWRITER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"

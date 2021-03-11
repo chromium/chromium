@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"

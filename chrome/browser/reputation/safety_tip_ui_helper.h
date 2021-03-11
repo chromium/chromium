@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_HELPER_H_
 #define CHROME_BROWSER_REPUTATION_SAFETY_TIP_UI_HELPER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/security_state/core/security_state.h"

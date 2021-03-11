@@ -5,6 +5,8 @@
 #ifndef UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 #define UI_BASE_COCOA_TEXT_SERVICES_CONTEXT_MENU_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FAVICON_CORE_FALLBACK_URL_UTIL_H_
 #define COMPONENTS_FAVICON_CORE_FALLBACK_URL_UTIL_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 class GURL;

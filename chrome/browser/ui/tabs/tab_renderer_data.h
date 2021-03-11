@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
 #define CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"

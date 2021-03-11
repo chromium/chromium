@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"

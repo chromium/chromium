@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"

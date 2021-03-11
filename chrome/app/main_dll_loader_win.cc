@@ -10,6 +10,7 @@
 #include <userenv.h>  // NOLINT
 
 #include <memory>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"

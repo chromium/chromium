@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_BROWSER_WEBLAYER_IMPL_ANDROID_H_
 #define WEBLAYER_BROWSER_WEBLAYER_IMPL_ANDROID_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace weblayer {

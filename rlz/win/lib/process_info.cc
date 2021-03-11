@@ -4,6 +4,8 @@
 //
 // Information about the current process.
 
+#include <string>
+
 #include "rlz/win/lib/process_info.h"
 
 #include <windows.h>

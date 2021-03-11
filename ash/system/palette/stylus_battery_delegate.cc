@@ -4,6 +4,8 @@
 
 #include "ash/system/palette/stylus_battery_delegate.h"
 
+#include <string>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_ITEM_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/supports_user_data.h"

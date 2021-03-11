@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"

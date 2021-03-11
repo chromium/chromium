@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"

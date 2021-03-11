@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "ui/gfx/range/range.h"

@@ -7,6 +7,8 @@
 
 // These functions are used by X11 targets and by Ozone/XKBcommon targets.
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/xkb_keysym.h"

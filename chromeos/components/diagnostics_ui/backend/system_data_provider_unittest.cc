@@ -5,6 +5,7 @@
 #include "chromeos/components/diagnostics_ui/backend/system_data_provider.h"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "base/bind.h"

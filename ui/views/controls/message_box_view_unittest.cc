@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/callback_helpers.h"
 #include "base/strings/string16.h"

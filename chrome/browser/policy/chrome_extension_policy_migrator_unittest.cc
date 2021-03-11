@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/chrome_extension_policy_migrator.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/string16.h"

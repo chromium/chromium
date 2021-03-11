@@ -5,6 +5,7 @@
 #include "content/public/browser/shared_worker_instance.h"
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/strings/string16.h"

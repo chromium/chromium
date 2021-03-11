@@ -5,6 +5,7 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper_observer_bridge.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_API_DECLARATIVE_DECLARATIVE_MANIFEST_DATA_H_
 #define EXTENSIONS_COMMON_API_DECLARATIVE_DECLARATIVE_MANIFEST_DATA_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

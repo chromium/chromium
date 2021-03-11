@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <winspool.h>
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/strings/string16.h"
 #include "base/win/windows_version.h"

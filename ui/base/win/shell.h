@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/strings/string16.h"
 

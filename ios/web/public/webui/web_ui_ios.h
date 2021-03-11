@@ -6,6 +6,7 @@
 #define IOS_WEB_PUBLIC_WEBUI_WEB_UI_IOS_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_MANAGED_UI_H_
 #define CHROME_BROWSER_UI_MANAGED_UI_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/chromeos_buildflags.h"
 

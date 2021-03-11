@@ -10,6 +10,7 @@
 #include <windows.h>   // NOLINT
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"

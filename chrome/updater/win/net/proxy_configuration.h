@@ -9,6 +9,7 @@
 #include <winhttp.h>
 
 #include <memory>
+#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"

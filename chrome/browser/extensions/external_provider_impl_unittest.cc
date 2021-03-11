@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

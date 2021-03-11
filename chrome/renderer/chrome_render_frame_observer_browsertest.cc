@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/chrome_render_frame_observer.h"
 
+#include <string>
 #include <tuple>
 
 #include "base/bind.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_item_model.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"

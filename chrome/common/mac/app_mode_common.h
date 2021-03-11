@@ -7,6 +7,8 @@
 
 #include <CoreServices/CoreServices.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringize_macros.h"

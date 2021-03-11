@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ERROR_UI_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

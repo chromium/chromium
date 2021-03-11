@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

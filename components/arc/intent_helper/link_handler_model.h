@@ -6,6 +6,7 @@
 #define COMPONENTS_ARC_INTENT_HELPER_LINK_HANDLER_MODEL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"

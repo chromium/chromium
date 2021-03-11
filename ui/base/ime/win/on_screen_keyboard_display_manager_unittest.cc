@@ -4,6 +4,8 @@
 
 #include <wrl/event.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"

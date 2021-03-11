@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_BLOCKED_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_BLOCKED_DIALOG_VIEW_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"

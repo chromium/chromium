@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_URL_AND_TITLE_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_URL_AND_TITLE_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "url/gurl.h"
 

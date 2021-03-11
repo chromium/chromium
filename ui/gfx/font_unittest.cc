@@ -4,6 +4,8 @@
 
 #include "ui/gfx/font.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"

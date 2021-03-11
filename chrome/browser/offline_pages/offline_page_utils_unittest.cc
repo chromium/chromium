@@ -5,6 +5,7 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 
 #include <stdint.h>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

@@ -4,6 +4,7 @@
 
 #include "components/dbus/menu/menu_property_list.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

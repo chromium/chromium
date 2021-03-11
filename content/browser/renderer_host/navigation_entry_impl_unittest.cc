@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/files/file_util.h"

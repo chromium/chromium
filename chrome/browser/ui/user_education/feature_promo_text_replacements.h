@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_TEXT_REPLACEMENTS_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 

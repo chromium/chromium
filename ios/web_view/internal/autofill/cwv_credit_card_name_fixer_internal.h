@@ -7,6 +7,8 @@
 
 #import "ios/web_view/public/cwv_credit_card_name_fixer.h"
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 

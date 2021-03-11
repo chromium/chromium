@@ -5,6 +5,8 @@
 #ifndef UI_BASE_MODELS_DIALOG_MODEL_FIELD_H_
 #define UI_BASE_MODELS_DIALOG_MODEL_FIELD_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"

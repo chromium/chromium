@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/notification_opt_in_view.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"

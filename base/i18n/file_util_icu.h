@@ -7,6 +7,8 @@
 
 // File utilities that use the ICU library go in this file.
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_export.h"
 #include "base/strings/string16.h"

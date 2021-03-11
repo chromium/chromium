@@ -4,6 +4,7 @@
 
 #include "components/services/patch/public/cpp/patch.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/group_policy_manager.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/win_util.h"

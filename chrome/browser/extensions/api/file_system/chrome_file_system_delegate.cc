@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 

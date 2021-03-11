@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_range.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

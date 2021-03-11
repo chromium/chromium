@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/format_macros.h"
+
+#include <string>
+
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

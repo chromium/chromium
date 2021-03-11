@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_OBSERVER_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_INFO_CACHE_OBSERVER_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/gfx/image/image.h"
 

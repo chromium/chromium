@@ -4,6 +4,8 @@
 
 #include "components/printing/test/mock_printer.h"
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string16.h"

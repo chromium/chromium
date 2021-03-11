@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <ctime>
+#include <string>
 
 #include "base/stl_util.h"
 #include "base/strings/string16.h"

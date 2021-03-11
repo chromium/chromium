@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 #define CHROME_BROWSER_WIN_CONFLICTS_MODULE_INFO_UTIL_H_
 
+#include <string>
 #include <utility>
 #include <vector>
 

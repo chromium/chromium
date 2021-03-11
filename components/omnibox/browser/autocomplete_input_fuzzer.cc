@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/strings/string16.h"

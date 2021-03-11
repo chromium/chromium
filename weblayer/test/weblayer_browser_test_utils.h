@@ -5,6 +5,8 @@
 #ifndef WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_UTILS_H_
 #define WEBLAYER_TEST_WEBLAYER_BROWSER_TEST_UTILS_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

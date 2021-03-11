@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace chrome {

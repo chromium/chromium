@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_
 #define CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_CONTENT_EXTRACTION_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chromeos/components/local_search_service/shared_structs.h"
 

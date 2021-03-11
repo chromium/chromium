@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_WEB_APP_SHORTCUT_ICONS_HANDLER_H_
 
 #include <map>
+#include <string>
 
 #include "base/containers/span.h"
 #include "base/strings/string16.h"

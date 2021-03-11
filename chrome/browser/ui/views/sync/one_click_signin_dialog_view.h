@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SYNC_ONE_CLICK_SIGNIN_DIALOG_VIEW_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"

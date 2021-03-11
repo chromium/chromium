@@ -5,6 +5,7 @@
 #include "components/browser_sync/signin_confirmation_helper.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

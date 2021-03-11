@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_FORCED_EXTENSIONS_INSTALL_STAGE_TRACKER_H_
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/observer_list.h"

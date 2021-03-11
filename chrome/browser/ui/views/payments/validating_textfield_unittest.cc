@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"

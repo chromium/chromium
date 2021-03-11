@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_POPUP_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_POPUP_DELEGATE_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/ui/popup_types.h"

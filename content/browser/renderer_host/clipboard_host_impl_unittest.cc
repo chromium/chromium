@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"

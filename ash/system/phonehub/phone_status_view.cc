@@ -4,6 +4,8 @@
 
 #include "ash/system/phonehub/phone_status_view.h"
 
+#include <string>
+
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_MATCH_H_
 #define CHROMEOS_COMPONENTS_STRING_MATCHING_TOKENIZED_STRING_MATCH_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

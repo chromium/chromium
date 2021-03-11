@@ -5,6 +5,7 @@
 #include "ash/system/message_center/notification_swipe_control_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

@@ -15,6 +15,7 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <vector>

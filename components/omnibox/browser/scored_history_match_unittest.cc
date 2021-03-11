@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <string>
 #include <utility>
 
 #include "base/auto_reset.h"

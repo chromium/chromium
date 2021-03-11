@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SUPERVISED_USER_EXTENSION_INSTALL_BLOCKED_BY_PARENT_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SUPERVISED_USER_EXTENSION_INSTALL_BLOCKED_BY_PARENT_DIALOG_VIEW_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/browser_dialogs.h"

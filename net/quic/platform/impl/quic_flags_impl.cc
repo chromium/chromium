@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <set>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/export_template.h"

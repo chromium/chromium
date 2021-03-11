@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_infobar_delegate.h"
 
+#include <string>
 #include <utility>
 
 #include "base/strings/string16.h"

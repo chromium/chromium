@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_DESKS_HELPER_H_
 #define ASH_PUBLIC_CPP_DESKS_HELPER_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/notification_utils.h"

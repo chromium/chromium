@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_CLIPBOARD_BUBBLE_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_CLIPBOARD_BUBBLE_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/geometry/size.h"

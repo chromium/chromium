@@ -9,6 +9,8 @@
 #ifndef CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_H_
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "ui/gfx/geometry/rect.h"
 

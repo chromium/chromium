@@ -4,6 +4,7 @@
 
 #include "ash/login/security_token_request_controller.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/login/ui/pin_request_widget.h"

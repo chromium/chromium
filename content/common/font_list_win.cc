@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include <string>
+
 #include "base/i18n/rtl.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

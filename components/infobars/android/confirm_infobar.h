@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INFOBARS_ANDROID_CONFIRM_INFOBAR_H_
 #define COMPONENTS_INFOBARS_ANDROID_CONFIRM_INFOBAR_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

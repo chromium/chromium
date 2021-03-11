@@ -4,6 +4,8 @@
 
 #include "components/tab_groups/tab_group_visual_data.h"
 
+#include <string>
+
 #include "base/containers/contains.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

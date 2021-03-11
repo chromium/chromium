@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_USER_MENU_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_button.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 

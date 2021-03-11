@@ -4,6 +4,7 @@
 
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 
+#include <string>
 #include <utility>
 
 #include <memory>

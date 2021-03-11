@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <utility>
 

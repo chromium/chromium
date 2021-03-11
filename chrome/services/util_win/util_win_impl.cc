@@ -8,6 +8,7 @@
 #include <shldisp.h>
 #include <wrl/client.h>
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

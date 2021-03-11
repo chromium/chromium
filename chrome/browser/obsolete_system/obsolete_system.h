@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_OBSOLETE_SYSTEM_OBSOLETE_SYSTEM_H_
 #define CHROME_BROWSER_OBSOLETE_SYSTEM_OBSOLETE_SYSTEM_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"

@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_INFO_BUBBLE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"

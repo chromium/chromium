@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/ui/adb_sideloading_policy_change_notification.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/string16.h"

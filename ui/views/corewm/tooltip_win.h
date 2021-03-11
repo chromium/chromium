@@ -9,6 +9,8 @@
 
 #include <commctrl.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"

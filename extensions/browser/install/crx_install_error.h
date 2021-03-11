@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 #define EXTENSIONS_BROWSER_INSTALL_CRX_INSTALL_ERROR_H_
 
+#include <string>
+
 #include "base/optional.h"
 #include "base/strings/string16.h"
 

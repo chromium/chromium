@@ -5,6 +5,7 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 
 #include <memory>
+#include <string>
 
 #include "base/at_exit.h"
 #include "base/bind.h"

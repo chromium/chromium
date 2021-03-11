@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_TOAST_TOAST_OVERLAY_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"

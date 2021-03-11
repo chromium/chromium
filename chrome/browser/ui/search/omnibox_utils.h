@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SEARCH_OMNIBOX_UTILS_H_
 #define CHROME_BROWSER_UI_SEARCH_OMNIBOX_UTILS_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 
 namespace content {

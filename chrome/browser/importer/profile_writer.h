@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 #define CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

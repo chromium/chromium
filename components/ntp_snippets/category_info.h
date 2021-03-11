@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_NTP_SNIPPETS_CATEGORY_INFO_H_
 #define COMPONENTS_NTP_SNIPPETS_CATEGORY_INFO_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 

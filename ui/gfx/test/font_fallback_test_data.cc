@@ -4,6 +4,8 @@
 
 #include "ui/gfx/test/font_fallback_test_data.h"
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 

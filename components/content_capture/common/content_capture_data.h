@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_DATA_H_
 #define COMPONENTS_CONTENT_CAPTURE_COMMON_CONTENT_CAPTURE_DATA_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string16.h"

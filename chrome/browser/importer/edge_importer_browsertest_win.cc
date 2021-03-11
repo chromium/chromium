@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"

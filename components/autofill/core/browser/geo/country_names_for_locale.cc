@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"

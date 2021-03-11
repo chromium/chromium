@@ -4,6 +4,8 @@
 
 #include "net/base/filename_util.h"
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/strings/string16.h"

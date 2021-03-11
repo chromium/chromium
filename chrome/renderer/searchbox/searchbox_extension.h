@@ -5,6 +5,7 @@
 #ifndef CHROME_RENDERER_SEARCHBOX_SEARCHBOX_EXTENSION_H_
 #define CHROME_RENDERER_SEARCHBOX_SEARCHBOX_EXTENSION_H_
 
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

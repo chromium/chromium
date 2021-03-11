@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_persistent_storage_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"

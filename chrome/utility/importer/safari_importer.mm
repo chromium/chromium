@@ -7,6 +7,7 @@
 #include "chrome/utility/importer/safari_importer.h"
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/files/file_util.h"

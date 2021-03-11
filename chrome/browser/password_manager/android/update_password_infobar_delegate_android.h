@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_UPDATE_PASSWORD_INFOBAR_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"

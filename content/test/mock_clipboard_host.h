@@ -5,6 +5,8 @@
 #ifndef CONTENT_TEST_MOCK_CLIPBOARD_HOST_H_
 #define CONTENT_TEST_MOCK_CLIPBOARD_HOST_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"

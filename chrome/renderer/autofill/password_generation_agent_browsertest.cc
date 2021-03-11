@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/macros.h"

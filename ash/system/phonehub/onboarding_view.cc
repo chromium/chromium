@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"

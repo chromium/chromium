@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_HIERARCHY_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_HIERARCHY_H_
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>

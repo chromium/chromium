@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_MEDIA_ROUTER_UI_MEDIA_SINK_H_
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_UI_MEDIA_SINK_H_
 
+#include <string>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "components/media_router/common/issue.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"

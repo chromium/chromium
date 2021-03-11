@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 #define REMOTING_HOST_CHROMEOS_MESSAGE_BOX_H_
 
+#include <string>
+
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"

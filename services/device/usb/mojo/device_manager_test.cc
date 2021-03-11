@@ -4,6 +4,8 @@
 
 #include "services/device/usb/mojo/device_manager_test.h"
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"

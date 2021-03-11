@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MANIFEST_HANDLERS_PERMISSIONS_PARSER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/strings/string16.h"
 #include "extensions/common/permissions/api_permission.h"
