@@ -594,9 +594,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
 
+// crbug.com/1181414.
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityEventsTest,
-    AccessibilityEventsAriaHiddenSingleDescendantDisplayNone) {
+    DISABLED_AccessibilityEventsAriaHiddenSingleDescendantDisplayNone) {
   RunEventTest(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }

@@ -15,10 +15,17 @@
     </div>
   </div>
   <script>
+    var current_pass = 0;
+    var test_cases = document.querySelectorAll('.test-case[aria-hidden]');
+
+    function run_test_case(element) {
+      let hidden = element.getAttribute('aria-hidden') == 'true';
+      element.setAttribute('aria-hidden', !hidden);
+    }
+
     function go() {
-      document.querySelectorAll('.test-case[aria-hidden]').forEach((element) => {
-        let hidden = element.getAttribute('aria-hidden') == 'true';
-        element.setAttribute('aria-hidden', !hidden);
+      run_test_case(test_cases.item(current_pass++));
+      return current_pass < test_cases.length;
     }
   </script>
 </body>
