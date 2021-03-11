@@ -1111,9 +1111,9 @@ void ContentSecurityPolicy::ReportViolation(
   PostViolationReport(violation_data, context_frame, report_endpoints,
                       use_reporting_api);
 
-  // Fire a violation event if we're working with a delegate (e.g. we're not
-  // processing 'frame-ancestors').
-  if (delegate_)
+  // Fire a violation event if we're working with a delegate and we don't have a
+  // `context_frame` (i.e. we're not processing 'frame-ancestors').
+  if (delegate_ && !context_frame)
     delegate_->DispatchViolationEvent(*violation_data, element);
 
   ReportContentSecurityPolicyIssue(*violation_data, header_type, violation_type,
