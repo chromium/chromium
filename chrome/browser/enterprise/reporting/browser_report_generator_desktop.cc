@@ -50,6 +50,10 @@ version_info::Channel BrowserReportGeneratorDesktop::GetChannel() {
   return chrome::GetChannel();
 }
 
+bool BrowserReportGeneratorDesktop::IsExtendedStableChannel() {
+  return chrome::IsExtendedStableChannel();
+}
+
 void BrowserReportGeneratorDesktop::GenerateBuildStateInfo(
     em::BrowserReport* report) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

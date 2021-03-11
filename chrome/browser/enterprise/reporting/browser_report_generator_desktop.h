@@ -36,6 +36,7 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
 
   std::string GetExecutablePath() override;
   version_info::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   // Adds the auto-updated version to the given report instance.
   void GenerateBuildStateInfo(em::BrowserReport* report) override;
   // Generates user profiles info in the given report instance.

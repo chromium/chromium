@@ -31,6 +31,7 @@ class BrowserReportGenerator {
 
     virtual std::string GetExecutablePath() = 0;
     virtual version_info::Channel GetChannel() = 0;
+    virtual bool IsExtendedStableChannel() = 0;
     virtual void GenerateBuildStateInfo(
         enterprise_management::BrowserReport* report) = 0;
     virtual void GenerateProfileInfo(

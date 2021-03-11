@@ -1880,6 +1880,9 @@ message BrowserReport {
   // or lower version) has been installed and will be the active version
   // following a browser restart.
   optional string installed_browser_version = 8;
+
+  // True for an extended stable channel installation.
+  optional bool is_extended_stable_channel = 9 [default = false];
 }
 
 // Report Operating system related information.
