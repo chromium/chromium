@@ -8,6 +8,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
@@ -41,11 +42,14 @@ void PaddedButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
   auto* theme = GetNativeTheme();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  SetBackground(views::CreateSolidBackground(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationButtonBackground)));
+  SkColor background_color = theme->GetSystemColor(
+      ui::NativeTheme::kColorId_NotificationButtonBackground);
+  SetBackground(views::CreateSolidBackground(background_color));
+#else
+  SkColor background_color =
+      theme->GetSystemColor(ui::NativeTheme::kColorId_WindowBackground);
 #endif
-  SetInkDropBaseColor(theme->GetSystemColor(
-      ui::NativeTheme::kColorId_PaddedButtonInkDropColor));
+  SetInkDropBaseColor(color_utils::GetColorWithMaxContrast(background_color));
 }
 
 BEGIN_METADATA(PaddedButton, views::ImageButton)

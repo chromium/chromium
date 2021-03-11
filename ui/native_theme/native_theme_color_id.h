@@ -36,7 +36,6 @@
   OP(kColorId_ProminentButtonDisabledColor),                                   \
   OP(kColorId_ProminentButtonFocusedColor),                                    \
   OP(kColorId_TextOnProminentButtonColor),                                     \
-  OP(kColorId_PaddedButtonInkDropColor),                                       \
   /* ToggleButton */                                                           \
   OP(kColorId_ToggleButtonShadowColor),                                        \
   OP(kColorId_ToggleButtonTrackColorOff),                                      \

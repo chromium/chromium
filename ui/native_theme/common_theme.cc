@@ -180,10 +180,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     case NativeTheme::kColorId_ButtonUncheckedColor:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
-    case NativeTheme::kColorId_PaddedButtonInkDropColor:
-      return color_utils::GetColorWithMaxContrast(
-          base_theme->GetUnprocessedSystemColor(
-              NativeTheme::kColorId_WindowBackground, color_scheme));
     case NativeTheme::kColorId_ProminentButtonFocusedColor: {
       const SkColor bg = base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_ProminentButtonColor, color_scheme);
