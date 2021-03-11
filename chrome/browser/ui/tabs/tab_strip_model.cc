@@ -2290,7 +2290,9 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
           HostContentSettingsMapFactory::GetForProfile(profile);
       ContentSetting setting =
           mute ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW;
-      if (setting == settings->GetDefaultContentSetting(
+
+      if (!profile->IsIncognitoProfile() &&
+          setting == settings->GetDefaultContentSetting(
                          ContentSettingsType::SOUND, nullptr)) {
         setting = CONTENT_SETTING_DEFAULT;
       }
