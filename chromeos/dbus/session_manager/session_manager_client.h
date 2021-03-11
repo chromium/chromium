@@ -91,6 +91,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
     // Called when the ARC instance is stopped after it had already started.
     virtual void ArcInstanceStopped() {}
+
+    // Called when screen lock state is updated.
+    virtual void ScreenLockedStateUpdated() {}
   };
 
   // Interface for performing actions on behalf of the stub implementation.

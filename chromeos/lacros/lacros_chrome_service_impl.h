@@ -23,6 +23,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
+#include "chromeos/crosapi/mojom/idle_service.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -41,6 +42,7 @@ class GURL;
 namespace chromeos {
 
 class LacrosChromeServiceDelegate;
+class SystemIdleCache;
 
 // Forward declaration for class defined in .cc file that holds most of the
 // business logic of this class.
@@ -107,6 +109,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   bool IsFeedbackAvailable() const;
   bool IsFileManagerAvailable() const;
   bool IsHidManagerAvailable() const;
+  bool IsIdleServiceAvailable() const;
   bool IsKeystoreServiceAvailable() const;
   bool IsMediaSessionAudioFocusAvailable() const;
   bool IsMediaSessionAudioFocusDebugAvailable() const;
@@ -173,6 +176,14 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
     DCHECK(IsHidManagerAvailable());
     return hid_manager_remote_;
+  }
+
+  // This must be called on the affine sequence. It exposes a remote that can
+  // be used to query the system keystores.
+  mojo::Remote<crosapi::mojom::IdleService>& idle_service_remote() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
+    DCHECK(IsIdleServiceAvailable());
+    return idle_service_remote_;
   }
 
   // This must be called on the affine sequence. It exposes a remote that can
@@ -276,6 +287,11 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return init_params_.get();
   }
 
+  // Returns SystemIdleCache, which uses IdleInfoObserver to observe idle info
+  // changes and caches the results. Requires IsIdleServiceAvailable() for full
+  // function, and is robust against unavailability.
+  SystemIdleCache* system_idle_cache() { return system_idle_cache_.get(); }
+
   // Returns the version for an ash interface with a given UUID. Returns -1 if
   // the interface is not found. This is a synchronous version of
   // mojo::Remote::QueryVersion. It relies on Ash M88. Features that need to
@@ -318,12 +334,18 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // any sequence. This can only be called after BindReceiver().
   base::Optional<uint32_t> CrosapiVersion() const;
 
+  // Requests ash-chrome to send idle info updates.
+  void StartSystemIdleCache();
+
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.
   std::unique_ptr<LacrosChromeServiceDelegate> delegate_;
 
   // Parameters passed from ash-chrome.
   crosapi::mojom::BrowserInitParamsPtr init_params_;
+
+  // Receiver and cache of system idle info updates.
+  std::unique_ptr<SystemIdleCache> system_idle_cache_;
 
   // These members are affine to the affine sequence. They are initialized in
   // the constructor and are immediately available for use.
@@ -333,6 +355,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
+  mojo::Remote<crosapi::mojom::IdleService> idle_service_remote_;
   mojo::Remote<crosapi::mojom::KeystoreService> keystore_service_remote_;
   mojo::Remote<crosapi::mojom::MessageCenter> message_center_remote_;
   mojo::Remote<crosapi::mojom::Prefs> prefs_remote_;

@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -151,6 +152,10 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   // to access it.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // IdleServiceAsh uses objects that are unavailable for this test. Disable it
+  // to avoid problems.
+  crosapi::IdleServiceAsh::DisableForTesting();
 
   // Use IO type to support the FileDescriptorWatcher API on POSIX.
   // TestingProfileManager instantiated below requires a TaskRunner.

@@ -661,6 +661,8 @@ source_set("chromeos") {
     "../ash/crosapi/feedback_ash.h",
     "../ash/crosapi/file_manager_ash.cc",
     "../ash/crosapi/file_manager_ash.h",
+    "../ash/crosapi/idle_service_ash.cc",
+    "../ash/crosapi/idle_service_ash.h",
     "../ash/crosapi/keystore_service_ash.cc",
     "../ash/crosapi/keystore_service_ash.h",
     "../ash/crosapi/message_center_ash.cc",

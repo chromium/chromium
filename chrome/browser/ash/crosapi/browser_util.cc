@@ -20,6 +20,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -192,7 +193,7 @@ bool IsLacrosWindow(const aura::Window* window) {
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   static_assert(
-      crosapi::mojom::Crosapi::Version_ == 15,
+      crosapi::mojom::Crosapi::Version_ == 16,
       "if you add a new crosapi, please add it to the version map here");
   InterfaceVersions versions;
   AddVersion<chromeos::sensors::mojom::SensorHalClient>(&versions);
@@ -204,6 +205,7 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   AddVersion<crosapi::mojom::DeviceAttributes>(&versions);
   AddVersion<crosapi::mojom::Feedback>(&versions);
   AddVersion<crosapi::mojom::FileManager>(&versions);
+  AddVersion<crosapi::mojom::IdleService>(&versions);
   AddVersion<crosapi::mojom::KeystoreService>(&versions);
   AddVersion<crosapi::mojom::MessageCenter>(&versions);
   AddVersion<crosapi::mojom::MetricsReporting>(&versions);
@@ -246,6 +248,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->cros_user_id_hash = chromeos::ProfileHelper::GetUserIdHashFromProfile(
       ProfileManager::GetPrimaryUserProfile());
   params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
+  params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
 
   return params;
 }

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/message_center_ash.h"
 #include "chrome/browser/ash/crosapi/metrics_reporting_ash.h"
@@ -51,6 +52,7 @@ CrosapiAsh::CrosapiAsh()
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
+      idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
@@ -122,6 +124,11 @@ void CrosapiAsh::BindBrowserServiceHost(
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindIdleService(
+    mojo::PendingReceiver<crosapi::mojom::IdleService> receiver) {
+  idle_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindKeystoreService(

@@ -14,6 +14,7 @@ mojom("mojom") {
     "device_attributes.mojom",
     "feedback.mojom",
     "file_manager.mojom",
+    "idle_service.mojom",
     "keystore_service.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",

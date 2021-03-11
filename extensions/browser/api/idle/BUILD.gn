@@ -33,5 +33,9 @@ source_set("idle") {
     deps += [ "//chromeos/dbus/power" ]
   }
 
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+
   public_deps = [ "//extensions/browser:browser_sources" ]
 }

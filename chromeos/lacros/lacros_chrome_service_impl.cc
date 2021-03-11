@@ -16,6 +16,7 @@
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/startup/startup.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -201,6 +202,12 @@ class LacrosChromeServiceNeverBlockingState
     crosapi_->BindScreenManager(std::move(pending_receiver));
   }
 
+  void BindIdleServiceReceiver(
+      mojo::PendingReceiver<crosapi::mojom::IdleService> pending_receiver) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    crosapi_->BindIdleService(std::move(pending_receiver));
+  }
+
   void BindKeystoreServiceReceiver(
       mojo::PendingReceiver<crosapi::mojom::KeystoreService> pending_receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -354,10 +361,33 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     // Tests don't call BrowserService::InitDeprecated(), so provide
     // BrowserInitParams with default values.
     init_params_ = crosapi::mojom::BrowserInitParams::New();
+
+    // To simplify testing, instantiate under Fallback mode.
+    system_idle_cache_ = std::make_unique<SystemIdleCache>();
+
   } else {
     // Try to read the startup data. If ash-chrome is too old, the data
     // may not available, then fallback to the older approach.
     init_params_ = ReadStartupBrowserInitParams();
+
+    if (init_params_) {
+      if (init_params_->idle_info) {
+        // Presence of initial |idle_info| indicates that ash-chrome can stream
+        // idle info updates, so instantiate under Streaming mode, using
+        // |idle_info| as initial cached values.
+        system_idle_cache_ =
+            std::make_unique<SystemIdleCache>(*init_params_->idle_info);
+
+        // After construction finishes, start caching.
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&LacrosChromeServiceImpl::StartSystemIdleCache,
+                           weak_factory_.GetWeakPtr()));
+      } else {
+        // Ash-chrome cannot stream, so instantiate under fallback mode.
+        system_idle_cache_ = std::make_unique<SystemIdleCache>();
+      }
+    }
 
     // Short term workaround: if --crosapi-mojo-platform-channel-handle is
     // available, close --mojo-platform-channel-handle, and remove it
@@ -513,6 +543,17 @@ void LacrosChromeServiceImpl::BindReceiver(
             weak_sequenced_state_, std::move(hid_manager_pending_receiver)));
   }
 
+  if (IsIdleServiceAvailable()) {
+    mojo::PendingReceiver<crosapi::mojom::IdleService>
+        idle_service_pending_receiver =
+            idle_service_remote_.BindNewPipeAndPassReceiver();
+    never_blocking_sequence_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LacrosChromeServiceNeverBlockingState::BindIdleServiceReceiver,
+            weak_sequenced_state_, std::move(idle_service_pending_receiver)));
+  }
+
   if (IsKeystoreServiceAvailable()) {
     mojo::PendingReceiver<crosapi::mojom::KeystoreService>
         keystore_service_pending_receiver =
@@ -635,6 +676,12 @@ bool LacrosChromeServiceImpl::IsHidManagerAvailable() const {
   base::Optional<uint32_t> version = CrosapiVersion();
   return version && version.value() >=
                         Crosapi::MethodMinVersions::kBindHidManagerMinVersion;
+}
+
+bool LacrosChromeServiceImpl::IsIdleServiceAvailable() const {
+  base::Optional<uint32_t> version = CrosapiVersion();
+  return version && version.value() >=
+                        Crosapi::MethodMinVersions::kBindIdleServiceMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsKeystoreServiceAvailable() const {
@@ -850,6 +897,10 @@ base::Optional<uint32_t> LacrosChromeServiceImpl::CrosapiVersion() const {
     return base::nullopt;
   DCHECK(did_bind_receiver_);
   return init_params_->crosapi_version;
+}
+
+void LacrosChromeServiceImpl::StartSystemIdleCache() {
+  system_idle_cache_->Start();
 }
 
 void LacrosChromeServiceImpl::AddObserver(Observer* obs) {

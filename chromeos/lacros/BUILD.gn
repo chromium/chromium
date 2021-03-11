@@ -26,6 +26,8 @@ component("lacros") {
     "lacros_chrome_service_delegate.h",
     "lacros_chrome_service_impl.cc",
     "lacros_chrome_service_impl.h",
+    "system_idle_cache.cc",
+    "system_idle_cache.h",
   ]
 }
 

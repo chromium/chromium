@@ -11,6 +11,7 @@ import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
+import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
@@ -47,8 +48,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 16
-// Next method id: 21
+// Next version: 17
+// Next method id: 22
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -87,6 +88,11 @@ interface Crosapi {
   // Added in M88.
   [MinVersion=5]
   BindFileManager@8(pending_receiver<FileManager> receiver);
+
+  // Binds the IdleService interface for reading idle states.
+  // Added in M90.
+  [MinVersion=16]
+  BindIdleService@21(pending_receiver<IdleService> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
@@ -249,7 +255,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 12
+// Next version: 13
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -324,6 +330,10 @@ struct BrowserInitParams {
   // details.
   [MinVersion=11]
   array<uint8>? device_account_policy@11;
+
+  // System idle info to initialize SystemIdleCache.
+  [MinVersion=12]
+  IdleInfo? idle_info@12;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

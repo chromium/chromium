@@ -943,10 +943,14 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   void ScreenIsLockedReceived(dbus::Signal* signal) {
     screen_is_locked_ = true;
+    for (auto& observer : observers_)
+      observer.ScreenLockedStateUpdated();
   }
 
   void ScreenIsUnlockedReceived(dbus::Signal* signal) {
     screen_is_locked_ = false;
+    for (auto& observer : observers_)
+      observer.ScreenLockedStateUpdated();
   }
 
   void ArcInstanceStoppedReceived(dbus::Signal* signal) {

@@ -23,6 +23,12 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_delegate.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace message_center {
 
 class NotificationUIManagerTest : public BrowserWithTestWindowTest {
@@ -31,6 +37,14 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
 
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    auto init_params = crosapi::mojom::BrowserInitParams::New();
+    lacros_chrome_service_ =
+        std::make_unique<chromeos::LacrosChromeServiceImpl>(
+            /*delegate=*/nullptr);
+    lacros_chrome_service_->SetInitParamsForTests(std::move(init_params));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     MessageCenter::Initialize();
 
     BrowserWithTestWindowTest::SetUp();
@@ -41,6 +55,9 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
     MessageCenter::Shutdown();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    lacros_chrome_service_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   NotificationUIManagerImpl* notification_manager() {
@@ -62,6 +79,14 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
 
  private:
   MessageCenter* message_center_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // chromeos::LacrosChromeServiceImpl is used by Lacros implementation of
+  // CheckIdleStateIsLocked(). Once Lacros transitions away from using
+  // NotificationUIManagerImpl (like ChromeOS) then this file can be excluded
+  // and Lacros-specific code can be removed.
+  std::unique_ptr<chromeos::LacrosChromeServiceImpl> lacros_chrome_service_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(NotificationUIManagerTest, SetupNotificationManager) {
