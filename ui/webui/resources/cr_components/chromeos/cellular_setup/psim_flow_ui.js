@@ -53,6 +53,12 @@ cr.define('cellularSetup', function() {
   }
 
   /**
+   * The maximum tries allowed to detect the SIM.
+   * @private {number}
+   */
+  const MAX_START_ACTIVATION_ATTEMPTS = 3;
+
+  /**
    * Root element for the pSIM cellular setup flow. This element interacts with
    * the CellularSetup service to carry out the psim activation flow. It
    * contains navigation buttons and sub-pages corresponding to each step of the
@@ -129,6 +135,15 @@ cr.define('cellularSetup', function() {
         type: Object,
         value: null,
       },
+
+      /**
+       * The current number of tries to detect the SIM.
+       * @private {number}
+       */
+      startActivationAttempts_: {
+        type: Number,
+        value: 0,
+      },
     },
 
     observers: [
@@ -182,6 +197,7 @@ cr.define('cellularSetup', function() {
 
     initSubflow() {
       this.state_ = PSimUIState.STARTING_ACTIVATION;
+      this.startActivationAttempts_ = 0;
       this.updateButtonBarState_();
     },
 
@@ -196,6 +212,9 @@ cr.define('cellularSetup', function() {
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
         case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
           this.fire('exit-cellular-setup');
+          break;
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+          this.state_ = PSimUIState.STARTING_ACTIVATION;
           break;
         default:
           assertNotReached();
@@ -218,19 +237,35 @@ cr.define('cellularSetup', function() {
         case PSimUIState.IDLE:
         case PSimUIState.STARTING_ACTIVATION:
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
-        case PSimUIState.TIMEOUT_START_ACTIVATION:
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
         case PSimUIState.TIMEOUT_PORTAL_LOAD:
         case PSimUIState.WAITING_FOR_USER_PAYMENT:
+          this.forwardButtonLabel = this.i18n('next');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
             cancel: cellularSetup.ButtonState.ENABLED,
             forward: cellularSetup.ButtonState.DISABLED,
           };
           break;
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+          this.forwardButtonLabel = this.i18n('tryAgain');
+          buttonState = {
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
+          };
+          break;
         case PSimUIState.ACTIVATION_SUCCESS:
+          this.forwardButtonLabel = this.i18n('next');
+          buttonState = {
+            backward: cellularSetup.ButtonState.ENABLED,
+            cancel: cellularSetup.ButtonState.ENABLED,
+            forward: cellularSetup.ButtonState.ENABLED,
+          };
+          break;
         case PSimUIState.ALREADY_ACTIVATED:
         case PSimUIState.ACTIVATION_FAILURE:
+          this.forwardButtonLabel = this.i18n('done');
           buttonState = {
             backward: cellularSetup.ButtonState.ENABLED,
             cancel: cellularSetup.ButtonState.ENABLED,
@@ -350,7 +385,12 @@ cr.define('cellularSetup', function() {
 
       switch (this.state_) {
         case PSimUIState.STARTING_ACTIVATION:
-          this.state_ = PSimUIState.TIMEOUT_START_ACTIVATION;
+          this.startActivationAttempts_++;
+          if (this.startActivationAttempts_ < MAX_START_ACTIVATION_ATTEMPTS) {
+            this.state_ = PSimUIState.TIMEOUT_START_ACTIVATION;
+          } else {
+            this.state_ = PSimUIState.ACTIVATION_FAILURE;
+          }
           return;
         case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
           this.state_ = PSimUIState.TIMEOUT_PORTAL_LOAD;

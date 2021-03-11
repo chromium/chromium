@@ -68,6 +68,56 @@ suite('CrComponentsPsimFlowUiTest', function() {
         cellularSetup.PSimPageName.PROVISIONING);
   });
 
+  test('Sim detection failure with retries', async function() {
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(!!pSimPage.currentTimeoutId_);
+
+    await flushAsync();
+
+    // Simulate timeout.
+    pSimPage.clearTimer_();
+    pSimPage.onTimeout_();
+
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
+    assertTrue(pSimPage.forwardButtonLabel === 'Try again');
+
+    // Simulate clicking 'Try Again'.
+    pSimPage.navigateForward();
+
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(!!pSimPage.currentTimeoutId_);
+
+    await flushAsync();
+
+    // Timeout again.
+    pSimPage.clearTimer_();
+    pSimPage.onTimeout_();
+
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
+    assertTrue(pSimPage.forwardButtonLabel === 'Try again');
+
+    // Click 'Try Again' again.
+    pSimPage.navigateForward();
+
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(!!pSimPage.currentTimeoutId_);
+
+    await flushAsync();
+
+    // Timeout again.
+    pSimPage.clearTimer_();
+    pSimPage.onTimeout_();
+
+    // Should now be at the failure state.
+    assertTrue(
+        pSimPage.state_ === cellularSetup.PSimUIState.ACTIVATION_FAILURE);
+  });
+
   test('Carrier title on provisioning page', async () => {
     cellularActivationDelegate =
         cellularSetupRemote.getLastActivationDelegate();
