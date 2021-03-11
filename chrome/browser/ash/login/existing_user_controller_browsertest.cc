@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -1307,12 +1308,14 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
     // Login as a managed user would save force-online-signin to true and
     // invalidate the auth token into local state, which would prevent to focus
     // during the second part of the test which happens in the login screen.
-    UserSelectionScreen::SetSkipForceOnlineSigninForTesting(true);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipForceOnlineSignInForTesting);
   }
 
   void TearDownInProcessBrowserTestFixture() override {
     LoginManagerTest::TearDownInProcessBrowserTestFixture();
-    UserSelectionScreen::SetSkipForceOnlineSigninForTesting(false);
+    base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+        switches::kSkipForceOnlineSignInForTesting);
   }
 
  protected:

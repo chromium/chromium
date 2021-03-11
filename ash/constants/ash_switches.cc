@@ -583,6 +583,10 @@ const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
+// Disables online sign-in enforcement in tast tests.
+const char kSkipForceOnlineSignInForTesting[] =
+    "skip-force-online-signin-for-testing";
+
 // Specifies directory for the Telemetry System Web Extension.
 const char kTelemetryExtensionDirectory[] = "telemetry-extension-dir";
 

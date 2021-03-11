@@ -73,8 +73,6 @@ constexpr StaticOobeScreenId UserBoardView::kScreenId;
 
 namespace {
 
-bool g_skip_force_online_signin_for_testing = false;
-
 const char kWakeLockReason[] = "TPMLockedIssue";
 const int kWaitingOvertimeInSeconds = 1;
 
@@ -468,15 +466,12 @@ void UserSelectionScreen::SetTpmLockedState(bool is_locked,
 }
 
 // static
-void UserSelectionScreen::SetSkipForceOnlineSigninForTesting(bool skip) {
-  g_skip_force_online_signin_for_testing = skip;
-}
-
-// static
 bool UserSelectionScreen::ShouldForceOnlineSignIn(
     const user_manager::User* user) {
-  if (g_skip_force_online_signin_for_testing)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipForceOnlineSignInForTesting)) {
     return false;
+  }
 
   // Public sessions are always allowed to log in offline.
   // Deprecated supervised users are always allowed to log in offline.

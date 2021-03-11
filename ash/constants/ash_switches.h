@@ -213,6 +213,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableOobeTestAPI[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeScreenshotDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSkipForceOnlineSignInForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTelemetryExtensionDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTestEncryptionMigrationUI[];
