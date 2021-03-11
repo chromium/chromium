@@ -100,6 +100,8 @@ static_library("missive_storage_module") {
   sources = [
     "missive_storage_module.cc",
     "missive_storage_module.h",
+    "missive_storage_module_delegate_impl.cc",
+    "missive_storage_module_delegate_impl.h",
     "storage_module_interface.cc",
     "storage_module_interface.h",
   ]

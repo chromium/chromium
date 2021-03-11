@@ -188,6 +188,7 @@ source_set("chromeos") {
     "//chromeos/dbus/machine_learning",
     "//chromeos/dbus/media_analytics",
     "//chromeos/dbus/media_analytics:media_perception_proto",
+    "//chromeos/dbus/missive",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",

@@ -37,13 +37,14 @@ class MissiveStorageModule : public StorageModuleInterface {
     MissiveStorageModuleDelegateInterface& operator=(
         const MissiveStorageModuleDelegateInterface& other) = delete;
 
-    virtual void AddRecord(Priority priority,
-                           Record record,
+    virtual void AddRecord(const Priority priority,
+                           const Record& record,
                            base::OnceCallback<void(Status)> callback) = 0;
-    virtual void ReportSuccess(SequencingInformation sequencing_information,
-                               bool force) = 0;
+    virtual void ReportSuccess(
+        const SequencingInformation& sequencing_information,
+        bool force) = 0;
     virtual void UpdateEncryptionKey(
-        SignedEncryptionInfo signed_encryption_key) = 0;
+        const SignedEncryptionInfo& signed_encryption_key) = 0;
   };
 
   // Factory method creates |MissiveStorageModule| object.
