@@ -57,6 +57,7 @@
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
@@ -371,6 +372,9 @@ class DownloadProtectionServiceTestBase
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+
+    ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), BrowserContextKeyedServiceFactory::TestingFactory());
   }
 
   void TearDown() override {

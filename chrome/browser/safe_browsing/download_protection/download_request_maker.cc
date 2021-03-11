@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/user_population.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -151,27 +152,11 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
   callback_ = std::move(callback);
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  bool is_extended_reporting =
-      profile && IsExtendedReportingEnabled(*profile->GetPrefs());
-  bool is_incognito = browser_context_ && browser_context_->IsOffTheRecord();
   bool is_under_advanced_protection =
       profile && AdvancedProtectionStatusManagerFactory::GetForProfile(profile)
                      ->IsUnderAdvancedProtection();
-  bool is_enhanced_protection =
-      profile && IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
-  auto population = is_enhanced_protection
-                        ? ChromeUserPopulation::ENHANCED_PROTECTION
-                        : is_extended_reporting
-                              ? ChromeUserPopulation::EXTENDED_REPORTING
-                              : ChromeUserPopulation::SAFE_BROWSING;
-  request_->mutable_population()->set_user_population(population);
-  request_->mutable_population()->set_profile_management_status(
-      GetProfileManagementStatus(
-          g_browser_process->browser_policy_connector()));
-  request_->mutable_population()->set_is_under_advanced_protection(
-      is_under_advanced_protection);
-  request_->mutable_population()->set_is_incognito(is_incognito);
+  *request_->mutable_population() = GetUserPopulation(profile);
   request_->set_request_ap_verdicts(is_under_advanced_protection);
   request_->set_locale(g_browser_process->GetApplicationLocale());
   request_->set_file_basename(target_file_path_.BaseName().AsUTF8Unsafe());

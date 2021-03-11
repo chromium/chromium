@@ -20,6 +20,11 @@ namespace safe_browsing {
 
 ChromeUserPopulation GetUserPopulation(Profile* profile) {
   ChromeUserPopulation population;
+
+  // |profile| may be null in tests.
+  if (!profile)
+    return population;
+
   if (profile->GetPrefs()) {
     const PrefService& prefs = *profile->GetPrefs();
     if (IsEnhancedProtectionEnabled(prefs)) {
