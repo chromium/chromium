@@ -83,7 +83,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
   void OnScreenCaptureStarted(
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
-      const base::string16& application_title,
+      const std::u16string& application_title,
       content::MediaStreamUI::StateChangeCallback state_change_callback);
 
   // Called when screen capture is stopped.
@@ -109,7 +109,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
     ScreenCaptureInfo(
         const std::string& label,
         const content::DesktopMediaID& media_id,
-        const base::string16& application_title,
+        const std::u16string& application_title,
         content::MediaStreamUI::StateChangeCallback state_change_callback);
     ScreenCaptureInfo(const ScreenCaptureInfo& other);
     ScreenCaptureInfo& operator=(const ScreenCaptureInfo& other);
@@ -120,7 +120,7 @@ class DlpContentManager : public DlpWindowObserver::Delegate {
 
     std::string label;
     content::DesktopMediaID media_id;
-    base::string16 application_title;
+    std::u16string application_title;
     content::MediaStreamUI::StateChangeCallback state_change_callback;
     bool is_running = true;
     bool showing_paused_notification = false;

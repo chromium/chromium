@@ -41,7 +41,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
   void InitializeExtensionService(
       const ExtensionServiceInitParams& params) override;
 
-  static std::vector<base::string16> GetErrors();
+  static std::vector<std::u16string> GetErrors();
 
   void PackCRX(const base::FilePath& dir_path,
                const base::FilePath& pem_path,

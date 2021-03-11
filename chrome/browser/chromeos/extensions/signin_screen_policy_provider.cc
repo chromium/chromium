@@ -43,7 +43,7 @@ std::string SigninScreenPolicyProvider::GetDebugPolicyProviderName() const {
 
 bool SigninScreenPolicyProvider::UserMayLoad(
     const extensions::Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   if (g_bypass_checks_for_testing)
     return true;
   const extensions::Feature* feature =

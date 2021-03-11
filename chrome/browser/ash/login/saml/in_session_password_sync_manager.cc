@@ -84,7 +84,7 @@ void InSessionPasswordSyncManager::MaybeForceReauthOnLockScreen(
     // On the lock screen: need to update the UI.
     screenlock_bridge_->lock_handler()->SetAuthType(
         primary_user_->GetAccountId(),
-        proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, base::string16());
+        proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, std::u16string());
   }
   lock_screen_reauth_reason_ = reauth_reason;
 }
@@ -109,7 +109,7 @@ void InSessionPasswordSyncManager::OnSessionStateChanged() {
   // Request re-auth immediately after locking the screen.
   screenlock_bridge_->lock_handler()->SetAuthType(
       primary_user_->GetAccountId(),
-      proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, base::string16());
+      proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, std::u16string());
 }
 
 void InSessionPasswordSyncManager::UpdateOnlineAuth() {

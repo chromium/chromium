@@ -96,7 +96,7 @@ bool Dictation::OnToggleDictation() {
 }
 
 void Dictation::OnSpeechResult(
-    const base::string16& query,
+    const std::u16string& query,
     bool is_final,
     const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
         word_offsets) {
@@ -167,7 +167,7 @@ void Dictation::DictationOff() {
           ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
     }
 
-    composition_->text = base::string16();
+    composition_->text = std::u16string();
   } else {
     audio::SoundsManager::Get()->Play(
         static_cast<int>(Sound::kDictationCancel));

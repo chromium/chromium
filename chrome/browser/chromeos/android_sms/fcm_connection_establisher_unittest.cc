@@ -31,7 +31,7 @@ class FcmConnectionEstablisherTest : public testing::Test {
       const char* expected,
       const content::FakeServiceWorkerContext::
           StartServiceWorkerAndDispatchMessageArgs& call_args) {
-    base::string16 message_string;
+    std::u16string message_string;
     blink::DecodeStringMessage(
         std::get<blink::TransferableMessage>(call_args).owned_encoded_message,
         &message_string);

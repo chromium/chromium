@@ -28,17 +28,17 @@ bool FakeBluetoothChooserController::ShouldShowReScanButton() const {
   return true;
 }
 
-base::string16 FakeBluetoothChooserController::GetNoOptionsText() const {
+std::u16string FakeBluetoothChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 FakeBluetoothChooserController::GetOkButtonLabel() const {
+std::u16string FakeBluetoothChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 FakeBluetoothChooserController::GetThrobberLabelAndTooltip() const {
   return {
       l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
@@ -58,7 +58,7 @@ int FakeBluetoothChooserController::GetSignalStrengthLevel(size_t index) const {
   return devices_.at(index).signal_strength;
 }
 
-base::string16 FakeBluetoothChooserController::GetOption(size_t index) const {
+std::u16string FakeBluetoothChooserController::GetOption(size_t index) const {
   return base::ASCIIToUTF16(devices_.at(index).name);
 }
 

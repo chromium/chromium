@@ -475,8 +475,8 @@ TEST(ExtensionWebRequestHelpersTest,
 TEST(ExtensionWebRequestHelpersTest, TestCalculateOnAuthRequiredDelta) {
   const bool cancel = true;
 
-  base::string16 username = base::ASCIIToUTF16("foo");
-  base::string16 password = base::ASCIIToUTF16("bar");
+  std::u16string username = base::ASCIIToUTF16("foo");
+  std::u16string password = base::ASCIIToUTF16("bar");
   net::AuthCredentials credentials(username, password);
 
   EventResponseDelta delta = CalculateOnAuthRequiredDelta(
@@ -1910,9 +1910,9 @@ TEST(ExtensionWebRequestHelpersTest,
 TEST(ExtensionWebRequestHelpersTest, TestMergeOnAuthRequiredResponses) {
   helpers::IgnoredActions ignored_actions;
   EventResponseDeltas deltas;
-  base::string16 username = base::ASCIIToUTF16("foo");
-  base::string16 password = base::ASCIIToUTF16("bar");
-  base::string16 password2 = base::ASCIIToUTF16("baz");
+  std::u16string username = base::ASCIIToUTF16("foo");
+  std::u16string password = base::ASCIIToUTF16("bar");
+  std::u16string password2 = base::ASCIIToUTF16("baz");
 
   // Check that we can handle if not returning credentials.
   {

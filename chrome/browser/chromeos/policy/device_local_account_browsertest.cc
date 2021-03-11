@@ -384,7 +384,7 @@ bool DoesInstallFailureReferToId(const std::string& id,
                                  const content::NotificationDetails& details) {
   return content::Details<const extensions::CrxInstallError>(details)
              ->message()
-             .find(base::UTF8ToUTF16(id)) != base::string16::npos;
+             .find(base::UTF8ToUTF16(id)) != std::u16string::npos;
 }
 
 bool IsSessionStarted() {
@@ -1758,8 +1758,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
 
   std::string timezone_id1("America/Los_Angeles");
   std::string timezone_id2("Europe/Berlin");
-  base::string16 timezone_id1_utf16(base::UTF8ToUTF16(timezone_id1));
-  base::string16 timezone_id2_utf16(base::UTF8ToUTF16(timezone_id2));
+  std::u16string timezone_id1_utf16(base::UTF8ToUTF16(timezone_id1));
+  std::u16string timezone_id2_utf16(base::UTF8ToUTF16(timezone_id2));
 
   chromeos::system::TimezoneSettings* timezone_settings =
       chromeos::system::TimezoneSettings::GetInstance();

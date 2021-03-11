@@ -42,7 +42,7 @@ class ExtensionUninstaller
  private:
   // Overridden from ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override;
+                                        const std::u16string& error) override;
 
   Profile* profile_;
   std::string app_id_;

@@ -83,7 +83,7 @@ class TestBackgroundModeManager : public StrictMock<BackgroundModeManager> {
   MOCK_METHOD1(EnableLaunchOnStartup, void(bool should_launch));
 
   // TODO: Use strict-mocking rather than keeping state through overrides below.
-  void DisplayClientInstalledNotification(const base::string16& name) override {
+  void DisplayClientInstalledNotification(const std::u16string& name) override {
     has_shown_balloon_ = true;
   }
   void CreateStatusTrayIcon() override { have_status_tray_ = true; }
@@ -105,10 +105,10 @@ class TestStatusIcon : public StatusIcon {
  public:
   TestStatusIcon() {}
   void SetImage(const gfx::ImageSkia& image) override {}
-  void SetToolTip(const base::string16& tool_tip) override {}
+  void SetToolTip(const std::u16string& tool_tip) override {}
   void DisplayBalloon(const gfx::ImageSkia& icon,
-                      const base::string16& title,
-                      const base::string16& contents,
+                      const std::u16string& title,
+                      const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override {}
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {}
 

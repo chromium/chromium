@@ -100,7 +100,7 @@ class AnalysisServiceSettings {
   bool block_large_files_ = false;
   bool block_unsupported_file_types_ = false;
   size_t minimum_data_size_ = 100;
-  base::string16 custom_message_text_;
+  std::u16string custom_message_text_;
   GURL custom_message_learn_more_url_;
   std::string service_provider_name_;
 };

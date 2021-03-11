@@ -42,16 +42,16 @@ class StandardManagementPolicyProviderTest : public testing::Test {
 TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
   auto extension = CreateExtension(Manifest::EXTERNAL_POLICY_DOWNLOAD);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   // We won't check the exact wording of the error, but it should say
   // something.
   EXPECT_FALSE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
 
   // Component/policy extensions can modify and disable policy extensions, while
   // all others cannot.
@@ -72,14 +72,14 @@ TEST_F(StandardManagementPolicyProviderTest, RequiredExtension) {
 TEST_F(StandardManagementPolicyProviderTest, ComponentExtension) {
   auto extension = CreateExtension(Manifest::COMPONENT);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   EXPECT_FALSE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
   EXPECT_TRUE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_NE(base::string16(), error16);
+  EXPECT_NE(std::u16string(), error16);
 
   // No extension can modify or disable component extensions.
   auto component = extension;
@@ -99,13 +99,13 @@ TEST_F(StandardManagementPolicyProviderTest, ComponentExtension) {
 TEST_F(StandardManagementPolicyProviderTest, NotRequiredExtension) {
   auto extension = CreateExtension(Manifest::INTERNAL);
 
-  base::string16 error16;
+  std::u16string error16;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
   EXPECT_TRUE(provider_.UserMayModifySettings(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
   EXPECT_FALSE(provider_.MustRemainEnabled(extension.get(), &error16));
-  EXPECT_EQ(base::string16(), error16);
+  EXPECT_EQ(std::u16string(), error16);
 
   // All extension types can modify or disable internal extensions.
   auto component = CreateExtension(Manifest::COMPONENT);

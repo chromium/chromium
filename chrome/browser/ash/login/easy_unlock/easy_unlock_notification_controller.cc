@@ -34,14 +34,14 @@ const char kEasyUnlockPairingChangeAppliedNotifierId[] =
 // Convenience function for creating a Notification.
 std::unique_ptr<message_center::Notification> CreateNotification(
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const gfx::Image& icon,
     const message_center::RichNotificationData& rich_notification_data,
     message_center::NotificationDelegate* delegate) {
   return std::make_unique<message_center::Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-      message, icon, base::string16() /* display_source */,
+      message, icon, std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  id),
@@ -153,7 +153,7 @@ EasyUnlockNotificationController::NotificationDelegate::
 
 void EasyUnlockNotificationController::NotificationDelegate::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (!notification_controller_)
     return;
 

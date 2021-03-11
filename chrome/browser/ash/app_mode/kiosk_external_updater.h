@@ -54,7 +54,7 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
     std::string app_name;
     extensions::CRXFileInfo external_crx;
     UpdateStatus update_status;
-    base::string16 error;
+    std::u16string error;
   };
 
   // chromeos::disks::DiskMountManager::Observer overrides.
@@ -108,7 +108,7 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
   // the local cache. |success| is true if the operation succeeded.
   void OnPutValidatedExtension(const std::string& app_id, bool success);
 
-  void NotifyKioskUpdateProgress(const base::string16& message);
+  void NotifyKioskUpdateProgress(const std::u16string& message);
 
   void MaybeValidateNextExternalUpdate();
 
@@ -122,7 +122,7 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
   void DismissKioskUpdateNotification();
 
   // Return a detailed message for kiosk updating status.
-  base::string16 GetUpdateReportMessage() const;
+  std::u16string GetUpdateReportMessage() const;
 
   // Task runner for executing file I/O tasks.
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

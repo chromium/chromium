@@ -112,7 +112,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
                         int files_count);
 
   // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
@@ -125,7 +125,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
   void ShowResult(ContentAnalysisDelegate::FinalResult result,
-                  const base::string16& custom_message,
+                  const std::u16string& custom_message,
                   const GURL& learn_more_url);
 
   // Accessors to simplify |dialog_status_| checking.
@@ -185,13 +185,13 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   std::unique_ptr<views::View> CreateSideIcon();
 
   // Returns the appropriate dialog message depending on |dialog_status_|.
-  base::string16 GetDialogMessage() const;
+  std::u16string GetDialogMessage() const;
 
   // Returns the text for the Cancel button depending on |dialog_status_|.
-  base::string16 GetCancelButtonText() const;
+  std::u16string GetCancelButtonText() const;
 
   // Returns the text for the Ok button for the warning case.
-  base::string16 GetBypassWarningButtonText() const;
+  std::u16string GetBypassWarningButtonText() const;
 
   // Returns the appropriate paste top image ID depending on |dialog_status_|.
   int GetPasteImageId(bool use_dark) const;
@@ -200,19 +200,19 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   int GetUploadImageId(bool use_dark) const;
 
   // Returns the appropriate pending message depending on |files_count_|.
-  base::string16 GetPendingMessage() const;
+  std::u16string GetPendingMessage() const;
 
   // Returns the appropriate failure message depending on |final_result_| and
   // |files_count_|.
-  base::string16 GetFailureMessage() const;
+  std::u16string GetFailureMessage() const;
 
   // Returns the appropriate warning message depending on |files_count_|.
-  base::string16 GetWarningMessage() const;
+  std::u16string GetWarningMessage() const;
 
   // Returns the appropriate success message depending on |files_count_|.
-  base::string16 GetSuccessMessage() const;
+  std::u16string GetSuccessMessage() const;
 
-  base::string16 GetCustomMessage() const;
+  std::u16string GetCustomMessage() const;
 
   // Show the dialog. Sets |shown_| to true.
   void Show();
@@ -247,7 +247,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Used to show the appropriate message.
   ContentAnalysisDelegate::FinalResult final_result_ =
       ContentAnalysisDelegate::FinalResult::SUCCESS;
-  base::string16 final_custom_message_;
+  std::u16string final_custom_message_;
   GURL final_learn_more_url_;
 
   // Used to animate dialog height changes.

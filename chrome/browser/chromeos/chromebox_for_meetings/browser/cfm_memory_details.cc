@@ -71,7 +71,7 @@ void CfmMemoryDetails::CollectProcessInformation() {
 
       auto& titles = proc_mem_info_mojom->titles;
       titles.reserve(proc_mem_info.titles.size());
-      for (const base::string16& title : proc_mem_info.titles) {
+      for (const std::u16string& title : proc_mem_info.titles) {
         titles.push_back(base::UTF16ToUTF8(title));
       }
 

@@ -353,7 +353,7 @@ void WebstoreInstaller::Observe(int type,
     return;
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and
-  // replacing with base::string16. See crbug.com/71980.
+  // replacing with std::u16string. See crbug.com/71980.
   const extensions::CrxInstallError* error =
       content::Details<const extensions::CrxInstallError>(details).ptr();
   const std::string utf8_error = base::UTF16ToUTF8(error->message());

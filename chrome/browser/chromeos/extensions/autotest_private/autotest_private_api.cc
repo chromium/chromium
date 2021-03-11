@@ -1949,7 +1949,7 @@ AutotestPrivateGetClipboardTextDataFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateGetClipboardTextDataFunction::Run() {
-  base::string16 data;
+  std::u16string data;
   // This clipboard data read is initiated an extension API, then the user
   // shouldn't see a notification if the clipboard is restricted by the rules of
   // data leak prevention policy.
@@ -1977,7 +1977,7 @@ AutotestPrivateSetClipboardTextDataFunction::Run() {
       api::autotest_private::SetClipboardTextData::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const base::string16 data = base::UTF8ToUTF16(params->data);
+  const std::u16string data = base::UTF8ToUTF16(params->data);
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(data);
 

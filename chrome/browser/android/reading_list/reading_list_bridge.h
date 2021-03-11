@@ -15,8 +15,8 @@ class ReadingListBridge : public ReadingListNotificationDelegate {
 
  private:
   // ReadingListNotificationDelegate implementation.
-  base::string16 getNotificationTitle() override;
-  base::string16 getNotificationSubTitle(int unread_size) override;
+  std::u16string getNotificationTitle() override;
+  std::u16string getNotificationSubTitle(int unread_size) override;
   void OpenReadingListPage() override;
 };
 

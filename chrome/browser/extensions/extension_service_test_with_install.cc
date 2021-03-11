@@ -68,12 +68,12 @@ void ExtensionServiceTestWithInstall::InitializeExtensionService(
 }
 
 // static
-std::vector<base::string16> ExtensionServiceTestWithInstall::GetErrors() {
-  const std::vector<base::string16>* errors =
+std::vector<std::u16string> ExtensionServiceTestWithInstall::GetErrors() {
+  const std::vector<std::u16string>* errors =
       LoadErrorReporter::GetInstance()->GetErrors();
-  std::vector<base::string16> ret_val;
+  std::vector<std::u16string> ret_val;
 
-  for (const base::string16& error : *errors) {
+  for (const std::u16string& error : *errors) {
     std::string utf8_error = base::UTF16ToUTF8(error);
     if (utf8_error.find(".svn") == std::string::npos) {
       ret_val.push_back(error);
@@ -207,7 +207,7 @@ const Extension* ExtensionServiceTestWithInstall::VerifyCrxInstall(
     const base::FilePath& path,
     InstallState install_state,
     const std::string& expected_old_name) {
-  std::vector<base::string16> errors = GetErrors();
+  std::vector<std::u16string> errors = GetErrors();
   const Extension* extension = nullptr;
   if (install_state != INSTALL_FAILED) {
     if (install_state == INSTALL_NEW || install_state == INSTALL_WITHOUT_LOAD)
@@ -299,7 +299,7 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
   else
     content::RunAllTasksUntilIdle();
 
-  std::vector<base::string16> errors = GetErrors();
+  std::vector<std::u16string> errors = GetErrors();
   int error_count = errors.size();
   int enabled_extension_count = registry()->enabled_extensions().size();
   int installed_extension_count =

@@ -262,13 +262,13 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
       IsSecondaryEduAccountMigratedForChildUser(
           profile_, account_dummy_token_list.size());
 
-  const base::string16 message_title =
+  const std::u16string message_title =
       are_all_accounts_migrated
           ? l10n_util::GetStringUTF16(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_BUBBLE_VIEW_TITLE)
           : l10n_util::GetStringUTF16(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_TITLE);
-  const base::string16 message_body =
+  const std::u16string message_body =
       are_all_accounts_migrated
           ? GetMessageBody(true /* is_secondary_account_error */)
           : l10n_util::GetStringUTF16(
@@ -320,7 +320,7 @@ void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
   }
 }
 
-base::string16 SigninErrorNotifier::GetMessageBody(
+std::u16string SigninErrorNotifier::GetMessageBody(
     bool is_secondary_account_error) const {
   if (is_secondary_account_error) {
     return l10n_util::GetStringUTF16(

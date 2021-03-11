@@ -45,7 +45,7 @@ void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
 ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     const std::string& url)
     : chromeos::SystemWebDialogDelegate(GURL(url),
-                                        /*title=*/base::string16()) {}
+                                        /*title=*/std::u16string()) {}
 
 ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() {}
 

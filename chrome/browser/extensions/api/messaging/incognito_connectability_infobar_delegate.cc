@@ -16,7 +16,7 @@ namespace extensions {
 // static
 infobars::InfoBar* IncognitoConnectabilityInfoBarDelegate::Create(
     InfoBarService* infobar_service,
-    const base::string16& message,
+    const std::u16string& message,
     IncognitoConnectabilityInfoBarDelegate::InfoBarCallback callback) {
   return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
       std::unique_ptr<ConfirmInfoBarDelegate>(
@@ -25,7 +25,7 @@ infobars::InfoBar* IncognitoConnectabilityInfoBarDelegate::Create(
 }
 
 IncognitoConnectabilityInfoBarDelegate::IncognitoConnectabilityInfoBarDelegate(
-    const base::string16& message,
+    const std::u16string& message,
     InfoBarCallback callback)
     : message_(message), answered_(false), callback_(std::move(callback)) {}
 
@@ -45,11 +45,11 @@ IncognitoConnectabilityInfoBarDelegate::GetIdentifier() const {
   return INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE;
 }
 
-base::string16 IncognitoConnectabilityInfoBarDelegate::GetMessageText() const {
+std::u16string IncognitoConnectabilityInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
-base::string16 IncognitoConnectabilityInfoBarDelegate::GetButtonLabel(
+std::u16string IncognitoConnectabilityInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_PERMISSION_ALLOW
                                                          : IDS_PERMISSION_DENY);

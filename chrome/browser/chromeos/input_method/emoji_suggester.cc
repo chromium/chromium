@@ -131,7 +131,7 @@ void EmojiSuggester::OnEmojiDataLoaded(const std::string& emoji_data) {
     const auto comma_pos = line.find_first_of(",");
     DCHECK(comma_pos != std::string::npos);
     std::string word = line.substr(0, comma_pos);
-    base::string16 emojis = base::UTF8ToUTF16(line.substr(comma_pos + 1));
+    std::u16string emojis = base::UTF8ToUTF16(line.substr(comma_pos + 1));
     // Build emoji_map_ from splitting the string of emojis.
     emoji_map_[word] =
         base::SplitString(emojis, base::UTF8ToUTF16(";"), base::TRIM_WHITESPACE,
@@ -203,7 +203,7 @@ SuggestionStatus EmojiSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
   return SuggestionStatus::kNotHandled;
 }
 
-bool EmojiSuggester::ShouldShowSuggestion(const base::string16& text) {
+bool EmojiSuggester::ShouldShowSuggestion(const std::u16string& text) {
   if (text[text.length() - 1] != kSpaceChar)
     return false;
 
@@ -215,7 +215,7 @@ bool EmojiSuggester::ShouldShowSuggestion(const base::string16& text) {
   return false;
 }
 
-bool EmojiSuggester::Suggest(const base::string16& text) {
+bool EmojiSuggester::Suggest(const std::u16string& text) {
   if (emoji_map_.empty() || text[text.length() - 1] != kSpaceChar)
     return false;
   std::string last_word =

@@ -400,12 +400,12 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
       .WillOnce(Return(true));
 
   MockPlaintextPasswordCallback password_callback;
-  EXPECT_CALL(password_callback, Run(Eq(base::string16())));
+  EXPECT_CALL(password_callback, Run(Eq(std::u16string())));
   delegate.RequestPlaintextPassword(
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
       nullptr);
 
-  base::string16 result;
+  std::u16string result;
   test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
                             /* data_dst = */ nullptr, &result);
   EXPECT_EQ(form.password_value, result);
@@ -478,10 +478,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
       0, api::passwords_private::PLAINTEXT_REASON_COPY, password_callback.Get(),
       nullptr);
   // Clipboard should not be modifiend in case Reauth failed
-  base::string16 result;
+  std::u16string result;
   test_clipboard_->ReadText(ui::ClipboardBuffer::kCopyPaste,
                             /* data_dst = */ nullptr, &result);
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
   EXPECT_EQ(before_call, test_clipboard_->GetLastModifiedTime());
 
   // Since Reauth had failed password was not copied and metric wasn't recorded

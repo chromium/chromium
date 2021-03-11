@@ -71,9 +71,9 @@ void OmniboxPrerender::PrerenderMaybe(
   AutocompleteResult* autocomplete_result =
       reinterpret_cast<AutocompleteResult*>(jsource_match);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile_android);
-  base::string16 url_string =
+  std::u16string url_string =
       base::android::ConvertJavaStringToUTF16(env, j_url);
-  base::string16 current_url_string =
+  std::u16string current_url_string =
       base::android::ConvertJavaStringToUTF16(env, j_current_url);
   content::WebContents* web_contents =
       TabAndroid::GetNativeTab(env, j_tab)->web_contents();

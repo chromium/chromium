@@ -153,7 +153,7 @@ void PlatformAppNavigationRedirectorBrowserTest::TestMismatchingNavigationInTab(
 
   InstallPlatformApp(handler);
 
-  const base::string16 success_title = base::ASCIIToUTF16(success_tab_title);
+  const std::u16string success_title = base::ASCIIToUTF16(success_tab_title);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(tab, success_title);
@@ -176,8 +176,8 @@ void PlatformAppNavigationRedirectorBrowserTest::TestNegativeXhrInTab(
 
   InstallPlatformApp(handler);
 
-  const base::string16 success_title = base::ASCIIToUTF16(success_tab_title);
-  const base::string16 failure_title = base::ASCIIToUTF16(failure_tab_title);
+  const std::u16string success_title = base::ASCIIToUTF16(success_tab_title);
+  const std::u16string failure_title = base::ASCIIToUTF16(failure_tab_title);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(tab, success_title);
@@ -277,7 +277,7 @@ void PlatformAppNavigationRedirectorBrowserTest::
 
   InstallPlatformApp(handler);
 
-  const base::string16 success_title = base::ASCIIToUTF16(success_tab_title);
+  const std::u16string success_title = base::ASCIIToUTF16(success_tab_title);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(tab, success_title);

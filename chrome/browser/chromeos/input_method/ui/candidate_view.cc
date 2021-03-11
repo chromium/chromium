@@ -164,7 +164,7 @@ void CandidateView::SetWidths(int shortcut_width, int candidate_width) {
 }
 
 void CandidateView::SetEntry(const ui::CandidateWindow::Entry& entry) {
-  base::string16 label = entry.label;
+  std::u16string label = entry.label;
   if (!label.empty() && orientation_ != ui::CandidateWindow::VERTICAL)
     label += base::ASCIIToUTF16(".");
   shortcut_label_->SetText(label);

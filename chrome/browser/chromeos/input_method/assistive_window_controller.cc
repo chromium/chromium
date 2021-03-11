@@ -95,7 +95,7 @@ void AssistiveWindowController::OnWidgetClosing(views::Widget* widget) {
 // TODO(crbug/1119570): Update AcceptSuggestion signature (either use
 // announce_string, or no string)
 void AssistiveWindowController::AcceptSuggestion(
-    const base::string16& suggestion) {
+    const std::u16string& suggestion) {
   if (window_.type == ui::ime::AssistiveWindowType::kEmojiSuggestion) {
     tts_handler_->Announce(
         l10n_util::GetStringUTF8(IDS_SUGGESTION_EMOJI_SUGGESTED));
@@ -164,7 +164,7 @@ void AssistiveWindowController::SetButtonHighlighted(
   }
 }
 
-base::string16 AssistiveWindowController::GetSuggestionText() const {
+std::u16string AssistiveWindowController::GetSuggestionText() const {
   return suggestion_text_;
 }
 

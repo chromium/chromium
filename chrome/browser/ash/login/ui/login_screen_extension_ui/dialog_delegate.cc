@@ -37,7 +37,7 @@ ui::ModalType DialogDelegate::GetDialogModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-base::string16 DialogDelegate::GetDialogTitle() const {
+std::u16string DialogDelegate::GetDialogTitle() const {
   return l10n_util::GetStringFUTF16(IDS_LOGIN_EXTENSION_UI_DIALOG_TITLE,
                                     base::UTF8ToUTF16(extension_name_));
 }

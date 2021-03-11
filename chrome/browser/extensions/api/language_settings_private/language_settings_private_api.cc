@@ -666,9 +666,9 @@ void PopulateInputMethodListFromDescriptors(
   }
 
   // Map of sorted [display name -> input methods].
-  std::map<base::string16, language_settings_private::InputMethod,
-           l10n_util::StringComparator<base::string16>>
-      input_map(l10n_util::StringComparator<base::string16>(collator.get()));
+  std::map<std::u16string, language_settings_private::InputMethod,
+           l10n_util::StringComparator<std::u16string>>
+      input_map(l10n_util::StringComparator<std::u16string>(collator.get()));
 
   for (const auto& descriptor : descriptors) {
     language_settings_private::InputMethod input_method;

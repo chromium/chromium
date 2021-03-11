@@ -19,12 +19,12 @@ class FakeUsbChooserController : public ChooserController {
   explicit FakeUsbChooserController(int device_count);
 
   // ChooserController:
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
-  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const override;
   size_t NumOptions() const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   void Select(const std::vector<size_t>& indices) override {}
   void Cancel() override {}
   void Close() override {}

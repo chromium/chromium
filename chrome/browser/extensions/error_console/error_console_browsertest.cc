@@ -34,8 +34,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using base::string16;
 using base::UTF8ToUTF16;
+using std::u16string;
 
 namespace extensions {
 

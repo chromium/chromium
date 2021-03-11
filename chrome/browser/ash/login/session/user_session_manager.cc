@@ -1213,7 +1213,7 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
       profile_path,
       base::BindRepeating(&UserSessionManager::OnProfileCreated, AsWeakPtr(),
                           user_context_, is_demo_session),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 }
 
 void UserSessionManager::OnProfileCreated(const UserContext& user_context,

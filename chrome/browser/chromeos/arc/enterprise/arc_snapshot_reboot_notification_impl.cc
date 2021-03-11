@@ -52,7 +52,7 @@ void ArcSnapshotRebootNotificationImpl::Show() {
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
       l10n_util::GetStringUTF16(IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_MESSAGE),
-      base::string16() /* display_source */, GURL(), notifier_id,
+      std::u16string() /* display_source */, GURL(), notifier_id,
       optional_fields,
       new message_center::HandleNotificationClickDelegate(
           base::BindRepeating(&ArcSnapshotRebootNotificationImpl::HandleClick,

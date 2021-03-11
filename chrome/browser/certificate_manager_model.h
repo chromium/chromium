@@ -51,7 +51,7 @@ class CertificateManagerModel {
 
     CertInfo(net::ScopedCERTCertificate cert,
              net::CertType type,
-             base::string16 name,
+             std::u16string name,
              bool can_be_deleted,
              bool untrusted,
              Source source,
@@ -62,7 +62,7 @@ class CertificateManagerModel {
 
     CERTCertificate* cert() const { return cert_.get(); }
     net::CertType type() const { return type_; }
-    const base::string16& name() const { return name_; }
+    const std::u16string& name() const { return name_; }
     bool can_be_deleted() const { return can_be_deleted_; }
     bool untrusted() const { return untrusted_; }
     Source source() const { return source_; }
@@ -82,7 +82,7 @@ class CertificateManagerModel {
     net::CertType type_;
 
     // A user readable certificate name.
-    base::string16 name_;
+    std::u16string name_;
 
     // false if the certificate is stored on a read-only slot or provided by
     // enterprise policy or an extension, otherwise true.
@@ -198,7 +198,7 @@ class CertificateManagerModel {
   // Returns a net error code on failure.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_extractable);
 
   // Import user certificate from DER encoded |data|.

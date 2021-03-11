@@ -44,7 +44,7 @@ class UserBoardView {
                                        bool multiple_recommended_locales) = 0;
   virtual void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure) = 0;
-  virtual void ShowBannerMessage(const base::string16& message,
+  virtual void ShowBannerMessage(const std::u16string& message,
                                  bool is_warning) = 0;
   virtual void ShowUserPodCustomIcon(
       const AccountId& account_id,
@@ -53,7 +53,7 @@ class UserBoardView {
   virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
   virtual void SetAuthType(const AccountId& account_id,
                            proximity_auth::mojom::AuthType auth_type,
-                           const base::string16& initial_value) = 0;
+                           const std::u16string& initial_value) = 0;
 
   virtual void SetTpmLockedState(const AccountId& account_id,
                                  bool is_locked,

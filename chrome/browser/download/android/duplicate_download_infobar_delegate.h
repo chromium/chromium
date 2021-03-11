@@ -30,7 +30,7 @@ class DuplicateDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   virtual bool DuplicateRequestExists() const;
 
   // ConfirmInfoBarDelegate implementation.
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
 };
 

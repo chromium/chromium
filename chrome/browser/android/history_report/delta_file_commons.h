@@ -39,7 +39,7 @@ class DeltaFileEntryWithData {
   std::string Url() const;
 
   // Returns title of delta file entry.
-  base::string16 Title() const;
+  std::u16string Title() const;
 
   // Returns ranking score of url described by delta file entry.
   int32_t Score() const;
@@ -69,7 +69,7 @@ class DeltaFileEntryWithData {
   bool data_set_;
   history::URLRow data_;
   bool is_bookmark_;
-  base::string16 bookmark_title_;
+  std::u16string bookmark_title_;
 };
 
 }  // namespace history_report

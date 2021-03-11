@@ -181,11 +181,11 @@ class MenuBuilder {
 // For this test, all the extension items have same label
 // |kTestExtensionItemLabel|.
 int CountExtensionItems(const ExtensionContextMenuModel& model) {
-  base::string16 expected_label = base::ASCIIToUTF16(kTestExtensionItemLabel);
+  std::u16string expected_label = base::ASCIIToUTF16(kTestExtensionItemLabel);
   int num_items_found = 0;
   int num_custom_found = 0;
   for (int i = 0; i < model.GetItemCount(); ++i) {
-    base::string16 actual_label = model.GetLabelAt(i);
+    std::u16string actual_label = model.GetLabelAt(i);
     int command_id = model.GetCommandIdAt(i);
     // If the command id is not visible, it should not be counted.
     if (model.IsCommandIdVisible(command_id)) {
@@ -568,9 +568,9 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
   // For laziness.
   const ExtensionContextMenuModel::MenuEntries visibility_command =
       ExtensionContextMenuModel::TOGGLE_VISIBILITY;
-  const base::string16 pin_string =
+  const std::u16string pin_string =
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_PIN_TO_TOOLBAR);
-  const base::string16 unpin_string =
+  const std::u16string unpin_string =
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
 
   {
@@ -647,9 +647,9 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuForcePinned) {
   // For laziness.
   const ExtensionContextMenuModel::MenuEntries visibility_command =
       ExtensionContextMenuModel::TOGGLE_VISIBILITY;
-  const base::string16 unpin_string =
+  const std::u16string unpin_string =
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
-  const base::string16 force_pinned_string =
+  const std::u16string force_pinned_string =
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_PINNED_BY_ADMIN);
 
   {
@@ -1151,7 +1151,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccessMenuOptions) {
     }
 
     // Uninstall the extension so as not to conflict with more additions.
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(service()->UninstallExtension(
         extension->id(), UNINSTALL_REASON_FOR_TESTING, &error));
     EXPECT_TRUE(error.empty()) << error;

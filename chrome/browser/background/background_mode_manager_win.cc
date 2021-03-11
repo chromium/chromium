@@ -37,7 +37,7 @@ void BackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 }
 
 void BackgroundModeManager::DisplayClientInstalledNotification(
-    const base::string16& name) {
+    const std::u16string& name) {
   // Create a status tray notification balloon explaining to the user what has
   // been installed.
   CreateStatusTrayIcon();

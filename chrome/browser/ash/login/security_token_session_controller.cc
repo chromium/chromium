@@ -104,13 +104,13 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
   return true;
 }
 
-void DisplayNotification(const base::string16& title,
-                         const base::string16& text) {
+void DisplayNotification(const std::u16string& title,
+                         const std::u16string& text) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
           text,
-          /*display_source=*/base::string16(), /*origin_url=*/GURL(),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierSecurityTokenSession),

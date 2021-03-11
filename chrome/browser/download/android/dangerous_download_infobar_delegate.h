@@ -35,14 +35,14 @@ class DangerousDownloadInfoBarDelegate
   int GetIconId() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
   bool Cancel() override;
 
   // The download item that is requesting the infobar. Could get deleted while
   // the infobar is showing.
   download::DownloadItem* download_item_;
-  base::string16 message_text_;
+  std::u16string message_text_;
 
   DISALLOW_COPY_AND_ASSIGN(DangerousDownloadInfoBarDelegate);
 };

@@ -191,7 +191,7 @@ void InputMethodEngineBase::ProcessKeyEvent(const ui::KeyEvent& key_event,
   }
 }
 
-void InputMethodEngineBase::SetSurroundingText(const base::string16& text,
+void InputMethodEngineBase::SetSurroundingText(const std::u16string& text,
                                                uint32_t cursor_pos,
                                                uint32_t anchor_pos,
                                                uint32_t offset_pos) {
@@ -233,7 +233,7 @@ bool InputMethodEngineBase::ClearComposition(int context_id,
 }
 
 bool InputMethodEngineBase::CommitText(int context_id,
-                                       const base::string16& text,
+                                       const std::u16string& text,
                                        std::string* error) {
   if (!IsActive()) {
     // TODO: Commit the text anyways.

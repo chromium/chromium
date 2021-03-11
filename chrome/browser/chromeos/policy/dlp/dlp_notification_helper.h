@@ -21,10 +21,10 @@ void ShowDlpPrintDisabledNotification();
 // are shown for them. |app_title| is provided for a customized message.
 void HideDlpScreenCapturePausedNotification(const std::string& capture_id);
 void ShowDlpScreenCapturePausedNotification(const std::string& capture_id,
-                                            const base::string16& app_title);
+                                            const std::u16string& app_title);
 void HideDlpScreenCaptureResumedNotification(const std::string& capture_id);
 void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
-                                             const base::string16& app_title);
+                                             const std::u16string& app_title);
 
 }  // namespace policy
 

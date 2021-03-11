@@ -77,12 +77,12 @@ class FakeProximityAuthPrefManager
 };
 
 // Checks if `input` string has any unreplaced placeholders.
-bool StringHasPlaceholders(const base::string16& input) {
+bool StringHasPlaceholders(const std::u16string& input) {
   std::vector<size_t> offsets;
-  std::vector<base::string16> subst;
-  subst.push_back(base::string16());
+  std::vector<std::u16string> subst;
+  subst.push_back(std::u16string());
 
-  base::string16 replaced =
+  std::u16string replaced =
       base::ReplaceStringPlaceholders(input, subst, &offsets);
   return !offsets.empty();
 }
@@ -97,7 +97,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   ~TestLockHandler() override {}
 
   // proximity_auth::ScreenlockBridge::LockHandler implementation:
-  void ShowBannerMessage(const base::string16& message,
+  void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override {
     ASSERT_FALSE(true) << "Should not be reached.";
   }
@@ -127,7 +127,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   void SetAuthType(const AccountId& account_id,
                    proximity_auth::mojom::AuthType auth_type,
-                   const base::string16& auth_value) override {
+                   const std::u16string& auth_value) override {
     ASSERT_TRUE(account_id_ == account_id)
         << "account_id_=" << account_id_.Serialize()
         << " != account_id=" << account_id.Serialize();
@@ -162,10 +162,10 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // Utility methods used by tests:
 
   // Gets last set auth value.
-  base::string16 GetAuthValue() const { return auth_value_; }
+  std::u16string GetAuthValue() const { return auth_value_; }
 
   // Sets the auth value.
-  void SetAuthValue(const base::string16& value) { auth_value_ = value; }
+  void SetAuthValue(const std::u16string& value) { auth_value_ = value; }
 
   // Returns the number of times an icon was shown since the last call to this
   // method.
@@ -194,8 +194,8 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   }
 
   // Gets the custom icon's tooltip text, if one is set.
-  base::string16 GetCustomIconTooltip() const {
-    base::string16 result;
+  std::u16string GetCustomIconTooltip() const {
+    std::u16string result;
     if (last_custom_icon_)
       last_custom_icon_->GetString("tooltip.text", &result);
     return result;
@@ -227,7 +227,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     EXPECT_TRUE(last_custom_icon_->HasKey("id"));
 
     if (last_custom_icon_->HasKey("tooltip")) {
-      base::string16 tooltip;
+      std::u16string tooltip;
       EXPECT_TRUE(last_custom_icon_->GetString("tooltip.text", &tooltip));
       EXPECT_FALSE(tooltip.empty());
       EXPECT_FALSE(StringHasPlaceholders(tooltip));
@@ -245,7 +245,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   // Auth type and value set using `SetAuthType`.
   proximity_auth::mojom::AuthType auth_type_;
-  base::string16 auth_value_;
+  std::u16string auth_value_;
 
   DISALLOW_COPY_AND_ASSIGN(TestLockHandler);
 };
@@ -559,7 +559,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest,
 
   state_handler_->ChangeState(ScreenlockState::NO_PHONE);
 
-  EXPECT_EQ(base::string16(), lock_handler_->GetAuthValue());
+  EXPECT_EQ(std::u16string(), lock_handler_->GetAuthValue());
 }
 
 TEST_F(EasyUnlockScreenlockStateHandlerTest,
@@ -680,7 +680,7 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, PrimaryUserAbsent) {
 TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {
   lock_handler_->SetAuthType(account_id_,
                              proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-                             base::string16());
+                             std::u16string());
 
   std::vector<ScreenlockState> states;
   states.push_back(ScreenlockState::NO_BLUETOOTH);

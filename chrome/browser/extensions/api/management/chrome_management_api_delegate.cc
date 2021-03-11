@@ -203,7 +203,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
 
   // ExtensionUninstallDialog::Delegate implementation.
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override {
+                                        const std::u16string& error) override {
     function_->OnExtensionUninstallDialogClosed(did_start_uninstall, error);
   }
 
@@ -637,7 +637,7 @@ bool ChromeManagementAPIDelegate::UninstallExtension(
     content::BrowserContext* context,
     const std::string& transient_extension_id,
     extensions::UninstallReason reason,
-    base::string16* error) const {
+    std::u16string* error) const {
   return extensions::ExtensionSystem::Get(context)
       ->extension_service()
       ->UninstallExtension(transient_extension_id, reason, error);

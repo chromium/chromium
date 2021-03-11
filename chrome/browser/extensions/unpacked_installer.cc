@@ -212,7 +212,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
     return;
   }
 
-  base::string16 error_message;
+  std::u16string error_message;
   if (errors.count(PreloadCheck::DISALLOWED_BY_POLICY))
     error_message = policy_check_->GetErrorMessage();
   else

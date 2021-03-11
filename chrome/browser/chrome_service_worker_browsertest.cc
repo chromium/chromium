@@ -89,7 +89,7 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   }
 
   void NavigateToPageAndWaitForReadyTitle(const std::string path) {
-    const base::string16 expected_title1 = base::ASCIIToUTF16("READY");
+    const std::u16string expected_title1 = base::ASCIIToUTF16("READY");
     content::TitleWatcher title_watcher1(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title1);
     ui_test_utils::NavigateToURL(browser(),
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
-  const base::string16 expected_title2 = base::ASCIIToUTF16("Done");
+  const std::u16string expected_title2 = base::ASCIIToUTF16("Done");
   content::TitleWatcher title_watcher2(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title2);
   ui_test_utils::NavigateToURL(
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        StartServiceWorkerAndDispatchMessage) {
   base::RunLoop run_loop;
   blink::TransferableMessage msg;
-  const base::string16 message_data = base::UTF8ToUTF16("testMessage");
+  const std::u16string message_data = base::UTF8ToUTF16("testMessage");
 
   WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
   WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
@@ -352,7 +352,7 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
   void InitializeServiceWorkerFetchTestPage() {
     // The message "READY" will be sent when the service worker is activated.
-    const base::string16 expected_title = base::ASCIIToUTF16("READY");
+    const std::u16string expected_title = base::ASCIIToUTF16("READY");
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
     ui_test_utils::NavigateToURL(browser(),

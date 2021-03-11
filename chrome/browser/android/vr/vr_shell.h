@@ -245,7 +245,7 @@ class VrShell : VoiceResultDelegate,
   content::WebContents* GetActiveWebContents() const override;
   bool ShouldDisplayURL() const override;
 
-  void OnVoiceResults(const base::string16& result) override;
+  void OnVoiceResults(const std::u16string& result) override;
 
   void OnAssetsLoaded(AssetsLoadStatus status,
                       std::unique_ptr<Assets> assets,

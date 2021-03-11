@@ -160,18 +160,18 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
   void WaitUntilCalled() { run_loop_.Run(); }
 
-  const base::string16& inserted_text() const { return inserted_text_; }
+  const std::u16string& inserted_text() const { return inserted_text_; }
 
  private:
   // ui::DummyTextInputClient:
   bool ShouldDoLearning() override { return true; }
-  void InsertText(const base::string16& text,
+  void InsertText(const std::u16string& text,
                   InsertTextCursorBehavior cursor_behavior) override {
     inserted_text_ = text;
     run_loop_.Quit();
   }
 
-  base::string16 inserted_text_;
+  std::u16string inserted_text_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTextInputClient);

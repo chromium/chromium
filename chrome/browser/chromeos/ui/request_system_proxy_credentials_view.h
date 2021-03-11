@@ -40,15 +40,15 @@ class RequestSystemProxyCredentialsView final
 
   // views::DialogDelegateView
   views::View* GetInitiallyFocusedView() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
 
   // Returns the proxy server for which the dialog is asking for credentials,
   // in the format scheme://host:port.
   const std::string& GetProxyServer() const;
 
-  base::string16 GetUsername() const;
-  base::string16 GetPassword() const;
+  std::u16string GetUsername() const;
+  std::u16string GetPassword() const;
 
   views::Textfield* username_textfield_for_testing() {
     return username_textfield_;
@@ -61,7 +61,7 @@ class RequestSystemProxyCredentialsView final
  private:
   void Init();
 
-  const base::string16 window_title_;
+  const std::u16string window_title_;
 
   views::Textfield* username_textfield_ = nullptr;
   views::Textfield* password_textfield_ = nullptr;

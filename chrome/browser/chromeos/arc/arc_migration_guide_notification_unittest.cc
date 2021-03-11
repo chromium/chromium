@@ -37,7 +37,7 @@ TEST_F(ArcMigrationGuideNotificationTest, BatteryPercent) {
       NotificationHandler::Type::TRANSIENT);
   ASSERT_EQ(1U, notifications.size());
   EXPECT_EQ("arc_fs_migration/suggest", notifications[0].id());
-  base::string16 message = notifications[0].message();
+  std::u16string message = notifications[0].message();
   EXPECT_THAT(base::UTF16ToUTF8(notifications[0].message()),
               Not(HasSubstr("charge")));
 

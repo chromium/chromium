@@ -27,7 +27,7 @@ class SupervisedUserManagerImpl : public SupervisedUserManager {
   ~SupervisedUserManagerImpl() override;
 
   std::string GetUserSyncId(const std::string& user_id) const override;
-  base::string16 GetManagerDisplayName(
+  std::u16string GetManagerDisplayName(
       const std::string& user_id) const override;
   std::string GetManagerUserId(const std::string& user_id) const override;
   std::string GetManagerDisplayEmail(const std::string& user_id) const override;

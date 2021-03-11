@@ -25,11 +25,11 @@ namespace {
 
 constexpr char kUserActionNext[] = "next";
 
-base::string16 GetActiveUserName() {
+std::u16string GetActiveUserName() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   if (!user || !user->IsChild())
-    return base::string16();
+    return std::u16string();
   return user->GetDisplayName();
 }
 

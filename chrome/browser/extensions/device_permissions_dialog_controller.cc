@@ -33,15 +33,15 @@ bool DevicePermissionsDialogController::AllowMultipleSelection() const {
   return prompt_->multiple();
 }
 
-base::string16 DevicePermissionsDialogController::GetNoOptionsText() const {
+std::u16string DevicePermissionsDialogController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 DevicePermissionsDialogController::GetOkButtonLabel() const {
+std::u16string DevicePermissionsDialogController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_SELECT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 DevicePermissionsDialogController::GetThrobberLabelAndTooltip() const {
   return {
       l10n_util::GetStringUTF16(IDS_DEVICE_PERMISSIONS_DIALOG_LOADING_LABEL),
@@ -53,9 +53,9 @@ size_t DevicePermissionsDialogController::NumOptions() const {
   return prompt_->GetDeviceCount();
 }
 
-base::string16 DevicePermissionsDialogController::GetOption(
+std::u16string DevicePermissionsDialogController::GetOption(
     size_t index) const {
-  base::string16 device_name = prompt_->GetDeviceName(index);
+  std::u16string device_name = prompt_->GetDeviceName(index);
   const auto& it = device_name_map_.find(device_name);
   DCHECK(it != device_name_map_.end());
   return it->second == 1
@@ -90,7 +90,7 @@ void DevicePermissionsDialogController::OnDevicesInitialized() {
 
 void DevicePermissionsDialogController::OnDeviceAdded(
     size_t index,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (view()) {
     ++device_name_map_[device_name];
     view()->OnOptionAdded(index);
@@ -99,7 +99,7 @@ void DevicePermissionsDialogController::OnDeviceAdded(
 
 void DevicePermissionsDialogController::OnDeviceRemoved(
     size_t index,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   if (view()) {
     DCHECK_GT(device_name_map_[device_name], 0);
     if (--device_name_map_[device_name] == 0)

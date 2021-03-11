@@ -36,7 +36,7 @@ static void OnContextFetchComplete(
 
 // IMPORTANT: The output of this fetch should only be handled in memory safe
 //      languages (Java) and should not be parsed in C++.
-static void ExecuteFetch(const base::string16& script,
+static void ExecuteFetch(const std::u16string& script,
                          const ScopedJavaGlobalRef<jobject>& scoped_jcallback,
                          content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
@@ -55,7 +55,7 @@ static void JNI_WebContextFetcher_FetchContextWithJavascript(
     const JavaParamRef<jobject>& jrender_frame_host) {
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
-  base::string16 script = base::android::ConvertJavaStringToUTF16(env, jscript);
+  std::u16string script = base::android::ConvertJavaStringToUTF16(env, jscript);
   ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
   ExecuteFetch(script, scoped_jcallback, render_frame_host);
 }

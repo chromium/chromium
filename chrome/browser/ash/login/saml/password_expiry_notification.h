@@ -23,7 +23,7 @@ class PasswordExpiryNotification {
 
   // Returns localized title text appropriate for `time_until_expiry`, eg:
   // "Password expires in 7 days".
-  static base::string16 GetTitleText(base::TimeDelta time_until_expiry);
+  static std::u16string GetTitleText(base::TimeDelta time_until_expiry);
 
   // Hides the password expiry notification if it is currently shown.
   static void Dismiss(Profile* profile);

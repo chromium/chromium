@@ -67,7 +67,7 @@ CrostiniExportImportNotificationController::
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id,
-      base::string16(), base::string16(),
+      std::u16string(), std::u16string(),
       gfx::Image(),  // icon
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_EXPORT_IMPORT_NOTIFICATION_DISPLAY_SOURCE),
@@ -185,7 +185,7 @@ void CrostiniExportImportNotificationController::SetStatusCancelledUI() {
 
 void CrostiniExportImportNotificationController::SetStatusFailedWithMessageUI(
     Status status,
-    const base::string16& message) {
+    const std::u16string& message) {
   switch (status) {
     case Status::FAILED_UNKNOWN_REASON:
       delegate_->SetCallback(base::BindRepeating(

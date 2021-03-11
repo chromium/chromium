@@ -795,7 +795,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
   bool UninstallExtension(content::BrowserContext* context,
                           const std::string& transient_extension_id,
                           UninstallReason reason,
-                          base::string16* error) const override {
+                          std::u16string* error) const override {
     return true;
   }
   bool CreateAppShortcutFunctionDelegate(

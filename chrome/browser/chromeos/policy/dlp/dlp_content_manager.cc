@@ -174,7 +174,7 @@ bool DlpContentManager::IsCaptureModeInitRestricted() const {
 void DlpContentManager::OnScreenCaptureStarted(
     const std::string& label,
     std::vector<content::DesktopMediaID> screen_capture_ids,
-    const base::string16& application_title,
+    const std::u16string& application_title,
     content::MediaStreamUI::StateChangeCallback state_change_callback) {
   for (const content::DesktopMediaID& id : screen_capture_ids) {
     ScreenCaptureInfo capture_info(label, id, application_title,
@@ -218,7 +218,7 @@ DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo() = default;
 DlpContentManager::ScreenCaptureInfo::ScreenCaptureInfo(
     const std::string& label,
     const content::DesktopMediaID& media_id,
-    const base::string16& application_title,
+    const std::u16string& application_title,
     content::MediaStreamUI::StateChangeCallback state_change_callback)
     : label(label),
       media_id(media_id),

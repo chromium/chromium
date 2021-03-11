@@ -62,7 +62,7 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
       base::BindRepeating(&LockScreenProfileCreatorImpl::OnProfileReady,
                           weak_ptr_factory_.GetWeakPtr(),
                           tick_clock_->NowTicks()),
-      base::string16() /* name */, "" /* icon_url*/);
+      std::u16string() /* name */, "" /* icon_url*/);
 }
 
 void LockScreenProfileCreatorImpl::InitializeImpl() {

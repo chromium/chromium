@@ -271,7 +271,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     HistoryServiceFactory::GetForProfile(browser()->profile(),
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->QueryHistory(
-            base::string16(), history::QueryOptions(),
+            std::u16string(), history::QueryOptions(),
             base::BindLambdaForTesting(
                 [&](history::QueryResults results) { run_loop.Quit(); }),
             &tracker);

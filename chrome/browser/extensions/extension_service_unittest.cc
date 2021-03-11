@@ -1465,7 +1465,7 @@ TEST_F(ExtensionServiceTest, InstallUserScript) {
       GURL("http://www.aaronboodman.com/scripts/user_script_basic.user.js"));
 
   content::RunAllTasksUntilIdle();
-  std::vector<base::string16> errors = GetErrors();
+  std::vector<std::u16string> errors = GetErrors();
   EXPECT_TRUE(installed_) << "Nothing was installed.";
   EXPECT_FALSE(was_update_) << path.value();
   ASSERT_EQ(1u, loaded_.size()) << "Nothing was loaded.";
@@ -5193,8 +5193,8 @@ namespace {
 void CreateDatabase(storage::DatabaseTracker* db_tracker,
                     const std::string& origin_id) {
   DCHECK(db_tracker->task_runner()->RunsTasksInCurrentSequence());
-  base::string16 db_name = base::UTF8ToUTF16("db");
-  base::string16 description = base::UTF8ToUTF16("db_description");
+  std::u16string db_name = base::UTF8ToUTF16("db");
+  std::u16string description = base::UTF8ToUTF16("db_description");
   int64_t size;
   db_tracker->DatabaseOpened(origin_id, db_name, description, 1, &size);
   db_tracker->DatabaseClosed(origin_id, db_name);
@@ -7594,7 +7594,7 @@ TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   std::string id = (*(registry()->enabled_extensions().begin()))->id();
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(service()->UninstallExtension(id, UNINSTALL_REASON_USER_INITIATED,
                                             nullptr));
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));

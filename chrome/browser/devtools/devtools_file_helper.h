@@ -66,7 +66,7 @@ class DevToolsFileHelper {
 
   using SaveCallback = base::OnceCallback<void(const std::string&)>;
   using ShowInfoBarCallback =
-      base::RepeatingCallback<void(const base::string16&,
+      base::RepeatingCallback<void(const std::u16string&,
                                    base::OnceCallback<void(bool)>)>;
 
   // Saves |content| to the file and associates its path with given |url|.

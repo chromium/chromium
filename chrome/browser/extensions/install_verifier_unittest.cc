@@ -108,7 +108,7 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
     EXPECT_EQ(test_case.expected_from_store_status == FROM_STORE,
               InstallVerifier::IsFromStore(*extension, profile()));
     disable_reason::DisableReason disable_reason;
-    base::string16 error;
+    std::u16string error;
     EXPECT_EQ(
         test_case.expected_must_remain_disabled_status == MUST_REMAIN_DISABLED,
         install_verifier->MustRemainDisabled(extension.get(), &disable_reason,

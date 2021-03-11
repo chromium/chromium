@@ -74,7 +74,7 @@ class UserSelectionScreen
   void SetTpmLockedState(bool is_locked, base::TimeDelta time_left);
 
   // proximity_auth::ScreenlockBridge::LockHandler implementation:
-  void ShowBannerMessage(const base::string16& message,
+  void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override;
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
@@ -85,7 +85,7 @@ class UserSelectionScreen
   void EnableInput() override;
   void SetAuthType(const AccountId& account_id,
                    proximity_auth::mojom::AuthType auth_type,
-                   const base::string16& auth_value) override;
+                   const std::u16string& auth_value) override;
   proximity_auth::mojom::AuthType GetAuthType(
       const AccountId& account_id) const override;
   ScreenType GetScreenType() const override;

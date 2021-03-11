@@ -241,8 +241,8 @@ class EmbedderWebContentsObserver : public content::WebContentsObserver {
 void ExecuteScriptWaitForTitle(content::WebContents* web_contents,
                                const char* script,
                                const char* title) {
-  base::string16 expected_title(base::ASCIIToUTF16(title));
-  base::string16 error_title(base::ASCIIToUTF16("error"));
+  std::u16string expected_title(base::ASCIIToUTF16(title));
+  std::u16string error_title(base::ASCIIToUTF16("error"));
 
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(error_title);

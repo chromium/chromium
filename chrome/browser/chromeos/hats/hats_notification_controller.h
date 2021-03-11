@@ -69,7 +69,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void Initialize(bool is_new_device);
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
   // NetworkPortalDetector::Observer override:
   void OnPortalDetectionCompleted(

@@ -86,7 +86,7 @@ base::OnceClosure& GetRegistrationCBForTesting() {
   return *registration_cb_for_testing;
 }
 
-void ReportUploadsWithUma(const base::string16& upload_results) {
+void ReportUploadsWithUma(const std::u16string& upload_results) {
   base::String16Tokenizer tokenizer(upload_results, u";");
   bool last_result = false;
   while (tokenizer.GetNext()) {
@@ -210,7 +210,7 @@ bool ExtractInvocationSequenceFromManifest(
 
     std::vector<std::wstring> argv = {exe_path.value()};
     for (const auto& value : *arguments) {
-      base::string16 argument;
+      std::u16string argument;
       if (!value.GetAsString(&argument)) {
         ReportConfigurationError(kBadParams);
         return false;

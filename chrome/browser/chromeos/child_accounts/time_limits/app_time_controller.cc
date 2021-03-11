@@ -82,13 +82,13 @@ constexpr char kAppTimeLimitUpdateNotificationId[] = "time-limit-updated-id-";
 // formatted result will be one value or two values: for example if the time
 // delta is 2 hours 30 minutes: |cutoff| of <2 will result in "2 hours" and
 // |cutoff| of 3 will result in "2 hours and 30 minutes".
-base::string16 GetTimeLimitMessage(base::TimeDelta time_limit, int cutoff) {
+std::u16string GetTimeLimitMessage(base::TimeDelta time_limit, int cutoff) {
   return ui::TimeFormat::Detailed(ui::TimeFormat::Format::FORMAT_DURATION,
                                   ui::TimeFormat::Length::LENGTH_LONG, cutoff,
                                   time_limit);
 }
 
-base::string16 GetNotificationTitleFor(const base::string16& app_name,
+std::u16string GetNotificationTitleFor(const std::u16string& app_name,
                                        AppNotification notification) {
   switch (notification) {
     case AppNotification::kFiveMinutes:
@@ -107,8 +107,8 @@ base::string16 GetNotificationTitleFor(const base::string16& app_name,
   }
 }
 
-base::string16 GetNotificationMessageFor(
-    const base::string16& app_name,
+std::u16string GetNotificationMessageFor(
+    const std::u16string& app_name,
     AppNotification notification,
     base::Optional<base::TimeDelta> time_limit) {
   switch (notification) {
@@ -619,13 +619,13 @@ void AppTimeController::ShowNotificationForApp(
          notification == AppNotification::kAvailable || time_limit.has_value());
 
   // Alright we have all the messages that we want.
-  const base::string16 app_name_16 = base::UTF8ToUTF16(app_name);
-  const base::string16 title =
+  const std::u16string app_name_16 = base::UTF8ToUTF16(app_name);
+  const std::u16string title =
       GetNotificationTitleFor(app_name_16, notification);
-  const base::string16 message =
+  const std::u16string message =
       GetNotificationMessageFor(app_name_16, notification, time_limit);
   // Family link display source.
-  const base::string16 notification_source =
+  const std::u16string notification_source =
       l10n_util::GetStringUTF16(IDS_TIME_LIMIT_NOTIFICATION_DISPLAY_SOURCE);
 
   std::string notification_id = GetNotificationIdFor(app_name, notification);

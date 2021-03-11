@@ -43,19 +43,19 @@ SystemProxyNotification::SystemProxyNotification(
 SystemProxyNotification::~SystemProxyNotification() = default;
 
 void SystemProxyNotification::Show() {
-  const base::string16 title =
+  const std::u16string title =
       show_error_ ? l10n_util::GetStringUTF16(
                         IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_ERROR_TITLE)
                   : l10n_util::GetStringUTF16(
                         IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_TITLE);
-  const base::string16 body = l10n_util::GetStringFUTF16(
+  const std::u16string body = l10n_util::GetStringFUTF16(
       IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_BODY,
       base::ASCIIToUTF16(protection_space_.origin()));
 
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
-          body, base::string16() /*display_source=*/, GURL() /*origin_url=*/,
+          body, std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId),
           message_center::RichNotificationData(),

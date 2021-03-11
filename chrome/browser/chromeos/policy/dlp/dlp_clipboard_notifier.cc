@@ -92,7 +92,7 @@ void DlpClipboardNotifier::NotifyBlockedAction(
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
   DCHECK(data_src->origin());
-  const base::string16 host_name =
+  const std::u16string host_name =
       base::UTF8ToUTF16(data_src->origin()->host());
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
@@ -130,7 +130,7 @@ void DlpClipboardNotifier::WarnOnPaste(
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
-  const base::string16 host_name =
+  const std::u16string host_name =
       base::UTF8ToUTF16(data_src->origin()->host());
 
   if (data_dst) {
@@ -180,7 +180,7 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
-  const base::string16 host_name =
+  const std::u16string host_name =
       base::UTF8ToUTF16(data_src->origin()->host());
 
   blink_paste_cb_ = std::move(paste_cb);
@@ -239,7 +239,7 @@ void DlpClipboardNotifier::ResetUserWarnSelection() {
 }
 
 void DlpClipboardNotifier::ShowToast(const std::string& id,
-                                     const base::string16& text) const {
+                                     const std::u16string& text) const {
   ash::ToastData toast(id, text, kClipboardDlpBlockDurationMs,
                        /*dismiss_text=*/base::nullopt);
   toast.is_managed = true;

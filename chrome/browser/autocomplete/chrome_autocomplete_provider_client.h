@@ -59,8 +59,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       KeywordProvider* keyword_provider) override;
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
-  std::vector<base::string16> GetBuiltinURLs() override;
-  std::vector<base::string16> GetBuiltinsToProvideAsUserTypes() override;
+  std::vector<std::u16string> GetBuiltinURLs() override;
+  std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   query_tiles::TileService* GetQueryTileService() const override;
@@ -74,7 +74,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsSyncActive() const override;
   std::string ProfileUserName() const override;
   void Classify(
-      const base::string16& text,
+      const std::u16string& text,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
       metrics::OmniboxEventProto::PageClassification page_classification,
@@ -82,7 +82,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       GURL* alternate_nav_url) override;
   void DeleteMatchingURLsForKeywordFromHistory(
       history::KeywordID keyword_id,
-      const base::string16& term) override;
+      const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
   void StartServiceWorker(const GURL& destination_url) override;
   bool IsTabOpenWithURL(const GURL& url,

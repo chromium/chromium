@@ -549,7 +549,7 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
-base::string16 GetTimeRemainingMessage(base::TimeTicks start, int percent) {
+std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent) {
   // Only estimate once we've spent at least 3 seconds OR gotten 10% of the way
   // through.
   constexpr base::TimeDelta kMinTimeForEstimate =
@@ -568,7 +568,6 @@ base::string16 GetTimeRemainingMessage(base::TimeTicks start, int percent) {
         IDS_CROSTINI_NOTIFICATION_OPERATION_STARTING);
   }
 }
-
 
 const ContainerId& DefaultContainerId() {
   static const base::NoDestructor<ContainerId> container_id(

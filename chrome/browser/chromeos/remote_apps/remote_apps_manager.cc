@@ -76,7 +76,7 @@ class RemoteAppsPlaceholderIcon : public gfx::CanvasImageSource {
  public:
   RemoteAppsPlaceholderIcon(const std::string& name, int32_t size)
       : gfx::CanvasImageSource(gfx::Size(size, size)) {
-    base::string16 sanitized_name = base::UTF8ToUTF16(std::string(name));
+    std::u16string sanitized_name = base::UTF8ToUTF16(std::string(name));
     base::i18n::UnadjustStringForLocaleDirection(&sanitized_name);
     letter_ = sanitized_name.substr(0, 1);
 
@@ -115,7 +115,7 @@ class RemoteAppsPlaceholderIcon : public gfx::CanvasImageSource {
   }
 
   // The first letter of the app's name.
-  base::string16 letter_;
+  std::u16string letter_;
   ui::ResourceBundle::FontStyle font_style_ = ui::ResourceBundle::MediumFont;
 };
 

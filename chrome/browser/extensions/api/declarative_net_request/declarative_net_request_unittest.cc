@@ -189,9 +189,9 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     // Verify the error. Only verify if the |expected_error| is a substring of
     // the actual error, since some string may be prepended/appended while
     // creating the actual error.
-    const std::vector<base::string16>* errors = error_reporter()->GetErrors();
+    const std::vector<std::u16string>* errors = error_reporter()->GetErrors();
     ASSERT_EQ(1u, errors->size());
-    EXPECT_NE(base::string16::npos,
+    EXPECT_NE(std::u16string::npos,
               errors->at(0).find(base::UTF8ToUTF16(error_with_filename)))
         << "expected: " << error_with_filename << " actual: " << errors->at(0);
 
@@ -325,7 +325,7 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     ASSERT_TRUE(result->is_list());
     const base::ListValue& ids_value = base::Value::AsListValue(*result);
 
-    base::string16 error;
+    std::u16string error;
     std::vector<std::string> actual_ids;
     for (const auto& val : ids_value)
       actual_ids.push_back(val.GetString());

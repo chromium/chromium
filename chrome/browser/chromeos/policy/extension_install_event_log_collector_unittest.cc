@@ -529,7 +529,7 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
       kExtensionId1,
       extensions::CrxInstallError(
           extensions::SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
-          base::string16()));
+          std::u16string()));
   ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
                                            0 /*expected_add_all_count*/));
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,

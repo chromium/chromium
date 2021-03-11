@@ -40,7 +40,7 @@ using AcceptMap = decltype(blink::Manifest::FileHandler::accept);
 // web app manifest's `accept` property.
 AcceptMap MakeHandlerAccept() {
   AcceptMap result;
-  const base::string16 separator = base::ASCIIToUTF16(",");
+  const std::u16string separator = base::ASCIIToUTF16(",");
   for (const auto& handler : kFileHandlers) {
     result[base::ASCIIToUTF16(std::get<0>(handler))] =
         base::SplitString(base::ASCIIToUTF16(std::get<1>(handler)), separator,

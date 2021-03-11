@@ -28,7 +28,7 @@ permissions::RequestType DownloadPermissionRequest::GetRequestType() const {
 }
 
 #if defined(OS_ANDROID)
-base::string16 DownloadPermissionRequest::GetMessageText() const {
+std::u16string DownloadPermissionRequest::GetMessageText() const {
   return l10n_util::GetStringFUTF16(
       IDS_MULTI_DOWNLOAD_WARNING, url_formatter::FormatOriginForSecurityDisplay(
                                       request_origin_,
@@ -37,7 +37,7 @@ base::string16 DownloadPermissionRequest::GetMessageText() const {
 }
 #endif
 
-base::string16 DownloadPermissionRequest::GetMessageTextFragment() const {
+std::u16string DownloadPermissionRequest::GetMessageTextFragment() const {
   return l10n_util::GetStringUTF16(IDS_MULTI_DOWNLOAD_PERMISSION_FRAGMENT);
 }
 

@@ -150,8 +150,8 @@ class DemoSetupController
     ErrorCode error_code() const { return error_code_; }
     RecoveryMethod recovery_method() const { return recovery_method_; }
 
-    base::string16 GetLocalizedErrorMessage() const;
-    base::string16 GetLocalizedRecoveryMessage() const;
+    std::u16string GetLocalizedErrorMessage() const;
+    std::u16string GetLocalizedRecoveryMessage() const;
     std::string GetDebugDescription() const;
 
    private:

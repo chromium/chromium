@@ -55,8 +55,8 @@ class ChromeExtensionWebContentsObserver
   // Adds a message to the extensions ErrorConsole.
   void OnDetailedConsoleMessageAdded(
       content::RenderFrameHost* render_frame_host,
-      const base::string16& message,
-      const base::string16& source,
+      const std::u16string& message,
+      const std::u16string& source,
       const StackTrace& stack_trace,
       int32_t severity_level);
 

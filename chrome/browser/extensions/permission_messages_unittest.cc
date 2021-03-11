@@ -68,7 +68,7 @@ class PermissionMessagesUnittest : public testing::Test {
 
   // Returns the permission messages that would display in the prompt that
   // requests all the optional permissions for the current |app_|.
-  std::vector<base::string16> GetOptionalPermissionMessages() {
+  std::vector<std::u16string> GetOptionalPermissionMessages() {
     std::unique_ptr<const PermissionSet> granted_permissions =
         env_.GetExtensionPrefs()->GetGrantedPermissions(app_->id());
     const PermissionSet& optional_permissions =
@@ -85,21 +85,21 @@ class PermissionMessagesUnittest : public testing::Test {
         PermissionsParser::GetOptionalPermissions(app_.get()));
   }
 
-  std::vector<base::string16> active_permissions() {
+  std::vector<std::u16string> active_permissions() {
     return GetMessages(app_->permissions_data()->active_permissions());
   }
 
-  std::vector<base::string16> required_permissions() {
+  std::vector<std::u16string> required_permissions() {
     return GetMessages(PermissionsParser::GetRequiredPermissions(app_.get()));
   }
 
-  std::vector<base::string16> optional_permissions() {
+  std::vector<std::u16string> optional_permissions() {
     return GetMessages(PermissionsParser::GetOptionalPermissions(app_.get()));
   }
 
  private:
-  std::vector<base::string16> GetMessages(const PermissionSet& permissions) {
-    std::vector<base::string16> messages;
+  std::vector<std::u16string> GetMessages(const PermissionSet& permissions) {
+    std::vector<std::u16string> messages;
     for (const PermissionMessage& msg :
          message_provider_->GetPermissionMessages(
              message_provider_->GetAllPermissionIDs(permissions,
@@ -337,7 +337,7 @@ TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
   PermissionMessages messages = GetMessages(permission.GetPermissions());
   ASSERT_EQ(1U, messages.size());
   EXPECT_EQ(base::ASCIIToUTF16(kMessage), messages.front().message());
-  const std::vector<base::string16>& submessages =
+  const std::vector<std::u16string>& submessages =
       messages.front().submessages();
   ASSERT_EQ(base::size(kDetails), submessages.size());
   for (size_t i = 0; i < submessages.size(); i++)

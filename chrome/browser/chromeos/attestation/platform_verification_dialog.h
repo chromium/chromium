@@ -48,7 +48,7 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
 
  private:
   PlatformVerificationDialog(content::WebContents* web_contents,
-                             const base::string16& domain,
+                             const std::u16string& domain,
                              ConsentCallback callback);
 
   // content::WebContentsObserver:
@@ -57,7 +57,7 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
 
   void ButtonPressed();
 
-  base::string16 domain_;
+  std::u16string domain_;
   ConsentCallback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformVerificationDialog);

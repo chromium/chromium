@@ -39,11 +39,11 @@ class InputConnectionImpl : public mojom::InputConnection {
       bool is_input_state_update_requested) const;
 
   // mojom::InputConnection overrides:
-  void CommitText(const base::string16& text, int new_cursor_pos) override;
+  void CommitText(const std::u16string& text, int new_cursor_pos) override;
   void DeleteSurroundingText(int before, int after) override;
   void FinishComposingText() override;
   void SetComposingText(
-      const base::string16& text,
+      const std::u16string& text,
       int new_cursor_pos,
       const base::Optional<gfx::Range>& new_selection_range) override;
   void RequestTextInputState(
@@ -59,7 +59,7 @@ class InputConnectionImpl : public mojom::InputConnection {
   // starting timer is after API call, the timer won't be cancelled.
   void StartStateUpdateTimer();
 
-  void SendControlKeyEvent(const base::string16& text);
+  void SendControlKeyEvent(const std::u16string& text);
 
   chromeos::InputMethodEngine* const ime_engine_;  // Not owned
   ArcInputMethodManagerBridge* const imm_bridge_;  // Not owned

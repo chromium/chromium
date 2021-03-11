@@ -125,7 +125,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   void ClickButton(const ui::ime::AssistiveWindowButton& button) override;
 
   bool AcceptSuggestionCandidate(int context_id,
-                                 const base::string16& candidate,
+                                 const std::u16string& candidate,
                                  std::string* error) override;
 
   bool SetAssistiveWindowProperties(
@@ -202,7 +202,7 @@ class InputMethodEngine : public InputMethodEngineBase,
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
 
   void CommitTextToInputContext(int context_id,
-                                const base::string16& text) override;
+                                const std::u16string& text) override;
 
   bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) override;
 

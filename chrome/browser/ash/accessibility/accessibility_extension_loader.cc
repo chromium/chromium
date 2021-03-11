@@ -129,7 +129,7 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
 
   auto* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
-  base::string16 error;
+  std::u16string error;
   extension_service->UninstallExtension(
       extension_id_, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL,
       &error);

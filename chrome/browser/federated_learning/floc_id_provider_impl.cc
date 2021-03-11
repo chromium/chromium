@@ -334,7 +334,7 @@ void FlocIdProviderImpl::GetRecentlyVisitedURLs(
   options.end_time = now;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
-  history_service_->QueryHistory(base::string16(), options, std::move(callback),
+  history_service_->QueryHistory(std::u16string(), options, std::move(callback),
                                  &history_task_tracker_);
 }
 

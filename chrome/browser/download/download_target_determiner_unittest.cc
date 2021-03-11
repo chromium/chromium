@@ -2467,10 +2467,8 @@ class ScopedRegisterInternalPlugin {
     content::WebPluginMimeType plugin_mime_type(mime_type,
                                                 extension,
                                                 "Test file");
-    content::WebPluginInfo plugin_info(base::string16(),
-                                       path,
-                                       base::string16(),
-                                       base::string16());
+    content::WebPluginInfo plugin_info(std::u16string(), path, std::u16string(),
+                                       std::u16string());
     plugin_info.mime_types.push_back(plugin_mime_type);
     plugin_info.type = type;
 

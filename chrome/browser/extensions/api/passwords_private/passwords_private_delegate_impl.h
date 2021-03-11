@@ -51,8 +51,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
   bool ChangeSavedPassword(const std::vector<int>& ids,
-                           const base::string16& new_username,
-                           const base::string16& new_password) override;
+                           const std::u16string& new_username,
+                           const std::u16string& new_password) override;
   void RemoveSavedPasswords(const std::vector<int>& ids) override;
   void RemovePasswordExceptions(const std::vector<int>& ids) override;
   void UndoRemoveSavedPasswordOrException() override;

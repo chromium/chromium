@@ -512,7 +512,7 @@ void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
     return;
   }
 
-  base::string16 error;
+  std::u16string error;
   extensions::ExtensionSystem::Get(lock_screen_profile_)
       ->extension_service()
       ->UninstallExtension(

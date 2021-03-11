@@ -337,12 +337,12 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
                    const base::DictionaryValue* forcelist,
                    const base::ListValue* allowed_types,
                    const Extension* extension,
-                   base::string16* error);
-  bool UserMayModifySettings(const Extension* extension, base::string16* error);
+                   std::u16string* error);
+  bool UserMayModifySettings(const Extension* extension, std::u16string* error);
   bool ExtensionMayModifySettings(const Extension* source_extension,
                                   const Extension* extension,
-                                  base::string16* error);
-  bool MustRemainEnabled(const Extension* extension, base::string16* error);
+                                  std::u16string* error);
+  bool MustRemainEnabled(const Extension* extension, std::u16string* error);
 
  protected:
   std::unique_ptr<StandardManagementPolicyProvider> provider_;
@@ -363,7 +363,7 @@ bool ExtensionAdminPolicyTest::UserMayLoad(
     const base::DictionaryValue* forcelist,
     const base::ListValue* allowed_types,
     const Extension* extension,
-    base::string16* error) {
+    std::u16string* error) {
   SetUpPolicyProvider();
   if (blocklist)
     SetPref(true, pref_names::kInstallDenyList, blocklist->CreateDeepCopy());
@@ -377,7 +377,7 @@ bool ExtensionAdminPolicyTest::UserMayLoad(
 }
 
 bool ExtensionAdminPolicyTest::UserMayModifySettings(const Extension* extension,
-                                                     base::string16* error) {
+                                                     std::u16string* error) {
   SetUpPolicyProvider();
   return provider_->UserMayModifySettings(extension, error);
 }
@@ -385,14 +385,14 @@ bool ExtensionAdminPolicyTest::UserMayModifySettings(const Extension* extension,
 bool ExtensionAdminPolicyTest::ExtensionMayModifySettings(
     const Extension* source_extension,
     const Extension* extension,
-    base::string16* error) {
+    std::u16string* error) {
   SetUpPolicyProvider();
   return provider_->ExtensionMayModifySettings(source_extension, extension,
                                                error);
 }
 
 bool ExtensionAdminPolicyTest::MustRemainEnabled(const Extension* extension,
-                                                 base::string16* error) {
+                                                 std::u16string* error) {
   SetUpPolicyProvider();
   return provider_->MustRemainEnabled(extension, error);
 }
@@ -1053,7 +1053,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadRequired) {
   CreateExtension(Manifest::COMPONENT);
   EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
                           nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(UserMayLoad(nullptr, nullptr, nullptr, nullptr, extension_.get(),
                           &error));
   EXPECT_TRUE(error.empty());
@@ -1077,7 +1077,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadNoBlocklist) {
   base::ListValue blocklist;
   EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                           extension_.get(), nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                           extension_.get(), &error));
   EXPECT_TRUE(error.empty());
@@ -1096,7 +1096,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowlisted) {
   blocklist.AppendString(extension_->id());
   EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
                           extension_.get(), nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(UserMayLoad(nullptr, &allowlist, nullptr, nullptr,
                           extension_.get(), &error));
   EXPECT_TRUE(error.empty());
@@ -1111,7 +1111,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadBlocklisted) {
   blocklist.AppendString("*");
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_FALSE(UserMayLoad(&blocklist, nullptr, nullptr, nullptr,
                            extension_.get(), &error));
   EXPECT_FALSE(error.empty());
@@ -1160,7 +1160,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowedTypes) {
 TEST_F(ExtensionAdminPolicyTest, UserMayModifySettings) {
   CreateExtension(Manifest::INTERNAL);
   EXPECT_TRUE(UserMayModifySettings(extension_.get(), nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(UserMayModifySettings(extension_.get(), &error));
   EXPECT_TRUE(error.empty());
 
@@ -1204,7 +1204,7 @@ TEST_F(ExtensionAdminPolicyTest, ExtensionMayModifySettings) {
 TEST_F(ExtensionAdminPolicyTest, MustRemainEnabled) {
   CreateExtension(Manifest::EXTERNAL_POLICY_DOWNLOAD);
   EXPECT_TRUE(MustRemainEnabled(extension_.get(), nullptr));
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(MustRemainEnabled(extension_.get(), &error));
   EXPECT_FALSE(error.empty());
 

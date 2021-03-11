@@ -92,7 +92,7 @@ class EasyUnlockScreenlockStateHandler
 
   // Gets the name to be used for the device. The name depends on the device
   // type (example values: Chromebook and Chromebox).
-  base::string16 GetDeviceName();
+  std::u16string GetDeviceName();
 
   // Updates the screenlock auth type if it has to be changed.
   void UpdateScreenlockAuthType();

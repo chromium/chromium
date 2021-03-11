@@ -247,7 +247,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // |accept_types| contains only valid lowercased MIME types or file extensions
   // beginning with a period (.).
   static std::unique_ptr<ui::SelectFileDialog::FileTypeInfo>
-  GetFileTypesFromAcceptType(const std::vector<base::string16>& accept_types);
+  GetFileTypesFromAcceptType(const std::vector<std::u16string>& accept_types);
 
   // Check the accept type is valid. It is expected to be all lower case with
   // no whitespace.

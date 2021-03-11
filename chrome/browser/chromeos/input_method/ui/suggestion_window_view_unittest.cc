@@ -78,7 +78,7 @@ class SuggestionWindowViewTest : public ChromeViewsTestBase {
   SuggestionWindowView* suggestion_window_view_;
   std::unique_ptr<MockAssistiveDelegate> delegate_ =
       std::make_unique<MockAssistiveDelegate>();
-  std::vector<base::string16> candidates_;
+  std::vector<std::u16string> candidates_;
   chromeos::AssistiveWindowProperties window_;
   AssistiveWindowButton candidate_button_;
   AssistiveWindowButton setting_link_view_;

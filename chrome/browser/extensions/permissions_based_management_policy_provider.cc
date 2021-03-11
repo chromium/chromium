@@ -38,7 +38,7 @@ PermissionsBasedManagementPolicyProvider::GetDebugPolicyProviderName() const {
 
 bool PermissionsBasedManagementPolicyProvider::UserMayLoad(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   // Component extensions are always allowed.
   if (Manifest::IsComponentLocation(extension->location()))
     return true;

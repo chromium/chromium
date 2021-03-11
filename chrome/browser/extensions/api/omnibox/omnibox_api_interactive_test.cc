@@ -63,7 +63,7 @@ AutocompleteController* GetAutocompleteController(Browser* browser) {
       ->autocomplete_controller();
 }
 
-base::string16 AutocompleteResultAsString(const AutocompleteResult& result) {
+std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
   std::string output(base::StringPrintf("{%" PRIuS "} ", result.size()));
   for (size_t i = 0; i < result.size(); ++i) {
     AutocompleteMatch match = result.match_at(i);
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(3).provider->type());
 
-    base::string16 description =
+    std::u16string description =
         ASCIIToUTF16("Description with style: <match>, [dim], (url till end)");
     EXPECT_EQ(description, result.match_at(1).contents);
     ASSERT_EQ(6u, result.match_at(1).contents_class.size());

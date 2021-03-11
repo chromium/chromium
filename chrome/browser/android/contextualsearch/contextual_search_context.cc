@@ -124,13 +124,13 @@ int ContextualSearchContext::GetPreviousEventResults() const {
 void ContextualSearchContext::SetSelectionSurroundings(
     int start_offset,
     int end_offset,
-    const base::string16& surrounding_text) {
+    const std::u16string& surrounding_text) {
   this->start_offset_ = start_offset;
   this->end_offset_ = end_offset;
   this->surrounding_text_ = surrounding_text;
 }
 
-const base::string16 ContextualSearchContext::GetSurroundingText() const {
+const std::u16string ContextualSearchContext::GetSurroundingText() const {
   return surrounding_text_;
 }
 
@@ -189,7 +189,7 @@ ContextualSearchContext::GetTranslationLanguages() const {
 }
 
 std::string ContextualSearchContext::GetReliableLanguage(
-    const base::string16& contents) const {
+    const std::u16string& contents) const {
   std::string model_detected_language;
   bool is_model_reliable;
   float model_reliability_score;
@@ -203,7 +203,7 @@ std::string ContextualSearchContext::GetReliableLanguage(
   return language;
 }
 
-base::string16 ContextualSearchContext::GetSelection() const {
+std::u16string ContextualSearchContext::GetSelection() const {
   int start = this->start_offset_;
   int end = this->end_offset_;
   DCHECK(start >= 0);

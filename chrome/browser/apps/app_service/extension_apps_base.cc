@@ -507,7 +507,7 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
     return;
   }
 
-  base::string16 error;
+  std::u16string error;
   extensions::ExtensionSystem::Get(profile())
       ->extension_service()
       ->UninstallExtension(app_id, GetUninstallReason(uninstall_source),

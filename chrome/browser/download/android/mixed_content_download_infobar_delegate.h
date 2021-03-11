@@ -40,15 +40,15 @@ class MixedContentDownloadInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetIconId() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
   // Calls callback_ with the appropriate result.
   void PostReply(bool should_download);
 
-  base::string16 message_text_;
+  std::u16string message_text_;
   download::DownloadItem::MixedContentStatus mixed_content_status_;
   ResultCallback callback_;
 

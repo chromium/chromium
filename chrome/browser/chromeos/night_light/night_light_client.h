@@ -52,7 +52,7 @@ class NightLightClient : public ash::NightLightController::Observer,
     return last_successful_geo_request_time_;
   }
 
-  const base::string16& current_timezone_id() const {
+  const std::u16string& current_timezone_id() const {
     return current_timezone_id_;
   }
 
@@ -64,7 +64,7 @@ class NightLightClient : public ash::NightLightController::Observer,
 
   void SetClockForTesting(base::Clock* clock);
 
-  void SetCurrentTimezoneIdForTesting(const base::string16& timezone_id);
+  void SetCurrentTimezoneIdForTesting(const std::u16string& timezone_id);
 
  protected:
   void OnGeoposition(const chromeos::Geoposition& position,
@@ -102,7 +102,7 @@ class NightLightClient : public ash::NightLightController::Observer,
   double longitude_ = 0.0;
 
   // The ID of the current timezone in the fromat similar to "America/Chicago".
-  base::string16 current_timezone_id_;
+  std::u16string current_timezone_id_;
 
   // True as long as the schedule type is set to "sunset to sunrise" or
   // "custom", which means this client will be retrieving the IP-based

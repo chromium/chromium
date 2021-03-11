@@ -17,15 +17,15 @@ class KioskExternalUpdateNotificationView;
 // Provides the UI showing kiosk external update status to admin.
 class KioskExternalUpdateNotification {
  public:
-  explicit KioskExternalUpdateNotification(const base::string16& message);
+  explicit KioskExternalUpdateNotification(const std::u16string& message);
   virtual ~KioskExternalUpdateNotification();
 
-  void ShowMessage(const base::string16& message);
+  void ShowMessage(const std::u16string& message);
 
  private:
   friend class KioskExternalUpdateNotificationView;
   void Dismiss();
-  void CreateAndShowNotificationView(const base::string16& message);
+  void CreateAndShowNotificationView(const std::u16string& message);
 
   KioskExternalUpdateNotificationView* view_;  // Owned by views hierarchy.
 

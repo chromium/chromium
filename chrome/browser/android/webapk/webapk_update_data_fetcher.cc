@@ -242,8 +242,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
         (info_.share_target->enctype ==
          blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData);
 
-    std::vector<base::string16> file_names;
-    std::vector<std::vector<base::string16>> accepts;
+    std::vector<std::u16string> file_names;
+    std::vector<std::vector<std::u16string>> accepts;
     for (auto& f : info_.share_target->params.files) {
       file_names.push_back(f.name);
       accepts.push_back(f.accept);
@@ -257,7 +257,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   // Wraps the shortcut info in a 2D vector for convenience.
   // The inner vector represents a shortcut items, with the following fields:
   // <name>, <short name>, <launch url>, <icon url>, <icon hash>.
-  std::vector<std::vector<base::string16>> shortcuts;
+  std::vector<std::vector<std::u16string>> shortcuts;
   DCHECK_EQ(info_.shortcut_items.size(), info_.best_shortcut_icon_urls.size());
 
   for (size_t i = 0; i < info_.shortcut_items.size(); i++) {
@@ -273,7 +273,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
     }
 
     shortcuts.push_back({shortcut.name,
-                         shortcut.short_name.value_or(base::string16()),
+                         shortcut.short_name.value_or(std::u16string()),
                          base::UTF8ToUTF16(shortcut.url.spec()),
                          base::UTF8ToUTF16(chosen_icon_url.spec()),
                          base::UTF8ToUTF16(chosen_icon_hash),

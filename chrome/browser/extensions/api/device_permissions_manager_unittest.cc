@@ -337,10 +337,10 @@ TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
 }
 
 TEST_F(DevicePermissionsManagerTest, PermissionMessages) {
-  base::string16 empty;
-  base::string16 product(base::ASCIIToUTF16("Widget"));
-  base::string16 manufacturer(base::ASCIIToUTF16("ACME"));
-  base::string16 serial_number(base::ASCIIToUTF16("A"));
+  std::u16string empty;
+  std::u16string product(base::ASCIIToUTF16("Widget"));
+  std::u16string manufacturer(base::ASCIIToUTF16("ACME"));
+  std::u16string serial_number(base::ASCIIToUTF16("A"));
 
   EXPECT_EQ(base::ASCIIToUTF16("Unknown product 0001 from vendor 0000"),
             DevicePermissionsManager::GetPermissionMessage(

@@ -105,7 +105,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
       close_run_loop.QuitClosure());
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::TRANSIENT, kNotificationIds[GetNotifyType()],
-      base::Optional<int>(), base::Optional<base::string16>());
+      base::Optional<int>(), base::Optional<std::u16string>());
   close_run_loop.Run();
 
   EXPECT_FALSE(GetNotification().has_value());

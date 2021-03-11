@@ -32,7 +32,7 @@ const char kCupsPrintJobNotificationId[] =
 
 const int64_t kSuccessTimeoutSeconds = 8;
 
-base::string16 GetNotificationTitleForError(
+std::u16string GetNotificationTitleForError(
     const base::WeakPtr<CupsPrintJob>& print_job) {
   DCHECK_EQ(CupsPrintJob::State::STATE_ERROR, print_job->state());
 
@@ -81,8 +81,8 @@ CupsPrintJobNotification::CupsPrintJobNotification(
   // notification will be updated in UpdateNotification().
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      base::string16(),  // title
-      base::string16(),  // body
+      std::u16string(),  // title
+      std::u16string(),  // body
       gfx::Image(),      // icon
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
       GURL(kCupsPrintJobNotificationId),
@@ -113,7 +113,7 @@ void CupsPrintJobNotification::Close(bool by_user) {
 
 void CupsPrintJobNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   // If we are in guest mode then we need to use the OffTheRecord profile to
   // open the Print Manageament App. There is a check in Browser::Browser
   // that only OffTheRecord profiles can open browser windows in guest mode.
@@ -172,7 +172,7 @@ void CupsPrintJobNotification::UpdateNotification() {
 void CupsPrintJobNotification::UpdateNotificationTitle() {
   if (!print_job_)
     return;
-  base::string16 title;
+  std::u16string title;
   switch (print_job_->state()) {
     case CupsPrintJob::State::STATE_WAITING:
     case CupsPrintJob::State::STATE_STARTED:
@@ -228,7 +228,7 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
 void CupsPrintJobNotification::UpdateNotificationBodyMessage() {
   if (!print_job_)
     return;
-  base::string16 message;
+  std::u16string message;
   if (print_job_->total_page_number() > 1) {
     message = l10n_util::GetStringFUTF16(
         IDS_PRINT_JOB_NOTIFICATION_MESSAGE,

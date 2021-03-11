@@ -61,7 +61,7 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
     for (const SavedFileEntry& entry : retained_file_entries)
       retained_file_paths.push_back(entry.path);
   }
-  std::vector<base::string16> retained_device_messages;
+  std::vector<std::u16string> retained_device_messages;
   if (extension->permissions_data()->HasAPIPermission(APIPermission::kUsb)) {
     retained_device_messages =
         DevicePermissionsManager::Get(profile_)

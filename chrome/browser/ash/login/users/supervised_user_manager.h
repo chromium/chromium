@@ -43,7 +43,7 @@ class SupervisedUserManager {
   // Returns the display name for manager of user `user_id` if it is known
   // (was previously set by a `SaveUserDisplayName` call).
   // Otherwise, returns a manager id.
-  virtual base::string16 GetManagerDisplayName(
+  virtual std::u16string GetManagerDisplayName(
       const std::string& user_id) const = 0;
 
   // Returns the user id for manager of user `user_id` if it is known (user is

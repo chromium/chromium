@@ -320,7 +320,7 @@ std::string InstallVerifier::GetDebugPolicyProviderName() const {
 
 bool InstallVerifier::MustRemainDisabled(const Extension* extension,
                                          disable_reason::DisableReason* reason,
-                                         base::string16* error) const {
+                                         std::u16string* error) const {
   CHECK(extension);
   if (!CanUseExtensionApis(*extension))
     return false;

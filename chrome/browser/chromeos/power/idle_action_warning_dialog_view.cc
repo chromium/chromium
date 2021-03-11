@@ -72,7 +72,7 @@ void IdleActionWarningDialogView::Update(base::TimeTicks idle_action_time) {
   UpdateTitle();
 }
 
-base::string16 IdleActionWarningDialogView::GetWindowTitle() const {
+std::u16string IdleActionWarningDialogView::GetWindowTitle() const {
   const base::TimeDelta time_until_idle_action =
       std::max(idle_action_time_ - base::TimeTicks::Now(), base::TimeDelta());
   return l10n_util::GetStringFUTF16(

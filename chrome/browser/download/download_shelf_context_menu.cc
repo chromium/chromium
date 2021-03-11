@@ -109,7 +109,7 @@ bool DownloadShelfContextMenu::IsItemForCommandIdDynamic(int command_id) const {
   return false;
 }
 
-base::string16 DownloadShelfContextMenu::GetLabelForCommandId(
+std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     int command_id) const {
   int id = -1;
 

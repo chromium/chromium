@@ -164,7 +164,7 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
 void ApplyDefaultSuggestionForExtensionKeyword(
     Profile* profile,
     const TemplateURL* keyword,
-    const base::string16& remaining_input,
+    const std::u16string& remaining_input,
     AutocompleteMatch* match);
 
 // This function converts style information populated by the JSON schema

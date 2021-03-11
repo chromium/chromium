@@ -16,12 +16,12 @@ namespace chromeos {
 class Printer;
 class UsbPrinterId;
 
-base::string16 GetManufacturerName(
+std::u16string GetManufacturerName(
     const device::mojom::UsbDeviceInfo& device_info);
 
-base::string16 GetProductName(const device::mojom::UsbDeviceInfo& device_info);
+std::u16string GetProductName(const device::mojom::UsbDeviceInfo& device_info);
 
-base::string16 GetSerialNumber(const device::mojom::UsbDeviceInfo& device_info);
+std::u16string GetSerialNumber(const device::mojom::UsbDeviceInfo& device_info);
 
 bool UsbDeviceIsPrinter(const device::mojom::UsbDeviceInfo& device_info);
 

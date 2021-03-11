@@ -41,7 +41,7 @@ class SearchPermissionsService : public KeyedService {
     virtual ~SearchEngineDelegate() {}
 
     // Returns the name of the current DSE.
-    virtual base::string16 GetDSEName() = 0;
+    virtual std::u16string GetDSEName() = 0;
 
     // Returns the origin of the DSE. If the current DSE is Google this will
     // return the current CCTLD.

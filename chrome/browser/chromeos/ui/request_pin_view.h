@@ -59,13 +59,13 @@ class RequestPinView final : public views::DialogDelegateView,
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   // views::DialogDelegateView:
   bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // |code_type| - specifies whether the user is asked to enter PIN or PUK.
   // |error_label| - the error template to be displayed in red in the dialog. If
@@ -104,9 +104,9 @@ class RequestPinView final : public views::DialogDelegateView,
   // caller processes the previously entered PIN/PUK.
   bool locked_ = false;
 
-  base::string16 window_title_;
+  std::u16string window_title_;
   views::Label* header_label_ = nullptr;
-  base::string16 code_type_;
+  std::u16string code_type_;
   views::Textfield* textfield_ = nullptr;
   views::Label* error_label_ = nullptr;
 

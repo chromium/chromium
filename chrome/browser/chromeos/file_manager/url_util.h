@@ -23,7 +23,7 @@ GURL GetFileManagerMainPageUrl();
 // in the query string section. |file_types| is optional.
 GURL GetFileManagerMainPageUrlWithParams(
     ui::SelectFileDialog::Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const GURL& current_directory_url,
     const GURL& selection_url,
     const std::string& target_name,

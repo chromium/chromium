@@ -22,7 +22,7 @@ using LoginWebDialogTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CannotMinimize) {
   LoginWebDialog* dialog = new LoginWebDialog(
       browser()->profile(), nullptr, browser()->window()->GetNativeWindow(),
-      base::string16(), GURL());
+      std::u16string(), GURL());
   dialog->Show();
   aura::Window* window = dialog->get_dialog_window_for_test();
   ASSERT_TRUE(window);
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CannotMinimize) {
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CloseDialogByAccelerator) {
   LoginWebDialog* dialog = new LoginWebDialog(
       browser()->profile(), nullptr, browser()->window()->GetNativeWindow(),
-      base::string16(), GURL());
+      std::u16string(), GURL());
   dialog->Show();
   gfx::NativeWindow window = dialog->get_dialog_window_for_test();
   ASSERT_TRUE(window);
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CloseDialogByAccelerator) {
 // Tests that LoginWebDialog does not crash with missing parent window.
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, NoParentWindow) {
   LoginWebDialog* dialog = new LoginWebDialog(
-      browser()->profile(), nullptr, nullptr, base::string16(), GURL());
+      browser()->profile(), nullptr, nullptr, std::u16string(), GURL());
   dialog->Show();
   aura::Window* window = dialog->get_dialog_window_for_test();
   ASSERT_TRUE(window);

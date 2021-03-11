@@ -19,9 +19,8 @@ std::unique_ptr<base::DictionaryValue> CreateCommandValue(
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->SetString("name", command.command_name());
   result->SetString("description", command.description());
-  result->SetString("shortcut",
-                    active ? command.accelerator().GetShortcutText() :
-                             base::string16());
+  result->SetString("shortcut", active ? command.accelerator().GetShortcutText()
+                                       : std::u16string());
   return result;
 }
 

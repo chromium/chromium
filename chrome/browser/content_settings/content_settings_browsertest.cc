@@ -795,11 +795,11 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
   for (auto* op : kTestOps) {
     EXPECT_TRUE(ExecJs(tab, base::StringPrintf(kBaseCall, op)));
 
-    base::string16 expected_title(
+    std::u16string expected_title(
         base::ASCIIToUTF16(base::StringPrintf(kBaseExpected, op)));
     content::TitleWatcher title_watcher(tab, expected_title);
 
-    base::string16 unexpected_title(
+    std::u16string unexpected_title(
         base::ASCIIToUTF16(base::StringPrintf(kBaseUnexpected, op)));
     title_watcher.AlsoWaitForTitle(unexpected_title);
 
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title(base::ASCIIToUTF16("Imported"));
+  std::u16string expected_title(base::ASCIIToUTF16("Imported"));
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Failed"));
 
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::string16 expected_title(base::ASCIIToUTF16("Failed"));
+  std::u16string expected_title(base::ASCIIToUTF16("Failed"));
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("Imported"));
 

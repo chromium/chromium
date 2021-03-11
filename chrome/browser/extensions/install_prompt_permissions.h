@@ -26,8 +26,8 @@ struct InstallPromptPermissions {
   void AddPermissionMessages(
       const extensions::PermissionMessages& permissions_messages);
 
-  std::vector<base::string16> permissions;
-  std::vector<base::string16> details;
+  std::vector<std::u16string> permissions;
+  std::vector<std::u16string> details;
   std::vector<bool> is_showing_details;
 };
 

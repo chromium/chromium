@@ -35,7 +35,7 @@ namespace chromeos {
 //       ...
 //     }
 //
-//     void MyTextCheck(Profile* profile, const base::string16& text) {
+//     void MyTextCheck(Profile* profile, const std::u16string& text) {
 //        client_.reset(new GrammarServiceClient);
 //        client_->RequestTextCheck(profile, 0, text,
 //            base::BindOnce(&MyClient::OnTextCheckComplete,
@@ -57,13 +57,13 @@ class GrammarServiceClient {
   // Sends grammar check request to ML service, parses the reponse
   // and calls a provided callback method.
   bool RequestTextCheck(Profile* profile,
-                        const base::string16& text,
+                        const std::u16string& text,
                         TextCheckCompleteCallback callback) const;
 
  private:
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
-      const base::string16& text,
+      const std::u16string& text,
       TextCheckCompleteCallback callback,
       chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const;
 

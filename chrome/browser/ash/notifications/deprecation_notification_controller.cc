@@ -82,9 +82,9 @@ void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
   const int launcher_key_name_id = ui::DeviceUsesKeyboardLayout2()
                                        ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                                        : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
-  const base::string16 launcher_key_name =
+  const std::u16string launcher_key_name =
       l10n_util::GetStringUTF16(launcher_key_name_id);
-  const base::string16 message_body =
+  const std::u16string message_body =
       l10n_util::GetStringFUTF16(message_id, launcher_key_name);
 
   ShowNotification(id, message_body);
@@ -92,7 +92,7 @@ void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
 
 void DeprecationNotificationController::ShowNotification(
     const std::string& id,
-    const base::string16& message_body) {
+    const std::u16string& message_body) {
   auto on_click_handler =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating([]() {
@@ -103,7 +103,7 @@ void DeprecationNotificationController::ShowNotification(
   auto notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(IDS_DEPRECATED_SHORTCUT_TITLE), message_body,
-      base::string16(), GURL(),
+      std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId),
       message_center::RichNotificationData(), std::move(on_click_handler),

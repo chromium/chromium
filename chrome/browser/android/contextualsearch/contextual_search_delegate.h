@@ -41,7 +41,7 @@ class ContextualSearchDelegate
       SearchTermResolutionCallback;
   // Provides text surrounding the selection to Java.
   typedef base::RepeatingCallback<
-      void(const std::string&, const base::string16&, size_t, size_t)>
+      void(const std::string&, const std::u16string&, size_t, size_t)>
       SurroundingTextCallback;
 
   // Constructs a delegate that will always call back to the given callbacks
@@ -123,7 +123,7 @@ class ContextualSearchDelegate
       const bool may_send_base_page_url);
 
   void OnTextSurroundingSelectionAvailable(
-      const base::string16& surrounding_text,
+      const std::u16string& surrounding_text,
       uint32_t start_offset,
       uint32_t end_offset);
 
@@ -175,7 +175,7 @@ class ContextualSearchDelegate
   // of the selection in the function result.
   // |return| the trimmed surrounding text with selection at the
   // updated start/end offsets.
-  base::string16 SampleSurroundingText(const base::string16& surrounding_text,
+  std::u16string SampleSurroundingText(const std::u16string& surrounding_text,
                                        int padding_each_side,
                                        size_t* start,
                                        size_t* end);

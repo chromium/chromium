@@ -83,7 +83,7 @@ class OpenWithMenu : public RenderViewContextMenuObserver,
   content::BrowserContext* context_;
   RenderViewContextMenuProxy* const proxy_;
   SubMenuDelegate submenu_delegate_{this};
-  const base::string16 more_apps_label_;
+  const std::u16string more_apps_label_;
 
   // A menu model received from Ash side.
   std::unique_ptr<LinkHandlerModel> menu_model_;

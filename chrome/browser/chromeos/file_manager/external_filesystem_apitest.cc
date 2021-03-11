@@ -96,7 +96,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
         drivefs_root_(drivefs_root) {}
 
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,

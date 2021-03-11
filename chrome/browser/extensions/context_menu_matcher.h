@@ -52,7 +52,7 @@ class ContextMenuMatcher {
   // action context menus, in which menu items are not placed in submenus
   // and the extension's icon is not shown.
   void AppendExtensionItems(const MenuItem::ExtensionKey& extension_key,
-                            const base::string16& selection_text,
+                            const std::u16string& selection_text,
                             int* index,
                             bool is_action_menu);
 
@@ -63,9 +63,9 @@ class ContextMenuMatcher {
 
   // This function returns the top level context menu title of an extension
   // based on a printable selection text.
-  base::string16 GetTopLevelContextMenuTitle(
+  std::u16string GetTopLevelContextMenuTitle(
       const MenuItem::ExtensionKey& extension_key,
-      const base::string16& selection_text);
+      const std::u16string& selection_text);
 
   void set_smart_text_selection_enabled(bool enabled) {
     is_smart_text_selection_enabled_ = enabled;
@@ -98,7 +98,7 @@ class ContextMenuMatcher {
   // Used for recursively adding submenus of extension items.
   void RecursivelyAppendExtensionItems(const MenuItem::List& items,
                                        bool can_cross_incognito,
-                                       const base::string16& selection_text,
+                                       const std::u16string& selection_text,
                                        ui::SimpleMenuModel* menu_model,
                                        int* index,
                                        bool is_action_menu_top_level);

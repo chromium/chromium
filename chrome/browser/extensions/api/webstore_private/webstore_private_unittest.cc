@@ -361,7 +361,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
 
   void VerifyBlockedByPolicyFunctionResult(
       WebstorePrivateBeginInstallWithManifest3Function* function,
-      const base::string16& expected_blocked_message) {
+      const std::u16string& expected_blocked_message) {
     const base::Value* result;
     ASSERT_TRUE(function->GetResultList() &&
                 function->GetResultList()->Get(0, &result));
@@ -513,7 +513,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                               GenerateArgs(kExtensionId, kExtensionManifest),
                               profile());
   VerifyPendingList({}, profile());
-  VerifyBlockedByPolicyFunctionResult(function.get(), base::string16());
+  VerifyBlockedByPolicyFunctionResult(function.get(), std::u16string());
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
@@ -530,7 +530,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   api_test_utils::RunFunction(function.get(),
                               GenerateArgs(kExtensionId, kExtensionManifest),
                               profile());
-  VerifyBlockedByPolicyFunctionResult(function.get(), base::string16());
+  VerifyBlockedByPolicyFunctionResult(function.get(), std::u16string());
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
@@ -547,7 +547,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   api_test_utils::RunFunction(function.get(),
                               GenerateArgs(kExtensionId, kExtensionManifest),
                               profile());
-  VerifyBlockedByPolicyFunctionResult(function.get(), base::string16());
+  VerifyBlockedByPolicyFunctionResult(function.get(), std::u16string());
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,

@@ -138,7 +138,7 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
 
   if (enable_notification) {
     // Show the tray notification icon now.
-    base::string16 notification_text =
+    std::u16string notification_text =
         l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_TEXT,
                                    base::UTF8ToUTF16(display_name));
     notification_ui_ = ScreenCaptureNotificationUI::Create(notification_text);

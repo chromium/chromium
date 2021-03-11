@@ -60,7 +60,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   WebstorePrivateBeginInstallWithManifest3Function();
 
-  base::string16 GetBlockedByPolicyErrorMessageForTesting() const;
+  std::u16string GetBlockedByPolicyErrorMessageForTesting() const;
   bool GetFrictionDialogShownForTesting() const {
     return friction_dialog_shown_;
   }
@@ -140,7 +140,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
   // ExtensionInstallPrompt to prompt for confirmation of the install.
   scoped_refptr<Extension> dummy_extension_;
 
-  base::string16 blocked_by_policy_error_message_;
+  std::u16string blocked_by_policy_error_message_;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;

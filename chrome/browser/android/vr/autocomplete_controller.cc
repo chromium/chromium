@@ -63,9 +63,9 @@ void AutocompleteController::Stop() {
 }
 
 std::tuple<GURL, bool> AutocompleteController::GetUrlFromVoiceInput(
-    const base::string16& input) {
+    const std::u16string& input) {
   AutocompleteMatch match;
-  base::string16 culled_input;
+  std::u16string culled_input;
   base::RemoveChars(input, base::ASCIIToUTF16(" "), &culled_input);
   client_->Classify(culled_input, false, false,
                     metrics::OmniboxEventProto::INVALID_SPEC, &match, nullptr);

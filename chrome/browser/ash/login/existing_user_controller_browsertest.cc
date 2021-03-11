@@ -1336,7 +1336,7 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
     login_manager_mixin_.LoginAndWaitForActiveSession(context);
   }
 
-  base::string16 ConstructManagedSessionUserWarning(std::string manager) {
+  std::u16string ConstructManagedSessionUserWarning(std::string manager) {
     return l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(manager));

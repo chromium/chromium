@@ -53,14 +53,14 @@ class FakeBluetoothChooserController : public ChooserController {
   // ChooserController:
   bool ShouldShowIconBeforeText() const override;
   bool ShouldShowReScanButton() const override;
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
-  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const override;
   bool TableViewAlwaysDisabled() const override;
   size_t NumOptions() const override;
   int GetSignalStrengthLevel(size_t index) const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   bool IsConnected(size_t index) const override;
   bool IsPaired(size_t index) const override;
   MOCK_METHOD0(RefreshOptions, void());

@@ -62,7 +62,7 @@ TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   base::RunLoop run_loop;
   std::unique_ptr<ui::SimpleMenuModel> menu;
   auto simple_menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  const base::string16 first_item_label = base::UTF8ToUTF16("FirstItemLabel");
+  const std::u16string first_item_label = base::UTF8ToUTF16("FirstItemLabel");
   simple_menu_model->AddItem(1, first_item_label);
   auto arc_app_shortcuts_menu_builder =
       std::make_unique<ArcAppShortcutsMenuBuilder>(

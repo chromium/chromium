@@ -63,7 +63,7 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   // NotificationObserver:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
   void ShutDown();
 
@@ -94,25 +94,25 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   void OnDecodeImageFailed() override;
 
   // Returns a short one-line status string for the download.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Returns a short one-line status string for a download command.
-  base::string16 GetCommandLabel(DownloadCommands::Command command) const;
+  std::u16string GetCommandLabel(DownloadCommands::Command command) const;
 
   // Get the warning text to notify a dangerous download. Should only be called
   // if IsDangerous() is true.
-  base::string16 GetWarningStatusString() const;
+  std::u16string GetWarningStatusString() const;
 
   // Get the sub status text of the current in-progress download status. Should
   // be called only for downloads in progress.
-  base::string16 GetInProgressSubStatusString() const;
+  std::u16string GetInProgressSubStatusString() const;
 
   // Get the sub status text. Can be called for downloads in all states.
   // If the state does not have sub status string, it returns empty string.
-  base::string16 GetSubStatusString() const;
+  std::u16string GetSubStatusString() const;
 
   // Get the status text.
-  base::string16 GetStatusString() const;
+  std::u16string GetStatusString() const;
 
   bool IsScanning() const;
   bool AllowedToOpenWhileScanning() const;

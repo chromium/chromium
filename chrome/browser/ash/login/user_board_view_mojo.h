@@ -26,7 +26,7 @@ class UserBoardViewMojo : public UserBoardView {
                                bool multiple_recommended_locales) override;
   void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure) override;
-  void ShowBannerMessage(const base::string16& message,
+  void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override;
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
@@ -35,7 +35,7 @@ class UserBoardViewMojo : public UserBoardView {
   void HideUserPodCustomIcon(const AccountId& account_id) override;
   void SetAuthType(const AccountId& account_id,
                    proximity_auth::mojom::AuthType auth_type,
-                   const base::string16& initial_value) override;
+                   const std::u16string& initial_value) override;
   void SetTpmLockedState(const AccountId& account_id,
                          bool is_locked,
                          base::TimeDelta time_left) override;

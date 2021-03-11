@@ -34,7 +34,7 @@ class DownloadItemModel : public DownloadUIModel,
   // DownloadUIModel implementation.
   ContentId GetContentId() const override;
   Profile* profile() const override;
-  base::string16 GetTabProgressStatusText() const override;
+  std::u16string GetTabProgressStatusText() const override;
   int64_t GetCompletedBytes() const override;
   int64_t GetTotalBytes() const override;
   int PercentComplete() const override;

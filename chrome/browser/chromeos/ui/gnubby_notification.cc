@@ -41,16 +41,16 @@ void GnubbyNotification::PromptUserAuth() {
 }
 
 void GnubbyNotification::CreateNotification() {
-  const base::string16 title =
+  const std::u16string title =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
-  const base::string16 message =
+  const std::u16string message =
       l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_MESSAGE);
   const message_center::SystemNotificationWarningLevel colorType =
       message_center::SystemNotificationWarningLevel::NORMAL;
 
   GnubbyNotification::notification_prompt_ = ash::CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      GnubbyNotification::kNotificationID, title, message, base::string16(),
+      GnubbyNotification::kNotificationID, title, message, std::u16string(),
       GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(),
       new message_center::HandleNotificationClickDelegate(

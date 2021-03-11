@@ -141,7 +141,7 @@ void AutocorrectManager::ClearUnderline() {
   }
 }
 
-void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
+void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
                                                   const int cursor_pos,
                                                   const int anchpr_pos) {
   std::string error;

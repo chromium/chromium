@@ -34,7 +34,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     disposition_ =
         CrostiniUpgradeAvailableNotificationClosed::kNotificationBody;
     if (button_index && button_index.value() == 0) {
@@ -112,7 +112,7 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_BODY),
-      gfx::Image(), base::string16(), GURL(),
+      gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierCrostiniUpgradeAvailable),
       rich_notification_data,

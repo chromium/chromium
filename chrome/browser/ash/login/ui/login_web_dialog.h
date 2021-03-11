@@ -39,14 +39,14 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   LoginWebDialog(content::BrowserContext* browser_context,
                  Delegate* delegate,
                  gfx::NativeWindow parent_window,
-                 const base::string16& title,
+                 const std::u16string& title,
                  const GURL& url);
   ~LoginWebDialog() override;
 
   void Show();
 
   // Overrides dialog title.
-  void SetDialogTitle(const base::string16& title);
+  void SetDialogTitle(const std::u16string& title);
 
   static content::WebContents* GetCurrentWebContents();
 
@@ -59,7 +59,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
  protected:
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -88,7 +88,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   // Notifications receiver.
   Delegate* const delegate_;
 
-  base::string16 title_;
+  std::u16string title_;
   const GURL url_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginWebDialog);

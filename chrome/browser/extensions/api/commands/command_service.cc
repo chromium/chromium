@@ -319,8 +319,8 @@ Command CommandService::FindCommandByName(const std::string& extension_id,
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
-    return Command(command_name, base::string16(), tokens[1].as_string(),
-           global);
+    return Command(command_name, std::u16string(), tokens[1].as_string(),
+                   global);
   }
 
   return Command();

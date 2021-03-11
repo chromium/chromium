@@ -96,7 +96,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void ResyncUserData();
 
   // LoginDisplay::Delegate: implementation
-  base::string16 GetConnectedNetworkName() override;
+  std::u16string GetConnectedNetworkName() override;
   bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
@@ -343,10 +343,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // The displayed name for the next login attempt set by
   // `SetDisplayAndGivenName`.
-  base::string16 display_name_;
+  std::u16string display_name_;
 
   // The given name for the next login attempt set by `SetDisplayAndGivenName`.
-  base::string16 given_name_;
+  std::u16string given_name_;
 
   // Whether login attempt is running.
   bool is_login_in_progress_ = false;

@@ -93,7 +93,7 @@ class TabAndroid : public base::SupportsUserData {
   bool IsNativePage() const;
 
   // Return the tab title.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Return the tab url.
   GURL GetURL() const;

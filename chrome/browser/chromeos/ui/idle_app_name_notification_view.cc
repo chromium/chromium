@@ -109,12 +109,11 @@ class IdleAppNameNotificationDelegateView
   // |error| is true if something is not correct.
   // |message_visibility_time_in_ms| ms's after creation the message will start
   // to remove itself from the screen.
-  IdleAppNameNotificationDelegateView(IdleAppNameNotificationView *owner,
-                                      const base::string16& app_name,
+  IdleAppNameNotificationDelegateView(IdleAppNameNotificationView* owner,
+                                      const std::u16string& app_name,
                                       bool error,
                                       int message_visibility_time_in_ms)
-      : owner_(owner),
-        widget_closed_(false) {
+      : owner_(owner), widget_closed_(false) {
     ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
     // Add the application name label to the message.
     AddLabel(app_name, rb->GetFontList(ui::ResourceBundle::BoldFont),
@@ -190,7 +189,7 @@ class IdleAppNameNotificationDelegateView
 
  private:
   // Adds the label to the view, using |text| with a |font| and a |text_color|.
-  void AddLabel(const base::string16& text,
+  void AddLabel(const std::u16string& text,
                 const gfx::FontList& font,
                 SkColor text_color) {
     views::Label* label = new views::Label;
@@ -210,7 +209,7 @@ class IdleAppNameNotificationDelegateView
   IdleAppNameNotificationView* owner_;
 
   // The spoken text.
-  base::string16 spoken_text_;
+  std::u16string spoken_text_;
 
   // True if the widget got already closed.
   bool widget_closed_;
@@ -240,7 +239,7 @@ bool IdleAppNameNotificationView::IsVisible() {
   return view_ != NULL;
 }
 
-base::string16 IdleAppNameNotificationView::GetShownTextForTest() {
+std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
   ui::AXNodeData node_data;
   DCHECK(view_);
   view_->GetAccessibleNodeData(&node_data);
@@ -253,7 +252,7 @@ void IdleAppNameNotificationView::ShowMessage(
     const extensions::Extension* extension) {
   DCHECK(!view_);
 
-  base::string16 app_name;
+  std::u16string app_name;
   bool error = false;
   if (extension &&
       !base::ContainsOnlyChars(extension->name(), base::kWhitespaceASCII)) {

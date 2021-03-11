@@ -68,7 +68,7 @@ namespace login {
 NetworkStateHelper::NetworkStateHelper() {}
 NetworkStateHelper::~NetworkStateHelper() {}
 
-base::string16 NetworkStateHelper::GetCurrentNetworkName() const {
+std::u16string NetworkStateHelper::GetCurrentNetworkName() const {
   NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
   const NetworkState* network =
       nsh->ConnectedNetworkByType(NetworkTypePattern::NonVirtual());
@@ -84,7 +84,7 @@ base::string16 NetworkStateHelper::GetCurrentNetworkName() const {
       return l10n_util::GetStringUTF16(IDS_STATUSBAR_NETWORK_DEVICE_ETHERNET);
     return base::UTF8ToUTF16(network->name());
   }
-  return base::string16();
+  return std::u16string();
 }
 
 bool NetworkStateHelper::IsConnected() const {

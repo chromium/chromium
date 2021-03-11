@@ -358,7 +358,7 @@ class InstallStageTracker : public KeyedService {
     base::Optional<base::TimeTicks> installation_complete_time;
     // Detailed error description when extension failed to install with
     // SandboxedUnpackerFailureReason equal to UNPACKER_CLIENT FAILED.
-    base::Optional<base::string16> unpacker_client_failed_error;
+    base::Optional<std::u16string> unpacker_client_failed_error;
   };
 
   class Observer : public base::CheckedObserver {

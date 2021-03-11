@@ -79,7 +79,7 @@ class BluetoothChooserContext : public permissions::ChooserContextBase {
 
   // ChooserContextBase;
   bool IsValidObject(const base::Value& object) override;
-  base::string16 GetObjectDisplayName(const base::Value& object) override;
+  std::u16string GetObjectDisplayName(const base::Value& object) override;
 
  private:
   base::Value FindDeviceObject(const url::Origin& origin,

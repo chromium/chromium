@@ -73,7 +73,7 @@ class ContentAnalysisDelegate {
     GURL url;
 
     // Text data to scan, such as plain text, URLs, HTML content, etc.
-    std::vector<base::string16> text;
+    std::vector<std::u16string> text;
 
     // List of files to scan.
     std::vector<base::FilePath> paths;

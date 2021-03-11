@@ -449,7 +449,7 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
       Data("file:///mnt/chromeos/MyFiles/shared/file1\n"
            "file:///mnt/chromeos/MyFiles/shared/file2"));
 
-  std::unordered_map<base::string16, base::string16> m;
+  std::unordered_map<std::u16string, std::u16string> m;
   ui::ReadCustomDataIntoMap(pickle.data(), pickle.size(), &m);
   EXPECT_EQ(2, m.size());
   EXPECT_EQ("exo", base::UTF16ToUTF8(m[u"fs/tag"]));

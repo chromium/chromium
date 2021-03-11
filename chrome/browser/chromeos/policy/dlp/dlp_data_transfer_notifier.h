@@ -30,10 +30,10 @@ class DlpDataTransferNotifier : public views::WidgetObserver {
       const ui::DataTransferEndpoint* const data_dst) = 0;
 
  protected:
-  virtual void ShowBlockBubble(const base::string16& text);
+  virtual void ShowBlockBubble(const std::u16string& text);
 
   virtual void ShowWarningBubble(
-      const base::string16& text,
+      const std::u16string& text,
       base::RepeatingCallback<void(views::Widget*)> proceed_cb,
       base::RepeatingCallback<void(views::Widget*)> cancel_cb);
 

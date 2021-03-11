@@ -48,9 +48,9 @@ namespace extensions {
 namespace {
 
 // Return the menu label for a global error.
-base::string16 GetMenuItemLabel(const Extension* extension) {
+std::u16string GetMenuItemLabel(const Extension* extension) {
   if (!extension)
-    return base::string16();
+    return std::u16string();
 
   int id = -1;
   if (extension->is_app())
@@ -87,7 +87,7 @@ class ExternalInstallMenuAlert : public GlobalError {
   Severity GetSeverity() override;
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
   bool HasBubbleView() override;
   bool HasShownBubbleView() override;
@@ -115,14 +115,14 @@ class ExternalInstallBubbleAlert : public GlobalErrorWithStandardBubble {
   Severity GetSeverity() override;
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
 
   // GlobalErrorWithStandardBubble implementation.
-  base::string16 GetBubbleViewTitle() override;
-  std::vector<base::string16> GetBubbleViewMessages() override;
-  base::string16 GetBubbleViewAcceptButtonLabel() override;
-  base::string16 GetBubbleViewCancelButtonLabel() override;
+  std::u16string GetBubbleViewTitle() override;
+  std::vector<std::u16string> GetBubbleViewMessages() override;
+  std::u16string GetBubbleViewAcceptButtonLabel() override;
+  std::u16string GetBubbleViewCancelButtonLabel() override;
   int GetDefaultDialogButton() const override;
   void OnBubbleViewDidClose(Browser* browser) override;
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
@@ -161,7 +161,7 @@ int ExternalInstallMenuAlert::MenuItemCommandID() {
   return id_provider_.menu_command_id();
 }
 
-base::string16 ExternalInstallMenuAlert::MenuItemLabel() {
+std::u16string ExternalInstallMenuAlert::MenuItemLabel() {
   return GetMenuItemLabel(error_->GetExtension());
 }
 
@@ -212,7 +212,7 @@ int ExternalInstallBubbleAlert::MenuItemCommandID() {
   return id_provider_.menu_command_id();
 }
 
-base::string16 ExternalInstallBubbleAlert::MenuItemLabel() {
+std::u16string ExternalInstallBubbleAlert::MenuItemLabel() {
   return GetMenuItemLabel(error_->GetExtension());
 }
 
@@ -223,15 +223,15 @@ void ExternalInstallBubbleAlert::ExecuteMenuItem(Browser* browser) {
   error_->DidOpenBubbleView();
 }
 
-base::string16 ExternalInstallBubbleAlert::GetBubbleViewTitle() {
+std::u16string ExternalInstallBubbleAlert::GetBubbleViewTitle() {
   return l10n_util::GetStringFUTF16(
       IDS_EXTENSION_EXTERNAL_INSTALL_ALERT_BUBBLE_TITLE,
       base::UTF8ToUTF16(prompt_->extension()->name()));
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ExternalInstallBubbleAlert::GetBubbleViewMessages() {
-  std::vector<base::string16> messages;
+  std::vector<std::u16string> messages;
   int heading_id =
       IDS_EXTENSION_EXTERNAL_INSTALL_ALERT_BUBBLE_HEADING_EXTENSION;
   if (prompt_->extension()->is_app())
@@ -265,11 +265,11 @@ int ExternalInstallBubbleAlert::GetDefaultDialogButton() const {
   return GlobalErrorWithStandardBubble::GetDefaultDialogButton();
 }
 
-base::string16 ExternalInstallBubbleAlert::GetBubbleViewAcceptButtonLabel() {
+std::u16string ExternalInstallBubbleAlert::GetBubbleViewAcceptButtonLabel() {
   return prompt_->GetAcceptButtonLabel();
 }
 
-base::string16 ExternalInstallBubbleAlert::GetBubbleViewCancelButtonLabel() {
+std::u16string ExternalInstallBubbleAlert::GetBubbleViewCancelButtonLabel() {
   return prompt_->GetAbortButtonLabel();
 }
 

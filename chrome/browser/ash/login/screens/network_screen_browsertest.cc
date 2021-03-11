@@ -81,7 +81,7 @@ class NetworkScreenTest : public InProcessBrowserTest {
   void SetDefaultNetworkStateHelperExpectations() {
     EXPECT_CALL(*network_state_helper(), GetCurrentNetworkName())
         .Times(AnyNumber())
-        .WillRepeatedly((Return(base::string16())));
+        .WillRepeatedly((Return(std::u16string())));
     EXPECT_CALL(*network_state_helper(), IsConnected())
         .Times(AnyNumber())
         .WillRepeatedly((Return(false)));

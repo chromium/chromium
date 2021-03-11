@@ -44,7 +44,7 @@ namespace {
 // A helper function to display the size of cache in units of MB or higher.
 // We need this, as 1 MB is the lowest nonzero cache size displayed by the
 // counter.
-base::string16 FormatBytesMBOrHigher(ResultInt bytes) {
+std::u16string FormatBytesMBOrHigher(ResultInt bytes) {
   if (ui::GetByteDisplayUnits(bytes) >= ui::DataUnits::DATA_UNITS_MEBIBYTE)
     return ui::FormatBytes(bytes);
 
@@ -66,7 +66,7 @@ bool ShouldShowCookieException(Profile* profile) {
   return false;
 }
 
-base::string16 GetChromeCounterTextFromResult(
+std::u16string GetChromeCounterTextFromResult(
     const BrowsingDataCounter::Result* result,
     Profile* profile) {
   std::string pref_name = result->source()->GetPrefName();
@@ -89,7 +89,7 @@ base::string16 GetChromeCounterTextFromResult(
     // a subset of cache (i.e. a finite time interval), and almost zero (< 1MB).
     static const int kBytesInAMegabyte = 1024 * 1024;
     if (cache_size_bytes >= kBytesInAMegabyte) {
-      base::string16 formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
+      std::u16string formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
       if (!is_upper_limit) {
         return is_basic_tab ? l10n_util::GetStringFUTF16(
                                   IDS_DEL_CACHE_COUNTER_BASIC, formatted_size)
@@ -134,7 +134,7 @@ base::string16 GetChromeCounterTextFromResult(
         hosted_apps_result->Value(),
         base::checked_cast<ResultInt>(hosted_apps_result->examples().size()));
 
-    std::vector<base::string16> replacements;
+    std::vector<std::u16string> replacements;
     if (hosted_apps_count > 0) {
       replacements.push_back(                                     // App1,
           base::UTF8ToUTF16(hosted_apps_result->examples()[0]));
@@ -168,7 +168,7 @@ base::string16 GetChromeCounterTextFromResult(
     ResultInt account_passwords = signin_result->account_passwords();
     ResultInt signin_data_count = signin_result->WebAuthnCredentialsValue();
 
-    std::vector<base::string16> counts;
+    std::vector<std::u16string> counts;
     // TODO(crbug.com/1086433): If there are profile passwords, account
     // passwords and other sign-in data, these are combined as
     // "<1>; <2>; <3>" by recursively applying a "<1>; <2>" message.

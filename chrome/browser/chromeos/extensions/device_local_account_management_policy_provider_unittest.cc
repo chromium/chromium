@@ -109,15 +109,15 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   scoped_refptr<const extensions::Extension> extension =
       CreateExternalComponentExtension();
   ASSERT_TRUE(extension.get());
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
   error.clear();
 
   extension = CreateComponentExtension();
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
   error.clear();
 
   // Verify that if an extension's type has been whitelisted for use in
@@ -125,7 +125,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   extension = CreateHostedApp();
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
   error.clear();
 
   // Verify that if an extension's ID has been explicitly whitelisted for use in
@@ -133,7 +133,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   extension = CreateRegularExtension(kWhitelistedId);
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_EQ(base::string16(), error);
+  EXPECT_EQ(std::u16string(), error);
   error.clear();
 
   // Verify that if neither the location, type nor the ID of an extension have
@@ -142,7 +142,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   extension = CreateRegularExtension(std::string());
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-  EXPECT_NE(base::string16(), error);
+  EXPECT_NE(std::u16string(), error);
   error.clear();
 
   // Verify that a minimal platform app can be installed from location
@@ -156,7 +156,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -171,7 +171,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -186,7 +186,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -211,7 +211,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -227,7 +227,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -246,7 +246,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -262,7 +262,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -278,7 +278,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -299,7 +299,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -317,7 +317,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -336,7 +336,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -356,7 +356,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -376,7 +376,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -396,7 +396,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -416,7 +416,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -436,7 +436,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -457,7 +457,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -475,7 +475,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -498,7 +498,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -521,7 +521,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 
@@ -536,7 +536,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -552,7 +552,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -568,7 +568,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 
@@ -585,7 +585,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
   }
 }
@@ -602,9 +602,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
     // Verify that a platform app can be installed.
     scoped_refptr<const extensions::Extension> extension = CreatePlatformApp();
     ASSERT_TRUE(extension.get());
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
 
     // Verify that an extension whose location has been whitelisted for use in
@@ -613,13 +613,13 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
     extension = CreateExternalComponentExtension();
     ASSERT_TRUE(extension.get());
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
 
     extension = CreateComponentExtension();
     ASSERT_TRUE(extension.get());
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
 
     // Verify that an extension whose type has been whitelisted for use in other
@@ -628,7 +628,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
     extension = CreateHostedApp();
     ASSERT_TRUE(extension.get());
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_NE(base::string16(), error);
+    EXPECT_NE(std::u16string(), error);
     error.clear();
 
     // Verify that an extension whose ID has been whitelisted for use in other
@@ -637,7 +637,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
     extension = CreateRegularExtension(kWhitelistedId);
     ASSERT_TRUE(extension.get());
     EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
-    EXPECT_EQ(base::string16(), error);
+    EXPECT_EQ(std::u16string(), error);
     error.clear();
   }
 }

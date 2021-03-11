@@ -24,7 +24,7 @@ class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Creates a confirmation infobar and delegate and adds the infobar to
   // |infobar_service|.
   static infobars::InfoBar* Create(InfoBarService* infobar_service,
-                                   const base::string16& message,
+                                   const std::u16string& message,
                                    InfoBarCallback callback);
 
   // Marks the infobar as answered so that the callback is not executed when the
@@ -32,18 +32,18 @@ class IncognitoConnectabilityInfoBarDelegate : public ConfirmInfoBarDelegate {
   void set_answered() { answered_ = true; }
 
  private:
-  IncognitoConnectabilityInfoBarDelegate(const base::string16& message,
+  IncognitoConnectabilityInfoBarDelegate(const std::u16string& message,
                                          InfoBarCallback callback);
   ~IncognitoConnectabilityInfoBarDelegate() override;
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
-  base::string16 message_;
+  std::u16string message_;
   bool answered_;
   InfoBarCallback callback_;
 };

@@ -2981,7 +2981,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, AppCacheRequests) {
           "content/test/data", GURL(origin));
   GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
 
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
 
   // Load the main page first to make sure it is cached. After the first
   // navigation, load the extension, then navigate again.
@@ -3050,7 +3050,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
           "content/test/data", GURL(origin));
   GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
 
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
 
   // Load the main page first to make sure it is cached. After the first
   // navigation, load the extension, then navigate again.
@@ -3342,7 +3342,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   GURL page_url = embedded_test_server()->GetURL("/test.html");
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("ScriptDone:UrnUUIDScriptDone");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   ui_test_utils::NavigateToURL(browser(), page_url);
@@ -3476,7 +3476,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ui_test_utils::NavigateToURL(browser(), page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
 
-  base::string16 expected_title1 = base::ASCIIToUTF16("script loaded");
+  std::u16string expected_title1 = base::ASCIIToUTF16("script loaded");
   content::TitleWatcher title_watcher1(web_contents, expected_title1);
   EXPECT_TRUE(TryLoadScript("pass.js"));
   // Check that the script in the web bundle is correctly loaded even when the
@@ -3485,7 +3485,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
 
   EXPECT_FALSE(TryLoadScript("cancel.js"));
 
-  base::string16 expected_title2 = base::ASCIIToUTF16("urn uuid script loaded");
+  std::u16string expected_title2 = base::ASCIIToUTF16("urn uuid script loaded");
   content::TitleWatcher title_watcher2(web_contents, expected_title2);
   EXPECT_TRUE(TryLoadScript(pass_urn_uuid_js_url));
   // Check that the urn UUID script in the web bundle is correctly loaded even
@@ -3587,7 +3587,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest, ChangeHeader) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("200:bar-changed, inserted");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
@@ -3691,7 +3691,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::string16 expected_title = base::ASCIIToUTF16("failed to load");
+  std::u16string expected_title = base::ASCIIToUTF16("failed to load");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
@@ -3824,7 +3824,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   ui_test_utils::NavigateToURL(browser(), page_url);
   EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
   {
-    base::string16 expected_title = base::ASCIIToUTF16("redirected");
+    std::u16string expected_title = base::ASCIIToUTF16("redirected");
     content::TitleWatcher title_watcher(web_contents, expected_title);
     EXPECT_TRUE(TryLoadScript("redirect.js"));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -3833,7 +3833,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
     // In the current implementation, extensions can redirect the request to
     // the other resource in the web bundle even if the resource is not listed
     // in the resources attribute.
-    base::string16 expected_title =
+    std::u16string expected_title =
         base::ASCIIToUTF16("redirected_to_unlisted");
     content::TitleWatcher title_watcher(web_contents, expected_title);
     EXPECT_TRUE(TryLoadScript("redirect_to_unlisted.js"));

@@ -93,7 +93,7 @@ class ChromeUserManagerImpl
       const AccountId& account_id,
       user_manager::User::OAuthTokenStatus oauth_token_status) override;
   void SaveUserDisplayName(const AccountId& account_id,
-                           const base::string16& display_name) override;
+                           const std::u16string& display_name) override;
   bool CanCurrentUserLock() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
@@ -109,7 +109,7 @@ class ChromeUserManagerImpl
       const AccountId& account_id) const override;
   bool HasBrowserRestarted() const override;
   const gfx::ImageSkia& GetResourceImagekiaNamed(int id) const override;
-  base::string16 GetResourceStringUTF16(int string_id) const override;
+  std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;

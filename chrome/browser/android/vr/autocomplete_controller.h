@@ -38,7 +38,7 @@ class AutocompleteController : public ::AutocompleteController::Observer {
   // navigates to the default search engine with |input| as query and false.
   // This function runs independently of any currently-running autocomplete
   // session.
-  std::tuple<GURL, bool> GetUrlFromVoiceInput(const base::string16& input);
+  std::tuple<GURL, bool> GetUrlFromVoiceInput(const std::u16string& input);
 
  private:
   // ::AutocompleteController::Observer:

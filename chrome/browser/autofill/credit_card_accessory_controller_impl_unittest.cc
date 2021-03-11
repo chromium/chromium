@@ -27,7 +27,7 @@ using testing::SaveArg;
 using testing::SaveArgPointee;
 
 constexpr char kExampleSite[] = "https://example.com";
-const base::string16 kFirstTwelveDigits = base::ASCIIToUTF16("411111111111");
+const std::u16string kFirstTwelveDigits = base::ASCIIToUTF16("411111111111");
 
 namespace autofill {
 namespace {
@@ -100,7 +100,7 @@ class TestAccessManager : public CreditCardAccessManager {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MOCK_METHOD1(RendererShouldFillFieldWithValue, void(const base::string16&));
+  MOCK_METHOD1(RendererShouldFillFieldWithValue, void(const std::u16string&));
 };
 
 class CreditCardAccessoryControllerTest
@@ -159,7 +159,7 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
   autofill::CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                                      base::string16());
+                                      std::u16string());
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
       .WillOnce(SaveArg<0>(&result));
@@ -186,7 +186,7 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
   autofill::CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   autofill::AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
-                                      base::string16());
+                                      std::u16string());
   SetFormOrigin(GURL("http://insecure.http-site.com"));
 
   EXPECT_CALL(mock_mf_controller_, RefreshSuggestions(_))
@@ -233,7 +233,7 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
 
   autofill::CreditCard card_to_unmask;
 
-  base::string16 expected_number = kFirstTwelveDigits + card.number();
+  std::u16string expected_number = kFirstTwelveDigits + card.number();
 
   EXPECT_CALL(mock_af_driver_,
               RendererShouldFillFieldWithValue(expected_number));

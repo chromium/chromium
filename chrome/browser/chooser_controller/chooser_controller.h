@@ -69,7 +69,7 @@ class ChooserController {
   // Returns the text to be displayed in the chooser title.
   // Note that this is only called once, and there is no way to update the title
   // for a given instance of ChooserController.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Returns whether the chooser needs to show an icon before the text.
   // For WebBluetooth, it is a signal strength icon.
@@ -88,20 +88,20 @@ class ChooserController {
   virtual bool ShouldShowSelectAllCheckbox() const;
 
   // Returns the text to be displayed in the chooser when there are no options.
-  virtual base::string16 GetNoOptionsText() const = 0;
+  virtual std::u16string GetNoOptionsText() const = 0;
 
   // Returns the label for OK button.
-  virtual base::string16 GetOkButtonLabel() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
 
   // Returns the label for Cancel button.
-  virtual base::string16 GetCancelButtonLabel() const;
+  virtual std::u16string GetCancelButtonLabel() const;
 
   // Returns the label for SelectAll checkbox.
-  virtual base::string16 GetSelectAllCheckboxLabel() const;
+  virtual std::u16string GetSelectAllCheckboxLabel() const;
 
   // Returns the label for the throbber shown while options are initializing or
   // a re-scan is in progress.
-  virtual std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  virtual std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const = 0;
 
   // Returns whether both OK and Cancel buttons are enabled.
@@ -134,7 +134,7 @@ class ChooserController {
   virtual int GetSignalStrengthLevel(size_t index) const;
 
   // The |index|th option string which is listed in the chooser.
-  virtual base::string16 GetOption(size_t index) const = 0;
+  virtual std::u16string GetOption(size_t index) const = 0;
 
   // Returns if the |index|th option is connected.
   // This function returns false by default.
@@ -174,10 +174,10 @@ class ChooserController {
   View* view() const { return view_; }
 
  protected:
-  void set_title_for_testing(const base::string16& title) { title_ = title; }
+  void set_title_for_testing(const std::u16string& title) { title_ = title; }
 
  private:
-  base::string16 title_;
+  std::u16string title_;
   View* view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserController);

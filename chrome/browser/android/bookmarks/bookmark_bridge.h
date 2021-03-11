@@ -242,7 +242,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
   bool IsBookmarked(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& gurl);
 
-  base::string16 GetTitle(const bookmarks::BookmarkNode* node) const;
+  std::u16string GetTitle(const bookmarks::BookmarkNode* node) const;
 
   // ProfileObserver override
   void OnProfileWillBeDestroyed(Profile* profile) override;

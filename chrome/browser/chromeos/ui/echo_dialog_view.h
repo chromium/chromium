@@ -34,8 +34,8 @@ class EchoDialogView : public views::DialogDelegateView {
 
   struct Params {
     bool echo_enabled = false;
-    base::string16 service_name;
-    base::string16 origin;
+    std::u16string service_name;
+    std::u16string origin;
   };
 
   EchoDialogView(EchoDialogListener* listener, const Params& params);
@@ -55,8 +55,8 @@ class EchoDialogView : public views::DialogDelegateView {
   // url. Service name should be underlined in the dialog, and hovering over its
   // label should display tooltip containing |origin|.
   // The dialog will have both OK and Cancel buttons.
-  void InitForEnabledEcho(const base::string16& service_name,
-                          const base::string16& origin);
+  void InitForEnabledEcho(const std::u16string& service_name,
+                          const std::u16string& origin);
 
   // Initializes dialog layout that will be shown when echo extension is not
   // allowed to redeem offers. The dialog will be showing a message that the

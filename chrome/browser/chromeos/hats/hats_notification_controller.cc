@@ -184,7 +184,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
 
 void HatsNotificationController::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   UpdateLastInteractionTime();

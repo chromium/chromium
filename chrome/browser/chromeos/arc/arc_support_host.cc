@@ -365,7 +365,7 @@ void ArcSupportHost::ShowError(ErrorInfo error_info,
   }
 #undef MAP_ERROR
 
-  base::string16 message;
+  std::u16string message;
   switch (error_info.error) {
     case Error::SIGN_IN_CLOUD_PROVISION_FLOW_ACCOUNT_MISSING_ERROR:
     case Error::SIGN_IN_CLOUD_PROVISION_FLOW_DOMAIN_JOIN_FAIL_ERROR:

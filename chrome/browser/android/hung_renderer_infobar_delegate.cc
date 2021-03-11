@@ -56,11 +56,11 @@ int HungRendererInfoBarDelegate::GetIconId() const {
   return IDR_ANDROID_INFOBAR_FROZEN_TAB;
 }
 
-base::string16 HungRendererInfoBarDelegate::GetMessageText() const {
+std::u16string HungRendererInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_BROWSER_HANGMONITOR_RENDERER_INFOBAR);
 }
 
-base::string16 HungRendererInfoBarDelegate::GetButtonLabel(
+std::u16string HungRendererInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(
       (button == BUTTON_OK) ? IDS_BROWSER_HANGMONITOR_RENDERER_INFOBAR_END

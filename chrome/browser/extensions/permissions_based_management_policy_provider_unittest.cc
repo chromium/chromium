@@ -106,7 +106,7 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
                                     &required_permissions,
                                     &optional_permissions);
 
-  base::string16 error16;
+  std::u16string error16;
   // The extension should be allowed to be loaded by default.
   error16.clear();
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));

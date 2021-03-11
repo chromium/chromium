@@ -137,7 +137,7 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
   // The test starts a local http test server to load the test page
   void RunMediaTestPage(const std::string& html_page,
                         const base::StringPairs& query_params,
-                        const base::string16& expected_title) {
+                        const std::u16string& expected_title) {
     std::string query = media::GetURLQueryString(query_params);
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);

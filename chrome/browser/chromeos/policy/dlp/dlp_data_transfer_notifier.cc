@@ -105,7 +105,7 @@ DlpDataTransferNotifier::~DlpDataTransferNotifier() {
   }
 }
 
-void DlpDataTransferNotifier::ShowBlockBubble(const base::string16& text) {
+void DlpDataTransferNotifier::ShowBlockBubble(const std::u16string& text) {
   InitWidget();
   ClipboardBlockBubble* bubble =
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
@@ -116,7 +116,7 @@ void DlpDataTransferNotifier::ShowBlockBubble(const base::string16& text) {
 }
 
 void DlpDataTransferNotifier::ShowWarningBubble(
-    const base::string16& text,
+    const std::u16string& text,
     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
     base::RepeatingCallback<void(views::Widget*)> cancel_cb) {
   InitWidget();

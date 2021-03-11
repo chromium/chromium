@@ -155,7 +155,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
       profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
   profile_manager()->profile_attributes_storage()->AddProfile(
       profile_path, base::ASCIIToUTF16(kIdleProfile), std::string(),
-      base::string16(), false, 0, std::string(), EmptyAccountId());
+      std::u16string(), false, 0, std::string(), EmptyAccountId());
   std::unique_ptr<em::ChromeUserProfileInfo> response =
       generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
   ASSERT_FALSE(response.get());

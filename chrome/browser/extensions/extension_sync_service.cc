@@ -330,7 +330,7 @@ void ExtensionSyncService::ApplySyncData(
 
   // Handle uninstalls first.
   if (extension_sync_data.uninstalled()) {
-    base::string16 error;
+    std::u16string error;
     bool uninstalled = true;
     if (!extension) {
       error = base::ASCIIToUTF16("Unknown extension");

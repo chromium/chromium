@@ -280,7 +280,7 @@ class AppNotificationsWebNotificationTest
       const GURL& origin) {
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-        base::string16(), base::string16(), gfx::Image(),
+        std::u16string(), std::u16string(), gfx::Image(),
         base::UTF8ToUTF16(origin.host()), origin,
         message_center::NotifierId(origin),
         message_center::RichNotificationData(), nullptr);

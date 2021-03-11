@@ -403,7 +403,7 @@ void VrGLThread::SetSpeechRecognitionEnabled(bool enabled) {
                      weak_browser_ui_, enabled));
 }
 
-void VrGLThread::SetRecognitionResult(const base::string16& result) {
+void VrGLThread::SetRecognitionResult(const std::u16string& result) {
   DCHECK(OnMainThread());
   task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BrowserUiInterface::SetRecognitionResult,
@@ -507,7 +507,7 @@ void VrGLThread::SetDialogFloating(bool floating) {
                                          weak_browser_ui_, floating));
 }
 
-void VrGLThread::ShowPlatformToast(const base::string16& text) {
+void VrGLThread::ShowPlatformToast(const std::u16string& text) {
   task_runner()->PostTask(FROM_HERE,
                           base::BindOnce(&BrowserUiInterface::ShowPlatformToast,
                                          weak_browser_ui_, text));

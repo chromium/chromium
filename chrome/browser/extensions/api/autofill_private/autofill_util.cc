@@ -38,7 +38,7 @@ std::unique_ptr<std::vector<std::string>> GetValueList(
     autofill::ServerFieldType type) {
   std::unique_ptr<std::vector<std::string>> list(new std::vector<std::string>);
 
-  std::vector<base::string16> values;
+  std::vector<std::u16string> values;
   if (autofill::AutofillType(type).group() == autofill::FieldTypeGroup::kName) {
     values.push_back(
         profile.GetInfo(autofill::AutofillType(type),
@@ -52,7 +52,7 @@ std::unique_ptr<std::vector<std::string>> GetValueList(
   if (values.size() == 1 && values.front().empty())
     return list;
 
-  for (const base::string16& value16 : values)
+  for (const std::u16string& value16 : values)
     list->push_back(base::UTF16ToUTF8(value16));
 
   return list;
@@ -68,7 +68,7 @@ std::unique_ptr<std::string> GetStringFromProfile(
 
 autofill_private::AddressEntry ProfileToAddressEntry(
     const autofill::AutofillProfile& profile,
-    const base::string16& label) {
+    const std::u16string& label) {
   autofill_private::AddressEntry address;
 
   // Add all address fields to the entry.
@@ -97,9 +97,9 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.language_code.reset(new std::string(profile.language_code()));
 
   // Parse |label| so that it can be used to create address metadata.
-  base::string16 separator =
+  std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-  std::vector<base::string16> label_pieces = base::SplitStringUsingSubstr(
+  std::vector<std::u16string> label_pieces = base::SplitStringUsingSubstr(
       label, separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Create address metadata and add it to |address|.
@@ -150,7 +150,7 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   // Create card metadata and add it to |card|.
   std::unique_ptr<autofill_private::AutofillMetadata> metadata(
       new autofill_private::AutofillMetadata);
-  std::pair<base::string16, base::string16> label_pieces =
+  std::pair<std::u16string, std::u16string> label_pieces =
       credit_card.LabelPieces();
   metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
   metadata->summary_sublabel =
@@ -179,7 +179,7 @@ AddressEntryList GenerateAddressList(
     const autofill::PersonalDataManager& personal_data) {
   const std::vector<autofill::AutofillProfile*>& profiles =
       personal_data.GetProfiles();
-  std::vector<base::string16> labels;
+  std::vector<std::u16string> labels;
   autofill::AutofillProfile::CreateDifferentiatingLabels(
       profiles, g_browser_process->GetApplicationLocale(), &labels);
   DCHECK_EQ(labels.size(), profiles.size());

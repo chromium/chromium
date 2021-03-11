@@ -73,7 +73,7 @@ std::string NormalizeEngineId(const std::string engine_id) {
   return engine_id;
 }
 
-base::string16 ConvertToUtf16AndNormalize(const std::string& str) {
+std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
   // TODO(https://crbug.com/1185629): Add a new helper in
   // base/i18n/icu_string_conversions.h that does the conversion directly
   // without a redundant UTF16->UTF8 conversion.
@@ -370,7 +370,7 @@ void NativeInputMethodEngine::ImeObserver::OnCompositionBoundsChanged(
 
 void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     const std::string& engine_id,
-    const base::string16& text,
+    const std::u16string& text,
     int cursor_pos,
     int anchor_pos,
     int offset_pos) {

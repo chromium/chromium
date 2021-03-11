@@ -67,9 +67,9 @@ InstantAppsInfoBarDelegate::GetIdentifier() const {
   return INSTANT_APPS_INFOBAR_DELEGATE_ANDROID;
 }
 
-base::string16 InstantAppsInfoBarDelegate::GetMessageText() const {
+std::u16string InstantAppsInfoBarDelegate::GetMessageText() const {
   // Message is set in InstantAppInfobar.java
-  return base::string16();
+  return std::u16string();
 }
 
 bool InstantAppsInfoBarDelegate::Accept() {

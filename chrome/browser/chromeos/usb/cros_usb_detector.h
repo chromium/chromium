@@ -50,14 +50,14 @@ enum class CrosUsbNotificationClosed {
 // CrosUsbDetector only exposes devices which can be shared with Guest OSes.
 struct CrosUsbDeviceInfo {
   CrosUsbDeviceInfo(std::string guid,
-                    base::string16 label,
+                    std::u16string label,
                     base::Optional<std::string> shared_vm_name,
                     bool prompt_before_sharing);
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
 
   std::string guid;
-  base::string16 label;
+  std::u16string label;
   // Name of VM shared with. Unset if not shared. The device may be shared but
   // not yet attached.
   base::Optional<std::string> shared_vm_name;
@@ -136,7 +136,7 @@ class CrosUsbDetector : public device::mojom::UsbDeviceManagerClient,
     // Device information from the USB manager.
     device::mojom::UsbDeviceInfoPtr info;
 
-    base::string16 label;
+    std::u16string label;
 
     // Whether the device can be shared with guest OSes.
     bool shareable = false;

@@ -40,7 +40,7 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
       FileSystemDelegate::FilesSelectedCallback files_selected_callback,
       base::OnceClosure file_selection_canceled_callback) override;
   void ConfirmSensitiveDirectoryAccess(bool has_write_permission,
-                                       const base::string16& app_name,
+                                       const std::u16string& app_name,
                                        content::WebContents* web_contents,
                                        base::OnceClosure on_accept,
                                        base::OnceClosure on_cancel) override;

@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
         browser(),
         embedded_test_server()->GetURL(
             "google.com", "/extensions/api_test/active_tab_cors/page.html"));
-    base::string16 title = base::ASCIIToUTF16("page");
+    std::u16string title = base::ASCIIToUTF16("page");
     content::TitleWatcher watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), title);
     ASSERT_EQ(title, watcher.WaitAndGetTitle());

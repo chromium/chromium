@@ -309,7 +309,7 @@ bool BluetoothChooserContext::IsValidObject(const base::Value& object) {
          object.FindDictKey(kServicesKey);
 }
 
-base::string16 BluetoothChooserContext::GetObjectDisplayName(
+std::u16string BluetoothChooserContext::GetObjectDisplayName(
     const base::Value& object) {
   return base::UTF8ToUTF16(*object.FindStringKey(kDeviceNameKey));
 }

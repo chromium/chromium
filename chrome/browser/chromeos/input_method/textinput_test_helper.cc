@@ -43,7 +43,7 @@ TextInputTestHelper::~TextInputTestHelper() {
   input_method_->RemoveObserver(this);
 }
 
-base::string16 TextInputTestHelper::GetSurroundingText() const {
+std::u16string TextInputTestHelper::GetSurroundingText() const {
   return surrounding_text_;
 }
 
@@ -155,7 +155,7 @@ void TextInputTestHelper::WaitForCaretBoundsChanged(
 }
 
 void TextInputTestHelper::WaitForSurroundingTextChanged(
-    const base::string16& expected_text) {
+    const std::u16string& expected_text) {
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
   while (expected_text != surrounding_text_) {
     base::RunLoop run_loop;
@@ -165,7 +165,7 @@ void TextInputTestHelper::WaitForSurroundingTextChanged(
 }
 
 void TextInputTestHelper::WaitForSurroundingTextChanged(
-    const base::string16& expected_text,
+    const std::u16string& expected_text,
     const gfx::Range& expected_selection) {
   waiting_type_ = WAIT_ON_CARET_BOUNDS_CHANGED;
   while (expected_text != surrounding_text_ ||

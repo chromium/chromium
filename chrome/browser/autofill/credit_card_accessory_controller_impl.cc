@@ -28,13 +28,13 @@ namespace autofill {
 
 namespace {
 
-base::string16 GetTitle(bool has_suggestions) {
+std::u16string GetTitle(bool has_suggestions) {
   return l10n_util::GetStringUTF16(
       has_suggestions ? IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE
                       : IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
-void AddSimpleField(const base::string16& data,
+void AddSimpleField(const std::u16string& data,
                     UserInfo* user_info,
                     bool enabled) {
   user_info->add_field(UserInfo::Field(data, data,
@@ -46,7 +46,7 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
 
   UserInfo user_info(data->network());
 
-  base::string16 obfuscated_number = data->ObfuscatedLastFourDigits();
+  std::u16string obfuscated_number = data->ObfuscatedLastFourDigits();
   user_info.add_field(UserInfo::Field(obfuscated_number, obfuscated_number,
                                       data->guid(), /*is_password=*/false,
                                       enabled));
@@ -55,15 +55,15 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
     AddSimpleField(data->Expiration2DigitMonthAsString(), &user_info, enabled);
     AddSimpleField(data->Expiration4DigitYearAsString(), &user_info, enabled);
   } else {
-    AddSimpleField(base::string16(), &user_info, enabled);
-    AddSimpleField(base::string16(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
   }
 
   if (data->HasNameOnCard()) {
     AddSimpleField(data->GetRawInfo(autofill::CREDIT_CARD_NAME_FULL),
                    &user_info, enabled);
   } else {
-    AddSimpleField(base::string16(), &user_info, enabled);
+    AddSimpleField(std::u16string(), &user_info, enabled);
   }
 
   return user_info;
@@ -207,7 +207,7 @@ void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
 void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
     bool did_succeed,
     const CreditCard* credit_card,
-    const base::string16& cvc) {
+    const std::u16string& cvc) {
   if (!did_succeed)
     return;
   if (!web_contents_->GetFocusedFrame())

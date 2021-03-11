@@ -41,7 +41,7 @@ std::unique_ptr<message_center::Notification> CreateNotificationWithId(
   return std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, ASCIIToUTF16("title"),
       ASCIIToUTF16("message"), /*icon=*/gfx::Image(),
-      /*display_source=*/base::string16(), GURL(), message_center::NotifierId(),
+      /*display_source=*/std::u16string(), GURL(), message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
 

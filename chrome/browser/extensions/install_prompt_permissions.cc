@@ -38,9 +38,9 @@ void InstallPromptPermissions::AddPermissionMessages(
   for (const extensions::PermissionMessage& msg : permissions_messages) {
     permissions.push_back(msg.message());
     // Add a dash to the front of each permission detail.
-    base::string16 details_str;
+    std::u16string details_str;
     if (!msg.submessages().empty()) {
-      std::vector<base::string16> detail_lines_with_bullets;
+      std::vector<std::u16string> detail_lines_with_bullets;
       for (const auto& detail_line : msg.submessages()) {
         detail_lines_with_bullets.push_back(base::ASCIIToUTF16("- ") +
                                             detail_line);

@@ -96,7 +96,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
       // If block state is unknown, check if there is an application registered
       // for the url scheme.
       GURL url(scheme + "://");
-      base::string16 application_name =
+      std::u16string application_name =
           shell_integration::GetApplicationNameForProtocol(url);
       return application_name.empty() ? metrics::OmniboxInputType::EMPTY
                                       : metrics::OmniboxInputType::URL;

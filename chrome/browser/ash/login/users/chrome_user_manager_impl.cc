@@ -580,7 +580,7 @@ void ChromeUserManagerImpl::SaveUserOAuthStatus(
 
 void ChromeUserManagerImpl::SaveUserDisplayName(
     const AccountId& account_id,
-    const base::string16& display_name) {
+    const std::u16string& display_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChromeUserManager::SaveUserDisplayName(account_id, display_name);
 }
@@ -1395,7 +1395,7 @@ const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImagekiaNamed(
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }
 
-base::string16 ChromeUserManagerImpl::GetResourceStringUTF16(
+std::u16string ChromeUserManagerImpl::GetResourceStringUTF16(
     int string_id) const {
   return l10n_util::GetStringUTF16(string_id);
 }

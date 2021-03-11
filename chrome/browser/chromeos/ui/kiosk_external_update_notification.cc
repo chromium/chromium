@@ -63,7 +63,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     }
   }
 
-  void SetMessage(const base::string16& message) { label_->SetText(message); }
+  void SetMessage(const std::u16string& message) { label_->SetText(message); }
 
   // views::WidgetDelegateView overrides:
   void OnPaint(gfx::Canvas* canvas) override {
@@ -109,7 +109,7 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
 };
 
 KioskExternalUpdateNotification::KioskExternalUpdateNotification(
-    const base::string16& message) {
+    const std::u16string& message) {
   CreateAndShowNotificationView(message);
 }
 
@@ -118,13 +118,13 @@ KioskExternalUpdateNotification::~KioskExternalUpdateNotification() {
 }
 
 void KioskExternalUpdateNotification::ShowMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   if (view_)
     view_->SetMessage(message);
 }
 
 void KioskExternalUpdateNotification::CreateAndShowNotificationView(
-    const base::string16& message) {
+    const std::u16string& message) {
   view_ = new KioskExternalUpdateNotificationView(this);
   view_->SetMessage(message);
 

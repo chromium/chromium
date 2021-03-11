@@ -45,8 +45,8 @@ class PackExtensionJob {
   void Start();
 
   // The standard packing success message.
-  static base::string16 StandardSuccessMessage(const base::FilePath& crx_file,
-                                         const base::FilePath& key_file);
+  static std::u16string StandardSuccessMessage(const base::FilePath& crx_file,
+                                               const base::FilePath& key_file);
 
   void set_synchronous() { run_mode_ = RunMode::SYNCHRONOUS; }
 

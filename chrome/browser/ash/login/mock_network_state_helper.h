@@ -16,7 +16,7 @@ class MockNetworkStateHelper : public NetworkStateHelper {
  public:
   MockNetworkStateHelper();
   ~MockNetworkStateHelper() override;
-  MOCK_CONST_METHOD0(GetCurrentNetworkName, base::string16(void));
+  MOCK_CONST_METHOD0(GetCurrentNetworkName, std::u16string(void));
   MOCK_CONST_METHOD0(IsConnected, bool(void));
   MOCK_CONST_METHOD0(IsConnecting, bool(void));
 };

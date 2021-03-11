@@ -175,7 +175,7 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override {
+                                        const std::u16string& error) override {
     delete this;
   }
 
@@ -452,7 +452,7 @@ void ExtensionContextMenuModel::AppendExtensionItems() {
 
   int index = 0;
   extension_items_->AppendExtensionItems(MenuItem::ExtensionKey(extension_id_),
-                                         base::string16(), &index,
+                                         std::u16string(), &index,
                                          true);  // is_action_menu
 }
 

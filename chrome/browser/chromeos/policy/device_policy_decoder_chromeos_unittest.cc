@@ -149,7 +149,7 @@ TEST_F(DevicePolicyDecoderChromeOSTest, UserWhitelistWarning) {
   EXPECT_EQ(base::ListValue(list),
             *policies.GetValue(key::kDeviceUserWhitelist));
 
-  base::RepeatingCallback<base::string16(int)> l10nlookup =
+  base::RepeatingCallback<std::u16string(int)> l10nlookup =
       base::BindRepeating(&l10n_util::GetStringUTF16);
 
   // Should have a deprecation warning.

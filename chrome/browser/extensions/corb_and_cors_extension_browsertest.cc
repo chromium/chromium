@@ -1731,7 +1731,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   // is restricted to secure contexts.
   GURL main_url(origin + "/appcache/simple_page_with_manifest.html");
   ui_test_utils::NavigateToURL(browser(), main_url);
-  base::string16 expected_title = base::ASCIIToUTF16("AppCache updated");
+  std::u16string expected_title = base::ASCIIToUTF16("AppCache updated");
   content::TitleWatcher title_watcher(active_web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   ui_test_utils::NavigateToURL(browser(), main_url);

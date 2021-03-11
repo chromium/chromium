@@ -20,19 +20,19 @@ class WebContentsForcedTitle
       public content::WebContentsUserData<WebContentsForcedTitle> {
  public:
   static void CreateForWebContentsWithTitle(content::WebContents* web_contents,
-                                            const base::string16& title);
+                                            const std::u16string& title);
 
   ~WebContentsForcedTitle() override;
 
  private:
   friend class content::WebContentsUserData<WebContentsForcedTitle>;
   WebContentsForcedTitle(content::WebContents* web_contents,
-                         const base::string16& title);
+                         const std::u16string& title);
 
   // content::WebContentsObserver:
   void TitleWasSet(content::NavigationEntry* entry) override;
 
-  base::string16 title_;
+  std::u16string title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

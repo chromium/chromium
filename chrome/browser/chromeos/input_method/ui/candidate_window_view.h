@@ -66,7 +66,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   void ShowPreeditText();
 
   // Updates the preedit text.
-  void UpdatePreeditText(const base::string16& text);
+  void UpdatePreeditText(const std::u16string& text);
 
   // Updates candidates of the candidate window from |candidate_window|.
   // Candidates are arranged per |orientation|.

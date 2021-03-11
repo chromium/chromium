@@ -54,9 +54,9 @@ void ReleaseNotesNotification::HandleClickShowNotification() {
 }
 
 void ReleaseNotesNotification::ShowReleaseNotesNotification() {
-  base::string16 title = ui::SubstituteChromeOSDeviceType(
+  std::u16string title = ui::SubstituteChromeOSDeviceType(
       IDS_RELEASE_NOTES_DEVICE_SPECIFIC_NOTIFICATION_TITLE);
-  base::string16 message =
+  std::u16string message =
       l10n_util::GetStringUTF16(IDS_RELEASE_NOTES_NOTIFICATION_MESSAGE);
 
   release_notes_available_notification_ = ash::CreateSystemNotification(

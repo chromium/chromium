@@ -22,9 +22,9 @@ namespace {
 
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
 
-base::string16 GetTitle(NotificationType type,
+std::u16string GetTitle(NotificationType type,
                         int days_remaining,
-                        const base::string16& device_type) {
+                        const std::u16string& device_type) {
   // |days_remaining| could be zero if we are very close to the deadline, like
   // 10 minutes as we round of the time remaining into days. In this case, we
   // need to show the last day notification title which does not mention the
@@ -56,10 +56,10 @@ base::string16 GetTitle(NotificationType type,
   }
 }
 
-base::string16 GetMessage(NotificationType type,
+std::u16string GetMessage(NotificationType type,
                           const std::string& manager,
                           int days_remaining,
-                          const base::string16& device_type) {
+                          const std::u16string& device_type) {
   // |days_remaining| could be zero if we are very close to the deadline, like
   // 10 minutes as we round of the time remaining into days. In this case, we
   // need to show the last day notification.
@@ -81,7 +81,7 @@ base::string16 GetMessage(NotificationType type,
   }
 }
 
-base::string16 GetButtonText(NotificationType type) {
+std::u16string GetButtonText(NotificationType type) {
   switch (type) {
     case NotificationType::kNoConnection:
       return l10n_util::GetStringUTF16(
@@ -119,16 +119,16 @@ UpdateRequiredNotification::~UpdateRequiredNotification() = default;
 void UpdateRequiredNotification::Show(NotificationType type,
                                       base::TimeDelta warning_time,
                                       const std::string& manager,
-                                      const base::string16& device_type,
+                                      const std::u16string& device_type,
                                       base::OnceClosure button_click_callback,
                                       base::OnceClosure close_callback) {
   const int days_remaining = warning_time.InDays();
   notification_button_click_callback_ = std::move(button_click_callback);
   notification_close_callback_ = std::move(close_callback);
 
-  base::string16 title = GetTitle(type, days_remaining, device_type);
-  base::string16 body = GetMessage(type, manager, days_remaining, device_type);
-  base::string16 button = GetButtonText(type);
+  std::u16string title = GetTitle(type, days_remaining, device_type);
+  std::u16string body = GetMessage(type, manager, days_remaining, device_type);
+  std::u16string button = GetButtonText(type);
   if (title.empty() || body.empty() || button.empty()) {
     NOTREACHED();
     return;
@@ -140,9 +140,9 @@ void UpdateRequiredNotification::Show(NotificationType type,
 }
 
 void UpdateRequiredNotification::DisplayNotification(
-    const base::string16& title,
-    const base::string16& message,
-    const base::string16& button_text,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& button_text,
     message_center::SystemNotificationWarningLevel color_type,
     message_center::NotificationPriority priority) {
   message_center::RichNotificationData data;
@@ -152,7 +152,7 @@ void UpdateRequiredNotification::DisplayNotification(
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUpdateRequiredNotificationId, title, message,
-          base::string16() /*display_source*/, GURL(),
+          std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kUpdateRequiredNotificationId),
@@ -176,7 +176,7 @@ void UpdateRequiredNotification::Close(bool by_user) {
 
 void UpdateRequiredNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   // |button_index| may be empty if the notification body was clicked.
   if (!button_index)
     return;

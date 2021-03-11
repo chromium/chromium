@@ -192,11 +192,11 @@ class LoginScreenButtonsLocalePolicy : public LoginScreenLocalePolicyTestBase {
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
                        LoginShelfButtonsTextAndAlignment) {
   // Actual text on the button.
-  base::string16 actual_text =
+  std::u16string actual_text =
       ash::LoginScreenTestApi::GetShutDownButtonLabel();
 
   // Shut down text in the current locale.
-  base::string16 expected_text =
+  std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_SHUTDOWN_BUTTON);
 
   EXPECT_EQ(expected_text, actual_text);
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {
       ash::VIEW_ID_TRAY_ENTERPRISE, true /* open_tray */));
 
   // Text on EnterpriseManagedView tooltip in current locale.
-  base::string16 expected_text =
+  std::u16string expected_text =
       ash::features::IsManagedDeviceUIRedesignEnabled()
           ? l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
                                        base::UTF8ToUTF16(kDomain))

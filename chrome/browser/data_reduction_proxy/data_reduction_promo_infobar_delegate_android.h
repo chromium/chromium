@@ -44,7 +44,7 @@ class DataReductionPromoInfoBarDelegateAndroid : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
 
   DISALLOW_COPY_AND_ASSIGN(DataReductionPromoInfoBarDelegateAndroid);

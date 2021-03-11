@@ -21,7 +21,7 @@ namespace lock_screen_apps {
 class ToastDialogView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ToastDialogView);
-  ToastDialogView(const base::string16& app_name,
+  ToastDialogView(const std::u16string& app_name,
                   base::OnceClosure dismissed_callback);
   ToastDialogView(const ToastDialogView&) = delete;
   ToastDialogView& operator=(const ToastDialogView&) = delete;

@@ -245,7 +245,7 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
           x509_certificate_model::GetType(cert_info.cert.get());
       bool can_be_deleted = !cert_info.on_read_only_slot;
       bool hardware_backed = cert_info.hardware_backed;
-      base::string16 name = GetName(cert_info.cert.get(), hardware_backed);
+      std::u16string name = GetName(cert_info.cert.get(), hardware_backed);
 
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
           /*cert=*/std::move(cert_info.cert), type, name, can_be_deleted,
@@ -258,9 +258,9 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
     SetCertInfos(std::move(cert_infos));
   }
 
-  static base::string16 GetName(CERTCertificate* cert,
+  static std::u16string GetName(CERTCertificate* cert,
                                 bool is_hardware_backed) {
-    base::string16 name =
+    std::u16string name =
         base::UTF8ToUTF16(x509_certificate_model::GetCertNameOrNickname(cert));
     if (is_hardware_backed) {
       name = l10n_util::GetStringFUTF16(
@@ -363,7 +363,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
         continue;
 
       net::CertType type = x509_certificate_model::GetType(nss_cert.get());
-      base::string16 cert_name = base::UTF8ToUTF16(
+      std::u16string cert_name = base::UTF8ToUTF16(
           x509_certificate_model::GetCertNameOrNickname(nss_cert.get()));
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
           std::move(nss_cert), type, std::move(cert_name),
@@ -427,9 +427,9 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
       if (!nss_cert)
         continue;
 
-      base::string16 cert_name = base::UTF8ToUTF16(
+      std::u16string cert_name = base::UTF8ToUTF16(
           x509_certificate_model::GetCertNameOrNickname(nss_cert.get()));
-      base::string16 display_name = l10n_util::GetStringFUTF16(
+      std::u16string display_name = l10n_util::GetStringFUTF16(
           IDS_CERT_MANAGER_EXTENSION_PROVIDED_FORMAT, std::move(cert_name));
 
       cert_infos.push_back(std::make_unique<CertificateManagerModel::CertInfo>(
@@ -456,7 +456,7 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
 
 CertificateManagerModel::CertInfo::CertInfo(net::ScopedCERTCertificate cert,
                                             net::CertType type,
-                                            base::string16 name,
+                                            std::u16string name,
                                             bool can_be_deleted,
                                             bool untrusted,
                                             Source source,
@@ -626,7 +626,7 @@ void CertificateManagerModel::FilterAndBuildOrgGroupingMap(
 
 int CertificateManagerModel::ImportFromPKCS12(PK11SlotInfo* slot_info,
                                               const std::string& data,
-                                              const base::string16& password,
+                                              const std::u16string& password,
                                               bool is_extractable) {
   return cert_db_->ImportFromPKCS12(slot_info, data, password, is_extractable,
                                     nullptr);

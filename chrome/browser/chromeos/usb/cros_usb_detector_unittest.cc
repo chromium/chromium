@@ -260,12 +260,12 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  base::string16 connection_message(const char* product_name) {
+  std::u16string connection_message(const char* product_name) {
     return base::ASCIIToUTF16(base::StringPrintf(
         "Open Settings to connect %s to Linux", product_name));
   }
 
-  base::string16 expected_title() {
+  std::u16string expected_title() {
     return base::ASCIIToUTF16("USB device detected");
   }
 

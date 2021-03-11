@@ -92,7 +92,7 @@ class InstallVerifier : public KeyedService,
   std::string GetDebugPolicyProviderName() const override;
   bool MustRemainDisabled(const Extension* extension,
                           disable_reason::DisableReason* reason,
-                          base::string16* error) const override;
+                          std::u16string* error) const override;
 
  private:
   // We keep a list of operations to the current set of extensions.

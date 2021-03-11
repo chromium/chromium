@@ -208,8 +208,8 @@ class MenuItem {
 
   // Returns the title with any instances of %s replaced by |selection|. The
   // result will be no longer than |max_length|.
-  base::string16 TitleWithReplacement(const base::string16& selection,
-                                size_t max_length) const;
+  std::u16string TitleWithReplacement(const std::u16string& selection,
+                                      size_t max_length) const;
 
   // Sets the checked state to |checked|. Returns true if successful.
   bool SetChecked(bool checked);

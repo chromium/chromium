@@ -30,7 +30,7 @@ class IdleActionWarningDialogView : public views::DialogDelegateView {
   void Update(base::TimeTicks idle_action_time);
 
   // views::DialogDelegateView:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
  private:
   ~IdleActionWarningDialogView() override;

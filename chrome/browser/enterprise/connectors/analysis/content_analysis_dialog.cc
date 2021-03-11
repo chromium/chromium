@@ -221,8 +221,8 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   Show();
 }
 
-base::string16 ContentAnalysisDialog::GetWindowTitle() const {
-  return base::string16();
+std::u16string ContentAnalysisDialog::GetWindowTitle() const {
+  return std::u16string();
 }
 
 void ContentAnalysisDialog::AcceptButtonCallback() {
@@ -360,7 +360,7 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
 
 void ContentAnalysisDialog::ShowResult(
     ContentAnalysisDelegate::FinalResult result,
-    const base::string16& custom_message,
+    const std::u16string& custom_message,
     const GURL& learn_more_url) {
   DCHECK(is_pending());
   final_result_ = result;
@@ -429,7 +429,7 @@ void ContentAnalysisDialog::UpdateDialog() {
 
   // Update the message's text, and send an alert for screen readers since the
   // text changed.
-  base::string16 new_message = GetDialogMessage();
+  std::u16string new_message = GetDialogMessage();
   message_->SetText(new_message);
   message_->GetViewAccessibility().AnnounceText(std::move(new_message));
 
@@ -547,7 +547,7 @@ void ContentAnalysisDialog::SetupButtons() {
   }
 }
 
-base::string16 ContentAnalysisDialog::GetDialogMessage() const {
+std::u16string ContentAnalysisDialog::GetDialogMessage() const {
   switch (dialog_status_) {
     case DeepScanningDialogStatus::PENDING:
       return GetPendingMessage();
@@ -560,7 +560,7 @@ base::string16 ContentAnalysisDialog::GetDialogMessage() const {
   }
 }
 
-base::string16 ContentAnalysisDialog::GetCancelButtonText() const {
+std::u16string ContentAnalysisDialog::GetCancelButtonText() const {
   int text_id;
   switch (dialog_status_) {
     case DeepScanningDialogStatus::SUCCESS:
@@ -579,7 +579,7 @@ base::string16 ContentAnalysisDialog::GetCancelButtonText() const {
   return l10n_util::GetStringUTF16(text_id);
 }
 
-base::string16 ContentAnalysisDialog::GetBypassWarningButtonText() const {
+std::u16string ContentAnalysisDialog::GetBypassWarningButtonText() const {
   DCHECK(is_warning());
   return l10n_util::GetStringUTF16(IDS_DEEP_SCANNING_DIALOG_PROCEED_BUTTON);
 }
@@ -660,13 +660,13 @@ int ContentAnalysisDialog::GetUploadImageId(bool use_dark) const {
   return use_dark ? IDR_UPLOAD_VIOLATION_DARK : IDR_UPLOAD_VIOLATION;
 }
 
-base::string16 ContentAnalysisDialog::GetPendingMessage() const {
+std::u16string ContentAnalysisDialog::GetPendingMessage() const {
   DCHECK(is_pending());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, files_count_);
 }
 
-base::string16 ContentAnalysisDialog::GetFailureMessage() const {
+std::u16string ContentAnalysisDialog::GetFailureMessage() const {
   DCHECK(is_failure());
 
   // If the admin has specified a custom message for this failure, it takes
@@ -688,7 +688,7 @@ base::string16 ContentAnalysisDialog::GetFailureMessage() const {
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAILURE_MESSAGE, files_count_);
 }
 
-base::string16 ContentAnalysisDialog::GetWarningMessage() const {
+std::u16string ContentAnalysisDialog::GetWarningMessage() const {
   DCHECK(is_warning());
 
   // If the admin has specified a custom message for this warning, it takes
@@ -700,13 +700,13 @@ base::string16 ContentAnalysisDialog::GetWarningMessage() const {
       IDS_DEEP_SCANNING_DIALOG_UPLOAD_WARNING_MESSAGE, files_count_);
 }
 
-base::string16 ContentAnalysisDialog::GetSuccessMessage() const {
+std::u16string ContentAnalysisDialog::GetSuccessMessage() const {
   DCHECK(is_success());
   return l10n_util::GetPluralStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_SUCCESS_MESSAGE, files_count_);
 }
 
-base::string16 ContentAnalysisDialog::GetCustomMessage() const {
+std::u16string ContentAnalysisDialog::GetCustomMessage() const {
   DCHECK(is_warning() || is_failure());
   DCHECK(has_custom_message());
   return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,

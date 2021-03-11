@@ -11,9 +11,8 @@
 namespace chromeos {
 
 ScreenCaptureNotificationUIChromeOS::ScreenCaptureNotificationUIChromeOS(
-    const base::string16& text)
-    : text_(text) {
-}
+    const std::u16string& text)
+    : text_(text) {}
 
 ScreenCaptureNotificationUIChromeOS::~ScreenCaptureNotificationUIChromeOS() {
   // MediaStreamCaptureIndicator will delete ScreenCaptureNotificationUI object
@@ -47,7 +46,7 @@ void ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI() {
 
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
-ScreenCaptureNotificationUI::Create(const base::string16& text) {
+ScreenCaptureNotificationUI::Create(const std::u16string& text) {
   return std::unique_ptr<ScreenCaptureNotificationUI>(
       new chromeos::ScreenCaptureNotificationUIChromeOS(text));
 }

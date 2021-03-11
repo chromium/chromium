@@ -144,7 +144,7 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
 
     StorageMonitor::GetInstance()->receiver()->ProcessAttach(
         StorageInfo(device_id_, kDevicePath, base::ASCIIToUTF16(kDeviceName),
-                    base::string16(), base::string16(), 0));
+                    std::u16string(), std::u16string(), 0));
     content::RunAllPendingInMessageLoop();
   }
 

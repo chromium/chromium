@@ -9,7 +9,7 @@
 
 namespace chromeos {
 
-DialogWindowWaiter::DialogWindowWaiter(const base::string16& dialog_title)
+DialogWindowWaiter::DialogWindowWaiter(const std::u16string& dialog_title)
     : dialog_title_(dialog_title) {
   aura::Env::GetInstance()->AddObserver(this);
 }

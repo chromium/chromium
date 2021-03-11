@@ -130,7 +130,7 @@ class ForwardingDelegate : public message_center::NotificationDelegate {
   }
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     if (button_index) {
       // Chrome OS does not support inline reply. The button index comes out of
       // trusted ash-side message center UI code and is guaranteed not to be

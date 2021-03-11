@@ -236,7 +236,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
     if (job_details->type() == ::printing::JobEventDetails::DOC_DONE) {
       const ::printing::PrintedDocument* document = job_details->document();
       DCHECK(document);
-      base::string16 title =
+      std::u16string title =
           ::printing::SimplifyDocumentTitle(document->name());
       if (title.empty()) {
         title = ::printing::SimplifyDocumentTitle(

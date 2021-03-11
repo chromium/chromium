@@ -39,7 +39,7 @@ AdbSideloadingPolicyChangeNotification::
     ~AdbSideloadingPolicyChangeNotification() {}
 
 void AdbSideloadingPolicyChangeNotification::Show(Type type) {
-  base::string16 title, text;
+  std::u16string title, text;
   std::string notification_id;
   bool pinned = false;
   std::vector<message_center::ButtonInfo> notification_actions;
@@ -48,7 +48,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
       base::UTF8ToUTF16(g_browser_process->platform_part()
                             ->browser_policy_connector_chromeos()
                             ->GetEnterpriseDomainManager());
-  base::string16 device_type = ui::GetChromeOSDeviceName();
+  std::u16string device_type = ui::GetChromeOSDeviceName();
 
   switch (type) {
     case Type::kNone:
@@ -89,7 +89,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          text, base::string16() /*display_source*/, GURL(),
+          text, std::u16string() /*display_source*/, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, notification_id),
           message_center::RichNotificationData(),

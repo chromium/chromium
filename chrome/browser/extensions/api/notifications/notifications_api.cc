@@ -254,8 +254,8 @@ bool NotificationsApiFunction::CreateNotification(
   message_center::NotificationType type =
       MapApiTemplateTypeToType(options->type);
 
-  const base::string16 title(base::UTF8ToUTF16(*options->title));
-  const base::string16 message(base::UTF8ToUTF16(*options->message));
+  const std::u16string title(base::UTF8ToUTF16(*options->title));
+  const std::u16string message(base::UTF8ToUTF16(*options->message));
   gfx::Image icon;
 
   if (!options->icon_bitmap.get() ||

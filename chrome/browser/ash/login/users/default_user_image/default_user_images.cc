@@ -392,7 +392,7 @@ std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
       int string_id = kDefaultImageDescriptions[i];
       image_data->SetString("title", string_id
                                          ? l10n_util::GetStringUTF16(string_id)
-                                         : base::string16());
+                                         : std::u16string());
     }
     image_urls->Append(std::move(image_data));
   }

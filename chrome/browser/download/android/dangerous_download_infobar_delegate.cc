@@ -61,7 +61,7 @@ void DangerousDownloadInfoBarDelegate::InfoBarDismissed() {
     download_item_->Remove();
 }
 
-base::string16 DangerousDownloadInfoBarDelegate::GetMessageText() const {
+std::u16string DangerousDownloadInfoBarDelegate::GetMessageText() const {
   return message_text_;
 }
 

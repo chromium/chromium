@@ -59,7 +59,7 @@ class WebUILoginView : public views::View,
 
     // Title of the web contents. This will be shown in the task manager. If
     // empty, the default webview title will be used.
-    base::string16 web_view_title;
+    std::u16string web_view_title;
   };
 
   WebUILoginView(const WebViewSettings& settings,
@@ -121,7 +121,7 @@ class WebUILoginView : public views::View,
 
  protected:
   static void InitializeWebView(views::WebView* web_view,
-                                const base::string16& title);
+                                const std::u16string& title);
 
   // Overridden from views::View:
   void Layout() override;

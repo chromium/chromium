@@ -114,7 +114,7 @@ std::string DeltaFileEntryWithData::Url() const {
   return entry_.url();
 }
 
-base::string16 DeltaFileEntryWithData::Title() const {
+std::u16string DeltaFileEntryWithData::Title() const {
   if (!Valid()) return base::UTF8ToUTF16("");
   if (is_bookmark_ && !bookmark_title_.empty()) return bookmark_title_;
   if (data_.title().empty()) return base::UTF8ToUTF16(data_.url().host_piece());

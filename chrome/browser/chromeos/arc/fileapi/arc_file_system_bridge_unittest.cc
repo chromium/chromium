@@ -109,7 +109,7 @@ TEST_F(ArcFileSystemBridgeTest, GetFileName) {
 }
 
 TEST_F(ArcFileSystemBridgeTest, GetFileNameNonASCII) {
-  const std::string filename = base::UTF16ToUTF8(base::string16({
+  const std::string filename = base::UTF16ToUTF8(std::u16string({
       0x307b,  // HIRAGANA_LETTER_HO
       0x3052,  // HIRAGANA_LETTER_GE
   }));

@@ -43,9 +43,9 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Cancel() override;
 
   // ThemeServiceObserver:

@@ -97,7 +97,7 @@ const FileBrowserHandler* FindFileBrowserHandlerForActionId(
 }
 
 std::string EscapedUtf8ToLower(const std::string& str) {
-  base::string16 utf16 = base::UTF8ToUTF16(
+  std::u16string utf16 = base::UTF8ToUTF16(
       net::UnescapeURLComponent(str, net::UnescapeRule::NORMAL));
   return net::EscapeUrlEncodedData(
       base::UTF16ToUTF8(base::i18n::ToLower(utf16)),

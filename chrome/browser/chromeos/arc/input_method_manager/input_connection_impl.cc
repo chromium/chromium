@@ -35,7 +35,7 @@ constexpr std::tuple<char, ui::KeyboardCode, ui::DomCode, ui::DomKey>
     kControlCharToKeyEvent[] = {
         {'\n', ui::VKEY_RETURN, ui::DomCode::ENTER, ui::DomKey::ENTER}};
 
-bool IsControlChar(const base::string16& text) {
+bool IsControlChar(const std::u16string& text) {
   const std::string str = base::UTF16ToUTF8(text);
   if (str.length() != 1)
     return false;
@@ -101,7 +101,7 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
   gfx::Range text_range = gfx::Range();
   gfx::Range selection_range = gfx::Range();
   base::Optional<gfx::Range> composition_text_range = gfx::Range();
-  base::string16 text;
+  std::u16string text;
 
   if (!client) {
     return mojom::TextInputStatePtr(base::in_place, 0, text, text_range,
@@ -123,7 +123,7 @@ mojom::TextInputStatePtr InputConnectionImpl::GetTextInputState(
       composition_text_range);
 }
 
-void InputConnectionImpl::CommitText(const base::string16& text,
+void InputConnectionImpl::CommitText(const std::u16string& text,
                                      int new_cursor_pos) {
   StartStateUpdateTimer();
 
@@ -180,7 +180,7 @@ void InputConnectionImpl::FinishComposingText() {
     return;
   }
 
-  base::string16 composing_text;
+  std::u16string composing_text;
   client->GetTextFromRange(composition_range, &composing_text);
 
   std::string error;
@@ -198,7 +198,7 @@ void InputConnectionImpl::FinishComposingText() {
 }
 
 void InputConnectionImpl::SetComposingText(
-    const base::string16& text,
+    const std::u16string& text,
     int new_cursor_pos,
     const base::Optional<gfx::Range>& new_selection_range) {
   // It's relative to the last character of the composing text,
@@ -311,7 +311,7 @@ void InputConnectionImpl::StartStateUpdateTimer() {
                      true /* is_input_state_update_requested */));
 }
 
-void InputConnectionImpl::SendControlKeyEvent(const base::string16& text) {
+void InputConnectionImpl::SendControlKeyEvent(const std::u16string& text) {
   DCHECK(IsControlChar(text));
 
   const std::string str = base::UTF16ToUTF8(text);

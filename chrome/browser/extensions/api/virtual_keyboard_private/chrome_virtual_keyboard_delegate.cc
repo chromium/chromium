@@ -209,7 +209,7 @@ bool ChromeVirtualKeyboardDelegate::HideKeyboard() {
   return true;
 }
 
-bool ChromeVirtualKeyboardDelegate::InsertText(const base::string16& text) {
+bool ChromeVirtualKeyboardDelegate::InsertText(const std::u16string& text) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ui::TextInputClient* tic = GetFocusedTextInputClient();
   if (!tic || tic->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE)

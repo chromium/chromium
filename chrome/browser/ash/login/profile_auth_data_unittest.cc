@@ -217,7 +217,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
       ->Add(GURL(kProxyAuthURL), net::HttpAuth::AUTH_PROXY, kProxyAuthRealm,
             net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
             kProxyAuthChallenge,
-            net::AuthCredentials(base::string16(),
+            net::AuthCredentials(std::u16string(),
                                  base::ASCIIToUTF16(proxy_auth_password)),
             std::string());
 

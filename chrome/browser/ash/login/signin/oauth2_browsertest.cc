@@ -983,7 +983,7 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
   EXPECT_FALSE(fake_google_.IsPageRequested());
 
   // Check that throttle page is displayed instead.
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser, &title);
   DVLOG(1) << "Loaded page at the start : " << title;
 

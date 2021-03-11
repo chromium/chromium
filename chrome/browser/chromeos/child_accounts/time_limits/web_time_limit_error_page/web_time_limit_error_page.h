@@ -24,7 +24,7 @@ class TimeDelta;
 // |app_locale| is used to specify the locale used by the browser.
 std::string GetWebTimeLimitChromeErrorPage(
     const std::string& domain,
-    const base::Optional<base::string16>& title,
+    const base::Optional<std::u16string>& title,
     base::TimeDelta time_limit,
     const std::string& app_locale);
 

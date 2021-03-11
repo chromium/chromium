@@ -22,8 +22,8 @@ bool DuplicateDownloadInfoBarDelegate::DuplicateRequestExists() const {
   return false;
 }
 
-base::string16 DuplicateDownloadInfoBarDelegate::GetMessageText() const {
-  return base::string16();
+std::u16string DuplicateDownloadInfoBarDelegate::GetMessageText() const {
+  return std::u16string();
 }
 
 bool DuplicateDownloadInfoBarDelegate::ShouldExpire(

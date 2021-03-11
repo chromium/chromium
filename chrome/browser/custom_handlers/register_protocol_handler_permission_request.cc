@@ -32,7 +32,7 @@ RegisterProtocolHandlerPermissionRequest::GetRequestType() const {
   return permissions::RequestType::kRegisterProtocolHandler;
 }
 
-base::string16
+std::u16string
 RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
   ProtocolHandler old_handler = registry_->GetHandlerFor(handler_.protocol());
   return old_handler.IsEmpty()

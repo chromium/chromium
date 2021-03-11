@@ -212,17 +212,17 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
   // Create 3 groups with different colors.
   tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({0});
   tab_groups::TabGroupVisualData visual_data1(
-      base::string16(), tab_groups::TabGroupColorId::kGrey);
+      std::u16string(), tab_groups::TabGroupColorId::kGrey);
   tab_group_model->GetTabGroup(group1)->SetVisualData(visual_data1);
 
   tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({1});
   tab_groups::TabGroupVisualData visual_data2(
-      base::string16(), tab_groups::TabGroupColorId::kRed);
+      std::u16string(), tab_groups::TabGroupColorId::kRed);
   tab_group_model->GetTabGroup(group2)->SetVisualData(visual_data2);
 
   tab_groups::TabGroupId group3 = tab_strip_model->AddToNewGroup({2});
   tab_groups::TabGroupVisualData visual_data3(
-      base::string16(), tab_groups::TabGroupColorId::kBlue);
+      std::u16string(), tab_groups::TabGroupColorId::kBlue);
   tab_group_model->GetTabGroup(group3)->SetVisualData(visual_data3);
 
   // Query by color and verify results.

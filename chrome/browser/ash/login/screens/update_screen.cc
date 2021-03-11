@@ -431,7 +431,7 @@ void UpdateScreen::SetUpdateStatusMessage(int percent,
                                           base::TimeDelta time_left) {
   if (!view_)
     return;
-  base::string16 time_left_message;
+  std::u16string time_left_message;
   if (time_left.InMinutes() == 0) {
     time_left_message = l10n_util::GetStringFUTF16(
         IDS_UPDATE_STATUS_SUBTITLE_TIME_LEFT,

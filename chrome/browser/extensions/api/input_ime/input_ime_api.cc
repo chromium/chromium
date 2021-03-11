@@ -98,7 +98,7 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   } else {
     ch = event.GetCharacter();
   }
-  return base::UTF16ToUTF8(base::string16(1, ch));
+  return base::UTF16ToUTF8(std::u16string(1, ch));
 }
 
 ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
@@ -269,7 +269,7 @@ void ImeObserver::OnCompositionBoundsChanged(
     const std::vector<gfx::Rect>& bounds) {}
 
 void ImeObserver::OnSurroundingTextChanged(const std::string& component_id,
-                                           const base::string16& text,
+                                           const std::u16string& text,
                                            int cursor_pos,
                                            int anchor_pos,
                                            int offset_pos) {

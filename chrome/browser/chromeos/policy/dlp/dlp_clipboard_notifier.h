@@ -67,7 +67,7 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
 
  private:
   virtual void ShowToast(const std::string& id,
-                         const base::string16& text) const;
+                         const std::u16string& text) const;
 
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;

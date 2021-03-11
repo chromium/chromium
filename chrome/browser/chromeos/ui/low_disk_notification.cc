@@ -89,8 +89,8 @@ void LowDiskNotification::LowDiskSpace(uint64_t free_disk_bytes) {
 
 std::unique_ptr<message_center::Notification>
 LowDiskNotification::CreateNotification(Severity severity) {
-  base::string16 title;
-  base::string16 message;
+  std::u16string title;
+  std::u16string message;
   message_center::SystemNotificationWarningLevel warning_level;
   if (severity == Severity::HIGH) {
     title =
@@ -124,7 +124,7 @@ LowDiskNotification::CreateNotification(Severity severity) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kLowDiskId, title, message,
-          base::string16(), GURL(), notifier_id, optional_fields,
+          std::u16string(), GURL(), notifier_id, optional_fields,
           new message_center::HandleNotificationClickDelegate(on_click),
           kNotificationStorageFullIcon, warning_level);
 

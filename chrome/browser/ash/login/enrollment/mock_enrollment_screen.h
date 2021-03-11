@@ -36,7 +36,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
               (Controller*, const policy::EnrollmentConfig& config));
   MOCK_METHOD(void,
               SetEnterpriseDomainInfo,
-              (const std::string& manager, const base::string16& device_type));
+              (const std::string& manager, const std::u16string& device_type));
   MOCK_METHOD(void, Show, ());
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, ShowSigninScreen, ());

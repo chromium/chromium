@@ -63,7 +63,7 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
       !network::IsUrlPotentiallyTrustworthy(origin)) {
     return RespondNow(Error(kUrlNotSecure));
   }
-  base::string16 target_name =
+  std::u16string target_name =
       base::UTF8ToUTF16(network::IsUrlPotentiallyTrustworthy(origin)
                             ? net::GetHostAndOptionalPort(origin)
                             : origin.spec());

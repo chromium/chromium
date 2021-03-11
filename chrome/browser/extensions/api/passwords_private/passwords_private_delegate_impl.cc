@@ -216,8 +216,8 @@ void PasswordsPrivateDelegateImpl::GetPasswordExceptionsList(
 
 bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(
     const std::vector<int>& ids,
-    const base::string16& new_username,
-    const base::string16& new_password) {
+    const std::u16string& new_username,
+    const std::u16string& new_password) {
   const std::vector<std::string> sort_keys =
       GetSortKeys(password_id_generator_, ids);
 
@@ -306,7 +306,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
     // Copying occurs here so javascript doesn't need plaintext password.
     callback = base::BindOnce(
         [](PlaintextPasswordCallback callback,
-           base::Optional<base::string16> password) {
+           base::Optional<std::u16string> password) {
           if (!password) {
             std::move(callback).Run(base::nullopt);
             return;
@@ -315,7 +315,7 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
               ui::ClipboardBuffer::kCopyPaste);
           clipboard_writer.WriteText(*password);
           clipboard_writer.MarkAsConfidential();
-          std::move(callback).Run(base::string16());
+          std::move(callback).Run(std::u16string());
         },
         std::move(callback));
   }

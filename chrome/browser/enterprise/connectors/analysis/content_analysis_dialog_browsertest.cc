@@ -72,7 +72,7 @@ constexpr char kBlockingScansForDlpAndMalwareWithCustomMessage[] = R"(
   }]
 })";
 
-base::string16 text() {
+std::u16string text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
 }
 
@@ -343,8 +343,8 @@ class ContentAnalysisDialogAppearanceBrowserTest
                        base::TimeTicks timestamp) override {
     // The dialog initially shows the pending message for the appropriate access
     // point and scan type.
-    base::string16 pending_message = dialog->GetMessageForTesting()->GetText();
-    base::string16 expected_message = l10n_util::GetPluralStringFUTF16(
+    std::u16string pending_message = dialog->GetMessageForTesting()->GetText();
+    std::u16string expected_message = l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_UPLOAD_PENDING_MESSAGE, file_scan() ? 1 : 0);
     ASSERT_EQ(pending_message, expected_message);
 
@@ -379,8 +379,8 @@ class ContentAnalysisDialogAppearanceBrowserTest
                      ContentAnalysisDelegate::FinalResult result) override {
     // The dialog shows the failure or success message for the appropriate
     // access point and scan type.
-    base::string16 final_message = dialog->GetMessageForTesting()->GetText();
-    base::string16 expected_message = GetExpectedMessage();
+    std::u16string final_message = dialog->GetMessageForTesting()->GetText();
+    std::u16string expected_message = GetExpectedMessage();
 
     ASSERT_EQ(final_message, expected_message);
 
@@ -415,7 +415,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     ASSERT_FALSE(dialog->GetSideIconSpinnerForTesting());
   }
 
-  virtual base::string16 GetExpectedMessage() {
+  virtual std::u16string GetExpectedMessage() {
     int files_count = file_scan() ? 1 : 0;
     return success()
                ? l10n_util::GetPluralStringFUTF16(
@@ -445,7 +445,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
 class ContentAnalysisDialogCustomMessageAppearanceBrowserTest
     : public ContentAnalysisDialogAppearanceBrowserTest {
  private:
-  base::string16 GetExpectedMessage() override {
+  std::u16string GetExpectedMessage() override {
     int files_count = file_scan() ? 1 : 0;
     return success()
                ? l10n_util::GetPluralStringFUTF16(

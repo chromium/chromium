@@ -26,10 +26,10 @@ const NetworkState* GetNetworkState(const std::string& network_id) {
 
 namespace shill_error {
 
-base::string16 GetShillErrorString(const std::string& error,
+std::u16string GetShillErrorString(const std::string& error,
                                    const std::string& network_id) {
   if (error.empty())
-    return base::string16();
+    return std::u16string();
   if (error == shill::kErrorOutOfRange)
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_OUT_OF_RANGE);
   if (error == shill::kErrorPinMissing)

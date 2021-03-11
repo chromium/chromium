@@ -722,7 +722,7 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
     return;
   }
 
-  std::vector<base::string16> keywords =
+  std::vector<std::u16string> keywords =
       base::SplitString(base::UTF8ToUTF16(query_text),
                         base::StringPiece16(base::kWhitespaceUTF16),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

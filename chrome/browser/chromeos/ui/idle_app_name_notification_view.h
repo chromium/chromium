@@ -38,7 +38,7 @@ class IdleAppNameNotificationView {
   bool IsVisible();
 
   // Returns the shown text for testing.
-  base::string16 GetShownTextForTest();
+  std::u16string GetShownTextForTest();
 
  private:
   // Show the message. This will make the message visible.

@@ -23,7 +23,7 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
   MOCK_METHOD(
       void,
       SavePasswordsForOrigin,
-      ((const std::map<base::string16, const password_manager::PasswordForm*>&),
+      ((const std::map<std::u16string, const password_manager::PasswordForm*>&),
        (const url::Origin&)));
   MOCK_METHOD(void,
               RefreshSuggestionsForField,

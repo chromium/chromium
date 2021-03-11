@@ -45,7 +45,7 @@ class Extension;
 // So if you change this, you also have to change GetScopeURLFromBookmarkApp().
 std::unique_ptr<base::DictionaryValue> CreateURLHandlersForBookmarkApp(
     const GURL& scope_url,
-    const base::string16& title);
+    const std::u16string& title);
 
 // Retrieves the scope URL from a Bookmark App's URL handlers.
 GURL GetScopeURLFromBookmarkApp(const Extension* extension);

@@ -195,21 +195,20 @@ class BaseSearchProviderTest : public testing::Test,
     ResultInfo(GURL gurl,
                AutocompleteMatch::Type result_type,
                bool allowed_to_be_default_match,
-               base::string16 fill_into_edit)
-      : gurl(gurl),
-        result_type(result_type),
-        allowed_to_be_default_match(allowed_to_be_default_match),
-        fill_into_edit(fill_into_edit) {
-    }
+               std::u16string fill_into_edit)
+        : gurl(gurl),
+          result_type(result_type),
+          allowed_to_be_default_match(allowed_to_be_default_match),
+          fill_into_edit(fill_into_edit) {}
 
     const GURL gurl;
     const AutocompleteMatch::Type result_type;
     const bool allowed_to_be_default_match;
-    const base::string16 fill_into_edit;
+    const std::u16string fill_into_edit;
   };
 
   struct TestData {
-    const base::string16 input;
+    const std::u16string input;
     const size_t num_results;
     const ResultInfo output[3];
   };
@@ -238,7 +237,7 @@ class BaseSearchProviderTest : public testing::Test,
   // Adds a search for |term|, using the engine |t_url| to the history, and
   // returns the URL for that search.
   GURL AddSearchToHistory(TemplateURL* t_url,
-                          base::string16 term,
+                          std::u16string term,
                           int visit_count);
 
   // Used in SetUp in subclasses. See description above this class about common
@@ -248,7 +247,7 @@ class BaseSearchProviderTest : public testing::Test,
 
   // Looks for a match in |provider_| with |contents| equal to |contents|.
   // Sets |match| to it if found.  Returns whether |match| was set.
-  bool FindMatchWithContents(const base::string16& contents,
+  bool FindMatchWithContents(const std::u16string& contents,
                              AutocompleteMatch* match);
 
   // Looks for a match in |provider_| with destination |url|.  Sets |match| to
@@ -264,13 +263,13 @@ class BaseSearchProviderTest : public testing::Test,
   void RunTillProviderDone();
 
   // Invokes Start on provider_, then runs all pending tasks.
-  void QueryForInput(const base::string16& text,
+  void QueryForInput(const std::u16string& text,
                      bool prevent_inline_autocomplete,
                      bool prefer_keyword);
 
   // Calls QueryForInput(), finishes any suggest query, then if |wyt_match| is
   // not nullptr, sets it to the "what you typed" entry for |text|.
-  void QueryForInputAndSetWYTMatch(const base::string16& text,
+  void QueryForInputAndSetWYTMatch(const std::u16string& text,
                                    AutocompleteMatch* wyt_match);
 
   // Calls QueryForInput(), sets the JSON responses for the default and keyword
@@ -278,7 +277,7 @@ class BaseSearchProviderTest : public testing::Test,
   // returned.  Use empty responses for each fetcher that shouldn't be set up /
   // configured.
   void QueryForInputAndWaitForFetcherResponses(
-      const base::string16& text,
+      const std::u16string& text,
       const bool prefer_keyword,
       const std::string& default_fetcher_response,
       const std::string& keyword_fetcher_response);
@@ -286,7 +285,7 @@ class BaseSearchProviderTest : public testing::Test,
   // Notifies the URLFetcher for the suggest query corresponding to the default
   // search provider that it's done.
   // Be sure and wrap calls to this in ASSERT_NO_FATAL_FAILURE.
-  void FinishDefaultSuggestQuery(const base::string16& query_text);
+  void FinishDefaultSuggestQuery(const std::u16string& query_text);
 
   // Verifies that |matches| and |expected_matches| agree on the first
   // |num_expected_matches|, displaying an error message that includes
@@ -304,10 +303,10 @@ class BaseSearchProviderTest : public testing::Test,
 
   // See description above class for details of these fields.
   TemplateURL* default_t_url_ = nullptr;
-  const base::string16 term1_ = ASCIIToUTF16("term1");
+  const std::u16string term1_ = ASCIIToUTF16("term1");
   GURL term1_url_;
   TemplateURL* keyword_t_url_ = nullptr;
-  const base::string16 keyword_term_ = ASCIIToUTF16("keyword");
+  const std::u16string keyword_term_ = ASCIIToUTF16("keyword");
   GURL keyword_url_;
 
   // SearchProviderFeatureTestComponent must come before BrowserTaskEnvironment,
@@ -465,7 +464,7 @@ void BaseSearchProviderTest::RunTillProviderDone() {
   run_loop.Run();
 }
 
-void BaseSearchProviderTest::QueryForInput(const base::string16& text,
+void BaseSearchProviderTest::QueryForInput(const std::u16string& text,
                                            bool prevent_inline_autocomplete,
                                            bool prefer_keyword) {
   // Start a query.
@@ -481,7 +480,7 @@ void BaseSearchProviderTest::QueryForInput(const base::string16& text,
 }
 
 void BaseSearchProviderTest::QueryForInputAndSetWYTMatch(
-    const base::string16& text,
+    const std::u16string& text,
     AutocompleteMatch* wyt_match) {
   QueryForInput(text, false, false);
   profile_.BlockUntilHistoryProcessesPendingRequests();
@@ -499,7 +498,7 @@ void BaseSearchProviderTest::QueryForInputAndSetWYTMatch(
 }
 
 void BaseSearchProviderTest::QueryForInputAndWaitForFetcherResponses(
-    const base::string16& text,
+    const std::u16string& text,
     const bool prefer_keyword,
     const std::string& default_fetcher_response,
     const std::string& keyword_fetcher_response) {
@@ -531,7 +530,7 @@ void BaseSearchProviderTest::QueryForInputAndWaitForFetcherResponses(
 }
 
 GURL BaseSearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
-                                                base::string16 term,
+                                                std::u16string term,
                                                 int visit_count) {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       &profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -542,7 +541,7 @@ GURL BaseSearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
   static base::Time last_added_time;
   last_added_time = std::max(base::Time::Now(),
       last_added_time + base::TimeDelta::FromMicroseconds(1));
-  history->AddPageWithDetails(search, base::string16(), visit_count,
+  history->AddPageWithDetails(search, std::u16string(), visit_count,
                               visit_count, last_added_time, false,
                               history::SOURCE_BROWSED);
   history->SetKeywordSearchTermsForURL(search, t_url->id(), term);
@@ -550,7 +549,7 @@ GURL BaseSearchProviderTest::AddSearchToHistory(TemplateURL* t_url,
 }
 
 bool BaseSearchProviderTest::FindMatchWithContents(
-    const base::string16& contents,
+    const std::u16string& contents,
     AutocompleteMatch* match) {
   for (auto i = provider_->matches().begin(); i != provider_->matches().end();
        ++i) {
@@ -576,7 +575,7 @@ bool BaseSearchProviderTest::FindMatchWithDestination(
 }
 
 void BaseSearchProviderTest::FinishDefaultSuggestQuery(
-    const base::string16& query_text) {
+    const std::u16string& query_text) {
   std::string text8;
   ASSERT_TRUE(
       base::UTF16ToUTF8(query_text.data(), query_text.length(), &text8));
@@ -633,7 +632,7 @@ void BaseSearchProviderTest::ClearAllResults() {
 // Make sure we query history for the default provider and a URLFetcher is
 // created for the default provider suggest results.
 TEST_F(SearchProviderTest, QueryDefaultProvider) {
-  base::string16 term = term1_.substr(0, term1_.length() - 1);
+  std::u16string term = term1_.substr(0, term1_.length() - 1);
   QueryForInput(term, false, false);
 
   // Make sure the default providers suggest service was queried.
@@ -678,7 +677,7 @@ TEST_F(SearchProviderTest, QueryDefaultProvider) {
 // provider even if the default search provider's keyword is renamed in the
 // middle of processing the query.
 TEST_F(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
-  base::string16 query = ASCIIToUTF16("query");
+  std::u16string query = ASCIIToUTF16("query");
   QueryForInput(query, false, false);
 
   // Make sure the default provider's suggest service was queried.
@@ -711,7 +710,7 @@ TEST_F(SearchProviderTest, HasQueryWhatYouTypedIfDefaultKeywordChanges) {
 }
 
 TEST_F(SearchProviderTest, HonorPreventInlineAutocomplete) {
-  base::string16 term = term1_.substr(0, term1_.length() - 1);
+  std::u16string term = term1_.substr(0, term1_.length() - 1);
   QueryForInput(term, true, false);
 
   ASSERT_FALSE(provider_->matches().empty());
@@ -723,7 +722,7 @@ TEST_F(SearchProviderTest, HonorPreventInlineAutocomplete) {
 // Issues a query that matches the registered keyword and makes sure history
 // is queried as well as URLFetchers getting created.
 TEST_F(SearchProviderTest, QueryKeywordProvider) {
-  base::string16 term = keyword_term_.substr(0, keyword_term_.length() - 1);
+  std::u16string term = keyword_term_.substr(0, keyword_term_.length() - 1);
   QueryForInput(ASCIIToUTF16("k ") + term, false, false);
 
   // Make sure the default providers suggest service was queried.
@@ -828,7 +827,7 @@ TEST_F(SearchProviderTest, DontAutocompleteURLLikeTerms) {
   // Add the term as a url.
   HistoryServiceFactory::GetForProfile(&profile_,
                                        ServiceAccessType::EXPLICIT_ACCESS)
-      ->AddPageWithDetails(GURL("http://docs.google.com"), base::string16(), 1,
+      ->AddPageWithDetails(GURL("http://docs.google.com"), std::u16string(), 1,
                            1, base::Time::Now(), false,
                            history::SOURCE_BROWSED);
   profile_.BlockUntilHistoryProcessesPendingRequests();
@@ -2333,13 +2332,13 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
   // We hardcode the string "term1" below, so ensure that the search term that
   // got added to history already is that string.
   ASSERT_EQ(ASCIIToUTF16("term1"), term1_);
-  base::string16 term = term1_.substr(0, term1_.length() - 1);
+  std::u16string term = term1_.substr(0, term1_.length() - 1);
 
   AddSearchToHistory(default_t_url_, term + ASCIIToUTF16("2"), 2);
   profile_.BlockUntilHistoryProcessesPendingRequests();
 
   struct {
-    const base::string16 input;
+    const std::u16string input;
     const std::string json;
     const std::string matches[6];
   } cases[] = {
@@ -2826,7 +2825,7 @@ TEST_F(SearchProviderTest, NavigationInline) {
     QueryForInput(ASCIIToUTF16(cases[i].input), false, false);
     SearchSuggestionParser::NavigationResult result(
         ChromeAutocompleteSchemeClassifier(&profile_), GURL(cases[i].url),
-        AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+        AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
         false, 0, false, ASCIIToUTF16(cases[i].input));
     result.set_received_after_last_keystroke(false);
     AutocompleteMatch match(provider_->NavigationToMatch(result));
@@ -2840,7 +2839,7 @@ TEST_F(SearchProviderTest, NavigationInline) {
     QueryForInput(ASCIIToUTF16(cases[i].input), true, false);
     SearchSuggestionParser::NavigationResult result_prevent_inline(
         ChromeAutocompleteSchemeClassifier(&profile_), GURL(cases[i].url),
-        AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+        AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
         false, 0, false, ASCIIToUTF16(cases[i].input));
     result_prevent_inline.set_received_after_last_keystroke(false);
     AutocompleteMatch match_prevent_inline(
@@ -2856,11 +2855,11 @@ TEST_F(SearchProviderTest, NavigationInline) {
 
 // Verifies that "http://" is not trimmed for input that is a leading substring.
 TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
-  const base::string16 input(ASCIIToUTF16("http:"));
-  const base::string16 url(ASCIIToUTF16("http://a.com"));
+  const std::u16string input(ASCIIToUTF16("http:"));
+  const std::u16string url(ASCIIToUTF16("http://a.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
   result.set_received_after_last_keystroke(false);
 
@@ -2887,7 +2886,7 @@ TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_),
       GURL("http://www.http.com/http"), AutocompleteMatchType::NAVSUGGEST, {},
-      base::string16(), std::string(), false, 0, false, ASCIIToUTF16("h"));
+      std::u16string(), std::string(), false, 0, false, ASCIIToUTF16("h"));
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(ASCIIToUTF16("ttp.com/http"), match.inline_autocompletion);
@@ -2913,7 +2912,7 @@ TEST_F(SearchProviderTest, NavigationPrefixClassify) {
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_),
       GURL("http://moon.com/moon"), AutocompleteMatchType::NAVSUGGEST, {},
-      base::string16(), std::string(), false, 0, false, ASCIIToUTF16("moon"));
+      std::u16string(), std::string(), false, 0, false, ASCIIToUTF16("moon"));
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
   EXPECT_EQ(ASCIIToUTF16("moon.com/moon"), match.contents);
@@ -2933,7 +2932,7 @@ TEST_F(SearchProviderTest, NavigationMidWordClassify) {
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_),
       GURL("http://www.facebook.com"), AutocompleteMatchType::NAVSUGGEST, {},
-      base::string16(), std::string(), false, 0, false,
+      std::u16string(), std::string(), false, 0, false,
       ASCIIToUTF16("acebook"));
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
@@ -2951,7 +2950,7 @@ TEST_F(SearchProviderTest, NavigationWordBreakClassify) {
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_),
       GURL("http://www.yellow-animals.com/duck"),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, ASCIIToUTF16("duck"));
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
@@ -2968,11 +2967,11 @@ TEST_F(SearchProviderTest, NavigationWordBreakClassify) {
 
 // Verifies that "http://" is trimmed in the general case.
 TEST_F(SearchProviderTest, DoTrimHttpScheme) {
-  const base::string16 input(ASCIIToUTF16("face book"));
-  const base::string16 url(ASCIIToUTF16("http://www.facebook.com"));
+  const std::u16string input(ASCIIToUTF16("face book"));
+  const std::u16string url(ASCIIToUTF16("http://www.facebook.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
   QueryForInput(input, false, false);
@@ -2983,11 +2982,11 @@ TEST_F(SearchProviderTest, DoTrimHttpScheme) {
 // Verifies that "http://" is not trimmed for input that has a scheme, even if
 // the input doesn't match the URL.
 TEST_F(SearchProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
-  const base::string16 input(ASCIIToUTF16("https://face book"));
-  const base::string16 url(ASCIIToUTF16("http://www.facebook.com"));
+  const std::u16string input(ASCIIToUTF16("https://face book"));
+  const std::u16string url(ASCIIToUTF16("http://www.facebook.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
   QueryForInput(input, false, false);
@@ -2998,11 +2997,11 @@ TEST_F(SearchProviderTest, DontTrimHttpSchemeIfInputHasScheme) {
 // Verifies that "https://" is not trimmed for input that has a (non-matching)
 // scheme.
 TEST_F(SearchProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
-  const base::string16 input(ASCIIToUTF16("http://face book"));
-  const base::string16 url(ASCIIToUTF16("https://www.facebook.com"));
+  const std::u16string input(ASCIIToUTF16("http://face book"));
+  const std::u16string url(ASCIIToUTF16("https://www.facebook.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
   QueryForInput(input, false, false);
@@ -3012,11 +3011,11 @@ TEST_F(SearchProviderTest, DontTrimHttpsSchemeIfInputHasScheme) {
 
 // Verifies that "https://" is trimmed in the general case.
 TEST_F(SearchProviderTest, DoTrimHttpsScheme) {
-  const base::string16 input(ASCIIToUTF16("face book"));
-  const base::string16 url(ASCIIToUTF16("https://www.facebook.com"));
+  const std::u16string input(ASCIIToUTF16("face book"));
+  const std::u16string url(ASCIIToUTF16("https://www.facebook.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
-      AutocompleteMatchType::NAVSUGGEST, {}, base::string16(), std::string(),
+      AutocompleteMatchType::NAVSUGGEST, {}, std::u16string(), std::string(),
       false, 0, false, input);
 
   QueryForInput(input, false, false);
@@ -3665,7 +3664,7 @@ TEST_F(SearchProviderTest, SuggestQueryUsesToken) {
   default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
   turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
 
-  base::string16 term = term1_.substr(0, term1_.length() - 1);
+  std::u16string term = term1_.substr(0, term1_.length() - 1);
   QueryForInput(term, false, false);
 
   // And the URL matches what we expected.
@@ -3708,7 +3707,7 @@ TEST_F(SearchProviderTest, AnswersCache) {
   EXPECT_EQ(-1, answer.query_type);
 
   // Inject a scored result, which will trigger answer retrieval.
-  base::string16 query = base::ASCIIToUTF16("weather los angeles");
+  std::u16string query = base::ASCIIToUTF16("weather los angeles");
   SearchSuggestionParser::SuggestResult suggest_result(
       query, AutocompleteMatchType::SEARCH_HISTORY,
       /*subtypes=*/{}, /*from_keyword_provider=*/false,
@@ -3761,7 +3760,7 @@ TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
 }
 
 TEST_F(InvalidSearchProviderTest, DoesNotSendSuggestRequests) {
-  base::string16 query = ASCIIToUTF16("query");
+  std::u16string query = ASCIIToUTF16("query");
   QueryForInput(query, false, false);
 
   // Make sure the default provider's suggest service was not queried.

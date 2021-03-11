@@ -50,7 +50,7 @@ class LoginDisplay {
     virtual void OnStartKioskAutolaunchScreen() = 0;
 
     // Returns name of the currently connected network, for error message,
-    virtual base::string16 GetConnectedNetworkName() = 0;
+    virtual std::u16string GetConnectedNetworkName() = 0;
 
     // Restarts the auto-login timer if it is running.
     virtual void ResetAutoLoginTimer() = 0;

@@ -52,10 +52,10 @@ DataReductionPromoInfoBarDelegateAndroid::GetIdentifier() const {
   return DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID;
 }
 
-base::string16 DataReductionPromoInfoBarDelegateAndroid::GetMessageText()
+std::u16string DataReductionPromoInfoBarDelegateAndroid::GetMessageText()
     const {
   // Message is set in DataReductionPromoInfoBar.java.
-  return base::string16();
+  return std::u16string();
 }
 
 bool DataReductionPromoInfoBarDelegateAndroid::Accept() {

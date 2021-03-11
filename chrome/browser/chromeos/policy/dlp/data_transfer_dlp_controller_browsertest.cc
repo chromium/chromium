@@ -105,7 +105,7 @@ class FakeDlpController : public DataTransferDlpController,
   FakeClipboardNotifier* helper_;
 };
 
-void SetClipboardText(base::string16 text,
+void SetClipboardText(std::u16string text,
                       std::unique_ptr<ui::DataTransferEndpoint> source) {
   ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
                                    source ? std::move(source) : nullptr);
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
 
   ui::DataTransferEndpoint data_dst(
       url::Origin::Create(GURL("https://google.com")));
-  base::string16 result;
+  std::u16string result;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);
@@ -259,22 +259,22 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockDestination) {
                        url::Origin::Create(GURL(kMailUrl))));
 
   ui::DataTransferEndpoint data_dst1(url::Origin::Create(GURL(kMailUrl)));
-  base::string16 result1;
+  std::u16string result1;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result1);
 
   ui::DataTransferEndpoint data_dst2(url::Origin::Create(GURL(kDocsUrl)));
-  base::string16 result2;
+  std::u16string result2;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result2);
 
   ui::DataTransferEndpoint data_dst3(url::Origin::Create(GURL(kExampleUrl)));
-  base::string16 result3;
+  std::u16string result3;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
-  EXPECT_EQ(base::string16(), result3);
+  EXPECT_EQ(std::u16string(), result3);
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockDestination) {
   testing::Mock::VerifyAndClearExpectations(helper.get());
 
   ui::DataTransferEndpoint data_dst4(url::Origin::Create(GURL(kMailUrl)));
-  base::string16 result4;
+  std::u16string result4;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result4);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result4);
@@ -331,22 +331,22 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
     writer.WriteText(base::UTF8ToUTF16(kClipboardText1));
   }
   ui::DataTransferEndpoint data_dst1(ui::EndpointType::kDefault);
-  base::string16 result1;
+  std::u16string result1;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result1);
 
   ui::DataTransferEndpoint data_dst2(ui::EndpointType::kArc);
-  base::string16 result2;
+  std::u16string result2;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
-  EXPECT_EQ(base::string16(), result2);
+  EXPECT_EQ(std::u16string(), result2);
 
   ui::DataTransferEndpoint data_dst3(ui::EndpointType::kCrostini);
-  base::string16 result3;
+  std::u16string result3;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
-  EXPECT_EQ(base::string16(), result3);
+  EXPECT_EQ(std::u16string(), result3);
 }
 
 // Flaky on MSan bots: http://crbug.com/1178328
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
                        url::Origin::Create(GURL(kMailUrl))));
 
   // Initiate a paste on textfield_.
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   textfield_->RequestFocus();
   event_generator_->PressKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
   event_generator_->ReleaseKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
@@ -427,13 +427,13 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
   // Initiate a paste on nullptr data_dst.
-  base::string16 result;
+  std::u16string result;
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, nullptr, &result);
   testing::Mock::VerifyAndClearExpectations(&dlp_controller);
 
-  EXPECT_EQ(base::string16(), result);
+  EXPECT_EQ(std::u16string(), result);
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
   EXPECT_CALL(dlp_controller, OnWidgetClosing);
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
   }
 
   ui::DataTransferEndpoint arc_endpoint(ui::EndpointType::kArc);
-  base::string16 result;
+  std::u16string result;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &arc_endpoint, &result);
   EXPECT_EQ(base::UTF8ToUTF16(kClipboardText1), result);

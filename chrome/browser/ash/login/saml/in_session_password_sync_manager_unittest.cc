@@ -190,7 +190,7 @@ TEST_F(InSessionPasswordSyncManagerTest, ReauthenticateSetOnLock) {
   EXPECT_CALL(*lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-                          base::string16()))
+                          std::u16string()))
       .Times(1);
   user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
@@ -210,7 +210,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithIncorrectUser) {
   EXPECT_CALL(*lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-                          base::string16()))
+                          std::u16string()))
       .Times(1);
   EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(0);
   user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
@@ -240,7 +240,7 @@ TEST_F(InSessionPasswordSyncManagerTest, AuthenticateWithCorrectUser) {
   EXPECT_CALL(*lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-                          base::string16()))
+                          std::u16string()))
       .Times(1);
   EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
   user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);

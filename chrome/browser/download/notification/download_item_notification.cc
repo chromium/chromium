@@ -216,8 +216,8 @@ DownloadItemNotification::DownloadItemNotification(
 
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, GetNotificationId(),
-      base::string16(),  // title
-      base::string16(),  // body
+      std::u16string(),  // title
+      std::u16string(),  // body
       gfx::Image(),      // icon
       l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_NOTIFICATION_DISPLAY_SOURCE),  // display_source
@@ -301,7 +301,7 @@ void DownloadItemNotification::Close(bool by_user) {
 
 void DownloadItemNotification::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   if (!item_)
     return;
 
@@ -700,8 +700,8 @@ DownloadItemNotification::GetExtraActions() const {
   return actions;
 }
 
-base::string16 DownloadItemNotification::GetTitle() const {
-  base::string16 title_text;
+std::u16string DownloadItemNotification::GetTitle() const {
+  std::u16string title_text;
 
   if (item_->IsDangerous()) {
     if (item_->MightBeMalicious() &&
@@ -719,7 +719,7 @@ base::string16 DownloadItemNotification::GetTitle() const {
     return l10n_util::GetStringUTF16(IDS_PROMPT_BLOCKED_MIXED_DOWNLOAD_TITLE);
   }
 
-  base::string16 file_name =
+  std::u16string file_name =
       item_->GetFileNameToReportUser().LossyDisplayName();
   if (IsScanning()) {
     return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_SCAN_TITLE,
@@ -754,7 +754,7 @@ base::string16 DownloadItemNotification::GetTitle() const {
   return title_text;
 }
 
-base::string16 DownloadItemNotification::GetCommandLabel(
+std::u16string DownloadItemNotification::GetCommandLabel(
     DownloadCommands::Command command) const {
   int id = -1;
   switch (command) {
@@ -805,16 +805,16 @@ base::string16 DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       // Only for menu.
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   CHECK(id != -1);
   return l10n_util::GetStringUTF16(id);
 }
 
-base::string16 DownloadItemNotification::GetWarningStatusString() const {
+std::u16string DownloadItemNotification::GetWarningStatusString() const {
   // Should only be called if IsDangerous() or IsMixedContent().
   DCHECK(item_->IsDangerous() || item_->IsMixedContent());
-  base::string16 elided_filename =
+  std::u16string elided_filename =
       item_->GetFileNameToReportUser().LossyDisplayName();
   // If mixed content, that warning is shown first.
   if (item_->IsMixedContent()) {
@@ -884,10 +884,10 @@ base::string16 DownloadItemNotification::GetWarningStatusString() const {
     }
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 DownloadItemNotification::GetInProgressSubStatusString() const {
+std::u16string DownloadItemNotification::GetInProgressSubStatusString() const {
   // "Paused"
   if (item_->IsPaused())
     return l10n_util::GetStringUTF16(IDS_DOWNLOAD_PROGRESS_PAUSED);
@@ -928,7 +928,7 @@ base::string16 DownloadItemNotification::GetInProgressSubStatusString() const {
   return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_STARTING);
 }
 
-base::string16 DownloadItemNotification::GetSubStatusString() const {
+std::u16string DownloadItemNotification::GetSubStatusString() const {
   if (item_->IsMixedContent() || item_->IsDangerous())
     return GetWarningStatusString();
 
@@ -954,7 +954,7 @@ base::string16 DownloadItemNotification::GetSubStatusString() const {
       if (item_->GetFileExternallyRemoved()) {
         return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_REMOVED);
       } else {
-        base::string16 file_name =
+        std::u16string file_name =
             item_->GetFileNameToReportUser().LossyDisplayName();
         base::i18n::AdjustStringForLocaleDirection(&file_name);
         return file_name;
@@ -966,7 +966,7 @@ base::string16 DownloadItemNotification::GetSubStatusString() const {
       FailState fail_state = item_->GetLastFailState();
       if (fail_state != FailState::USER_CANCELED) {
         // "Failed - <REASON>"
-        base::string16 interrupt_reason = item_->GetInterruptReasonText();
+        std::u16string interrupt_reason = item_->GetInterruptReasonText();
         DCHECK(!interrupt_reason.empty());
         return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED,
                                           interrupt_reason);
@@ -979,19 +979,19 @@ base::string16 DownloadItemNotification::GetSubStatusString() const {
       NOTREACHED();
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 DownloadItemNotification::GetStatusString() const {
+std::u16string DownloadItemNotification::GetStatusString() const {
   if (item_->IsDangerous() || item_->IsMixedContent())
-    return base::string16();
+    return std::u16string();
 
   if (IsScanning()) {
     return l10n_util::GetStringUTF16(IDS_PROMPT_DEEP_SCANNING_DOWNLOAD_SHORT);
   }
 
   // The hostname. (E.g.:"example.com" or "127.0.0.1")
-  base::string16 host_name = url_formatter::FormatUrlForSecurityDisplay(
+  std::u16string host_name = url_formatter::FormatUrlForSecurityDisplay(
       item_->GetURL(), url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
   bool show_size_ratio = true;
@@ -1010,7 +1010,7 @@ base::string16 DownloadItemNotification::GetStatusString() const {
       } else {
         // Otherwise, the download should be completed.
         // "3.4 MB from example.com"
-        base::string16 size = ui::FormatBytes(item_->GetCompletedBytes());
+        std::u16string size = ui::FormatBytes(item_->GetCompletedBytes());
         return l10n_util::GetStringFUTF16(
             IDS_DOWNLOAD_NOTIFICATION_STATUS_COMPLETED, size, host_name);
       }
@@ -1021,7 +1021,7 @@ base::string16 DownloadItemNotification::GetStatusString() const {
 
   // Indication of progress (E.g.:"100/200 MB" or "100 MB"), or just the
   // received bytes if the |show_size_ratio| flag is false.
-  base::string16 size = show_size_ratio
+  std::u16string size = show_size_ratio
                             ? item_->GetProgressSizesString()
                             : ui::FormatBytes(item_->GetCompletedBytes());
 

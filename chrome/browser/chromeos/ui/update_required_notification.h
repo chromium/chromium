@@ -34,7 +34,7 @@ class UpdateRequiredNotification : public message_center::NotificationObserver {
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
   // Collects notification data like title, body, button text, priority on the
   // basis of |type| and |warning_time|. Sets the |button_click_callback| to be
@@ -43,7 +43,7 @@ class UpdateRequiredNotification : public message_center::NotificationObserver {
   void Show(policy::MinimumVersionPolicyHandler::NotificationType type,
             base::TimeDelta warning_time,
             const std::string& domain_name,
-            const base::string16& device_type,
+            const std::u16string& device_type,
             base::OnceClosure button_click_callback,
             base::OnceClosure close_callback);
 
@@ -52,9 +52,9 @@ class UpdateRequiredNotification : public message_center::NotificationObserver {
  private:
   // Creates and displays a new notification.
   void DisplayNotification(
-      const base::string16& title,
-      const base::string16& message,
-      const base::string16& button_text,
+      const std::u16string& title,
+      const std::u16string& message,
+      const std::u16string& button_text,
       const message_center::SystemNotificationWarningLevel color_type,
       const message_center::NotificationPriority priority);
 

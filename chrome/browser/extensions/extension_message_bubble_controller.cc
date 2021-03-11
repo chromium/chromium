@@ -47,7 +47,7 @@ ExtensionMessageBubbleController::Delegate::Delegate(Profile* profile)
 
 ExtensionMessageBubbleController::Delegate::~Delegate() {}
 
-base::string16 ExtensionMessageBubbleController::Delegate::GetLearnMoreLabel()
+std::u16string ExtensionMessageBubbleController::Delegate::GetLearnMoreLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
@@ -127,14 +127,14 @@ bool ExtensionMessageBubbleController::ShouldShow() {
          delegate_->ShouldShow(GetExtensionIdList());
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ExtensionMessageBubbleController::GetExtensionList() {
   ExtensionIdList* list = GetOrCreateExtensionList();
   if (list->empty())
-    return std::vector<base::string16>();
+    return std::vector<std::u16string>();
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  std::vector<base::string16> return_value;
+  std::vector<std::u16string> return_value;
   for (const std::string& id : *list) {
     const Extension* extension =
         registry->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
@@ -143,11 +143,11 @@ ExtensionMessageBubbleController::GetExtensionList() {
   return return_value;
 }
 
-base::string16 ExtensionMessageBubbleController::GetExtensionListForDisplay() {
+std::u16string ExtensionMessageBubbleController::GetExtensionListForDisplay() {
   if (!delegate_->ShouldShowExtensionList())
-    return base::string16();
+    return std::u16string();
 
-  std::vector<base::string16> extension_list = GetExtensionList();
+  std::vector<std::u16string> extension_list = GetExtensionList();
   if (extension_list.size() > kMaxExtensionsToShow) {
     int old_size = extension_list.size();
     extension_list.erase(extension_list.begin() + kMaxExtensionsToShow,
@@ -156,8 +156,8 @@ base::string16 ExtensionMessageBubbleController::GetExtensionListForDisplay() {
         base::NumberToString16(old_size - kMaxExtensionsToShow)));
   }
   const char16_t bullet_point = 0x2022;
-  base::string16 prefix = bullet_point + base::ASCIIToUTF16(" ");
-  for (base::string16& str : extension_list)
+  std::u16string prefix = bullet_point + base::ASCIIToUTF16(" ");
+  for (std::u16string& str : extension_list)
     str.insert(0, prefix);
   return base::JoinString(extension_list, base::ASCIIToUTF16("\n"));
 }

@@ -22,7 +22,7 @@ class MockLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   // proximity_auth::ScreenlockBridge::LockHandler:
   MOCK_METHOD(void,
               ShowBannerMessage,
-              (const base::string16& message, bool is_warning));
+              (const std::u16string& message, bool is_warning));
   MOCK_METHOD(
       void,
       ShowUserPodCustomIcon,
@@ -34,7 +34,7 @@ class MockLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
               SetAuthType,
               (const AccountId& account_id,
                proximity_auth::mojom::AuthType auth_type,
-               const base::string16& auth_value));
+               const std::u16string& auth_value));
   MOCK_METHOD(proximity_auth::mojom::AuthType,
               GetAuthType,
               (const AccountId& account_id),

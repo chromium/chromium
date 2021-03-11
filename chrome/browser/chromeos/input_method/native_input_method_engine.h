@@ -93,7 +93,7 @@ class NativeInputMethodEngine
     void OnCompositionBoundsChanged(
         const std::vector<gfx::Rect>& bounds) override;
     void OnSurroundingTextChanged(const std::string& engine_id,
-                                  const base::string16& text,
+                                  const std::u16string& text,
                                   int cursor_pos,
                                   int anchor_pos,
                                   int offset_pos) override;

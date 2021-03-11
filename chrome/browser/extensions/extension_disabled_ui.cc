@@ -64,12 +64,12 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
   Severity GetSeverity() override;
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
-  base::string16 GetBubbleViewTitle() override;
-  std::vector<base::string16> GetBubbleViewMessages() override;
-  base::string16 GetBubbleViewAcceptButtonLabel() override;
-  base::string16 GetBubbleViewCancelButtonLabel() override;
+  std::u16string GetBubbleViewTitle() override;
+  std::vector<std::u16string> GetBubbleViewMessages() override;
+  std::u16string GetBubbleViewAcceptButtonLabel() override;
+  std::u16string GetBubbleViewCancelButtonLabel() override;
   void OnBubbleViewDidClose(Browser* browser) override;
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
   void BubbleViewCancelButtonPressed(Browser* browser) override;
@@ -78,7 +78,7 @@ class ExtensionDisabledGlobalError : public GlobalErrorWithStandardBubble,
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override;
+                                        const std::u16string& error) override;
 
  private:
   // content::NotificationObserver:
@@ -147,7 +147,7 @@ int ExtensionDisabledGlobalError::MenuItemCommandID() {
   return id_provider_.menu_command_id();
 }
 
-base::string16 ExtensionDisabledGlobalError::MenuItemLabel() {
+std::u16string ExtensionDisabledGlobalError::MenuItemLabel() {
   std::string extension_name = extension_->name();
   // Ampersands need to be escaped to avoid being treated like
   // mnemonics in the menu.
@@ -167,7 +167,7 @@ void ExtensionDisabledGlobalError::ExecuteMenuItem(Browser* browser) {
   ShowBubbleView(browser);
 }
 
-base::string16 ExtensionDisabledGlobalError::GetBubbleViewTitle() {
+std::u16string ExtensionDisabledGlobalError::GetBubbleViewTitle() {
   if (is_remote_install_) {
     return l10n_util::GetStringFUTF16(
         IDS_EXTENSION_DISABLED_REMOTE_INSTALL_ERROR_TITLE,
@@ -178,9 +178,9 @@ base::string16 ExtensionDisabledGlobalError::GetBubbleViewTitle() {
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ExtensionDisabledGlobalError::GetBubbleViewMessages() {
-  std::vector<base::string16> messages;
+  std::vector<std::u16string> messages;
 
   std::unique_ptr<const PermissionSet> granted_permissions =
       ExtensionPrefs::Get(service_->GetBrowserContext())
@@ -207,7 +207,7 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
   return messages;
 }
 
-base::string16 ExtensionDisabledGlobalError::GetBubbleViewAcceptButtonLabel() {
+std::u16string ExtensionDisabledGlobalError::GetBubbleViewAcceptButtonLabel() {
   if (is_remote_install_) {
     return l10n_util::GetStringUTF16(
         extension_->is_app()
@@ -218,7 +218,7 @@ base::string16 ExtensionDisabledGlobalError::GetBubbleViewAcceptButtonLabel() {
       IDS_EXTENSION_PROMPT_PERMISSIONS_ACCEPT_BUTTON);
 }
 
-base::string16 ExtensionDisabledGlobalError::GetBubbleViewCancelButtonLabel() {
+std::u16string ExtensionDisabledGlobalError::GetBubbleViewCancelButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON);
 }
 
@@ -280,7 +280,7 @@ bool ExtensionDisabledGlobalError::ShouldShowCloseButton() const {
 
 void ExtensionDisabledGlobalError::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
-    const base::string16& error) {
+    const std::u16string& error) {
   // No need to do anything.
 }
 

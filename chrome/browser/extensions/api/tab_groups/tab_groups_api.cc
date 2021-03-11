@@ -181,7 +181,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   if (params->update_properties.color != api::tab_groups::COLOR_NONE)
     color = tab_groups_util::ColorToColorId(params->update_properties.color);
 
-  base::string16 title = visual_data->title();
+  std::u16string title = visual_data->title();
   if (params->update_properties.title.get())
     title = base::UTF8ToUTF16(*params->update_properties.title);
 

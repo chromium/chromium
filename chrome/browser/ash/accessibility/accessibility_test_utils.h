@@ -46,7 +46,7 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
 
 
  private:
-  std::vector<base::string16> errors_;
+  std::vector<std::u16string> errors_;
   ErrorConsole* error_console_;
 };
 

@@ -287,7 +287,7 @@ class ChromeBrowsingDataLifetimeManagerShutdownTest
     base::RunLoop run_loop;
     base::CancelableTaskTracker tracker;
     history_service()->QueryHistory(
-        base::string16(), history::QueryOptions(),
+        std::u16string(), history::QueryOptions(),
         base::BindLambdaForTesting([&](history::QueryResults results) {
           history_query_results = std::move(results);
           run_loop.QuitClosure().Run();

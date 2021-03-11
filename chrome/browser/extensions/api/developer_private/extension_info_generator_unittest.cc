@@ -283,7 +283,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
       kContextUrl, logging::LOG_ERROR, 1, 1));
   error_console->ReportError(std::make_unique<ManifestError>(
       extension->id(), base::UTF8ToUTF16("message"), base::UTF8ToUTF16("key"),
-      base::string16()));
+      std::u16string()));
   error_console->ReportError(std::make_unique<RuntimeError>(
       extension->id(), false, base::UTF8ToUTF16("source"),
       base::UTF8ToUTF16("message"),
@@ -333,7 +333,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
     const api::developer_private::Permission& info_permission =
         info->permissions.simple_permissions[i];
     EXPECT_EQ(message.message(), base::UTF8ToUTF16(info_permission.message));
-    const std::vector<base::string16>& submessages = message.submessages();
+    const std::vector<std::u16string>& submessages = message.submessages();
     ASSERT_EQ(submessages.size(), info_permission.submessages.size());
     for (size_t j = 0; j < submessages.size(); ++j) {
       EXPECT_EQ(submessages[j],

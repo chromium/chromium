@@ -52,17 +52,17 @@ void FontFamilyCache::FillFontFamilyMap(
   // (font family / script) combinations - see http://crbug.com/308095.
   for (size_t i = 0; i < prefs::kWebKitScriptsForFontFamilyMapsLength; ++i) {
     const char* script = prefs::kWebKitScriptsForFontFamilyMaps[i];
-    base::string16 result = FetchAndCacheFont(script, map_name);
+    std::u16string result = FetchAndCacheFont(script, map_name);
     if (!result.empty())
       (*map)[script] = result;
   }
 }
 
-base::string16 FontFamilyCache::FetchFont(const char* script,
+std::u16string FontFamilyCache::FetchFont(const char* script,
                                           const char* map_name) {
   std::string pref_name = base::StringPrintf("%s.%s", map_name, script);
   std::string font = prefs_->GetString(pref_name.c_str());
-  base::string16 font16 = base::UTF8ToUTF16(font);
+  std::u16string font16 = base::UTF8ToUTF16(font);
 
   // Lazily constructs the map if it doesn't already exist.
   ScriptFontMap& map = font_family_map_[map_name];
@@ -70,7 +70,7 @@ base::string16 FontFamilyCache::FetchFont(const char* script,
   return font16;
 }
 
-base::string16 FontFamilyCache::FetchAndCacheFont(const char* script,
+std::u16string FontFamilyCache::FetchAndCacheFont(const char* script,
                                                   const char* map_name) {
   FontFamilyMap::const_iterator it = font_family_map_.find(map_name);
   if (it != font_family_map_.end()) {

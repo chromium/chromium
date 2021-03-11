@@ -291,7 +291,7 @@ const extensions::Extension* AppShimInteractiveTest::InstallAppWithShim(
   // To create a shim in a test, instead call UpdateAllShortcuts, which has been
   // blessed by g_app_shims_allow_update_and_launch_in_tests.
   base::RunLoop run_loop;
-  web_app::UpdateAllShortcuts(base::string16(), profile(), app,
+  web_app::UpdateAllShortcuts(std::u16string(), profile(), app,
                               run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_TRUE(base::PathExists(shim_path_));

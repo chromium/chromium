@@ -345,7 +345,7 @@ WebstorePrivateBeginInstallWithManifest3Function::
 WebstorePrivateBeginInstallWithManifest3Function::
     ~WebstorePrivateBeginInstallWithManifest3Function() = default;
 
-base::string16 WebstorePrivateBeginInstallWithManifest3Function::
+std::u16string WebstorePrivateBeginInstallWithManifest3Function::
     GetBlockedByPolicyErrorMessageForTesting() const {
   return blocked_by_policy_error_message_;
 }

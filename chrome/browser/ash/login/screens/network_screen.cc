@@ -168,7 +168,7 @@ void NetworkScreen::UpdateStatus() {
   if (is_connected)
     view_->ClearErrors();
 
-  base::string16 network_name = network_state_helper_->GetCurrentNetworkName();
+  std::u16string network_name = network_state_helper_->GetCurrentNetworkName();
   if (is_connected)
     StopWaitingForConnection(network_name);
   else if (network_state_helper_->IsConnecting())
@@ -177,7 +177,7 @@ void NetworkScreen::UpdateStatus() {
     StopWaitingForConnection(network_id_);
 }
 
-void NetworkScreen::StopWaitingForConnection(const base::string16& network_id) {
+void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
   bool is_connected = network_state_helper_->IsConnected();
   if (is_connected && continue_pressed_) {
     NotifyOnConnection();
@@ -198,7 +198,7 @@ void NetworkScreen::StopWaitingForConnection(const base::string16& network_id) {
   }
 }
 
-void NetworkScreen::WaitForConnection(const base::string16& network_id) {
+void NetworkScreen::WaitForConnection(const std::u16string& network_id) {
   if (network_id_ != network_id || !connection_timer_.IsRunning()) {
     connection_timer_.Stop();
     connection_timer_.Start(FROM_HERE, kConnectionTimeout, this,

@@ -26,14 +26,14 @@ class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
 
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
   bool LinkClicked(WindowOpenDisposition disposition) override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   gfx::ElideBehavior GetMessageElideBehavior() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
@@ -55,7 +55,7 @@ GlobalConfirmInfoBar::DelegateProxy::GetIdentifier() const {
                           : INVALID;
 }
 
-base::string16 GlobalConfirmInfoBar::DelegateProxy::GetLinkText() const {
+std::u16string GlobalConfirmInfoBar::DelegateProxy::GetLinkText() const {
   return global_info_bar_ ? global_info_bar_->delegate_->GetLinkText()
                           : ConfirmInfoBarDelegate::GetLinkText();
 }
@@ -94,9 +94,9 @@ void GlobalConfirmInfoBar::DelegateProxy::InfoBarDismissed() {
   }
 }
 
-base::string16 GlobalConfirmInfoBar::DelegateProxy::GetMessageText() const {
+std::u16string GlobalConfirmInfoBar::DelegateProxy::GetMessageText() const {
   return global_info_bar_ ? global_info_bar_->delegate_->GetMessageText()
-                          : base::string16();
+                          : std::u16string();
 }
 
 gfx::ElideBehavior
@@ -113,7 +113,7 @@ int GlobalConfirmInfoBar::DelegateProxy::GetButtons() const {
                           : BUTTON_NONE;
 }
 
-base::string16 GlobalConfirmInfoBar::DelegateProxy::GetButtonLabel(
+std::u16string GlobalConfirmInfoBar::DelegateProxy::GetButtonLabel(
     InfoBarButton button) const {
   return global_info_bar_ ? global_info_bar_->delegate_->GetButtonLabel(button)
                           : ConfirmInfoBarDelegate::GetButtonLabel(button);

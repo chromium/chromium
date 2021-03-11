@@ -135,7 +135,7 @@ void CrostiniUpgrader::StatusTracker::SetStatusCancelledUI() {
 
 void CrostiniUpgrader::StatusTracker::SetStatusFailedWithMessageUI(
     Status status,
-    const base::string16& message) {
+    const std::u16string& message) {
   CrostiniResult result = CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED;
   if (status == Status::FAILED_INSUFFICIENT_SPACE) {
     result = CrostiniResult::CONTAINER_EXPORT_IMPORT_FAILED_SPACE;

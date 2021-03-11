@@ -116,7 +116,7 @@ ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
 
 ExternalProtocolNoHandlersDialog::~ExternalProtocolNoHandlersDialog() = default;
 
-base::string16 ExternalProtocolNoHandlersDialog::GetWindowTitle() const {
+std::u16string ExternalProtocolNoHandlersDialog::GetWindowTitle() const {
   // If click to call feature is available, we display a message to the user on
   // how to use the feature.
   // TODO(crbug.com/1007995) - This is a hotfix for M78 and we plan to use our

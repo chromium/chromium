@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
       embedded_test_server()->GetURL("/extensions/test_file.html"));
   EXPECT_TRUE(catcher.GetNextResult());
 
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(std::string("FIRSTMESSAGE"), base::UTF16ToUTF8(title));
 

@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ExtensionService* extension_service = extensions::ExtensionSystem::Get(
       browser()->profile())->extension_service();
 
-  base::string16 error;
+  std::u16string error;
   ASSERT_TRUE(extension_service->UninstallExtension(
       extension->id(),
       UNINSTALL_REASON_FOR_TESTING,

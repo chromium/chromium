@@ -27,7 +27,7 @@ std::unique_ptr<icu::TimeZone> CreateTimezone(const char* timezone_id) {
       icu::UnicodeString(timezone_id, -1, US_INV)));
 }
 
-base::string16 GetTimezoneId(const icu::TimeZone& timezone) {
+std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
   return chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
 }
 

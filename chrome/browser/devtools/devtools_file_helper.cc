@@ -117,7 +117,7 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
       file_type_info.extensions[0].push_back(ext);
     }
     select_file_dialog_->SelectFile(
-        type, base::string16(), default_path, &file_type_info, 0, ext,
+        type, std::u16string(), default_path, &file_type_info, 0, ext,
         platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   }
 
@@ -347,9 +347,9 @@ void DevToolsFileHelper::InnerAddFileSystem(
     RemoveFileSystem(file_system_path);
 
   std::string path_display_name = path.AsEndingWithSeparator().AsUTF8Unsafe();
-  base::string16 message = l10n_util::GetStringFUTF16(
-      IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
-      base::UTF8ToUTF16(path_display_name));
+  std::u16string message =
+      l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
+                                 base::UTF8ToUTF16(path_display_name));
   show_info_bar_callback.Run(
       message, BindOnce(&DevToolsFileHelper::AddUserConfirmedFileSystem,
                         weak_factory_.GetWeakPtr(), type, path));

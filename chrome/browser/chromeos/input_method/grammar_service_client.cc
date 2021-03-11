@@ -39,7 +39,7 @@ GrammarServiceClient::~GrammarServiceClient() = default;
 
 bool GrammarServiceClient::RequestTextCheck(
     Profile* profile,
-    const base::string16& text,
+    const std::u16string& text,
     TextCheckCompleteCallback callback) const {
   if (!profile || !IsAvailable(profile)) {
     std::move(callback).Run(false, {});
@@ -58,7 +58,7 @@ bool GrammarServiceClient::RequestTextCheck(
 }
 
 void GrammarServiceClient::ParseGrammarCheckerResult(
-    const base::string16& text,
+    const std::u16string& text,
     TextCheckCompleteCallback callback,
     chromeos::machine_learning::mojom::GrammarCheckerResultPtr result) const {
   if (result->status == GrammarCheckerResult::Status::OK &&

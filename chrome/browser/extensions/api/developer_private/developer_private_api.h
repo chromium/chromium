@@ -392,7 +392,7 @@ class DeveloperPrivateGetExtensionSizeFunction
   ~DeveloperPrivateGetExtensionSizeFunction() override;
   ResponseAction Run() override;
 
-  void OnSizeCalculated(const base::string16& size);
+  void OnSizeCalculated(const std::u16string& size);
 
   DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateGetExtensionSizeFunction);
 };
@@ -497,7 +497,7 @@ class DeveloperPrivateChooseEntryFunction : public ExtensionFunction,
  protected:
   ~DeveloperPrivateChooseEntryFunction() override;
   bool ShowPicker(ui::SelectFileDialog::Type picker_type,
-                  const base::string16& select_title,
+                  const std::u16string& select_title,
                   const ui::SelectFileDialog::FileTypeInfo& info,
                   int file_type_index);
 };

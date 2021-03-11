@@ -93,7 +93,7 @@ void ShortcutsProviderExtensionTest::TearDown() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ShortcutsProviderExtensionTest, Extension) {
   // Try an input string that matches an extension URL.
-  base::string16 text(base::ASCIIToUTF16("echo"));
+  std::u16string text(base::ASCIIToUTF16("echo"));
   std::string expected_url(
       "chrome-extension://cedabbhfglmiikkmdgcpjdkocfcmbkee/?q=echo");
   ExpectedURLs expected_urls;
@@ -111,6 +111,6 @@ TEST_F(ShortcutsProviderExtensionTest, Extension) {
 
   // Now the URL should have disappeared.
   RunShortcutsProviderTest(provider_, text, false, ExpectedURLs(),
-                           std::string(), base::string16());
+                           std::string(), std::u16string());
 }
 #endif

@@ -61,11 +61,11 @@ void MixedContentDownloadInfoBarDelegate::InfoBarDismissed() {
   PostReply(false);
 }
 
-base::string16 MixedContentDownloadInfoBarDelegate::GetMessageText() const {
+std::u16string MixedContentDownloadInfoBarDelegate::GetMessageText() const {
   return message_text_;
 }
 
-base::string16 MixedContentDownloadInfoBarDelegate::GetButtonLabel(
+std::u16string MixedContentDownloadInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   if (mixed_content_status_ == MixedContentStatus::WARN) {
     return l10n_util::GetStringUTF16(

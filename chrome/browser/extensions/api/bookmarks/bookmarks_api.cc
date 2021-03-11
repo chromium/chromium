@@ -160,7 +160,7 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     index = size_t{*details.index};
   }
 
-  base::string16 title;  // Optional.
+  std::u16string title;  // Optional.
   if (details.title.get())
     title = base::UTF8ToUTF16(*details.title);
 
@@ -528,7 +528,7 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
   if (params->query.as_string) {
     bookmarks::QueryFields query;
     query.word_phrase_query.reset(
-        new base::string16(base::UTF8ToUTF16(*params->query.as_string)));
+        new std::u16string(base::UTF8ToUTF16(*params->query.as_string)));
     bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
         std::numeric_limits<int>::max(), &nodes);
@@ -539,12 +539,12 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
     bookmarks::QueryFields query;
     if (object.query) {
       query.word_phrase_query.reset(
-          new base::string16(base::UTF8ToUTF16(*object.query)));
+          new std::u16string(base::UTF8ToUTF16(*object.query)));
     }
     if (object.url)
-      query.url.reset(new base::string16(base::UTF8ToUTF16(*object.url)));
+      query.url.reset(new std::u16string(base::UTF8ToUTF16(*object.url)));
     if (object.title)
-      query.title.reset(new base::string16(base::UTF8ToUTF16(*object.title)));
+      query.title.reset(new std::u16string(base::UTF8ToUTF16(*object.title)));
     bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
         std::numeric_limits<int>::max(), &nodes);
@@ -673,7 +673,7 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
     return BadMessage();
 
   // Optional but we need to distinguish non present from an empty title.
-  base::string16 title;
+  std::u16string title;
   bool has_title = false;
   if (params->changes.title.get()) {
     title = base::UTF8ToUTF16(*params->changes.title);
@@ -746,7 +746,7 @@ void BookmarksIOFunction::ShowSelectFileDialog(
   // such a case if file-selection dialogs are forbidden by policy, we will not
   // show an InfoBar, which is better than letting one appear out of the blue.
   select_file_dialog_->SelectFile(
-      type, base::string16(), default_path, &file_type_info, 0,
+      type, std::u16string(), default_path, &file_type_info, 0,
       base::FilePath::StringType(), owning_window, nullptr);
 }
 

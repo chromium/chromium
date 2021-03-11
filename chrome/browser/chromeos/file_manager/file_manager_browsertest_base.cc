@@ -2657,7 +2657,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "runLauncherSearch") {
     app_list::LauncherSearchProvider search_provider(profile());
-    base::string16 query;
+    std::u16string query;
     ASSERT_TRUE(value.GetString("query", &query));
 
     search_provider.Start(query);

@@ -103,8 +103,8 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, Reload) {
       "data:text/html,<script>document.title=new Date().valueOf()</script>");
   ui_test_utils::NavigateToURL(browser(), url);
 
-  base::string16 title_before_crash;
-  base::string16 title_after_crash;
+  std::u16string title_before_crash;
+  std::u16string title_after_crash;
 
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_before_crash));
@@ -134,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, ReloadCacheRevalidate) {
   ui_test_utils::NavigateToURL(browser(),
                                embedded_test_server()->GetURL(kTestPath));
 
-  base::string16 title_before_crash;
-  base::string16 title_after_crash;
+  std::u16string title_before_crash;
+  std::u16string title_after_crash;
 
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_before_crash));
@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, LoadInNewTab) {
       base::FilePath(kTitle2File)));
   ui_test_utils::NavigateToURL(browser(), url);
 
-  base::string16 title_before_crash;
-  base::string16 title_after_crash;
+  std::u16string title_before_crash;
+  std::u16string title_after_crash;
 
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(),
                                                 &title_before_crash));

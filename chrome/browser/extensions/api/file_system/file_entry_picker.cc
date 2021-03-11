@@ -35,7 +35,7 @@ FileEntryPicker::FileEntryPicker(
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
   select_file_dialog_->SelectFile(
-      picker_type, base::string16(), suggested_name, &file_type_info, 0,
+      picker_type, std::u16string(), suggested_name, &file_type_info, 0,
       base::FilePath::StringType(), owning_window, nullptr);
 }
 

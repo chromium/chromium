@@ -576,7 +576,7 @@ void ExistingUserController::CompleteLogin(const UserContext& user_context) {
                      weak_factory_.GetWeakPtr(), user_context));
 }
 
-base::string16 ExistingUserController::GetConnectedNetworkName() {
+std::u16string ExistingUserController::GetConnectedNetworkName() {
   return network_state_helper_->GetCurrentNetworkName();
 }
 
@@ -652,7 +652,7 @@ void ExistingUserController::PerformLogin(
   // profile is ready.
   UserContext new_user_context = user_context;
   if (user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
-    base::string16 password(
+    std::u16string password(
         base::UTF8ToUTF16(new_user_context.GetKey()->GetSecret()));
     new_user_context.SetSyncPasswordData(password_manager::PasswordHashData(
         user_context.GetAccountId().GetUserEmail(), password,
@@ -1021,9 +1021,9 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON)));
-  const base::string16 title =
+  const std::u16string title =
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_TITLE);
-  const base::string16 message = l10n_util::GetStringFUTF16(
+  const std::u16string message = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
       base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()));
   auto delegate =
@@ -1035,7 +1035,7 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
-          title, message, base::string16(), GURL(),
+          title, message, std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kAutoLaunchNotifierId),

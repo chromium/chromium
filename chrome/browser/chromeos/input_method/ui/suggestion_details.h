@@ -13,7 +13,7 @@ namespace ui {
 namespace ime {
 
 struct SuggestionDetails {
-  base::string16 text;
+  std::u16string text;
   size_t confirmed_length = 0;
   bool show_annotation = false;
   bool show_setting_link = false;

@@ -88,7 +88,7 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
         success_(false) {}
 
   bool success() const { return success_; }
-  const base::string16& error() const { return error_; }
+  const std::u16string& error() const { return error_; }
 
   void Start() {
     GetExtensionFileTaskRunner()->PostTask(
@@ -146,7 +146,7 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
   bool success_;
 
   // If the unpacking wasn't successful, this contains an error message.
-  base::string16 error_;
+  std::u16string error_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ValidateCrxHelper);

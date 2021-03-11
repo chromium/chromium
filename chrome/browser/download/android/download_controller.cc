@@ -314,7 +314,7 @@ void DownloadController::StartAndroidDownloadInternal(
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::string16 file_name =
+  std::u16string file_name =
       net::GetSuggestedFilename(info.url, info.content_disposition,
                                 std::string(),  // referrer_charset
                                 std::string(),  // suggested_name

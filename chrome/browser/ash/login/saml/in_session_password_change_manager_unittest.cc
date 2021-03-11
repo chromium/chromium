@@ -36,7 +36,7 @@ constexpr base::TimeDelta kAdvanceWarningTime = base::TimeDelta::FromDays(14);
 constexpr base::TimeDelta kOneYear = base::TimeDelta::FromDays(365);
 constexpr base::TimeDelta kTenYears = base::TimeDelta::FromDays(10 * 365);
 
-inline base::string16 utf16(const char* ascii) {
+inline std::u16string utf16(const char* ascii) {
   return base::ASCIIToUTF16(ascii);
 }
 

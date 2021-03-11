@@ -52,7 +52,7 @@ views::View* RequestSystemProxyCredentialsView::GetInitiallyFocusedView() {
   return username_textfield_;
 }
 
-base::string16 RequestSystemProxyCredentialsView::GetWindowTitle() const {
+std::u16string RequestSystemProxyCredentialsView::GetWindowTitle() const {
   return window_title_;
 }
 
@@ -64,11 +64,11 @@ const std::string& RequestSystemProxyCredentialsView::GetProxyServer() const {
   return proxy_server_;
 }
 
-base::string16 RequestSystemProxyCredentialsView::GetUsername() const {
+std::u16string RequestSystemProxyCredentialsView::GetUsername() const {
   return username_textfield_->GetText();
 }
 
-base::string16 RequestSystemProxyCredentialsView::GetPassword() const {
+std::u16string RequestSystemProxyCredentialsView::GetPassword() const {
   return password_textfield_->GetText();
 }
 
@@ -173,8 +173,8 @@ void RequestSystemProxyCredentialsView::Init() {
 
 BEGIN_METADATA(RequestSystemProxyCredentialsView, views::DialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(std::string, ProxyServer)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Username)
-ADD_READONLY_PROPERTY_METADATA(base::string16, Password)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
+ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
 END_METADATA
 
 }  // namespace chromeos

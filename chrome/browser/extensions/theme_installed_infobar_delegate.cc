@@ -90,7 +90,7 @@ ThemeInstalledInfoBarDelegate*
   return this;
 }
 
-base::string16 ThemeInstalledInfoBarDelegate::GetMessageText() const {
+std::u16string ThemeInstalledInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(IDS_THEME_INSTALL_INFOBAR_LABEL,
                                     base::UTF8ToUTF16(theme_name_));
 }
@@ -99,7 +99,7 @@ int ThemeInstalledInfoBarDelegate::GetButtons() const {
   return BUTTON_CANCEL;
 }
 
-base::string16 ThemeInstalledInfoBarDelegate::GetButtonLabel(
+std::u16string ThemeInstalledInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_CANCEL, button);
   return l10n_util::GetStringUTF16(IDS_THEME_INSTALL_INFOBAR_UNDO_BUTTON);

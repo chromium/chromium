@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, NonRootDirectory) {
   ASSERT_EQ(kErrorsExpected, error_list.size());
   ASSERT_EQ(
       error_list[0]->message(),
-      base::string16(base::ASCIIToUTF16("Service worker registration failed")));
+      std::u16string(base::ASCIIToUTF16("Service worker registration failed")));
 }
 
 // Tests chrome.runtime.onInstalled fires for extension service workers.
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
             NavigateAndExtractInnerText(get_resource_url("another.html")));
 
   // Uninstall the extension. Opening pages should fail again.
-  base::string16 error;
+  std::u16string error;
   extension_service()->UninstallExtension(
       extension_id, UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
   base::RunLoop().RunUntilIdle();
@@ -2424,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLazyBackgroundTest, ConsoleLogging) {
       run_loop_.QuitWhenIdle();
     }
 
-    base::string16 expected_message_;
+    std::u16string expected_message_;
     base::RunLoop run_loop_;
     ScopedObserver<content::ServiceWorkerContext,
                    content::ServiceWorkerContextObserver>

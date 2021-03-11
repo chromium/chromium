@@ -118,37 +118,37 @@ void NtpOverriddenBubbleDelegate::PerformAction(
   }
 }
 
-base::string16 NtpOverriddenBubbleDelegate::GetTitle() const {
+std::u16string NtpOverriddenBubbleDelegate::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_EXTENSIONS_NTP_CONTROLLED_TITLE_HOME_PAGE_BUBBLE);
 }
 
-base::string16 NtpOverriddenBubbleDelegate::GetMessageBody(
+std::u16string NtpOverriddenBubbleDelegate::GetMessageBody(
     bool anchored_to_browser_action,
     int extension_count) const {
-  base::string16 body =
+  std::u16string body =
       l10n_util::GetStringUTF16(IDS_EXTENSIONS_NTP_CONTROLLED_FIRST_LINE);
   body += l10n_util::GetStringUTF16(
       IDS_EXTENSIONS_SETTINGS_API_THIRD_LINE_CONFIRMATION);
   return body;
 }
 
-base::string16 NtpOverriddenBubbleDelegate::GetOverflowText(
-    const base::string16& overflow_count) const {
+std::u16string NtpOverriddenBubbleDelegate::GetOverflowText(
+    const std::u16string& overflow_count) const {
   // Does not have more than one extension in the list at a time.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 GURL NtpOverriddenBubbleDelegate::GetLearnMoreUrl() const {
   return GURL(chrome::kExtensionControlledSettingLearnMoreURL);
 }
 
-base::string16 NtpOverriddenBubbleDelegate::GetActionButtonLabel() const {
+std::u16string NtpOverriddenBubbleDelegate::GetActionButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_RESTORE_SETTINGS);
 }
 
-base::string16 NtpOverriddenBubbleDelegate::GetDismissButtonLabel() const {
+std::u16string NtpOverriddenBubbleDelegate::GetDismissButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_EXTENSION_CONTROLLED_KEEP_CHANGES);
 }
 

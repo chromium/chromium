@@ -292,7 +292,7 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
   std::unique_ptr<Search::Params> params(Search::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  base::string16 search_text = base::UTF8ToUTF16(params->query.text);
+  std::u16string search_text = base::UTF8ToUTF16(params->query.text);
 
   history::QueryOptions options;
   options.SetRecentDayRange(1);

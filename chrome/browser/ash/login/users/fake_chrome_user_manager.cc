@@ -365,9 +365,9 @@ const gfx::ImageSkia& FakeChromeUserManager::GetResourceImagekiaNamed(
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }
 
-base::string16 FakeChromeUserManager::GetResourceStringUTF16(
+std::u16string FakeChromeUserManager::GetResourceStringUTF16(
     int string_id) const {
-  return base::string16();
+  return std::u16string();
 }
 
 void FakeChromeUserManager::ScheduleResolveLocale(
@@ -487,7 +487,7 @@ void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
 
 void FakeChromeUserManager::SaveUserDisplayName(
     const AccountId& account_id,
-    const base::string16& display_name) {
+    const std::u16string& display_name) {
   for (auto* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_display_name(display_name);
@@ -496,9 +496,9 @@ void FakeChromeUserManager::SaveUserDisplayName(
   }
 }
 
-base::string16 FakeChromeUserManager::GetUserDisplayName(
+std::u16string FakeChromeUserManager::GetUserDisplayName(
     const AccountId& account_id) const {
-  return base::string16();
+  return std::u16string();
 }
 
 void FakeChromeUserManager::SaveUserDisplayEmail(

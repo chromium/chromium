@@ -380,7 +380,7 @@ TEST_F(ManualFillingControllerLegacyTest, OnAutomaticGenerationStatusChanged) {
 TEST_F(ManualFillingControllerLegacyTest,
        OnFillingTriggeredFillsAndClosesSheet) {
   const char kTextToFill[] = "TextToFill";
-  const base::string16 text_to_fill(base::ASCIIToUTF16(kTextToFill));
+  const std::u16string text_to_fill(base::ASCIIToUTF16(kTextToFill));
   const autofill::UserInfo::Field field(text_to_fill, text_to_fill, false,
                                         true);
 
@@ -399,7 +399,7 @@ TEST_F(ManualFillingControllerLegacyTest, RefreshingUpdatesCache) {
   controller()->RefreshSuggestions(filled_passwords_sheet());
 
   // Triggering a subsequent (independent) update must reuse the latest sheet.
-  AccessorySheetData cached(AccessoryTabType::PASSWORDS, base::string16());
+  AccessorySheetData cached(AccessoryTabType::PASSWORDS, std::u16string());
   EXPECT_CALL(*view(), OnItemsAvailable).WillOnce(SaveArg<0>(&cached));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
   EXPECT_EQ(cached, filled_passwords_sheet());

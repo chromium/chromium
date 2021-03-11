@@ -232,13 +232,13 @@ bool IsCrostiniShelfAppId(const Profile* profile,
              ->FindKey(shelf_app_id) != nullptr;
 }
 
-base::string16 GetCrostiniShelfTitle(base::StringPiece shelf_app_id) {
+std::u16string GetCrostiniShelfTitle(base::StringPiece shelf_app_id) {
   if (shelf_app_id == kCrostiniInstallerShelfId) {
     return l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_INSTALLING);
   } else if (shelf_app_id == kCrostiniUpgraderShelfId) {
     return l10n_util::GetStringUTF16(IDS_CROSTINI_UPGRADING_LABEL);
   }
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace crostini

@@ -28,7 +28,7 @@ class DialogWindowWaiter : public aura::EnvObserver,
                            public aura::WindowObserver {
  public:
   // Starts listening for a dialog window to open with title `dialog_title`.
-  explicit DialogWindowWaiter(const base::string16& dialog_title);
+  explicit DialogWindowWaiter(const std::u16string& dialog_title);
 
   ~DialogWindowWaiter() override;
 
@@ -46,7 +46,7 @@ class DialogWindowWaiter : public aura::EnvObserver,
 
  private:
   // The title of the expected dialog window.
-  base::string16 dialog_title_;
+  std::u16string dialog_title_;
 
   base::RunLoop run_loop_;
 

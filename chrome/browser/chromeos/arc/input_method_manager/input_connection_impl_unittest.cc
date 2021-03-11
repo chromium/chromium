@@ -39,7 +39,7 @@ class DummyInputMethodEngineObserver
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset_pos) override {}
@@ -135,7 +135,7 @@ class MockTextInputClient : public ui::DummyTextInputClient {
   }
 
   bool GetTextFromRange(const gfx::Range& range,
-                        base::string16* text) const override {
+                        std::u16string* text) const override {
     *text = base::ASCIIToUTF16(text_.substr(range.start(), range.end()));
     return true;
   }
@@ -285,7 +285,7 @@ TEST_F(InputConnectionImplTest, FinishComposingText) {
 }
 
 TEST_F(InputConnectionImplTest, SetComposingText) {
-  const base::string16 text = u"text";
+  const std::u16string text = u"text";
   auto connection = CreateNewConnection(1);
   engine()->FocusIn(context());
 

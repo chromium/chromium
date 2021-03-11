@@ -72,7 +72,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   void HandleSecondaryAccountReauthNotificationClick(
       base::Optional<int> button_index);
 
-  base::string16 GetMessageBody(bool is_secondary_account_error) const;
+  std::u16string GetMessageBody(bool is_secondary_account_error) const;
 
   // The error controller to query for error details.
   SigninErrorController* error_controller_;

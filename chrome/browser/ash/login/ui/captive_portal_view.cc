@@ -22,7 +22,7 @@ const char* CaptivePortalStartURL() {
   return captive_portal::CaptivePortalDetector::kDefaultURL;
 }
 
-base::string16 WindowTitleForNetwork(const chromeos::NetworkState* network) {
+std::u16string WindowTitleForNetwork(const chromeos::NetworkState* network) {
   if (network && !network->name().empty()) {
     return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
                                       base::ASCIIToUTF16(network->name()));

@@ -174,7 +174,7 @@ class ReportGeneratorTest : public ::testing::Test,
         case kIdle:
           profile_manager_.profile_attributes_storage()->AddProfile(
               profile_manager()->profiles_dir().AppendASCII(profile_name),
-              base::ASCIIToUTF16(profile_name), std::string(), base::string16(),
+              base::ASCIIToUTF16(profile_name), std::string(), std::u16string(),
               false, 0, std::string(), EmptyAccountId());
           break;
         case kActive:

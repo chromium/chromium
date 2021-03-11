@@ -44,8 +44,8 @@ constexpr char kTimeLimitOverrideUpdatedId[] = "time-limit-override-updated";
 // The notifier id representing the app.
 constexpr char kTimeLimitNotifierId[] = "family-link";
 
-void ShowNotification(base::string16 title,
-                      base::string16 message,
+void ShowNotification(std::u16string title,
+                      std::u16string message,
                       const std::string& notification_id,
                       content::BrowserContext* context) {
   message_center::RichNotificationData option_fields;
@@ -70,7 +70,7 @@ void ShowNotification(base::string16 title,
                 /*metadata=*/nullptr);
 }
 
-base::string16 RemainingTimeString(base::TimeDelta time_remaining) {
+std::u16string RemainingTimeString(base::TimeDelta time_remaining) {
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                 ui::TimeFormat::LENGTH_LONG, time_remaining);
 }
@@ -99,7 +99,7 @@ void TimeLimitNotifier::MaybeScheduleLockNotifications(
       break;
   }
 
-  const base::string16 title = l10n_util::GetStringUTF16(title_id);
+  const std::u16string title = l10n_util::GetStringUTF16(title_id);
 
   if (remaining_time >= kWarningNotificationTimeout) {
     warning_notification_timer_.Start(
@@ -121,7 +121,7 @@ void TimeLimitNotifier::ShowPolicyUpdateNotification(
     LimitType limit_type,
     base::Optional<base::Time> lock_time) {
   int title_id;
-  base::string16 message;
+  std::u16string message;
   std::string notification_id;
   switch (limit_type) {
     case LimitType::kScreenTime:

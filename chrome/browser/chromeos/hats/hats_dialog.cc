@@ -145,8 +145,8 @@ ui::ModalType HatsDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 HatsDialog::GetDialogTitle() const {
-  return base::string16();
+std::u16string HatsDialog::GetDialogTitle() const {
+  return std::u16string();
 }
 
 GURL HatsDialog::GetDialogContentURL() const {

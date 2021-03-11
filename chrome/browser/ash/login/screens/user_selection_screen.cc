@@ -316,7 +316,7 @@ class UserSelectionScreen::DircryptoMigrationChecker {
     owner_->ShowBannerMessage(
         needs_migration ? l10n_util::GetStringUTF16(
                               IDS_LOGIN_NEEDS_DIRCRYPTO_MIGRATION_BANNER)
-                        : base::string16(),
+                        : std::u16string(),
         needs_migration);
   }
 
@@ -727,7 +727,7 @@ void UserSelectionScreen::OnUserStatusChecked(
   if (status == TokenHandleUtil::INVALID) {
     RecordReauthReason(account_id, ReauthReason::INVALID_TOKEN_HANDLE);
     SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-                base::string16());
+                std::u16string());
   }
 }
 
@@ -735,7 +735,7 @@ void UserSelectionScreen::OnUserStatusChecked(
 
 void UserSelectionScreen::SetAuthType(const AccountId& account_id,
                                       proximity_auth::mojom::AuthType auth_type,
-                                      const base::string16& initial_value) {
+                                      const std::u16string& initial_value) {
   if (GetAuthType(account_id) ==
       proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD) {
     return;
@@ -769,7 +769,7 @@ UserSelectionScreen::GetScreenType() const {
   }
 }
 
-void UserSelectionScreen::ShowBannerMessage(const base::string16& message,
+void UserSelectionScreen::ShowBannerMessage(const std::u16string& message,
                                             bool is_warning) {
   view_->ShowBannerMessage(message, is_warning);
 }
@@ -836,7 +836,7 @@ void UserSelectionScreen::OnInvalidSyncToken(const AccountId& account_id) {
   RecordReauthReason(account_id,
                      ReauthReason::SAML_PASSWORD_SYNC_TOKEN_VALIDATION_FAILED);
   SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
-              base::string16());
+              std::u16string());
 }
 
 void UserSelectionScreen::OnOnlineSigninEnforced(const AccountId& account_id) {
@@ -851,7 +851,7 @@ void UserSelectionScreen::HideImpl() {}
 void UserSelectionScreen::HardLockPod(const AccountId& account_id) {
   view_->SetAuthType(account_id,
                      proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
-                     base::string16());
+                     std::u16string());
   EasyUnlockService* service = GetEasyUnlockServiceForUser(account_id);
   if (!service)
     return;

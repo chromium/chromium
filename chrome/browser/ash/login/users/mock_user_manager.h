@@ -45,10 +45,10 @@ class MockUserManager : public ChromeUserManager {
                void(const AccountId&, user_manager::User::OAuthTokenStatus));
   MOCK_METHOD2(SaveForceOnlineSignin, void(const AccountId&, bool));
   MOCK_METHOD2(SaveUserDisplayName,
-               void(const AccountId&, const base::string16&));
+               void(const AccountId&, const std::u16string&));
   MOCK_METHOD2(UpdateUserAccountData,
                void(const AccountId&, const UserAccountData&));
-  MOCK_CONST_METHOD1(GetUserDisplayName, base::string16(const AccountId&));
+  MOCK_CONST_METHOD1(GetUserDisplayName, std::u16string(const AccountId&));
   MOCK_METHOD2(SaveUserDisplayEmail,
                void(const AccountId&, const std::string&));
   MOCK_CONST_METHOD0(IsCurrentUserOwner, bool(void));
@@ -108,7 +108,7 @@ class MockUserManager : public ChromeUserManager {
   MOCK_METHOD1(PublicAccountUserLoggedIn, void(user_manager::User*));
   MOCK_METHOD1(OnUserRemoved, void(const AccountId&));
   MOCK_CONST_METHOD1(GetResourceImagekiaNamed, const gfx::ImageSkia&(int));
-  MOCK_CONST_METHOD1(GetResourceStringUTF16, base::string16(int));
+  MOCK_CONST_METHOD1(GetResourceStringUTF16, std::u16string(int));
   MOCK_CONST_METHOD3(DoScheduleResolveLocale,
                      void(const std::string&,
                           base::OnceClosure*,

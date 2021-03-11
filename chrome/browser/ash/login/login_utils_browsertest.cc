@@ -31,7 +31,7 @@ constexpr char kTestBrand[] = "TEST";
 
 #if BUILDFLAG(ENABLE_RLZ)
 void GetAccessPointRlzInBackgroundThread(rlz_lib::AccessPoint point,
-                                         base::string16* rlz) {
+                                         std::u16string* rlz) {
   ASSERT_FALSE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   ASSERT_TRUE(rlz::RLZTracker::GetAccessPointRlz(point, rlz));
 }
@@ -84,14 +84,14 @@ IN_PROC_BROWSER_TEST_F(LoginUtilsTest, RlzInitialized) {
   // This value must be obtained in a background thread.
   {
     base::RunLoop loop;
-    base::string16 rlz_string;
+    std::u16string rlz_string;
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&GetAccessPointRlzInBackgroundThread,
                        rlz::RLZTracker::ChromeHomePage(), &rlz_string),
         loop.QuitClosure());
     loop.Run();
-    EXPECT_EQ(base::string16(), rlz_string);
+    EXPECT_EQ(std::u16string(), rlz_string);
   }
 }
 #endif

@@ -128,7 +128,7 @@ ExtensionIndicatorIcon::ExtensionIndicatorIcon(
   // Get the icon image and tool tip for the status icon. The extension name is
   // used as the tool tip.
   gfx::ImageSkia icon_skia = manifest_icon_.image().AsImageSkia();
-  base::string16 tool_tip = base::UTF8ToUTF16(extension_->name());
+  std::u16string tool_tip = base::UTF8ToUTF16(extension_->name());
 
   status_icon_ = status_tray_->CreateStatusIcon(StatusTray::OTHER_ICON,
                                                 icon_skia, tool_tip);

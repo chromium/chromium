@@ -194,7 +194,7 @@ void RemoveLxdContainerFromPrefs(Profile* profile,
 // Returns a string to be displayed in a notification with the estimated time
 // left for an operation to run which started and time |start| and is current
 // at |percent| way through.
-base::string16 GetTimeRemainingMessage(base::TimeTicks start, int percent);
+std::u16string GetTimeRemainingMessage(base::TimeTicks start, int percent);
 
 // Returns a pref value stored for a specific container.
 const base::Value* GetContainerPrefValue(Profile* profile,

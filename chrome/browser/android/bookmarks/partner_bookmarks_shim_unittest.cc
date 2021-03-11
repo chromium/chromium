@@ -431,7 +431,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that search returns case-insensitive matches for title only.
   std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("WX")));
+  query.word_phrase_query.reset(new std::u16string(base::ASCIIToUTF16("WX")));
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[1]);
@@ -439,7 +439,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
 
   // Ensure that every word in the search must have a match.
   nodes.clear();
-  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("WX Y")));
+  query.word_phrase_query.reset(new std::u16string(base::ASCIIToUTF16("WX Y")));
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark2, nodes[0]);
@@ -447,7 +447,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Ensure that search returns matches for URL only.
   nodes.clear();
   query.word_phrase_query.reset(
-      new base::string16(base::ASCIIToUTF16("dat.com")));
+      new std::u16string(base::ASCIIToUTF16("dat.com")));
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(1u, nodes.size());
   ASSERT_EQ(partner_bookmark1, nodes[0]);
@@ -456,7 +456,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // effective.
   nodes.clear();
   query.word_phrase_query.reset(
-      new base::string16(base::ASCIIToUTF16("folder")));
+      new std::u16string(base::ASCIIToUTF16("folder")));
 
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(2u, nodes.size());
@@ -472,7 +472,7 @@ TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
   // Test a scenario with no search results.
   nodes.clear();
   query.word_phrase_query.reset(
-      new base::string16(base::ASCIIToUTF16("foo.com")));
+      new std::u16string(base::ASCIIToUTF16("foo.com")));
   shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
   ASSERT_EQ(0u, nodes.size());
 }

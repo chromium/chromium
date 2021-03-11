@@ -107,7 +107,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
 
   void AlsoRequireUrl(const GURL& url) { required_url_ = url; }
 
-  void AlsoRequireTitle(const base::string16& title) {
+  void AlsoRequireTitle(const std::u16string& title) {
     required_title_ = title;
   }
 
@@ -167,7 +167,7 @@ class PendingTaskWaiter : public content::WebContentsObserver {
 
   base::RepeatingClosure quit_closure_;
   GURL required_url_;
-  base::Optional<base::string16> required_title_;
+  base::Optional<std::u16string> required_title_;
   base::WeakPtrFactory<PendingTaskWaiter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PendingTaskWaiter);

@@ -34,8 +34,10 @@
 namespace extensions {
 
 scoped_refptr<Extension> ConvertUserScriptToExtension(
-    const base::FilePath& user_script_path, const GURL& original_url,
-    const base::FilePath& extensions_dir, base::string16* error) {
+    const base::FilePath& user_script_path,
+    const GURL& original_url,
+    const base::FilePath& extensions_dir,
+    std::u16string* error) {
   using ContentScript = api::content_scripts::ContentScript;
 
   std::string content;
@@ -166,7 +168,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   }
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with base::string16
+  // with std::u16string
   std::string utf8_error;
   scoped_refptr<Extension> extension =
       Extension::Create(temp_dir.GetPath(), Manifest::INTERNAL, *root,

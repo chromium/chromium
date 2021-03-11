@@ -83,7 +83,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
   }
 
   // proximity_auth::ScreenlockBridge::LockHandler implementation:
-  void ShowBannerMessage(const base::string16& message,
+  void ShowBannerMessage(const std::u16string& message,
                          bool is_warning) override {
     ADD_FAILURE() << "Should not be reached.";
   }
@@ -106,7 +106,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   void SetAuthType(const AccountId& account_id,
                    proximity_auth::mojom::AuthType auth_type,
-                   const base::string16& auth_value) override {
+                   const std::u16string& auth_value) override {
     ADD_FAILURE() << "Should not be reached.";
   }
 

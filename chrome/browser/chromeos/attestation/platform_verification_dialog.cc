@@ -74,7 +74,7 @@ PlatformVerificationDialog::~PlatformVerificationDialog() {
 
 PlatformVerificationDialog::PlatformVerificationDialog(
     content::WebContents* web_contents,
-    const base::string16& domain,
+    const std::u16string& domain,
     ConsentCallback callback)
     : content::WebContentsObserver(web_contents),
       domain_(domain),

@@ -185,7 +185,7 @@ TEST_F(SigninErrorNotifierTest, ErrorTransitionForPrimaryAccount) {
   base::Optional<message_center::Notification> notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
-  base::string16 message = notification->message();
+  std::u16string message = notification->message();
   EXPECT_FALSE(message.empty());
 
   // Now set another auth error.
@@ -196,7 +196,7 @@ TEST_F(SigninErrorNotifierTest, ErrorTransitionForPrimaryAccount) {
   notification =
       display_service_->GetNotification(kPrimaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
-  base::string16 new_message = notification->message();
+  std::u16string new_message = notification->message();
   EXPECT_FALSE(new_message.empty());
 
   ASSERT_NE(new_message, message);
@@ -259,7 +259,7 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
   base::Optional<message_center::Notification> notification =
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
-  base::string16 message = notification->message();
+  std::u16string message = notification->message();
   EXPECT_FALSE(message.empty());
 
   // Clear error.
@@ -278,7 +278,7 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
   notification =
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId);
   ASSERT_TRUE(notification);
-  base::string16 new_message = notification->message();
+  std::u16string new_message = notification->message();
   EXPECT_NE(new_message, message);
 }
 

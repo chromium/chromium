@@ -163,7 +163,7 @@ void InputMethodEngine::ClickButton(
 
 bool InputMethodEngine::AcceptSuggestionCandidate(
     int context_id,
-    const base::string16& suggestion,
+    const std::u16string& suggestion,
     std::string* error) {
   if (!IsActive()) {
     *error = kErrorNotActive;
@@ -357,7 +357,7 @@ bool InputMethodEngine::AcceptSuggestion(int context_id, std::string* error) {
   IMEAssistiveWindowHandlerInterface* aw_handler =
       ui::IMEBridge::Get()->GetAssistiveWindowHandler();
   if (aw_handler) {
-    base::string16 suggestion_text = aw_handler->GetSuggestionText();
+    std::u16string suggestion_text = aw_handler->GetSuggestionText();
     if (suggestion_text.empty()) {
       *error = kSuggestionNotFound;
       return false;
@@ -494,7 +494,7 @@ bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {
 }
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,
-                                                 const base::string16& text) {
+                                                 const std::u16string& text) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)

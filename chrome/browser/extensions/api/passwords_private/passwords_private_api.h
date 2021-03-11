@@ -120,7 +120,7 @@ class PasswordsPrivateRequestPlaintextPasswordFunction
   ResponseAction Run() override;
 
  private:
-  void GotPassword(base::Optional<base::string16> password);
+  void GotPassword(base::Optional<std::u16string> password);
 };
 
 class PasswordsPrivateGetSavedPasswordListFunction : public ExtensionFunction {

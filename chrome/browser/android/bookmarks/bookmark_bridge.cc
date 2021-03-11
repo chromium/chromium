@@ -549,7 +549,7 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
   DCHECK(IsLoaded());
 
   const BookmarkNode* bookmark = GetNodeByID(id, type);
-  const base::string16 title =
+  const std::u16string title =
       base::android::ConvertJavaStringToUTF16(env, j_title);
 
   if (partner_bookmarks_shim_->IsPartnerBookmark(bookmark)) {
@@ -690,7 +690,7 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
   std::vector<const BookmarkNode*> results;
 
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new base::string16(
+  query.word_phrase_query.reset(new std::u16string(
       base::android::ConvertJavaStringToUTF16(env, j_query)));
 
   GetBookmarksMatchingProperties(bookmark_model_, query, max_results, &results);
@@ -893,7 +893,7 @@ bool BookmarkBridge::IsBookmarked(JNIEnv* env,
       *url::GURLAndroid::ToNativeGURL(env, gurl));
 }
 
-base::string16 BookmarkBridge::GetTitle(const BookmarkNode* node) const {
+std::u16string BookmarkBridge::GetTitle(const BookmarkNode* node) const {
   if (partner_bookmarks_shim_->IsPartnerBookmark(node))
     return partner_bookmarks_shim_->GetTitle(node);
 

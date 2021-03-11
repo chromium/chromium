@@ -65,7 +65,7 @@ TEST_F(SigninScreenPolicyProviderTest, DenyRandomPolicyExtension) {
   // Arbitrary extension (though installed via policy) should be blocked.
   scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kRandomExtensionId, extensions::Manifest::Location::EXTERNAL_POLICY);
-  base::string16 error;
+  std::u16string error;
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_FALSE(error.empty());
 }
@@ -74,7 +74,7 @@ TEST_F(SigninScreenPolicyProviderTest, AllowEssentialExtension) {
   // Essential component extensions for the login screen should always work.
   scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kGnubbyExtensionId, extensions::Manifest::Location::EXTERNAL_COMPONENT);
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_TRUE(error.empty());
 }
@@ -87,7 +87,7 @@ TEST_F(SigninScreenPolicyProviderTest, AllowWhitelistedExtensionViaPolicy) {
   scoped_refptr<const extensions::Extension> extension =
       CreateTestApp(kSampleSigninExtensionId,
                     extensions::Manifest::Location::EXTERNAL_POLICY);
-  base::string16 error;
+  std::u16string error;
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_TRUE(error.empty());
 }
@@ -99,7 +99,7 @@ TEST_F(SigninScreenPolicyProviderTest, DenyNonPolicyWhitelistedExtension) {
   scoped_refptr<const extensions::Extension> extension =
       CreateTestApp(kSampleSigninExtensionId,
                     extensions::Manifest::Location::EXTERNAL_COMPONENT);
-  base::string16 error;
+  std::u16string error;
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_FALSE(error.empty());
 }
@@ -107,7 +107,7 @@ TEST_F(SigninScreenPolicyProviderTest, DenyNonPolicyWhitelistedExtension) {
 TEST_F(SigninScreenPolicyProviderTest, DenyRandomNonPolicyExtension) {
   scoped_refptr<const extensions::Extension> extension = CreateTestApp(
       kRandomExtensionId, extensions::Manifest::Location::EXTERNAL_COMPONENT);
-  base::string16 error;
+  std::u16string error;
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_FALSE(error.empty());
 }

@@ -98,7 +98,7 @@ void UserBoardViewMojo::SetPublicSessionShowFullManagementDisclosure(
           show_full_management_disclosure);
 }
 
-void UserBoardViewMojo::ShowBannerMessage(const base::string16& message,
+void UserBoardViewMojo::ShowBannerMessage(const std::u16string& message,
                                           bool is_warning) {
   // As of M69, ShowBannerMessage is used only for showing ext4 migration
   // warning banner message.
@@ -121,7 +121,7 @@ void UserBoardViewMojo::HideUserPodCustomIcon(const AccountId& account_id) {
 
 void UserBoardViewMojo::SetAuthType(const AccountId& account_id,
                                     proximity_auth::mojom::AuthType auth_type,
-                                    const base::string16& initial_value) {
+                                    const std::u16string& initial_value) {
   ash::LoginScreen::Get()->GetModel()->SetTapToUnlockEnabledForUser(
       account_id, auth_type == proximity_auth::mojom::AuthType::USER_CLICK);
 

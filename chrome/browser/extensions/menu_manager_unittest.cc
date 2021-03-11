@@ -636,7 +636,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(info->GetString("pageUrl", &tmp));
   ASSERT_EQ(params.page_url.spec(), tmp);
 
-  base::string16 tmp16;
+  std::u16string tmp16;
   ASSERT_TRUE(info->GetString("selectionText", &tmp16));
   ASSERT_EQ(params.selection_text, tmp16);
 

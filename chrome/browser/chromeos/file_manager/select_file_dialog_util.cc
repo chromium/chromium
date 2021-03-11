@@ -10,9 +10,9 @@
 namespace file_manager {
 namespace util {
 
-base::string16 GetSelectFileDialogTitle(
+std::u16string GetSelectFileDialogTitle(
     ui::SelectFileDialog::Type dialog_type) {
-  base::string16 title;
+  std::u16string title;
   switch (dialog_type) {
     case ui::SelectFileDialog::SELECT_NONE:
       // Full page file manager doesn't need a title.

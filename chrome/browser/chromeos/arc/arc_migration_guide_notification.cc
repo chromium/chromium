@@ -51,7 +51,7 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
           power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT &&
       power->battery_percent() < kMigrationMinimumBatteryPercent;
 
-  const base::string16 message = ui::SubstituteChromeOSDeviceType(
+  const std::u16string message = ui::SubstituteChromeOSDeviceType(
       is_low_battery
           ? IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_LOW_BATTERY_MESSAGE
           : IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_MESSAGE);
@@ -65,7 +65,7 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
           message_center::NOTIFICATION_TYPE_SIMPLE, kSuggestNotificationId,
           l10n_util::GetStringUTF16(
               IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
-          message, base::string16(), GURL(), notifier_id,
+          message, std::u16string(), GURL(), notifier_id,
           message_center::RichNotificationData(), std::move(delegate),
           vector_icons::kSettingsIcon,
           message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);

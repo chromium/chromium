@@ -144,7 +144,7 @@ class CookieTreeNode : public ui::TreeNode<CookieTreeNode> {
   };
 
   CookieTreeNode() {}
-  explicit CookieTreeNode(const base::string16& title)
+  explicit CookieTreeNode(const std::u16string& title)
       : ui::TreeNode<CookieTreeNode>(title) {}
   ~CookieTreeNode() override {}
 
@@ -203,7 +203,7 @@ class CookieTreeRootNode : public CookieTreeNode {
 class CookieTreeHostNode : public CookieTreeNode {
  public:
   // Returns the host node's title to use for a given URL.
-  static base::string16 TitleForUrl(const GURL& url);
+  static std::u16string TitleForUrl(const GURL& url);
 
   explicit CookieTreeHostNode(const GURL& url);
   ~CookieTreeHostNode() override;
@@ -335,7 +335,7 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
   void DeleteCookieNode(CookieTreeNode* cookie_node);
 
   // Filter the origins to only display matched results.
-  void UpdateSearchResults(const base::string16& filter);
+  void UpdateSearchResults(const std::u16string& filter);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Returns the set of extensions which protect the data item represented by
@@ -410,42 +410,42 @@ class CookiesTreeModel : public ui::TreeNodeModel<CookieTreeNode> {
 
   void PopulateAppCacheInfoWithFilter(LocalDataContainer* container,
                                       ScopedBatchUpdateNotifier* notifier,
-                                      const base::string16& filter);
+                                      const std::u16string& filter);
   void PopulateCookieInfoWithFilter(LocalDataContainer* container,
                                     ScopedBatchUpdateNotifier* notifier,
-                                    const base::string16& filter);
+                                    const std::u16string& filter);
   void PopulateDatabaseInfoWithFilter(LocalDataContainer* container,
                                       ScopedBatchUpdateNotifier* notifier,
-                                      const base::string16& filter);
+                                      const std::u16string& filter);
   void PopulateLocalStorageInfoWithFilter(LocalDataContainer* container,
                                           ScopedBatchUpdateNotifier* notifier,
-                                          const base::string16& filter);
+                                          const std::u16string& filter);
   void PopulateSessionStorageInfoWithFilter(LocalDataContainer* container,
                                             ScopedBatchUpdateNotifier* notifier,
-                                            const base::string16& filter);
+                                            const std::u16string& filter);
   void PopulateIndexedDBInfoWithFilter(LocalDataContainer* container,
                                        ScopedBatchUpdateNotifier* notifier,
-                                       const base::string16& filter);
+                                       const std::u16string& filter);
   void PopulateFileSystemInfoWithFilter(LocalDataContainer* container,
                                         ScopedBatchUpdateNotifier* notifier,
-                                        const base::string16& filter);
+                                        const std::u16string& filter);
   void PopulateQuotaInfoWithFilter(LocalDataContainer* container,
                                    ScopedBatchUpdateNotifier* notifier,
-                                   const base::string16& filter);
+                                   const std::u16string& filter);
   void PopulateServiceWorkerUsageInfoWithFilter(
       LocalDataContainer* container,
       ScopedBatchUpdateNotifier* notifier,
-      const base::string16& filter);
+      const std::u16string& filter);
   void PopulateSharedWorkerInfoWithFilter(LocalDataContainer* container,
                                           ScopedBatchUpdateNotifier* notifier,
-                                          const base::string16& filter);
+                                          const std::u16string& filter);
   void PopulateCacheStorageUsageInfoWithFilter(
       LocalDataContainer* container,
       ScopedBatchUpdateNotifier* notifier,
-      const base::string16& filter);
+      const std::u16string& filter);
   void PopulateMediaLicenseInfoWithFilter(LocalDataContainer* container,
                                           ScopedBatchUpdateNotifier* notifier,
-                                          const base::string16& filter);
+                                          const std::u16string& filter);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The extension special storage policy; see ExtensionsProtectingNode() above.

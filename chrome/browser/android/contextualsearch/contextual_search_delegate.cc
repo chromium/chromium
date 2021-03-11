@@ -122,7 +122,7 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
     focused_frame->RequestTextSurroundingSelection(std::move(callback),
                                                    surroundingTextSize);
   } else {
-    std::move(callback).Run(base::string16(), 0, 0);
+    std::move(callback).Run(std::u16string(), 0, 0);
   }
 }
 
@@ -299,7 +299,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
       template_url_service_->GetDefaultSearchProvider();
 
   TemplateURLRef::SearchTermsArgs search_terms_args =
-      TemplateURLRef::SearchTermsArgs(base::string16());
+      TemplateURLRef::SearchTermsArgs(std::u16string());
 
   // Set the Coca-integration version.
   // This is based on our current active feature.
@@ -356,7 +356,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
 }
 
 void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
-    const base::string16& surrounding_text,
+    const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
   if (context_ == nullptr)
@@ -365,7 +365,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
   // Sometimes the surroundings are 0, 0, '', so run the callback with empty
   // data in that case. See https://crbug.com/393100.
   if (start_offset == 0 && end_offset == 0 && surrounding_text.length() == 0) {
-    surrounding_text_callback_.Run(std::string(), base::string16(), 0, 0);
+    surrounding_text_callback_.Run(std::string(), std::u16string(), 0, 0);
     return;
   }
 
@@ -385,7 +385,7 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
   size_t selection_start = start_offset;
   size_t selection_end = end_offset;
   int sample_padding_each_side = sample_surrounding_size / 2;
-  base::string16 sample_surrounding_text =
+  std::u16string sample_surrounding_text =
       SampleSurroundingText(surrounding_text, sample_padding_each_side,
                             &selection_start, &selection_end);
   DCHECK(selection_start <= selection_end);
@@ -571,12 +571,12 @@ void ContextualSearchDelegate::ExtractMentionsStartEnd(
     *endResult = std::max(0, int_value);
 }
 
-base::string16 ContextualSearchDelegate::SampleSurroundingText(
-    const base::string16& surrounding_text,
+std::u16string ContextualSearchDelegate::SampleSurroundingText(
+    const std::u16string& surrounding_text,
     int padding_each_side,
     size_t* start,
     size_t* end) {
-  base::string16 result_text = surrounding_text;
+  std::u16string result_text = surrounding_text;
   size_t start_offset = *start;
   size_t end_offset = *end;
   size_t padding_each_side_pinned =

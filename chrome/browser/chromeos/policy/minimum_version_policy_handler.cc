@@ -491,7 +491,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
   NotificationType type = NotificationType::kNoConnection;
   base::OnceClosure button_click_callback;
   std::string manager = GetEnterpriseManager();
-  base::string16 device_type = ui::GetChromeOSDeviceName();
+  std::u16string device_type = ui::GetChromeOSDeviceName();
   auto close_callback =
       base::BindOnce(&MinimumVersionPolicyHandler::StopObservingNetwork,
                      weak_factory_.GetWeakPtr());

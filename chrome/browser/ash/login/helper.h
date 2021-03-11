@@ -69,7 +69,7 @@ class NetworkStateHelper {
   // that is in the "connecting" state. Otherwise empty string is returned.
   // If there are multiple connected networks, network priority:
   // Ethernet > WiFi > Cellular. Same for connecting network.
-  virtual base::string16 GetCurrentNetworkName() const;
+  virtual std::u16string GetCurrentNetworkName() const;
 
   // Returns true if the default network is in connected state.
   virtual bool IsConnected() const;

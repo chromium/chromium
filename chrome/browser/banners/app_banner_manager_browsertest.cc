@@ -130,16 +130,16 @@ class AppBannerManagerTest : public AppBannerManager {
   void InvalidateWeakPtrs() override { weak_factory_.InvalidateWeakPtrs(); }
 
   bool IsSupportedNonWebAppPlatform(
-      const base::string16& platform) const override {
+      const std::u16string& platform) const override {
     return base::EqualsASCII(platform, "chrome_web_store");
   }
 
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override {
     // Corresponds to the id listed in manifest_listing_related_chrome_app.json.
-    return base::EqualsASCII(related_app.platform.value_or(base::string16()),
+    return base::EqualsASCII(related_app.platform.value_or(std::u16string()),
                              "chrome_web_store") &&
-           base::EqualsASCII(related_app.id.value_or(base::string16()),
+           base::EqualsASCII(related_app.id.value_or(std::u16string()),
                              "installed-extension-id");
   }
 

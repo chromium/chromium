@@ -140,7 +140,7 @@ base::Value CreateWebAppFileHandlersForBookmarkApp(
 
 std::unique_ptr<base::DictionaryValue> CreateURLHandlersForBookmarkApp(
     const GURL& scope_url,
-    const base::string16& title) {
+    const std::u16string& title) {
   auto matches = std::make_unique<base::ListValue>();
   matches->AppendString(scope_url.GetOrigin().Resolve(scope_url.path()).spec() +
                         "*");

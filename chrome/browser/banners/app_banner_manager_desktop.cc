@@ -101,7 +101,7 @@ void AppBannerManagerDesktop::InvalidateWeakPtrs() {
 }
 
 bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(
-    const base::string16& platform) const {
+    const std::u16string& platform) const {
   if (base::EqualsASCII(platform, kPlatformChromeWebStore))
     return true;
 
@@ -124,7 +124,7 @@ bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
   }
 
   const std::string id = base::UTF16ToUTF8(*related_app.id);
-  const base::string16& platform = *related_app.platform;
+  const std::u16string& platform = *related_app.platform;
 
   if (base::EqualsASCII(platform, kPlatformChromeWebStore)) {
     return extension_registry_->GetExtensionById(

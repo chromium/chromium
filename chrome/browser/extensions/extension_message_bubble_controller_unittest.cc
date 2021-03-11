@@ -385,7 +385,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
       const std::string& extension_name) {
     controller->SetIsActiveBubble();
     EXPECT_TRUE(controller->ShouldShow());
-    std::vector<base::string16> override_extensions =
+    std::vector<std::u16string> override_extensions =
         controller->GetExtensionList();
     ASSERT_EQ(1U, override_extensions.size());
     EXPECT_EQ(base::UTF8ToUTF16(extension_name), override_extensions[0]);
@@ -441,7 +441,7 @@ TEST_F(ExtensionMessageBubbleTest,
 
   // The list will contain one enabled unpacked extension (ext 2).
   EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
+  std::vector<std::u16string> override_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(1U, override_extensions.size());
   EXPECT_EQ(base::ASCIIToUTF16("Extension 2"), override_extensions[0]);
@@ -520,7 +520,7 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
 
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> suspicious_extensions =
+  std::vector<std::u16string> suspicious_extensions =
       controller->GetExtensionList();
   EXPECT_EQ(0U, suspicious_extensions.size());
   EXPECT_EQ(0U, controller->link_click_count());
@@ -595,7 +595,7 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
 
   // The list will contain one enabled unpacked extension.
   EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> dev_mode_extensions =
+  std::vector<std::u16string> dev_mode_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(2U, dev_mode_extensions.size());
   EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") == dev_mode_extensions[0]);
@@ -783,7 +783,7 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
 
     // The list will contain one enabled unpacked extension (ext 2).
     EXPECT_TRUE(controller->ShouldShow());
-    std::vector<base::string16> override_extensions =
+    std::vector<std::u16string> override_extensions =
         controller->GetExtensionList();
     ASSERT_EQ(1U, override_extensions.size());
     EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") ==
@@ -928,7 +928,7 @@ TEST_F(ExtensionMessageBubbleTest,
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
 
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> suspicious_extensions =
+  std::vector<std::u16string> suspicious_extensions =
       controller->GetExtensionList();
   EXPECT_EQ(0U, suspicious_extensions.size());
 
@@ -1024,7 +1024,7 @@ TEST_F(ExtensionMessageBubbleTest, NtpOverriddenControllerTest) {
 
   // The list will contain one enabled unpacked extension (ext 2).
   EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
+  std::vector<std::u16string> override_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(1U, override_extensions.size());
   EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") ==
@@ -1206,7 +1206,7 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // The list will contain one enabled unpacked extension (ext 2).
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
+  std::vector<std::u16string> override_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(1U, override_extensions.size());
   EXPECT_EQ(base::ASCIIToUTF16("Extension 2"), override_extensions[0]);

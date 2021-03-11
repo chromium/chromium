@@ -74,7 +74,7 @@ constexpr SystemNotificationWarningLevel kWarningLevel =
 // A time-delta of length one minute.
 constexpr base::TimeDelta kOneMinute = base::TimeDelta::FromMinutes(1);
 
-base::string16 GetBodyText() {
+std::u16string GetBodyText() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_EXPIRY_CALL_TO_ACTION);
 }
 
@@ -96,7 +96,7 @@ class PasswordExpiryNotificationDelegate : public NotificationDelegate {
   // message_center::NotificationDelegate:
   void Close(bool by_user) override;
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 };
 
 PasswordExpiryNotificationDelegate::PasswordExpiryNotificationDelegate() =
@@ -113,7 +113,7 @@ void PasswordExpiryNotificationDelegate::Close(bool by_user) {
 
 void PasswordExpiryNotificationDelegate::Click(
     const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
+    const base::Optional<std::u16string>& reply) {
   bool clicked_on_button = button_index.has_value();
   if (clicked_on_button) {
     InSessionPasswordChangeManager::Get()->StartInSessionPasswordChange();
@@ -133,13 +133,13 @@ void PasswordExpiryNotification::Show(Profile* profile,
 
   // Leaving this empty means the notification is attributed to the system -
   // ie "Chromium OS" or similar.
-  static const base::NoDestructor<base::string16> kEmptyDisplaySource;
+  static const base::NoDestructor<std::u16string> kEmptyDisplaySource;
 
   // No origin URL is needed since the notification comes from the system.
   static const base::NoDestructor<GURL> kEmptyOriginUrl;
 
-  const base::string16 title = GetTitleText(time_until_expiry);
-  const base::string16 body = GetBodyText();
+  const std::u16string title = GetTitleText(time_until_expiry);
+  const std::u16string body = GetBodyText();
   const RichNotificationData rich_notification_data = GetRichNotificationData();
   const scoped_refptr<PasswordExpiryNotificationDelegate> delegate =
       base::MakeRefCounted<PasswordExpiryNotificationDelegate>();
@@ -158,7 +158,7 @@ void PasswordExpiryNotification::Show(Profile* profile,
 }
 
 // static
-base::string16 PasswordExpiryNotification::GetTitleText(
+std::u16string PasswordExpiryNotification::GetTitleText(
     base::TimeDelta time_until_expiry) {
   if (time_until_expiry < kOneMinute) {
     // Don't need to count the seconds - just say its overdue.

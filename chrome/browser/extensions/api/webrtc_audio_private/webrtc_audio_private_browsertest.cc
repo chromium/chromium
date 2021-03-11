@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
 
   content::TitleWatcher title_watcher(tab, base::ASCIIToUTF16("success"));
   title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16("failure"));
-  base::string16 result = title_watcher.WaitAndGetTitle();
+  std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_EQ(base::ASCIIToUTF16("success"), result);
 }
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)

@@ -1490,7 +1490,7 @@ void DevToolsUIBindings::SearchCompleted(
 }
 
 void DevToolsUIBindings::ShowDevToolsInfoBar(
-    const base::string16& message,
+    const std::u16string& message,
     DevToolsInfoBarDelegate::Callback callback) {
   if (!delegate_->GetInfoBarService()) {
     std::move(callback).Run(false);

@@ -15,19 +15,19 @@ class DevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   using Callback = base::OnceCallback<void(bool)>;
 
-  static void Create(const base::string16& message, Callback callback);
+  static void Create(const std::u16string& message, Callback callback);
 
  private:
-  DevToolsInfoBarDelegate(const base::string16& message, Callback callback);
+  DevToolsInfoBarDelegate(const std::u16string& message, Callback callback);
   ~DevToolsInfoBarDelegate() override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 
-  const base::string16 message_;
+  const std::u16string message_;
   Callback callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsInfoBarDelegate);

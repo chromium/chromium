@@ -50,14 +50,14 @@ bool PassphraseTextfield::GetChanged() const {
 }
 
 void PassphraseTextfield::SetFakePassphrase() {
-  static base::NoDestructor<base::string16> fake_passphrase(
+  static base::NoDestructor<std::u16string> fake_passphrase(
       base::ASCIIToUTF16("********"));
   SetText(*fake_passphrase);
   changed_ = false;
 }
 
 void PassphraseTextfield::ClearFakePassphrase() {
-  SetText(base::string16());
+  SetText(std::u16string());
   changed_ = true;
 }
 

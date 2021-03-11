@@ -350,7 +350,7 @@ DemoSetupController::DemoSetupError::DemoSetupError(
 
 DemoSetupController::DemoSetupError::~DemoSetupError() = default;
 
-base::string16 DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
+std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
     const {
   switch (error_code_) {
     case ErrorCode::kOfflinePolicyError:
@@ -428,10 +428,10 @@ base::string16 DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_UNEXPECTED_ERROR);
   }
   NOTREACHED() << "No localized error message available for demo setup error.";
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16
+std::u16string
 DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
   switch (recovery_method_) {
     case RecoveryMethod::kRetry:
@@ -449,7 +449,7 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
   }
   NOTREACHED()
       << "No localized error message available for demo setup recovery method.";
-  return base::string16();
+  return std::u16string();
 }
 
 std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {

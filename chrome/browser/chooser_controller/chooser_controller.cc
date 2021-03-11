@@ -21,7 +21,7 @@
 
 namespace {
 
-base::string16 CreateTitle(content::RenderFrameHost* render_frame_host,
+std::u16string CreateTitle(content::RenderFrameHost* render_frame_host,
                            int title_string_id_origin,
                            int title_string_id_extension) {
   url::Origin origin = render_frame_host->GetLastCommittedOrigin();
@@ -64,7 +64,7 @@ ChooserController::ChooserController(content::RenderFrameHost* owner,
 
 ChooserController::~ChooserController() {}
 
-base::string16 ChooserController::GetTitle() const {
+std::u16string ChooserController::GetTitle() const {
   return title_;
 }
 
@@ -92,12 +92,12 @@ bool ChooserController::ShouldShowSelectAllCheckbox() const {
   return false;
 }
 
-base::string16 ChooserController::GetCancelButtonLabel() const {
+std::u16string ChooserController::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_CANCEL_BUTTON_TEXT);
 }
 
-base::string16 ChooserController::GetSelectAllCheckboxLabel() const {
-  return base::string16();
+std::u16string ChooserController::GetSelectAllCheckboxLabel() const {
+  return std::u16string();
 }
 
 bool ChooserController::BothButtonsAlwaysEnabled() const {

@@ -13,7 +13,7 @@ namespace chromeos {
 // static
 void WebContentsForcedTitle::CreateForWebContentsWithTitle(
     content::WebContents* web_contents,
-    const base::string16& title) {
+    const std::u16string& title) {
   if (FromWebContents(web_contents))
     return;
 
@@ -25,7 +25,7 @@ void WebContentsForcedTitle::CreateForWebContentsWithTitle(
 
 WebContentsForcedTitle::WebContentsForcedTitle(
     content::WebContents* web_contents,
-    const base::string16& title)
+    const std::u16string& title)
     : content::WebContentsObserver(web_contents), title_(title) {}
 
 WebContentsForcedTitle::~WebContentsForcedTitle() {}

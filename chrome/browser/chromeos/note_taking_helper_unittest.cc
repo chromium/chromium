@@ -302,7 +302,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
   }
   void UninstallExtension(const extensions::Extension* extension,
                           Profile* profile) {
-    base::string16 error;
+    std::u16string error;
     extensions::ExtensionSystem::Get(profile)
         ->extension_service()
         ->UninstallExtension(

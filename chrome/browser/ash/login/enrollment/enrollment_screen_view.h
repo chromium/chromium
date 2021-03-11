@@ -56,7 +56,7 @@ class EnrollmentScreenView {
 
   // Sets the enterprise manager and the device type to be shown for the user.
   virtual void SetEnterpriseDomainInfo(const std::string& manager,
-                                       const base::string16& device_type) = 0;
+                                       const std::u16string& device_type) = 0;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;

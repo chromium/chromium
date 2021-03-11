@@ -73,7 +73,7 @@ class WebTimeNavigationObserver
     return last_navigation_info_;
   }
 
-  const base::Optional<base::string16>& previous_title() const {
+  const base::Optional<std::u16string>& previous_title() const {
     return previous_title_;
   }
 
@@ -89,7 +89,7 @@ class WebTimeNavigationObserver
 
   base::Optional<NavigationInfo> last_navigation_info_ = base::nullopt;
 
-  base::Optional<base::string16> previous_title_;
+  base::Optional<std::u16string> previous_title_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

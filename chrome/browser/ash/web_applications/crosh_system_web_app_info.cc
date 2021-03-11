@@ -21,7 +21,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCroshSystemWebApp() {
   auto info = std::make_unique<WebApplicationInfo>();
   info->start_url = GURL(chrome::kChromeUIUntrustedCroshURL);
   info->scope = GURL(chrome::kChromeUIUntrustedCroshURL);
-  info->title = base::string16(base::ASCIIToUTF16("crosh"));
+  info->title = std::u16string(base::ASCIIToUTF16("crosh"));
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url, {{"app_icon_256.png", 256, IDR_LOGO_CROSTINI_TERMINAL}},
       *info);

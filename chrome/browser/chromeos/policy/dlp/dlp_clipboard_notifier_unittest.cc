@@ -51,13 +51,13 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
 
 class MockDlpClipboardNotifier : public DlpClipboardNotifier {
  public:
-  MOCK_METHOD1(ShowBlockBubble, void(const base::string16& text));
+  MOCK_METHOD1(ShowBlockBubble, void(const std::u16string& text));
   MOCK_METHOD3(ShowWarningBubble,
-               void(const base::string16& text,
+               void(const std::u16string& text,
                     base::RepeatingCallback<void(views::Widget*)> proceed_cb,
                     base::RepeatingCallback<void(views::Widget*)> cancel_cb));
   MOCK_CONST_METHOD2(ShowToast,
-                     void(const std::string& id, const base::string16& text));
+                     void(const std::string& id, const std::u16string& text));
 
   using DlpClipboardNotifier::BlinkProceedPressed;
   using DlpClipboardNotifier::CancelWarningPressed;
@@ -213,7 +213,7 @@ TEST_P(DlpClipboardToastTest, BlockToast) {
   ui::DataTransferEndpoint data_src(origin);
   ui::DataTransferEndpoint data_dst(GetParam().dst_type);
 
-  base::string16 expected_toast_str = l10n_util::GetStringFUTF16(
+  std::u16string expected_toast_str = l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_COPY_VM,
       base::UTF8ToUTF16(origin.host()),
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
@@ -229,7 +229,7 @@ TEST_P(DlpClipboardToastTest, WarnToast) {
   ui::DataTransferEndpoint data_src(origin);
   ui::DataTransferEndpoint data_dst(GetParam().dst_type);
 
-  base::string16 expected_toast_str = l10n_util::GetStringFUTF16(
+  std::u16string expected_toast_str = l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_WARN_ON_COPY_VM,
       l10n_util::GetStringUTF16(GetParam().expected_dst_name_id));
 

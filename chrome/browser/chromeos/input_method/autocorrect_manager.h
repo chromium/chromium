@@ -39,7 +39,7 @@ class AutocorrectManager {
 
   // To show the undo window when cursor is in an autocorrected word, this class
   // is notified of surrounding text changes.
-  void OnSurroundingTextChanged(const base::string16& text,
+  void OnSurroundingTextChanged(const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos);
 

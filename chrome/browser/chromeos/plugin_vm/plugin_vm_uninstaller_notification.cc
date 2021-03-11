@@ -29,7 +29,7 @@ std::string GetUniqueNotificationId() {
                             next_notification_id_++);
 }
 
-base::string16 PluginVmAppName() {
+std::u16string PluginVmAppName() {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
 }
 
@@ -44,13 +44,13 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
   rich_notification_data.pinned = true;
   rich_notification_data.never_timeout = true;
 
-  base::string16 app_name = PluginVmAppName();
+  std::u16string app_name = PluginVmAppName();
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, GetUniqueNotificationId(),
       l10n_util::GetStringFUTF16(
           IDS_PLUGIN_VM_REMOVING_NOTIFICATION_IN_PROGRESS_MESSAGE,
           app_name),     // title
-      base::string16(),  // message
+      std::u16string(),  // message
       gfx::Image(),      // icon
       app_name,
       GURL(),  // origin_url
@@ -66,8 +66,8 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
 PluginVmUninstallerNotification::~PluginVmUninstallerNotification() = default;
 
 void PluginVmUninstallerNotification::SetFailed(FailedReason reason) {
-  base::string16 app_name = PluginVmAppName();
-  base::string16 message;
+  std::u16string app_name = PluginVmAppName();
+  std::u16string message;
   if (reason == FailedReason::kStopVmFailed) {
     message = l10n_util::GetStringFUTF16(
         IDS_PLUGIN_VM_SHUTDOWN_WINDOWS_TO_UNINSTALL_MESSAGE, app_name);

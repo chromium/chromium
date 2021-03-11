@@ -30,11 +30,11 @@ namespace chromeos {
 
 namespace {
 
-inline base::string16 utf16(const char* ascii) {
+inline std::u16string utf16(const char* ascii) {
   return base::ASCIIToUTF16(ascii);
 }
 
-inline base::string16 GetTitleText(base::TimeDelta time_until_expiry) {
+inline std::u16string GetTitleText(base::TimeDelta time_until_expiry) {
   return PasswordExpiryNotification::GetTitleText(time_until_expiry);
 }
 

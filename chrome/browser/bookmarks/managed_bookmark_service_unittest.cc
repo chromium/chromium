@@ -141,7 +141,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
 
   static bool NodeMatchesValue(const BookmarkNode* node,
                                const base::DictionaryValue* dict) {
-    base::string16 title;
+    std::u16string title;
     if (!dict->GetString("name", &title) || node->GetTitle() != title)
       return false;
 

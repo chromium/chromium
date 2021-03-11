@@ -84,13 +84,13 @@ class ContextualSearchDelegateTest : public testing::Test {
   }
 
   void CreateDefaultSearchContextAndRequestSearchTerm() {
-    base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+    std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
     CreateSearchContextAndRequestSearchTerm("Barack Obama", surrounding, 0, 6);
   }
 
   void CreateSearchContextAndRequestSearchTerm(
       const std::string& selected_text,
-      const base::string16& surrounding_text,
+      const std::u16string& surrounding_text,
       int start_offset,
       int end_offset) {
     test_context_ = new ContextualSearchContext(
@@ -141,7 +141,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   // Cannot be in an actual test because OnTextSurroundingSelectionAvailable
   // is private.
   void CallOnTextSurroundingSelectionAvailable() {
-    delegate_->OnTextSurroundingSelectionAvailable(base::string16(), 1, 2);
+    delegate_->OnTextSurroundingSelectionAvailable(std::u16string(), 1, 2);
   }
 
   void CallResolveSearchTermFromContext() {
@@ -169,7 +169,7 @@ class ContextualSearchDelegateTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetSurroundingContext(const base::string16& surrounding_text,
+  void SetSurroundingContext(const std::u16string& surrounding_text,
                              int start_offset,
                              int end_offset) {
     test_context_ = new ContextualSearchContext(
@@ -268,7 +268,7 @@ class ContextualSearchDelegateTest : public testing::Test {
   }
 
   void recordSampleSelectionAvailable(const std::string& encoding,
-                                      const base::string16& surrounding_text,
+                                      const std::u16string& surrounding_text,
                                       size_t start_offset,
                                       size_t end_offset) {
     // unused.
@@ -401,7 +401,7 @@ TEST_F(ContextualSearchDelegateTest, InvalidResponse) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionToEnd) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 6);
   SetResponseStringAndSimulateResponse(selected_text, "0", "12");
@@ -411,7 +411,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToEnd) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionToStart) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Obama";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 12);
   SetResponseStringAndSimulateResponse(selected_text, "0", "12");
@@ -421,7 +421,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionToStart) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionBothDirections) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
   SetResponseStringAndSimulateResponse(selected_text, "0", "12");
@@ -431,7 +431,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionBothDirections) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidRange) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 7, 9);
   SetResponseStringAndSimulateResponse(selected_text, "0", "1001");
@@ -441,7 +441,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidRange) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantStart) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           0xffffffff, 0xffffffff - 2);
@@ -452,7 +452,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantStart) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidNoOverlap) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 12);
   SetResponseStringAndSimulateResponse(selected_text, "12", "14");
@@ -462,7 +462,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidNoOverlap) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           0xffffffff, 0xffffffff - 2);
@@ -473,7 +473,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionInvalidDistantEndAndRange) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Ob";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding,
                                           268435450, 268435455);
@@ -484,7 +484,7 @@ TEST_F(ContextualSearchDelegateTest, ExpandSelectionLargeNumbers) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ContractSelectionValid) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
   SetResponseStringAndSimulateResponse(selected_text, "0", "12");
@@ -494,7 +494,7 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionValid) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
-  base::string16 surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
+  std::u16string surrounding = base::UTF8ToUTF16("Barack Obama just spoke.");
   std::string selected_text = "Barack Obama just";
   CreateSearchContextAndRequestSearchTerm(selected_text, surrounding, 0, 17);
   SetResponseStringAndSimulateResponse(selected_text, "5", "5");
@@ -515,11 +515,11 @@ TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
-  base::string16 sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
   int limit_each_side = 3;
   size_t start = 8;
   size_t end = 20;
-  base::string16 result =
+  std::u16string result =
       delegate_->SampleSurroundingText(sample, limit_each_side, &start, &end);
   EXPECT_EQ(static_cast<size_t>(3), start);
   EXPECT_EQ(static_cast<size_t>(15), end);
@@ -527,11 +527,11 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingText) {
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
-  base::string16 sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
   int limit_each_side = -2;
   size_t start = 8;
   size_t end = 20;
-  base::string16 result =
+  std::u16string result =
       delegate_->SampleSurroundingText(sample, limit_each_side, &start, &end);
   EXPECT_EQ(static_cast<size_t>(0), start);
   EXPECT_EQ(static_cast<size_t>(12), end);
@@ -539,11 +539,11 @@ TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextNegativeLimit) {
 }
 
 TEST_F(ContextualSearchDelegateTest, SampleSurroundingTextSameStartEnd) {
-  base::string16 sample = base::ASCIIToUTF16("this is Barack Obama in office.");
+  std::u16string sample = base::ASCIIToUTF16("this is Barack Obama in office.");
   int limit_each_side = 3;
   size_t start = 11;
   size_t end = 11;
-  base::string16 result =
+  std::u16string result =
       delegate_->SampleSurroundingText(sample, limit_each_side, &start, &end);
   VLOG(0) << "start " << start;
   VLOG(0) << "end " << end;

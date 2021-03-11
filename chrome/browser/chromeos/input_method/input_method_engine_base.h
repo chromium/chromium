@@ -87,7 +87,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
     // Called when a surrounding text is changed.
     virtual void OnSurroundingTextChanged(const std::string& engine_id,
-                                          const base::string16& text,
+                                          const std::u16string& text,
                                           int cursor_pos,
                                           int anchor_pos,
                                           int offset_pos) = 0;
@@ -134,7 +134,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   void Reset() override;
   void ProcessKeyEvent(const ui::KeyEvent& key_event,
                        KeyEventDoneCallback callback) override;
-  void SetSurroundingText(const base::string16& text,
+  void SetSurroundingText(const std::u16string& text,
                           uint32_t cursor_pos,
                           uint32_t anchor_pos,
                           uint32_t offset_pos) override;
@@ -150,7 +150,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   // Commit the specified text to the specified context.  Fails if the context
   // is not focused.
   bool CommitText(int context_id,
-                  const base::string16& text,
+                  const std::u16string& text,
                   std::string* error);
 
   // Notifies InputContextHandler to commit any composition text.
@@ -289,7 +289,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
 
   // Notifies InputContextHanlder to commit |text|.
   virtual void CommitTextToInputContext(int context_id,
-                                        const base::string16& text) = 0;
+                                        const std::u16string& text) = 0;
 
   // Notifies InputContextHandler to delete surrounding text.
   void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
@@ -332,7 +332,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   std::vector<gfx::Rect> composition_bounds_;
 
   // The text to be committed from calling input.ime.commitText API.
-  base::string16 text_;
+  std::u16string text_;
   bool commit_text_changed_;
 
   // Indicates whether the IME extension is currently handling a physical key

@@ -199,7 +199,7 @@ bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
   return show_report_abuse_checkbox_ || show_remove_data_checkbox_;
 }
 
-base::string16 ExtensionUninstallDialog::GetCheckboxLabel() const {
+std::u16string ExtensionUninstallDialog::GetCheckboxLabel() const {
   DCHECK(ShouldShowCheckbox());
 
   if (show_report_abuse_checkbox_) {
@@ -231,7 +231,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   }
 
   bool success = false;
-  base::string16 error;
+  std::u16string error;
   switch (action) {
     case CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED:
       DCHECK(profile_);
@@ -275,7 +275,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   delegate_->OnExtensionUninstallDialogClosed(success, error);
 }
 
-bool ExtensionUninstallDialog::Uninstall(base::string16* error) {
+bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
   DCHECK(profile_);
   const Extension* current_extension =
       ExtensionRegistry::Get(profile_)->GetExtensionById(

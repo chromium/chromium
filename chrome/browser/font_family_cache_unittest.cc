@@ -18,7 +18,7 @@ class TestingFontFamilyCache : public FontFamilyCache {
   explicit TestingFontFamilyCache(Profile* profile)
       : FontFamilyCache(profile), fetch_font_count_(0) {}
   ~TestingFontFamilyCache() override {}
-  base::string16 FetchFont(const char* script, const char* map_name) override {
+  std::u16string FetchFont(const char* script, const char* map_name) override {
     ++fetch_font_count_;
     return FontFamilyCache::FetchFont(script, map_name);
   }

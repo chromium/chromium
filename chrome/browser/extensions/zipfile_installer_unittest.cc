@@ -61,7 +61,7 @@ struct MockExtensionRegistryObserver : public ExtensionRegistryObserver {
           base::TimeDelta::FromMilliseconds(100));
       quit_closure = run_loop.QuitClosure();
       run_loop.Run();
-      const std::vector<base::string16>* errors = error_reporter->GetErrors();
+      const std::vector<std::u16string>* errors = error_reporter->GetErrors();
       if (!errors->empty()) {
         if (!expect_error) {
           FAIL() << "Error(s) happened when unzipping extension: "

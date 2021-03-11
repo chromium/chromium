@@ -156,8 +156,8 @@ jlong PartnerBookmarksReader::AddPartnerBookmark(
     jboolean fetch_uncached_favicons_from_server,
     jint desired_favicon_size_px,
     const JavaParamRef<jobject>& j_callback) {
-  base::string16 url;
-  base::string16 title;
+  std::u16string url;
+  std::u16string title;
   if (jurl) {
     DCHECK(!is_folder);
     url = ConvertJavaStringToUTF16(env, jurl);

@@ -45,7 +45,7 @@ class SimpleConsole {
   virtual bool Init() = 0;
 
   // Writes a string to the console with the current color.
-  virtual bool Write(const base::string16& text) = 0;
+  virtual bool Write(const std::u16string& text) = 0;
 
   // Called when the program is about to exit.
   virtual void OnQuit() = 0;
@@ -76,7 +76,7 @@ class WinConsole : public SimpleConsole {
 
   bool Init() override { return SetIOHandles(); }
 
-  bool Write(const base::string16& txt) override {
+  bool Write(const std::u16string& txt) override {
     DWORD sz = txt.size();
     return (TRUE ==
             ::WriteConsoleW(std_out_, base::as_wcstr(txt), sz, &sz, NULL));
@@ -146,7 +146,7 @@ class PosixConsole : public SimpleConsole {
     return true;
   }
 
-  bool Write(const base::string16& text) override {
+  bool Write(const std::u16string& text) override {
     // We're assuming that the terminal is using UTF-8 encoding.
     printf("%s", base::UTF16ToUTF8(text).c_str());
     return true;

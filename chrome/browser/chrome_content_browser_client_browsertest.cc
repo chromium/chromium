@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html"))));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedColorScheme()), tab_title);
 }
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(FILE_PATH_LITERAL("prefers-contrast.html"))));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedPrefersContrast()), tab_title);
 }
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("news:something"));
 
-  base::string16 expected_title = base::ASCIIToUTF16("abc.xyz");
+  std::u16string expected_title = base::ASCIIToUTF16("abc.xyz");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("bitcoin:something"));
 
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16("about:blank"), tab_title);
 }
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
   // tab being opened.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   // Make sure the protocol handler redirected the navigation.
-  base::string16 expected_title = base::ASCIIToUTF16("mail.google.com");
+  std::u16string expected_title = base::ASCIIToUTF16("mail.google.com");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());

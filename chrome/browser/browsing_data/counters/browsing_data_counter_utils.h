@@ -20,7 +20,7 @@ namespace browsing_data_counter_utils {
 bool ShouldShowCookieException(Profile* profile);
 
 // Constructs the text to be displayed by a counter from the given |result|.
-base::string16 GetChromeCounterTextFromResult(
+std::u16string GetChromeCounterTextFromResult(
     const browsing_data::BrowsingDataCounter::Result* result,
     Profile* profile);
 

@@ -51,9 +51,9 @@ static CrosUsbDetector* g_cros_usb_detector = nullptr;
 
 const char kNotifierUsb[] = "crosusb.connected";
 
-base::string16 ProductLabelFromDevice(
+std::u16string ProductLabelFromDevice(
     const device::mojom::UsbDeviceInfo& device_info) {
-  base::string16 product_label =
+  std::u16string product_label =
       l10n_util::GetStringUTF16(IDS_CROSUSB_UNKNOWN_DEVICE);
   if (device_info.product_name.has_value() &&
       !device_info.product_name->empty()) {
@@ -152,7 +152,7 @@ class CrosUsbNotificationDelegate
         disposition_(CrosUsbNotificationClosed::kUnknown) {}
 
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
     if (button_index && *button_index < static_cast<int>(vm_names_.size())) {
       HandleConnectToVm(vm_names_[*button_index]);
@@ -228,11 +228,11 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
 }
 
 void ShowNotificationForDevice(const std::string& guid,
-                               const base::string16& label) {
+                               const std::u16string& label) {
   message_center::RichNotificationData rich_notification_data;
   std::vector<std::string> vm_names;
   std::string settings_sub_page;
-  base::string16 vm_name;
+  std::u16string vm_name;
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
   rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
@@ -256,7 +256,7 @@ void ShowNotificationForDevice(const std::string& guid,
         chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
   }
 
-  base::string16 message;
+  std::u16string message;
   if (vm_names.size() == 1) {
     message = l10n_util::GetStringFUTF16(
         IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION, label, vm_name);
@@ -271,7 +271,7 @@ void ShowNotificationForDevice(const std::string& guid,
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_MULTIPLE, notification_id,
       l10n_util::GetStringUTF16(IDS_CROSUSB_DEVICE_DETECTED_NOTIFICATION_TITLE),
-      message, gfx::Image(), base::string16(), GURL(),
+      message, gfx::Image(), std::u16string(), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierUsb),
       rich_notification_data,
@@ -323,7 +323,7 @@ void FilesystemUnmounter::OnUnmountPath(MountError mount_error) {
 }  // namespace
 
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(std::string guid,
-                                     base::string16 label,
+                                     std::u16string label,
                                      base::Optional<std::string> shared_vm_name,
                                      bool prompt_before_sharing)
     : guid(guid),
@@ -573,7 +573,7 @@ void CrosUsbDetector::OnDeviceChecked(
 
   // Copy strings prior to moving |device_info| and |new_device|.
   std::string guid = device_info->guid;
-  base::string16 label = new_device.label;
+  std::u16string label = new_device.label;
 
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));

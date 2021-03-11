@@ -116,7 +116,7 @@ bool ChromeAppBannerManagerAndroid::MaybeShowPwaBottomSheetController(
   return PwaBottomSheetController::MaybeShow(
       web_contents(), GetAppName(), primary_icon_, has_maskable_primary_icon_,
       manifest_.start_url, screenshots_,
-      manifest_.description.value_or(base::string16()), expand_sheet,
+      manifest_.description.value_or(std::u16string()), expand_sheet,
       std::move(a2hs_params),
       base::BindRepeating(&ChromeAppBannerManagerAndroid::OnInstallEvent,
                           ChromeAppBannerManagerAndroid::GetAndroidWeakPtr()));

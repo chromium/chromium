@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerSubresourceWebBundlesBrowserTest,
   GURL handler_url = embedded_test_server()->GetURL("/%s");
   AddProtocolHandler("urn", handler_url);
 
-  base::string16 expected_title = base::ASCIIToUTF16("OK");
+  std::u16string expected_title = base::ASCIIToUTF16("OK");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 

@@ -40,7 +40,7 @@ constexpr int kDialogTitleMarginEndDp = 0;
 
 }  // namespace
 
-ToastDialogView::ToastDialogView(const base::string16& app_name,
+ToastDialogView::ToastDialogView(const std::u16string& app_name,
                                  base::OnceClosure dismissed_callback) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCloseCallback(std::move(dismissed_callback));

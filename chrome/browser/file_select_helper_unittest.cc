@@ -367,17 +367,17 @@ TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
   scoped_refptr<FileSelectHelper> file_select_helper =
       new FileSelectHelper(&profile);
 
-  std::vector<base::string16> accept_types{
+  std::vector<std::u16string> accept_types{
       // normal file extension
-      base::string16{0x2e, 'm', 'p', '4'},
+      std::u16string{0x2e, 'm', 'p', '4'},
       // file extension with some chinese
-      base::string16{0x2e, 0x65a4, 0x62f7, 0x951f},
+      std::u16string{0x2e, 0x65a4, 0x62f7, 0x951f},
       // file extension with fire emoji
-      base::string16{0x2e, 55357, 56613},
+      std::u16string{0x2e, 55357, 56613},
       // mime type
-      base::string16({'i', 'm', 'a', 'g', 'e', '/', 'p', 'n', 'g'}),
+      std::u16string({'i', 'm', 'a', 'g', 'e', '/', 'p', 'n', 'g'}),
       // non-ascii mime type which should be ignored
-      base::string16({'t', 'e', 'x', 't', '/', 0x65a4, 0x62f7, 0x951f})};
+      std::u16string({'t', 'e', 'x', 't', '/', 0x65a4, 0x62f7, 0x951f})};
 
   std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_type_info =
       file_select_helper->GetFileTypesFromAcceptType(accept_types);

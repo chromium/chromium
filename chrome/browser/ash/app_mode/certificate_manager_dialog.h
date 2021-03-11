@@ -22,7 +22,7 @@ class CertificateManagerDialog : public LoginWebDialog {
   ~CertificateManagerDialog() override;
 
   // ui::WebDialogDelegate
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   void GetDialogSize(gfx::Size* size) const override;
 
  private:

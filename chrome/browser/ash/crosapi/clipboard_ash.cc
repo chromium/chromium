@@ -18,7 +18,7 @@ void ClipboardAsh::BindReceiver(
 }
 
 void ClipboardAsh::GetCopyPasteText(GetCopyPasteTextCallback callback) {
-  base::string16 text;
+  std::u16string text;
 
   // There is no source that appropriately represents Lacros. Use kDefault for
   // now.

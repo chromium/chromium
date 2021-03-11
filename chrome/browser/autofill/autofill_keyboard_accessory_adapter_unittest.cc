@@ -41,9 +41,10 @@ class MockAccessoryView
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
   MOCK_METHOD3(ConfirmDeletion,
-               void(const base::string16&,
-                    const base::string16&,
+               void(const std::u16string&,
+                    const std::u16string&,
                     base::OnceClosure));
+
  private:
   DISALLOW_COPY_AND_ASSIGN(MockAccessoryView);
 };
@@ -179,7 +180,7 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), base::string16());
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
   EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1),

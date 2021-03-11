@@ -795,7 +795,7 @@ bool ExtensionService::UninstallExtension(
     // to become invalid. Instead, use |extension->id()|.
     const std::string& transient_extension_id,
     UninstallReason reason,
-    base::string16* error) {
+    std::u16string* error) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   scoped_refptr<const Extension> extension =
@@ -1249,7 +1249,7 @@ void ExtensionService::CheckManagementPolicy() {
     }
   }
   for (auto extension_id : remove_list) {
-    base::string16 error;
+    std::u16string error;
     if (!UninstallExtension(extension_id, UNINSTALL_REASON_INTERNAL_MANAGEMENT,
                             &error)) {
       SYSLOG(WARNING) << "Extension with id " << extension_id

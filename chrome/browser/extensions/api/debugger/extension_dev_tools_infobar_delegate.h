@@ -43,7 +43,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   gfx::ElideBehavior GetMessageElideBehavior() const override;
   int GetButtons() const override;
 
@@ -59,7 +59,7 @@ class ExtensionDevToolsInfoBarDelegate : public ConfirmInfoBarDelegate {
       base::OnceClosure destroyed_callback);
 
   const std::string extension_id_;
-  const base::string16 extension_name_;
+  const std::u16string extension_name_;
   // infobar_ is set after attaching an extension and is deleted 5 seconds after
   // detaching the extension. |infobar_| owns this object and is therefore
   // guaranteed to outlive it.

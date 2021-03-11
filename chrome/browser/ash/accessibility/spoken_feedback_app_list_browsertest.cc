@@ -45,7 +45,7 @@ enum SpokenFeedbackAppListTestVariant { kTestAsNormalUser, kTestAsGuestUser };
 
 class TestSuggestionChipResult : public TestSearchResult {
  public:
-  explicit TestSuggestionChipResult(const base::string16& title) {
+  explicit TestSuggestionChipResult(const std::u16string& title) {
     set_display_type(SearchResultDisplayType::kChip);
     set_title(title);
   }

@@ -261,7 +261,7 @@ class TestWebappRegistry : public WebappRegistry {
 class TestSearchEngineDelegate
     : public SearchPermissionsService::SearchEngineDelegate {
  public:
-  base::string16 GetDSEName() override { return base::string16(); }
+  std::u16string GetDSEName() override { return std::u16string(); }
 
   url::Origin GetDSEOrigin() override {
     return url::Origin::Create(DSEOrigin());

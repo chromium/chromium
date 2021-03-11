@@ -432,7 +432,7 @@ enum KnownApp {
 };
 
 // Returns the app name for one of the known apps.
-base::string16 GetAppName(KnownApp app) {
+std::u16string GetAppName(KnownApp app) {
   switch (app) {
     case DEFAULT_APP:
       return base::ASCIIToUTF16(kDefaultAppName);
@@ -470,15 +470,15 @@ class PrintableNotification {
         message_(base.message()),
         progress_(base.progress()) {}
 
-  const base::string16& display_source() const { return display_source_; }
-  const base::string16& title() const { return title_; }
-  const base::string16& message() const { return message_; }
+  const std::u16string& display_source() const { return display_source_; }
+  const std::u16string& title() const { return title_; }
+  const std::u16string& message() const { return message_; }
   int progress() const { return progress_; }
 
  private:
-  const base::string16 display_source_;
-  const base::string16 title_;
-  const base::string16 message_;
+  const std::u16string display_source_;
+  const std::u16string title_;
+  const std::u16string message_;
   const int progress_;
 };
 
@@ -508,17 +508,17 @@ std::vector<PrintableNotification> Printable(
 
 class NotificationMatcher : public MatcherInterface<PrintableNotification> {
  public:
-  NotificationMatcher(const base::string16& expected_source,
-                      const base::string16& expected_title,
-                      const base::string16& expected_message)
+  NotificationMatcher(const std::u16string& expected_source,
+                      const std::u16string& expected_title,
+                      const std::u16string& expected_message)
       : expected_source_(expected_source),
         expected_title_(expected_title),
         check_message_(true),
         expected_message_(expected_message),
         check_progress_(false),
         expected_progress_(-1) {}
-  NotificationMatcher(const base::string16& expected_source,
-                      const base::string16& expected_title,
+  NotificationMatcher(const std::u16string& expected_source,
+                      const std::u16string& expected_title,
                       int expected_progress)
       : expected_source_(expected_source),
         expected_title_(expected_title),
@@ -585,10 +585,10 @@ class NotificationMatcher : public MatcherInterface<PrintableNotification> {
   }
 
  private:
-  const base::string16 expected_source_;
-  const base::string16 expected_title_;
+  const std::u16string expected_source_;
+  const std::u16string expected_title_;
   const bool check_message_;
-  const base::string16 expected_message_;
+  const std::u16string expected_message_;
   const bool check_progress_;
   const int expected_progress_;
 };

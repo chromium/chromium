@@ -151,7 +151,7 @@ MostVisitedSitesBridge::JavaObserver::JavaObserver(
 void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     const std::map<SectionType, NTPTilesVector>& sections) {
   JNIEnv* env = AttachCurrentThread();
-  std::vector<base::string16> titles;
+  std::vector<std::u16string> titles;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
   std::vector<std::string> allowlist_icons;
   std::vector<int> title_sources;

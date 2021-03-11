@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
   auto* navigation_observer =
       chromeos::app_time::WebTimeNavigationObserver::FromWebContents(
           web_contents);
-  base::string16 title = web_contents->GetTitle();
+  std::u16string title = web_contents->GetTitle();
   EXPECT_EQ(title, navigation_observer->previous_title());
 
   LoadFinishedWaiter waiter(web_contents, url);

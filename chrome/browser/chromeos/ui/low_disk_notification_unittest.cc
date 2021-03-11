@@ -90,7 +90,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(LowDiskNotificationTest, MediumLevelNotification) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_LOW_DISK_NOTIFICATION_TITLE);
   low_disk_notification_->LowDiskSpace(kMediumNotification);
   auto notification = GetNotification();
@@ -100,7 +100,7 @@ TEST_F(LowDiskNotificationTest, MediumLevelNotification) {
 }
 
 TEST_F(LowDiskNotificationTest, HighLevelReplacesMedium) {
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE);
   low_disk_notification_->LowDiskSpace(kMediumNotification);
   low_disk_notification_->LowDiskSpace(kHighNotification);

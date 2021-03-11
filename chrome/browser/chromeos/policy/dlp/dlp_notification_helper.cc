@@ -28,12 +28,12 @@ constexpr char kScreenCaptureResumedNotificationPrefix[] =
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void ShowDlpNotification(const std::string& id,
-                         const base::string16& title,
-                         const base::string16& message) {
+                         const std::u16string& title,
+                         const std::u16string& message) {
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
-          /*display_source=*/base::string16(), GURL(),
+          /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kDlpPolicyNotifierId),
@@ -73,7 +73,7 @@ void HideDlpScreenCapturePausedNotification(const std::string& capture_id) {
 }
 
 void ShowDlpScreenCapturePausedNotification(const std::string& capture_id,
-                                            const base::string16& app_title) {
+                                            const std::u16string& app_title) {
   ShowDlpNotification(
       GetCapturePausedNotificationId(capture_id),
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_TITLE),
@@ -89,7 +89,7 @@ void HideDlpScreenCaptureResumedNotification(const std::string& capture_id) {
 }
 
 void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
-                                             const base::string16& app_title) {
+                                             const std::u16string& app_title) {
   ShowDlpNotification(
       GetCaptureResumedNotificationId(capture_id),
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE),

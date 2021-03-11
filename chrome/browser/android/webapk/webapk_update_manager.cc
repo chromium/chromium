@@ -123,11 +123,11 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
             ? blink::mojom::ManifestShareTarget_Enctype::kMultipartFormData
             : blink::mojom::ManifestShareTarget_Enctype::kFormUrlEncoded;
 
-    std::vector<base::string16> fileNames;
+    std::vector<std::u16string> fileNames;
     base::android::AppendJavaStringArrayToStringVector(
         env, java_share_target_param_file_names, &fileNames);
 
-    std::vector<std::vector<base::string16>> accepts;
+    std::vector<std::vector<std::u16string>> accepts;
     base::android::Java2dStringArrayTo2dStringVector(
         env, java_share_target_param_accepts, &accepts);
 
@@ -170,7 +170,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
   std::string webapk_package;
   ConvertJavaStringToUTF8(env, java_webapk_package, &webapk_package);
 
-  std::vector<std::vector<base::string16>> shortcuts;
+  std::vector<std::vector<std::u16string>> shortcuts;
   base::android::Java2dStringArrayTo2dStringVector(env, java_shortcuts,
                                                    &shortcuts);
 

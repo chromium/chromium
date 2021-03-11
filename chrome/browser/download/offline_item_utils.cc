@@ -230,7 +230,7 @@ OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
 }
 
 // static
-base::string16 OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
+std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
   int string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
 
   switch (fail_state) {

@@ -19,8 +19,8 @@ class PasswordEditDelegate {
 
   // The method edits a password form held by the delegate. |new_username| and
   // |new_password| are user input from the PasswordEntryEditor.
-  virtual void EditSavedPassword(const base::string16& new_username,
-                                 const base::string16& new_password) = 0;
+  virtual void EditSavedPassword(const std::u16string& new_username,
+                                 const std::u16string& new_password) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordEditDelegate);
 };

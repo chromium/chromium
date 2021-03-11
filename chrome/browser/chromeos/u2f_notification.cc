@@ -109,7 +109,7 @@ void U2FNotification::ShowNotification() {
           message_center::NOTIFICATION_TYPE_SIMPLE, kU2FNotificationId,
           l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_MESSAGE),
-          base::string16(), GURL(kU2FNotificationId),
+          std::u16string(), GURL(kU2FNotificationId),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kU2FNotificationId),

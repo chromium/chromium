@@ -159,18 +159,18 @@ Profile* DownloadItemModel::profile() const {
       content::DownloadItemUtils::GetBrowserContext(download_));
 }
 
-base::string16 DownloadItemModel::GetTabProgressStatusText() const {
+std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   int64_t total = GetTotalBytes();
   int64_t size = download_->GetReceivedBytes();
-  base::string16 received_size = ui::FormatBytes(size);
-  base::string16 amount = received_size;
+  std::u16string received_size = ui::FormatBytes(size);
+  std::u16string amount = received_size;
 
   // Adjust both strings for the locale direction since we don't yet know which
   // string we'll end up using for constructing the final progress string.
   base::i18n::AdjustStringForLocaleDirection(&amount);
 
   if (total) {
-    base::string16 total_text = ui::FormatBytes(total);
+    std::u16string total_text = ui::FormatBytes(total);
     base::i18n::AdjustStringForLocaleDirection(&total_text);
 
     base::i18n::AdjustStringForLocaleDirection(&received_size);
@@ -180,11 +180,11 @@ base::string16 DownloadItemModel::GetTabProgressStatusText() const {
     amount.assign(received_size);
   }
   int64_t current_speed = download_->CurrentSpeed();
-  base::string16 speed_text = ui::FormatSpeed(current_speed);
+  std::u16string speed_text = ui::FormatSpeed(current_speed);
   base::i18n::AdjustStringForLocaleDirection(&speed_text);
 
   base::TimeDelta remaining;
-  base::string16 time_remaining;
+  std::u16string time_remaining;
   if (download_->IsPaused()) {
     time_remaining = l10n_util::GetStringUTF16(IDS_DOWNLOAD_PROGRESS_PAUSED);
   } else if (download_->TimeRemaining(&remaining)) {
@@ -201,7 +201,6 @@ base::string16 DownloadItemModel::GetTabProgressStatusText() const {
   return l10n_util::GetStringFUTF16(
       IDS_DOWNLOAD_TAB_PROGRESS_STATUS, speed_text, amount, time_remaining);
 }
-
 
 int64_t DownloadItemModel::GetCompletedBytes() const {
   return download_->GetReceivedBytes();

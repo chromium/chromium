@@ -133,7 +133,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                                    /*time_zone=*/icu::TimeZone::getGMT())),
         l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
                                    ui::GetChromeOSDeviceName()),
-        base::string16() /* display_source */, GURL(kEolNotificationId),
+        std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
         data,
@@ -151,7 +151,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
         GetStringUTF16(IDS_EOL_NOTIFICATION_TITLE),
         l10n_util::GetStringFUTF16(IDS_EOL_NOTIFICATION_EOL,
                                    ui::GetChromeOSDeviceName()),
-        base::string16() /* display_source */, GURL(kEolNotificationId),
+        std::u16string() /* display_source */, GURL(kEolNotificationId),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId),
         data,
@@ -179,7 +179,7 @@ void EolNotification::Close(bool by_user) {
 }
 
 void EolNotification::Click(const base::Optional<int>& button_index,
-                            const base::Optional<base::string16>& reply) {
+                            const base::Optional<std::u16string>& reply) {
   if (!button_index)
     return;
 

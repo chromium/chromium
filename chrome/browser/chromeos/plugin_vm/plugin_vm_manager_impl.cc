@@ -66,8 +66,8 @@ bool VmIsStopping(vm_tools::plugin_dispatcher::VmState state) {
 void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
   LOG(ERROR) << "Failed to start VM with launch result "
              << static_cast<int>(result);
-  base::string16 app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
-  base::string16 title;
+  std::u16string app_name = l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME);
+  std::u16string title;
   int message_id;
   switch (result) {
     default:

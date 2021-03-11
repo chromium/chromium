@@ -123,7 +123,7 @@ class InformationTextArea : public views::View {
   }
 
   // Sets the displayed text.
-  void SetText(const base::string16& text) { label_->SetText(text); }
+  void SetText(const std::u16string& text) { label_->SetText(text); }
 
   // Sets the border thickness for top/bottom.
   void SetBorderFromPosition(BorderPosition position) {
@@ -238,7 +238,7 @@ void CandidateWindowView::ShowPreeditText() {
   UpdateVisibility();
 }
 
-void CandidateWindowView::UpdatePreeditText(const base::string16& text) {
+void CandidateWindowView::UpdatePreeditText(const std::u16string& text) {
   preedit_->SetText(text);
 }
 

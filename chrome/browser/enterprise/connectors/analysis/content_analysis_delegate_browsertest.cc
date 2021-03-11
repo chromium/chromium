@@ -40,7 +40,7 @@ namespace {
 
 constexpr char kUserName[] = "test@chromium.org";
 
-base::string16 text() {
+std::u16string text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
 }
 

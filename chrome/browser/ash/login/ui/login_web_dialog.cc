@@ -50,7 +50,7 @@ void LoginWebDialog::Delegate::OnDialogClosed() {}
 LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
                                Delegate* delegate,
                                gfx::NativeWindow parent_window,
-                               const base::string16& title,
+                               const std::u16string& title,
                                const GURL& url)
     : browser_context_(browser_context),
       parent_window_(parent_window),
@@ -72,7 +72,7 @@ void LoginWebDialog::Show() {
       chrome::ShowWebDialog(parent_window_, browser_context_, this);
 }
 
-void LoginWebDialog::SetDialogTitle(const base::string16& title) {
+void LoginWebDialog::SetDialogTitle(const std::u16string& title) {
   title_ = title;
 }
 
@@ -83,7 +83,7 @@ ui::ModalType LoginWebDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 LoginWebDialog::GetDialogTitle() const {
+std::u16string LoginWebDialog::GetDialogTitle() const {
   return title_;
 }
 

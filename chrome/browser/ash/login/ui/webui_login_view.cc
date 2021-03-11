@@ -145,7 +145,7 @@ WebUILoginView::~WebUILoginView() {
 
 // static
 void WebUILoginView::InitializeWebView(views::WebView* web_view,
-                                       const base::string16& title) {
+                                       const std::u16string& title) {
   WebContents* web_contents = web_view->GetWebContents();
 
   if (!title.empty())

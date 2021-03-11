@@ -55,7 +55,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
     return true;
   }
 
-  void VerifySuggestion(const base::string16 text,
+  void VerifySuggestion(const std::u16string text,
                         const size_t confirmed_length) {
     EXPECT_EQ(suggestion_text_, text);
     EXPECT_EQ(confirmed_length_, confirmed_length);
@@ -85,7 +85,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
   }
 
   bool AcceptSuggestionCandidate(int context_id,
-                                 const base::string16& candidate,
+                                 const std::u16string& candidate,
                                  std::string* error) override {
     return false;
   }
@@ -110,7 +110,7 @@ class TestSuggestionHandler : public SuggestionHandlerInterface {
   bool IsSuggestionAccepted() { return suggestion_accepted_; }
 
  private:
-  base::string16 suggestion_text_;
+  std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   bool show_annotation_ = false;
   bool show_setting_link_ = false;
@@ -179,13 +179,13 @@ class PersonalInfoSuggesterTest : public testing::Test {
   autofill::TestAutofillClient autofill_client_;
   std::unique_ptr<autofill::TestPersonalDataManager> personal_data_;
 
-  const base::string16 email_ = base::UTF8ToUTF16("johnwayne@me.xyz");
-  const base::string16 first_name_ = base::UTF8ToUTF16("John");
-  const base::string16 last_name_ = base::UTF8ToUTF16("Wayne");
-  const base::string16 full_name_ = base::UTF8ToUTF16("John Wayne");
-  const base::string16 address_ =
+  const std::u16string email_ = base::UTF8ToUTF16("johnwayne@me.xyz");
+  const std::u16string first_name_ = base::UTF8ToUTF16("John");
+  const std::u16string last_name_ = base::UTF8ToUTF16("Wayne");
+  const std::u16string full_name_ = base::UTF8ToUTF16("John Wayne");
+  const std::u16string address_ =
       base::UTF8ToUTF16("1 Dream Road, Hollywood, CA 12345");
-  const base::string16 phone_number_ = base::UTF8ToUTF16("16505678910");
+  const std::u16string phone_number_ = base::UTF8ToUTF16("16505678910");
 };
 
 TEST_F(PersonalInfoSuggesterTest, SuggestEmail) {

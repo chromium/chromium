@@ -58,7 +58,7 @@ std::pair<OpenWithMenu::HandlerMap, int> BuildHandlersMap(size_t num_apps) {
       CreateLinkHandlerInfo(num_apps));
 }
 
-base::string16 GetTitle(size_t i) {
+std::u16string GetTitle(size_t i) {
   return l10n_util::GetStringFUTF16(
       IDS_CONTENT_CONTEXT_OPEN_WITH_APP,
       base::UTF8ToUTF16(base::StringPrintf("App %" PRIuS, i)));

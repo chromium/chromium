@@ -160,7 +160,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneSharedModulesOnUninstall) {
   EXPECT_TRUE(InstallExtension(importing_extension.get(), false));
 
   // Uninstall the extension that imports our module.
-  base::string16 error;
+  std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
                                 extensions::UNINSTALL_REASON_FOR_TESTING,
                                 &error);
@@ -297,7 +297,7 @@ TEST_F(SharedModuleServiceUnitTest, PruneMultipleSharedModules) {
   EXPECT_TRUE(InstallExtension(importing_extension.get(), false));
 
   // Uninstall the extension that imports our modules.
-  base::string16 error;
+  std::u16string error;
   service()->UninstallExtension(importing_extension->id(),
                                 extensions::UNINSTALL_REASON_FOR_TESTING,
                                 &error);

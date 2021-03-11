@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverridenDSEPersists) {
                        TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
 
   std::string new_tab_url_ext = ext_turl.new_tab_url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(base::string16()),
+      TemplateURLRef::SearchTermsArgs(std::u16string()),
       UIThreadSearchTermsData());
 
   EXPECT_EQ(new_tab_url_ext, search::GetNewTabPageURL(profile).spec());

@@ -50,7 +50,7 @@ class DeprecationNotificationController {
 
   // Show a shortcut deprecation notification with the given |message_body|.
   void ShowNotification(const std::string& id,
-                        const base::string16& message_body);
+                        const std::u16string& message_body);
 
   // Returns whether to show the deprecation notice for |key_code|.
   bool ShouldShowAltBasedDeprecationNotification(ui::KeyboardCode key_code);

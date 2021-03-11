@@ -33,7 +33,7 @@ class RegisterProtocolHandlerPermissionRequest
  private:
   // permissions::PermissionRequest:
   permissions::RequestType GetRequestType() const override;
-  base::string16 GetMessageTextFragment() const override;
+  std::u16string GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;

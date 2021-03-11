@@ -108,13 +108,13 @@ class MockPromptProxy {
   bool did_succeed() const { return !extension_id_.empty(); }
   const std::string& extension_id() { return extension_id_; }
   bool confirmation_requested() const { return confirmation_requested_; }
-  const base::string16& error() const { return error_; }
+  const std::u16string& error() const { return error_; }
 
   void set_extension_id(const std::string& id) { extension_id_ = id; }
   void set_confirmation_requested(bool requested) {
     confirmation_requested_ = requested;
   }
-  void set_error(const base::string16& error) { error_ = error; }
+  void set_error(const std::u16string& error) { error_ = error; }
 
   std::unique_ptr<ExtensionInstallPrompt> CreatePrompt();
 
@@ -125,7 +125,7 @@ class MockPromptProxy {
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
   std::string extension_id_;
-  base::string16 error_;
+  std::u16string error_;
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm;
 
@@ -228,7 +228,7 @@ class ManagementPolicyMock : public extensions::ManagementPolicy::Provider {
   }
 
   bool UserMayLoad(const Extension* extension,
-                   base::string16* error) const override {
+                   std::u16string* error) const override {
     if (error)
       *error = base::UTF8ToUTF16("Dummy error message");
     return false;
@@ -624,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
     EXPECT_EQ(kTestData[i], mock_prompt->confirmation_requested()) <<
         kTestData[i];
     if (kTestData[i]) {
-      EXPECT_EQ(base::string16(), mock_prompt->error()) << kTestData[i];
+      EXPECT_EQ(std::u16string(), mock_prompt->error()) << kTestData[i];
     } else {
       EXPECT_EQ(l10n_util::GetStringUTF16(
           IDS_EXTENSION_INSTALL_DISALLOWED_ON_SITE),

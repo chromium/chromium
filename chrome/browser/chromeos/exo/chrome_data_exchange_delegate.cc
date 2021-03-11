@@ -99,7 +99,7 @@ void SendArcUrls(exo::DataExchangeDelegate::SendDataCallback callback,
     lines.push_back(url.spec());
   }
   // Arc requires UTF16 for data.
-  base::string16 data =
+  std::u16string data =
       base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
   std::move(callback).Run(base::RefCountedString16::TakeString(&data));
 }
@@ -256,7 +256,7 @@ void ShareAndSend(ui::EndpointType target,
   std::string joined = base::JoinString(lines_to_send, kUriListSeparator);
   scoped_refptr<base::RefCountedMemory> data;
   if (is_arc) {
-    base::string16 utf16 = base::UTF8ToUTF16(joined);
+    std::u16string utf16 = base::UTF8ToUTF16(joined);
     data = base::RefCountedString16::TakeString(&utf16);
   } else {
     data = base::RefCountedString::TakeString(&joined);
@@ -389,7 +389,7 @@ base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
   }
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(
-      std::unordered_map<base::string16, base::string16>(
+      std::unordered_map<std::u16string, std::u16string>(
           {{kFilesAppMimeTag, kFilesAppTagExo},
            {kFilesAppMimeSources, base::UTF8ToUTF16(base::JoinString(
                                       filenames, kFilesAppSeparator))}}),
@@ -412,7 +412,7 @@ ChromeDataExchangeDelegate::ParseClipboardFilenamesPickle(
   }
 
   const ui::DataTransferEndpoint data_dst(target);
-  base::string16 file_system_url_list;
+  std::u16string file_system_url_list;
   data.ReadCustomData(ui::ClipboardBuffer::kCopyPaste, kFilesAppMimeSources,
                       &data_dst, &file_system_url_list);
   if (file_system_url_list.empty())

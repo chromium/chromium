@@ -55,7 +55,7 @@ class ChromeWebViewPermissionHelperDelegate
  private:
 #if BUILDFLAG(ENABLE_PLUGINS)
   // chrome::mojom::PluginAuthHost methods.
-  void BlockedUnauthorizedPlugin(const base::string16& name,
+  void BlockedUnauthorizedPlugin(const std::u16string& name,
                                  const std::string& identifier) override;
 
   content::WebContentsFrameReceiverSet<chrome::mojom::PluginAuthHost>

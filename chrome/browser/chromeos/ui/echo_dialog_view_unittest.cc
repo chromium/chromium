@@ -32,7 +32,7 @@ class TestEchoDialogListener : public EchoDialogListener {
   TestEchoDialogListener& operator=(const TestEchoDialogListener&) = delete;
 };
 
-bool IsLabelWithText(const views::View* view, const base::string16& text) {
+bool IsLabelWithText(const views::View* view, const std::u16string& text) {
   const char* class_name = view->GetClassName();
   if (!strcmp(class_name, "Label")) {
     auto* label = static_cast<const views::Label*>(view);
@@ -45,7 +45,7 @@ bool IsLabelWithText(const views::View* view, const base::string16& text) {
   return false;
 }
 
-views::View* FindLabelWithText(views::View* root, const base::string16& text) {
+views::View* FindLabelWithText(views::View* root, const std::u16string& text) {
   if (IsLabelWithText(root, text))
     return root;
   for (auto* child : root->children()) {

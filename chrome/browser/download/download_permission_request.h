@@ -26,9 +26,9 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
   // permissions::PermissionRequest:
   permissions::RequestType GetRequestType() const override;
 #if defined(OS_ANDROID)
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
 #endif
-  base::string16 GetMessageTextFragment() const override;
+  std::u16string GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
   void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;

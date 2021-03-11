@@ -52,8 +52,8 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
   HungRendererInfoBarDelegate* AsHungRendererInfoBarDelegate() override;
   int GetIconId() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   bool Cancel() override;
 

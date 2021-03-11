@@ -287,7 +287,7 @@ class CaptivePortalDialogDelegate
     return ui::ModalType::MODAL_TYPE_SYSTEM;
   }
 
-  base::string16 GetDialogTitle() const override { return base::string16(); }
+  std::u16string GetDialogTitle() const override { return std::u16string(); }
 
   GURL GetDialogContentURL() const override { return GURL(); }
 
@@ -472,8 +472,8 @@ ui::ModalType OobeUIDialogDelegate::GetDialogModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-base::string16 OobeUIDialogDelegate::GetDialogTitle() const {
-  return base::string16();
+std::u16string OobeUIDialogDelegate::GetDialogTitle() const {
+  return std::u16string();
 }
 
 GURL OobeUIDialogDelegate::GetDialogContentURL() const {

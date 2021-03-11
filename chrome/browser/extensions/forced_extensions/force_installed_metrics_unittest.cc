@@ -593,11 +593,11 @@ TEST_F(ForceInstalledMetricsTest,
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId1,
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_FILE_NOT_READABLE,
-                      base::string16()));
+                      std::u16string()));
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId2,
       CrxInstallError(SandboxedUnpackerFailureReason::UNZIP_FAILED,
-                      base::string16()));
+                      std::u16string()));
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
@@ -619,7 +619,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidFromCache) {
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId1,
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
-                      base::string16()));
+                      std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
       kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
   registry()->AddEnabled(ext2.get());
@@ -645,7 +645,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsCrxHeaderInvalidNotFromCache) {
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId1,
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
-                      base::string16()));
+                      std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
       kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
   registry()->AddEnabled(ext2.get());
@@ -672,7 +672,7 @@ TEST_F(ForceInstalledMetricsTest,
   install_stage_tracker()->ReportSandboxedUnpackerFailureReason(
       kExtensionId1,
       CrxInstallError(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID,
-                      base::string16()));
+                      std::u16string()));
   scoped_refptr<const Extension> ext2 = CreateNewExtension(
       kExtensionName2, kExtensionId2, ExtensionStatus::kPending);
   registry()->AddEnabled(ext2.get());

@@ -876,9 +876,9 @@ class DownloadTest : public InProcessBrowserTest {
     // TODO(ahendrickson) -- |expected_title_in_progress| and
     // |expected_title_finished| need to be checked.
     base::FilePath filename = base::FilePath::FromUTF8Unsafe(url.path());
-    base::string16 expected_title_in_progress(
+    std::u16string expected_title_in_progress(
         base::ASCIIToUTF16(partial_indication) + filename.LossyDisplayName());
-    base::string16 expected_title_finished(
+    std::u16string expected_title_finished(
         base::ASCIIToUTF16(total_indication) + filename.LossyDisplayName());
 
     // Download a partial web page in a background tab and wait.
@@ -4543,8 +4543,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
 
   // Clicking the <a download> in the iframe should navigate the iframe,
   // not the main frame.
-  base::string16 expected_title(base::UTF8ToUTF16("Loaded as iframe"));
-  base::string16 failed_title(base::UTF8ToUTF16("Loaded as main frame"));
+  std::u16string expected_title(base::UTF8ToUTF16("Loaded as iframe"));
+  std::u16string failed_title(base::UTF8ToUTF16("Loaded as main frame"));
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(failed_title);
   render_frame_host->ExecuteJavaScriptForTests(base::ASCIIToUTF16("runTest();"),

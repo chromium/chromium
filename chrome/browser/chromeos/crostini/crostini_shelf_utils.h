@@ -40,7 +40,7 @@ bool IsCrostiniShelfAppId(const Profile* profile,
                           base::StringPiece shelf_app_id);
 
 // Returns the title for the specified app.
-base::string16 GetCrostiniShelfTitle(base::StringPiece shelf_app_id);
+std::u16string GetCrostiniShelfTitle(base::StringPiece shelf_app_id);
 
 }  // namespace crostini
 

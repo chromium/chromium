@@ -63,7 +63,7 @@ class VersionUpdater : public UpdateEngineClient::Observer,
     // True if VersionUpdater in such a state that progress is not available or
     // applicable (e.g. checking for updates)
     bool progress_unavailable = true;
-    base::string16 progress_message = base::string16();
+    std::u16string progress_message = std::u16string();
     // Percent of update progress, between 0 and 100.
     int progress = 0;
 

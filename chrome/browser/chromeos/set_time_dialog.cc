@@ -39,7 +39,7 @@ bool SetTimeDialog::ShouldShowTimezone() {
 
 SetTimeDialog::SetTimeDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUISetTimeURL),
-                              base::string16() /* title */) {}
+                              std::u16string() /* title */) {}
 
 SetTimeDialog::~SetTimeDialog() = default;
 

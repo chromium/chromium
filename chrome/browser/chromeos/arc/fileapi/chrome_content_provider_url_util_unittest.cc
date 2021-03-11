@@ -28,7 +28,7 @@ TEST(ChromeContentProviderUrlUtilTest, EncodeAndDecode) {
     EXPECT_EQ(original, decoded);
   }
   {
-    const base::string16 utf16_string = {
+    const std::u16string utf16_string = {
         0x307b,  // HIRAGANA_LETTER_HO
         0x3052,  // HIRAGANA_LETTER_GE
     };

@@ -65,7 +65,7 @@ ui::ModalType NetworkPortalWebDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 NetworkPortalWebDialog::GetDialogTitle() const {
+std::u16string NetworkPortalWebDialog::GetDialogTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_CAPTIVE_PORTAL_AUTHORIZATION_DIALOG_NAME);
 }

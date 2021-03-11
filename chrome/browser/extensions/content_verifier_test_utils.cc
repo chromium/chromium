@@ -72,12 +72,12 @@ std::string ForceInstallProvider::GetDebugPolicyProviderName() const {
 }
 
 bool ForceInstallProvider::UserMayModifySettings(const Extension* extension,
-                                                 base::string16* error) const {
+                                                 std::u16string* error) const {
   return extension->id() != id_;
 }
 
 bool ForceInstallProvider::MustRemainEnabled(const Extension* extension,
-                                             base::string16* error) const {
+                                             std::u16string* error) const {
   return extension->id() == id_;
 }
 

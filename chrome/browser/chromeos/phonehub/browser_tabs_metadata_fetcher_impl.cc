@@ -48,7 +48,7 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
       if (!tab_url.is_valid())
         continue;
 
-      const base::string16& title = current_navigation.title();
+      const std::u16string& title = current_navigation.title();
       const base::Time last_accessed_timestamp = tab->timestamp;
       browser_tab_metadata.emplace_back(tab_url, title, last_accessed_timestamp,
                                         gfx::Image());

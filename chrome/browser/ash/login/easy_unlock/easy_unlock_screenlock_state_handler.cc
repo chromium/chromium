@@ -268,7 +268,7 @@ void EasyUnlockScreenlockStateHandler::ShowHardlockUI() {
   if (existing_auth_type != proximity_auth::mojom::AuthType::OFFLINE_PASSWORD) {
     screenlock_bridge_->lock_handler()->SetAuthType(
         account_id_, proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
-        base::string16());
+        std::u16string());
   }
 
   if (hardlock_state_ == NO_PAIRING) {
@@ -293,8 +293,8 @@ void EasyUnlockScreenlockStateHandler::ShowHardlockUI() {
         proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_HARDLOCKED);
   }
 
-  base::string16 device_name = GetDeviceName();
-  base::string16 tooltip;
+  std::u16string device_name = GetDeviceName();
+  std::u16string tooltip;
   switch (hardlock_state_) {
     case USER_HARDLOCK:
       tooltip = l10n_util::GetStringFUTF16(
@@ -344,7 +344,7 @@ void EasyUnlockScreenlockStateHandler::ShowHardlockUI() {
 void EasyUnlockScreenlockStateHandler::UpdateTooltipOptions(
     proximity_auth::ScreenlockBridge::UserPodCustomIconOptions* icon_options) {
   size_t resource_id = 0;
-  base::string16 device_name;
+  std::u16string device_name;
   resource_id = GetTooltipResourceId(state_);
   if (TooltipContainsDeviceType(state_))
     device_name = GetDeviceName();
@@ -352,7 +352,7 @@ void EasyUnlockScreenlockStateHandler::UpdateTooltipOptions(
   if (!resource_id)
     return;
 
-  base::string16 tooltip;
+  std::u16string tooltip;
   if (device_name.empty()) {
     tooltip = l10n_util::GetStringUTF16(resource_id);
   } else {
@@ -366,7 +366,7 @@ void EasyUnlockScreenlockStateHandler::UpdateTooltipOptions(
   icon_options->SetTooltip(tooltip, autoshow_tooltip);
 }
 
-base::string16 EasyUnlockScreenlockStateHandler::GetDeviceName() {
+std::u16string EasyUnlockScreenlockStateHandler::GetDeviceName() {
   return ui::GetChromeOSDeviceName();
 }
 
@@ -391,7 +391,7 @@ void EasyUnlockScreenlockStateHandler::UpdateScreenlockAuthType() {
              proximity_auth::mojom::AuthType::OFFLINE_PASSWORD) {
     screenlock_bridge_->lock_handler()->SetAuthType(
         account_id_, proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
-        base::string16());
+        std::u16string());
   }
 }
 

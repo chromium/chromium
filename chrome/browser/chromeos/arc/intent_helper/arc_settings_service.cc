@@ -650,7 +650,7 @@ void ArcSettingsServiceImpl::SyncSwitchAccessEnabled() const {
 
 void ArcSettingsServiceImpl::SyncTimeZone() const {
   TimezoneSettings* timezone_settings = TimezoneSettings::GetInstance();
-  base::string16 timezoneID = timezone_settings->GetCurrentTimezoneID();
+  std::u16string timezoneID = timezone_settings->GetCurrentTimezoneID();
   base::DictionaryValue extras;
   extras.SetString("olsonTimeZone", timezoneID);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_TIME_ZONE", extras);

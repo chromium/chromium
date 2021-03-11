@@ -312,7 +312,7 @@ ACMatchClassifications StyleTypesToACMatchClassifications(
     const omnibox::SuggestResult &suggestion) {
   ACMatchClassifications match_classifications;
   if (suggestion.description_styles) {
-    base::string16 description = base::UTF8ToUTF16(suggestion.description);
+    std::u16string description = base::UTF8ToUTF16(suggestion.description);
     std::vector<int> styles(description.length(), 0);
 
     for (const omnibox::MatchClassification& style :
@@ -359,7 +359,7 @@ ACMatchClassifications StyleTypesToACMatchClassifications(
 void ApplyDefaultSuggestionForExtensionKeyword(
     Profile* profile,
     const TemplateURL* keyword,
-    const base::string16& remaining_input,
+    const std::u16string& remaining_input,
     AutocompleteMatch* match) {
   DCHECK(keyword->type() == TemplateURL::OMNIBOX_API_EXTENSION);
 
@@ -368,18 +368,18 @@ void ApplyDefaultSuggestionForExtensionKeyword(
   if (!suggestion || suggestion->description.empty())
     return;  // fall back to the universal default
 
-  const base::string16 kPlaceholderText(base::ASCIIToUTF16("%s"));
-  const base::string16 kReplacementText(base::ASCIIToUTF16("<input>"));
+  const std::u16string kPlaceholderText(base::ASCIIToUTF16("%s"));
+  const std::u16string kReplacementText(base::ASCIIToUTF16("<input>"));
 
-  base::string16 description = base::UTF8ToUTF16(suggestion->description);
+  std::u16string description = base::UTF8ToUTF16(suggestion->description);
   ACMatchClassifications& description_styles = match->contents_class;
   description_styles = StyleTypesToACMatchClassifications(*suggestion);
 
   // Replace "%s" with the user's input and adjust the style offsets to the
   // new length of the description.
   size_t placeholder(description.find(kPlaceholderText, 0));
-  if (placeholder != base::string16::npos) {
-    base::string16 replacement =
+  if (placeholder != std::u16string::npos) {
+    std::u16string replacement =
         remaining_input.empty() ? kReplacementText : remaining_input;
     description.replace(placeholder, kPlaceholderText.length(), replacement);
 

@@ -52,7 +52,7 @@ using ::testing::Values;
 
 namespace {
 
-// GMock's HasSubstr does not support base::string16. Hence redefine it as a
+// GMock's HasSubstr does not support std::u16string. Hence redefine it as a
 // generic matcher.
 MATCHER_P(HasSubstr, str, "") {
   return arg.find(str) != arg.npos;
@@ -66,12 +66,13 @@ class MockUpdateCheckDelegate : public UpdateCheckDelegate {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD1(OnUpdateCheckComplete, void(const base::string16&));
-  MOCK_METHOD2(OnUpgradeProgress, void(int, const base::string16&));
-  MOCK_METHOD1(OnUpgradeComplete, void(const base::string16&));
-  MOCK_METHOD3(OnError, void(GoogleUpdateErrorCode,
-                             const base::string16&,
-                             const base::string16&));
+  MOCK_METHOD1(OnUpdateCheckComplete, void(const std::u16string&));
+  MOCK_METHOD2(OnUpgradeProgress, void(int, const std::u16string&));
+  MOCK_METHOD1(OnUpgradeComplete, void(const std::u16string&));
+  MOCK_METHOD3(OnError,
+               void(GoogleUpdateErrorCode,
+                    const std::u16string&,
+                    const std::u16string&));
 
  private:
   base::WeakPtrFactory<UpdateCheckDelegate> weak_ptr_factory_;
@@ -99,7 +100,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
 
   // Adds an expectation for get_completionMessage that will return the given
   // message any number of times.
-  void ExpectCompletionMessage(const base::string16& completion_message) {
+  void ExpectCompletionMessage(const std::u16string& completion_message) {
     completion_message_ = completion_message;
     EXPECT_CALL(*this, get_completionMessage(_))
         .WillRepeatedly(
@@ -113,7 +114,7 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
 
   // Adds an expectation for get_availableVersion that will return the given
   // version any number of times.
-  void ExpectAvailableVersion(const base::string16& available_version) {
+  void ExpectAvailableVersion(const std::u16string& available_version) {
     available_version_ = available_version;
     EXPECT_CALL(*this, get_availableVersion(_))
         .WillRepeatedly(
@@ -194,8 +195,8 @@ class MockCurrentState : public CComObjectRootEx<CComSingleThreadModel>,
                                      VARIANT *, EXCEPINFO *, UINT *));
 
  private:
-  base::string16 completion_message_;
-  base::string16 available_version_;
+  std::u16string completion_message_;
+  std::u16string available_version_;
 
   DISALLOW_COPY_AND_ASSIGN(MockCurrentState);
 };
@@ -268,7 +269,7 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
   // Adds a MockCurrentState to the back of the sequence to be returned by the
   // mock IAppWeb for an ERROR state.
   void PushErrorState(LONG error_code,
-                      const base::string16& completion_message,
+                      const std::u16string& completion_message,
                       LONG installer_result_code) {
     CComObject<MockCurrentState>* mock_state = MakeNextState(STATE_ERROR);
     EXPECT_CALL(*mock_state, get_errorCode(_))
@@ -283,7 +284,7 @@ class MockApp : public CComObjectRootEx<CComSingleThreadModel>, public IAppWeb {
 
   // Adds a MockCurrentState to the back of the sequence to be returned by the
   // mock IAppWeb for an UPDATE_AVAILABLE state.
-  void PushUpdateAvailableState(const base::string16& new_version) {
+  void PushUpdateAvailableState(const std::u16string& new_version) {
     MakeNextState(STATE_UPDATE_AVAILABLE)->ExpectAvailableVersion(new_version);
   }
 
@@ -660,7 +661,7 @@ class GoogleUpdateWinTest : public ::testing::TestWithParam<bool> {
   StrictMock<MockGoogleUpdateFactory> mock_google_update_factory_;
 
   // The new version that the fixture will pretend is available.
-  base::string16 new_version_;
+  std::u16string new_version_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GoogleUpdateWinTest);
@@ -904,7 +905,7 @@ TEST_P(GoogleUpdateWinTest, UpdateInstalled) {
 
 // Test a failed upgrade where Google Update reports that the installer failed.
 TEST_P(GoogleUpdateWinTest, UpdateFailed) {
-  const base::string16 error(u"It didn't work.");
+  const std::u16string error(u"It didn't work.");
   static const HRESULT GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
   static const int kInstallerError = 12;
 

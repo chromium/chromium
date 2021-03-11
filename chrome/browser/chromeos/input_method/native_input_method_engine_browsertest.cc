@@ -76,7 +76,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
-                                const base::string16& text,
+                                const std::u16string& text,
                                 int cursor_pos,
                                 int anchor_pos,
                                 int offset) override {}
@@ -360,8 +360,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my email is ");
-  const base::string16 expected_result_text =
+  const std::u16string prefix_text = base::UTF8ToUTF16("my email is ");
+  const std::u16string expected_result_text =
       base::UTF8ToUTF16("my email is johnwayne@me.xyz");
 
   helper.GetTextInputClient()->InsertText(
@@ -403,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my email is ");
-  const base::string16 expected_result_text =
+  const std::u16string prefix_text = base::UTF8ToUTF16("my email is ");
+  const std::u16string expected_result_text =
       base::UTF8ToUTF16("my email is john@abc.com");
 
   helper.GetTextInputClient()->InsertText(
@@ -449,8 +449,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
 
-  const base::string16 prefix_text = base::UTF8ToUTF16("my name is ");
-  const base::string16 expected_result_text =
+  const std::u16string prefix_text = base::UTF8ToUTF16("my name is ");
+  const std::u16string expected_result_text =
       base::UTF8ToUTF16("my name is John Wayne");
 
   helper.GetTextInputClient()->InsertText(
@@ -525,8 +525,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
-  const base::string16 expected_result_text = base::UTF8ToUTF16("happy 😀");
+  const std::u16string prefix_text = base::UTF8ToUTF16("happy ");
+  const std::u16string expected_result_text = base::UTF8ToUTF16("happy 😀");
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -558,8 +558,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("happy ");
-  const base::string16 expected_result_text = base::UTF8ToUTF16("happy a");
+  const std::u16string prefix_text = base::UTF8ToUTF16("happy ");
+  const std::u16string expected_result_text = base::UTF8ToUTF16("happy a");
 
   helper.GetTextInputClient()->InsertText(
       prefix_text,
@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 prefix_text = base::UTF8ToUTF16("corrected ");
+  const std::u16string prefix_text = base::UTF8ToUTF16("corrected ");
   helper.GetTextInputClient()->InsertText(
       prefix_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -739,9 +739,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text =
+  const std::u16string corrected_text =
       base::UTF8ToUTF16("hello corrected world");
-  const base::string16 typed_text = base::UTF8ToUTF16("hello typed world");
+  const std::u16string typed_text = base::UTF8ToUTF16("hello typed world");
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -781,8 +781,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
-  const base::string16 typed_text = base::UTF8ToUTF16("typed");
+  const std::u16string corrected_text = base::UTF8ToUTF16("corrected");
+  const std::u16string typed_text = base::UTF8ToUTF16("typed");
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
@@ -822,8 +822,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
-  const base::string16 corrected_text = base::UTF8ToUTF16("corrected");
-  const base::string16 typed_text = base::UTF8ToUTF16("typed");
+  const std::u16string corrected_text = base::UTF8ToUTF16("corrected");
+  const std::u16string typed_text = base::UTF8ToUTF16("typed");
   helper.GetTextInputClient()->InsertText(
       corrected_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);

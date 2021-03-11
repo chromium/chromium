@@ -127,7 +127,7 @@ void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
 //
 // This is a long way to say "UTF-16 is hard to hash, let's just convert
 // to UTF-8 and hash that", which avoids all of these issues.
-void MD5UpdateString16(base::MD5Context* ctx, const base::string16& str) {
+void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
   std::string tmp = base::UTF16ToUTF8(str);
   base::MD5Update(ctx, base::StringPiece(tmp.data(), tmp.size()));
 }
@@ -234,16 +234,16 @@ Uri UsbPrinterUri(const UsbDeviceInfo& device_info) {
 
 }  // namespace
 
-base::string16 GetManufacturerName(const UsbDeviceInfo& device_info) {
-  return device_info.manufacturer_name.value_or(base::string16());
+std::u16string GetManufacturerName(const UsbDeviceInfo& device_info) {
+  return device_info.manufacturer_name.value_or(std::u16string());
 }
 
-base::string16 GetProductName(const UsbDeviceInfo& device_info) {
-  return device_info.product_name.value_or(base::string16());
+std::u16string GetProductName(const UsbDeviceInfo& device_info) {
+  return device_info.product_name.value_or(std::u16string());
 }
 
-base::string16 GetSerialNumber(const UsbDeviceInfo& device_info) {
-  return device_info.serial_number.value_or(base::string16());
+std::u16string GetSerialNumber(const UsbDeviceInfo& device_info) {
+  return device_info.serial_number.value_or(std::u16string());
 }
 
 bool UsbDeviceIsPrinter(const UsbDeviceInfo& device_info) {

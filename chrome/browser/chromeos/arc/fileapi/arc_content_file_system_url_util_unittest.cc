@@ -51,7 +51,7 @@ TEST(ArcContentFileSystemUrlUtilTest, EncodeAndDecodeExternalFileUrl) {
     EXPECT_EQ(src, result);
   }
   {
-    base::string16 utf16_string = {
+    std::u16string utf16_string = {
         0x307b,  // HIRAGANA_LETTER_HO
         0x3052,  // HIRAGANA_LETTER_GE
     };

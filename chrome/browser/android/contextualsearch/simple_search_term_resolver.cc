@@ -123,7 +123,7 @@ void SimpleSearchTermResolver::OnSearchTermResolutionResponse(
 
 void SimpleSearchTermResolver::OnTextSurroundingSelectionAvailable(
     const std::string& encoding,
-    const base::string16& surrounding_text,
+    const std::u16string& surrounding_text,
     size_t start_offset,
     size_t end_offset) {
   // For now we ignore the callback -- shouldn't happen anyway.

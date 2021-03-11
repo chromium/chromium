@@ -264,7 +264,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // extension).
   bool UninstallExtension(const std::string& extension_id,
                           UninstallReason reason,
-                          base::string16* error);
+                          std::u16string* error);
 
   // Enables the extension. If the extension is already enabled, does
   // nothing.

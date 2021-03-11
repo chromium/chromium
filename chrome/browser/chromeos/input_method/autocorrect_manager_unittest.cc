@@ -58,7 +58,7 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
   MOCK_METHOD(bool,
               AcceptSuggestionCandidate,
               (int context_id,
-               const base::string16& candidate,
+               const std::u16string& candidate,
                std::string* error),
               (override));
   MOCK_METHOD(bool,

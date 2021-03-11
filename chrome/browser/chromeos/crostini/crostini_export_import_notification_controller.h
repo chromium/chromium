@@ -78,7 +78,7 @@ class CrostiniExportImportNotificationController
   void SetStatusDoneUI() override;
   void SetStatusCancelledUI() override;
   void SetStatusFailedWithMessageUI(Status status,
-                                    const base::string16& message) override;
+                                    const std::u16string& message) override;
 
   void on_notification_closed() { hidden_ = true; }
 

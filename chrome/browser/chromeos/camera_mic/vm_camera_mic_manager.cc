@@ -267,7 +267,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         /*title=*/
         l10n_util::GetStringFUTF16(message_id,
                                    l10n_util::GetStringUTF16(name_id_)),
-        /*message=*/base::string16(),
+        /*message=*/std::u16string(),
         /*icon=*/gfx::Image(),
         /*display_source=*/
         l10n_util::GetStringUTF16(IDS_CHROME_OS_NOTIFICATION_SOURCE),
@@ -299,7 +299,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   //
   // This open the settings page if the button is clicked on the notification.
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override {
+             const base::Optional<std::u16string>& reply) override {
     switch (vm_type_) {
       case VmType::kCrostiniVm:
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

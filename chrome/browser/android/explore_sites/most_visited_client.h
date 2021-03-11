@@ -20,7 +20,7 @@ class MostVisitedClient
   ~MostVisitedClient() override;
 
   GURL GetExploreSitesUrl() const override;
-  base::string16 GetExploreSitesTitle() const override;
+  std::u16string GetExploreSitesTitle() const override;
 
  private:
   MostVisitedClient();

@@ -62,11 +62,11 @@ void OnClick(ClickCallback click_callback,
 void Show(Profile* profile,
           const std::string& principal_name,
           ClickCallback click_callback) {
-  const base::string16 kTitle =
+  const std::u16string kTitle =
       l10n_util::GetStringUTF16(IDS_KERBEROS_TICKET_EXPIRY_TITLE);
-  const base::string16 kBody = l10n_util::GetStringFUTF16(
+  const std::u16string kBody = l10n_util::GetStringFUTF16(
       IDS_KERBEROS_TICKET_EXPIRY_BODY, base::UTF8ToUTF16(principal_name));
-  const base::string16 kButton =
+  const std::u16string kButton =
       l10n_util::GetStringUTF16(IDS_KERBEROS_TICKET_EXPIRY_BUTTON);
 
   // For histogram reporting.
@@ -76,7 +76,7 @@ void Show(Profile* profile,
   const GURL kEmptyOriginUrl;
 
   // Empty display source to show OS name as source.
-  const base::string16 kEmptyDisplaySource;
+  const std::u16string kEmptyDisplaySource;
 
   // Office building.
   const gfx::VectorIcon& kIcon = vector_icons::kBusinessIcon;

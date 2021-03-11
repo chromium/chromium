@@ -53,7 +53,7 @@ ChromeWebViewPermissionHelperDelegate::~ChromeWebViewPermissionHelperDelegate()
 #if BUILDFLAG(ENABLE_PLUGINS)
 
 void ChromeWebViewPermissionHelperDelegate::BlockedUnauthorizedPlugin(
-    const base::string16& name,
+    const std::u16string& name,
     const std::string& identifier) {
   const char kPluginName[] = "name";
   const char kPluginIdentifier[] = "identifier";
