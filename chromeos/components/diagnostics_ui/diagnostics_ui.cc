@@ -47,6 +47,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"batteryHealthText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT},
       {"batteryHealthTooltipText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT},
       {"batteryTitle", IDS_DIAGNOSTICS_BATTERY_TITLE},
+      {"boardAndVersionInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
       {"chargeTestResultText", IDS_CHARGE_TEST_RESULT},
       {"cpuCacheRoutineText", IDS_DIAGNOSTICS_CPU_CACHE_ROUTINE_TEXT},
       {"cpuChipText", IDS_DIAGNOSTICS_CPU_CHIP_TEXT},
@@ -70,7 +71,6 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"currentNowTooltipText", IDS_DIAGNOSTICS_CURRENT_NOW_TOOLTIP_TEXT},
       {"cycleCount", IDS_DIAGNOSTICS_CYCLE_COUNT_LABEL},
       {"cycleCountTooltipText", IDS_DIAGNOSTICS_CYCLE_COUNT_TOOLTIP_TEXT},
-      {"deviceInfo", IDS_DIAGNOSTICS_DEVICE_INFO_TEXT},
       {"diagnosticsTitle", IDS_DIAGNOSTICS_TITLE},
       {"dischargeTestResultText", IDS_DISCHARGE_TEST_RESULT},
       {"hideReportText", IDS_DIAGNOSTICS_HIDE_REPORT_TEXT},
@@ -110,6 +110,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"testStoppedBadgeText", IDS_DIAGNOSTICS_TEST_STOPPED_BADGE_TEXT},
       {"testSuccess", IDS_DIAGNOSTICS_TEST_SUCCESS_TEXT},
       {"testSucceededBadgeText", IDS_DIAGNOSTICS_TEST_SUCCESS_BADGE_TEXT},
+      {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();

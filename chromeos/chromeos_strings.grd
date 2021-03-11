@@ -712,7 +712,10 @@ Try tapping the mic to ask me anything.
         Learn more
       </message>
       <message name="IDS_DIAGNOSTICS_DEVICE_INFO_TEXT" desc="The text that displays the device's name and milestone version.">
-        (<ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>)
+        <ph name="BOARD_NAME">$1<ex>Atlas</ex></ph>, version <ph name="MILESTONE_VERSION">$2<ex>88</ex></ph>
+      </message>
+      <message name="IDS_DIAGNOSTICS_VERSION_INFO_TEXT" desc="The text that displays the device's milestone version. Substring of 'Atlas, version 88'">
+        version <ph name="MILESTONE_VERSION">$1<ex>88</ex></ph>
       </message>
       <message name="IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT" desc="The tooltip that states that battery capacity declines with usage.">
         Battery capacity declines with usage

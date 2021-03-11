@@ -65,9 +65,23 @@ Polymer({
 
   /** @private */
   getDeviceInfo_() {
-    return loadTimeData.getStringF(
-        'deviceInfo', this.systemInfo_.boardName,
-        this.systemInfo_.versionInfo.milestoneVersion);
+    const marketingNameValid = !this.shouldHideMarketingName_();
+    const boardName = this.systemInfo_.boardName;
+    const milestoneVersion = this.systemInfo_.versionInfo.milestoneVersion;
+
+    if (!boardName && !marketingNameValid) {
+      const versionInfo =
+          loadTimeData.getStringF('versionInfo', milestoneVersion);
+      // Capitalize "v" in "version" if board and marketing name are missing.
+      return versionInfo[0].toUpperCase() + versionInfo.slice(1);
+    }
+
+    let deviceInfo = this.systemInfo_.boardName ?
+        loadTimeData.getStringF(
+            'boardAndVersionInfo', this.systemInfo_.boardName,
+            milestoneVersion) :
+        loadTimeData.getStringF('versionInfo', milestoneVersion);
+    return marketingNameValid ? `(${deviceInfo})` : deviceInfo;
   },
 
   /**
@@ -75,6 +89,7 @@ Polymer({
    * @return {boolean}
    */
   shouldHideMarketingName_() {
-    return this.systemInfo_.marketingName === 'TBD';
+    return this.systemInfo_.marketingName === 'TBD' ||
+        this.systemInfo_.marketingName === '';
   },
 });
