@@ -1,21 +1,26 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.33.0+
-Revision: 4ac9c6f755463a2321f84b0cb2d631e1828faedb
+Version: v1.36.1+
+Revision: 3ca079faadfcc1f111b6c9a3f3fb10f4b5c794ea
 Security Critical: yes
 
 Steps to upgrade to a new version of GRPC:
-1. Merge origin/grpc/master into eureka/master branch.
+1. Update ../../DEPS to pull origin/grpc/master.
+   NOTE: Tagged "official releases" do not work on the buildbots. The master
+   branch must be used.
 2. Update revision and version information in this file.
-4. Checkout GRPC submodules with: git submodule update --init
-5. Copy template/BUILD.chromium.gn.template to src/templates
-6. Rebuild BUILD.gn by running tools/buildgen/generate_projects.sh
-    (make sure mako_templates python module is installed in your system)
-   and then running gn format BUILD.gn. This will use the template in
-   templates/BUILD.chromium.gn.template to generate BUILD.chromium.gn file.
-4. Do:
-  mv third_party/grpc/src/BUILD.chromium.gn BUILD.gn
-6. Update plugin_register. Ensure xds_resolver and all lb_policies are
-disabled except first_pick.
-5. Run 'gn format --in-place BUILD.gn'
+3. Checkout GRPC submodules by running from the src/ directory:
+   git submodule update --init
+4. Copy template/BUILD.chromium.gn.template to src/templates.
+5. Rebuild BUILD.gn by running from the src/ directory:
+   tools/buildgen/generate_projects.sh
+    (make sure mako_templates python module is installed in your system using
+     command apt-get install python3-mako)
+   This will use the template in templates/BUILD.chromium.gn.template to
+   generate src/BUILD.chromium.gn file.
+6. Run: mv third_party/grpc/src/BUILD.chromium.gn third_party/grpc/BUILD.gn
+7. If the new gRPC version adds new dependencies, this may result in linker
+   errors when building due to some of the gRPC Plugins that have been manually
+   disabled. Manually remove these from the BUILD.gn file.
+8. Run: gn format --in-place BUILD.gn
