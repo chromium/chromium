@@ -60,19 +60,8 @@ class DriveModuleElement extends mixinBehaviors
    * @private
    */
   getImageSrc_(file) {
-    switch (file.type) {
-      case (drive.mojom.FileType.kDoc):
-        return 'modules/drive/icons/google_docs_logo.svg';
-      case (drive.mojom.FileType.kSheet):
-        return 'modules/drive/icons/google_sheets_logo.svg';
-      case (drive.mojom.FileType.kSlide):
-        return 'modules/drive/icons/google_slides_logo.svg';
-      default:
-        // TODO(crbug/1176982): Need to return an image
-        // in the case we don't know the type of
-        // drive item.
-        return '';
-    }
+    return 'https://drive-thirdparty.googleusercontent.com/128/type/' +
+        file.mimeType;
   }
 
   /** @private */

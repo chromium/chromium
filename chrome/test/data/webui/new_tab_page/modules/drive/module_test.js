@@ -28,21 +28,21 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           justificationText: 'Edited last week',
           title: 'Foo',
           id: '123',
-          type: drive.mojom.FileType.kDoc,
+          mimeType: 'application/vnd.google-apps.spreadsheet',
           url: {url: 'https://foo.com'},
         },
         {
           justificationText: 'Edited today',
           title: 'Bar',
           id: '234',
-          type: drive.mojom.FileType.kSheet,
+          mimeType: 'application/vnd.google-apps.document',
           url: {url: 'https://bar.com'},
         },
         {
           justificationText: 'Created today',
           title: 'Caz',
           id: '345',
-          type: drive.mojom.FileType.kOther,
+          mimeType: 'application/vnd.google-apps.presentation',
           url: {url: 'https://caz.com'},
         }
       ]
@@ -63,6 +63,15 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals(
         'Edited today',
         items[1].querySelector('.file-description').textContent);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.spreadsheet',
+        items[0].querySelector('img').autoSrc);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.document',
+        items[1].querySelector('img').autoSrc);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.presentation',
+        items[2].querySelector('img').autoSrc);
     const urls = module.shadowRoot.querySelectorAll('.file');
     assertEquals('https://foo.com/', urls[0].href);
     assertEquals('https://bar.com/', urls[1].href);
@@ -76,7 +85,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
                          justification: 'edited',
                          title: 'foo',
                          id: '123',
-                         type: drive.mojom.FileType.kDoc
+                         mimeType: 'application/vnd.google-apps.document',
                        }))
     }));
 

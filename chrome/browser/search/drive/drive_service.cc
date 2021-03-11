@@ -192,15 +192,7 @@ void DriveService::OnJsonParsed(
       }
       auto mojo_drive_doc = drive::mojom::File::New();
       mojo_drive_doc->title = *title;
-      if (*mime_type == "application/vnd.google-apps.document") {
-        mojo_drive_doc->type = drive::mojom::FileType::kDoc;
-      } else if (*mime_type == "application/vnd.google-apps.spreadsheet") {
-        mojo_drive_doc->type = drive::mojom::FileType::kSheet;
-      } else if (*mime_type == "application/vnd.google-apps.presentation") {
-        mojo_drive_doc->type = drive::mojom::FileType::kSlide;
-      } else {
-        mojo_drive_doc->type = drive::mojom::FileType::kOther;
-      }
+      mojo_drive_doc->mime_type = *mime_type;
       mojo_drive_doc->justification_text = justification_text;
       mojo_drive_doc->id = *id;
       mojo_drive_doc->url = GURL(*url);

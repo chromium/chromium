@@ -6,26 +6,16 @@ module drive.mojom;
 
 import "url/mojom/url.mojom";
 
-// The types of documents available within Google Drive.
-// TODO(crbug/1176927): Verify prioritized types from
-// Item Suggest.
-enum FileType {
-  kDoc,
-  kSlide,
-  kSheet,
-  kOther,
-};
-
 // A Google Drive File.
 struct File {
   // The ID of the Drive Item.
   string id;
   // Information on why the Drive Item was returned.
   string justification_text;
+  // The mime type of the Drive Item.
+  string mime_type;
   // The name of the Drive Item.
   string title;
-  // The type of the Drive Item.
-  FileType type;
   // The URL to navigate to the Drive Item.
   url.mojom.Url url;
 };

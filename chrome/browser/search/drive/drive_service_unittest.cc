@@ -66,7 +66,7 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
               "url":"https://google.com/foo",
               "driveItem": {
                 "title": "Foo foo",
-                "mimeType": "Foo foo foo"
+                "mimeType": "application/vnd.google-apps.spreadsheet"
               },
               "justification": {
                 "displayText": {
@@ -110,12 +110,14 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
 
   EXPECT_EQ(2u, actual_documents.size());
   EXPECT_EQ("Foo foo", actual_documents.at(0)->title);
-  EXPECT_EQ(drive::mojom::FileType::kOther, actual_documents.at(0)->type);
+  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
+            actual_documents.at(0)->mime_type);
   EXPECT_EQ("Foo foo", actual_documents.at(0)->justification_text);
   EXPECT_EQ("https://google.com/foo", actual_documents.at(0)->url.spec());
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
   EXPECT_EQ("123", actual_documents.at(1)->id);
-  EXPECT_EQ(drive::mojom::FileType::kDoc, actual_documents.at(1)->type);
+  EXPECT_EQ("application/vnd.google-apps.document",
+            actual_documents.at(1)->mime_type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
   EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->url.spec());
 }
@@ -195,19 +197,23 @@ TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
   EXPECT_EQ(1u, response3.size());
   EXPECT_EQ(1u, response4.size());
   EXPECT_EQ("Foo foo", response1.at(0)->title);
-  EXPECT_EQ(drive::mojom::FileType::kSheet, response1.at(0)->type);
+  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
+            response1.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response1.at(0)->justification_text);
   EXPECT_EQ("234", response1.at(0)->id);
   EXPECT_EQ("Foo foo", response2.at(0)->title);
-  EXPECT_EQ(drive::mojom::FileType::kSheet, response2.at(0)->type);
+  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
+            response2.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response2.at(0)->justification_text);
   EXPECT_EQ("234", response2.at(0)->id);
   EXPECT_EQ("Foo foo", response3.at(0)->title);
-  EXPECT_EQ(drive::mojom::FileType::kSheet, response3.at(0)->type);
+  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
+            response3.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response3.at(0)->justification_text);
   EXPECT_EQ("234", response3.at(0)->id);
   EXPECT_EQ("Foo foo", response4.at(0)->title);
-  EXPECT_EQ(drive::mojom::FileType::kSheet, response4.at(0)->type);
+  EXPECT_EQ("application/vnd.google-apps.spreadsheet",
+            response4.at(0)->mime_type);
   EXPECT_EQ("Foo foo", response4.at(0)->justification_text);
   EXPECT_EQ("234", response4.at(0)->id);
 }
