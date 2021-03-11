@@ -1338,24 +1338,53 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
   }
 }
 
+void HTMLElement::AdjustDirectionalityIfNeededAfterShadowRootChanged() {
+  DCHECK(IsShadowHost(this));
+  if (SelfOrAncestorHasDirAutoAttribute()) {
+    for (auto* element_to_adjust = this; element_to_adjust;
+         element_to_adjust = DynamicTo<HTMLElement>(
+             FlatTreeTraversal::ParentElement(*element_to_adjust))) {
+      if (ElementAffectsDirectionality(element_to_adjust)) {
+        element_to_adjust->CalculateAndAdjustAutoDirectionality(
+            element_to_adjust);
+        return;
+      }
+    }
+  } else if (!NeedsInheritDirectionalityFromParent()) {
+    UpdateDescendantDirectionality(CachedDirectionality());
+  }
+}
+
 void HTMLElement::AdjustCandidateDirectionalityForSlot(
-    HeapHashSet<Member<HTMLElement>> candidate_set) {
+    HeapHashSet<Member<Node>> candidate_set) {
   HeapHashSet<Member<HTMLElement>> directionality_set;
   // Transfer a candidate directionality set to |directionality_set| to avoid
   // the tree walk to the duplicated parent node for the directionality.
-  for (auto& element : candidate_set) {
-    if (!element->SelfOrAncestorHasDirAutoAttribute()) {
+  for (auto& node : candidate_set) {
+    Node* node_to_adjust = node.Get();
+    if (!node->SelfOrAncestorHasDirAutoAttribute()) {
+      auto* slot = node->AssignedSlot();
       auto* parent =
-          DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(*element));
-      if (parent && !parent->NeedsInheritDirectionalityFromParent() &&
-          element->NeedsInheritDirectionalityFromParent()) {
-        element->UpdateDirectionalityAndDescendant(
-            parent->CachedDirectionality());
+          DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(*node));
+      if (ElementAffectsDirectionality(node))
+        continue;
+      if (slot && slot->SelfOrAncestorHasDirAutoAttribute()) {
+        node_to_adjust = slot;
+      } else if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
+        node_to_adjust = parent;
+      } else {
+        if (ElementAffectsDirectionality(slot)) {
+          node->SetCachedDirectionality(slot->CachedDirectionality());
+        } else if (parent && !parent->NeedsInheritDirectionalityFromParent() &&
+                   node->NeedsInheritDirectionalityFromParent()) {
+          node->SetCachedDirectionality(parent->CachedDirectionality());
+        }
+        continue;
       }
-      continue;
     }
 
-    for (auto* element_to_adjust = element.Get(); element_to_adjust;
+    for (auto* element_to_adjust = DynamicTo<HTMLElement>(node_to_adjust);
+         element_to_adjust;
          element_to_adjust = DynamicTo<HTMLElement>(
              FlatTreeTraversal::ParentElement(*element_to_adjust))) {
       if (ElementAffectsDirectionality(element_to_adjust)) {
@@ -1373,14 +1402,6 @@ void HTMLElement::AdjustCandidateDirectionalityForSlot(
                                        style_change_reason::kPseudoClass));
     }
   }
-}
-
-void HTMLElement::AddCandidateDirectionalityForSlot() {
-  ShadowRoot* root = ShadowRootOfParent();
-  if (!root || !root->HasSlotAssignment())
-    return;
-
-  root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }
 
 Node::InsertionNotificationRequest HTMLElement::InsertedInto(

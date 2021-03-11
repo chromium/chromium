@@ -1127,6 +1127,8 @@ class CORE_EXPORT Node : public EventTarget {
   }
   ShadowRoot* GetSlotAssignmentRoot() const;
 
+  void AddCandidateDirectionalityForSlot();
+
   uint32_t node_flags_;
   Member<Node> parent_or_shadow_host_node_;
   Member<TreeScope> tree_scope_;

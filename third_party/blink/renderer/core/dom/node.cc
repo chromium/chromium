@@ -3292,8 +3292,15 @@ void Node::FlatTreeParentChanged() {
   // box may have changed.
   SetForceReattachLayoutTree();
 
-  if (auto* element = DynamicTo<HTMLElement>(this))
-    element->AddCandidateDirectionalityForSlot();
+  AddCandidateDirectionalityForSlot();
+}
+
+void Node::AddCandidateDirectionalityForSlot() {
+  ShadowRoot* root = ShadowRootOfParent();
+  if (!root || !root->HasSlotAssignment())
+    return;
+
+  root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }
 
 void Node::RemovedFromFlatTree() {

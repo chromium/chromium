@@ -153,12 +153,12 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 
-  void AddCandidateDirectionalityForSlot();
   static void AdjustCandidateDirectionalityForSlot(
-      HeapHashSet<Member<HTMLElement>> candidate_set);
+      HeapHashSet<Member<Node>> candidate_set);
   void UpdateDescendantHasDirAutoAttribute(bool has_dir_auto);
   void UpdateDirectionalityAndDescendant(TextDirection direction);
   void UpdateDescendantDirectionality(TextDirection direction);
+  void AdjustDirectionalityIfNeededAfterShadowRootChanged();
   void BeginParsingChildren() override;
 
  protected:
