@@ -27,7 +27,7 @@ def load(fp):
 
 def dumps(obj):
   ret = ''
-  for k, v in sorted(obj.iteritems()):
+  for k, v in sorted(obj.items()):
     ret += '%s = %s\n' % (k, str(v))
   return ret
 
