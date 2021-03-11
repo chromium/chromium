@@ -384,10 +384,6 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
 
   use_virtualized_gl_context_ |= task_executor_->ForceVirtualizedGLContexts();
 
-  // MailboxManagerSync synchronization correctness currently depends on having
-  // only a single context. See https://crbug.com/510243 for details.
-  use_virtualized_gl_context_ |= task_executor_->mailbox_manager()->UsesSync();
-
   use_virtualized_gl_context_ |=
       context_group_->feature_info()->workarounds().use_virtualized_gl_contexts;
 
@@ -878,12 +874,6 @@ void InProcessCommandBuffer::FlushOnGpuThread(
     return;
   auto cache_use = CreateCacheUse();
 
-  MailboxManager* mailbox_manager = context_group_->mailbox_manager();
-  if (mailbox_manager->UsesSync()) {
-    for (const auto& sync_token : sync_token_fences)
-      mailbox_manager->PullTextureUpdates(sync_token);
-  }
-
   {
     base::Optional<raster::GrShaderCache::ScopedCacheUse> gr_cache_use;
     if (gr_shader_cache_)
@@ -1197,10 +1187,6 @@ void InProcessCommandBuffer::OnFenceSyncRelease(uint64_t release) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   SyncToken sync_token(GetNamespaceID(), GetCommandBufferID(), release);
-
-  MailboxManager* mailbox_manager = context_group_->mailbox_manager();
-  if (mailbox_manager->UsesSync())
-    mailbox_manager->PushTextureUpdates(sync_token);
 
   command_buffer_->SetReleaseCount(release);
   sync_point_client_state_->ReleaseFenceSync(release);

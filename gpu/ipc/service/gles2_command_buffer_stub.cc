@@ -130,10 +130,6 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   use_virtualized_gl_context_ |=
       context_group_->feature_info()->workarounds().use_virtualized_gl_contexts;
 
-  // MailboxManagerSync synchronization correctness currently depends on having
-  // only a single context. See crbug.com/510243 for details.
-  use_virtualized_gl_context_ |= manager->mailbox_manager()->UsesSync();
-
   bool offscreen = (surface_handle_ == kNullSurfaceHandle);
   gl::GLSurface* default_surface = manager->default_offscreen_surface();
   // On low-spec Android devices, the default offscreen surface is
@@ -468,7 +464,6 @@ void GLES2CommandBufferStub::OnTakeFrontBuffer(const Mailbox& mailbox) {
 void GLES2CommandBufferStub::OnReturnFrontBuffer(const Mailbox& mailbox,
                                                  bool is_lost) {
   // No need to pull texture updates.
-  DCHECK(!context_group_->mailbox_manager()->UsesSync());
   gles2_decoder_->ReturnFrontBuffer(mailbox, is_lost);
 }
 

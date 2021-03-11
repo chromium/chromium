@@ -206,11 +206,6 @@ const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
 // and on Linux this will use Vulkan.
 const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used to enable shared image mailbox and disable legacy texture mailbox on
-// webview.
-const base::Feature kEnableSharedImageForWebview{
-    "EnableSharedImageForWebview", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable GrShaderCache to use with Vulkan backend.
 const base::Feature kEnableGrShaderCacheForVulkan{
     "EnableGrShaderCacheForVulkan", base::FEATURE_ENABLED_BY_DEFAULT};

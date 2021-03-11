@@ -201,11 +201,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);
     }
 
-    if (cl->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
-      // When draw functor uses vulkan, assume that it is safe to enable viz
-      // which depends on shared images.
-      features.EnableIfNotSet(::features::kEnableSharedImageForWebview);
-    } else {
+    if (!cl->HasSwitch(switches::kWebViewDrawFunctorUsesVulkan)) {
       // Not use ANGLE's Vulkan backend, if the draw functor is not using
       // Vulkan.
       features.DisableIfNotSet(::features::kDefaultANGLEVulkan);
@@ -434,11 +430,7 @@ gpu::SyncPointManager* GetSyncPointManager() {
 
 gpu::SharedImageManager* GetSharedImageManager() {
   DCHECK(GpuServiceWebView::GetInstance());
-  const bool enable_shared_image =
-      base::FeatureList::IsEnabled(::features::kEnableSharedImageForWebview);
-  return enable_shared_image
-             ? GpuServiceWebView::GetInstance()->shared_image_manager()
-             : nullptr;
+  return GpuServiceWebView::GetInstance()->shared_image_manager();
 }
 
 viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner() {

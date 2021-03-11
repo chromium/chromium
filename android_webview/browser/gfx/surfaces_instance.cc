@@ -86,8 +86,7 @@ SurfacesInstance::SurfacesInstance()
       std::move(display_controller), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       nullptr /* current_task_runner */);
-  display_->Initialize(this, frame_sink_manager_->surface_manager(),
-                       output_surface_provider_.enable_shared_image());
+  display_->Initialize(this, frame_sink_manager_->surface_manager(), true);
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source_.get(),
                                                 frame_sink_id_);
 

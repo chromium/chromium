@@ -210,7 +210,7 @@ class SkiaOutputSurfaceImplOnGpu
   // It will do nothing when Vulkan is used.
   bool MakeCurrent(bool need_framebuffer);
 
-  void ReleaseFenceSyncAndPushTextureUpdates(uint64_t sync_fence_release);
+  void ReleaseFenceSync(uint64_t sync_fence_release);
 
  private:
   class OffscreenSurface;
@@ -234,8 +234,6 @@ class SkiaOutputSurfaceImplOnGpu
       scoped_refptr<gpu::SharedContextState> context_state,
       const gpu::SyncToken& sync_token,
       bool is_lost);
-
-  void PullTextureUpdates(std::vector<gpu::SyncToken> sync_token);
 
   void SwapBuffersInternal(base::Optional<OutputSurfaceFrame> frame);
   void PostSubmit(base::Optional<OutputSurfaceFrame> frame);

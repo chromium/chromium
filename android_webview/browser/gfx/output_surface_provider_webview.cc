@@ -57,11 +57,6 @@ OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
   enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
 
-  enable_shared_image_ =
-      base::FeatureList::IsEnabled(features::kEnableSharedImageForWebview);
-  LOG_IF(FATAL, enable_vulkan_ && !enable_shared_image_)
-      << "--webview-enable-vulkan only works with shared image "
-         "(--webview-enable-shared-image).";
   LOG_IF(FATAL, enable_vulkan_ && !renderer_settings_.use_skia_renderer)
       << "--webview-enable-vulkan only works with skia renderer "
          "(--enable-features=UseSkiaRenderer).";

@@ -723,9 +723,6 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 #endif
   use_virtualized_gl_contexts |=
       gpu_driver_bug_workarounds_.use_virtualized_gl_contexts;
-  // MailboxManagerSync synchronization correctness currently depends on having
-  // only a single context. See crbug.com/510243 for details.
-  use_virtualized_gl_contexts |= mailbox_manager_->UsesSync();
 
   const bool use_passthrough_decoder =
       gles2::PassthroughCommandDecoderSupported() &&

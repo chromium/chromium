@@ -54,8 +54,6 @@ GPU_EXPORT extern const base::Feature kVulkan;
 
 GPU_EXPORT extern const base::Feature kSkiaDawn;
 
-GPU_EXPORT extern const base::Feature kEnableSharedImageForWebview;
-
 GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
 
 GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;

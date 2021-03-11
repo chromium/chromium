@@ -142,8 +142,7 @@ HardwareRendererViz::OnViz::OnViz(
       std::move(display_controller), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),
       nullptr /* current_task_runner */);
-  display_->Initialize(this, GetFrameSinkManager()->surface_manager(),
-                       output_surface_provider->enable_shared_image());
+  display_->Initialize(this, GetFrameSinkManager()->surface_manager(), true);
 
   display_->SetVisible(true);
   display_->DisableGPUAccessByDefault();

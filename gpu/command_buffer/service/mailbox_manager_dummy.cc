@@ -14,10 +14,6 @@ MailboxManagerDummy::MailboxManagerDummy() = default;
 
 MailboxManagerDummy::~MailboxManagerDummy() = default;
 
-bool MailboxManagerDummy::UsesSync() {
-  return false;
-}
-
 TextureBase* MailboxManagerDummy::ConsumeTexture(const Mailbox& mailbox) {
   NOTREACHED();
   return nullptr;

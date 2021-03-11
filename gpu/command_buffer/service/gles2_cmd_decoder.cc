@@ -4271,11 +4271,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
   caps.texture_format_etc1_npot =
       caps.texture_format_etc1 && !workarounds().etc1_power_of_two_only;
-  // Whether or not a texture will be bound to an EGLImage is
-  // dependent on whether we are using the sync mailbox manager.
-  caps.disable_one_component_textures =
-      mailbox_manager()->UsesSync() &&
-      workarounds().avoid_one_component_egl_images;
   caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
   caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
   caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;

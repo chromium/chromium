@@ -178,8 +178,6 @@ target(link_target_type, "gles2_sources") {
     "mailbox_manager_factory.h",
     "mailbox_manager_impl.cc",
     "mailbox_manager_impl.h",
-    "mailbox_manager_sync.cc",
-    "mailbox_manager_sync.h",
     "memory_program_cache.cc",
     "memory_program_cache.h",
     "multi_draw_manager.cc",

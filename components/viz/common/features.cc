@@ -185,10 +185,6 @@ bool IsUsingFastPathForSolidColorQuad() {
 }
 
 bool IsUsingVizForWebView() {
-  // Viz for WebView requires shared images to be enabled.
-  if (!base::FeatureList::IsEnabled(kEnableSharedImageForWebview))
-    return false;
-
   // Vulkan on WebView requires viz.
   if (features::IsUsingVulkan())
     return true;

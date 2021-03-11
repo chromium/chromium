@@ -13,7 +13,6 @@
 
 namespace gpu {
 
-struct SyncToken;
 class TextureBase;
 
 // Manages resources scoped beyond the context or context group level.
@@ -26,13 +25,6 @@ class GPU_EXPORT MailboxManager {
 
   // Put the texture into the named mailbox.
   virtual void ProduceTexture(const Mailbox& mailbox, TextureBase* texture) = 0;
-
-  // If |true| then Pull/PushTextureUpdates() needs to be called.
-  virtual bool UsesSync() = 0;
-
-  // Used to synchronize texture state across share groups.
-  virtual void PushTextureUpdates(const SyncToken& token) = 0;
-  virtual void PullTextureUpdates(const SyncToken& token) = 0;
 
   // Destroy any mailbox that reference the given texture.
   virtual void TextureDeleted(TextureBase* texture) = 0;

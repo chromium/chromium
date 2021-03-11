@@ -1122,9 +1122,9 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
       gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
       impl_on_gpu_->command_buffer_id(), ++sync_fence_release_);
   sync_token.SetVerifyFlush();
-  auto callback = base::BindOnce(
-      &SkiaOutputSurfaceImplOnGpu::ReleaseFenceSyncAndPushTextureUpdates,
-      base::Unretained(impl_on_gpu_.get()), sync_fence_release_);
+  auto callback =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync,
+                     base::Unretained(impl_on_gpu_.get()), sync_fence_release_);
   EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   FlushGpuTasks(/*wait_for_finish=*/false);

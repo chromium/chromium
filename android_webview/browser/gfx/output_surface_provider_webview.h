@@ -48,7 +48,6 @@ class OutputSurfaceProviderWebView {
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     return shared_context_state_;
   }
-  bool enable_shared_image() const { return enable_shared_image_; }
 
  private:
   void InitializeContext();
@@ -60,7 +59,6 @@ class OutputSurfaceProviderWebView {
   viz::DebugRendererSettings debug_settings_;
   scoped_refptr<AwGLSurface> gl_surface_;
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
-  bool enable_shared_image_;
   bool enable_vulkan_;
 };
 

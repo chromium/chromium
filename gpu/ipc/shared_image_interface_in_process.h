@@ -227,7 +227,6 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   SharedImageManager* shared_image_manager_;
 
   // Accessed on GPU thread.
-  // TODO(weiliangc): Check whether can be removed when !UsesSync().
   MailboxManager* mailbox_manager_;
   // Used to check if context is lost at destruction time.
   // TODO(weiliangc): SharedImageInterface should become active observer of

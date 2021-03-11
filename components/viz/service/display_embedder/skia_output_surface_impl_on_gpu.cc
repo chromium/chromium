@@ -31,7 +31,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -630,7 +629,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   sync_point_client_state_->Destroy();
 
   // Release all ongoing AsyncReadResults.
-  ReleaseAsyncReadResultHelpers();   
+  ReleaseAsyncReadResultHelpers();
 }
 
 void SkiaOutputSurfaceImplOnGpu::Reshape(const gfx::Size& size,
@@ -691,8 +690,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   }
 
   dependency_->ScheduleGrContextCleanup();
-
-  PullTextureUpdates(std::move(sync_tokens));
 
   {
     base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
@@ -800,8 +797,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     MarkContextLost(CONTEXT_LOST_UNKNOWN);
     return;
   }
-
-  PullTextureUpdates(std::move(sync_tokens));
 
   auto& offscreen = offscreen_surfaces_[id];
   if (!offscreen.surface()) {
@@ -1547,36 +1542,7 @@ bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
   return true;
 }
 
-void SkiaOutputSurfaceImplOnGpu::PullTextureUpdates(
-    std::vector<gpu::SyncToken> sync_tokens) {
-  // TODO(https://crbug.com/900973): Remove it when MailboxManager is replaced
-  // with SharedImage API.
-  if (dependency_->GetMailboxManager()->UsesSync()) {
-    for (auto& sync_token : sync_tokens)
-      dependency_->GetMailboxManager()->PullTextureUpdates(sync_token);
-  }
-}
-
-void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSyncAndPushTextureUpdates(
-    uint64_t sync_fence_release) {
-  // TODO(https://crbug.com/900973): Remove it when MailboxManager is replaced
-  // with SharedImage API.
-  if (dependency_->GetMailboxManager()->UsesSync()) {
-    // If MailboxManagerSync is used, we are sharing textures between threads.
-    // In this case, sync point can only guarantee GL commands are issued in
-    // correct order across threads and GL contexts. However GPU driver may
-    // execute GL commands out of the issuing order across GL contexts. So we
-    // have to use PushTextureUpdates() and PullTextureUpdates() to ensure the
-    // correct GL commands executing order.
-    // PushTextureUpdates(token) will insert a GL fence into the current GL
-    // context, PullTextureUpdates(token) will wait the GL fence associated with
-    // the give token on the current GL context.
-    // Reconstruct sync_token from sync_fence_release.
-    gpu::SyncToken sync_token(
-        gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
-        command_buffer_id(), sync_fence_release);
-    dependency_->GetMailboxManager()->PushTextureUpdates(sync_token);
-  }
+void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync(uint64_t sync_fence_release) {
   sync_point_client_state_->ReleaseFenceSync(sync_fence_release);
 }
 

@@ -72,8 +72,6 @@ public final class ProductionSupportedFlagList {
                     "Enables modern SameSite cookie behavior: 1) SameSite=Lax by default "
                             + "(cookies without a SameSite attribute are treated as SameSite=Lax); "
                             + "2) Schemeful Same-Site (site boundaries include the URL scheme)."),
-            Flag.baseFeature(GpuFeatures.ENABLE_SHARED_IMAGE_FOR_WEBVIEW,
-                    "Enables shared images for WebView."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires VizForWebView and Android device and "
                             + "OS support. May crash if enabled on unsupported device."),
