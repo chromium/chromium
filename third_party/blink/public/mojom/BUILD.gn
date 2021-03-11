@@ -791,10 +791,8 @@ mojom("android_mojo_bindings") {
           cpp = "::device::LargeBlobSupport"
         },
       ]
-      traits_headers =
-          [ "//content/browser/webauth/authenticator_mojom_traits.h" ]
-      traits_sources =
-          [ "//content/browser/webauth/authenticator_mojom_traits.cc" ]
+      traits_headers = [ "authenticator_mojom_traits.h" ]
+      traits_sources = [ "authenticator_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
         "//device/fido",

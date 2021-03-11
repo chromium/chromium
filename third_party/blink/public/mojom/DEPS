@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "authenticator_mojom_traits\.(cc|h)": [
+    "+base",
+    "+device/fido",
+    "+mojo/public/cpp/bindings",
+    "+url/mojom/url_gurl_mojom_traits.h",
+  ]
+}

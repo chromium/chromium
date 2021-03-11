@@ -14,10 +14,10 @@
 #include "base/timer/timer.h"
 #include "chrome/android/chrome_jni_headers/AuthenticatorImpl_jni.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
-#include "content/browser/webauth/authenticator_mojom_traits.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/mojom/base/time.mojom.h"
+#include "third_party/blink/public/mojom/authenticator_mojom_traits.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 
 using base::android::AttachCurrentThread;
