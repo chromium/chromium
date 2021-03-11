@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/av_scanning_file_validator.h"
+#include "components/download/public/common/quarantine_connection.h"
 
 class MediaFileValidatorFactory;
 class SafeAudioVideoChecker;
@@ -31,7 +32,9 @@ class SupportedAudioVideoChecker : public AVScanningFileValidator {
  private:
   friend class MediaFileValidatorFactory;
 
-  explicit SupportedAudioVideoChecker(const base::FilePath& file);
+  SupportedAudioVideoChecker(
+      const base::FilePath& file,
+      download::QuarantineConnectionCallback quarantine_connection_callback);
 
   void OnFileOpen(base::File file);
 

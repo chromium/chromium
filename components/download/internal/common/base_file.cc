@@ -23,7 +23,7 @@
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/download/quarantine/quarantine.h"
+#include "components/services/quarantine/quarantine.h"
 #include "crypto/secure_hash.h"
 
 #if defined(OS_WIN)
@@ -607,34 +607,6 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
 
 }  // namespace
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
-    const std::string& client_guid,
-    const GURL& source_url,
-    const GURL& referrer_url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!detached_);
-  DCHECK(!full_path_.empty());
-
-  CONDITIONAL_TRACE(BEGIN0("download", "DownloadFileAnnotate"));
-  QuarantineFileResult result = QuarantineFile(
-      full_path_, GetEffectiveAuthorityURL(source_url, referrer_url),
-      referrer_url, client_guid);
-  CONDITIONAL_TRACE(END0("download", "DownloadFileAnnotate"));
-
-  return QuarantineFileResultToReason(result);
-}
-#else  // !OS_WIN && !OS_APPLE && !OS_LINUX && !OS_CHROMEOS
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
-    const std::string& client_guid,
-    const GURL& source_url,
-    const GURL& referrer_url) {
-  return DOWNLOAD_INTERRUPT_REASON_NONE;
-}
-#endif
-
 void BaseFile::OnFileQuarantined(
     bool connection_error,
     quarantine::mojom::QuarantineFileResult result) {
@@ -670,10 +642,12 @@ void BaseFile::AnnotateWithSourceInformation(
   GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
   if (!remote_quarantine) {
 #if defined(OS_WIN)
-    QuarantineFileResult result = quarantine::SetInternetZoneIdentifierDirectly(
-        full_path_, authority_url, referrer_url);
+    quarantine::mojom::QuarantineFileResult result =
+        quarantine::SetInternetZoneIdentifierDirectly(full_path_, authority_url,
+                                                      referrer_url);
 #else
-    QuarantineFileResult result = QuarantineFileResult::ANNOTATION_FAILED;
+    quarantine::mojom::QuarantineFileResult result =
+        quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED;
 #endif
     std::move(on_annotation_done_callback)
         .Run(QuarantineFileResultToReason(result));

@@ -121,7 +121,6 @@ include_rules = [
   "+components/download/public/background_service",
   "+components/download/public/common",
   "+components/download/public/task",
-  "+components/download/quarantine",
   "+components/drive",
   "+components/embedder_support",
   "+components/encrypted_messages",

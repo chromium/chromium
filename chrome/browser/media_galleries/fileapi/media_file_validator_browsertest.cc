@@ -130,7 +130,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
         std::make_unique<storage::TestFileSystemBackend>(
             file_system_runner_.get(), src_path));
     additional_providers.push_back(
-        std::make_unique<MediaFileSystemBackend>(base));
+        std::make_unique<MediaFileSystemBackend>(base, base::NullCallback()));
     file_system_context_ =
         storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
             content::GetIOThreadTaskRunner({}).get(), file_system_runner_.get(),

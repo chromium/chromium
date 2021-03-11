@@ -72,10 +72,10 @@ source_set("internal") {
     "//base",
     "//components/download/database",
     "//components/download/public/common:interfaces",
-    "//components/download/quarantine",
     "//components/filename_generation",
     "//components/leveldb_proto",
     "//components/safe_browsing:buildflags",
+    "//components/services/quarantine",
     "//mojo/public/c/system",
     "//net",
     "//services/device/public/mojom:mojom",
@@ -163,10 +163,6 @@ source_set("unit_tests") {
     "parallel_download_utils_unittest.cc",
     "rate_estimator_unittest.cc",
   ]
-
-  if (is_win) {
-    sources += [ "base_file_win_unittest.cc" ]
-  }
 
   deps = [
     ":for_tests",

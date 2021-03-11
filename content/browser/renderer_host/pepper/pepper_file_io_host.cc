@@ -22,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "ipc/ipc_platform_file.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_file_io.h"
 #include "ppapi/host/dispatch_host_message.h"
@@ -445,14 +446,27 @@ void PepperFileIOHost::OnLocalFileOpened(
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(
-          &download::QuarantineFile, path,
-          browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()), GURL(),
-          std::string()),
-      base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined, AsWeakPtr(),
-                     reply_context, path));
+  mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote;
+  download::QuarantineConnectionCallback quarantine_connection_callback =
+      GetContentClient()->browser()->GetQuarantineConnectionCallback();
+  if (quarantine_connection_callback) {
+    quarantine_connection_callback.Run(
+        quarantine_remote.BindNewPipeAndPassReceiver());
+  }
+
+  if (quarantine_remote) {
+    quarantine::mojom::Quarantine* raw_quarantine = quarantine_remote.get();
+    raw_quarantine->QuarantineFile(
+        path, browser_ppapi_host_->GetDocumentURLForInstance(pp_instance()),
+        GURL(), std::string(),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&PepperFileIOHost::OnLocalFileQuarantined,
+                           AsWeakPtr(), reply_context, path,
+                           std::move(quarantine_remote)),
+            quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED));
+  } else {
+    SendFileOpenReply(reply_context, error_code);
+  }
 #else
   SendFileOpenReply(reply_context, error_code);
 #endif
@@ -462,9 +476,10 @@ void PepperFileIOHost::OnLocalFileOpened(
 void PepperFileIOHost::OnLocalFileQuarantined(
     ppapi::host::ReplyMessageContext reply_context,
     const base::FilePath& path,
-    download::QuarantineFileResult quarantine_result) {
+    mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
+    quarantine::mojom::QuarantineFileResult quarantine_result) {
   base::File::Error file_error =
-      (quarantine_result == download::QuarantineFileResult::OK
+      (quarantine_result == quarantine::mojom::QuarantineFileResult::OK
            ? base::File::FILE_OK
            : base::File::FILE_ERROR_SECURITY);
   if (file_error != base::File::FILE_OK && file_.IsValid())

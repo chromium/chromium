@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/download/quarantine/quarantine.h"
+#include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_platform_file.h"
@@ -90,9 +90,11 @@ class PepperFileIOHost : public ppapi::host::ResourceHost,
                          const base::FilePath& path,
                          base::File::Error error_code);
 
-  void OnLocalFileQuarantined(ppapi::host::ReplyMessageContext reply_context,
-                              const base::FilePath& path,
-                              download::QuarantineFileResult quarantine_result);
+  void OnLocalFileQuarantined(
+      ppapi::host::ReplyMessageContext reply_context,
+      const base::FilePath& path,
+      mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote,
+      quarantine::mojom::QuarantineFileResult quarantine_result);
 
   void SendFileOpenReply(ppapi::host::ReplyMessageContext reply_context,
                          base::File::Error error_code);

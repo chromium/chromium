@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "components/download/public/common/quarantine_connection.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -58,6 +59,7 @@ class ChromeContentBrowserClientParts {
   virtual void GetAdditionalFileSystemBackends(
       content::BrowserContext* browser_context,
       const base::FilePath& storage_partition_path,
+      download::QuarantineConnectionCallback quarantine_connection_callback,
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) {}
 

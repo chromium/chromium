@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -116,8 +117,9 @@ void SupportedImageTypeValidator::StartPreWriteValidation(
 }
 
 SupportedImageTypeValidator::SupportedImageTypeValidator(
-    const base::FilePath& path)
-    : path_(path) {}
+    const base::FilePath& path,
+    download::QuarantineConnectionCallback quarantine_connection_callback)
+    : AVScanningFileValidator(quarantine_connection_callback), path_(path) {}
 
 void SupportedImageTypeValidator::OnFileOpen(
     std::unique_ptr<std::string> data) {
