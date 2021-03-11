@@ -296,8 +296,6 @@ void BindImageAnnotator(
 void BindCommerceHintObserver(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule))
-    return;
   // Cart is not available for non-signin single-profile users.
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
@@ -322,7 +320,7 @@ void BindCommerceHintObserver(
       cart::CommerceHintService::FromWebContents(web_contents);
   if (!service)
     return;
-  service->BindCommerceHintObserver(std::move(receiver));
+  service->BindCommerceHintObserver(frame_host, std::move(receiver));
 }
 #endif
 
@@ -528,13 +526,17 @@ void BindCdmInfobarServiceReceiver(
 #endif
 
 void PopulateChromeFrameBinders(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
+    content::RenderFrameHost* render_frame_host) {
   map->Add<image_annotation::mojom::Annotator>(
       base::BindRepeating(&BindImageAnnotator));
 
 #if !defined(OS_ANDROID)
-  map->Add<cart::mojom::CommerceHintObserver>(
-      base::BindRepeating(&BindCommerceHintObserver));
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+      !render_frame_host->GetParent()) {
+    map->Add<cart::mojom::CommerceHintObserver>(
+        base::BindRepeating(&BindCommerceHintObserver));
+  }
 #endif
 
   map->Add<blink::mojom::AnchorElementMetricsHost>(

@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -35,10 +36,16 @@ std::string GetDomain(const GURL& url) {
 
 // Implementation of the Mojo CommerceHintObserver. This is called by the
 // renderer to notify the browser that a commerce hint happens.
-class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
+class CommerceHintObserverImpl
+    : public content::FrameServiceBase<mojom::CommerceHintObserver> {
  public:
-  explicit CommerceHintObserverImpl(base::WeakPtr<CommerceHintService> service)
-      : service_(std::move(service)) {}
+  explicit CommerceHintObserverImpl(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<mojom::CommerceHintObserver> receiver,
+      base::WeakPtr<CommerceHintService> service)
+      : FrameServiceBase(render_frame_host, std::move(receiver)),
+        binding_url_(render_frame_host->GetLastCommittedURL()),
+        service_(std::move(service)) {}
 
   ~CommerceHintObserverImpl() override = default;
 
@@ -46,33 +53,45 @@ class CommerceHintObserverImpl : public mojom::CommerceHintObserver {
     DVLOG(1) << "Received OnAddToCart in the browser process";
     if (!service_)
       return;
-    service_->OnAddToCart(service_->WebContents()->GetLastCommittedURL(),
-                          cart_url);
+    service_->OnAddToCart(binding_url_, cart_url);
   }
 
   void OnVisitCart() override {
     DVLOG(1) << "Received OnVisitCart in the browser process";
     if (!service_)
       return;
-    const GURL& main_frame_url = service_->WebContents()->GetLastCommittedURL();
-    service_->OnAddToCart(main_frame_url, main_frame_url);
+    service_->OnAddToCart(binding_url_, binding_url_);
+  }
+
+  void OnCartProductUpdated(std::vector<mojom::ProductPtr> products) override {
+    DVLOG(1) << "Received OnCartProductUpdated in the browser process, with "
+             << products.size() << " product(s).";
+    if (!service_)
+      return;
+
+    if (products.empty()) {
+      service_->OnRemoveCart(binding_url_);
+    } else {
+      service_->OnCartUpdated(binding_url_, std::move(products));
+    }
   }
 
   void OnVisitCheckout() override {
     DVLOG(1) << "Received OnVisitCheckout in the browser process";
     if (!service_)
       return;
-    service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
+    service_->OnRemoveCart(binding_url_);
   }
 
   void OnPurchase() override {
     DVLOG(1) << "Received OnPurchase in the browser process";
     if (!service_)
       return;
-    service_->OnRemoveCart(service_->WebContents()->GetLastCommittedURL());
+    service_->OnRemoveCart(binding_url_);
   }
 
  private:
+  GURL binding_url_;
   base::WeakPtr<CommerceHintService> service_;
 };
 
@@ -97,10 +116,12 @@ content::WebContents* CommerceHintService::WebContents() {
 }
 
 void CommerceHintService::BindCommerceHintObserver(
+    content::RenderFrameHost* host,
     mojo::PendingReceiver<mojom::CommerceHintObserver> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CommerceHintObserverImpl>(weak_factory_.GetWeakPtr()),
-      std::move(receiver));
+  // The object is bound to the lifetime of |host| and the mojo
+  // connection. See FrameServiceBase for details.
+  new CommerceHintObserverImpl(host, std::move(receiver),
+                               weak_factory_.GetWeakPtr());
 }
 
 bool CommerceHintService::ShouldSkip(const GURL& url) {
@@ -125,7 +146,8 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
     validated_cart = base::nullopt;
   }
   cart_db::ChromeCartContentProto proto;
-  ConstructCartProto(&proto, navigation_url);
+  std::vector<mojom::ProductPtr> products;
+  ConstructCartProto(&proto, navigation_url, std::move(products));
   service_->AddCart(GetDomain(navigation_url), validated_cart,
                     std::move(proto));
 }
@@ -134,14 +156,28 @@ void CommerceHintService::OnRemoveCart(const GURL& url) {
   service_->DeleteCart(GetDomain(url));
 }
 
+void CommerceHintService::OnCartUpdated(
+    const GURL& cart_url,
+    std::vector<mojom::ProductPtr> products) {
+  if (ShouldSkip(cart_url))
+    return;
+  cart_db::ChromeCartContentProto proto;
+  ConstructCartProto(&proto, cart_url, std::move(products));
+  service_->AddCart(proto.key(), cart_url, std::move(proto));
+}
+
 void CommerceHintService::ConstructCartProto(
     cart_db::ChromeCartContentProto* proto,
-    const GURL& navigation_url) {
+    const GURL& navigation_url,
+    std::vector<mojom::ProductPtr> products) {
   const std::string& domain = GetDomain(navigation_url);
   proto->set_key(domain);
   proto->set_merchant(domain);
   proto->set_merchant_cart_url(navigation_url.spec());
   proto->set_timestamp(base::Time::Now().ToDoubleT());
+  for (auto& product : products) {
+    proto->add_product_image_urls(product->image_url.spec());
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)

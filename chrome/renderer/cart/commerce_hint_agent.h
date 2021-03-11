@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "url/gurl.h"
 
 namespace cart {
@@ -36,11 +37,25 @@ class CommerceHintAgent
   static bool IsPurchase(base::StringPiece button_text);
 
   void ExtractProducts();
+  void OnProductsExtracted(std::unique_ptr<base::Value> result);
   static std::string ExtractButtonText(const blink::WebFormElement& form);
 
  private:
   GURL starting_url_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
+
+  class JavaScriptRequest : public blink::WebScriptExecutionCallback {
+   public:
+    explicit JavaScriptRequest(base::WeakPtr<CommerceHintAgent> agent);
+    JavaScriptRequest(const JavaScriptRequest&) = delete;
+    JavaScriptRequest& operator=(const JavaScriptRequest&) = delete;
+    void Completed(
+        const blink::WebVector<v8::Local<v8::Value>>& result) override;
+
+   private:
+    ~JavaScriptRequest() override;
+    base::WeakPtr<CommerceHintAgent> agent_;
+  };
 
   // content::RenderFrameObserver overrides
   void OnDestruct() override;
