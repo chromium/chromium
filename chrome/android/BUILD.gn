@@ -2947,9 +2947,14 @@ instrumentation_test_runner("trichrome_chrome_bundle_fake_modules_smoke_test") {
       _bundle_smoke_test_extra_args + _bundle_fake_modules_smoke_test_extra_args
 }
 
-python_library("chrome_public_wpt") {
-  testonly = true
-  pydeps_file = "//testing/scripts/run_android_wpt.pydeps"
+script_test("chrome_public_wpt") {
+  script = "//testing/scripts/run_android_wpt.py"
+  args = [
+      "--product=chrome_android",
+      "--chrome-apk=apks/ChromePublic.apk",
+      "--webdriver-binary=clang_x64/chromedriver",
+      "-v",
+    ]
   data_deps = [
     ":chrome_public_apk",
     "//build/android:test_runner_py",
