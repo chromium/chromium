@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,13 +33,13 @@ class CopyLinkToTextMenuObserverTest
     base::test::ScopedFeatureList scoped_feature_list;
     if (GetParam()) {
       scoped_feature_list.InitWithFeatures(
-          {features::kPreemtiveLinkToTextGeneration,
+          {shared_highlighting::kPreemptiveLinkToTextGeneration,
            shared_highlighting::kSharedHighlightingUseBlocklist},
           {});
     } else {
       scoped_feature_list.InitWithFeatures(
           {shared_highlighting::kSharedHighlightingUseBlocklist},
-          {features::kPreemtiveLinkToTextGeneration});
+          {shared_highlighting::kPreemptiveLinkToTextGeneration});
     }
     InProcessBrowserTest::SetUp();
   }

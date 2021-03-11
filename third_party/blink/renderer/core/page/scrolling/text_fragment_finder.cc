@@ -386,9 +386,13 @@ TextFragmentFinder::TextFragmentFinder(Client& client,
   }
 }
 
-void TextFragmentFinder::FindMatch() {
+void TextFragmentFinder::Cancel() {
   if (find_buffer_runner_ && find_buffer_runner_->IsActive())
     find_buffer_runner_->Cancel();
+}
+
+void TextFragmentFinder::FindMatch() {
+  Cancel();
 
   auto forced_lock_scope =
       document_->GetDisplayLockDocumentState().GetScopedForceActivatableLocks();

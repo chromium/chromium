@@ -52,6 +52,8 @@ class CORE_EXPORT TextFragmentFinder final
   // Begins searching in the given top-level document.
   void FindMatch();
 
+  void Cancel();
+
   void Trace(Visitor*) const;
 
  private:
