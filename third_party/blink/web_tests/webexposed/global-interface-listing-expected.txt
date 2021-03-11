@@ -6923,6 +6923,35 @@ interface Headers
     method keys
     method set
     method values
+interface Highlight
+    attribute @@toStringTag
+    getter name
+    getter priority
+    getter size
+    method @@iterator
+    method add
+    method clear
+    method constructor
+    method delete
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
+    setter priority
+interface HighlightRegistry
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method add
+    method clear
+    method constructor
+    method delete
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface History
     attribute @@toStringTag
     getter length
@@ -13582,6 +13611,7 @@ interface webkitURL
 namespace CSS
     attribute @@toStringTag
     getter animationWorklet
+    getter highlights
     getter layoutWorklet
     getter paintWorklet
     method Hz
