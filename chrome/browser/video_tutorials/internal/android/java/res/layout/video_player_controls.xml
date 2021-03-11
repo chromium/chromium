@@ -50,7 +50,7 @@
 
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/try_now"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/video_tutorials_try_now"

@@ -7751,8 +7751,9 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "base_url": "https://staging-gsaprototype-pa.sandbox.googleapis.com",
+                        "base_url": "https://chromeupboarding-pa.googleapis.com",
                         "default_locale": "en",
+                        "enable_share": "true",
                         "experiment_tag": "",
                         "fetch_frequency": "15",
                         "use_animated_gif_url": "true"
