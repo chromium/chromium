@@ -39,6 +39,9 @@ class ASH_EXPORT StylusBatteryDelegate
   base::Optional<uint8_t> battery_level() const { return battery_level_; }
 
  private:
+  bool IsBatteryInfoValid(
+      const PeripheralBatteryListener::BatteryInfo& battery) const;
+
   // PeripheralBatteryListener::Observer:
   void OnAddingBattery(
       const PeripheralBatteryListener::BatteryInfo& battery) override;

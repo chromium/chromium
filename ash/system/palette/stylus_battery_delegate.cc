@@ -92,23 +92,42 @@ bool StylusBatteryDelegate::IsBatteryStatusStale() const {
          kStylusBatteryStatusStaleThreshold;
 }
 
-void StylusBatteryDelegate::OnAddingBattery(
-    const PeripheralBatteryListener::BatteryInfo& battery) {
-  battery_level_ = battery.level;
-  battery_charge_status_ = battery.charge_status;
-  last_update_timestamp_ = battery.last_update_timestamp;
-  if (battery_update_callback_)
-    battery_update_callback_.Run();
+bool StylusBatteryDelegate::IsBatteryInfoValid(
+    const PeripheralBatteryListener::BatteryInfo& battery) const {
+  if (battery.type != PeripheralBatteryListener::BatteryInfo::PeripheralType::
+                          kStylusViaCharger &&
+      battery.type != PeripheralBatteryListener::BatteryInfo::PeripheralType::
+                          kStylusViaScreen) {
+    return false;
+  }
+
+  if (!battery.last_active_update_timestamp.has_value() ||
+      !battery.level.has_value()) {
+    return false;
+  }
+
+  if (last_update_timestamp_.has_value() &&
+      battery.last_active_update_timestamp < last_update_timestamp_) {
+    return false;
+  }
+
+  return true;
 }
+
+void StylusBatteryDelegate::OnAddingBattery(
+    const PeripheralBatteryListener::BatteryInfo& battery) {}
 
 void StylusBatteryDelegate::OnRemovingBattery(
     const PeripheralBatteryListener::BatteryInfo& battery) {}
 
 void StylusBatteryDelegate::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery) {
+  if (!IsBatteryInfoValid(battery))
+    return;
+
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
-  last_update_timestamp_ = battery.last_update_timestamp;
+  last_update_timestamp_ = battery.last_active_update_timestamp;
   if (battery_update_callback_)
     battery_update_callback_.Run();
 }
