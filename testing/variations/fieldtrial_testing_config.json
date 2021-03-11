@@ -2315,21 +2315,6 @@
             ]
         }
     ],
-    "DefaultEnableOopRasterization": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "DefaultEnableOopRasterization",
-                    "enable_features": [
-                        "DefaultEnableOopRasterization"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
