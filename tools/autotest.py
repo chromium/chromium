@@ -39,7 +39,10 @@ from pathlib import Path
 USE_PYTHON_3 = f'This script will only run under python3.'
 
 SRC_DIR = Path(__file__).parent.parent.resolve()
-DEPOT_TOOLS_DIR = SRC_DIR.joinpath('third_party', 'depot_tools')
+sys.path.append(str(SRC_DIR / 'build' / 'android'))
+from pylib import constants
+
+DEPOT_TOOLS_DIR = SRC_DIR / 'third_party' / 'depot_tools'
 DEBUG = False
 
 # Some test suites use suffixes that would also match non-test-suite targets.
@@ -175,7 +178,7 @@ def FindTestFilesInDirectory(directory):
   test_files = []
   if DEBUG:
     print('Test files:')
-  for root, dirs, files in os.walk(directory):
+  for root, _, files in os.walk(directory):
     for f in files:
       path = os.path.join(root, f)
       file_validity = IsTestFile(path)
@@ -359,8 +362,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run):
 
 def BuildCppTestFilter(filenames, line):
   make_filter_command = [
-      sys.executable,
-      os.path.join(SRC_DIR, 'tools', 'make-gtest-filter.py')
+      sys.executable, SRC_DIR / 'tools' / 'make-gtest-filter.py'
   ]
   if line:
     make_filter_command += ['--line', str(line)]
@@ -391,6 +393,7 @@ def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument('--out-dir',
+                      '--output-directory',
                       '-C',
                       metavar='OUT_DIR',
                       help='output directory of the build')
@@ -418,12 +421,17 @@ def main():
   if not args.out_dir and os.path.exists('build.ninja'):
     args.out_dir = '.'
 
-  if not os.path.isdir(args.out_dir):
-    parser.error(f'OUT_DIR "{args.out_dir}" does not exist.')
-  target_cache = TargetCache(args.out_dir)
+  if args.out_dir:
+    constants.SetOutputDirectory(args.out_dir)
+  constants.CheckOutputDirectory()
+  out_dir: str = constants.GetOutDirectory()
+
+  if not os.path.isdir(out_dir):
+    parser.error(f'OUT_DIR "{out_dir}" does not exist.')
+  target_cache = TargetCache(out_dir)
   filenames = FindMatchingTestFiles(args.file)
 
-  targets, used_cache = FindTestTargets(target_cache, args.out_dir, filenames,
+  targets, used_cache = FindTestTargets(target_cache, out_dir, filenames,
                                         args.run_all)
 
   gtest_filter = args.gtest_filter
@@ -434,26 +442,26 @@ def main():
     ExitWithMessage('Failed to derive a gtest filter')
 
   assert targets
-  build_ok = BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run)
+  build_ok = BuildTestTargetsWithNinja(out_dir, targets, args.dry_run)
 
   # If we used the target cache, it's possible we chose the wrong target because
   # a gn file was changed. The build step above will check for gn modifications
   # and update build.ninja. Use this opportunity the verify the cache is still
   # valid.
   if used_cache and not target_cache.IsStillValid():
-    target_cache = TargetCache(args.out_dir)
-    new_targets, _ = FindTestTargets(target_cache, args.out_dir, filenames,
+    target_cache = TargetCache(out_dir)
+    new_targets, _ = FindTestTargets(target_cache, out_dir, filenames,
                                      args.run_all)
     if targets != new_targets:
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
       targets = new_targets
-      if not BuildTestTargetsWithNinja(args.out_dir, targets, args.dry_run):
+      if not BuildTestTargetsWithNinja(out_dir, targets, args.dry_run):
         sys.exit(1)
   else:  # cache still valid, quit if the build failed
     if not build_ok: sys.exit(1)
 
-  RunTestTargets(args.out_dir, targets, gtest_filter, _extras, args.dry_run)
+  RunTestTargets(out_dir, targets, gtest_filter, _extras, args.dry_run)
 
 
 if __name__ == '__main__':
