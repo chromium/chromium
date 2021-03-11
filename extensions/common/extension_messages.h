@@ -573,13 +573,6 @@ IPC_MESSAGE_CONTROL4(ExtensionMsg_UpdateUserScripts,
                      std::set<extensions::mojom::HostID> /* changed hosts */,
                      bool /* whitelisted_only */)
 
-// Trigger to execute declarative content script under browser control.
-IPC_MESSAGE_ROUTED4(ExtensionMsg_ExecuteDeclarativeScript,
-                    int /* tab identifier */,
-                    extensions::ExtensionId /* extension identifier */,
-                    std::string /* script identifier */,
-                    GURL /* page URL where script should be injected */)
-
 // Tell the render view which browser window it's being attached to.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_UpdateBrowserWindowId,
                     int /* id of browser window */)

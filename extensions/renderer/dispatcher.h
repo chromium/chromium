@@ -182,6 +182,12 @@ class Dispatcher : public content::RenderThreadObserver,
                                 const std::string& function_name,
                                 const base::ListValue& args);
 
+  void ExecuteDeclarativeScript(content::RenderFrame* render_frame,
+                                int tab_id,
+                                const ExtensionId& extension_id,
+                                const std::string& script_id,
+                                const GURL& url);
+
   struct JsResourceInfo {
     const char* name = nullptr;
     int id = 0;

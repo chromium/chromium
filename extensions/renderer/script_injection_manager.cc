@@ -97,10 +97,6 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void OnStop() override;
 
   virtual void OnExecuteCode(const mojom::ExecuteCodeParams& params);
-  virtual void OnExecuteDeclarativeScript(int tab_id,
-                                          const ExtensionId& extension_id,
-                                          const std::string& script_id,
-                                          const GURL& url);
   virtual void OnPermitScriptInjection(int64_t request_id);
 
   // Tells the ScriptInjectionManager to run tasks associated with
@@ -154,8 +150,6 @@ bool ScriptInjectionManager::RFOHelper::OnMessageReceived(
     IPC_MESSAGE_HANDLER(ExtensionMsg_ExecuteCode, OnExecuteCode)
     IPC_MESSAGE_HANDLER(ExtensionMsg_PermitScriptInjection,
                         OnPermitScriptInjection)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_ExecuteDeclarativeScript,
-                        OnExecuteDeclarativeScript)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -249,23 +243,6 @@ void ScriptInjectionManager::RFOHelper::OnStop() {
 void ScriptInjectionManager::RFOHelper::OnExecuteCode(
     const mojom::ExecuteCodeParams& params) {
   manager_->HandleExecuteCode(params, render_frame());
-}
-
-void ScriptInjectionManager::RFOHelper::OnExecuteDeclarativeScript(
-    int tab_id,
-    const ExtensionId& extension_id,
-    const std::string& script_id,
-    const GURL& url) {
-  // TODO(markdittmer): URL-checking isn't the best security measure.
-  // Begin script injection workflow only if the current URL is identical to
-  // the one that matched declarative conditions in the browser.
-  if (GURL(render_frame()->GetWebFrame()->GetDocument().Url()) == url) {
-    manager_->HandleExecuteDeclarativeScript(render_frame(),
-                                             tab_id,
-                                             extension_id,
-                                             script_id,
-                                             url);
-  }
 }
 
 void ScriptInjectionManager::RFOHelper::OnPermitScriptInjection(
@@ -514,7 +491,7 @@ void ScriptInjectionManager::HandleExecuteCode(
   TryToInject(std::move(injection), run_location, &scripts_run_info);
 }
 
-void ScriptInjectionManager::HandleExecuteDeclarativeScript(
+void ScriptInjectionManager::ExecuteDeclarativeScript(
     content::RenderFrame* render_frame,
     int tab_id,
     const ExtensionId& extension_id,
@@ -526,7 +503,8 @@ void ScriptInjectionManager::HandleExecuteDeclarativeScript(
   if (injection.get()) {
     ScriptsRunInfo scripts_run_info(render_frame,
                                     mojom::RunLocation::kBrowserDriven);
-    // TODO(markdittmer): Use return value of TryToInject for error handling.
+    // TODO(https://crbug.com/1186525): Use return value of TryToInject for
+    // error handling.
     TryToInject(std::move(injection), mojom::RunLocation::kBrowserDriven,
                 &scripts_run_info);
 

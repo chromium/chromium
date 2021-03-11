@@ -44,6 +44,12 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Removes pending injections of the unloaded extension.
   void OnExtensionUnloaded(const std::string& extension_id);
 
+  void ExecuteDeclarativeScript(content::RenderFrame* render_frame,
+                                int tab_id,
+                                const ExtensionId& extension_id,
+                                const std::string& script_id,
+                                const GURL& url);
+
   void set_activity_logging_enabled(bool enabled) {
     activity_logging_enabled_ = enabled;
   }
@@ -87,13 +93,6 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Handle the ExecuteCode extension message.
   void HandleExecuteCode(const mojom::ExecuteCodeParams& params,
                          content::RenderFrame* render_frame);
-
-  // Handle the ExecuteDeclarativeScript extension message.
-  void HandleExecuteDeclarativeScript(content::RenderFrame* web_frame,
-                                      int tab_id,
-                                      const ExtensionId& extension_id,
-                                      const std::string& script_id,
-                                      const GURL& url);
 
   // Handle the GrantInjectionPermission extension message.
   void HandlePermitScriptInjection(int64_t request_id);

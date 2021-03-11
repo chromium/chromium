@@ -70,4 +70,10 @@ interface LocalFrame {
                 string module_name,
                 string function_name,
                 mojo_base.mojom.ListValue args);
+
+  // Trigger to execute declarative content script under browser control.
+  ExecuteDeclarativeScript(int32 tab_id,
+                           string extension_id,
+                           string script_id,
+                           url.mojom.Url url);
 };

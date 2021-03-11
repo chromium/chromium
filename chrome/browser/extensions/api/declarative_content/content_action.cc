@@ -18,12 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
@@ -356,11 +356,11 @@ void RequestContentScript::Revert(const ApplyInfo& apply_info) const {}
 void RequestContentScript::InstructRenderProcessToInject(
     content::WebContents* contents,
     const Extension* extension) const {
-  content::RenderFrameHost* render_frame_host = contents->GetMainFrame();
-  render_frame_host->Send(new ExtensionMsg_ExecuteDeclarativeScript(
-      render_frame_host->GetRoutingID(),
-      sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
-      script_.id(), contents->GetLastCommittedURL()));
+  ExtensionWebContentsObserver::GetForWebContents(contents)
+      ->GetLocalFrame(contents->GetMainFrame())
+      ->ExecuteDeclarativeScript(
+          sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
+          script_.id(), contents->GetLastCommittedURL());
 }
 
 // static

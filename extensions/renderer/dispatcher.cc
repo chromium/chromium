@@ -712,6 +712,15 @@ void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
                           &args));
 }
 
+void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
+                                          int tab_id,
+                                          const ExtensionId& extension_id,
+                                          const std::string& script_id,
+                                          const GURL& url) {
+  script_injection_manager_->ExecuteDeclarativeScript(
+      render_frame, tab_id, extension_id, script_id, url);
+}
+
 // static
 std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
   // Libraries.

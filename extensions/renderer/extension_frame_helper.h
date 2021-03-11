@@ -109,6 +109,10 @@ class ExtensionFrameHelper
                      const std::string& module_name,
                      const std::string& function_name,
                      const base::Value args) override;
+  void ExecuteDeclarativeScript(int32_t tab_id,
+                                const std::string& extension_id,
+                                const std::string& script_id,
+                                const GURL& url) override;
 
   // Called when the document element has been inserted in this frame. This
   // method may invoke untrusted JavaScript code that invalidate the frame and
