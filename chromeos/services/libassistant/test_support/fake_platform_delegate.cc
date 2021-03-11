@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
+#include "chromeos/services/libassistant/test_support/fake_platform_delegate.h"
 
 namespace chromeos {
 namespace assistant {

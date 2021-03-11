@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
 #include "chromeos/services/libassistant/power_manager_provider_impl.h"
+#include "chromeos/services/libassistant/test_support/fake_platform_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"

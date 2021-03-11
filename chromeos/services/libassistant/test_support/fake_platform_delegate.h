@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_DELEGATE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_DELEGATE_H_
+#ifndef CHROMEOS_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_
+#define CHROMEOS_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_
 
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom.h"
-
-#include "base/component_export.h"
 
 namespace chromeos {
 namespace assistant {
 
-class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
-    FakePlatformDelegate
+class FakePlatformDelegate
     : public chromeos::libassistant::mojom::PlatformDelegate {
  public:
   FakePlatformDelegate();
@@ -63,4 +60,4 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_MIGRATION_FAKE_PLATFORM_DELEGATE_H_
+#endif  // CHROMEOS_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_PLATFORM_DELEGATE_H_

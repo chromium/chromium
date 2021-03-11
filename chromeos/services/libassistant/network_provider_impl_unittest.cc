@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/assistant/public/cpp/migration/fake_platform_delegate.h"
+#include "chromeos/services/libassistant/test_support/fake_platform_delegate.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"

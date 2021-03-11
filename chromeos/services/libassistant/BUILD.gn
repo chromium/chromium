@@ -163,6 +163,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_support/fake_platform_delegate.cc",
+    "test_support/fake_platform_delegate.h",
     "test_support/libassistant_service_tester.cc",
     "test_support/libassistant_service_tester.h",
   ]

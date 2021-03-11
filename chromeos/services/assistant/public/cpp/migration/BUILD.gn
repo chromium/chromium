@@ -35,8 +35,6 @@ component("test_support") {
   sources = [
     "fake_assistant_manager_service_delegate.cc",
     "fake_assistant_manager_service_delegate.h",
-    "fake_platform_delegate.cc",
-    "fake_platform_delegate.h",
   ]
 
   deps = [
