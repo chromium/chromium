@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -84,6 +88,29 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   // Neither icon nor bubble should be visible.
   NavigateTo("https://www.example.com/first/");
   EXPECT_FALSE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
+  SetUpOfferDataWithDomains(
+      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+
+  NavigateTo(chrome::kChromeUINewTabURL);
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  NavigateTo("https://www.example.com/first");
+  WaitForObservedEvent();
+
+  // Bubble should be visible.
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com/"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
