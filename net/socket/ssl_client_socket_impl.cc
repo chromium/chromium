@@ -683,11 +683,21 @@ int SSLClientSocketImpl::ReadIfReady(IOBuffer* buf,
 }
 
 int SSLClientSocketImpl::CancelReadIfReady() {
-  int result = stream_socket_->CancelReadIfReady();
+  DCHECK(user_read_callback_);
+  DCHECK(!user_read_buf_);
+
   // Cancel |user_read_callback_|, because caller does not expect the callback
   // to be invoked after they have canceled the ReadIfReady.
+  //
+  // We do not pass the signal on to |stream_socket_| or |transport_adapter_|.
+  // Multiple operations may be waiting on a transport ReadIfReady().
+  // Conversely, an SSL ReadIfReady() may be blocked on something other than a
+  // transport ReadIfReady(). Instead, the underlying transport ReadIfReady()
+  // will continue running (with no underlying buffer). When it completes, it
+  // will signal OnReadReady(), which will notice there is no read operation to
+  // progress and skip it.
   user_read_callback_.Reset();
-  return result;
+  return OK;
 }
 
 int SSLClientSocketImpl::Write(

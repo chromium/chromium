@@ -27,6 +27,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -1364,6 +1365,51 @@ TEST_P(SSLServerSocketAlpsTest, Alps) {
     EXPECT_FALSE(alps_data_received_by_client.has_value());
     EXPECT_FALSE(alps_data_received_by_server.has_value());
   }
+}
+
+// Test that CancelReadIfReady works.
+TEST_F(SSLServerSocketTest, CancelReadIfReady) {
+  ASSERT_NO_FATAL_FAILURE(CreateContext());
+  ASSERT_NO_FATAL_FAILURE(CreateSockets());
+
+  TestCompletionCallback connect_callback;
+  int client_ret = client_socket_->Connect(connect_callback.callback());
+  TestCompletionCallback handshake_callback;
+  int server_ret = server_socket_->Handshake(handshake_callback.callback());
+  ASSERT_THAT(connect_callback.GetResult(client_ret), IsOk());
+  ASSERT_THAT(handshake_callback.GetResult(server_ret), IsOk());
+
+  // Attempt to read from the server socket. There will not be anything to read.
+  // Cancel the read immediately afterwards.
+  TestCompletionCallback read_callback;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(1);
+  int read_ret =
+      server_socket_->ReadIfReady(read_buf.get(), 1, read_callback.callback());
+  ASSERT_THAT(read_ret, IsError(ERR_IO_PENDING));
+  ASSERT_THAT(server_socket_->CancelReadIfReady(), IsOk());
+
+  // After the client writes data, the server should still not pick up a result.
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>("a");
+  TestCompletionCallback write_callback;
+  ASSERT_EQ(write_callback.GetResult(client_socket_->Write(
+                write_buf.get(), write_buf->size(), write_callback.callback(),
+                TRAFFIC_ANNOTATION_FOR_TESTS)),
+            write_buf->size());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(read_callback.have_result());
+
+  // After a canceled read, future reads are still possible.
+  while (true) {
+    TestCompletionCallback read_callback2;
+    read_ret = server_socket_->ReadIfReady(read_buf.get(), 1,
+                                           read_callback2.callback());
+    if (read_ret != ERR_IO_PENDING) {
+      break;
+    }
+    ASSERT_THAT(read_callback2.GetResult(read_ret), IsOk());
+  }
+  ASSERT_EQ(1, read_ret);
+  EXPECT_EQ(read_buf->data()[0], 'a');
 }
 
 }  // namespace net

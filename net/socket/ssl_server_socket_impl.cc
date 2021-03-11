@@ -89,6 +89,7 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   int ReadIfReady(IOBuffer* buf,
                   int buf_len,
                   CompletionOnceCallback callback) override;
+  int CancelReadIfReady() override;
   int Write(IOBuffer* buf,
             int buf_len,
             CompletionOnceCallback callback,
@@ -476,6 +477,22 @@ int SSLServerContextImpl::SocketImpl::ReadIfReady(
   }
 
   return rv;
+}
+
+int SSLServerContextImpl::SocketImpl::CancelReadIfReady() {
+  DCHECK(user_read_callback_);
+  DCHECK(!user_read_buf_);
+
+  // Cancel |user_read_callback_|, because caller does not expect the callback
+  // to be invoked after they have canceled the ReadIfReady.
+  //
+  // We do not pass the signal on to |stream_socket_| or |transport_adapter_|.
+  // When it completes, it will signal OnReadReady(), which will notice there is
+  // no read operation to progress and skip it. Unlike with SSLClientSocket,
+  // SSL and transport reads are more aligned, but this avoids making
+  // assumptions or breaking the SocketBIOAdapter's state.
+  user_read_callback_.Reset();
+  return OK;
 }
 
 int SSLServerContextImpl::SocketImpl::Write(

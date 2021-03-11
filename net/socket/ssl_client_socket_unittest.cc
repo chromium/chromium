@@ -23,6 +23,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -218,6 +219,7 @@ class FakeBlockingStreamSocket : public WrappedStreamSocket {
   int ReadIfReady(IOBuffer* buf,
                   int buf_len,
                   CompletionOnceCallback callback) override;
+  int CancelReadIfReady() override;
   int Write(IOBuffer* buf,
             int buf_len,
             CompletionOnceCallback callback,
@@ -358,6 +360,12 @@ int FakeBlockingStreamSocket::ReadIfReady(IOBuffer* buf,
   return rv;
 }
 
+int FakeBlockingStreamSocket::CancelReadIfReady() {
+  DCHECK(!read_if_ready_callback_.is_null());
+  read_if_ready_callback_.Reset();
+  return OK;
+}
+
 int FakeBlockingStreamSocket::Write(
     IOBuffer* buf,
     int len,
@@ -485,12 +493,13 @@ void FakeBlockingStreamSocket::OnReadCompleted(int result) {
 
 void FakeBlockingStreamSocket::CompleteReadIfReady(scoped_refptr<IOBuffer> buf,
                                                    int rv) {
-  DCHECK(read_if_ready_callback_);
   DCHECK(read_if_ready_buf_.empty());
   DCHECK(!should_block_read_);
   if (rv > 0)
     read_if_ready_buf_ = std::string(buf->data(), buf->data() + rv);
-  std::move(read_if_ready_callback_).Run(rv > 0 ? OK : rv);
+  // The callback may be null if CancelReadIfReady() was called.
+  if (!read_if_ready_callback_.is_null())
+    std::move(read_if_ready_callback_).Run(rv > 0 ? OK : rv);
 }
 
 void FakeBlockingStreamSocket::ReturnReadResult() {
@@ -5017,6 +5026,77 @@ TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTEarlyDataLimit) {
   EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
 }
 
+// When a client socket reaches the 0-RTT early data limit, both Write() and
+// ConfirmHandshake() become blocked on a transport read. Test that
+// CancelReadIfReady() does not interrupt those.
+TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTEarlyDataLimitCancelReadIfReady) {
+  ASSERT_TRUE(StartServer());
+  ASSERT_TRUE(RunInitialConnection());
+
+  // Make a 0-RTT Connection. Connect() completes even though the ServerHello is
+  // blocked.
+  FakeBlockingStreamSocket* socket = MakeClient(true);
+  socket->BlockReadResult();
+  ASSERT_THAT(Connect(), IsOk());
+
+  // EmbeddedTestServer uses BoringSSL's hard-coded early data limit, which is
+  // below 16k.
+  constexpr size_t kRequestSize = 16 * 1024;
+  std::string request = "GET /zerortt HTTP/1.0\r\n";
+  while (request.size() < kRequestSize) {
+    request += "The-Answer-To-Life-The-Universe-And-Everything: 42\r\n";
+  }
+  request += "\r\n";
+
+  // Writing the large input should not succeed. It is blocked on the
+  // ServerHello.
+  TestCompletionCallback write_callback;
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>(request);
+  int write_rv = ssl_socket()->Write(write_buf.get(), request.size(),
+                                     write_callback.callback(),
+                                     TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_THAT(write_rv, IsError(ERR_IO_PENDING));
+
+  // The Write should have issued a read for the ServerHello, so
+  // WaitForReadResult has something to wait for.
+  socket->WaitForReadResult();
+  EXPECT_TRUE(socket->pending_read_result());
+
+  // Attempt a ReadIfReady(). It should be blocked on the ServerHello.
+  TestCompletionCallback read_callback;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(4096);
+  int read_rv =
+      ssl_socket()->ReadIfReady(read_buf.get(), 4096, read_callback.callback());
+  ASSERT_THAT(read_rv, IsError(ERR_IO_PENDING));
+
+  // Also queue a ConfirmHandshake. It should also be blocked on ServerHello.
+  TestCompletionCallback confirm_callback;
+  int confirm_rv = ssl_socket()->ConfirmHandshake(confirm_callback.callback());
+  ASSERT_THAT(confirm_rv, IsError(ERR_IO_PENDING));
+
+  // Cancel the ReadIfReady() and release the ServerHello. The remaining
+  // operations should complete.
+  ASSERT_THAT(ssl_socket()->CancelReadIfReady(), IsOk());
+  socket->UnblockReadResult();
+  EXPECT_EQ(static_cast<int>(request.size()),
+            write_callback.GetResult(write_rv));
+  EXPECT_THAT(confirm_callback.GetResult(confirm_rv), IsOk());
+
+  // ReadIfReady() should not complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(read_callback.have_result());
+
+  SSLInfo ssl_info;
+  ASSERT_TRUE(GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+
+  // After a canceled read, future reads are still possible.
+  TestCompletionCallback read_callback2;
+  read_rv = read_callback2.GetResult(
+      ssl_socket()->Read(read_buf.get(), 4096, read_callback2.callback()));
+  ASSERT_GT(read_rv, 0);
+}
+
 TEST_F(SSLClientSocketZeroRTTTest, ZeroRTTReject) {
   ASSERT_TRUE(StartServer());
   ASSERT_TRUE(RunInitialConnection());
@@ -5946,6 +6026,62 @@ TEST_F(SSLClientSocketTest, VersionMinOverride) {
   config.version_max_override = SSL_PROTOCOL_VERSION_TLS1_3;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+}
+
+// Basic test of CancelReadIfReady works.
+TEST_F(SSLClientSocketTest, CancelReadIfReady) {
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
+
+  // Connect with a FakeBlockingStreamSocket.
+  auto real_transport = std::make_unique<TCPClientSocket>(
+      addr(), nullptr, nullptr, nullptr, NetLogSource());
+  auto transport =
+      std::make_unique<FakeBlockingStreamSocket>(std::move(real_transport));
+  FakeBlockingStreamSocket* raw_transport = transport.get();
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(transport->Connect(callback.callback())),
+              IsOk());
+
+  // Complete the handshake. Disable the post-handshake peek so that, after the
+  // handshake, there are no pending reads on the transport.
+  SSLConfig config;
+  config.disable_post_handshake_peek_for_testing = true;
+  auto sock =
+      CreateSSLClientSocket(std::move(transport), host_port_pair(), config);
+  ASSERT_THAT(callback.GetResult(sock->Connect(callback.callback())), IsOk());
+
+  // Block the socket and wait for some data to arrive from the server.
+  raw_transport->BlockReadResult();
+  auto write_buf =
+      base::MakeRefCounted<StringIOBuffer>("GET / HTTP/1.0\r\n\r\n");
+  ASSERT_EQ(callback.GetResult(sock->Write(write_buf.get(), write_buf->size(),
+                                           callback.callback(),
+                                           TRAFFIC_ANNOTATION_FOR_TESTS)),
+            write_buf->size());
+
+  // ReadIfReady() should not read anything because the socket is blocked.
+  bool callback_called = false;
+  auto read_buf = base::MakeRefCounted<IOBuffer>(100);
+  int rv = sock->ReadIfReady(
+      read_buf.get(), 100,
+      base::BindLambdaForTesting([&](int rv) { callback_called = true; }));
+  ASSERT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // Cancel ReadIfReady() and unblock the socket.
+  ASSERT_THAT(sock->CancelReadIfReady(), IsOk());
+  raw_transport->WaitForReadResult();
+  raw_transport->UnblockReadResult();
+  base::RunLoop().RunUntilIdle();
+
+  // Although data is now available, the callback should not have been called.
+  EXPECT_FALSE(callback_called);
+
+  // Future reads on the socket should still work. The data should be
+  // synchronously available.
+  EXPECT_GT(
+      callback.GetResult(sock->Read(read_buf.get(), 100, callback.callback())),
+      0);
 }
 
 class SSLClientSocketAlpsTest
