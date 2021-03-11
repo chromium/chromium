@@ -24,6 +24,8 @@ RankingItemType RankingItemTypeFromSearchResult(
     case ash::AppListSearchResultType::kOmnibox:
       return RankingItemType::kOmniboxGeneric;
     case ash::AppListSearchResultType::kLauncher:
+    case ash::AppListSearchResultType::kLocalFile:
+    case ash::AppListSearchResultType::kDriveFile:
       return RankingItemType::kFile;
     case ash::AppListSearchResultType::kUnknown:
     case ash::AppListSearchResultType::kPlayStoreApp:

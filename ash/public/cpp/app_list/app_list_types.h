@@ -158,6 +158,8 @@ enum class AppListSearchResultType {
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
   kAssistantText,          // Assistant text results.
   kHelpApp,                // Help App (aka Explore) results.
+  kLocalFile,              // Local file search results.
+  kDriveFile,              // Drive file search results.
   // Add new values here.
 };
 
