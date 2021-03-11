@@ -137,10 +137,8 @@ base::Optional<SkBitmap> CreateBitmap(
   const gfx::Rect clip_rect =
       AdjustClipRect(raw_clip_rect, skp->cullRect(), scale_factor);
   SkBitmap bitmap;
-  // Use N32 rather than an alpha color type as frames cannot have transparent
-  // backgrounds.
-  if (!bitmap.tryAllocPixels(SkImageInfo::MakeN32(
-          clip_rect.width(), clip_rect.height(), kOpaque_SkAlphaType))) {
+  if (!bitmap.tryAllocPixels(
+          SkImageInfo::MakeN32Premul(clip_rect.width(), clip_rect.height()))) {
     return base::nullopt;
   }
   SkCanvas canvas(bitmap, skia::LegacyDisplayGlobals::GetSkSurfaceProps());

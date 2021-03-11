@@ -64,7 +64,8 @@ public class PlayerFrameBitmapPainterTest {
         }
 
         @Implementation
-        public static Bitmap decodeByteArray(byte[] array, int offset, int length) {
+        public static Bitmap decodeByteArray(
+                byte[] array, int offset, int length, BitmapFactory.Options options) {
             return sBitmaps.get(fromByteArray(array));
         }
     }
@@ -262,11 +263,17 @@ public class PlayerFrameBitmapPainterTest {
 
         // Prepare the bitmap matrix.
         Bitmap bitmap00 = Mockito.mock(Bitmap.class);
+        when(bitmap00.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Bitmap bitmap10 = Mockito.mock(Bitmap.class);
+        when(bitmap10.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Bitmap bitmap01 = Mockito.mock(Bitmap.class);
+        when(bitmap01.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Bitmap bitmap11 = Mockito.mock(Bitmap.class);
+        when(bitmap11.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Bitmap bitmap20 = Mockito.mock(Bitmap.class);
+        when(bitmap20.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Bitmap bitmap21 = Mockito.mock(Bitmap.class);
+        when(bitmap21.extractAlpha()).thenReturn(Mockito.mock(Bitmap.class));
         Map<Integer, Bitmap> bitmapMap = new HashMap<>();
         bitmapMap.put(bitmap00.hashCode(), bitmap00);
         bitmapMap.put(bitmap10.hashCode(), bitmap10);
