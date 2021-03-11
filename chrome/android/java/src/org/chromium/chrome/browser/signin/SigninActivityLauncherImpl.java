@@ -21,8 +21,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * SigninActivityLauncher creates the proper intent and then launches the
  * SigninActivity in different scenarios.
  */
-public class SigninActivityLauncherImpl implements SigninActivityLauncher {
-    private static SigninActivityLauncherImpl sLauncher;
+public final class SigninActivityLauncherImpl implements SigninActivityLauncher {
+    private static SigninActivityLauncher sLauncher;
 
     /**
      * Singleton instance getter
@@ -35,7 +35,7 @@ public class SigninActivityLauncherImpl implements SigninActivityLauncher {
     }
 
     @VisibleForTesting
-    public static void setLauncherForTest(@Nullable SigninActivityLauncherImpl launcher) {
+    public static void setLauncherForTest(@Nullable SigninActivityLauncher launcher) {
         sLauncher = launcher;
     }
 
