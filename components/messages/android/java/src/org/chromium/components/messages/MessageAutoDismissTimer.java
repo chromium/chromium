@@ -14,15 +14,14 @@ import org.chromium.base.ThreadUtils;
  * Auto dismiss timer for messages.
  */
 class MessageAutoDismissTimer {
-    private final long mDuration;
+    private long mDuration;
     private Runnable mRunnableOnTimeUp;
     private Handler mAutoDismissTimer;
 
     /**
      * @param duration Duration in mills.
      */
-    public MessageAutoDismissTimer(long duration) {
-        mDuration = duration;
+    public MessageAutoDismissTimer() {
         mAutoDismissTimer = new Handler(ThreadUtils.getUiThreadLooper());
     }
 
@@ -33,7 +32,7 @@ class MessageAutoDismissTimer {
         if (mRunnableOnTimeUp == null) return;
         Runnable runnable = mRunnableOnTimeUp;
         cancelTimer();
-        startTimer(runnable);
+        startTimer(mDuration, runnable);
     }
 
     /**
@@ -48,7 +47,9 @@ class MessageAutoDismissTimer {
     /**
      * @param runnableOnTimeUp Runnable called when time is up.
      */
-    void startTimer(Runnable runnableOnTimeUp) {
+    void startTimer(long duration, Runnable runnableOnTimeUp) {
+        mDuration = duration;
+        assert mDuration > 0;
         mRunnableOnTimeUp = runnableOnTimeUp;
         mAutoDismissTimer.postDelayed(mRunnableOnTimeUp, mDuration);
     }
