@@ -22,6 +22,9 @@ public class ListModelChangeProcessor<M extends ListObservable<P>, V, P>
         implements ListObservable.ListObserver<P> {
     /**
      * A generic view binder that associates a view with a model.
+     *
+     * Refer to Javadocs for {@link ListObservable} for more information on the methods.
+     *
      * @param <M> The {@link ListObservable} model.
      * @param <V> The view or view holder that should be changed based on the model.
      * @param <P> The payload for partial updates. Void can be used if a payload is not needed.
