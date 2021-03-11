@@ -234,12 +234,17 @@ void PluginVmDriveImageDownloadService::DownloadActionCallback(
 
 void PluginVmDriveImageDownloadService::GetContentCallback(
     google_apis::DriveApiErrorCode error_code,
-    std::unique_ptr<std::string> content) {
+    std::unique_ptr<std::string> content,
+    bool first_chunk) {
   if (ErrorCodeIndicatesFailure(error_code)) {
     LOG(ERROR) << "Download failed with error code: " << (int)error_code;
     plugin_vm_installer_->OnDownloadFailed(ConvertToFailureReason(error_code));
     return;
   }
+
+  if (first_chunk)
+    ResetState();
+
   secure_hash_service_->Update(content->c_str(), content->length());
   total_bytes_downloaded_ += content->length();
 }

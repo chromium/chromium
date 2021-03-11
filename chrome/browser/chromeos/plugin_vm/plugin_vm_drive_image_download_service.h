@@ -69,7 +69,8 @@ class PluginVmDriveImageDownloadService {
   void DownloadActionCallback(google_apis::DriveApiErrorCode error_code,
                               const base::FilePath& file_path);
   void GetContentCallback(google_apis::DriveApiErrorCode error_code,
-                          std::unique_ptr<std::string> content);
+                          std::unique_ptr<std::string> content,
+                          bool first_chunk);
   void ProgressCallback(int64_t progress, int64_t total);
 
   PluginVmInstaller* plugin_vm_installer_;

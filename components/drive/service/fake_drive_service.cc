@@ -796,7 +796,7 @@ CancelCallbackOnce FakeDriveService::DownloadFile(
           new std::string(content_data.substr(i, size)));
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(get_content_callback, HTTP_SUCCESS,
-                                    std::move(content_for_callback)));
+                                    std::move(content_for_callback), i == 0));
     }
   }
 
