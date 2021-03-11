@@ -137,6 +137,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:util,texture,texel_data:ufloat_texel_data_
 
 # Test is outdated relative to spec; need to fix the test first.
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindingTypeSpecific_optional_members,* [ Skip ]
+crbug.com/dawn/130 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_state:check_multiple_of_4_bytes_constraint_on_offset,* [ Failure ]
 
 # Deprecations that need to be updated in the tests
 wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:* [ Failure ]
