@@ -68,8 +68,8 @@ struct BLINK_EXPORT WebServiceWorkerInstalledScriptsManagerParams {
       manager_host_remote;
 };
 
-// An interface to start and terminate an embedded worker.
-// All methods of this class must be called on the main thread.
+// An interface to start and terminate an embedded worker. Lives on
+// a background thread from the ThreadPool.
 class BLINK_EXPORT WebEmbeddedWorker {
  public:
   // Invoked on the main thread to instantiate a WebEmbeddedWorker.

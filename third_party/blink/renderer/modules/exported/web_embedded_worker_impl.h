@@ -51,12 +51,11 @@ class ServiceWorkerThread;
 struct CrossThreadFetchClientSettingsObjectData;
 
 // The implementation of WebEmbeddedWorker. This is responsible for starting
-// and terminating a service worker thread.
+// and terminating a service worker thread. Lives on a ThreadPool background
+// thread.
 //
-// Currently this starts the worker thread on the main thread. Future plan is to
-// start the worker thread off the main thread. This means that
-// WebEmbeddedWorkerImpl shouldn't create garbage-collected objects during
-// worker startup. See https://crbug.com/988335 for details.
+// Because it lives on a ThreadPool thread, this class does not make
+// GarbageCollected objects (https://crbug.com/988335).
 class MODULES_EXPORT WebEmbeddedWorkerImpl final : public WebEmbeddedWorker {
  public:
   explicit WebEmbeddedWorkerImpl(WebServiceWorkerContextClient*);
