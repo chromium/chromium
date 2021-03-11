@@ -28,6 +28,11 @@ extern const char kSixthTabOpened[];
 // The user made a new tab group.
 extern const char kTabGroupCreated[];
 
+// A tab was added to reading list.
+extern const char kReadingListItemAdded[];
+// Reading list was opened.
+extern const char kReadingListMenuOpened[];
+
 // All conditions for reopen closed tab IPH were met. Since this IPH needs to
 // track user events (opening/closing tabs, focusing the omnibox, etc) on the
 // second level, it must be done manually.

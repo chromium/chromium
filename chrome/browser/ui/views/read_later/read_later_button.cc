@@ -11,6 +11,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +26,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -279,6 +282,10 @@ void ReadLaterButton::ButtonPressed() {
     } else {
       base::RecordAction(
           base::UserMetricsAction("DesktopReadingList.OpenReadingList"));
+      feature_engagement::Tracker* tracker =
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              browser_->profile());
+      tracker->NotifyEvent(feature_engagement::events::kReadingListMenuOpened);
       RecordBookmarkBarState(browser_);
       webui_bubble_manager_->ShowBubble();
       reading_list_model_->MarkAllSeen();
