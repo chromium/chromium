@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInsta
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
 import org.chromium.chrome.browser.autofill_assistant.metrics.OnBoarding;
+import org.chromium.chrome.browser.autofill_assistant.strings.IntentStrings;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
@@ -25,7 +26,13 @@ public class AutofillAssistantMetrics {
     /**
      * Records the reason for a drop out.
      */
-    public static void recordDropOut(@DropOutReason int reason) {
+    public static void recordDropOut(@DropOutReason int reason, String intent) {
+        String histogramSuffix = getHistogramSuffixForIntent(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.DropOutReason." + histogramSuffix, reason,
+                DropOutReason.MAX_VALUE + 1);
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.DropOutReason", reason, DropOutReason.MAX_VALUE + 1);
     }
@@ -33,7 +40,13 @@ public class AutofillAssistantMetrics {
     /**
      * Records the onboarding related action.
      */
-    public static void recordOnBoarding(@OnBoarding int metric) {
+    public static void recordOnBoarding(@OnBoarding int metric, String intent) {
+        String histogramSuffix = getHistogramSuffixForIntent(intent);
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AutofillAssistant.OnBoarding." + histogramSuffix, metric,
+                OnBoarding.MAX_VALUE + 1);
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AutofillAssistant.OnBoarding", metric, OnBoarding.MAX_VALUE + 1);
     }
@@ -50,9 +63,10 @@ public class AutofillAssistantMetrics {
     /**
      * UKM metric. Records the start of a lite script.
      *
-     * The events recorded by this call lacks a trigger type. This is appropriate when the trigger
-     * type is not yet known, because the Trigger protos sent by the server have not been processed
-     * yet. If trigger protos are available, record the metric from C++.
+     * The events recorded by this call lacks a trigger type. This is appropriate
+     * when the trigger type is not yet known, because the Trigger protos sent by
+     * the server have not been processed yet. If trigger protos are available,
+     * record the metric from C++.
      */
     public static void recordLiteScriptStarted(
             WebContents webContents, @LiteScriptStarted int started) {
@@ -68,9 +82,10 @@ public class AutofillAssistantMetrics {
     /**
      * UKM metric. Records the finish of a lite script.
      *
-     * The events recorded by this call lacks a trigger type. This is appropriate when the trigger
-     * type is not yet known, because the Trigger protos sent by the server have not been processed
-     * yet. If trigger protos are available, record the metric from C++.
+     * The events recorded by this call lacks a trigger type. This is appropriate
+     * when the trigger type is not yet known, because the Trigger protos sent by
+     * the server have not been processed yet. If trigger protos are available,
+     * record the metric from C++.
      */
     public static void recordLiteScriptFinished(
             WebContents webContents, @LiteScriptFinishedState int finishedState) {
@@ -84,10 +99,43 @@ public class AutofillAssistantMetrics {
     }
 
     /**
-     * Returns whether {@code webContents} are non-null and valid. Invalid webContents will cause a
-     * failed DCHECK when attempting to report UKM metrics.
+     * Returns whether {@code webContents} are non-null and valid. Invalid
+     * webContents will cause a failed DCHECK when attempting to report UKM metrics.
      */
     private static boolean areWebContentsValid(@Nullable WebContents webContents) {
         return webContents != null && !webContents.isDestroyed();
+    }
+
+    /**
+     * Returns histogram suffix for given intent.
+     */
+    private static String getHistogramSuffixForIntent(String intent) {
+        if (intent == null) {
+            // Intent is not set.
+            return "NotSet";
+        }
+        switch (intent) {
+            case IntentStrings.BUY_MOVIE_TICKET:
+                return "BuyMovieTicket";
+            case IntentStrings.FLIGHTS_CHECKIN:
+                return "FlightsCheckin";
+            case IntentStrings.FOOD_ORDERING:
+                return "FoodOrdering";
+            case IntentStrings.FOOD_ORDERING_DELIVERY:
+                return "FoodOrderingDelivery";
+            case IntentStrings.FOOD_ORDERING_PICKUP:
+                return "FoodOrderingPickup";
+            case IntentStrings.PASSWORD_CHANGE:
+                return "PasswordChange";
+            case IntentStrings.RENT_CAR:
+                return "RentCar";
+            case IntentStrings.SHOPPING:
+                return "Shopping";
+            case IntentStrings.SHOPPING_ASSISTED_CHECKOUT:
+                return "ShoppingAssistedCheckout";
+            case IntentStrings.TELEPORT:
+                return "Teleport";
+        }
+        return "UnknownIntent";
     }
 }

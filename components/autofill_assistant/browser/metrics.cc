@@ -6,8 +6,11 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+
+#include <map>
 
 namespace autofill_assistant {
 
@@ -22,16 +25,39 @@ const char kPaymentRequestFirstNameOnly[] =
 const char kPaymentRequestMandatoryPostalCode[] =
     "Android.AutofillAssistant.PaymentRequest.MandatoryPostalCode";
 static bool DROPOUT_RECORDED = false;
+
+std::string GetSuffixForIntent(const std::string& intent) {
+  std::map<std::string, std::string> histogramsSuffixes = {
+      {kBuyMovieTicket, ".BuyMovieTicket"},
+      {kFlightsCheckin, ".FlightsCheckin"},
+      {kFoodOrdering, ".FoodOrdering"},
+      {kFoodOrderingDelivery, ".FoodOrderingDelivery"},
+      {kFoodOrderingPickup, ".FoodOrderingPickup"},
+      {kPasswordChange, ".PasswordChange"},
+      {kRentCar, ".RentCar"},
+      {kShopping, ".Shopping"},
+      {kShoppingAssistedCheckout, ".ShoppingAssistedCheckout"},
+      {kTeleport, ".Teleport"}};
+
+  // Check if histogram exists for given intent.
+  if (histogramsSuffixes.count(intent) == 0) {
+    DVLOG(2) << "Unknow intent " << intent;
+    return ".UnknownIntent";
+  }
+  return histogramsSuffixes[intent];
+}
 }  // namespace
 
 // static
-void Metrics::RecordDropOut(DropOutReason reason) {
+void Metrics::RecordDropOut(DropOutReason reason, const std::string& intent) {
   DCHECK_LE(reason, DropOutReason::kMaxValue);
   if (DROPOUT_RECORDED) {
     return;
   }
   DVLOG_IF(3, reason != DropOutReason::AA_START)
       << "Drop out with reason: " << reason;
+  auto suffix = GetSuffixForIntent(intent);
+  base::UmaHistogramEnumeration(kDropOutEnumName + suffix, reason);
   base::UmaHistogramEnumeration(kDropOutEnumName, reason);
   DROPOUT_RECORDED = true;
 }

@@ -21,6 +21,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="AutofillAssistantIntents">
+  <variant name="" summary="aggregated across all intents"/>
+  <variant name=".BuyMovieTicket"/>
+  <variant name=".FlightsCheckin"/>
+  <variant name=".FoodOrdering"/>
+  <variant name=".FoodOrderingDelivery"/>
+  <variant name=".FoodOrderingPickup"/>
+  <variant name=".NotSet"/>
+  <variant name=".PasswordChange"/>
+  <variant name=".RentCar"/>
+  <variant name=".Shopping"/>
+  <variant name=".ShoppingAssistedCheckout"/>
+  <variant name=".Teleport"/>
+  <variant name=".UnknownIntent"/>
+</variants>
+
 <histogram name="Android.AppNotificationStatus" enum="NotificationAppStatus"
     expires_after="2020-11-15">
   <owner>peter@chromium.org</owner>
@@ -45,16 +61,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.AutofillAssistant.DropOutReason"
+<histogram name="Android.AutofillAssistant.DropOutReason{Intent}"
     enum="AutofillAssistantDropOutReason" expires_after="2021-08-22">
+  <owner>selakovic@google.com</owner>
   <owner>mcarlen@chromium.org</owner>
   <summary>
-    Reports the drop out reason of an Autofill Assistant script. It is recorded
-    when Autofill Assistant is shut down or terminated. The AA_START value is
-    used as a baseline and counts the number of attempted starts of Autofill
-    Assistant flows. The sum of all drop out reasons should be the same as the
-    number of attempted starts (i.e. AA_START).
+    Reports the drop out reason of an Autofill Assistant script during the
+    {Intent} flow. It is recorded when Autofill Assistant is shut down or
+    terminated. The AA_START value is used as a baseline and counts the number
+    of attempted starts of Autofill Assistant flows. The sum of all drop out
+    reasons should be the same as the number of attempted starts (i.e.
+    AA_START).
   </summary>
+  <token key="Intent" variants="AutofillAssistantIntents"/>
 </histogram>
 
 <histogram name="Android.AutofillAssistant.FeatureModuleInstallation"
@@ -69,16 +88,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Android.AutofillAssistant.OnBoarding"
-    enum="AutofillAssistantOnBoarding" expires_after="2021-06-20">
-  <owner>lsuder@chromium.org</owner>
-  <owner>mcarlen@chromium.org</owner>
-  <summary>
-    Reports the basic user interactions that can happen in regard on boarding.
-    It is recorded on Autofill Assistant startup and during the on boarding.
-  </summary>
-</histogram>
-
 <histogram name="Android.AutofillAssistant.OnboardingFetcher.ResultStatus"
     enum="AutofillAssistantOnboardingFetcherResultStatus" expires_after="M93">
   <owner>sandromaggi@google.com</owner>
@@ -89,6 +98,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     extract data that was received. This is recorded every time an onboarding
     definition is loaded for a user.
   </summary>
+</histogram>
+
+<histogram name="Android.AutofillAssistant.OnBoarding{Intent}"
+    enum="AutofillAssistantOnBoarding" expires_after="2021-09-04">
+  <owner>lsuder@chromium.org</owner>
+  <owner>mcarlen@chromium.org</owner>
+  <summary>
+    Reports the basic user interactions that can happen in regard to onboarding
+    during the {Intent} flow. It is recorded on Autofill Assistant startup and
+    during the on boarding.
+  </summary>
+  <token key="Intent" variants="AutofillAssistantIntents"/>
 </histogram>
 
 <histogram name="Android.AutofillAssistant.PaymentRequest.AutofillChanged"

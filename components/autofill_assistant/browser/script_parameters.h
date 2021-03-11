@@ -43,6 +43,7 @@ class ScriptParameters {
   base::Optional<bool> GetRequestsTriggerScript() const;
   base::Optional<bool> GetStartImmediately() const;
   base::Optional<bool> GetEnabled() const;
+  base::Optional<std::string> GetIntent() const;
 
   // Details parameters.
   base::Optional<bool> GetDetailsShowInitial() const;

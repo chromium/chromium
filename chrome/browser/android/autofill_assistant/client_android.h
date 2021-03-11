@@ -165,6 +165,10 @@ class ClientAndroid : public Client,
   // True if Start() was called. This turns on the tracking of dropouts.
   bool started_ = false;
 
+  // Intent parameter used for tracking dropouts per intent.
+  // TODO(b/182164683) Do not store intent paramenter in |ClientAndroid|.
+  std::string intent_;
+
   // True if the UI was ever attached.
   bool has_had_ui_ = false;
 

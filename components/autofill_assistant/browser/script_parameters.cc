@@ -64,6 +64,9 @@ const char kStartImmediatelyParameterName[] = "START_IMMEDIATELY";
 // Mandatory parameter that MUST be present and set to true in all intents.
 const char kEnabledParameterName[] = "ENABLED";
 
+// The intent parameter.
+const char kIntent[] = "INTENT";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 5> kAllowlistedTriggerScriptParameters = {
@@ -171,6 +174,10 @@ base::Optional<bool> ScriptParameters::GetStartImmediately() const {
 
 base::Optional<bool> ScriptParameters::GetEnabled() const {
   return GetTypedParameter<bool>(parameters_, kEnabledParameterName);
+}
+
+base::Optional<std::string> ScriptParameters::GetIntent() const {
+  return GetParameter(kIntent);
 }
 
 base::Optional<bool> ScriptParameters::GetDetailsShowInitial() const {

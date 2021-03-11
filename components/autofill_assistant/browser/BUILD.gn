@@ -143,6 +143,8 @@ static_library("browser") {
     "generic_ui_replace_placeholders.h",
     "info_box.cc",
     "info_box.h",
+    "intent_strings.cc",
+    "intent_strings.h",
     "metrics.cc",
     "metrics.h",
     "onboarding_result.h",
@@ -465,6 +467,12 @@ if (is_android) {
       "user_data.h",
       "viewport_mode.h",
     ]
+  }
+
+  java_cpp_strings("autofill_assistant_intent_strings_java") {
+    sources = [ "intent_strings.cc" ]
+
+    template = "java_templates/IntentStrings.java.tmpl"
   }
 
   static_library("test_support") {

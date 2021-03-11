@@ -129,8 +129,9 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             Context context, @NonNull WebContents webContents, boolean isChromeCustomTab,
             @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
             @Nullable String callerAccount, @Nullable String userName) {
+        String intent = parameters.get(BaseOnboardingCoordinator.INTENT_IDENTFIER);
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
-            AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN);
+            AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN, intent);
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
                             isChromeCustomTab, /* onboardingCoordinator= */ null);
@@ -147,20 +148,21 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         onboardingCoordinator.show(result -> {
             switch (result) {
                 case AssistantOnboardingResult.DISMISSED:
-                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER, intent);
                     AutofillAssistantMetrics.recordDropOut(
-                            DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                            DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED, intent);
                     break;
                 case AssistantOnboardingResult.REJECTED:
-                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_CANCELLED);
-                    AutofillAssistantMetrics.recordDropOut(DropOutReason.DECLINED);
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_CANCELLED, intent);
+                    AutofillAssistantMetrics.recordDropOut(DropOutReason.DECLINED, intent);
                     break;
                 case AssistantOnboardingResult.NAVIGATION:
-                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
-                    AutofillAssistantMetrics.recordDropOut(DropOutReason.ONBOARDING_NAVIGATION);
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER, intent);
+                    AutofillAssistantMetrics.recordDropOut(
+                            DropOutReason.ONBOARDING_NAVIGATION, intent);
                     break;
                 case AssistantOnboardingResult.ACCEPTED:
-                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_ACCEPTED);
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_ACCEPTED, intent);
                     break;
             }
             AutofillAssistantClient.onOnboardingUiChange(webContents, /* shown= */ false);
