@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -314,4 +315,30 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
   WaitForCartCount(kExpectedExampleFallbackCart);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class CommerceHintCacaoTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ntp_features::kNtpChromeCartModule,
+         optimization_guide::features::kOptimizationHints},
+        {});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This bloom filter rejects "walmart.com" as a shopping site.
+    command_line->AppendSwitchASCII("optimization_guide_hints_override",
+                                    "Eg8IDxILCBsQJxoFiUzKeE4=");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
+  NavigateToURL("https://www.walmart.com/");
+  SendXHR("/add-to-cart", "product: 123");
+  WaitForCartCount(kEmptyExpected);
+}
+
 }  // namespace
