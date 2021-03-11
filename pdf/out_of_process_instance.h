@@ -118,7 +118,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void DocumentLoadFailed() override;
   pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
-  void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
@@ -325,9 +324,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // TODO(abodenha@chromium.org) Implement full IME support in the plugin.
   // http://crbug.com/132565
   std::unique_ptr<pp::TextInput_Dev> text_input_;
-
-  // The last document load progress value sent to the web page.
-  double last_progress_sent_ = 0.0;
 
   // Whether an update to the number of find results found was sent less than
   // |kFindResultCooldownMs| milliseconds ago.

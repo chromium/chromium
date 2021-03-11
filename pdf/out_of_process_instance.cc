@@ -8,8 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <algorithm>  // for min/max()
-#include <cmath>      // for log() and pow()
+#include <algorithm>
 #include <list>
 #include <memory>
 #include <utility>
@@ -1396,30 +1395,6 @@ void OutOfProcessInstance::DocumentHasUnsupportedFeature(
   told_browser_about_unsupported_feature_ = true;
 
   pp::PDF::HasUnsupportedFeature(this);
-}
-
-void OutOfProcessInstance::DocumentLoadProgress(uint32_t available,
-                                                uint32_t doc_size) {
-  double progress = 0.0;
-  if (doc_size) {
-    progress = 100.0 * static_cast<double>(available) / doc_size;
-  } else {
-    // Document size is unknown. Use heuristics.
-    // We'll make progress logarithmic from 0 to 100M.
-    static const double kFactor = log(100000000.0) / 100.0;
-    if (available > 0)
-      progress = std::min(log(static_cast<double>(available)) / kFactor, 100.0);
-  }
-
-  // We send 100% load progress in DocumentLoadComplete.
-  if (progress >= 100)
-    return;
-
-  // Avoid sending too many progress messages over PostMessage.
-  if (progress > last_progress_sent_ + 1) {
-    last_progress_sent_ = progress;
-    SendLoadingProgress(progress);
-  }
 }
 
 void OutOfProcessInstance::FormTextFieldFocusChange(bool in_focus) {

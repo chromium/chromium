@@ -253,9 +253,6 @@ pp::Instance* PdfViewWebPlugin::GetPluginInstance() {
 void PdfViewWebPlugin::DocumentHasUnsupportedFeature(
     const std::string& feature) {}
 
-void PdfViewWebPlugin::DocumentLoadProgress(uint32_t available,
-                                            uint32_t doc_size) {}
-
 void PdfViewWebPlugin::FormTextFieldFocusChange(bool in_focus) {}
 
 bool PdfViewWebPlugin::IsPrintPreview() {

@@ -78,7 +78,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void DocumentLoadFailed() override;
   pp::Instance* GetPluginInstance() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
-  void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   void FormTextFieldFocusChange(bool in_focus) override;
   bool IsPrintPreview() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;

@@ -231,6 +231,32 @@ void PdfViewPluginBase::Email(const std::string& to,
   SendMessage(std::move(message));
 }
 
+void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
+                                             uint32_t doc_size) {
+  double progress = 0.0;
+  if (doc_size > 0) {
+    progress = 100.0 * static_cast<double>(available) / doc_size;
+  } else {
+    // Use heuristics when the document size is unknown.
+    // Progress logarithmically from 0 to 100M.
+    static const double kFactor = std::log(100'000'000.0) / 100.0;
+    if (available > 0)
+      progress =
+          std::min(std::log(static_cast<double>(available)) / kFactor, 100.0);
+  }
+
+  // DocumentLoadComplete() will send the 100% load progress.
+  if (progress >= 100)
+    return;
+
+  // Avoid sending too many progress messages over PostMessage.
+  if (progress <= last_progress_sent_ + 1)
+    return;
+
+  last_progress_sent_ = progress;
+  SendLoadingProgress(progress);
+}
+
 SkColor PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
 }

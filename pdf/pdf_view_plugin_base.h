@@ -72,6 +72,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
              const std::string& bcc,
              const std::string& subject,
              const std::string& body) override;
+  void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;
   void DocumentFocusChanged(bool document_has_focus) override;
@@ -376,6 +377,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // The callback for receiving the password from the page.
   base::OnceCallback<void(const std::string&)> password_callback_;
+
+  // The last document load progress value sent to the web page.
+  double last_progress_sent_ = 0.0;
 
   // The current state of document load.
   DocumentLoadState document_load_state_ = DocumentLoadState::kLoading;
