@@ -341,8 +341,6 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
     {switches::kDisallowNonExactResourceReuse, ""},
     // Disable pinch zoom gesture.
     {switches::kDisablePinch, ""},
-    // Disable the unsandboxed zygote to save some memory.
-    {switches::kNoUnsandboxedZygote, ""},
 };
 
 void AddDefaultCommandLineSwitches(base::CommandLine* command_line) {
