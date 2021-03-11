@@ -17,6 +17,7 @@
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/global_request_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -166,7 +167,6 @@ using TakeResponseBodyPipeCallback =
 using Modifications = DevToolsURLLoaderInterceptor::Modifications;
 using InterceptionStage = DevToolsURLLoaderInterceptor::InterceptionStage;
 using protocol::Response;
-using GlobalRequestId = std::tuple<int32_t, int32_t, int32_t>;
 using network::mojom::CredentialsMode;
 using network::mojom::FetchResponseType;
 
@@ -257,7 +257,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
                         public network::mojom::URLLoader {
  public:
   static InterceptionJob* FindByRequestId(
-      const GlobalRequestId& global_req_id) {
+      const GlobalRequestID& global_req_id) {
     const auto& map = GetInterceptionJobMap();
     auto it = map.find(global_req_id);
     return it == map.end() ? nullptr : it->second;
@@ -288,8 +288,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
       DevToolsURLLoaderInterceptor::HandleAuthRequestCallback callback);
 
  private:
-  static std::map<GlobalRequestId, InterceptionJob*>& GetInterceptionJobMap() {
-    static base::NoDestructor<std::map<GlobalRequestId, InterceptionJob*>> inst;
+  static std::map<GlobalRequestID, InterceptionJob*>& GetInterceptionJobMap() {
+    static base::NoDestructor<std::map<GlobalRequestID, InterceptionJob*>> inst;
     return *inst;
   }
 
@@ -372,7 +372,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   network::ResourceRequest GetResourceRequestForCookies();
 
   const std::string id_prefix_;
-  const GlobalRequestId global_req_id_;
+  const GlobalRequestID global_req_id_;
   const base::UnguessableToken frame_token_;
   const bool report_upload_;
 
@@ -590,7 +590,7 @@ void DevToolsURLLoaderInterceptor::HandleAuthRequest(
     int32_t request_id,
     const net::AuthChallengeInfo& auth_info,
     HandleAuthRequestCallback callback) {
-  GlobalRequestId req_id = std::make_tuple(process_id, routing_id, request_id);
+  GlobalRequestID req_id(process_id, request_id);
   if (auto* job = InterceptionJob::FindByRequestId(req_id))
     job->OnAuthRequest(auth_info, std::move(callback));
   else
@@ -692,10 +692,7 @@ InterceptionJob::InterceptionJob(
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory,
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager)
     : id_prefix_(id),
-      global_req_id_(
-          std::make_tuple(process_id,
-                          create_loader_params->request.render_frame_id,
-                          create_loader_params->request_id)),
+      global_req_id_(process_id, create_loader_params->request_id),
       frame_token_(frame_token),
       report_upload_(!!create_loader_params->request.request_body),
       interceptor_(interceptor),

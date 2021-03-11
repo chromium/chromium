@@ -46,7 +46,6 @@ class CONTENT_EXPORT DevToolsNetworkResourceLoader
       net::SiteForCookies site_for_cookies,
       Caching caching,
       Credentials include_credentials,
-      int32_t render_frame_id,
       CompletionCallback complete_callback);
 
   ~DevToolsNetworkResourceLoader() override;

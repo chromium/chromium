@@ -2740,8 +2740,7 @@ void NetworkHandler::LoadNetworkResource(
     auto loader = DevToolsNetworkResourceLoader::Create(
         std::move(url_loader_factory), std::move(gurl),
         frame->GetLastCommittedOrigin(), frame->ComputeSiteForCookies(),
-        caching, include_credentials, frame->GetRoutingID(),
-        std::move(complete_callback));
+        caching, include_credentials, std::move(complete_callback));
     loaders_.emplace(std::move(loader), std::move(callback));
     return;
   }
@@ -2757,7 +2756,7 @@ void NetworkHandler::LoadNetworkResource(
       auto loader = DevToolsNetworkResourceLoader::Create(
           std::move(url_loader_factory), std::move(gurl),
           std::move(info.origin), std::move(info.site_for_cookies), caching,
-          include_credentials, MSG_ROUTING_NONE, std::move(complete_callback));
+          include_credentials, std::move(complete_callback));
       loaders_.emplace(std::move(loader), std::move(callback));
       return;
     }
