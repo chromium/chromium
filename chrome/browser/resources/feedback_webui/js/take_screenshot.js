@@ -7,7 +7,7 @@
  * @param {function(?HTMLCanvasElement)} callback Callback for returning the
  *     canvas with the screenshot. Called with null if the screenshot failed.
  */
-function takeScreenshot(callback) {
+export function takeScreenshot(callback) {
   let screenshotStream = null;
   const video = document.createElement('video');
 

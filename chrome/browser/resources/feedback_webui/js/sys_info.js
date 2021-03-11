@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../strings.m.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * A queue of a sequence of closures that will incrementally build the sys info
  * html table.

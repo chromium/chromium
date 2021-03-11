@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * Setup handlers for the minimize and close topbar buttons.
  */
@@ -11,11 +13,11 @@ function assistantInit() {
     e.preventDefault();
   });
   closeButton.addEventListener('click', function() {
-    chrome.app.window.current().close();
+    window.close();
   });
   window.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      chrome.app.window.current().close();
+      window.close();
     }
   }, false);
 }
