@@ -211,6 +211,10 @@ class PermissionUmaUtil {
 
   static void PermissionRequested(ContentSettingsType permission,
                                   const GURL& requesting_origin);
+
+  // Records the revocation UMA and UKM metrics for ContentSettingsTypes that
+  // have user facing permission prompts. The passed in `permission` must be
+  // such that PermissionUtil::IsPermission(permission) returns true.
   static void PermissionRevoked(ContentSettingsType permission,
                                 PermissionSourceUI source_ui,
                                 const GURL& revoked_origin,
@@ -240,6 +244,7 @@ class PermissionUmaUtil {
       const std::vector<PermissionRequest*>& requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
+      base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       base::Optional<PermissionPromptDispositionReason> ui_reason,
       base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood);
@@ -298,13 +303,16 @@ class PermissionUmaUtil {
 
  private:
   friend class PermissionUmaUtilTest;
-
+  // Records UMA and UKM metrics for ContentSettingsTypes that have user facing
+  // permission prompts. The passed in `permission` must be such that
+  // PermissionUtil::IsPermission(permission) returns true.
   // web_contents may be null when for recording non-prompt actions.
   static void RecordPermissionAction(
       ContentSettingsType permission,
       PermissionAction action,
       PermissionSourceUI source_ui,
       PermissionRequestGestureType gesture_type,
+      base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       base::Optional<PermissionPromptDispositionReason> ui_reason,
       const GURL& requesting_origin,

@@ -716,9 +716,20 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(2U, new_bubble_content.media_menus.size());
 }
 
-TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kMacCoreLocationImplementation);
+class GeolocationContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest {
+ public:
+  GeolocationContentSettingBubbleModelTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kMacCoreLocationImplementation);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GeolocationContentSettingBubbleModelTest, Geolocation) {
+  ASSERT_TRUE(profile()->CreateHistoryService());
 
 #if defined(OS_MAC)
   auto fake_geolocation_permission_manager =

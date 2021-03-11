@@ -20,6 +20,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -184,6 +185,7 @@ void RecordPermissionActionUkm(
     int dismiss_count,
     int ignore_count,
     PermissionSourceUI source_ui,
+    base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     base::Optional<PermissionPromptDispositionReason> ui_reason,
     base::Optional<bool> has_three_consecutive_denies,
@@ -230,6 +232,11 @@ void RecordPermissionActionUkm(
           PermissionAutoRevocationHistory::PREVIOUSLY_AUTO_REVOKED);
     }
     builder.SetPermissionAutoRevocationHistory(previously_revoked_permission);
+  }
+
+  if (!time_to_decision.is_zero()) {
+    builder.SetTimeToDecision(ukm::GetExponentialBucketMinForUserTiming(
+        time_to_decision.InMilliseconds()));
   }
 
   builder.Record(ukm::UkmRecorder::Get());
@@ -349,22 +356,16 @@ void PermissionUmaUtil::PermissionRevoked(
     PermissionSourceUI source_ui,
     const GURL& revoked_origin,
     content::BrowserContext* browser_context) {
-  // TODO(tsergeant): Expand metrics definitions for revocation to include all
-  // permissions.
-  if (permission == ContentSettingsType::NOTIFICATIONS ||
-      permission == ContentSettingsType::GEOLOCATION ||
-      permission == ContentSettingsType::MEDIASTREAM_MIC ||
-      permission == ContentSettingsType::MEDIASTREAM_CAMERA ||
-      permission == ContentSettingsType::IDLE_DETECTION) {
-    // An unknown gesture type is passed in since gesture type is only
-    // applicable in prompt UIs where revocations are not possible.
-    RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
-                           PermissionRequestGestureType::UNKNOWN,
-                           PermissionPromptDisposition::NOT_APPLICABLE,
-                           base::nullopt /* ui_reason */, revoked_origin,
-                           nullptr /* web_contents */, browser_context,
-                           base::nullopt /* predicted_grant_likelihood */);
-  }
+  DCHECK(PermissionUtil::IsPermission(permission));
+  // An unknown gesture type is passed in since gesture type is only
+  // applicable in prompt UIs where revocations are not possible.
+  RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
+                         PermissionRequestGestureType::UNKNOWN,
+                         /*time_to_decision=*/base::TimeDelta(),
+                         PermissionPromptDisposition::NOT_APPLICABLE,
+                         /*ui_reason=*/base::nullopt, revoked_origin,
+                         /*web_contents=*/nullptr, browser_context,
+                         /*predicted_grant_likelihood=*/base::nullopt);
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -427,6 +428,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     const std::vector<PermissionRequest*>& requests,
     content::WebContents* web_contents,
     PermissionAction permission_action,
+    base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     base::Optional<PermissionPromptDispositionReason> ui_reason,
     base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
@@ -475,8 +477,9 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
     RecordPermissionAction(
         permission, permission_action, PermissionSourceUI::PROMPT, gesture_type,
-        ui_disposition, ui_reason, requesting_origin, web_contents,
-        web_contents->GetBrowserContext(), predicted_grant_likelihood);
+        time_to_decision, ui_disposition, ui_reason, requesting_origin,
+        web_contents, web_contents->GetBrowserContext(),
+        predicted_grant_likelihood);
 
     std::string priorDismissPrefix =
         "Permissions.Prompt." + action_string + ".PriorDismissCount2.";
@@ -613,6 +616,8 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
 PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
   if (!is_initially_allowed_)
     return;
+  if (!PermissionUtil::IsPermission(content_type_))
+    return;
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
   ContentSetting final_content_setting = settings_map->GetContentSetting(
@@ -637,12 +642,14 @@ void PermissionUmaUtil::RecordPermissionAction(
     PermissionAction action,
     PermissionSourceUI source_ui,
     PermissionRequestGestureType gesture_type,
+    base::TimeDelta time_to_decision,
     PermissionPromptDisposition ui_disposition,
     base::Optional<PermissionPromptDispositionReason> ui_reason,
     const GURL& requesting_origin,
     const content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
+  DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           browser_context);
@@ -654,7 +661,8 @@ void PermissionUmaUtil::RecordPermissionAction(
       browser_context, web_contents, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
-          dismiss_count, ignore_count, source_ui, ui_disposition, ui_reason,
+          dismiss_count, ignore_count, source_ui, time_to_decision,
+          ui_disposition, ui_reason,
           permission == ContentSettingsType::NOTIFICATIONS
               ? PermissionsClient::Get()
                     ->HadThreeConsecutiveNotificationPermissionDenies(

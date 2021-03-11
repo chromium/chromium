@@ -585,8 +585,8 @@ void PermissionRequestManager::ShowBubble() {
     }
   }
   current_request_already_displayed_ = true;
+  current_request_first_display_time_ = base::Time::Now();
   NotifyBubbleAdded();
-
   // If in testing mode, automatically respond to the bubble that was shown.
   if (auto_response_for_test_ != NONE)
     DoAutoResponseForTesting();
@@ -606,6 +606,7 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
     selector->Cancel();
 
   current_request_already_displayed_ = false;
+  current_request_first_display_time_ = base::Time();
   prediction_grant_likelihood_.reset();
   current_request_ui_to_use_.reset();
   selector_decisions_.clear();
@@ -617,8 +618,13 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
 void PermissionRequestManager::FinalizeCurrentRequests(
     PermissionAction permission_action) {
   DCHECK(IsRequestInProgress());
+  base::TimeDelta time_to_decision;
+  if (!current_request_first_display_time_.is_null() &&
+      permission_action != PermissionAction::IGNORED) {
+    time_to_decision = base::Time::Now() - current_request_first_display_time_;
+  }
   PermissionUmaUtil::PermissionPromptResolved(
-      requests_, web_contents(), permission_action,
+      requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDispositionForUMA(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
       prediction_grant_likelihood_);
