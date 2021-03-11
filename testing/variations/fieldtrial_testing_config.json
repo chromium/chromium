@@ -3365,27 +3365,6 @@
             ]
         }
     ],
-    "FindInPageBestEffortPriority": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20200601",
-                    "enable_features": [
-                        "BlinkSchedulerBestEffortPriorityForFindInPage"
-                    ]
-                }
-            ]
-        }
-    ],
     "FirstPartySetsOriginTrial": [
         {
             "platforms": [
