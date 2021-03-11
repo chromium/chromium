@@ -494,7 +494,9 @@
 
 # Ignore missing Kotlin meta-annotations so that this library can be used
 # without adding a compileOnly dependency on the Kotlin standard library.
+-dontwarn kotlin.Deprecated
 -dontwarn kotlin.Metadata
+-dontwarn kotlin.ReplaceWith
 -dontwarn kotlin.annotation.AnnotationRetention
 -dontwarn kotlin.annotation.AnnotationTarget
 -dontwarn kotlin.annotation.Retention
