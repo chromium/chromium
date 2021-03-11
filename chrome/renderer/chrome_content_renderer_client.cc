@@ -165,9 +165,11 @@
 #if defined(OS_ANDROID)
 #include "chrome/renderer/sandbox_status_extension_android.h"
 #else
+#include "chrome/renderer/cart/commerce_hint_agent.h"
 #include "chrome/renderer/media/chrome_speech_recognition_client.h"
 #include "chrome/renderer/searchbox/searchbox.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
+#include "components/search/ntp_features.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -627,6 +629,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (command_line->HasSwitch(switches::kInstantProcess) &&
       render_frame->IsMainFrame()) {
     new SearchBox(render_frame);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+      render_frame->IsMainFrame()) {
+    new cart::CommerceHintAgent(render_frame);
   }
 #endif  // !defined(OS_ANDROID)
 

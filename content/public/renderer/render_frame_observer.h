@@ -12,6 +12,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -215,6 +216,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // requests for placeholder images.
   virtual void DidObserveLazyLoadBehavior(
       blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
+
+#if !defined(OS_ANDROID)
+  // Reports that a resource will be requested.
+  virtual void WillSendRequest(const blink::WebURLRequest& request) {}
+#endif
 
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.

@@ -610,8 +610,8 @@ if (is_android) {
       "$root_gen_dir/components/dev_ui_components_resources.pak",
       "$root_out_dir/browser_tests.pak",
       "//components/test/data/payments/",
-      "//chrome/test/data/banners/",
       "//chrome/test/data/android/customtabs/",
+      "//chrome/test/data/banners/",
       "//chrome/test/data/ssl/",
       "//chrome/test/data/ads_observer/",
       "//content/test/data/",
@@ -1572,6 +1572,7 @@ if (!is_android) {
       "../renderer/autofill/password_generation_agent_browsertest.cc",
       "../renderer/autofill/password_generation_test_utils.cc",
       "../renderer/autofill/password_generation_test_utils.h",
+      "../renderer/cart/commerce_hint_agent_browsertest.cc",
       "../renderer/chrome_content_renderer_client_browsertest.cc",
       "../renderer/chrome_content_settings_agent_delegate_browsertest.cc",
       "../renderer/chrome_render_frame_observer_browsertest.cc",
@@ -4082,6 +4083,7 @@ test("unit_tests") {
       "../browser/upgrade_detector/mock_build_state_observer.h",
       "../browser/webauthn/authenticator_request_scheduler_unittest.cc",
       "../browser/webauthn/chrome_authenticator_request_delegate_unittest.cc",
+      "../renderer/cart/commerce_hint_agent_unittest.cc",
     ]
   }
   if (is_chromeos_ash) {
