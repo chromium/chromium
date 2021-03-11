@@ -45,14 +45,14 @@ class FakeTranslateInfoBarDelegate
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type);
 
-  base::string16 source_language_name() const override;
+  std::u16string source_language_name() const override;
 
-  base::string16 target_language_name() const override;
+  std::u16string target_language_name() const override;
 
  private:
   base::ObserverList<Observer> observers_;
-  base::string16 source_language_;
-  base::string16 target_language_;
+  std::u16string source_language_;
+  std::u16string target_language_;
 };
 
 // Factory class to create instances of FakeTranslateInfoBarDelegate.

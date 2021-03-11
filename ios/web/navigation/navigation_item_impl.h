@@ -44,11 +44,11 @@ class NavigationItemImpl : public web::NavigationItem {
   const web::Referrer& GetReferrer() const override;
   void SetVirtualURL(const GURL& url) override;
   const GURL& GetVirtualURL() const override;
-  void SetTitle(const base::string16& title) override;
-  const base::string16& GetTitle() const override;
+  void SetTitle(const std::u16string& title) override;
+  const std::u16string& GetTitle() const override;
   void SetPageDisplayState(const PageDisplayState& display_state) override;
   const PageDisplayState& GetPageDisplayState() const override;
-  const base::string16& GetTitleForDisplay() const override;
+  const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
   const FaviconStatus& GetFavicon() const override;
@@ -122,7 +122,7 @@ class NavigationItemImpl : public web::NavigationItem {
 
   // Returns the title string to be used for a page with |url| if that page
   // doesn't specify a title.
-  static base::string16 GetDisplayTitleForURL(const GURL& url);
+  static std::u16string GetDisplayTitleForURL(const GURL& url);
 
   // Used only by NavigationManagerImpl.  SetUntrusted() is only used for
   // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
@@ -148,7 +148,7 @@ class NavigationItemImpl : public web::NavigationItem {
   GURL url_;
   Referrer referrer_;
   GURL virtual_url_;
-  base::string16 title_;
+  std::u16string title_;
   PageDisplayState page_display_state_;
   ui::PageTransition transition_type_;
   FaviconStatus favicon_;
@@ -178,7 +178,7 @@ class NavigationItemImpl : public web::NavigationItem {
 
   // This is a cached version of the result of GetTitleForDisplay. When the URL,
   // virtual URL, or title is set, this should be cleared to force a refresh.
-  mutable base::string16 cached_display_title_;
+  mutable std::u16string cached_display_title_;
 
   // Copy and assignment is explicitly allowed for this class.
 };

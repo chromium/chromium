@@ -23,11 +23,11 @@ class TranslateModalRequestConfig
   // The current TranslateStep Translate is in.
   translate::TranslateStep current_step() const { return current_step_; }
   // The source language name.
-  base::string16 source_language_name() const { return source_language_name_; }
+  std::u16string source_language_name() const { return source_language_name_; }
   // The target language name.
-  base::string16 target_language_name() const { return target_language_name_; }
+  std::u16string target_language_name() const { return target_language_name_; }
   // A list of names of all possible languages.
-  std::vector<base::string16> language_names() const { return language_names_; }
+  std::vector<std::u16string> language_names() const { return language_names_; }
   // Whether the current Translate pref is set to always translate for the
   // source language.
   bool is_always_translate_enabled() const {
@@ -53,9 +53,9 @@ class TranslateModalRequestConfig
   InfoBarIOS* infobar_ = nullptr;
   // Configuration data extracted from |infobar_|'s translate delegate.
   translate::TranslateStep current_step_;
-  base::string16 source_language_name_;
-  base::string16 target_language_name_;
-  std::vector<base::string16> language_names_;
+  std::u16string source_language_name_;
+  std::u16string target_language_name_;
+  std::vector<std::u16string> language_names_;
   bool is_always_translate_enabled_ = false;
   bool is_translatable_language_ = false;
   bool is_site_on_never_prompt_list_ = false;

@@ -56,12 +56,12 @@ void ReadUsbDescriptors(
     base::OnceCallback<void(std::unique_ptr<UsbDeviceDescriptor>)> callback);
 
 bool ParseUsbStringDescriptor(const std::vector<uint8_t>& descriptor,
-                              base::string16* output);
+                              std::u16string* output);
 
 void ReadUsbStringDescriptors(
     scoped_refptr<UsbDeviceHandle> device_handle,
-    std::unique_ptr<std::map<uint8_t, base::string16>> index_map,
-    base::OnceCallback<void(std::unique_ptr<std::map<uint8_t, base::string16>>)>
+    std::unique_ptr<std::map<uint8_t, std::u16string>> index_map,
+    base::OnceCallback<void(std::unique_ptr<std::map<uint8_t, std::u16string>>)>
         callback);
 
 mojom::UsbEndpointInfoPtr BuildUsbEndpointInfoPtr(const uint8_t* data);

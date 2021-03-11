@@ -104,7 +104,7 @@ const CGFloat kSpinnerButtonPadding = 18;
       base::Time passphrase_time =
           service->GetUserSettings()->GetExplicitPassphraseTime();
       if (!passphrase_time.is_null()) {
-        base::string16 passphrase_time_str =
+        std::u16string passphrase_time_str =
             base::TimeFormatShortDate(passphrase_time);
         _headerMessage = l10n_util::GetNSStringF(
             IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL_AND_DATE,

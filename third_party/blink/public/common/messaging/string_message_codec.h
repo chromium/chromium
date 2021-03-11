@@ -24,11 +24,11 @@ namespace blink {
 // format we currently persist to disk via IndexedDB.
 
 BLINK_COMMON_EXPORT std::vector<uint8_t> EncodeStringMessage(
-    const base::string16& data);
+    const std::u16string& data);
 
 BLINK_COMMON_EXPORT bool DecodeStringMessage(
     base::span<const uint8_t> encoded_data,
-    base::string16* result);
+    std::u16string* result);
 
 }  // namespace blink
 

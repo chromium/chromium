@@ -784,8 +784,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     _query_history_continuation.Reset();
 
     BOOL fetchAllHistory = !query || [query isEqualToString:@""];
-    base::string16 queryString =
-        fetchAllHistory ? base::string16() : base::SysNSStringToUTF16(query);
+    std::u16string queryString =
+        fetchAllHistory ? std::u16string() : base::SysNSStringToUTF16(query);
     history::QueryOptions options;
     options.duplicate_policy =
         fetchAllHistory ? history::QueryOptions::REMOVE_DUPLICATES_PER_DAY

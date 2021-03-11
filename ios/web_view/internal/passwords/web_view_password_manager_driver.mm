@@ -51,19 +51,19 @@ void WebViewPasswordManagerDriver::FormEligibleForGenerationFound(
 }
 
 void WebViewPasswordManagerDriver::GeneratedPasswordAccepted(
-    const base::string16& password) {
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void WebViewPasswordManagerDriver::FillSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void WebViewPasswordManagerDriver::PreviewSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 

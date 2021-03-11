@@ -41,13 +41,13 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
   if (build_info->sdk_int() >= base::android::SDK_VERSION_MARSHMALLOW)
     device_version = Java_ChromeUsbDevice_getDeviceVersion(env, wrapper);
 
-  base::string16 manufacturer_string;
+  std::u16string manufacturer_string;
   ScopedJavaLocalRef<jstring> manufacturer_jstring =
       Java_ChromeUsbDevice_getManufacturerName(env, wrapper);
   if (!manufacturer_jstring.is_null())
     manufacturer_string = ConvertJavaStringToUTF16(env, manufacturer_jstring);
 
-  base::string16 product_string;
+  std::u16string product_string;
   ScopedJavaLocalRef<jstring> product_jstring =
       Java_ChromeUsbDevice_getProductName(env, wrapper);
   if (!product_jstring.is_null())
@@ -55,7 +55,7 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
 
   // Reading the serial number requires device access permission when
   // targeting the Q SDK.
-  base::string16 serial_number;
+  std::u16string serial_number;
   if (service->HasDevicePermission(wrapper) ||
       build_info->sdk_int() < base::android::SDK_VERSION_Q) {
     ScopedJavaLocalRef<jstring> serial_jstring =
@@ -113,9 +113,9 @@ UsbDeviceAndroid::UsbDeviceAndroid(JNIEnv* env,
                                    uint16_t vendor_id,
                                    uint16_t product_id,
                                    uint16_t device_version,
-                                   const base::string16& manufacturer_string,
-                                   const base::string16& product_string,
-                                   const base::string16& serial_number,
+                                   const std::u16string& manufacturer_string,
+                                   const std::u16string& product_string,
+                                   const std::u16string& serial_number,
                                    const JavaRef<jobject>& wrapper)
     : UsbDevice(usb_version,
                 device_class,

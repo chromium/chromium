@@ -19,11 +19,11 @@
 namespace blink {
 namespace {
 
-base::FilePath ToFilePath(const base::Optional<base::string16>& s) {
+base::FilePath ToFilePath(const base::Optional<std::u16string>& s) {
   return s ? base::FilePath::FromUTF16Unsafe(*s) : base::FilePath();
 }
 
-void ToFilePathVector(const std::vector<base::Optional<base::string16>>& input,
+void ToFilePathVector(const std::vector<base::Optional<std::u16string>>& input,
                       std::vector<base::FilePath>* output) {
   output->clear();
   output->reserve(input.size());

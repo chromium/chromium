@@ -17,7 +17,7 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
   // ConfirmInfoBarDelegate implementation.
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
 
  private:

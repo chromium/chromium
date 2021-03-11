@@ -15,7 +15,7 @@ struct WebMessage {
   WebMessage();
   ~WebMessage();
 
-  base::string16 message;
+  std::u16string message;
 };
 
 }  // namespace weblayer

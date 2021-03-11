@@ -191,7 +191,7 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_Resolution) {
 TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
   std::string uri = "ipps://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
-  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
   SetDefaultSettings(true, uri);
   std::string create_job_document_name;
   std::string create_job_username;
@@ -215,7 +215,7 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
 TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
   std::string uri = "ipp://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
-  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
   std::string default_username = "chronos";
   std::string default_document_name = "-";
   SetDefaultSettings(true, uri);
@@ -241,7 +241,7 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
 TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
   std::string uri = "ipps://test-uri";
   ipp_status_t status = ipp_status_t::IPP_STATUS_OK;
-  base::string16 document_name = base::ASCIIToUTF16(kDocumentName);
+  std::u16string document_name = base::ASCIIToUTF16(kDocumentName);
   std::string blank;
   SetDefaultSettings(false, uri);
   std::string create_job_document_name;

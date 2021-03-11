@@ -23,7 +23,7 @@ MockPacFileFetcher::~MockPacFileFetcher() = default;
 // PacFileFetcher implementation.
 int MockPacFileFetcher::Fetch(
     const GURL& url,
-    base::string16* text,
+    std::u16string* text,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK(!has_pending_request());

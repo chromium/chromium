@@ -95,13 +95,13 @@ class WebClient {
       web::SerializableUserDataManager* user_data_manager,
       web::WebState* web_state);
   // Returns text to be displayed for an unsupported plugin.
-  virtual base::string16 GetPluginNotSupportedText() const;
+  virtual std::u16string GetPluginNotSupportedText() const;
 
   // Returns the user agent string for the specified type.
   virtual std::string GetUserAgent(UserAgentType type) const;
 
   // Returns a string resource given its id.
-  virtual base::string16 GetLocalizedString(int message_id) const;
+  virtual std::u16string GetLocalizedString(int message_id) const;
 
   // Returns the contents of a resource in a StringPiece given the resource id.
   virtual base::StringPiece GetDataResource(int resource_id,

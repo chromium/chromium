@@ -228,10 +228,10 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                           self.config->language_names().at(languageIndex))]);
 
   self.newSourceLanguageIndex = languageIndex;
-  base::string16 sourceLanguage =
+  std::u16string sourceLanguage =
       self.config->language_names().at(languageIndex);
 
-  base::string16 targetLanguage = self.config->target_language_name();
+  std::u16string targetLanguage = self.config->target_language_name();
   if (self.newTargetLanguageIndex != kInvalidLanguageIndex) {
     targetLanguage =
         self.config->language_names().at(self.newTargetLanguageIndex);
@@ -253,10 +253,10 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
                           self.config->language_names().at(languageIndex))]);
 
   self.newTargetLanguageIndex = languageIndex;
-  base::string16 targetLanguage =
+  std::u16string targetLanguage =
       self.config->language_names().at(languageIndex);
 
-  base::string16 sourceLanguage = self.config->source_language_name();
+  std::u16string sourceLanguage = self.config->source_language_name();
   if (self.newSourceLanguageIndex != kInvalidLanguageIndex) {
     sourceLanguage =
         self.config->language_names().at(self.newSourceLanguageIndex);
@@ -277,14 +277,14 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
   // In the instance that the user has already selected a different original
   // language, then we should be using that language as the one to potentially
   // check or not show.
-  base::string16 originalLanguageName =
+  std::u16string originalLanguageName =
       self.newSourceLanguageIndex != kInvalidLanguageIndex
           ? self.config->language_names().at(self.newSourceLanguageIndex)
           : self.config->source_language_name();
   // In the instance that the user has already selected a different target
   // language, then we should be using that language as the one to potentially
   // check or not show.
-  base::string16 targetLanguageName =
+  std::u16string targetLanguageName =
       self.newTargetLanguageIndex != kInvalidLanguageIndex
           ? self.config->language_names().at(self.newTargetLanguageIndex)
           : self.config->target_language_name();

@@ -17,7 +17,7 @@
 // Initialize with a suggested |name| and a |callback| to be invoked with the
 // chosen name.
 - (instancetype)initWithName:(NSString*)name
-                    callback:(base::OnceCallback<void(const base::string16&)>)
+                    callback:(base::OnceCallback<void(const std::u16string&)>)
                                  callback NS_DESIGNATED_INITIALIZER;
 
 @end

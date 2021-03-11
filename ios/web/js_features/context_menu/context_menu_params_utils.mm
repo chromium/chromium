@@ -31,7 +31,7 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(base::Value* element) {
     if (link_url.SchemeIs(url::kJavaScriptScheme)) {
       title = @"JavaScript";
     } else {
-      base::string16 URLText = url_formatter::FormatUrl(link_url);
+      std::u16string URLText = url_formatter::FormatUrl(link_url);
       title = base::SysUTF16ToNSString(URLText);
     }
   }

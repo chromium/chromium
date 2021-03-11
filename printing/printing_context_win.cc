@@ -271,7 +271,7 @@ PrintingContext::Result PrintingContextWin::InitWithSettingsForTest(
 }
 
 PrintingContext::Result PrintingContextWin::NewDocument(
-    const base::string16& document_name) {
+    const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   if (!context_)
     return OnError();

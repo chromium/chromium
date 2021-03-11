@@ -72,7 +72,7 @@ class UsbDeviceWin : public UsbDevice {
       uint8_t i_manufacturer,
       uint8_t i_product,
       uint8_t i_serial_number,
-      std::unique_ptr<std::map<uint8_t, base::string16>> string_map);
+      std::unique_ptr<std::map<uint8_t, std::u16string>> string_map);
   void OnReadWebUsbCapabilityDescriptor(
       base::OnceCallback<void(bool)> callback,
       scoped_refptr<UsbDeviceHandle> device_handle,

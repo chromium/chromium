@@ -27,7 +27,7 @@ TestChromeBrowserStateManager::TestChromeBrowserStateManager(
   if (browser_state_) {
     browser_state_info_cache_.AddBrowserState(browser_state_->GetStatePath(),
                                               /*gaia_id=*/std::string(),
-                                              /*user_name=*/base::string16());
+                                              /*user_name=*/std::u16string());
   }
 }
 

@@ -38,11 +38,11 @@ class MockFormSaver : public password_manager::StubFormSaver {
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(
@@ -95,7 +95,7 @@ TestInfobarPasswordDelegate::GetIdentifier() const {
   return TEST_INFOBAR;
 }
 
-base::string16 TestInfobarPasswordDelegate::GetMessageText() const {
+std::u16string TestInfobarPasswordDelegate::GetMessageText() const {
   return base::SysNSStringToUTF16(infobar_message_);
 }
 

@@ -100,7 +100,7 @@ bool GetMacAddress(unsigned char* buffer, size_t size) {
 
 }  // namespace
 
-bool GetRawMachineId(base::string16* data, int* more_data) {
+bool GetRawMachineId(std::u16string* data, int* more_data) {
   uint8_t mac_address[kIOEthernetAddressSize];
 
   data->clear();

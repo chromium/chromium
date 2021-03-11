@@ -146,7 +146,7 @@ void CheckField(const FormStructure& form,
   FAIL() << "Missing field " << name;
 }
 
-AutofillEntry CreateAutofillEntry(const base::string16& value) {
+AutofillEntry CreateAutofillEntry(const std::u16string& value) {
   const base::Time kNow = AutofillClock::Now();
   return AutofillEntry(AutofillKey(base::ASCIIToUTF16("Name"), value), kNow,
                        kNow);
@@ -536,7 +536,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
                       CreateAutofillEntry(base::ASCIIToUTF16("get")),
                       CreateAutofillEntry(base::ASCIIToUTF16("overwritten"))};
   web_data_service->GetFormValuesForElementName(
-      base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
+      base::UTF8ToUTF16("greeting"), std::u16string(), limit, &consumer);
   base::ThreadPoolInstance::Get()->FlushForTesting();
   WaitForBackgroundTasks();
   // No value should be returned before anything is loaded via form submission.
@@ -544,7 +544,7 @@ TEST_F(AutofillControllerTest, KeyValueImport) {
   ExecuteJavaScript(@"submit.click()");
   WaitForCondition(^bool {
     web_data_service->GetFormValuesForElementName(
-        base::UTF8ToUTF16("greeting"), base::string16(), limit, &consumer);
+        base::UTF8ToUTF16("greeting"), std::u16string(), limit, &consumer);
     return consumer.result_.size();
   });
   base::ThreadPoolInstance::Get()->FlushForTesting();

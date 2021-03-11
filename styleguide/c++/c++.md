@@ -162,7 +162,7 @@ Place platform-specific #includes in their own section below the "normal"
     not have been compiled with the same sizes for things like `int` and
     `size_t`. However, to the greatest degree possible, avoid letting these
     sized types bleed through the APIs of the layers in question.
-  * Don't use `std::wstring`. Use `base::string16` or `base::FilePath` instead.
+  * Don't use `std::wstring`. Use `std::u16string` or `base::FilePath` instead.
     (Windows-specific code interfacing with system APIs using `wstring` and
     `wchar_t` can still use `string16` and `char16`; it is safe to assume that
     these are equivalent to the "wide" types.)

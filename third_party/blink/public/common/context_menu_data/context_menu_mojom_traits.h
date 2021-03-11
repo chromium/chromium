@@ -56,7 +56,7 @@ struct BLINK_COMMON_EXPORT
     return r.link_url;
   }
 
-  static base::string16 link_text(
+  static std::u16string link_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.link_text;
   }
@@ -84,32 +84,32 @@ struct BLINK_COMMON_EXPORT
     return r.media_flags;
   }
 
-  static base::string16 selection_text(
+  static std::u16string selection_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.selection_text;
   }
 
-  static base::string16 title_text(
+  static std::u16string title_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.title_text;
   }
 
-  static base::string16 alt_text(
+  static std::u16string alt_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.alt_text;
   }
 
-  static base::string16 suggested_filename(
+  static std::u16string suggested_filename(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.suggested_filename;
   }
 
-  static base::string16 misspelled_word(
+  static std::u16string misspelled_word(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.misspelled_word;
   }
 
-  static std::vector<base::string16> dictionary_suggestions(
+  static std::vector<std::u16string> dictionary_suggestions(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.dictionary_suggestions;
   }

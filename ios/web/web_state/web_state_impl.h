@@ -203,13 +203,13 @@ class WebStateImpl : public WebState,
   CRWSessionStorage* BuildSessionStorage() override;
   CRWJSInjectionReceiver* GetJSInjectionReceiver() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
-  void ExecuteJavaScript(const base::string16& javascript) override;
-  void ExecuteJavaScript(const base::string16& javascript,
+  void ExecuteJavaScript(const std::u16string& javascript) override;
+  void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
-  const base::string16& GetTitle() const override;
+  const std::u16string& GetTitle() const override;
   bool IsLoading() const override;
   double GetLoadingProgress() const override;
   bool IsCrashed() const override;
@@ -379,7 +379,7 @@ class WebStateImpl : public WebState,
   WebInterstitialImpl* interstitial_;
 
   // Returned by reference.
-  base::string16 empty_string16_;
+  std::u16string empty_string16_;
 
   // Callbacks associated to command prefixes.
   std::map<std::string,

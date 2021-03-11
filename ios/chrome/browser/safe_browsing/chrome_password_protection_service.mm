@@ -158,7 +158,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
         GetPasswordProtectionReusedPasswordAccountType(request->password_type(),
                                                        request->username());
     std::vector<size_t> placeholder_offsets;
-    const base::string16 warning_text = GetWarningDetailText(
+    const std::u16string warning_text = GetWarningDetailText(
         reused_password_account_type, &placeholder_offsets);
     // Partial bind WebState and password_type.
     auto completion_callback = base::BindOnce(
@@ -551,7 +551,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseDialogInteraction(
   user_event_service->RecordUserEvent(std::move(specifics));
 }
 
-base::string16 ChromePasswordProtectionService::GetWarningDetailText(
+std::u16string ChromePasswordProtectionService::GetWarningDetailText(
     ReusedPasswordAccountType password_type,
     std::vector<size_t>* placeholder_offsets) const {
   DCHECK(password_type.account_type() ==
@@ -560,10 +560,10 @@ base::string16 ChromePasswordProtectionService::GetWarningDetailText(
       safe_browsing::kPasswordProtectionForSavedPasswords));
   return GetWarningDetailTextForSavedPasswords(placeholder_offsets);
 }
-base::string16
+std::u16string
 ChromePasswordProtectionService::GetWarningDetailTextForSavedPasswords(
     std::vector<size_t>* placeholder_offsets) const {
-  std::vector<base::string16> placeholders =
+  std::vector<std::u16string> placeholders =
       GetPlaceholdersForSavedPasswordWarningText();
   // The default text is a complete sentence without placeholders.
   return placeholders.empty()
@@ -572,10 +572,10 @@ ChromePasswordProtectionService::GetWarningDetailTextForSavedPasswords(
              : GetWarningDetailTextToCheckSavedPasswords(placeholder_offsets);
 }
 
-base::string16
+std::u16string
 ChromePasswordProtectionService::GetWarningDetailTextToCheckSavedPasswords(
     std::vector<size_t>* placeholder_offsets) const {
-  std::vector<base::string16> placeholders =
+  std::vector<std::u16string> placeholders =
       GetPlaceholdersForSavedPasswordWarningText();
   if (placeholders.size() == 1) {
     return l10n_util::GetStringFUTF16(
@@ -592,7 +592,7 @@ ChromePasswordProtectionService::GetWarningDetailTextToCheckSavedPasswords(
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 ChromePasswordProtectionService::GetPlaceholdersForSavedPasswordWarningText()
     const {
   const std::vector<std::string>& matching_domains =
@@ -602,7 +602,7 @@ ChromePasswordProtectionService::GetPlaceholdersForSavedPasswordWarningText()
   // Show most commonly spoofed domains first.
   // This looks through the top priority spoofed domains and then checks to see
   // if it's in the matching domains.
-  std::vector<base::string16> placeholders;
+  std::vector<std::u16string> placeholders;
   for (auto priority_domain_iter = spoofed_domains.begin();
        priority_domain_iter != spoofed_domains.end(); ++priority_domain_iter) {
     std::string matching_domain;

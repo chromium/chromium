@@ -25,7 +25,7 @@ bool ConvertBmpStringValue(const der::Input& in, std::string* out) {
   if (in.Length() % 2 != 0)
     return false;
 
-  base::string16 in_16bit;
+  std::u16string in_16bit;
   if (in.Length()) {
     memcpy(base::WriteInto(&in_16bit, in.Length() / 2 + 1), in.UnsafeData(),
            in.Length());

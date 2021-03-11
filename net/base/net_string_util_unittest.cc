@@ -13,33 +13,33 @@
 namespace net {
 
 TEST(NetStringUtilTest, ToUpperEmpty) {
-  base::string16 in;
-  base::string16 out;
-  base::string16 expected;
+  std::u16string in;
+  std::u16string out;
+  std::u16string expected;
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }
 
 TEST(NetStringUtilTest, ToUpperSingleChar) {
-  base::string16 in(base::WideToUTF16(L"a"));
-  base::string16 out;
-  base::string16 expected(base::WideToUTF16(L"A"));
+  std::u16string in(base::WideToUTF16(L"a"));
+  std::u16string out;
+  std::u16string expected(base::WideToUTF16(L"A"));
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }
 
 TEST(NetStringUtilTest, ToUpperSimple) {
-  base::string16 in(base::WideToUTF16(L"hello world"));
-  base::string16 out;
-  base::string16 expected(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string in(base::WideToUTF16(L"hello world"));
+  std::u16string out;
+  std::u16string expected(base::WideToUTF16(L"HELLO WORLD"));
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }
 
 TEST(NetStringUtilTest, ToUpperAlreadyUpper) {
-  base::string16 in(base::WideToUTF16(L"HELLO WORLD"));
-  base::string16 out;
-  base::string16 expected(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string in(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string out;
+  std::u16string expected(base::WideToUTF16(L"HELLO WORLD"));
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }

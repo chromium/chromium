@@ -39,7 +39,7 @@ void DisconnectWindowAura::Start(
     const base::WeakPtr<ClientSessionControl>& client_session_control) {
   // TODO(kelvinp): Clean up the NotifyScreenShareStart interface when we
   // completely retire Hangout Remote Desktop v1.
-  base::string16 helper_name;
+  std::u16string helper_name;
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
       base::BindRepeating(&ClientSessionControl::DisconnectSession,
                           client_session_control, protocol::OK),

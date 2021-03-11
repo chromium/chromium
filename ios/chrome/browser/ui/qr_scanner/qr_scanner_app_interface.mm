@@ -185,7 +185,7 @@ using scanner::CameraState;
 
 // Returns the expected title for the dialog which is presented for |state|.
 + (NSString*)dialogTitleForState:(CameraState)state {
-  base::string16 appName = base::UTF8ToUTF16(version_info::GetProductName());
+  std::u16string appName = base::UTF8ToUTF16(version_info::GetProductName());
   switch (state) {
     case scanner::CAMERA_AVAILABLE:
     case scanner::CAMERA_NOT_LOADED:

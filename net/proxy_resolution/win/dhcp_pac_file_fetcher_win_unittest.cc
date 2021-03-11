@@ -116,7 +116,7 @@ class RealFetchTester {
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DhcpPacFileFetcherWin> fetcher_;
   bool finished_;
-  base::string16 pac_text_;
+  std::u16string pac_text_;
   base::OneShotTimer timeout_;
   base::OneShotTimer cancel_timer_;
   bool on_completion_is_error_;
@@ -240,15 +240,13 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
     return result_;
   }
 
-  base::string16 GetPacScript() const override {
-    return pac_script_;
-  }
+  std::u16string GetPacScript() const override { return pac_script_; }
 
   void OnTimer() { std::move(callback_).Run(result_); }
 
   void Configure(bool did_finish,
                  int result,
-                 base::string16 pac_script,
+                 std::u16string pac_script,
                  int fetch_delay_ms) {
     did_finish_ = did_finish;
     result_ = result;
@@ -259,7 +257,7 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
  private:
   bool did_finish_;
   int result_;
-  base::string16 pac_script_;
+  std::u16string pac_script_;
   int fetch_delay_ms_;
   CompletionOnceCallback callback_;
   base::OneShotTimer timer_;
@@ -311,7 +309,7 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   void ConfigureAndPushBackAdapter(const std::string& adapter_name,
                                    bool did_finish,
                                    int result,
-                                   base::string16 pac_script,
+                                   std::u16string pac_script,
                                    base::TimeDelta fetch_delay) {
     std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
         new DummyDhcpPacFileAdapterFetcher(url_request_context(),
@@ -436,7 +434,7 @@ class FetcherClient {
   MockDhcpPacFileFetcherWin fetcher_;
   bool finished_;
   int result_;
-  base::string16 pac_text_;
+  std::u16string pac_text_;
 };
 
 // We separate out each test's logic so that we can easily implement
@@ -462,7 +460,7 @@ TEST(DhcpPacFileFetcherWin, NormalCaseURLConfiguredOneAdapter) {
 
 void TestNormalCaseURLConfiguredMultipleAdapters(FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   client->fetcher_.ConfigureAndPushBackAdapter(
       "second", true, OK, u"bingo", base::TimeDelta::FromMilliseconds(50));
@@ -484,7 +482,7 @@ TEST(DhcpPacFileFetcherWin, NormalCaseURLConfiguredMultipleAdapters) {
 void TestNormalCaseURLConfiguredMultipleAdaptersWithTimeout(
     FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
@@ -509,7 +507,7 @@ TEST(DhcpPacFileFetcherWin,
 void TestFailureCaseURLConfiguredMultipleAdaptersWithTimeout(
     FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
@@ -518,15 +516,15 @@ void TestFailureCaseURLConfiguredMultipleAdaptersWithTimeout(
   // This is the first non-ERR_PAC_NOT_IN_DHCP error and as such
   // should be chosen.
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "third", true, ERR_HTTP_RESPONSE_CODE_FAILURE, base::string16(),
+      "third", true, ERR_HTTP_RESPONSE_CODE_FAILURE, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "fourth", true, ERR_NOT_IMPLEMENTED, base::string16(),
+      "fourth", true, ERR_NOT_IMPLEMENTED, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsError(ERR_HTTP_RESPONSE_CODE_FAILURE));
-  ASSERT_EQ(base::string16(), client->pac_text_);
+  ASSERT_EQ(std::u16string(), client->pac_text_);
 }
 
 TEST(DhcpPacFileFetcherWin,
@@ -539,7 +537,7 @@ TEST(DhcpPacFileFetcherWin,
 
 void TestFailureCaseNoURLConfigured(FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
@@ -548,12 +546,12 @@ void TestFailureCaseNoURLConfigured(FetcherClient* client) {
   // This is the first non-ERR_PAC_NOT_IN_DHCP error and as such
   // should be chosen.
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "third", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "third", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsError(ERR_PAC_NOT_IN_DHCP));
-  ASSERT_EQ(base::string16(), client->pac_text_);
+  ASSERT_EQ(std::u16string(), client->pac_text_);
 }
 
 TEST(DhcpPacFileFetcherWin, FailureCaseNoURLConfigured) {
@@ -567,7 +565,7 @@ void TestFailureCaseNoDhcpAdapters(FetcherClient* client) {
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsError(ERR_PAC_NOT_IN_DHCP));
-  ASSERT_EQ(base::string16(), client->pac_text_);
+  ASSERT_EQ(std::u16string(), client->pac_text_);
   ASSERT_EQ(0, client->fetcher_.num_fetchers_created_);
 }
 
@@ -584,7 +582,7 @@ void TestShortCircuitLessPreferredAdapters(FetcherClient* client) {
   // time.  Verify that we complete quickly and do not wait for the slow
   // adapters, i.e. we finish before timeout.
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "1", true, ERR_PAC_NOT_IN_DHCP, base::string16(),
+      "1", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
       base::TimeDelta::FromMilliseconds(1));
   client->fetcher_.ConfigureAndPushBackAdapter(
       "2", true, OK, u"bingo", base::TimeDelta::FromMilliseconds(1));

@@ -135,7 +135,7 @@ void WebLayerRenderFrameObserver::CapturePageText(
   // translate helper for language detection and possible translation.
   // TODO(http://crbug.com/1163244): Update this when the corresponding usage of
   // this function in //chrome is updated.
-  base::string16 contents =
+  std::u16string contents =
       blink::WebFrameContentDumper::DumpFrameTreeAsText(frame, kMaxIndexChars)
           .Utf16();
 

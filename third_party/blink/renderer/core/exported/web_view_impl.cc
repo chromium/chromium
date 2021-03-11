@@ -252,47 +252,47 @@ class EmptyEventListener final : public NativeEventListener {
 };
 
 typedef void (*SetFontFamilyWrapper)(blink::WebSettings*,
-                                     const base::string16&,
+                                     const std::u16string&,
                                      UScriptCode);
 
 void SetStandardFontFamilyWrapper(WebSettings* settings,
-                                  const base::string16& font,
+                                  const std::u16string& font,
                                   UScriptCode script) {
   settings->SetStandardFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetFixedFontFamilyWrapper(WebSettings* settings,
-                               const base::string16& font,
+                               const std::u16string& font,
                                UScriptCode script) {
   settings->SetFixedFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetSerifFontFamilyWrapper(WebSettings* settings,
-                               const base::string16& font,
+                               const std::u16string& font,
                                UScriptCode script) {
   settings->SetSerifFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetSansSerifFontFamilyWrapper(WebSettings* settings,
-                                   const base::string16& font,
+                                   const std::u16string& font,
                                    UScriptCode script) {
   settings->SetSansSerifFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetCursiveFontFamilyWrapper(WebSettings* settings,
-                                 const base::string16& font,
+                                 const std::u16string& font,
                                  UScriptCode script) {
   settings->SetCursiveFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetFantasyFontFamilyWrapper(WebSettings* settings,
-                                 const base::string16& font,
+                                 const std::u16string& font,
                                  UScriptCode script) {
   settings->SetFantasyFontFamily(WebString::FromUTF16(font), script);
 }
 
 void SetPictographFontFamilyWrapper(WebSettings* settings,
-                                    const base::string16& font,
+                                    const std::u16string& font,
                                     UScriptCode script) {
   settings->SetPictographFontFamily(WebString::FromUTF16(font), script);
 }

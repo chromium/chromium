@@ -143,7 +143,7 @@ class PageStateSerializationTest : public testing::Test {
 
   void PopulateHttpBody(
       ExplodedHttpBody* http_body,
-      std::vector<base::Optional<base::string16>>* referenced_files) {
+      std::vector<base::Optional<std::u16string>>* referenced_files) {
     http_body->request_body = new network::ResourceRequestBody();
     http_body->request_body->set_identifier(12345);
     http_body->contains_passwords = false;

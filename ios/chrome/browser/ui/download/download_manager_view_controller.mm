@@ -699,7 +699,7 @@ NSString* GetSizeString(long long size_in_bytes) {
       }
       break;
     case kDownloadManagerStateInProgress: {
-      base::string16 size =
+      std::u16string size =
           base::SysNSStringToUTF16(GetSizeString(_countOfBytesReceived));
       statusText = l10n_util::GetNSStringF(
           IDS_IOS_DOWNLOAD_MANAGER_DOWNLOADING_ELIPSIS, size);

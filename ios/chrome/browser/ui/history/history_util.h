@@ -20,11 +20,11 @@ namespace history {
 
 // Returns a localized version of |visit_time| including a relative
 // indicator (e.g. today, yesterday).
-base::string16 GetRelativeDateLocalized(const base::Time& visit_time);
+std::u16string GetRelativeDateLocalized(const base::Time& visit_time);
 
 // Formats |title| to support RTL, or creates an RTL supported title based on
 // |url| if |title| is empty.
-NSString* FormattedTitle(const base::string16& title, const GURL& url);
+NSString* FormattedTitle(const std::u16string& title, const GURL& url);
 
 }  // namespace history
 

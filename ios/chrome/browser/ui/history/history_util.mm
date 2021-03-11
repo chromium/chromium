@@ -19,9 +19,9 @@
 
 namespace history {
 
-base::string16 GetRelativeDateLocalized(const base::Time& visit_time) {
+std::u16string GetRelativeDateLocalized(const base::Time& visit_time) {
   base::Time midnight = base::Time::Now().LocalMidnight();
-  base::string16 date_str = ui::TimeFormat::RelativeDate(visit_time, &midnight);
+  std::u16string date_str = ui::TimeFormat::RelativeDate(visit_time, &midnight);
   if (date_str.empty()) {
     date_str = base::TimeFormatFriendlyDate(visit_time);
   } else {
@@ -32,10 +32,10 @@ base::string16 GetRelativeDateLocalized(const base::Time& visit_time) {
   return date_str;
 }
 
-NSString* FormattedTitle(const base::string16& title, const GURL& url) {
+NSString* FormattedTitle(const std::u16string& title, const GURL& url) {
   // Use url as title if no title.
   bool using_url_as_the_title = false;
-  base::string16 formatted_title(title);
+  std::u16string formatted_title(title);
   if (title.empty()) {
     using_url_as_the_title = true;
     formatted_title = url_formatter::FormatUrl(url);

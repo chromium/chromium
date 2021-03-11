@@ -1166,7 +1166,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
   self.sharedState.addingNewFolder = YES;
-  base::string16 folderTitle =
+  std::u16string folderTitle =
       l10n_util::GetStringUTF16(IDS_IOS_BOOKMARK_NEW_GROUP_DEFAULT_NAME);
   self.sharedState.editingFolderNode =
       self.sharedState.bookmarkModel->AddFolder(

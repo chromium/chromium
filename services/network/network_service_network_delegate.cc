@@ -177,7 +177,7 @@ void NetworkServiceNetworkDelegate::OnCompleted(net::URLRequest* request,
 
 void NetworkServiceNetworkDelegate::OnPACScriptError(
     int line_number,
-    const base::string16& error) {
+    const std::u16string& error) {
   if (!proxy_error_client_)
     return;
 

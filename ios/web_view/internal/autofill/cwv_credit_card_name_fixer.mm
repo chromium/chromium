@@ -35,7 +35,7 @@ class WebViewCardNameFixFlowView : public autofill::CardNameFixFlowView {
 }
 
 - (instancetype)initWithName:(NSString*)name
-                    callback:(base::OnceCallback<void(const base::string16&)>)
+                    callback:(base::OnceCallback<void(const std::u16string&)>)
                                  callback {
   self = [super init];
   if (self) {

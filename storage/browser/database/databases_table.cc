@@ -42,7 +42,7 @@ bool DatabasesTable::Init() {
 }
 
 int64_t DatabasesTable::GetDatabaseID(const std::string& origin_identifier,
-                                      const base::string16& database_name) {
+                                      const std::u16string& database_name) {
   sql::Statement select_statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "SELECT id FROM Databases WHERE origin = ? AND name = ?"));
   select_statement.BindString(0, origin_identifier);
@@ -56,7 +56,7 @@ int64_t DatabasesTable::GetDatabaseID(const std::string& origin_identifier,
 }
 
 bool DatabasesTable::GetDatabaseDetails(const std::string& origin_identifier,
-                                        const base::string16& database_name,
+                                        const std::u16string& database_name,
                                         DatabaseDetails* details) {
   DCHECK(details);
   sql::Statement select_statement(db_->GetCachedStatement(
@@ -102,7 +102,7 @@ bool DatabasesTable::UpdateDatabaseDetails(const DatabaseDetails& details) {
 
 bool DatabasesTable::DeleteDatabaseDetails(
     const std::string& origin_identifier,
-    const base::string16& database_name) {
+    const std::u16string& database_name) {
   sql::Statement delete_statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM Databases WHERE origin = ? AND name = ?"));
   delete_statement.BindString(0, origin_identifier);

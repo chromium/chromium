@@ -106,7 +106,7 @@ void UsbDeviceWin::OnReadDescriptors(
   // WinUSB only supports the configuration 1.
   ActiveConfigurationChanged(1);
 
-  auto string_map = std::make_unique<std::map<uint8_t, base::string16>>();
+  auto string_map = std::make_unique<std::map<uint8_t, std::u16string>>();
   if (descriptor->i_manufacturer)
     (*string_map)[descriptor->i_manufacturer];
   if (descriptor->i_product)
@@ -128,7 +128,7 @@ void UsbDeviceWin::OnReadStringDescriptors(
     uint8_t i_manufacturer,
     uint8_t i_product,
     uint8_t i_serial_number,
-    std::unique_ptr<std::map<uint8_t, base::string16>> string_map) {
+    std::unique_ptr<std::map<uint8_t, std::u16string>> string_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (i_manufacturer)

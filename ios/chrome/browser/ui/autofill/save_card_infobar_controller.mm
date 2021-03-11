@@ -41,10 +41,10 @@ UIImage* InfoBarCloseImage() {
 }
 
 // Returns the title for the given infobar button.
-base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
+std::u16string GetTitleForButton(ConfirmInfoBarDelegate* delegate,
                                  ConfirmInfoBarDelegate::InfoBarButton button) {
   return (delegate->GetButtons() & button) ? delegate->GetButtonLabel(button)
-                                           : base::string16();
+                                           : std::u16string();
 }
 
 }  // namespace
@@ -94,10 +94,10 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   }
 
   // Message, if any.
-  base::string16 messageText = self.infoBarDelegate->GetMessageText();
+  std::u16string messageText = self.infoBarDelegate->GetMessageText();
   if (!messageText.empty()) {
     SaveCardMessageWithLinks* message = [[SaveCardMessageWithLinks alloc] init];
-    const base::string16 linkText = self.infoBarDelegate->GetLinkText();
+    const std::u16string linkText = self.infoBarDelegate->GetLinkText();
     GURL linkURL = self.infoBarDelegate->GetLinkURL();
 
     if (!linkText.empty() && !linkURL.is_empty()) {
@@ -117,7 +117,7 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   }
 
   // Description, if any.
-  const base::string16 description = self.infoBarDelegate->GetDescriptionText();
+  const std::u16string description = self.infoBarDelegate->GetDescriptionText();
   if (!description.empty()) {
     [self.infoBarView setDescription:base::SysUTF16ToNSString(description)];
   }
@@ -152,13 +152,13 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   }
 
   // Cancel button.
-  const base::string16 cancelButtonTitle = GetTitleForButton(
+  const std::u16string cancelButtonTitle = GetTitleForButton(
       self.infoBarDelegate, ConfirmInfoBarDelegate::BUTTON_CANCEL);
   [self.infoBarView
       setCancelButtonTitle:base::SysUTF16ToNSString(cancelButtonTitle)];
 
   // Confirm button.
-  const base::string16 confirmButtonTitle = GetTitleForButton(
+  const std::u16string confirmButtonTitle = GetTitleForButton(
       self.infoBarDelegate, ConfirmInfoBarDelegate::BUTTON_OK);
   [self.infoBarView
       setConfirmButtonTitle:base::SysUTF16ToNSString(confirmButtonTitle)];

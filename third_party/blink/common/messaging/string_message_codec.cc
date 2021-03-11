@@ -73,7 +73,7 @@ bool ReadUint32(const uint8_t** ptr, const uint8_t* end, uint32_t* value) {
   return true;
 }
 
-bool ContainsOnlyLatin1(const base::string16& data) {
+bool ContainsOnlyLatin1(const std::u16string& data) {
   char16_t x = 0;
   for (char16_t c : data)
     x |= c;
@@ -82,7 +82,7 @@ bool ContainsOnlyLatin1(const base::string16& data) {
 
 }  // namespace
 
-std::vector<uint8_t> EncodeStringMessage(const base::string16& data) {
+std::vector<uint8_t> EncodeStringMessage(const std::u16string& data) {
   std::vector<uint8_t> buffer;
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
@@ -105,7 +105,7 @@ std::vector<uint8_t> EncodeStringMessage(const base::string16& data) {
 }
 
 bool DecodeStringMessage(base::span<const uint8_t> encoded_data,
-                         base::string16* result) {
+                         std::u16string* result) {
   const uint8_t* ptr = encoded_data.data();
   const uint8_t* end = ptr + encoded_data.size();
   uint8_t tag;

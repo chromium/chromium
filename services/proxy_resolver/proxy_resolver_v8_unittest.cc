@@ -37,7 +37,7 @@ class MockJSBindings : public ProxyResolverV8::JSBindings {
         my_ip_address_ex_count(0),
         should_terminate(false) {}
 
-  void Alert(const base::string16& message) override {
+  void Alert(const std::u16string& message) override {
     VLOG(1) << "PAC-alert: " << message;  // Helpful when debugging.
     alerts.push_back(base::UTF16ToUTF8(message));
   }
@@ -76,7 +76,7 @@ class MockJSBindings : public ProxyResolverV8::JSBindings {
     return false;
   }
 
-  void OnError(int line_number, const base::string16& message) override {
+  void OnError(int line_number, const std::u16string& message) override {
     // Helpful when debugging.
     VLOG(1) << "PAC-error: [" << line_number << "] " << message;
 

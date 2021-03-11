@@ -186,9 +186,9 @@ namespace test_default {
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 
-const base::string16 kChrome(ASCIIToUTF16("chrome"));
-const base::string16 kSecret(ASCIIToUTF16("secret"));
-const base::string16 kUser(ASCIIToUTF16("user"));
+const std::u16string kChrome(ASCIIToUTF16("chrome"));
+const std::u16string kSecret(ASCIIToUTF16("secret"));
+const std::u16string kUser(ASCIIToUTF16("user"));
 
 const base::FilePath::CharType kTestFilePath[] =
     FILE_PATH_LITERAL("net/data/url_request_unittest");
@@ -4802,7 +4802,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_third_load_state_, load_state.state);
     if (expected_second_load_state_ == LOAD_STATE_WAITING_FOR_DELEGATE)
-      EXPECT_EQ(base::string16(), load_state.param);
+      EXPECT_EQ(std::u16string(), load_state.param);
     std::move(callback_).Run();
   }
 
@@ -4972,7 +4972,7 @@ TEST_F(URLRequestTestHTTP, DelegateInfoBeforeStart) {
         &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     AsyncDelegateLogger::Run(
         r.get(), LOAD_STATE_WAITING_FOR_DELEGATE,
@@ -5013,7 +5013,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfo) {
         &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     r->Start();
     request_delegate.RunUntilComplete();
@@ -5067,7 +5067,7 @@ TEST_F(URLRequestTestHTTP, NetworkDelegateInfoRedirect) {
         DEFAULT_PRIORITY, &request_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     LoadStateWithParam load_state = r->GetLoadState();
     EXPECT_EQ(LOAD_STATE_IDLE, load_state.state);
-    EXPECT_EQ(base::string16(), load_state.param);
+    EXPECT_EQ(std::u16string(), load_state.param);
 
     r->Start();
     request_delegate.RunUntilComplete();

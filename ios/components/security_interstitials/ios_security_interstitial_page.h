@@ -62,7 +62,7 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
   virtual void AfterShow() = 0;
 
   // Returns the formatted host name for the request url.
-  base::string16 GetFormattedHostName() const;
+  std::u16string GetFormattedHostName() const;
 
   web::WebState* web_state() const { return web_state_; }
   const GURL& request_url() const { return request_url_; }

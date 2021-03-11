@@ -55,7 +55,7 @@ TEST_F(MediaImageManagerTest, CheckExpectedImageTypeHashes) {
                                "image/png", "image/x-icon"};
 
   for (const auto& type : types) {
-    base::string16 type16 = base::ASCIIToUTF16(type);
+    std::u16string type16 = base::ASCIIToUTF16(type);
 
     // Uncomment these lines to print the hashes if new ones need to be added.
     // printf("0x%x %s\n",

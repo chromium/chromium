@@ -199,7 +199,7 @@ using base::UserMetricsAction;
       ClipboardRecentContent* clipboardRecentContent =
           ClipboardRecentContent::GetInstance();
       clipboardRecentContent->GetRecentTextFromClipboard(
-          base::BindOnce(^(base::Optional<base::string16> optional_text) {
+          base::BindOnce(^(base::Optional<std::u16string> optional_text) {
             if (!optional_text) {
               return;
             }

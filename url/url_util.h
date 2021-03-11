@@ -144,7 +144,7 @@ inline bool FindAndCompareScheme(const std::string& str,
   return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
                               compare, found_scheme);
 }
-inline bool FindAndCompareScheme(const base::string16& str,
+inline bool FindAndCompareScheme(const std::u16string& str,
                                  const char* compare,
                                  Component* found_scheme) {
   return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),

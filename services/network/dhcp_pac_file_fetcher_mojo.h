@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
   ~DhcpPacFileFetcherMojo() override;
 
   // DhcpPacFileFetcher implementation
-  int Fetch(base::string16* utf16_text,
+  int Fetch(std::u16string* utf16_text,
             net::CompletionOnceCallback callback,
             const net::NetLogWithSource& net_log,
             const net::NetworkTrafficAnnotationTag traffic_annotation) override;
@@ -54,14 +54,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DhcpPacFileFetcherMojo
       std::unique_ptr<net::PacFileFetcher> pac_file_fetcher);
 
  private:
-  void ContinueFetch(base::string16* utf16_text,
+  void ContinueFetch(std::u16string* utf16_text,
                      const net::NetworkTrafficAnnotationTag traffic_annotation,
                      std::string pac_url);
   void OnFetchCompleted(int result);
   void OnPacUrlReceived(const std::string& url);
 
   net::CompletionOnceCallback callback_;
-  base::string16* utf16_text_;
+  std::u16string* utf16_text_;
   GURL pac_url_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   std::unique_ptr<net::PacFileFetcher> pac_file_fetcher_;

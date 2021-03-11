@@ -44,7 +44,7 @@ void SetOrClearBit(uint64_t &value, uint64_t bit, bool set_bit) {
 void CreateAndPostKeyEvent(int keycode,
                            bool pressed,
                            uint64_t flags,
-                           const base::string16& unicode) {
+                           const std::u16string& unicode) {
   base::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
@@ -288,7 +288,7 @@ void InputInjectorMac::Core::InjectKeyEvent(const KeyEvent& event) {
 
   ui_thread_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, keycode, event.pressed(),
-                                flags, base::string16()));
+                                flags, std::u16string()));
 }
 
 void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
@@ -296,7 +296,7 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
 
   WakeUpDisplay();
 
-  base::string16 text = base::UTF8ToUTF16(event.text());
+  std::u16string text = base::UTF8ToUTF16(event.text());
 
   // CGEventKeyboardSetUnicodeString appears to only process up to 20 code
   // units (and key presses are generally expected to generate a single
@@ -317,21 +317,21 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
       // specially.
       ui_thread_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
-                                    /*pressed=*/true, 0, base::string16()));
+                                    /*pressed=*/true, 0, std::u16string()));
       ui_thread_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(CreateAndPostKeyEvent, kVK_Return,
-                                    /*pressed=*/false, 0, base::string16()));
+                                    /*pressed=*/false, 0, std::u16string()));
     } else {
       // Applications that ignore UnicodeString field will see the text event as
       // Space key.
       ui_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
-                         /*pressed=*/true, 0, base::string16(grapheme)));
+                         /*pressed=*/true, 0, std::u16string(grapheme)));
       ui_thread_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(CreateAndPostKeyEvent, kVK_Space,
-                         /*pressed=*/false, 0, base::string16(grapheme)));
+                         /*pressed=*/false, 0, std::u16string(grapheme)));
     }
   }
 }

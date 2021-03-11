@@ -43,9 +43,9 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   InfoBarIdentifier GetIdentifier() const override;
 
   // ConfirmInfoBarDelegate implementation.
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   gfx::Image GetIcon() const override;
   bool Accept() override;
 
@@ -56,8 +56,8 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   gfx::Image icon_;
   ChromeBrowserState* browser_state_;
   SyncSetupService::SyncServiceState error_state_;
-  base::string16 message_;
-  base::string16 button_text_;
+  std::u16string message_;
+  std::u16string button_text_;
   id<SyncPresenter> presenter_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncErrorInfoBarDelegate);

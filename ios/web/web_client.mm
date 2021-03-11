@@ -53,16 +53,16 @@ void WebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
 
-base::string16 WebClient::GetPluginNotSupportedText() const {
-  return base::string16();
+std::u16string WebClient::GetPluginNotSupportedText() const {
+  return std::u16string();
 }
 
 std::string WebClient::GetUserAgent(UserAgentType type) const {
   return std::string();
 }
 
-base::string16 WebClient::GetLocalizedString(int message_id) const {
-  return base::string16();
+std::u16string WebClient::GetLocalizedString(int message_id) const {
+  return std::u16string();
 }
 
 base::StringPiece WebClient::GetDataResource(

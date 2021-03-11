@@ -33,10 +33,10 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   int GetIconId() const override;
   void InfoBarDismissed() override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   bool Accept() override;
   bool Cancel() override;
 

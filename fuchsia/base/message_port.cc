@@ -35,7 +35,7 @@ base::Optional<fuchsia::web::FrameError> BlinkMessageFromFidl(
     return fuchsia::web::FrameError::NO_DATA_IN_MESSAGE;
   }
 
-  base::string16 data_utf16;
+  std::u16string data_utf16;
   if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(fidl_message.data(), &data_utf16)) {
     return fuchsia::web::FrameError::BUFFER_NOT_UTF8;
   }
@@ -359,7 +359,7 @@ base::Optional<fuchsia::web::WebMessage> FidlWebMessageFromBlink(
     blink_message.ports.clear();
   }
 
-  base::string16 data_utf16 = std::move(blink_message.data);
+  std::u16string data_utf16 = std::move(blink_message.data);
   std::string data_utf8;
   if (!base::UTF16ToUTF8(data_utf16.data(), data_utf16.size(), &data_utf8))
     return base::nullopt;

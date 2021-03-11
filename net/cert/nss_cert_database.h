@@ -195,7 +195,7 @@ class NET_EXPORT NSSCertDatabase {
   // of certs that were imported.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_extractable,
                        ScopedCERTCertificateList* imported_certs);
 
@@ -203,7 +203,7 @@ class NET_EXPORT NSSCertDatabase {
   // storing into |output|.
   // Returns the number of certificates successfully exported.
   int ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                     const base::string16& password,
+                     const std::u16string& password,
                      std::string* output) const;
 
   // Uses similar logic to nsNSSCertificateDB::handleCACertDownload to find the

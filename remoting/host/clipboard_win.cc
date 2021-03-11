@@ -168,7 +168,7 @@ void ClipboardWin::InjectClipboardEvent(
     return;
   }
 
-  base::string16 text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
+  std::u16string text = base::UTF8ToUTF16(ReplaceLfByCrLf(event.data()));
 
   ScopedClipboard clipboard;
   if (!clipboard.Init(window_->hwnd())) {

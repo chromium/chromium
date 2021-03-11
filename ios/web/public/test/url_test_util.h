@@ -15,7 +15,7 @@ namespace web {
 
 // Returns a formatted version of |url| that would be used as the fallback title
 // for a page with that URL.
-base::string16 GetDisplayTitleForUrl(const GURL& url);
+std::u16string GetDisplayTitleForUrl(const GURL& url);
 
 }  // namespace web
 

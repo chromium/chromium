@@ -34,7 +34,7 @@ struct DistantTab {
   // Uniquely identifies this tab in its distant session.
   SessionID tab_id;
   // The title of the page shown in this DistantTab.
-  base::string16 title;
+  std::u16string title;
   // The url shown in this DistantTab.
   GURL virtual_url;
   // Returns a hash the fields |virtual_url| and |title|.

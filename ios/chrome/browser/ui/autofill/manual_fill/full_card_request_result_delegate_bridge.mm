@@ -30,7 +30,7 @@ FullCardRequestResultDelegateBridge::GetWeakPtr() {
 void FullCardRequestResultDelegateBridge::OnFullCardRequestSucceeded(
     const autofill::payments::FullCardRequest& /* full_card_request */,
     const autofill::CreditCard& card,
-    const base::string16& /* cvc */) {
+    const std::u16string& /* cvc */) {
   [delegate_ onFullCardRequestSucceeded:card];
 }
 

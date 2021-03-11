@@ -228,7 +228,7 @@ const CGFloat kOmniboxIconSize = 16;
     // favicons may be fetched from Google server which doesn't suppoprt
     // icon URL.
     std::string emptyPageUrl = defaultProvider->url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(base::string16()),
+        TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     self.faviconLoader->FaviconForPageUrl(
         GURL(emptyPageUrl), kOmniboxIconSize, kOmniboxIconSize,

@@ -62,7 +62,7 @@ void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
         index, account_info.gaia, base::UTF8ToUTF16(account_info.email));
   } else {
     cache->SetAuthInfoOfBrowserStateAtIndex(index, /*gaia_id=*/std::string(),
-                                            /*user_name=*/base::string16());
+                                            /*user_name=*/std::u16string());
   }
 }
 

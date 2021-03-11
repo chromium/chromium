@@ -158,7 +158,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12WrongPassword) {
 
   EXPECT_EQ(
       ERR_PKCS12_IMPORT_BAD_PASSWORD,
-      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, base::string16(),
+      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, std::u16string(),
                                  true,  // is_extractable
                                  nullptr));
 
@@ -255,7 +255,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12InvalidFile) {
 
   EXPECT_EQ(
       ERR_PKCS12_IMPORT_INVALID_FILE,
-      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, base::string16(),
+      cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data, std::u16string(),
                                  true,  // is_extractable
                                  nullptr));
 
@@ -267,7 +267,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12EmptyPassword) {
   std::string pkcs12_data = ReadTestFile("client-empty-password.p12");
 
   EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           base::string16(),
+                                           std::u16string(),
                                            true,  // is_extractable
                                            nullptr));
   EXPECT_EQ(1U, ListCerts().size());
@@ -277,7 +277,7 @@ TEST_F(CertDatabaseNSSTest, ImportFromPKCS12NullPassword) {
   std::string pkcs12_data = ReadTestFile("client-null-password.p12");
 
   EXPECT_EQ(OK, cert_db_->ImportFromPKCS12(GetPublicSlot(), pkcs12_data,
-                                           base::string16(),
+                                           std::u16string(),
                                            true,  // is_extractable
                                            nullptr));
   EXPECT_EQ(1U, ListCerts().size());

@@ -139,10 +139,10 @@ class AbbreviatedMonthsMap {
 
   // Converts abbreviated month name |text| to its number (in range 1-12).
   // On success returns true and puts the number in |number|.
-  bool GetMonthNumber(const base::string16& text, int* number) {
+  bool GetMonthNumber(const std::u16string& text, int* number) {
     // Ignore the case of the month names. The simplest way to handle that
     // is to make everything lowercase.
-    base::string16 text_lower(base::i18n::ToLower(text));
+    std::u16string text_lower(base::i18n::ToLower(text));
 
     if (map_.find(text_lower) == map_.end())
       return false;
@@ -176,7 +176,7 @@ class AbbreviatedMonthsMap {
           format_symbols.getShortMonths(months_count);
 
       for (int32_t month = 0; month < months_count; month++) {
-        base::string16 month_name(
+        std::u16string month_name(
             base::i18n::UnicodeStringToString16(months[month]));
 
         // Ignore the case of the month names. The simplest way to handle that
@@ -212,7 +212,7 @@ class AbbreviatedMonthsMap {
   }
 
   // Maps lowercase month names to numbers in range 1-12.
-  std::map<base::string16, int> map_;
+  std::map<std::u16string, int> map_;
 
   DISALLOW_COPY_AND_ASSIGN(AbbreviatedMonthsMap);
 };
@@ -220,15 +220,15 @@ class AbbreviatedMonthsMap {
 }  // namespace
 
 // static
-bool FtpUtil::AbbreviatedMonthToNumber(const base::string16& text,
+bool FtpUtil::AbbreviatedMonthToNumber(const std::u16string& text,
                                        int* number) {
   return AbbreviatedMonthsMap::GetInstance()->GetMonthNumber(text, number);
 }
 
 // static
-bool FtpUtil::LsDateListingToTime(const base::string16& month,
-                                  const base::string16& day,
-                                  const base::string16& rest,
+bool FtpUtil::LsDateListingToTime(const std::u16string& month,
+                                  const std::u16string& day,
+                                  const std::u16string& rest,
                                   const base::Time& current_time,
                                   base::Time* result) {
   base::Time::Exploded time_exploded = { 0 };
@@ -255,7 +255,7 @@ bool FtpUtil::LsDateListingToTime(const base::string16& month,
       return false;
 
     size_t colon_pos = rest.find(':');
-    if (colon_pos == base::string16::npos)
+    if (colon_pos == std::u16string::npos)
       return false;
     if (colon_pos > 2)
       return false;
@@ -291,8 +291,8 @@ bool FtpUtil::LsDateListingToTime(const base::string16& month,
 }
 
 // static
-bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
-                                       const base::string16& time,
+bool FtpUtil::WindowsDateListingToTime(const std::u16string& date,
+                                       const std::u16string& time,
                                        base::Time* result) {
   base::Time::Exploded time_exploded = { 0 };
 
@@ -336,7 +336,7 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
   if (time.length() > 5) {
     if (time.length() != 7)
       return false;
-    base::string16 am_or_pm(time.substr(5, 2));
+    std::u16string am_or_pm(time.substr(5, 2));
     if (base::EqualsASCII(am_or_pm, "PM")) {
       if (time_exploded.hour < 12)
         time_exploded.hour += 12;
@@ -353,7 +353,7 @@ bool FtpUtil::WindowsDateListingToTime(const base::string16& date,
 }
 
 // static
-base::string16 FtpUtil::GetStringPartAfterColumns(const base::string16& text,
+std::u16string FtpUtil::GetStringPartAfterColumns(const std::u16string& text,
                                                   int columns) {
   base::i18n::UTF16CharIterator iter(text);
 
@@ -367,7 +367,7 @@ base::string16 FtpUtil::GetStringPartAfterColumns(const base::string16& text,
       iter.Advance();
   }
 
-  base::string16 result(text.substr(iter.array_pos()));
+  std::u16string result(text.substr(iter.array_pos()));
   base::TrimWhitespace(result, base::TRIM_ALL, &result);
   return result;
 }

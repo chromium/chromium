@@ -88,7 +88,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
   }
 
   void NavigateToPageAndWaitForTitleChange(const GURL& navigate_to,
-                                           base::string16 expected_title) {
+                                           std::u16string expected_title) {
     content::TitleWatcher title_watcher(
         static_cast<TabImpl*>(shell()->tab())->web_contents(), expected_title);
     NavigateAndWaitForCompletion(navigate_to, shell());

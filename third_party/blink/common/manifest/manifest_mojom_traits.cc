@@ -16,10 +16,10 @@
 namespace mojo {
 namespace {
 
-// A wrapper around base::Optional<base::string16> so a custom StructTraits
+// A wrapper around base::Optional<std::u16string> so a custom StructTraits
 // specialization can enforce maximum string length.
 struct TruncatedString16 {
-  base::Optional<base::string16> string;
+  base::Optional<std::u16string> string;
 };
 
 // This function should be kept in sync with IsHostValidForUrlHandler in
@@ -66,7 +66,7 @@ struct StructTraits<mojo_base::mojom::String16DataView, TruncatedString16> {
 
     output->string.emplace();
     return StructTraits<mojo_base::mojom::String16DataView,
-                        base::string16>::Read(input, &output->string.value());
+                        std::u16string>::Read(input, &output->string.value());
   }
 };
 

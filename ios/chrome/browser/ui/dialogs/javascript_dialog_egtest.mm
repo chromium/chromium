@@ -205,7 +205,7 @@ void WaitForJavaScriptDialog(const GURL& url,
 
   // Check the title.  Non-modal main-frame dialogs do not have a title label.
   if (!is_main_frame) {
-    base::string16 url_string = url_formatter::FormatUrlForSecurityDisplay(
+    std::u16string url_string = url_formatter::FormatUrlForSecurityDisplay(
         url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
     NSString* expected_title =
         l10n_util::GetNSStringF(IDS_JAVASCRIPT_MESSAGEBOX_TITLE, url_string);

@@ -152,17 +152,17 @@ namespace net {
 
 namespace {
 
-const base::string16 kBar(ASCIIToUTF16("bar"));
-const base::string16 kBar2(ASCIIToUTF16("bar2"));
-const base::string16 kBar3(ASCIIToUTF16("bar3"));
-const base::string16 kBaz(ASCIIToUTF16("baz"));
-const base::string16 kFirst(ASCIIToUTF16("first"));
-const base::string16 kFoo(ASCIIToUTF16("foo"));
-const base::string16 kFoo2(ASCIIToUTF16("foo2"));
-const base::string16 kFoo3(ASCIIToUTF16("foo3"));
-const base::string16 kFou(ASCIIToUTF16("fou"));
-const base::string16 kSecond(ASCIIToUTF16("second"));
-const base::string16 kWrongPassword(ASCIIToUTF16("wrongpassword"));
+const std::u16string kBar(ASCIIToUTF16("bar"));
+const std::u16string kBar2(ASCIIToUTF16("bar2"));
+const std::u16string kBar3(ASCIIToUTF16("bar3"));
+const std::u16string kBaz(ASCIIToUTF16("baz"));
+const std::u16string kFirst(ASCIIToUTF16("first"));
+const std::u16string kFoo(ASCIIToUTF16("foo"));
+const std::u16string kFoo2(ASCIIToUTF16("foo2"));
+const std::u16string kFoo3(ASCIIToUTF16("foo3"));
+const std::u16string kFou(ASCIIToUTF16("fou"));
+const std::u16string kSecond(ASCIIToUTF16("second"));
+const std::u16string kWrongPassword(ASCIIToUTF16("wrongpassword"));
 
 const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";

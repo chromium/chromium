@@ -12,10 +12,10 @@ namespace blink {
 
 IndexedDBKeyPath::IndexedDBKeyPath() : type_(mojom::IDBKeyPathType::Null) {}
 
-IndexedDBKeyPath::IndexedDBKeyPath(const base::string16& string)
+IndexedDBKeyPath::IndexedDBKeyPath(const std::u16string& string)
     : type_(mojom::IDBKeyPathType::String), string_(string) {}
 
-IndexedDBKeyPath::IndexedDBKeyPath(const std::vector<base::string16>& array)
+IndexedDBKeyPath::IndexedDBKeyPath(const std::vector<std::u16string>& array)
     : type_(mojom::IDBKeyPathType::Array), array_(array) {}
 
 IndexedDBKeyPath::IndexedDBKeyPath(const IndexedDBKeyPath& other) = default;
@@ -26,12 +26,12 @@ IndexedDBKeyPath& IndexedDBKeyPath::operator=(const IndexedDBKeyPath& other) =
 IndexedDBKeyPath& IndexedDBKeyPath::operator=(IndexedDBKeyPath&& other) =
     default;
 
-const std::vector<base::string16>& IndexedDBKeyPath::array() const {
+const std::vector<std::u16string>& IndexedDBKeyPath::array() const {
   DCHECK(type_ == blink::mojom::IDBKeyPathType::Array);
   return array_;
 }
 
-const base::string16& IndexedDBKeyPath::string() const {
+const std::u16string& IndexedDBKeyPath::string() const {
   DCHECK(type_ == blink::mojom::IDBKeyPathType::String);
   return string_;
 }

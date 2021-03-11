@@ -25,7 +25,7 @@ TestInfoBarDelegate::InfoBarIdentifier TestInfoBarDelegate::GetIdentifier()
   return TEST_INFOBAR;
 }
 
-base::string16 TestInfoBarDelegate::GetMessageText() const {
+std::u16string TestInfoBarDelegate::GetMessageText() const {
   return base::SysNSStringToUTF16(infobar_message_);
 }
 

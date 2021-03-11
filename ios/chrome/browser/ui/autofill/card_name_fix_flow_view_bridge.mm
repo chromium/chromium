@@ -66,7 +66,7 @@ CardNameFixFlowController* CardNameFixFlowViewBridge::GetController() {
 }
 
 void CardNameFixFlowViewBridge::OnConfirmedName(
-    const base::string16& confirmed_name) {
+    const std::u16string& confirmed_name) {
   controller_->OnNameAccepted(confirmed_name);
   PerformClose();
 }

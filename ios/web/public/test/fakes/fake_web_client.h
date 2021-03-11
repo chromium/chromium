@@ -38,7 +38,7 @@ class FakeWebClient : public web::WebClient {
 
   // Returns |plugin_not_supported_text_| as the text to be displayed for an
   // unsupported plugin.
-  base::string16 GetPluginNotSupportedText() const override;
+  std::u16string GetPluginNotSupportedText() const override;
 
   base::RefCountedMemory* GetDataResourceBytes(int id) const override;
 
@@ -69,7 +69,7 @@ class FakeWebClient : public web::WebClient {
                                     const GURL& url) override;
 
   // Sets |plugin_not_supported_text_|.
-  void SetPluginNotSupportedText(const base::string16& text);
+  void SetPluginNotSupportedText(const std::u16string& text);
 
   // Changes Early Page Script for testing purposes.
   void SetEarlyPageScript(NSString* page_script);
@@ -93,7 +93,7 @@ class FakeWebClient : public web::WebClient {
   void SetDefaultUserAgent(UserAgentType type) { default_user_agent_ = type; }
 
  private:
-  base::string16 plugin_not_supported_text_;
+  std::u16string plugin_not_supported_text_;
   std::vector<JavaScriptFeature*> java_script_features_;
   NSString* early_page_script_ = nil;
   // Last arguments passed to AllowCertificateError.

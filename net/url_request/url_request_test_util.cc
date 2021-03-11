@@ -599,8 +599,7 @@ void TestNetworkDelegate::OnURLRequestDestroyed(URLRequest* request) {
 }
 
 void TestNetworkDelegate::OnPACScriptError(int line_number,
-                                           const base::string16& error) {
-}
+                                           const std::u16string& error) {}
 
 bool TestNetworkDelegate::OnCanGetCookies(const URLRequest& request,
                                           bool allowed_from_caller) {

@@ -14,7 +14,7 @@
 WebEngineContentClient::WebEngineContentClient() = default;
 WebEngineContentClient::~WebEngineContentClient() = default;
 
-base::string16 WebEngineContentClient::GetLocalizedString(int message_id) {
+std::u16string WebEngineContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 

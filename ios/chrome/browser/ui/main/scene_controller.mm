@@ -974,16 +974,16 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   int numberOfTabs = self.currentInterface.browser->GetWebStateList()->count();
   DCHECK(numberOfTabs > 0);
   GURL url = webState->GetVisibleURL();
-  base::string16 urlText = url_formatter::FormatUrl(
+  std::u16string urlText = url_formatter::FormatUrl(
       url,
       url_formatter::kFormatUrlOmitDefaults |
           url_formatter::kFormatUrlOmitTrivialSubdomains |
           url_formatter::kFormatUrlOmitHTTPS |
           url_formatter::kFormatUrlTrimAfterHost,
       net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
-  base::string16 pattern =
+  std::u16string pattern =
       l10n_util::GetStringUTF16(IDS_IOS_APP_SWITCHER_SCENE_TITLE);
-  base::string16 formattedTitle =
+  std::u16string formattedTitle =
       base::i18n::MessageFormatter::FormatWithNamedArgs(
           pattern, "domain", urlText, "count", numberOfTabs - 1);
   return base::SysUTF16ToNSString(formattedTitle);
@@ -1743,7 +1743,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return nil;
   // Returns URL of browser tab that is currently showing.
   GURL url = webState->GetVisibleURL();
-  base::string16 urlText = url_formatter::FormatUrl(url);
+  std::u16string urlText = url_formatter::FormatUrl(url);
   return base::SysUTF16ToNSString(urlText);
 }
 

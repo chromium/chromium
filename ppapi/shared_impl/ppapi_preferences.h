@@ -15,7 +15,7 @@ namespace ppapi {
 
 struct PPAPI_SHARED_EXPORT Preferences {
  public:
-  typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
+  typedef std::map<std::string, std::u16string> ScriptFontFamilyMap;
 
   Preferences();
   ~Preferences();

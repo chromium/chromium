@@ -20,6 +20,6 @@ extern char kLegacyPixarUsdzMimeType[];
 // 3D model. The file extension is checked in addition to the content-type since
 // many static file hosting services do not allow setting the content-type.
 bool IsUsdzFileFormat(const std::string& mime_type,
-                      const base::string16& suggested_filename);
+                      const std::u16string& suggested_filename);
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_USDZ_MIME_TYPE_H_

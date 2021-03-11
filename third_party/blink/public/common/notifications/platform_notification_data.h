@@ -27,7 +27,7 @@ struct BLINK_COMMON_EXPORT PlatformNotificationData {
   ~PlatformNotificationData();
 
   // Title to be displayed with the Web Notification.
-  base::string16 title;
+  std::u16string title;
 
   // Hint to determine the directionality of the displayed notification.
   mojom::NotificationDirection direction;
@@ -36,7 +36,7 @@ struct BLINK_COMMON_EXPORT PlatformNotificationData {
   std::string lang;
 
   // Contents of the notification.
-  base::string16 body;
+  std::u16string body;
 
   // Tag of the notification. Notifications sharing both their origin and their
   // tag will replace the first displayed notification.

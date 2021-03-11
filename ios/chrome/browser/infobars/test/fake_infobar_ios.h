@@ -21,7 +21,7 @@ class FakeInfobarIOS : public InfoBarIOS {
   // |message_text| as its message.
   FakeInfobarIOS(
       InfobarType type = InfobarType::kInfobarTypeConfirm,
-      base::string16 message_text = base::ASCIIToUTF16("FakeInfobar"));
+      std::u16string message_text = base::ASCIIToUTF16("FakeInfobar"));
   // Creates a FakeInfobarIOS with |fake_delegate|. Uses
   // InfobarType::kInfobarTypeConfirm as a default type value.}
   FakeInfobarIOS(std::unique_ptr<FakeInfobarDelegate> fake_delegate);

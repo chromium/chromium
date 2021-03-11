@@ -65,9 +65,9 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
   void RecordSavePasswordProgress(const std::string& log) override {}
   void UserModifiedPasswordField() override {}
   void UserModifiedNonPasswordField(autofill::FieldRendererId renderer_id,
-                                    const base::string16& value) override {}
+                                    const std::u16string& value) override {}
   void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
-                               const base::string16& typed_username,
+                               const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override {}
   void ShowTouchToFill() override {}

@@ -57,11 +57,11 @@ void FakeTranslateInfoBarDelegate::TriggerOnTranslateStepChanged(
   }
 }
 
-base::string16 FakeTranslateInfoBarDelegate::source_language_name() const {
+std::u16string FakeTranslateInfoBarDelegate::source_language_name() const {
   return source_language_;
 }
 
-base::string16 FakeTranslateInfoBarDelegate::target_language_name() const {
+std::u16string FakeTranslateInfoBarDelegate::target_language_name() const {
   return target_language_;
 }
 

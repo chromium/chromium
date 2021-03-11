@@ -122,10 +122,10 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   // are showing.
   if (previousWindowCount != self.visibleWindowCount &&
       self.visibleWindowCount > 0) {
-    base::string16 pattern =
+    std::u16string pattern =
         l10n_util::GetStringUTF16(IDS_IOS_WINDOW_COUNT_CHANGE);
     int numberOfWindows = static_cast<int>(self.visibleWindowCount);
-    base::string16 formattedMessage =
+    std::u16string formattedMessage =
         base::i18n::MessageFormatter::FormatWithNamedArgs(pattern, "count",
                                                           numberOfWindows);
 

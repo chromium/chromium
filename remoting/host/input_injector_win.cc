@@ -422,9 +422,9 @@ void InputInjectorWin::Core::HandleText(const TextEvent& event) {
   // HostEventDispatcher should filter events missing the pressed field.
   DCHECK(event.has_text());
 
-  base::string16 text = base::UTF8ToUTF16(event.text());
-  for (base::string16::const_iterator it = text.begin();
-       it != text.end(); ++it)  {
+  std::u16string text = base::UTF8ToUTF16(event.text());
+  for (std::u16string::const_iterator it = text.begin(); it != text.end();
+       ++it) {
     if (*it == '\n') {
       // The WM_CHAR event generated for carriage return is '\r', not '\n', and
       // some applications may check for VK_RETURN explicitly, so handle

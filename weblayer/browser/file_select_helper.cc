@@ -90,13 +90,13 @@ void FileSelectHelper::RunFileChooser(
 
 #if defined(OS_ANDROID)
   // Android needs the original MIME types and an additional capture value.
-  std::pair<std::vector<base::string16>, bool> accept_types =
+  std::pair<std::vector<std::u16string>, bool> accept_types =
       std::make_pair(params->accept_types, params->use_media_capture);
 #endif
 
   // Many of these params are not used in the Android SelectFileDialog
   // implementation, so we can safely pass empty values.
-  select_file_dialog_->SelectFile(dialog_type_, base::string16(),
+  select_file_dialog_->SelectFile(dialog_type_, std::u16string(),
                                   base::FilePath(), nullptr, 0,
                                   base::FilePath::StringType(), owning_window,
 #if defined(OS_ANDROID)

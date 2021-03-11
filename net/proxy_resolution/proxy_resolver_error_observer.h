@@ -28,7 +28,7 @@ class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
   // be called concurrently, however it will be called from a different
   // thread than the proxy resolver's origin thread.
   virtual void OnPACScriptError(int line_number,
-                                const base::string16& error) = 0;
+                                const std::u16string& error) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProxyResolverErrorObserver);

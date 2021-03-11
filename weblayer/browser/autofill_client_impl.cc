@@ -144,7 +144,7 @@ void AutofillClientImpl::ConfirmMigrateLocalCardToCloud(
 
 void AutofillClientImpl::ShowLocalCardMigrationResults(
     const bool has_server_error,
-    const base::string16& tip_message,
+    const std::u16string& tip_message,
     const std::vector<autofill::MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {
   NOTREACHED();
@@ -183,13 +183,13 @@ void AutofillClientImpl::OfferVirtualCardOptions(
 
 #else  // defined(OS_ANDROID)
 void AutofillClientImpl::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   NOTREACHED();
 }
 
 void AutofillClientImpl::ConfirmExpirationDateFixFlow(
     const autofill::CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   NOTREACHED();
 }
@@ -242,8 +242,8 @@ void AutofillClientImpl::ShowAutofillPopup(
 }
 
 void AutofillClientImpl::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   NOTREACHED();
 }
 
@@ -288,8 +288,8 @@ void AutofillClientImpl::PropagateAutofillPredictions(
 }
 
 void AutofillClientImpl::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {
   NOTREACHED();
 }
 

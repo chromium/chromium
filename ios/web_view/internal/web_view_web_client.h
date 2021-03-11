@@ -31,7 +31,7 @@ class WebViewWebClient : public web::WebClient {
       web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
-  base::string16 GetPluginNotSupportedText() const override;
+  std::u16string GetPluginNotSupportedText() const override;
   void AllowCertificateError(web::WebState* web_state,
                              int cert_error,
                              const net::SSLInfo& ssl_info,

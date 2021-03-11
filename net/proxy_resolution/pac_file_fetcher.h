@@ -48,7 +48,7 @@ class NET_EXPORT_PRIVATE PacFileFetcher {
   //
   // Only one fetch is allowed to be outstanding at a time.
   virtual int Fetch(const GURL& url,
-                    base::string16* utf16_text,
+                    std::u16string* utf16_text,
                     CompletionOnceCallback callback,
                     const NetworkTrafficAnnotationTag traffic_annotation) = 0;
 

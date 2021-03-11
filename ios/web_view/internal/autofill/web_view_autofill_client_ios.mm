@@ -182,21 +182,21 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
 }
 
 void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const base::string16&)> callback) {
+    base::OnceCallback<void(const std::u16string&)> callback) {
   base::Optional<AccountInfo> primary_account_info =
       identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
           identity_manager_->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSync));
-  base::string16 account_name =
+  std::u16string account_name =
       primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
-                           : base::string16();
+                           : std::u16string();
   [bridge_ confirmCreditCardAccountName:account_name
                                callback:std::move(callback)];
 }
 
 void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
     const CreditCard& card,
-    base::OnceCallback<void(const base::string16&, const base::string16&)>
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
         callback) {
   [bridge_ confirmCreditCardExpirationWithCard:card
                                       callback:std::move(callback)];
@@ -248,8 +248,8 @@ void WebViewAutofillClientIOS::ShowAutofillPopup(
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   // No op. ios/web_view does not support display datalist.
 }
 
@@ -290,8 +290,8 @@ void WebViewAutofillClientIOS::PropagateAutofillPredictions(
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewField(
-    const base::string16& autofilled_value,
-    const base::string16& profile_full_name) {}
+    const std::u16string& autofilled_value,
+    const std::u16string& profile_full_name) {}
 
 bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);

@@ -43,7 +43,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
   ~DhcpPacFileFetcherWin() override;
 
   // DhcpPacFileFetcher implementation.
-  int Fetch(base::string16* utf16_text,
+  int Fetch(std::u16string* utf16_text,
             CompletionOnceCallback callback,
             const NetLogWithSource& net_log,
             const NetworkTrafficAnnotationTag traffic_annotation) override;
@@ -175,7 +175,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcherWin
 
   // Pointer to string we will write results to. Not valid in states
   // START and DONE.
-  base::string16* destination_string_;
+  std::u16string* destination_string_;
 
   // PAC URL retrieved from DHCP, if any. Valid only in state STATE_DONE.
   GURL pac_url_;

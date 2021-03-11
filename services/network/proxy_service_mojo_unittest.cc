@@ -73,14 +73,14 @@ class TestNetworkDelegate : public net::NetworkDelegateImpl {
 
   net::EventWaiter<Event>& event_waiter() { return event_waiter_; }
 
-  void OnPACScriptError(int line_number, const base::string16& error) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
 
  private:
   net::EventWaiter<Event> event_waiter_;
 };
 
 void TestNetworkDelegate::OnPACScriptError(int line_number,
-                                           const base::string16& error) {
+                                           const std::u16string& error) {
   event_waiter_.NotifyEvent(PAC_SCRIPT_ERROR);
   EXPECT_EQ(3, line_number);
   EXPECT_TRUE(base::UTF16ToUTF8(error).find("error: http://foo") !=

@@ -130,9 +130,9 @@ TEST_F(ReSignInInfoBarDelegateTest, TestMessages) {
   std::unique_ptr<ReSignInInfoBarDelegate> delegate(
       new ReSignInInfoBarDelegate(chrome_browser_state_.get(), nil));
   EXPECT_EQ(ConfirmInfoBarDelegate::BUTTON_OK, delegate->GetButtons());
-  base::string16 message_text = delegate->GetMessageText();
+  std::u16string message_text = delegate->GetMessageText();
   EXPECT_GT(message_text.length(), 0U);
-  base::string16 button_label =
+  std::u16string button_label =
       delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
   EXPECT_GT(button_label.length(), 0U);
 }

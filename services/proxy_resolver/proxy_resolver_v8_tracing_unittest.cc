@@ -80,10 +80,10 @@ class MockBindings {
   explicit MockBindings(ProxyHostResolver* host_resolver)
       : host_resolver_(host_resolver) {}
 
-  void Alert(const base::string16& message) {
+  void Alert(const std::u16string& message) {
     alerts_.push_back(base::UTF16ToASCII(message));
   }
-  void OnError(int line_number, const base::string16& error) {
+  void OnError(int line_number, const std::u16string& error) {
     waiter_.NotifyEvent(EVENT_ERROR);
     errors_.push_back(std::make_pair(line_number, base::UTF16ToASCII(error)));
     if (!error_callback_.is_null())
@@ -111,12 +111,12 @@ class MockBindings {
     explicit ForwardingBindings(MockBindings* bindings) : bindings_(bindings) {}
 
     // ProxyResolverV8Tracing::Bindings overrides.
-    void Alert(const base::string16& message) override {
+    void Alert(const std::u16string& message) override {
       DCHECK(thread_checker_.CalledOnValidThread());
       bindings_->Alert(message);
     }
 
-    void OnError(int line_number, const base::string16& error) override {
+    void OnError(int line_number, const std::u16string& error) override {
       DCHECK(thread_checker_.CalledOnValidThread());
       bindings_->OnError(line_number, error);
     }

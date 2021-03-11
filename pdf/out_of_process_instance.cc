@@ -504,7 +504,7 @@ pp::PDF::PrivateAccessibilityPageObjects ToPrivateAccessibilityPageObjects(
 }
 
 // Converts |version| to a formatted string.
-base::string16 GetFormattedVersion(PdfVersion version) {
+std::u16string GetFormattedVersion(PdfVersion version) {
   double value = 0;
   switch (version) {
     case PdfVersion::k1_0:
@@ -536,7 +536,7 @@ base::string16 GetFormattedVersion(PdfVersion version) {
       break;
     case PdfVersion::kUnknown:
     case PdfVersion::k1_8:  // Not an actual version
-      return base::string16();
+      return std::u16string();
   }
   // The default case is excluded from the above switch statement to ensure that
   // all supported versions are determinantly handled.
@@ -1608,7 +1608,7 @@ void OutOfProcessInstance::SendMetadata() {
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
   pp::VarDictionary metadata_data;
 
-  base::string16 version = GetFormattedVersion(document_metadata.version);
+  std::u16string version = GetFormattedVersion(document_metadata.version);
   if (!version.empty())
     metadata_data.Set(pp::Var(kJSVersion), pp::Var(base::UTF16ToUTF8(version)));
 

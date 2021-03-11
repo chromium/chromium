@@ -26,7 +26,7 @@ namespace blink {
 constexpr int kMaxScrollAnchorSelectorLength = 500;
 
 struct BLINK_COMMON_EXPORT ExplodedHttpBody {
-  base::Optional<base::string16> http_content_type;
+  base::Optional<std::u16string> http_content_type;
   scoped_refptr<network::ResourceRequestBody> request_body;
   bool contains_passwords;
 
@@ -35,12 +35,12 @@ struct BLINK_COMMON_EXPORT ExplodedHttpBody {
 };
 
 struct BLINK_COMMON_EXPORT ExplodedFrameState {
-  base::Optional<base::string16> url_string;
-  base::Optional<base::string16> referrer;
+  base::Optional<std::u16string> url_string;
+  base::Optional<std::u16string> referrer;
   base::Optional<url::Origin> initiator_origin;
-  base::Optional<base::string16> target;
-  base::Optional<base::string16> state_object;
-  std::vector<base::Optional<base::string16>> document_state;
+  base::Optional<std::u16string> target;
+  base::Optional<std::u16string> state_object;
+  std::vector<base::Optional<std::u16string>> document_state;
   blink::mojom::ScrollRestorationType scroll_restoration_type =
       blink::mojom::ScrollRestorationType::kAuto;
   bool did_save_scroll_or_scale_state = true;
@@ -52,7 +52,7 @@ struct BLINK_COMMON_EXPORT ExplodedFrameState {
   network::mojom::ReferrerPolicy referrer_policy =
       network::mojom::ReferrerPolicy::kDefault;
   ExplodedHttpBody http_body;
-  base::Optional<base::string16> scroll_anchor_selector;
+  base::Optional<std::u16string> scroll_anchor_selector;
   gfx::PointF scroll_anchor_offset;
   uint64_t scroll_anchor_simhash = 0;
   std::vector<ExplodedFrameState> children;
@@ -71,7 +71,7 @@ struct BLINK_COMMON_EXPORT ExplodedPageState {
   // extract referenced files from ExplodedHttpBody.  |referenced_files|
   // currently contains a list from all frames, but cannot be deserialized into
   // the files referenced by each frame.  See http://crbug.com/441966.
-  std::vector<base::Optional<base::string16>> referenced_files;
+  std::vector<base::Optional<std::u16string>> referenced_files;
   ExplodedFrameState top;
 
   ExplodedPageState();

@@ -26,14 +26,14 @@
 
 namespace {
 
-base::Optional<base::string16> GetPageTitle(const web::NavigationItem& item) {
-  const base::string16& title = item.GetTitleForDisplay();
+base::Optional<std::u16string> GetPageTitle(const web::NavigationItem& item) {
+  const std::u16string& title = item.GetTitleForDisplay();
   if (title.empty() ||
       title == l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE)) {
     return base::nullopt;
   }
 
-  return base::Optional<base::string16>(title);
+  return base::Optional<std::u16string>(title);
 }
 
 }  // namespace
@@ -45,7 +45,7 @@ HistoryTabHelper::~HistoryTabHelper() {
 void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   DCHECK(!delay_notification_);
 
-  const base::Optional<base::string16> title = GetPageTitle(item);
+  const base::Optional<std::u16string> title = GetPageTitle(item);
   // Don't update the history if current entry has no title.
   if (!title) {
     return;

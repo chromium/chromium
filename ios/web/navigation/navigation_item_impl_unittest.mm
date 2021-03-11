@@ -168,7 +168,7 @@ TEST_F(NavigationItemTest, ExtraLongTitle) {
 
 // Tests NavigationItemImpl::GetDisplayTitleForURL method.
 TEST_F(NavigationItemTest, GetDisplayTitleForURL) {
-  base::string16 title;
+  std::u16string title;
 
   title = NavigationItemImpl::GetDisplayTitleForURL(GURL("http://foo.org/"));
   EXPECT_EQ("foo.org", base::UTF16ToUTF8(title));

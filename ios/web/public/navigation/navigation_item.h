@@ -74,8 +74,8 @@ class NavigationItem : public base::SupportsUserData {
   // The caller is responsible for detecting when there is no title and
   // displaying the appropriate "Untitled" label if this is being displayed to
   // the user.
-  virtual void SetTitle(const base::string16& title) = 0;
-  virtual const base::string16& GetTitle() const = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
   // Stores the NavigationItem's last recorded scroll offset and zoom scale.
   virtual void SetPageDisplayState(const PageDisplayState& page_state) = 0;
@@ -85,7 +85,7 @@ class NavigationItem : public base::SupportsUserData {
 
   // Returns the title to be displayed on the tab. This could be the title of
   // the page if it is available or the URL.
-  virtual const base::string16& GetTitleForDisplay() const = 0;
+  virtual const std::u16string& GetTitleForDisplay() const = 0;
 
   // Tracking stuff ------------------------------------------------------------
 

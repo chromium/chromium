@@ -333,8 +333,8 @@ struct ParamTraits<std::string> {
 };
 
 template <>
-struct ParamTraits<base::string16> {
-  typedef base::string16 param_type;
+struct ParamTraits<std::u16string> {
+  typedef std::u16string param_type;
   static void Write(base::Pickle* m, const param_type& p) {
     m->WriteString16(p);
   }

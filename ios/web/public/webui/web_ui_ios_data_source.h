@@ -36,7 +36,7 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name,
-                         const base::string16& value) = 0;
+                         const std::u16string& value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(const std::string& name, const std::string& value) = 0;

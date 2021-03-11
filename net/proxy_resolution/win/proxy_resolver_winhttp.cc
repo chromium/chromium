@@ -120,7 +120,7 @@ int ProxyResolverWinHttp::GetProxyForURL(
   WINHTTP_AUTOPROXY_OPTIONS options = {0};
   options.fAutoLogonIfChallenged = FALSE;
   options.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
-  base::string16 pac_url16 = base::ASCIIToUTF16(pac_url_.spec());
+  std::u16string pac_url16 = base::ASCIIToUTF16(pac_url_.spec());
   options.lpszAutoConfigUrl = base::as_wcstr(pac_url16);
 
   WINHTTP_PROXY_INFO info = {0};

@@ -356,7 +356,7 @@
 - (void)showConfirmationDialogToUseOtherPassword {
   WebStateList* webStateList = self.browser->GetWebStateList();
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
-  base::string16 origin = base::ASCIIToUTF16(
+  std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(URL)));
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE);

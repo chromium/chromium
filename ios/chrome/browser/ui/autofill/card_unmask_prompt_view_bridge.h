@@ -34,7 +34,7 @@ class CardUnmaskPromptViewBridge : public CardUnmaskPromptView {
   void Show() override;
   void ControllerGone() override;
   void DisableAndWaitForVerification() override;
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override;
 
   CardUnmaskPromptController* GetController();

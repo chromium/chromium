@@ -20,8 +20,8 @@
 @synthesize nativeName = _nativeName;
 
 - (instancetype)initWithLanguageCode:(const std::string&)languageCode
-                       localizedName:(const base::string16&)localizedName
-                          nativeName:(const base::string16&)nativeName {
+                       localizedName:(const std::u16string&)localizedName
+                          nativeName:(const std::u16string&)nativeName {
   self = [super init];
   if (self) {
     _languageCode = base::SysUTF8ToNSString(languageCode);

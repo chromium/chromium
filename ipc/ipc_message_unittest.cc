@@ -37,7 +37,7 @@ namespace IPC {
 TEST(IPCMessageTest, BasicMessageTest) {
   int v1 = 10;
   std::string v2("foobar");
-  base::string16 v3(base::ASCIIToUTF16("hello world"));
+  std::u16string v3(base::ASCIIToUTF16("hello world"));
 
   IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
   m.WriteInt(v1);
@@ -48,7 +48,7 @@ TEST(IPCMessageTest, BasicMessageTest) {
 
   int vi;
   std::string vs;
-  base::string16 vs16;
+  std::u16string vs16;
 
   EXPECT_TRUE(iter.ReadInt(&vi));
   EXPECT_EQ(v1, vi);

@@ -99,8 +99,8 @@ bool WriteResponsePayloadsV2(
 
 bool WriteStringPayloads(NtlmBufferWriter* authenticate_writer,
                          bool is_unicode,
-                         const base::string16& domain,
-                         const base::string16& username,
+                         const std::u16string& domain,
+                         const std::u16string& username,
                          const std::string& hostname) {
   if (is_unicode) {
     return authenticate_writer->WriteUtf16String(domain) &&
@@ -115,11 +115,11 @@ bool WriteStringPayloads(NtlmBufferWriter* authenticate_writer,
 
 // Returns the size in bytes of a string16 depending whether unicode
 // was negotiated.
-size_t GetStringPayloadLength(const base::string16& str, bool is_unicode) {
+size_t GetStringPayloadLength(const std::u16string& str, bool is_unicode) {
   if (is_unicode)
     return str.length() * 2;
 
-  // When |WriteUtf16AsUtf8String| is called with a |base::string16|, the string
+  // When |WriteUtf16AsUtf8String| is called with a |std::u16string|, the string
   // is converted to UTF8. Do the conversion to ensure that the character
   // count is correct.
   return base::UTF16ToUTF8(str).length();
@@ -184,9 +184,9 @@ void NtlmClient::GenerateNegotiateMessage() {
 }
 
 std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
-    const base::string16& domain,
-    const base::string16& username,
-    const base::string16& password,
+    const std::u16string& domain,
+    const std::u16string& username,
+    const std::u16string& password,
     const std::string& hostname,
     const std::string& channel_bindings,
     const std::string& spn,
@@ -348,8 +348,8 @@ std::vector<uint8_t> NtlmClient::GenerateAuthenticateMessage(
 
 bool NtlmClient::CalculatePayloadLayout(
     bool is_unicode,
-    const base::string16& domain,
-    const base::string16& username,
+    const std::u16string& domain,
+    const std::u16string& username,
     const std::string& hostname,
     size_t updated_target_info_len,
     SecurityBuffer* lm_info,

@@ -154,7 +154,7 @@ base::Optional<double> MediaImageManager::GetImageExtensionScore(
 
 // static
 base::Optional<double> MediaImageManager::GetImageTypeScore(
-    const base::string16& type) {
+    const std::u16string& type) {
   // These hashes are calculated in
   // MediaImageManagerTest_CheckExpectedImageTypeHashes
   switch (base::PersistentHash(type.data(), type.size() * sizeof(char16_t))) {

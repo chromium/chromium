@@ -55,7 +55,7 @@ void TemplateURLServiceClientImpl::DeleteAllSearchTermsForKeyword(
 void TemplateURLServiceClientImpl::SetKeywordSearchTermsForURL(
     const GURL& url,
     TemplateURLID id,
-    const base::string16& term) {
+    const std::u16string& term) {
   if (history_service_)
     history_service_->SetKeywordSearchTermsForURL(url, id, term);
 }

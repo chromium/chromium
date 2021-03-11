@@ -22,16 +22,14 @@ AuthChallengeInfo::~AuthChallengeInfo() = default;
 
 AuthCredentials::AuthCredentials() = default;
 
-AuthCredentials::AuthCredentials(const base::string16& username,
-                                 const base::string16& password)
-    : username_(username),
-      password_(password) {
-}
+AuthCredentials::AuthCredentials(const std::u16string& username,
+                                 const std::u16string& password)
+    : username_(username), password_(password) {}
 
 AuthCredentials::~AuthCredentials() = default;
 
-void AuthCredentials::Set(const base::string16& username,
-                          const base::string16& password) {
+void AuthCredentials::Set(const std::u16string& username,
+                          const std::u16string& password) {
   username_ = username;
   password_ = password;
 }

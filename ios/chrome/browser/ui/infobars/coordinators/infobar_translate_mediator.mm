@@ -184,7 +184,7 @@ const int kInvalidLanguageIndex = -1;
 
   self.newSourceLanguageIndex = languageIndex;
 
-  base::string16 targetLanguage =
+  std::u16string targetLanguage =
       self.translateInfobarDelegate->target_language_name();
   if (self.newTargetLanguageIndex != kInvalidLanguageIndex) {
     targetLanguage = self.translateInfobarDelegate->language_name_at(
@@ -212,7 +212,7 @@ const int kInvalidLanguageIndex = -1;
 
   self.newTargetLanguageIndex = languageIndex;
 
-  base::string16 sourceLanguage =
+  std::u16string sourceLanguage =
       self.translateInfobarDelegate->source_language_name();
   if (self.newSourceLanguageIndex != kInvalidLanguageIndex) {
     sourceLanguage = self.translateInfobarDelegate->language_name_at(

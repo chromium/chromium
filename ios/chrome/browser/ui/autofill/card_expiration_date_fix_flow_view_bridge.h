@@ -32,8 +32,8 @@ class CardExpirationDateFixFlowViewBridge
   CardExpirationDateFixFlowController* GetController();
 
   // Called when the user confirms the expirationn date.
-  void OnConfirmedExpirationDate(const base::string16& month,
-                                 const base::string16& year);
+  void OnConfirmedExpirationDate(const std::u16string& month,
+                                 const std::u16string& year);
 
   // Called when the user cancels the fix flow.
   void OnDismissed();

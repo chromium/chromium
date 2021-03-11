@@ -220,18 +220,18 @@ class TabImpl : public Tab,
   void AddObserver(TabObserver* observer) override;
   void RemoveObserver(TabObserver* observer) override;
   NavigationController* GetNavigationController() override;
-  void ExecuteScript(const base::string16& script,
+  void ExecuteScript(const std::u16string& script,
                      bool use_separate_isolate,
                      JavaScriptResultCallback callback) override;
   const std::string& GetGuid() override;
   void SetData(const std::map<std::string, std::string>& data) override;
   const std::map<std::string, std::string>& GetData() override;
-  base::string16 AddWebMessageHostFactory(
+  std::u16string AddWebMessageHostFactory(
       std::unique_ptr<WebMessageHostFactory> factory,
-      const base::string16& js_object_name,
+      const std::u16string& js_object_name,
       const std::vector<std::string>& js_origins) override;
   void RemoveWebMessageHostFactory(
-      const base::string16& js_object_name) override;
+      const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
 #if !defined(OS_ANDROID)
@@ -242,7 +242,7 @@ class TabImpl : public Tab,
   void SetWebPreferences(blink::web_pref::WebPreferences* prefs);
 
   // Executes |script| with a user gesture.
-  void ExecuteScriptWithUserGestureForTests(const base::string16& script);
+  void ExecuteScriptWithUserGestureForTests(const std::u16string& script);
 
   // Initializes the autofill system with |provider| for tests.
   void InitializeAutofillForTests(
@@ -409,7 +409,7 @@ class TabImpl : public Tab,
   std::map<std::string, std::string> data_;
   base::ObserverList<DataObserver>::Unchecked data_observers_;
 
-  base::string16 title_;
+  std::u16string title_;
 
   std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 

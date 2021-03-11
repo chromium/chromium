@@ -322,7 +322,7 @@ std::string DownloadTaskImpl::GetMimeType() const {
   return mime_type_;
 }
 
-base::string16 DownloadTaskImpl::GetSuggestedFilename() const {
+std::u16string DownloadTaskImpl::GetSuggestedFilename() const {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return net::GetSuggestedFilename(GetOriginalUrl(), GetContentDisposition(),
                                    /*referrer_charset=*/std::string(),

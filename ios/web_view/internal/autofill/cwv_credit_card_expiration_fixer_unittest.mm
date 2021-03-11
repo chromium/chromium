@@ -23,8 +23,8 @@ namespace ios_web_view {
 
 class CWVCreditCardExpirationFixerTest : public TestWithLocaleAndResources {
  public:
-  void AcceptExpiration(const base::string16& month,
-                        const base::string16& year) {
+  void AcceptExpiration(const std::u16string& month,
+                        const std::u16string& year) {
     _accepted_month = base::SysUTF16ToNSString(month);
     _accepted_year = base::SysUTF16ToNSString(year);
   }
@@ -51,7 +51,7 @@ TEST_F(CWVCreditCardExpirationFixerTest, Properties) {
 // Tests CWVCreditCardExpirationFixer properly accepts a valid expiration.
 TEST_F(CWVCreditCardExpirationFixerTest, AcceptValidExpiration) {
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  base::OnceCallback<void(const base::string16&, const base::string16&)>
+  base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       callback =
           base::BindOnce(&CWVCreditCardExpirationFixerTest::AcceptExpiration,
                          base::Unretained(this));
@@ -69,7 +69,7 @@ TEST_F(CWVCreditCardExpirationFixerTest, AcceptValidExpiration) {
 // Tests CWVCreditCardExpirationFixer properly rejects invalid expirations.
 TEST_F(CWVCreditCardExpirationFixerTest, RejectsInvalidExpirations) {
   autofill::CreditCard card = autofill::test::GetCreditCard();
-  base::OnceCallback<void(const base::string16&, const base::string16&)>
+  base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       callback =
           base::BindOnce(&CWVCreditCardExpirationFixerTest::AcceptExpiration,
                          base::Unretained(this));

@@ -270,8 +270,8 @@ int FtpNetworkTransaction::Start(
   ctrl_response_buffer_ = std::make_unique<FtpCtrlResponseBuffer>(net_log_);
 
   if (request_->url.has_username()) {
-    base::string16 username;
-    base::string16 password;
+    std::u16string username;
+    std::u16string password;
     GetIdentityFromURL(request_->url, &username, &password);
     credentials_.Set(username, password);
   } else {

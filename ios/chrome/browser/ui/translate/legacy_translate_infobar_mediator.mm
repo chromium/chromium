@@ -136,7 +136,7 @@
 // Returns the menu items for the translate option selection popup menu.
 - (NSArray<NSArray<TableViewItem<PopupMenuItem>*>*>*)
     translateOptionSelectionItems {
-  base::string16 sourceLanguageName =
+  std::u16string sourceLanguageName =
       self.infobarDelegate->source_language_name();
 
   TranslatePopupMenuItem* selectTargetLanguageItem =

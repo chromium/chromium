@@ -510,8 +510,8 @@ bool HttpAuthController::SelectNextAuthIdentityToTry() {
     identity_.source = HttpAuth::IDENT_SRC_URL;
     identity_.invalid = false;
     // Extract the username:password from the URL.
-    base::string16 username;
-    base::string16 password;
+    std::u16string username;
+    std::u16string password;
     GetIdentityFromURL(auth_url_, &username, &password);
     identity_.credentials.Set(username, password);
     embedded_identity_used_ = true;

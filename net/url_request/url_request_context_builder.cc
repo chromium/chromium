@@ -104,7 +104,7 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
 
   void OnURLRequestDestroyed(URLRequest* request) override {}
 
-  void OnPACScriptError(int line_number, const base::string16& error) override {
+  void OnPACScriptError(int line_number, const std::u16string& error) override {
   }
 
   bool OnCanGetCookies(const URLRequest& request,

@@ -25,7 +25,7 @@ namespace {
 // Mocks ExecuteJavaScript method.
 class WebStateMock : public web::FakeWebState {
  public:
-  MOCK_METHOD1(ExecuteJavaScript, void(const base::string16&));
+  MOCK_METHOD1(ExecuteJavaScript, void(const std::u16string&));
 };
 
 }  // namespace

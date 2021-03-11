@@ -18,13 +18,13 @@ namespace net {
 
 namespace {
 
-bool TwoColumnDateListingToTime(const base::string16& date,
-                                const base::string16& time,
+bool TwoColumnDateListingToTime(const std::u16string& date,
+                                const std::u16string& time,
                                 base::Time* result) {
   base::Time::Exploded time_exploded = { 0 };
 
   // Date should be in format YYYY-MM-DD.
-  std::vector<base::string16> date_parts =
+  std::vector<std::u16string> date_parts =
       base::SplitString(date, base::ASCIIToUTF16("-"), base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_ALL);
   if (date_parts.size() != 3)
@@ -40,7 +40,7 @@ bool TwoColumnDateListingToTime(const base::string16& date,
   if (time.length() != 5)
     return false;
 
-  std::vector<base::string16> time_parts =
+  std::vector<std::u16string> time_parts =
       base::SplitString(time, base::ASCIIToUTF16(":"), base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_ALL);
   if (time_parts.size() != 2)
@@ -59,10 +59,10 @@ bool TwoColumnDateListingToTime(const base::string16& date,
 // Returns the column index of the end of the date listing and detected
 // last modification time.
 bool DetectColumnOffsetSizeAndModificationTime(
-    const std::vector<base::string16>& columns,
+    const std::vector<std::u16string>& columns,
     const base::Time& current_time,
     size_t* offset,
-    base::string16* size,
+    std::u16string* size,
     base::Time* modification_time) {
   // The column offset can be arbitrarily large if some fields
   // like owner or group name contain spaces. Try offsets from left to right
@@ -118,7 +118,7 @@ bool DetectColumnOffsetSizeAndModificationTime(
 }  // namespace
 
 bool ParseFtpDirectoryListingLs(
-    const std::vector<base::string16>& lines,
+    const std::vector<std::u16string>& lines,
     const base::Time& current_time,
     std::vector<FtpDirectoryListingEntry>* entries) {
   // True after we have received a "total n" listing header, where n is an
@@ -129,7 +129,7 @@ bool ParseFtpDirectoryListingLs(
     if (lines[i].empty())
       continue;
 
-    std::vector<base::string16> columns = base::SplitString(
+    std::vector<std::u16string> columns = base::SplitString(
         base::CollapseWhitespace(lines[i], false), base::ASCIIToUTF16(" "),
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
@@ -154,7 +154,7 @@ bool ParseFtpDirectoryListingLs(
     FtpDirectoryListingEntry entry;
 
     size_t column_offset;
-    base::string16 size;
+    std::u16string size;
     if (!DetectColumnOffsetSizeAndModificationTime(columns,
                                                    current_time,
                                                    &column_offset,
@@ -164,7 +164,7 @@ bool ParseFtpDirectoryListingLs(
       // All those messages have in common is the string ".:",
       // where "." means the current directory, and ":" separates it
       // from the rest of the message, which may be empty.
-      if (lines[i].find(base::ASCIIToUTF16(".:")) != base::string16::npos)
+      if (lines[i].find(base::ASCIIToUTF16(".:")) != std::u16string::npos)
         continue;
 
       return false;
@@ -212,12 +212,12 @@ bool ParseFtpDirectoryListingLs(
                                                     column_offset + 1);
 
     if (entry.type == FtpDirectoryListingEntry::SYMLINK) {
-      base::string16::size_type pos =
+      std::u16string::size_type pos =
           entry.name.rfind(base::ASCIIToUTF16(" -> "));
 
       // We don't require the " -> " to be present. Some FTP servers don't send
       // the symlink target, possibly for security reasons.
-      if (pos != base::string16::npos)
+      if (pos != std::u16string::npos)
         entry.name = entry.name.substr(0, pos);
     }
 

@@ -67,7 +67,7 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
   void DisableAndWaitForVerification() override {
     // No op.
   }
-  void GotVerificationResult(const base::string16& error_message,
+  void GotVerificationResult(const std::u16string& error_message,
                              bool allow_retry) override {
     NSString* ns_error_message = base::SysUTF16ToNSString(error_message);
     [verifier_ didReceiveVerificationResultWithErrorMessage:ns_error_message

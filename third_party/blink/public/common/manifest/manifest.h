@@ -45,7 +45,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // any string and doesn't have to be a valid image MIME type at this point.
     // It is up to the consumer of the object to check if the type matches a
     // supported type.
-    base::string16 type;
+    std::u16string type;
 
     // Empty if the parsing failed, the field was not present or empty.
     // The special value "any" is represented by gfx::Size(0, 0).
@@ -62,16 +62,16 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShortcutItem();
     ~ShortcutItem();
 
-    base::string16 name;
-    base::Optional<base::string16> short_name;
-    base::Optional<base::string16> description;
+    std::u16string name;
+    base::Optional<std::u16string> short_name;
+    base::Optional<std::u16string> description;
     GURL url;
     std::vector<ImageResource> icons;
   };
 
   struct BLINK_COMMON_EXPORT FileFilter {
-    base::string16 name;
-    std::vector<base::string16> accept;
+    std::u16string name;
+    std::vector<std::u16string> accept;
   };
 
   // Structure representing a Web Share target's query parameter keys.
@@ -79,9 +79,9 @@ struct BLINK_COMMON_EXPORT Manifest {
     ShareTargetParams();
     ~ShareTargetParams();
 
-    base::Optional<base::string16> title;
-    base::Optional<base::string16> text;
-    base::Optional<base::string16> url;
+    base::Optional<std::u16string> title;
+    base::Optional<std::u16string> text;
+    base::Optional<std::u16string> url;
     std::vector<FileFilter> files;
   };
 
@@ -107,13 +107,13 @@ struct BLINK_COMMON_EXPORT Manifest {
   struct BLINK_COMMON_EXPORT FileHandler {
     // The URL which will be opened when the file handler is invoked.
     GURL action;
-    base::string16 name;
-    std::map<base::string16, std::vector<base::string16>> accept;
+    std::u16string name;
+    std::map<std::u16string, std::vector<std::u16string>> accept;
   };
 
   // Structure representing a Protocol Handler.
   struct BLINK_COMMON_EXPORT ProtocolHandler {
-    base::string16 protocol;
+    std::u16string protocol;
     GURL url;
   };
 
@@ -130,7 +130,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // The platform on which the application can be found. This can be any
     // string, and is interpreted by the consumer of the object. Empty if the
     // parsing failed.
-    base::Optional<base::string16> platform;
+    base::Optional<std::u16string> platform;
 
     // URL at which the application can be found. One of |url| and |id| must be
     // present. Empty if the parsing failed or the field was not present.
@@ -139,7 +139,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     // An id which is used to represent the application on the platform. One of
     // |url| and |id| must be present. Empty if the parsing failed or the field
     // was not present.
-    base::Optional<base::string16> id;
+    base::Optional<std::u16string> id;
   };
 
   Manifest();
@@ -151,13 +151,13 @@ struct BLINK_COMMON_EXPORT Manifest {
   bool IsEmpty() const;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<base::string16> name;
+  base::Optional<std::u16string> name;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<base::string16> short_name;
+  base::Optional<std::u16string> short_name;
 
   // Null if the parsing failed or the field was not present.
-  base::Optional<base::string16> description;
+  base::Optional<std::u16string> description;
 
   // Empty if the parsing failed or the field was not present.
   GURL start_url;
@@ -229,7 +229,7 @@ struct BLINK_COMMON_EXPORT Manifest {
   // This is a proprietary extension of the web Manifest, double-check that it
   // is okay to use this entry.
   // Null if parsing failed or the field was not present.
-  base::Optional<base::string16> gcm_sender_id;
+  base::Optional<std::u16string> gcm_sender_id;
 
   // Empty if the parsing failed. Otherwise defaults to the start URL (or
   // document URL if start URL isn't present) with filename, query, and fragment

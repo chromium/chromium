@@ -28,6 +28,6 @@ void Shell::PlatformResizeSubViews() {}
 
 void Shell::Close() {}
 
-void Shell::PlatformSetTitle(const base::string16& title) {}
+void Shell::PlatformSetTitle(const std::u16string& title) {}
 
 }  // namespace weblayer

@@ -89,22 +89,22 @@ TEST_F(ConverterTest, String16) {
 
   HandleScope handle_scope(isolate);
 
-  EXPECT_TRUE(Converter<base::string16>::ToV8(isolate, base::ASCIIToUTF16(""))
+  EXPECT_TRUE(Converter<std::u16string>::ToV8(isolate, base::ASCIIToUTF16(""))
                   ->StrictEquals(StringToV8(isolate, "")));
   EXPECT_TRUE(
-      Converter<base::string16>::ToV8(isolate, base::ASCIIToUTF16("hello"))
+      Converter<std::u16string>::ToV8(isolate, base::ASCIIToUTF16("hello"))
           ->StrictEquals(StringToV8(isolate, "hello")));
 
-  base::string16 result;
+  std::u16string result;
 
   ASSERT_FALSE(
-      Converter<base::string16>::FromV8(isolate, v8::False(isolate), &result));
+      Converter<std::u16string>::FromV8(isolate, v8::False(isolate), &result));
   ASSERT_FALSE(
-      Converter<base::string16>::FromV8(isolate, v8::True(isolate), &result));
-  ASSERT_TRUE(Converter<base::string16>::FromV8(
+      Converter<std::u16string>::FromV8(isolate, v8::True(isolate), &result));
+  ASSERT_TRUE(Converter<std::u16string>::FromV8(
       isolate, v8::String::Empty(isolate), &result));
-  EXPECT_EQ(result, base::string16());
-  ASSERT_TRUE(Converter<base::string16>::FromV8(
+  EXPECT_EQ(result, std::u16string());
+  ASSERT_TRUE(Converter<std::u16string>::FromV8(
       isolate, StringToV8(isolate, "hello"), &result));
   EXPECT_EQ(result, base::ASCIIToUTF16("hello"));
 }

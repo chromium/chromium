@@ -30,7 +30,7 @@ using blink::mojom::EffectiveConnectionType;
 
 // Map of ISO 15924 four-letter script code to font family.  For example,
 // "Arab" to "My Arabic Font".
-typedef std::map<std::string, base::string16> ScriptFontFamilyMap;
+typedef std::map<std::string, std::u16string> ScriptFontFamilyMap;
 
 // The ISO 15924 script code for undetermined script aka Common. It's the
 // default used on WebKit's side to get/set a font setting when no script is

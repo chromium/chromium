@@ -34,7 +34,7 @@ class BrowserStateInfoCache {
 
   void AddBrowserState(const base::FilePath& browser_state_path,
                        const std::string& gaia_id,
-                       const base::string16& user_name);
+                       const std::u16string& user_name);
   void RemoveBrowserState(const base::FilePath& browser_state_path);
 
   // Returns the count of known browser states.
@@ -47,13 +47,13 @@ class BrowserStateInfoCache {
   // Gets and sets information related to browser states.
   size_t GetIndexOfBrowserStateWithPath(
       const base::FilePath& browser_state_path) const;
-  base::string16 GetUserNameOfBrowserStateAtIndex(size_t index) const;
+  std::u16string GetUserNameOfBrowserStateAtIndex(size_t index) const;
   base::FilePath GetPathOfBrowserStateAtIndex(size_t index) const;
   std::string GetGAIAIdOfBrowserStateAtIndex(size_t index) const;
   bool BrowserStateIsAuthenticatedAtIndex(size_t index) const;
   void SetAuthInfoOfBrowserStateAtIndex(size_t index,
                                         const std::string& gaia_id,
-                                        const base::string16& user_name);
+                                        const std::u16string& user_name);
   void SetBrowserStateIsAuthErrorAtIndex(size_t index, bool value);
   bool BrowserStateIsAuthErrorAtIndex(size_t index) const;
 

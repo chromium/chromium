@@ -54,7 +54,7 @@ void LegacyTLSBlockingPage::PopulateInterstitialStrings(
   load_time_data->SetBoolean("bad_clock", false);
   load_time_data->SetString("type", "LEGACY_TLS");
 
-  const base::string16 hostname(
+  const std::u16string hostname(
       security_interstitials::common_string_util::GetFormattedHostName(
           request_url_));
   security_interstitials::common_string_util::PopulateLegacyTLSStrings(

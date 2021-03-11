@@ -147,14 +147,14 @@ void OmniboxPopupViewIOS::OnMatchSelected(
         ClipboardRecentContent::GetInstance()->GetClipboardContentAge());
   }
   delegate_->OnSelectedMatchForOpening(match, disposition, GURL(),
-                                       base::string16(), row);
+                                       std::u16string(), row);
 }
 
 void OmniboxPopupViewIOS::OnMatchSelectedForAppending(
     const AutocompleteMatch& match) {
   // Make a defensive copy of |match.fill_into_edit|, as CopyToOmnibox() will
   // trigger a new round of autocomplete and modify |match|.
-  base::string16 fill_into_edit(match.fill_into_edit);
+  std::u16string fill_into_edit(match.fill_into_edit);
 
   // If the match is not a URL, append a whitespace to the end of it.
   if (AutocompleteMatch::IsSearchType(match.type)) {

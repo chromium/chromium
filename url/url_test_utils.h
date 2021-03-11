@@ -24,8 +24,8 @@ namespace test_utils {
 // in base bacause it passes invalid UTF-16 characters which is important for
 // test purposes. As a result, this is not meant to handle true UTF-32 encoded
 // strings.
-inline base::string16 TruncateWStringToUTF16(const wchar_t* src) {
-  base::string16 str;
+inline std::u16string TruncateWStringToUTF16(const wchar_t* src) {
+  std::u16string str;
   int length = static_cast<int>(wcslen(src));
   for (int i = 0; i < length; ++i) {
     str.push_back(static_cast<char16_t>(src[i]));

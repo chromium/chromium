@@ -57,7 +57,7 @@ static void JNI_WebLayerImpl_RegisterExternalExperimentIDs(
       experiment_ids);
 }
 
-base::string16 GetClientApplicationName() {
+std::u16string GetClientApplicationName() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
   return base::android::ConvertJavaStringToUTF16(

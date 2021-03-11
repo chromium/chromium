@@ -44,7 +44,7 @@ void AppendDataToRequestBody(
 
 void AppendFileRangeToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const base::Optional<base::string16>& file_path,
+    const base::Optional<std::u16string>& file_path,
     int file_start,
     int file_length,
     base::Time file_modification_time) {
@@ -59,7 +59,7 @@ void AppendFileRangeToRequestBody(
 
 void AppendReferencedFilesFromHttpBody(
     const std::vector<network::DataElement>& elements,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   for (size_t i = 0; i < elements.size(); ++i) {
     if (elements[i].type() == network::DataElement::Tag::kFile) {
       referenced_files->emplace_back(
@@ -69,8 +69,8 @@ void AppendReferencedFilesFromHttpBody(
 }
 
 bool AppendReferencedFilesFromDocumentState(
-    const std::vector<base::Optional<base::string16>>& document_state,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    const std::vector<base::Optional<std::u16string>>& document_state,
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   if (document_state.empty())
     return true;
 
@@ -99,7 +99,7 @@ bool AppendReferencedFilesFromDocumentState(
       return false;
 
     index++;  // Skip over name.
-    const base::Optional<base::string16>& type = document_state[index++];
+    const base::Optional<std::u16string>& type = document_state[index++];
 
     if (index >= document_state.size())
       return false;
@@ -129,7 +129,7 @@ bool AppendReferencedFilesFromDocumentState(
 
 bool RecursivelyAppendReferencedFiles(
     const ExplodedFrameState& frame_state,
-    std::vector<base::Optional<base::string16>>* referenced_files) {
+    std::vector<base::Optional<std::u16string>>* referenced_files) {
   if (frame_state.http_body.request_body) {
     AppendReferencedFilesFromHttpBody(
         *frame_state.http_body.request_body->elements(), referenced_files);
@@ -290,8 +290,8 @@ std::string ReadStdString(SerializeObject* obj) {
   return std::string();
 }
 
-// Pickles a base::string16 as <int length>:<char*16 data> tuple>.
-void WriteString(const base::string16& str, SerializeObject* obj) {
+// Pickles a std::u16string as <int length>:<char*16 data> tuple>.
+void WriteString(const std::u16string& str, SerializeObject* obj) {
   const char16_t* data = str.data();
   size_t length_in_bytes = str.length() * sizeof(char16_t);
 
@@ -302,8 +302,8 @@ void WriteString(const base::string16& str, SerializeObject* obj) {
 }
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
-// delegates to the base::string16 overload.
-void WriteString(const base::Optional<base::string16>& str,
+// delegates to the std::u16string overload.
+void WriteString(const base::Optional<std::u16string>& str,
                  SerializeObject* obj) {
   if (!str) {
     obj->pickle.WriteInt(-1);
@@ -312,7 +312,7 @@ void WriteString(const base::Optional<base::string16>& str,
   }
 }
 
-// This reads a serialized base::Optional<base::string16> from obj. If a string
+// This reads a serialized base::Optional<std::u16string> from obj. If a string
 // can't be read, nullptr is returned.
 const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   int length_in_bytes;
@@ -335,10 +335,10 @@ const char16_t* ReadStringNoCopy(SerializeObject* obj, int* num_chars) {
   return reinterpret_cast<const char16_t*>(data);
 }
 
-base::Optional<base::string16> ReadString(SerializeObject* obj) {
+base::Optional<std::u16string> ReadString(SerializeObject* obj) {
   int num_chars;
   const char16_t* chars = ReadStringNoCopy(obj, &num_chars);
-  base::Optional<base::string16> result;
+  base::Optional<std::u16string> result;
   if (chars)
     result.emplace(chars, num_chars);
   return result;
@@ -370,7 +370,7 @@ size_t ReadAndValidateVectorSize(SerializeObject* obj, size_t element_size) {
 }
 
 // Writes a Vector of strings into a SerializeObject for serialization.
-void WriteStringVector(const std::vector<base::Optional<base::string16>>& data,
+void WriteStringVector(const std::vector<base::Optional<std::u16string>>& data,
                        SerializeObject* obj) {
   WriteAndValidateVectorSize(data, obj);
   for (size_t i = 0; i < data.size(); ++i) {
@@ -379,9 +379,9 @@ void WriteStringVector(const std::vector<base::Optional<base::string16>>& data,
 }
 
 void ReadStringVector(SerializeObject* obj,
-                      std::vector<base::Optional<base::string16>>* result) {
+                      std::vector<base::Optional<std::u16string>>* result) {
   size_t num_elements =
-      ReadAndValidateVectorSize(obj, sizeof(base::Optional<base::string16>));
+      ReadAndValidateVectorSize(obj, sizeof(base::Optional<std::u16string>));
 
   result->resize(num_elements);
   for (size_t i = 0; i < num_elements; ++i)
@@ -432,7 +432,7 @@ void ReadResourceRequestBody(
                                 length);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
-      base::Optional<base::string16> file_path = ReadString(obj);
+      base::Optional<std::u16string> file_path = ReadString(obj);
       int64_t file_start = ReadInteger64(obj);
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);

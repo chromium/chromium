@@ -328,7 +328,7 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
     return;
   }
 
-  base::string16 script_utf16;
+  std::u16string script_utf16;
   if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(script, &script_utf16)) {
     result.set_err(fuchsia::web::FrameError::BUFFER_NOT_UTF8);
     callback(std::move(result));
@@ -720,11 +720,11 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  base::Optional<base::string16> origin_utf16;
+  base::Optional<std::u16string> origin_utf16;
   if (origin != kWildcardOrigin)
     origin_utf16 = base::UTF8ToUTF16(origin);
 
-  base::string16 data_utf16;
+  std::u16string data_utf16;
   if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(message.data(), &data_utf16)) {
     result.set_err(fuchsia::web::FrameError::BUFFER_NOT_UTF8);
     callback(std::move(result));
@@ -757,7 +757,7 @@ void FrameImpl::PostMessage(std::string origin,
   }
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents_.get(), base::string16(), origin_utf16,
+      web_contents_.get(), std::u16string(), origin_utf16,
       std::move(data_utf16), std::move(message_ports));
   result.set_response(fuchsia::web::Frame_PostMessage_Response());
   callback(std::move(result));
@@ -1005,9 +1005,9 @@ void FrameImpl::SetBlockMediaLoading(bool blocked) {
 bool FrameImpl::DidAddMessageToConsole(
     content::WebContents* source,
     blink::mojom::ConsoleMessageLevel log_level,
-    const base::string16& message,
+    const std::u16string& message,
     int32_t line_no,
-    const base::string16& source_id) {
+    const std::u16string& source_id) {
   fx_log_severity_t severity =
       BlinkConsoleMessageLevelToFxLogSeverity(log_level);
   if (severity < log_level_) {

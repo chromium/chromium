@@ -92,7 +92,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     GetWidget()->SetBounds(bounds);
   }
 
-  void SetWindowTitle(const base::string16& title) { title_ = title; }
+  void SetWindowTitle(const std::u16string& title) { title_ = title; }
 
   void EnableUIControl(UIControl control, bool is_enabled) {
     if (control == BACK_BUTTON) {
@@ -225,7 +225,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
 
   // Overridden from TextfieldController
   void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override {}
+                       const std::u16string& new_contents) override {}
 
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override {
@@ -244,7 +244,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   }
 
   // Overridden from WidgetDelegateView
-  base::string16 GetWindowTitle() const override { return title_; }
+  std::u16string GetWindowTitle() const override { return title_; }
 
   // Overridden from View
   gfx::Size GetMinimumSize() const override {
@@ -275,7 +275,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   std::unique_ptr<Shell> shell_;
 
   // Window title
-  base::string16 title_;
+  std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
   View* toolbar_view_ = nullptr;
@@ -384,7 +384,7 @@ void Shell::Close() {
   window_widget_->CloseNow();
 }
 
-void Shell::PlatformSetTitle(const base::string16& title) {
+void Shell::PlatformSetTitle(const std::u16string& title) {
   ShellWindowDelegateView* delegate_view =
       static_cast<ShellWindowDelegateView*>(window_widget_->widget_delegate());
   delegate_view->SetWindowTitle(title);

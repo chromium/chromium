@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
 
   static base::Optional<double> GetImageExtensionScore(const GURL& url);
 
-  static base::Optional<double> GetImageTypeScore(const base::string16& type);
+  static base::Optional<double> GetImageTypeScore(const std::u16string& type);
 
   const int min_size_;
   const int ideal_size_;

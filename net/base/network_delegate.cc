@@ -95,7 +95,7 @@ void NetworkDelegate::NotifyURLRequestDestroyed(URLRequest* request) {
 }
 
 void NetworkDelegate::NotifyPACScriptError(int line_number,
-                                           const base::string16& error) {
+                                           const std::u16string& error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   OnPACScriptError(line_number, error);
 }

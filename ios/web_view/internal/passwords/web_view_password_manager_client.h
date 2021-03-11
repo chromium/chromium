@@ -96,7 +96,7 @@ class WebViewPasswordManagerClient
       password_manager::CredentialLeakType leak_type,
       password_manager::CompromisedSitesCount saved_sites,
       const GURL& origin,
-      const base::string16& username) override;
+      const std::u16string& username) override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsCommittedMainFrameSecure() const override;
   const GURL& GetLastCommittedURL() const override;

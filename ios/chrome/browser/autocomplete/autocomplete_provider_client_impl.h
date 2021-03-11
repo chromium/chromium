@@ -53,8 +53,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       const override;
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
-  std::vector<base::string16> GetBuiltinURLs() override;
-  std::vector<base::string16> GetBuiltinsToProvideAsUserTypes() override;
+  std::vector<std::u16string> GetBuiltinURLs() override;
+  std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
   signin::IdentityManager* GetIdentityManager() const override;
@@ -64,7 +64,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
   void Classify(
-      const base::string16& text,
+      const std::u16string& text,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
       metrics::OmniboxEventProto::PageClassification page_classification,
@@ -72,7 +72,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       GURL* alternate_nav_url) override;
   void DeleteMatchingURLsForKeywordFromHistory(
       history::KeywordID keyword_id,
-      const base::string16& term) override;
+      const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) override;

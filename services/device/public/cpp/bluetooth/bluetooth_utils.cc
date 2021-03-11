@@ -18,7 +18,7 @@ namespace device {
 
 using DeviceType = mojom::BluetoothDeviceInfo::DeviceType;
 
-base::string16 GetBluetoothAddressForDisplay(
+std::u16string GetBluetoothAddressForDisplay(
     const std::array<uint8_t, 6>& address) {
   static constexpr char kAddressFormat[] =
       "%02hhX:%02hhX:%02hhX:%02hhX:%02hhX:%02hhX";
@@ -28,7 +28,7 @@ base::string16 GetBluetoothAddressForDisplay(
                          address[3], address[4], address[5]));
 }
 
-base::string16 GetBluetoothDeviceNameForDisplay(
+std::u16string GetBluetoothDeviceNameForDisplay(
     const mojom::BluetoothDeviceInfoPtr& device_info) {
   if (device_info->name) {
     const std::string& device_name = device_info->name.value();
@@ -124,9 +124,9 @@ int GetBluetoothDeviceTypeAccessibilityLabelId(DeviceType device_type) {
 }  // namespace
 
 // Returns a a11y accessibility label of the device
-base::string16 GetBluetoothDeviceLabelForAccessibility(
+std::u16string GetBluetoothDeviceLabelForAccessibility(
     const mojom::BluetoothDeviceInfoPtr& device_info) {
-  base::string16 name_utf16 =
+  std::u16string name_utf16 =
       device::GetBluetoothAddressForDisplay(device_info->address);
   if (device_info->name) {
     const std::string& device_name = device_info->name.value();

@@ -33,7 +33,7 @@ class NET_EXPORT_PRIVATE PacFileData
   static scoped_refptr<PacFileData> FromUTF8(const std::string& utf8);
 
   // Creates a script data given the UTF16 bytes of the content.
-  static scoped_refptr<PacFileData> FromUTF16(const base::string16& utf16);
+  static scoped_refptr<PacFileData> FromUTF16(const std::u16string& utf16);
 
   // Creates a script data given a URL to the PAC script.
   static scoped_refptr<PacFileData> FromURL(const GURL& url);
@@ -45,7 +45,7 @@ class NET_EXPORT_PRIVATE PacFileData
 
   // Returns the contents of the script as UTF16.
   // (only valid for type() == TYPE_SCRIPT_CONTENTS).
-  const base::string16& utf16() const;
+  const std::u16string& utf16() const;
 
   // Returns the URL of the script.
   // (only valid for type() == TYPE_SCRIPT_URL).
@@ -56,12 +56,12 @@ class NET_EXPORT_PRIVATE PacFileData
 
  private:
   friend class base::RefCountedThreadSafe<PacFileData>;
-  PacFileData(Type type, const GURL& url, const base::string16& utf16);
+  PacFileData(Type type, const GURL& url, const std::u16string& utf16);
   virtual ~PacFileData();
 
   const Type type_;
   const GURL url_;
-  const base::string16 utf16_;
+  const std::u16string utf16_;
 };
 
 }  // namespace net

@@ -24,7 +24,7 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
                                         blink::PlatformNotificationData> {
-  static const base::string16& title(
+  static const std::u16string& title(
       const blink::PlatformNotificationData& data) {
     return data.title;
   }
@@ -38,7 +38,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::NotificationDataDataView,
     return data.lang;
   }
 
-  static const base::string16& body(
+  static const std::u16string& body(
       const blink::PlatformNotificationData& data) {
     return data.body;
   }

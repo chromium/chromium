@@ -452,7 +452,7 @@ size_t PermissiveGetHostRegistryLength(base::StringPiece host,
 size_t PermissiveGetHostRegistryLength(base::StringPiece16 host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<base::string16>(host, unknown_filter,
+  return DoPermissiveGetHostRegistryLength<std::u16string>(host, unknown_filter,
                                                            private_filter);
 }
 

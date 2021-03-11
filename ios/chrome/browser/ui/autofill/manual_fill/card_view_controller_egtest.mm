@@ -59,8 +59,8 @@ constexpr char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
 NSString* kObfuscatedNumberPrefix = base::SysUTF16ToNSString(
-    kMidlineEllipsis + base::string16(separator) + kMidlineEllipsis +
-    base::string16(separator) + kMidlineEllipsis + base::string16(separator));
+    kMidlineEllipsis + std::u16string(separator) + kMidlineEllipsis +
+    std::u16string(separator) + kMidlineEllipsis + std::u16string(separator));
 
 NSString* kLocalNumberObfuscated =
     [NSString stringWithFormat:@"%@1111", kObfuscatedNumberPrefix];

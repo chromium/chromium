@@ -46,7 +46,7 @@ class PDFiumRange {
       PageOrientation orientation) const;
 
   // Gets the string of characters in this range.
-  base::string16 GetText() const;
+  std::u16string GetText() const;
 
  private:
   PDFiumPage* page_;

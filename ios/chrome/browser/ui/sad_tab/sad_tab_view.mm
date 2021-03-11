@@ -248,7 +248,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   NSString* label = nil;
   switch (self.mode) {
     case SadTabViewMode::RELOAD: {
-      base::string16 footerLinkText(
+      std::u16string footerLinkText(
           l10n_util::GetStringUTF16(IDS_SAD_TAB_HELP_LINK));
       label = base::SysUTF16ToNSString(
           l10n_util::GetStringFUTF16(IDS_SAD_TAB_HELP_MESSAGE, footerLinkText));
@@ -265,7 +265,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   NSString* label = nil;
   switch (self.mode) {
     case SadTabViewMode::RELOAD: {
-      base::string16 footerLinkText(
+      std::u16string footerLinkText(
           l10n_util::GetStringUTF16(IDS_SAD_TAB_HELP_LINK));
       label = base::SysUTF16ToNSString(footerLinkText);
     } break;

@@ -15,7 +15,7 @@
 #endif
 
 NSString* AdjustStringForLocaleDirection(NSString* text) {
-  base::string16 converted_text = base::SysNSStringToUTF16(text);
+  std::u16string converted_text = base::SysNSStringToUTF16(text);
   bool has_changed =
       base::i18n::AdjustStringForLocaleDirection(&converted_text);
   if (has_changed) {

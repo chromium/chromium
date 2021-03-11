@@ -173,8 +173,8 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Callback function passed to |resource_getter_|. Called when the auth
   // credentials are retrieved.
-  void OnAuthCredentialsRetrieved(const base::string16& username,
-                                  const base::string16& password);
+  void OnAuthCredentialsRetrieved(const std::u16string& username,
+                                  const std::u16string& password);
 
   // Extract the media metadata from a url, asynchronously.
   // OnMediaMetadataExtracted() will be called when this call finishes.

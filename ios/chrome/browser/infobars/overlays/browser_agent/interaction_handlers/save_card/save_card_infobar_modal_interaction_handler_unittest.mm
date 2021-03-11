@@ -48,9 +48,9 @@ class SaveCardInfobarModalInteractionHandlerTest : public PlatformTest {
 };
 
 TEST_F(SaveCardInfobarModalInteractionHandlerTest, UpdateCredentials) {
-  base::string16 cardholder_name = base::SysNSStringToUTF16(@"test name");
-  base::string16 expiration_date_month = base::SysNSStringToUTF16(@"06");
-  base::string16 expiration_date_year = base::SysNSStringToUTF16(@"2023");
+  std::u16string cardholder_name = base::SysNSStringToUTF16(@"test name");
+  std::u16string expiration_date_month = base::SysNSStringToUTF16(@"06");
+  std::u16string expiration_date_year = base::SysNSStringToUTF16(@"2023");
   EXPECT_CALL(mock_delegate(),
               UpdateAndAccept(cardholder_name, expiration_date_month,
                               expiration_date_year));

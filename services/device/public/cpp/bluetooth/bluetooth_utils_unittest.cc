@@ -118,7 +118,7 @@ TEST(BluetoothUtilsTest, GetBluetoothAddressForDisplay) {
       GetBluetoothAddressForDisplay({0xAA, 0xBB, 0xCC, 0x00, 0x11, 0x22}));
 }
 
-static base::string16 LabelFromTypeWithName(
+static std::u16string LabelFromTypeWithName(
     BluetoothDeviceInfo::DeviceType type,
     const char* name = kName) {
   BluetoothDeviceInfoPtr info = BluetoothDeviceInfo::New();

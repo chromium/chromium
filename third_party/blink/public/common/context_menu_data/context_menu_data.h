@@ -108,10 +108,10 @@ struct ContextMenuData {
   std::string suggested_filename;
 
   // The editable (possibily) misspelled word.
-  base::string16 misspelled_word;
+  std::u16string misspelled_word;
 
   // If misspelledWord is not empty, holds suggestions from the dictionary.
-  std::vector<base::string16> dictionary_suggestions;
+  std::vector<std::u16string> dictionary_suggestions;
 
   // Whether context is editable.
   bool is_editable;

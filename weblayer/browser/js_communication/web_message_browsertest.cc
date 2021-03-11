@@ -56,7 +56,7 @@ class WebMessageHostImpl : public WebMessageHost {
   }
 
   WebMessageReplyProxy* proxy() { return proxy_; }
-  std::vector<base::string16>& messages() { return messages_; }
+  std::vector<std::u16string>& messages() { return messages_; }
 
   // WebMessageHost:
   void OnPostMessage(std::unique_ptr<WebMessage> message) override {
@@ -84,7 +84,7 @@ class WebMessageHostImpl : public WebMessageHost {
   int back_forward_cache_state_changed_call_count_ = 0;
   base::RepeatingClosure quit_closure_;
   WebMessageReplyProxy* proxy_;
-  std::vector<base::string16> messages_;
+  std::vector<std::u16string> messages_;
   bool expected_back_forward_value_ = false;
   std::unique_ptr<base::RunLoop> state_changed_run_loop_;
 };

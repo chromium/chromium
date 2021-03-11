@@ -25,13 +25,13 @@ class SaveAddressProfileBannerRequestConfig
   ~SaveAddressProfileBannerRequestConfig() override;
 
   // The message text.
-  base::string16 message_text() const { return message_text_; }
+  std::u16string message_text() const { return message_text_; }
 
   // The button label text.
-  base::string16 button_label_text() const { return button_label_text_; }
+  std::u16string button_label_text() const { return button_label_text_; }
 
   // The message sub text.
-  base::string16 message_sub_text() const { return message_sub_text_; }
+  std::u16string message_sub_text() const { return message_sub_text_; }
 
   // The name of the icon image.
   NSString* icon_image_name() const { return icon_image_name_; }
@@ -47,9 +47,9 @@ class SaveAddressProfileBannerRequestConfig
   infobars::InfoBar* infobar_ = nullptr;
   // Configuration data extracted from |infobar_|'s save address profile
   // delegate.
-  base::string16 message_text_;
-  base::string16 message_sub_text_;
-  base::string16 button_label_text_;
+  std::u16string message_text_;
+  std::u16string message_sub_text_;
+  std::u16string button_label_text_;
   NSString* icon_image_name_ = nil;
 };
 

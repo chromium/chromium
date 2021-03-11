@@ -32,7 +32,7 @@ class CardNameFixFlowViewBridge : public CardNameFixFlowView {
   CardNameFixFlowController* GetController();
 
   // Called when the user confirms their name.
-  void OnConfirmedName(const base::string16& confirmed_name);
+  void OnConfirmedName(const std::u16string& confirmed_name);
 
   // Called when the user cancels the card name fix flow.
   void OnDismissed();

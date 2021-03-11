@@ -40,12 +40,12 @@ bool IsFormSubmit(const web::NavigationItem* item) {
 
 // Generates a keyword from |item|. This code is based on:
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
-base::string16 GenerateKeywordFromNavigationItem(
+std::u16string GenerateKeywordFromNavigationItem(
     const web::NavigationItem* item) {
   // Don't autogenerate keywords for pages that are the result of form
   // submissions.
   if (IsFormSubmit(item))
-    return base::string16();
+    return std::u16string();
 
   // The code from Desktop will try NavigationEntry::GetUserTypedURL() first if
   // available since that represents what the user typed to get here, and fall
@@ -54,7 +54,7 @@ base::string16 GenerateKeywordFromNavigationItem(
   // it.
   GURL url = item->GetURL();
   if (!url.is_valid()) {
-    return base::string16();
+    return std::u16string();
   }
 
   // Don't autogenerate keywords for referrers that
@@ -65,7 +65,7 @@ base::string16 GenerateKeywordFromNavigationItem(
   // elements and update AutocompletePopup to look for keywords using the path.
   // See http://b/issue?id=863583.
   if (!url.SchemeIsHTTPOrHTTPS() || url.path().length() > 1) {
-    return base::string16();
+    return std::u16string();
   }
 
   return TemplateURL::GenerateKeyword(url);
@@ -190,7 +190,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
 
   // Autogenerate a keyword for the autodetected case; in the other cases we'll
   // generate a keyword later after fetching the OSDD.
-  base::string16 keyword = GenerateKeywordFromNavigationItem(item);
+  std::u16string keyword = GenerateKeywordFromNavigationItem(item);
   if (keyword.empty())
     return;
 
@@ -232,7 +232,7 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   const web::NavigationItem* previous_item =
       manager->GetItemAtIndex(last_index - 1);
 
-  base::string16 keyword(GenerateKeywordFromNavigationItem(previous_item));
+  std::u16string keyword(GenerateKeywordFromNavigationItem(previous_item));
   if (keyword.empty())
     return;
 

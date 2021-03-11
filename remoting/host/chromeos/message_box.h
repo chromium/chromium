@@ -29,10 +29,10 @@ class MessageBox {
   // MessageBox without clicking on any buttons.
   typedef base::OnceCallback<void(Result)> ResultCallback;
 
-  MessageBox(const base::string16& title_label,
-             const base::string16& message_label,
-             const base::string16& ok_label,
-             const base::string16& cancel_label,
+  MessageBox(const std::u16string& title_label,
+             const std::u16string& message_label,
+             const std::u16string& ok_label,
+             const std::u16string& cancel_label,
              ResultCallback result_callback);
   ~MessageBox();
 

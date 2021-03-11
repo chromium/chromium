@@ -26,9 +26,9 @@ class SaveCardInfobarModalInteractionHandler
   // |expiration_date_month|, and |expiration_date_year|. Replaces
   // MainButtonTapped.
   virtual void UpdateCredentials(InfoBarIOS* infobar,
-                                 base::string16 cardholder_name,
-                                 base::string16 expiration_date_month,
-                                 base::string16 expiration_date_year);
+                                 std::u16string cardholder_name,
+                                 std::u16string expiration_date_month,
+                                 std::u16string expiration_date_year);
 
   // Instructs the handler to load |url| through the delegate.
   virtual void LoadURL(InfoBarIOS* infobar, GURL url);

@@ -641,7 +641,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (description.length()) {
       Vector<String> suggestions;
       description.Split('\n', suggestions);
-      WebVector<base::string16> web_suggestions(suggestions.size());
+      WebVector<std::u16string> web_suggestions(suggestions.size());
       std::transform(suggestions.begin(), suggestions.end(),
                      web_suggestions.begin(), [](const String& s) {
                        return WebString::FromUTF8(s.Utf8()).Utf16();
@@ -653,7 +653,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       spell_checker.GetTextCheckerClient()->CheckSpelling(
           WebString::FromUTF16(data.misspelled_word), misspelled_offset,
           misspelled_length, &web_suggestions);
-      WebVector<base::string16> suggestions(web_suggestions.size());
+      WebVector<std::u16string> suggestions(web_suggestions.size());
       std::transform(web_suggestions.begin(), web_suggestions.end(),
                      suggestions.begin(),
                      [](const WebString& s) { return s.Utf16(); });

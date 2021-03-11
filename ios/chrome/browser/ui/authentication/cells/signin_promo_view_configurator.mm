@@ -66,7 +66,7 @@ using l10n_util::GetNSStringF;
 
   NSString* name =
       self.userGivenName.length ? self.userGivenName : self.userEmail;
-  base::string16 name16 = SysNSStringToUTF16(name);
+  std::u16string name16 = SysNSStringToUTF16(name);
   switch (self.signinPromoViewMode) {
     case SigninPromoViewModeNoAccounts: {
       NSString* signInString =

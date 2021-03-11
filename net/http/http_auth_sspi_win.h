@@ -189,9 +189,9 @@ class NET_EXPORT_PRIVATE HttpAuthSSPI : public HttpAuthMechanism {
 // If |combined| is of form "bar", |domain| will be empty and |user| will
 // contain "bar".
 // |domain| and |user| must be non-nullptr.
-NET_EXPORT_PRIVATE void SplitDomainAndUser(const base::string16& combined,
-                                           base::string16* domain,
-                                           base::string16* user);
+NET_EXPORT_PRIVATE void SplitDomainAndUser(const std::u16string& combined,
+                                           std::u16string* domain,
+                                           std::u16string* user);
 
 }  // namespace net
 

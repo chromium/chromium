@@ -14,8 +14,8 @@ namespace storage {
 
 TEST(DatabaseConnectionsTest, DatabaseConnectionsTest) {
   const std::string kOriginId("origin_id");
-  const base::string16 kName(ASCIIToUTF16("database_name"));
-  const base::string16 kName2(ASCIIToUTF16("database_name2"));
+  const std::u16string kName(ASCIIToUTF16("database_name"));
+  const std::u16string kName2(ASCIIToUTF16("database_name2"));
   const int64_t kSize = 1000;
 
   DatabaseConnections connections;
@@ -52,7 +52,7 @@ TEST(DatabaseConnectionsTest, DatabaseConnectionsTest) {
   another.AddConnection(kOriginId, kName);
   another.AddConnection(kOriginId, kName2);
 
-  std::vector<std::pair<std::string, base::string16>> closed_dbs =
+  std::vector<std::pair<std::string, std::u16string>> closed_dbs =
       connections.RemoveConnections(another);
   EXPECT_EQ(1u, closed_dbs.size());
   EXPECT_EQ(kOriginId, closed_dbs[0].first);

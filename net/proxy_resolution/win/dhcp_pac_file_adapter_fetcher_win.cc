@@ -54,7 +54,7 @@ void DhcpPacFileAdapterFetcher::Fetch(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, STATE_START);
   result_ = ERR_IO_PENDING;
-  pac_script_ = base::string16();
+  pac_script_ = std::u16string();
   state_ = STATE_WAIT_DHCP;
   callback_ = std::move(callback);
 
@@ -104,7 +104,7 @@ int DhcpPacFileAdapterFetcher::GetResult() const {
   return result_;
 }
 
-base::string16 DhcpPacFileAdapterFetcher::GetPacScript() const {
+std::u16string DhcpPacFileAdapterFetcher::GetPacScript() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return pac_script_;
 }

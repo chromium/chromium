@@ -295,9 +295,9 @@ CWVTranslationError CWVConvertTranslateError(
     std::string locale = translate::TranslateDownloadManager::GetInstance()
                              ->application_locale();
     for (const std::string& languageCode : languageCodes) {
-      base::string16 localizedName =
+      std::u16string localizedName =
           l10n_util::GetDisplayNameForLocale(languageCode, locale, true);
-      base::string16 nativeName =
+      std::u16string nativeName =
           l10n_util::GetDisplayNameForLocale(languageCode, languageCode, true);
       CWVTranslationLanguage* language =
           [[CWVTranslationLanguage alloc] initWithLanguageCode:languageCode

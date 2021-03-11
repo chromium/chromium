@@ -29,8 +29,8 @@ namespace {
 int uniquifier_ = 0;
 
 struct MockCredential {
-  base::string16 source_principal;
-  base::string16 package;
+  std::u16string source_principal;
+  std::u16string package;
   bool has_explicit_credentials = false;
   int uniquifier = ++uniquifier_;
 
@@ -61,7 +61,7 @@ struct MockCredential {
 
 struct MockContext {
   MockCredential* credential = nullptr;
-  base::string16 target_principal;
+  std::u16string target_principal;
   int uniquifier = ++uniquifier_;
   int rounds = 0;
 

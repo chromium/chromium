@@ -49,7 +49,7 @@ bool GetMachineId(std::string* machine_id) {
     return true;
   }
 
-  base::string16 sid_string;
+  std::u16string sid_string;
   int volume_id;
   if (!GetRawMachineId(&sid_string, &volume_id))
     return false;
@@ -66,7 +66,7 @@ bool GetMachineId(std::string* machine_id) {
 
 namespace testing {
 
-bool GetMachineIdImpl(const base::string16& sid_string,
+bool GetMachineIdImpl(const std::u16string& sid_string,
                       int volume_id,
                       std::string* machine_id) {
   machine_id->clear();
@@ -81,7 +81,7 @@ bool GetMachineIdImpl(const base::string16& sid_string,
     // However, the chromebase SHA1 hash function takes only an std::string as
     // input, so the unicode string needs to be converted to std::string
     // "as is".
-    size_t byte_count = sid_string.size() * sizeof(base::string16::value_type);
+    size_t byte_count = sid_string.size() * sizeof(std::u16string::value_type);
     const char* buffer = reinterpret_cast<const char*>(sid_string.c_str());
     std::string sid_string_buffer(buffer, byte_count);
 

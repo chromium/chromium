@@ -115,7 +115,7 @@ class IOSChromePasswordManagerClient
       password_manager::CredentialLeakType leak_type,
       password_manager::CompromisedSitesCount saved_sites,
       const GURL& origin,
-      const base::string16& username) override;
+      const std::u16string& username) override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsFillingEnabled(const GURL& url) const override;
   bool IsCommittedMainFrameSecure() const override;
@@ -152,7 +152,7 @@ class IOSChromePasswordManagerClient
   // Shows the password protection UI. |warning_text| is the displayed text.
   // |callback| is invoked when the user dismisses the UI.
   void NotifyUserPasswordProtectionWarning(
-      const base::string16& warning_text,
+      const std::u16string& warning_text,
       base::OnceCallback<void(safe_browsing::WarningAction)> callback);
 
  private:

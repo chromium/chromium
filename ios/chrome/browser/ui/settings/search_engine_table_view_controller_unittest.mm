@@ -156,7 +156,7 @@ class SearchEngineTableViewControllerTest
     data.SetURL(expected_searchable_url.possibly_invalid_spec());
     const std::string expected_url =
         TemplateURL(data).url_ref().ReplaceSearchTerms(
-            TemplateURLRef::SearchTermsArgs(base::string16()),
+            TemplateURLRef::SearchTermsArgs(std::u16string()),
             template_url_service_->search_terms_data());
     CheckItem(base::SysUTF8ToNSString(expected_text),
               base::SysUTF8ToNSString(expected_text), GURL(expected_url),
@@ -195,7 +195,7 @@ class SearchEngineTableViewControllerTest
     CheckItem(base::SysUTF16ToNSString(turl->short_name()),
               base::SysUTF16ToNSString(turl->keyword()),
               GURL(turl->url_ref().ReplaceSearchTerms(
-                  TemplateURLRef::SearchTermsArgs(base::string16()),
+                  TemplateURLRef::SearchTermsArgs(std::u16string()),
                   template_url_service_->search_terms_data())),
               expected_checked, section, row, enabled);
   }
@@ -484,7 +484,7 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
       chrome_browser_state_->GetTestingPrefService()->GetDictionary(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   ASSERT_TRUE(searchProviderDict);
-  base::string16 short_name;
+  std::u16string short_name;
   EXPECT_TRUE(searchProviderDict->GetString(DefaultSearchManager::kShortName,
                                             &short_name));
   EXPECT_EQ(url_c1->short_name(), short_name);

@@ -19,7 +19,7 @@ class UrlBarController {
   static std::unique_ptr<UrlBarController> Create(Browser* browser);
 
   virtual ~UrlBarController() {}
-  virtual base::string16 GetUrlForDisplay() = 0;
+  virtual std::u16string GetUrlForDisplay() = 0;
   virtual security_state::SecurityLevel GetConnectionSecurityLevel() = 0;
 };
 

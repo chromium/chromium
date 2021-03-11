@@ -107,7 +107,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
   // names to this TestFrameAdapter.
   void VerifyUpdatedFrameState(const ExplodedFrameState& frame_state) const {
     EXPECT_EQ(GetUniqueName(),
-              base::UTF16ToUTF8(frame_state.target.value_or(base::string16())));
+              base::UTF16ToUTF8(frame_state.target.value_or(std::u16string())));
 
     ASSERT_EQ(children_.size(), frame_state.children.size());
     for (size_t i = 0; i < children_.size(); ++i) {

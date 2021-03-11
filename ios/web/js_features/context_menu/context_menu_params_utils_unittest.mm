@@ -80,7 +80,7 @@ TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTestNoTitle) {
   ContextMenuParams params =
       ContextMenuParamsFromElementDictionary(&element_dict);
 
-  base::string16 urlText = url_formatter::FormatUrl(GURL(kLinkUrl));
+  std::u16string urlText = url_formatter::FormatUrl(GURL(kLinkUrl));
   NSString* title = base::SysUTF16ToNSString(urlText);
 
   EXPECT_NSEQ(params.menu_title, title);

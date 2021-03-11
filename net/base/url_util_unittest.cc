@@ -667,7 +667,7 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
     SCOPED_TRACE(test.input_url);
     GURL url(test.input_url);
 
-    base::string16 username, password;
+    std::u16string username, password;
     GetIdentityFromURL(url, &username, &password);
 
     EXPECT_EQ(base::UTF8ToUTF16(test.expected_username), username);
@@ -683,7 +683,7 @@ TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
   EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.password());
 
   // Extract the unescaped identity.
-  base::string16 username, password;
+  std::u16string username, password;
   GetIdentityFromURL(url, &username, &password);
 
   // Verify that it was decoded as UTF8.

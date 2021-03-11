@@ -20,10 +20,10 @@ JavaScriptTabModalDialogManagerDelegateAndroid::
 base::WeakPtr<javascript_dialogs::TabModalDialogView>
 JavaScriptTabModalDialogManagerDelegateAndroid::CreateNewDialog(
     content::WebContents* alerting_web_contents,
-    const base::string16& title,
+    const std::u16string& title,
     content::JavaScriptDialogType dialog_type,
-    const base::string16& message_text,
-    const base::string16& default_prompt_text,
+    const std::u16string& message_text,
+    const std::u16string& default_prompt_text,
     content::JavaScriptDialogManager::DialogClosedCallback
         callback_on_button_clicked,
     base::OnceClosure callback_on_cancelled) {

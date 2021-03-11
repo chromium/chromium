@@ -17,37 +17,37 @@ namespace mojo {
 template <>
 struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
                                         blink::web_pref::WebPreferences> {
-  static const std::map<std::string, base::string16>& standard_font_family_map(
+  static const std::map<std::string, std::u16string>& standard_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.standard_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& fixed_font_family_map(
+  static const std::map<std::string, std::u16string>& fixed_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fixed_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& serif_font_family_map(
+  static const std::map<std::string, std::u16string>& serif_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.serif_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>&
+  static const std::map<std::string, std::u16string>&
   sans_serif_font_family_map(const blink::web_pref::WebPreferences& r) {
     return r.sans_serif_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& cursive_font_family_map(
+  static const std::map<std::string, std::u16string>& cursive_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.cursive_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>& fantasy_font_family_map(
+  static const std::map<std::string, std::u16string>& fantasy_font_family_map(
       const blink::web_pref::WebPreferences& r) {
     return r.fantasy_font_family_map;
   }
 
-  static const std::map<std::string, base::string16>&
+  static const std::map<std::string, std::u16string>&
   pictograph_font_family_map(const blink::web_pref::WebPreferences& r) {
     return r.pictograph_font_family_map;
   }

@@ -62,7 +62,7 @@ void EnsurePKCS12Init();
 int nsPKCS12Blob_Import(PK11SlotInfo* slot,
                         const char* pkcs12_data,
                         size_t pkcs12_len,
-                        const base::string16& password,
+                        const std::u16string& password,
                         bool is_extractable,
                         net::ScopedCERTCertificateList* imported_certs);
 
@@ -71,7 +71,7 @@ int nsPKCS12Blob_Import(PK11SlotInfo* slot,
 // TODO(mattm): provide better error return status?
 int nsPKCS12Blob_Export(std::string* output,
                         const net::ScopedCERTCertificateList& certs,
-                        const base::string16& password);
+                        const std::u16string& password);
 
 }  // namespace mozilla_security_manager
 

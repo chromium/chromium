@@ -45,10 +45,10 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
   // ConfirmInfoBarDelegate implementation.
-  base::string16 GetTitleText() const override;
-  base::string16 GetMessageText() const override;
+  std::u16string GetTitleText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   gfx::Image GetIcon() const override;
   bool UseIconBackgroundTint() const override;
   bool Accept() override;
@@ -56,9 +56,9 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
 
  private:
   gfx::Image icon_;
-  base::string16 title_;
-  base::string16 message_;
-  base::string16 button_text_;
+  std::u16string title_;
+  std::u16string message_;
+  std::u16string button_text_;
 
   // Dispatcher.
   __weak id<ApplicationSettingsCommands> dispatcher_ = nil;

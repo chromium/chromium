@@ -278,7 +278,7 @@
 - (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
   DCHECK(query);
   // Since the query is not user typed, sanitize it to make sure it's safe.
-  base::string16 sanitizedQuery =
+  std::u16string sanitizedQuery =
       OmniboxView::SanitizeTextForPaste(base::SysNSStringToUTF16(query));
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
@@ -467,7 +467,7 @@
 }
 
 // Navigate to |query| from omnibox.
-- (void)loadURLForQuery:(const base::string16&)query {
+- (void)loadURLForQuery:(const std::u16string&)query {
   GURL searchURL;
   metrics::OmniboxInputType type = AutocompleteInput::Parse(
       query, std::string(), AutocompleteSchemeClassifierImpl(), nullptr,

@@ -97,8 +97,8 @@ void Generator::FuzzString(std::string* value) {
   GenerateStringType<std::string>(value);
 }
 
-void Generator::FuzzString16(base::string16* value) {
-  GenerateStringType<base::string16>(value);
+void Generator::FuzzString16(std::u16string* value) {
+  GenerateStringType<std::u16string>(value);
 }
 
 void Generator::FuzzData(char* data, int length) {

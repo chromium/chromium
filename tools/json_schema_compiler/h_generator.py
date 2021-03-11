@@ -387,7 +387,7 @@ class _Generator(object):
       params = [
         'const base::DictionaryValue& root_dict',
         '%s* out' % classname,
-        'base::string16* error'
+        'std::u16string* error'
       ]
       comment = (
         'Parses manifest keys for this namespace. Any keys not available to the'
@@ -398,7 +398,7 @@ class _Generator(object):
         'const base::DictionaryValue& root_dict',
         'base::StringPiece key',
         '%s* out' % classname,
-        'base::string16* error',
+        'std::u16string* error',
         'std::vector<base::StringPiece>* error_path_reversed'
       ]
       comment = (
@@ -477,5 +477,5 @@ class _Generator(object):
     if generate_error_messages is None:
       generate_error_messages = self._generate_error_messages
     if generate_error_messages:
-      params += ('base::string16* error',)
+      params += ('std::u16string* error',)
     return ', '.join(str(p) for p in params)

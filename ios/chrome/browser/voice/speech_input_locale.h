@@ -16,7 +16,7 @@ typedef struct {
   // The locale code in canonical form (e.g. "en-US", "fr-FR").
   std::string code;
   // The display name (e.g. "English U.S.", "Français (France)").
-  base::string16 display_name;
+  std::u16string display_name;
 } SpeechInputLocale;
 
 }  // namespace voice

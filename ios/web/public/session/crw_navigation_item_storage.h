@@ -65,7 +65,7 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 @property(nonatomic, assign) GURL virtualURL;
 @property(nonatomic, assign) web::Referrer referrer;
 @property(nonatomic, assign) base::Time timestamp;
-@property(nonatomic, assign) base::string16 title;
+@property(nonatomic, assign) std::u16string title;
 @property(nonatomic, assign) web::PageDisplayState displayState;
 @property(nonatomic, assign) BOOL shouldSkipRepostFormConfirmation;
 @property(nonatomic, assign) web::UserAgentType userAgentType;

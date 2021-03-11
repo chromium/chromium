@@ -50,19 +50,19 @@ void IOSChromePasswordManagerDriver::FormEligibleForGenerationFound(
 }
 
 void IOSChromePasswordManagerDriver::GeneratedPasswordAccepted(
-    const base::string16& password) {
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void IOSChromePasswordManagerDriver::FillSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
 void IOSChromePasswordManagerDriver::PreviewSuggestion(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 

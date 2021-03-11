@@ -26,7 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string lang(reinterpret_cast<const char*>(data), lang_len);
   std::string html_lang(reinterpret_cast<const char*>(data + lang_len),
                         html_lang_len);
-  base::string16 text(
+  std::u16string text(
       reinterpret_cast<const char16_t*>(data + lang_len + html_lang_len),
       text_len / sizeof(char16_t));
   std::string model_detected_language;

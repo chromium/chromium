@@ -32,7 +32,7 @@ class MEDIA_EXPORT MediaResourceGetter {
   typedef base::OnceCallback<void(const std::string&)> GetPlatformPathCB;
 
   // Callback to get the auth credentials. Args: username and password.
-  typedef base::OnceCallback<void(const base::string16&, const base::string16&)>
+  typedef base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       GetAuthCredentialsCB;
 
   // Callback to get the media metadata. Args: duration, width, height, and

@@ -107,7 +107,7 @@ class MockDatabaseTracker : public DatabaseTracker {
       origin_identifier_ = origin_identifier;
     }
 
-    void AddMockDatabase(const base::string16& name, int size) {
+    void AddMockDatabase(const std::u16string& name, int size) {
       EXPECT_FALSE(base::Contains(database_sizes_, name));
       database_sizes_[name] = size;
       total_size_ += size;

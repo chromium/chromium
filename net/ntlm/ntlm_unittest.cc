@@ -107,8 +107,8 @@ TEST(NtlmTest, GenerateNtlmHashV1PasswordSpecTests) {
 }
 
 TEST(NtlmTest, GenerateNtlmHashV1PasswordChangesHash) {
-  base::string16 password1 = base::UTF8ToUTF16("pwd01");
-  base::string16 password2 = base::UTF8ToUTF16("pwd02");
+  std::u16string password1 = base::UTF8ToUTF16("pwd01");
+  std::u16string password2 = base::UTF8ToUTF16("pwd02");
   uint8_t hash1[kNtlmHashLen];
   uint8_t hash2[kNtlmHashLen];
 

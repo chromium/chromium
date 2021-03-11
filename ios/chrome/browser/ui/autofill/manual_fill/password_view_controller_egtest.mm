@@ -240,7 +240,7 @@ BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
       performAction:grey_tap()];
 
-  base::string16 origin = base::ASCIIToUTF16(
+  std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(self.URL)));
   NSString* title = l10n_util::GetNSStringF(
       IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION, origin);

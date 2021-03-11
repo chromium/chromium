@@ -151,7 +151,7 @@ IOSChromeSavePasswordInfoBarDelegate::GetIdentifier() const {
   return SAVE_PASSWORD_INFOBAR_DELEGATE_MOBILE;
 }
 
-base::string16 IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
+std::u16string IOSChromeSavePasswordInfoBarDelegate::GetMessageText() const {
   if (IsPasswordUpdate()) {
     return l10n_util::GetStringUTF16(IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD);
   }
@@ -164,23 +164,23 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetInfobarModalTitleText()
   return l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_TITLE);
 }
 
-base::string16 IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
+std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-    switch (button) {
-      case BUTTON_OK:
-        return l10n_util::GetStringUTF16(
-            IsPasswordUpdate() ? IDS_IOS_PASSWORD_MANAGER_UPDATE_BUTTON
-                               : IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON);
-      case BUTTON_CANCEL: {
-        return IsPasswordUpdate()
-                   ? base::string16()
-                   : l10n_util::GetStringUTF16(
-                         IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON);
-      }
-      case BUTTON_NONE:
-        NOTREACHED();
-        return base::string16();
+  switch (button) {
+    case BUTTON_OK:
+      return l10n_util::GetStringUTF16(
+          IsPasswordUpdate() ? IDS_IOS_PASSWORD_MANAGER_UPDATE_BUTTON
+                             : IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON);
+    case BUTTON_CANCEL: {
+      return IsPasswordUpdate()
+                 ? std::u16string()
+                 : l10n_util::GetStringUTF16(
+                       IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON);
     }
+    case BUTTON_NONE:
+      NOTREACHED();
+      return std::u16string();
+  }
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
@@ -214,8 +214,8 @@ bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(
 void IOSChromeSavePasswordInfoBarDelegate::UpdateCredentials(
     NSString* username,
     NSString* password) {
-  const base::string16 username_string = base::SysNSStringToUTF16(username);
-  const base::string16 password_string = base::SysNSStringToUTF16(password);
+  const std::u16string username_string = base::SysNSStringToUTF16(username);
+  const std::u16string password_string = base::SysNSStringToUTF16(password);
   UpdatePasswordFormUsernameAndPassword(username_string, password_string,
                                         form_to_save());
 }

@@ -47,7 +47,7 @@
 class COMPONENT_EXPORT(URL) GURL {
  public:
   typedef url::StringPieceReplacements<std::string> Replacements;
-  typedef url::StringPieceReplacements<base::string16> ReplacementsW;
+  typedef url::StringPieceReplacements<std::u16string> ReplacementsW;
 
   // Creates an empty, invalid URL.
   GURL();

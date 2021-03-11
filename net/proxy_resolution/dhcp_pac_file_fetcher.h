@@ -62,7 +62,7 @@ class NET_EXPORT_PRIVATE DhcpPacFileFetcher {
   // deleting |this|), then no callback is invoked.
   //
   // Only one fetch is allowed to be outstanding at a time.
-  virtual int Fetch(base::string16* utf16_text,
+  virtual int Fetch(std::u16string* utf16_text,
                     CompletionOnceCallback callback,
                     const NetLogWithSource& net_log,
                     const NetworkTrafficAnnotationTag traffic_annotation) = 0;
@@ -98,7 +98,7 @@ class NET_EXPORT_PRIVATE DoNothingDhcpPacFileFetcher
   DoNothingDhcpPacFileFetcher();
   ~DoNothingDhcpPacFileFetcher() override;
 
-  int Fetch(base::string16* utf16_text,
+  int Fetch(std::u16string* utf16_text,
             CompletionOnceCallback callback,
             const NetLogWithSource& net_log,
             const NetworkTrafficAnnotationTag traffic_annotation) override;

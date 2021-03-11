@@ -138,9 +138,9 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override;
 
   // ConfirmInfoBarDelegate:
-  base::string16 GetMessageText() const override;
+  std::u16string GetMessageText() const override;
   int GetButtons() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
   void InfoBarDismissed() override;
   bool ShouldExpire(const NavigationDetails& details) const override;
@@ -181,7 +181,7 @@ SessionCrashedInfoBarDelegate::GetIdentifier() const {
   return SESSION_CRASHED_INFOBAR_DELEGATE_IOS;
 }
 
-base::string16 SessionCrashedInfoBarDelegate::GetMessageText() const {
+std::u16string SessionCrashedInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_MESSAGE);
 }
 
@@ -189,7 +189,7 @@ int SessionCrashedInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 SessionCrashedInfoBarDelegate::GetButtonLabel(
+std::u16string SessionCrashedInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_RESTORE_BUTTON);

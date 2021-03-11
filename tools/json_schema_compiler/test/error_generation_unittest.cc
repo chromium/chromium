@@ -18,15 +18,15 @@ using json_schema_compiler::test_util::Dictionary;
 using json_schema_compiler::test_util::List;
 
 template <typename T>
-base::string16 GetPopulateError(const Value& value) {
-  base::string16 error;
+std::u16string GetPopulateError(const Value& value) {
+  std::u16string error;
   T test_type;
   T::Populate(value, &test_type, &error);
   return error;
 }
 
 testing::AssertionResult EqualsUtf16(const std::string& expected,
-                                     const base::string16& actual) {
+                                     const std::u16string& actual) {
   if (base::ASCIIToUTF16(expected) == actual)
     return testing::AssertionSuccess();
   return testing::AssertionFailure() << "\n    actual:     " << actual
@@ -83,13 +83,13 @@ TEST(JsonSchemaCompilerErrorTest, TooManyParameters) {
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5));
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(*params_value, &error));
   }
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5), std::make_unique<Value>(5));
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(*params_value, &error));
     EXPECT_TRUE(EqualsUtf16("expected 1 arguments, got 2", error));
   }
@@ -101,13 +101,13 @@ TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5));
-    base::string16 error;
+    std::u16string error;
     EXPECT_TRUE(errors::TestFunction::Params::Create(*params_value, &error));
   }
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>());
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::TestFunction::Params::Create(*params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'num' is required", error));
   }
@@ -131,7 +131,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
 
 TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
-    base::string16 error;
+    std::u16string error;
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>("Yeah!"));
     EXPECT_TRUE(errors::TestString::Params::Create(*params_value, &error));
@@ -139,7 +139,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
   {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5));
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(
         errors::TestTypeInObject::Params::Create(*params_value, &error));
     EXPECT_TRUE(EqualsUtf16("'paramObject': expected dictionary, got integer",
@@ -156,7 +156,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("otherType", std::make_unique<Value>(1.1));
     errors::ObjectType out;
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::ObjectType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
         error));
@@ -240,7 +240,7 @@ TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
         Dictionary("string", std::make_unique<Value>(1));
 
     errors::OptionalTestType out;
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::OptionalTestType::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
         error));
@@ -261,7 +261,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
         Dictionary("data", std::make_unique<Value>(1));
 
     errors::OptionalBinaryData out;
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::OptionalBinaryData::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
         error));
@@ -279,7 +279,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
     std::unique_ptr<base::DictionaryValue> value =
         Dictionary("TheArray", std::make_unique<Value>(5));
     errors::ArrayObject out;
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::ArrayObject::Populate(*value, &out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
@@ -299,7 +299,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
     std::unique_ptr<base::ListValue> params_value =
         List(std::make_unique<Value>(5), std::make_unique<Value>(false));
     errors::OptionalChoiceType::Integers out;
-    base::string16 error;
+    std::u16string error;
     EXPECT_FALSE(errors::OptionalChoiceType::Integers::Populate(*params_value,
                                                                 &out, &error));
     EXPECT_TRUE(

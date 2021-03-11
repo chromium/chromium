@@ -243,7 +243,7 @@ const int kMaxBookmarksSearchResults = 50;
 
   std::vector<const BookmarkNode*> nodes;
   bookmarks::QueryFields query;
-  query.word_phrase_query.reset(new base::string16);
+  query.word_phrase_query.reset(new std::u16string);
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   GetBookmarksMatchingProperties(self.sharedState.bookmarkModel, query,
                                  kMaxBookmarksSearchResults, &nodes);

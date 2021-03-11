@@ -57,8 +57,8 @@ namespace blink {
 // * WebString::FromASCII(const std::string& ascii)
 // * WebString::FromLatin1(const std::string& latin1)
 // * WebString::FromUTF8(const std::string& utf8)
-// * WebString::FromUTF16(const base::string16& utf16)
-// * WebString::FromUTF16(const base::Optional<base::string16>& utf16)
+// * WebString::FromUTF16(const std::u16string& utf16)
+// * WebString::FromUTF16(const base::Optional<std::u16string>& utf16)
 //
 // Similarly, use either of following methods to convert WebString to
 // ASCII, Latin1, UTF-8 or UTF-16:
@@ -132,15 +132,15 @@ class WebString {
     return FromUTF8(s.data(), s.length());
   }
 
-  base::string16 Utf16() const {
+  std::u16string Utf16() const {
     return base::Latin1OrUTF16ToUTF16(length(), Data8(), Data16());
   }
 
-  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const base::string16&);
+  BLINK_PLATFORM_EXPORT static WebString FromUTF16(const std::u16string&);
   BLINK_PLATFORM_EXPORT static WebString FromUTF16(
-      const base::Optional<base::string16>&);
+      const base::Optional<std::u16string>&);
 
-  static base::Optional<base::string16> ToOptionalString16(const WebString& s) {
+  static base::Optional<std::u16string> ToOptionalString16(const WebString& s) {
     return s.IsNull() ? base::nullopt : base::make_optional(s.Utf16());
   }
 

@@ -45,7 +45,7 @@ void FakeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
 
-base::string16 FakeWebClient::GetPluginNotSupportedText() const {
+std::u16string FakeWebClient::GetPluginNotSupportedText() const {
   return plugin_not_supported_text_;
 }
 
@@ -78,7 +78,7 @@ NSString* FakeWebClient::GetDocumentStartScriptForAllFrames(
   return web::test::GetPageScript(@"all_frames_web_test_bundle");
 }
 
-void FakeWebClient::SetPluginNotSupportedText(const base::string16& text) {
+void FakeWebClient::SetPluginNotSupportedText(const std::u16string& text) {
   plugin_not_supported_text_ = text;
 }
 

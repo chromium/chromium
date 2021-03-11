@@ -20,9 +20,9 @@ void ParamTraits<net::AuthCredentials>::Write(base::Pickle* m,
 bool ParamTraits<net::AuthCredentials>::Read(const base::Pickle* m,
                                              base::PickleIterator* iter,
                                              param_type* r) {
-  base::string16 username;
+  std::u16string username;
   bool read_username = ReadParam(m, iter, &username);
-  base::string16 password;
+  std::u16string password;
   bool read_password = ReadParam(m, iter, &password);
 
   if (!read_username || !read_password)

@@ -24,7 +24,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternate_nav_match) override;
   bool CurrentPageExists() const override;
@@ -52,7 +52,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
                        const BitmapFetchedCallback& on_bitmap_fetched) override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
   void DiscardNonCommittedNavigations() override;
-  const base::string16& GetTitle() const override;
+  const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
 
  private:

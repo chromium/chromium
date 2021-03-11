@@ -149,7 +149,7 @@ class Shell : public TabObserver,
   void PlatformSetLoadProgress(double progress);
 
   // Set the title of shell window
-  void PlatformSetTitle(const base::string16& title);
+  void PlatformSetTitle(const std::u16string& title);
 
   std::unique_ptr<Browser> browser_;
 

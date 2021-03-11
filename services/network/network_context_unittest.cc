@@ -1815,8 +1815,8 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
   test_clock.SetNow(start_time);
   cache->set_clock_for_testing(&test_clock);
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = base::ASCIIToUTF16("user");
+  std::u16string password = base::ASCIIToUTF16("pass");
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm1",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
@@ -1882,8 +1882,8 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
   test_clock.SetNow(start_time);
   cache->set_clock_for_testing(&test_clock);
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = base::ASCIIToUTF16("user");
+  std::u16string password = base::ASCIIToUTF16("pass");
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm1",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm1", net::AuthCredentials(user, password), "/");
@@ -1967,8 +1967,8 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
                                   ->GetSession()
                                   ->http_auth_cache();
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = base::ASCIIToUTF16("user");
+  std::u16string password = base::ASCIIToUTF16("pass");
   cache->Add(origin, net::HttpAuth::AUTH_SERVER, "Realm",
              net::HttpAuth::AUTH_SCHEME_BASIC, network_isolation_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
@@ -2027,8 +2027,8 @@ TEST_F(NetworkContextTest, LookupProxyAuthCredentials) {
                                   ->GetSession()
                                   ->http_auth_cache();
 
-  base::string16 user = base::ASCIIToUTF16("user");
-  base::string16 password = base::ASCIIToUTF16("pass");
+  std::u16string user = base::ASCIIToUTF16("user");
+  std::u16string password = base::ASCIIToUTF16("pass");
   cache->Add(http_proxy, net::HttpAuth::AUTH_PROXY, "Realm",
              net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(),
              "basic realm=Realm", net::AuthCredentials(user, password),

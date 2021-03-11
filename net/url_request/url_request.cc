@@ -263,10 +263,10 @@ LoadStateWithParam URLRequest::GetLoadState() const {
     return LoadStateWithParam(LOAD_STATE_WAITING_FOR_DELEGATE,
                               use_blocked_by_as_load_param_
                                   ? base::UTF8ToUTF16(blocked_by_)
-                                  : base::string16());
+                                  : std::u16string());
   }
   return LoadStateWithParam(job_.get() ? job_->GetLoadState() : LOAD_STATE_IDLE,
-                            base::string16());
+                            std::u16string());
 }
 
 base::Value URLRequest::GetStateAsValue() const {

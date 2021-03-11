@@ -84,7 +84,7 @@ void ExecuteScriptWithUserGesture(Tab* tab, const std::string& script) {
   tab_impl->ExecuteScriptWithUserGestureForTests(base::ASCIIToUTF16(script));
 }
 
-const base::string16& GetTitle(Shell* shell) {
+const std::u16string& GetTitle(Shell* shell) {
   TabImpl* tab_impl = static_cast<TabImpl*>(shell->tab());
 
   return tab_impl->web_contents()->GetTitle();

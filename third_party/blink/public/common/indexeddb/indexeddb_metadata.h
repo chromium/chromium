@@ -20,7 +20,7 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
   static const int64_t kInvalidId = -1;
 
   IndexedDBIndexMetadata();
-  IndexedDBIndexMetadata(const base::string16& name,
+  IndexedDBIndexMetadata(const std::u16string& name,
                          int64_t id,
                          const blink::IndexedDBKeyPath& key_path,
                          bool unique,
@@ -32,7 +32,7 @@ struct BLINK_COMMON_EXPORT IndexedDBIndexMetadata {
   IndexedDBIndexMetadata& operator=(IndexedDBIndexMetadata&& other);
   bool operator==(const IndexedDBIndexMetadata& other) const;
 
-  base::string16 name;
+  std::u16string name;
   int64_t id;
   blink::IndexedDBKeyPath key_path;
   bool unique;
@@ -44,7 +44,7 @@ struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
   static const int64_t kMinimumIndexId = 30;
 
   IndexedDBObjectStoreMetadata();
-  IndexedDBObjectStoreMetadata(const base::string16& name,
+  IndexedDBObjectStoreMetadata(const std::u16string& name,
                                int64_t id,
                                const blink::IndexedDBKeyPath& key_path,
                                bool auto_increment,
@@ -57,7 +57,7 @@ struct BLINK_COMMON_EXPORT IndexedDBObjectStoreMetadata {
   IndexedDBObjectStoreMetadata& operator=(IndexedDBObjectStoreMetadata&& other);
   bool operator==(const IndexedDBObjectStoreMetadata& other) const;
 
-  base::string16 name;
+  std::u16string name;
   int64_t id;
   blink::IndexedDBKeyPath key_path;
   bool auto_increment;
@@ -71,7 +71,7 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   enum { NO_VERSION = -1, DEFAULT_VERSION = 0 };
 
   IndexedDBDatabaseMetadata();
-  IndexedDBDatabaseMetadata(const base::string16& name,
+  IndexedDBDatabaseMetadata(const std::u16string& name,
                             int64_t id,
                             int64_t version,
                             int64_t max_object_store_id);
@@ -82,7 +82,7 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   IndexedDBDatabaseMetadata& operator=(IndexedDBDatabaseMetadata&& other);
   bool operator==(const IndexedDBDatabaseMetadata& other) const;
 
-  base::string16 name;
+  std::u16string name;
   int64_t id;
   int64_t version;
   int64_t max_object_store_id;

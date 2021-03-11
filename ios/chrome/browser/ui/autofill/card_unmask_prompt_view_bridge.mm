@@ -86,7 +86,7 @@ void CardUnmaskPromptViewBridge::DisableAndWaitForVerification() {
 }
 
 void CardUnmaskPromptViewBridge::GotVerificationResult(
-    const base::string16& error_message,
+    const std::u16string& error_message,
     bool allow_retry) {
   if (error_message.empty()) {
     [view_controller_ showSuccess];

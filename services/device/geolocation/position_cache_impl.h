@@ -57,7 +57,7 @@ class PositionCacheImpl
  private:
   // In order to avoid O(N) comparisons while searching for the right WifiData,
   // we hash the contents of those objects and use the hashes as cache keys.
-  using Hash = base::string16;
+  using Hash = std::u16string;
 
   class CacheEntry {
    public:

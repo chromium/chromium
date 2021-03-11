@@ -339,9 +339,9 @@ using autofill::FieldRendererId;
 }
 
 - (void)
-    confirmCreditCardAccountName:(const base::string16&)name
+    confirmCreditCardAccountName:(const std::u16string&)name
                         callback:
-                            (base::OnceCallback<void(const base::string16&)>)
+                            (base::OnceCallback<void(const std::u16string&)>)
                                 callback {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                          confirmCreditCardNameWithFixer:)]) {
@@ -357,8 +357,8 @@ using autofill::FieldRendererId;
 - (void)confirmCreditCardExpirationWithCard:(const autofill::CreditCard&)card
                                    callback:
                                        (base::OnceCallback<void(
-                                            const base::string16&,
-                                            const base::string16&)>)callback {
+                                            const std::u16string&,
+                                            const std::u16string&)>)callback {
   if (![_delegate respondsToSelector:@selector
                   (autofillController:confirmCreditCardExpirationWithFixer:)]) {
     return;

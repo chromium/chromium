@@ -14,18 +14,18 @@
 namespace device {
 
 // Returns the address suitable for displaying e.g. "AA:BB:CC:DD:00:11".
-base::string16 GetBluetoothAddressForDisplay(
+std::u16string GetBluetoothAddressForDisplay(
     const std::array<uint8_t, 6>& address);
 
 // Returns the name of the device suitable for displaying, this may
 // be a synthesized string containing the address and localized type name
 // if the device has no obtained name.
-base::string16 GetBluetoothDeviceNameForDisplay(
+std::u16string GetBluetoothDeviceNameForDisplay(
     const mojom::BluetoothDeviceInfoPtr& device_info);
 
 // Returns an accessibility label for the device based on name or address and
 // device type.
-base::string16 GetBluetoothDeviceLabelForAccessibility(
+std::u16string GetBluetoothDeviceLabelForAccessibility(
     const mojom::BluetoothDeviceInfoPtr& device_info);
 
 // Returns a BluetoothUUID for a Bluetooth SPP device.

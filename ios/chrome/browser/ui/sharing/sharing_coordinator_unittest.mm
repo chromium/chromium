@@ -60,7 +60,7 @@ class MockWebState : public web::FakeWebState {
   }
 
   MOCK_METHOD2(ExecuteJavaScript,
-               void(const base::string16&, JavaScriptResultCallback));
+               void(const std::u16string&, JavaScriptResultCallback));
 };
 
 }  // namespace
@@ -147,7 +147,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
 
   EXPECT_CALL(*test_web_state, ExecuteJavaScript(testing::_, testing::_))
       .WillOnce(testing::Invoke(
-          [&](const base::string16& javascript,
+          [&](const std::u16string& javascript,
               base::OnceCallback<void(const base::Value*)> callback) {
             std::move(callback).Run(&url_value);
           }));

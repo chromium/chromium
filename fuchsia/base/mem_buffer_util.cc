@@ -20,7 +20,7 @@
 namespace cr_fuchsia {
 
 bool ReadUTF8FromVMOAsUTF16(const fuchsia::mem::Buffer& buffer,
-                            base::string16* output) {
+                            std::u16string* output) {
   std::string output_utf8;
   if (!StringFromMemBuffer(buffer, &output_utf8))
     return false;

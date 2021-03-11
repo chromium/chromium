@@ -12,7 +12,7 @@
 namespace weblayer {
 
 // Returns the name of the WebLayer embedder.
-base::string16 GetClientApplicationName();
+std::u16string GetClientApplicationName();
 
 }  // namespace weblayer
 

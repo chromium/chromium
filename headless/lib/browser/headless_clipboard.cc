@@ -48,7 +48,7 @@ void HeadlessClipboard::Clear(ui::ClipboardBuffer buffer) {
 void HeadlessClipboard::ReadAvailableTypes(
     ui::ClipboardBuffer buffer,
     const ui::DataTransferEndpoint* data_dst,
-    std::vector<base::string16>* types) const {
+    std::vector<std::u16string>* types) const {
   DCHECK(types);
   types->clear();
 
@@ -69,15 +69,15 @@ void HeadlessClipboard::ReadAvailableTypes(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<base::string16>
+std::vector<std::u16string>
 HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
     ui::ClipboardBuffer buffer,
     const ui::DataTransferEndpoint* data_dst) const {
   const auto& data = GetStore(buffer).data;
-  std::vector<base::string16> types;
+  std::vector<std::u16string> types;
   types.reserve(data.size());
   for (const auto& it : data) {
-    base::string16 type = base::UTF8ToUTF16(it.first.GetName());
+    std::u16string type = base::UTF8ToUTF16(it.first.GetName());
     types.push_back(type);
   }
 
@@ -88,7 +88,7 @@ HeadlessClipboard::ReadAvailablePlatformSpecificFormatNames(
 // platforms.
 void HeadlessClipboard::ReadText(ui::ClipboardBuffer buffer,
                                  const ui::DataTransferEndpoint* data_dst,
-                                 base::string16* result) const {
+                                 std::u16string* result) const {
   std::string result8;
   ReadAsciiText(buffer, data_dst, &result8);
   *result = base::UTF8ToUTF16(result8);
@@ -110,7 +110,7 @@ void HeadlessClipboard::ReadAsciiText(ui::ClipboardBuffer buffer,
 // platforms.
 void HeadlessClipboard::ReadHTML(ui::ClipboardBuffer buffer,
                                  const ui::DataTransferEndpoint* data_dst,
-                                 base::string16* markup,
+                                 std::u16string* markup,
                                  std::string* src_url,
                                  uint32_t* fragment_start,
                                  uint32_t* fragment_end) const {
@@ -129,7 +129,7 @@ void HeadlessClipboard::ReadHTML(ui::ClipboardBuffer buffer,
 // platforms.
 void HeadlessClipboard::ReadSvg(ui::ClipboardBuffer buffer,
                                 const ui::DataTransferEndpoint* data_dst,
-                                base::string16* result) const {
+                                std::u16string* result) const {
   result->clear();
   const DataStore& store = GetStore(buffer);
   auto it = store.data.find(ui::ClipboardFormatType::GetSvgType());
@@ -160,9 +160,9 @@ void HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void HeadlessClipboard::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                                       const base::string16& type,
+                                       const std::u16string& type,
                                        const ui::DataTransferEndpoint* data_dst,
-                                       base::string16* result) const {}
+                                       std::u16string* result) const {}
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
@@ -175,7 +175,7 @@ void HeadlessClipboard::ReadFilenames(ui::ClipboardBuffer buffer,
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void HeadlessClipboard::ReadBookmark(const ui::DataTransferEndpoint* data_dst,
-                                     base::string16* title,
+                                     std::u16string* title,
                                      std::string* url) const {
   const DataStore& store = GetDefaultStore();
   auto it = store.data.find(ui::ClipboardFormatType::GetUrlType());
@@ -240,7 +240,7 @@ void HeadlessClipboard::WriteHTML(const char* markup_data,
                                   size_t markup_len,
                                   const char* url_data,
                                   size_t url_len) {
-  base::string16 markup;
+  std::u16string markup;
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
   GetDefaultStore().data[ui::ClipboardFormatType::GetHtmlType()] =
       base::UTF16ToUTF8(markup);

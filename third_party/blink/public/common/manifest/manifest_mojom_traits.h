@@ -17,7 +17,7 @@
 namespace mojo {
 namespace internal {
 
-inline base::StringPiece16 TruncateString16(const base::string16& string) {
+inline base::StringPiece16 TruncateString16(const std::u16string& string) {
   // We restrict the maximum length for all the strings inside the Manifest
   // when it is sent over Mojo. The renderer process truncates the strings
   // before sending the Manifest and the browser process validates that.
@@ -25,7 +25,7 @@ inline base::StringPiece16 TruncateString16(const base::string16& string) {
 }
 
 inline base::Optional<base::StringPiece16> TruncateOptionalString16(
-    const base::Optional<base::string16>& string) {
+    const base::Optional<std::u16string>& string) {
   if (!string)
     return base::nullopt;
 
@@ -249,7 +249,7 @@ struct BLINK_COMMON_EXPORT
       const ::blink::Manifest::FileFilter& share_target_file) {
     std::vector<base::StringPiece16> accept_types;
 
-    for (const base::string16& accept_type : share_target_file.accept)
+    for (const std::u16string& accept_type : share_target_file.accept)
       accept_types.push_back(internal::TruncateString16(accept_type));
 
     return accept_types;
@@ -334,12 +334,12 @@ struct BLINK_COMMON_EXPORT
     return entry.action;
   }
 
-  static const base::string16& name(
+  static const std::u16string& name(
       const ::blink::Manifest::FileHandler& entry) {
     return entry.name;
   }
 
-  static const std::map<base::string16, std::vector<base::string16>>& accept(
+  static const std::map<std::u16string, std::vector<std::u16string>>& accept(
       const ::blink::Manifest::FileHandler& entry) {
     return entry.accept;
   }

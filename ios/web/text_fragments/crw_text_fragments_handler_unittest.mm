@@ -60,7 +60,7 @@ class MockWebStateImpl : public web::WebStateImpl {
   explicit MockWebStateImpl(web::WebState::CreateParams params)
       : web::WebStateImpl(params) {}
 
-  MOCK_METHOD1(ExecuteJavaScript, void(const base::string16&));
+  MOCK_METHOD1(ExecuteJavaScript, void(const std::u16string&));
   MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
 
   base::CallbackListSubscription AddScriptCommandCallback(
@@ -182,7 +182,7 @@ TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptSuccess) {
   CRWTextFragmentsHandler* handler = CreateDefaultHandler();
 
   // Set up expectation.
-  base::string16 expected_javascript =
+  std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsURL);
   EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
 
@@ -210,7 +210,7 @@ TEST_F(CRWTextFragmentsHandlerTest, ExecuteJavaScriptWithColorChange) {
                     /*feature_color_change=*/true);
 
   // Set up expectation.
-  base::string16 expected_javascript =
+  std::u16string expected_javascript =
       base::UTF8ToUTF16(kScriptForValidFragmentsColorChangeURL);
   EXPECT_CALL(*web_state_, ExecuteJavaScript(expected_javascript)).Times(1);
 

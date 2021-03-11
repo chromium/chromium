@@ -44,9 +44,9 @@ namespace {
 // Constant for timeout while waiting for asynchronous sync operations.
 const NSTimeInterval kSyncOperationTimeout = 10.0;
 
-std::vector<base::string16> ExtractDisplayNamesFromLanguageItems(
+std::vector<std::u16string> ExtractDisplayNamesFromLanguageItems(
     NSArray<LanguageItem*>* language_items) {
-  __block std::vector<base::string16> output;
+  __block std::vector<std::u16string> output;
   [language_items enumerateObjectsUsingBlock:^(LanguageItem* item,
                                                NSUInteger index, BOOL* stop) {
     output.push_back(base::SysNSStringToUTF16(item.text));
@@ -185,9 +185,9 @@ TEST_F(LanguageSettingsMediatorTest, TestPrefsChanged) {
 // and excludes languages already in the accept languages list.
 TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
   NSArray<LanguageItem*>* language_items = [mediator() supportedLanguagesItems];
-  std::vector<base::string16> display_names =
+  std::vector<std::u16string> display_names =
       ExtractDisplayNamesFromLanguageItems(language_items);
-  std::vector<base::string16> sorted(display_names);
+  std::vector<std::u16string> sorted(display_names);
   l10n_util::SortVectorWithStringKey("en-US", &sorted, false);
   EXPECT_THAT(display_names, ElementsAreArray(sorted));
 

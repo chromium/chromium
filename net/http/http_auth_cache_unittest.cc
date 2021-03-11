@@ -27,17 +27,17 @@ const char kRealm2[] = "Realm2";
 const char kRealm3[] = "Realm3";
 const char kRealm4[] = "Realm4";
 const char kRealm5[] = "Realm5";
-const base::string16 k123(ASCIIToUTF16("123"));
-const base::string16 k1234(ASCIIToUTF16("1234"));
-const base::string16 k12345(ASCIIToUTF16("12345"));
-const base::string16 kAdmin(ASCIIToUTF16("admin"));
-const base::string16 kAlice(ASCIIToUTF16("alice"));
-const base::string16 kAlice2(ASCIIToUTF16("alice2"));
-const base::string16 kAlice3(ASCIIToUTF16("alice3"));
-const base::string16 kPassword(ASCIIToUTF16("password"));
-const base::string16 kRoot(ASCIIToUTF16("root"));
-const base::string16 kUsername(ASCIIToUTF16("username"));
-const base::string16 kWileCoyote(ASCIIToUTF16("wilecoyote"));
+const std::u16string k123(ASCIIToUTF16("123"));
+const std::u16string k1234(ASCIIToUTF16("1234"));
+const std::u16string k12345(ASCIIToUTF16("12345"));
+const std::u16string kAdmin(ASCIIToUTF16("admin"));
+const std::u16string kAlice(ASCIIToUTF16("alice"));
+const std::u16string kAlice2(ASCIIToUTF16("alice2"));
+const std::u16string kAlice3(ASCIIToUTF16("alice3"));
+const std::u16string kPassword(ASCIIToUTF16("password"));
+const std::u16string kRoot(ASCIIToUTF16("root"));
+const std::u16string kUsername(ASCIIToUTF16("username"));
+const std::u16string kWileCoyote(ASCIIToUTF16("wilecoyote"));
 
 AuthCredentials CreateASCIICredentials(const char* username,
                                        const char* password) {
@@ -237,10 +237,10 @@ TEST(HttpAuthCacheTest, Basic) {
 
 // Make sure server and proxy credentials are treated separately.
 TEST(HttpAuthCacheTest, SeparateByTarget) {
-  const base::string16 kServerUser = ASCIIToUTF16("server_user");
-  const base::string16 kServerPass = ASCIIToUTF16("server_pass");
-  const base::string16 kProxyUser = ASCIIToUTF16("proxy_user");
-  const base::string16 kProxyPass = ASCIIToUTF16("proxy_pass");
+  const std::u16string kServerUser = ASCIIToUTF16("server_user");
+  const std::u16string kServerPass = ASCIIToUTF16("server_pass");
+  const std::u16string kProxyUser = ASCIIToUTF16("proxy_user");
+  const std::u16string kProxyPass = ASCIIToUTF16("proxy_pass");
 
   const char kServerPath[] = "/foo/bar/index.html";
 
@@ -336,10 +336,10 @@ TEST(HttpAuthCacheTest, SeparateServersByNetworkIsolationKey) {
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = ASCIIToUTF16("user1");
+  const std::u16string kPass1 = ASCIIToUTF16("pass1");
+  const std::u16string kUser2 = ASCIIToUTF16("user2");
+  const std::u16string kPass2 = ASCIIToUTF16("pass2");
 
   for (bool key_entries_by_network_isolation_key : {false, true}) {
     HttpAuthCache cache(key_entries_by_network_isolation_key);
@@ -435,10 +435,10 @@ TEST(HttpAuthCacheTest, NeverSeparateProxiesByNetworkIsolationKey) {
   GURL kPseudoOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = ASCIIToUTF16("user1");
+  const std::u16string kPass1 = ASCIIToUTF16("pass1");
+  const std::u16string kUser2 = ASCIIToUTF16("user2");
+  const std::u16string kPass2 = ASCIIToUTF16("pass2");
 
   for (bool key_entries_by_network_isolation_key : {false, true}) {
     HttpAuthCache cache(key_entries_by_network_isolation_key);
@@ -508,10 +508,10 @@ TEST(HttpAuthCacheTest, SetKeyServerEntriesByNetworkIsolationKey) {
   GURL kOrigin("http://www.google.com");
   const char kPath[] = "/";
 
-  const base::string16 kUser1 = ASCIIToUTF16("user1");
-  const base::string16 kPass1 = ASCIIToUTF16("pass1");
-  const base::string16 kUser2 = ASCIIToUTF16("user2");
-  const base::string16 kPass2 = ASCIIToUTF16("pass2");
+  const std::u16string kUser1 = ASCIIToUTF16("user1");
+  const std::u16string kPass1 = ASCIIToUTF16("pass1");
+  const std::u16string kUser2 = ASCIIToUTF16("user2");
+  const std::u16string kPass2 = ASCIIToUTF16("pass2");
 
   for (bool initially_key_entries_by_network_isolation_key : {false, true}) {
     for (bool to_key_entries_by_network_isolation_key : {false, true}) {

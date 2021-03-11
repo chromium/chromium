@@ -262,7 +262,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSString* folderString = self.titleItem.text;
   DCHECK(folderString.length > 0);
-  base::string16 folderTitle = base::SysNSStringToUTF16(folderString);
+  std::u16string folderTitle = base::SysNSStringToUTF16(folderString);
 
   if (self.editingExistingFolder) {
     DCHECK(self.folder);

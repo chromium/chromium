@@ -71,7 +71,7 @@ bool ConvertHdcpVersion(const blink::WebString& hdcp_version_string,
 
 void WebContentDecryptionModuleImpl::Create(
     media::CdmFactory* cdm_factory,
-    const base::string16& key_system,
+    const std::u16string& key_system,
     const blink::WebSecurityOrigin& security_origin,
     const CdmConfig& cdm_config,
     WebCdmCreatedCB web_cdm_created_cb) {

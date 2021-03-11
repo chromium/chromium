@@ -38,7 +38,7 @@ NET_EXPORT_PRIVATE void Create3DesKeysFromNtlmHash(
 // Generates the NTLMv1 Hash and writes the |kNtlmHashLen| byte result to
 // |hash|. Defined by NTOWFv1() in [MS-NLMP] Section 3.3.1.
 NET_EXPORT_PRIVATE void GenerateNtlmHashV1(
-    const base::string16& password,
+    const std::u16string& password,
     base::span<uint8_t, kNtlmHashLen> hash);
 
 // Generates the |kResponseLenV1| byte NTLMv1 response field according to the
@@ -52,7 +52,7 @@ NET_EXPORT_PRIVATE void GenerateResponseDesl(
 // security. Defined by ComputeResponse() in [MS-NLMP] Section 3.3.1 for the
 // case where NTLMSSP_NEGOTIATE_EXTENDED_SESSIONSECURITY is not set.
 NET_EXPORT_PRIVATE void GenerateNtlmResponseV1(
-    const base::string16& password,
+    const std::u16string& password,
     base::span<const uint8_t, kChallengeLen> server_challenge,
     base::span<uint8_t, kResponseLenV1> ntlm_response);
 
@@ -68,7 +68,7 @@ NET_EXPORT_PRIVATE void GenerateNtlmResponseV1(
 // The default flags include this flag and the client will not be
 // downgraded by the server.
 NET_EXPORT_PRIVATE void GenerateResponsesV1(
-    const base::string16& password,
+    const std::u16string& password,
     base::span<const uint8_t, kChallengeLen> server_challenge,
     base::span<uint8_t, kResponseLenV1> lm_response,
     base::span<uint8_t, kResponseLenV1> ntlm_response);
@@ -95,7 +95,7 @@ NET_EXPORT_PRIVATE void GenerateSessionHashV1WithSessionSecurity(
 // Defined by ComputeResponse() in [MS-NLMP] Section 3.3.1 for the
 // case where NTLMSSP_NEGOTIATE_EXTENDED_SESSIONSECURITY is set.
 NET_EXPORT_PRIVATE void GenerateNtlmResponseV1WithSessionSecurity(
-    const base::string16& password,
+    const std::u16string& password,
     base::span<const uint8_t, kChallengeLen> server_challenge,
     base::span<const uint8_t, kChallengeLen> client_challenge,
     base::span<uint8_t, kResponseLenV1> ntlm_response);
@@ -106,7 +106,7 @@ NET_EXPORT_PRIVATE void GenerateNtlmResponseV1WithSessionSecurity(
 // |ntlm_response| is the result of |GenerateNtlmResponseV1WithSessionSecurity|.
 // See [MS-NLMP] Section 3.3.1.
 NET_EXPORT_PRIVATE void GenerateResponsesV1WithSessionSecurity(
-    const base::string16& password,
+    const std::u16string& password,
     base::span<const uint8_t, kChallengeLen> server_challenge,
     base::span<const uint8_t, kChallengeLen> client_challenge,
     base::span<uint8_t, kResponseLenV1> lm_response,
@@ -114,9 +114,9 @@ NET_EXPORT_PRIVATE void GenerateResponsesV1WithSessionSecurity(
 
 // Generates the NTLMv2 Hash and writes it into |v2_hash|.
 NET_EXPORT_PRIVATE void GenerateNtlmHashV2(
-    const base::string16& domain,
-    const base::string16& username,
-    const base::string16& password,
+    const std::u16string& domain,
+    const std::u16string& username,
+    const std::u16string& password,
     base::span<uint8_t, kNtlmHashLen> v2_hash);
 
 // In this implementation the Proof Input is the first 28 bytes of what

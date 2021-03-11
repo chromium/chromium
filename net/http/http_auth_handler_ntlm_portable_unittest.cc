@@ -115,7 +115,7 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
   // no assumptions about the underlying encoding. This will fail if there
   // are an odd number of bytes in the payload.
   void ReadString16Payload(ntlm::NtlmBufferReader* reader,
-                           base::string16* str) {
+                           std::u16string* str) {
     ntlm::SecurityBuffer sec_buf;
     EXPECT_TRUE(reader->ReadSecurityBuffer(&sec_buf));
     EXPECT_EQ(0, sec_buf.length % 2);

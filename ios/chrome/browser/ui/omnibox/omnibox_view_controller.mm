@@ -663,7 +663,7 @@ const CGFloat kClearButtonSize = 28.0f;
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   self.omniboxInteractedWhileFocused = YES;
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(base::Optional<base::string16> optionalText) {
+      base::BindOnce(^(base::Optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

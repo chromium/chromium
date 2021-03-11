@@ -24,8 +24,8 @@ class CreditCard;
 // with a month and year in MM and YYYY format.
 - (instancetype)
     initWithCreditCard:(const autofill::CreditCard&)creditCard
-              callback:(base::OnceCallback<void(const base::string16&,
-                                                const base::string16&)>)callback
+              callback:(base::OnceCallback<void(const std::u16string&,
+                                                const std::u16string&)>)callback
     NS_DESIGNATED_INITIALIZER;
 
 @end

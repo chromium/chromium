@@ -75,7 +75,7 @@ class PDFiumAPIStringBufferSizeInBytesAdapter {
   // character in bytes.
   // |check_expected_size| whether to check the actual number of bytes
   // written into |str| against |expected_size| when calling Close().
-  PDFiumAPIStringBufferSizeInBytesAdapter(base::string16* str,
+  PDFiumAPIStringBufferSizeInBytesAdapter(std::u16string* str,
                                           size_t expected_size,
                                           bool check_expected_size);
   ~PDFiumAPIStringBufferSizeInBytesAdapter();
@@ -97,7 +97,7 @@ class PDFiumAPIStringBufferSizeInBytesAdapter {
   }
 
  private:
-  PDFiumAPIStringBufferAdapter<base::string16> adapter_;
+  PDFiumAPIStringBufferAdapter<std::u16string> adapter_;
 };
 
 template <class AdapterType,
@@ -136,23 +136,23 @@ StringType CallPDFiumStringBufferApi(
 // Helper function to call PDFium APIs where the output buffer is expected to
 // hold UTF-16 data, and the buffer length is specified in bytes.
 template <typename BufferType>
-base::string16 CallPDFiumWideStringBufferApi(
+std::u16string CallPDFiumWideStringBufferApi(
     base::RepeatingCallback<unsigned long(BufferType*, unsigned long)> api,
     bool check_expected_size) {
   using adapter_type = internal::PDFiumAPIStringBufferSizeInBytesAdapter;
-  return internal::CallPDFiumStringBufferApi<adapter_type, base::string16>(
+  return internal::CallPDFiumStringBufferApi<adapter_type, std::u16string>(
       api, check_expected_size);
 }
 
 // Variant of CallPDFiumWideStringBufferApi() that distinguishes between API
 // call failures and empty string return values.
 template <typename BufferType>
-base::Optional<base::string16> CallPDFiumWideStringBufferApiAndReturnOptional(
+base::Optional<std::u16string> CallPDFiumWideStringBufferApiAndReturnOptional(
     base::RepeatingCallback<unsigned long(BufferType*, unsigned long)> api,
     bool check_expected_size) {
   using adapter_type = internal::PDFiumAPIStringBufferSizeInBytesAdapter;
   return internal::CallPDFiumStringBufferApiAndReturnOptional<adapter_type,
-                                                              base::string16>(
+                                                              std::u16string>(
       api, check_expected_size);
 }
 

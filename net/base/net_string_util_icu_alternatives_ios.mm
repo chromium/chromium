@@ -63,19 +63,19 @@ bool ConvertToUtf8AndNormalize(base::StringPiece text,
 
 bool ConvertToUTF16(base::StringPiece text,
                     const char* charset,
-                    base::string16* output) {
+                    std::u16string* output) {
   DCHECK(false) << "Not implemented yet.";
   return false;
 }
 
 bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
                                      const char* charset,
-                                     base::string16* output) {
+                                     std::u16string* output) {
   DCHECK(false) << "Not implemented yet.";
   return false;
 }
 
-bool ToUpper(base::StringPiece16 str, base::string16* output) {
+bool ToUpper(base::StringPiece16 str, std::u16string* output) {
   base::ScopedCFTypeRef<CFStringRef> cfstring(base::SysUTF16ToCFStringRef(str));
   base::ScopedCFTypeRef<CFMutableStringRef> mutable_cfstring(
       CFStringCreateMutableCopy(kCFAllocatorDefault, 0, cfstring.get()));

@@ -107,7 +107,7 @@ NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
   return [scripts componentsJoinedByString:@";"];
 }
 
-base::string16 WebViewWebClient::GetPluginNotSupportedText() const {
+std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 

@@ -30,7 +30,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
       const override;
   void OnUserActionOnPasswordUi(content::WebContents* web_contents,
                                 safe_browsing::WarningAction action) override;
-  base::string16 GetWarningDetailText() override;
+  std::u16string GetWarningDetailText() override;
 #endif
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type,
@@ -53,7 +53,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
   security_state::VisibleSecurityState GetVisibleSecurityState() override;
 
 #if defined(OS_ANDROID)
-  const base::string16 GetClientApplicationName() override;
+  const std::u16string GetClientApplicationName() override;
 #endif
 
  private:

@@ -192,7 +192,7 @@ bool NSSCertDatabase::SetCertTrust(CERTCertificate* cert,
 int NSSCertDatabase::ImportFromPKCS12(
     PK11SlotInfo* slot_info,
     const std::string& data,
-    const base::string16& password,
+    const std::u16string& password,
     bool is_extractable,
     ScopedCERTCertificateList* imported_certs) {
   DVLOG(1) << __func__ << " "
@@ -210,7 +210,7 @@ int NSSCertDatabase::ImportFromPKCS12(
 }
 
 int NSSCertDatabase::ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                                    const base::string16& password,
+                                    const std::u16string& password,
                                     std::string* output) const {
   return psm::nsPKCS12Blob_Export(output, certs, password);
 }

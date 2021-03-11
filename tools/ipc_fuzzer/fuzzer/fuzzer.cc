@@ -213,8 +213,8 @@ struct FuzzTraits<std::string> {
 };
 
 template <>
-struct FuzzTraits<base::string16> {
-  static bool Fuzz(base::string16* p, Fuzzer* fuzzer) {
+struct FuzzTraits<std::u16string> {
+  static bool Fuzz(std::u16string* p, Fuzzer* fuzzer) {
     fuzzer->FuzzString16(p);
     return true;
   }
@@ -446,7 +446,7 @@ struct FuzzTraits<base::File::Info> {
 template <>
 struct FuzzTraits<base::NullableString16> {
   static bool Fuzz(base::NullableString16* p, Fuzzer* fuzzer) {
-    base::string16 string = p->string();
+    std::u16string string = p->string();
     bool is_null = p->is_null();
     if (!FuzzParam(&string, fuzzer))
       return false;

@@ -21,20 +21,20 @@ class Size;
 namespace printing {
 
 // Simplify title to resolve issue with some drivers.
-PRINTING_EXPORT base::string16 SimplifyDocumentTitle(
-    const base::string16& title);
+PRINTING_EXPORT std::u16string SimplifyDocumentTitle(
+    const std::u16string& title);
 
-PRINTING_EXPORT base::string16 SimplifyDocumentTitleWithLength(
-    const base::string16& title,
+PRINTING_EXPORT std::u16string SimplifyDocumentTitleWithLength(
+    const std::u16string& title,
     size_t length);
 
-PRINTING_EXPORT base::string16 FormatDocumentTitleWithOwner(
-    const base::string16& owner,
-    const base::string16& title);
+PRINTING_EXPORT std::u16string FormatDocumentTitleWithOwner(
+    const std::u16string& owner,
+    const std::u16string& title);
 
-PRINTING_EXPORT base::string16 FormatDocumentTitleWithOwnerAndLength(
-    const base::string16& owner,
-    const base::string16& title,
+PRINTING_EXPORT std::u16string FormatDocumentTitleWithOwnerAndLength(
+    const std::u16string& owner,
+    const std::u16string& title,
     size_t length);
 
 // Returns the paper size (microns) most common in the locale to the nearest

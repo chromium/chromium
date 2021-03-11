@@ -35,7 +35,7 @@ void GetManifestParseError(base::StringPiece manifest_json,
   ASSERT_TRUE(manifest);
 
   simple_api::ManifestKeys manifest_keys;
-  base::string16 error_16;
+  std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
       base::Value::AsDictionaryValue(*manifest), &manifest_keys, &error_16);
 
@@ -48,7 +48,7 @@ void PopulateManifestKeys(base::StringPiece manifest_json,
   base::Optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
   ASSERT_TRUE(manifest.has_value());
 
-  base::string16 error_16;
+  std::u16string error_16;
   bool result = simple_api::ManifestKeys::ParseFromDictionary(
       base::Value::AsDictionaryValue(*manifest), manifest_keys, &error_16);
 

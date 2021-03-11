@@ -410,7 +410,7 @@ void ParamTraits<std::string>::Log(const param_type& p, std::string* l) {
   l->append(p);
 }
 
-void ParamTraits<base::string16>::Log(const param_type& p, std::string* l) {
+void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
   l->append(base::UTF16ToUTF8(p));
 }
 
@@ -1214,7 +1214,7 @@ void ParamTraits<base::NullableString16>::Write(base::Pickle* m,
 bool ParamTraits<base::NullableString16>::Read(const base::Pickle* m,
                                                base::PickleIterator* iter,
                                                param_type* r) {
-  base::string16 string;
+  std::u16string string;
   if (!ReadParam(m, iter, &string))
     return false;
   bool is_null;

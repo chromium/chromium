@@ -145,7 +145,7 @@ ContentSuggestion CreateSuggestion(Category category,
 }
 
 + (void)resetSearchEngineTo:(NSString*)defaultSearchEngine {
-  base::string16 defaultSearchEngineString =
+  std::u16string defaultSearchEngineString =
       base::SysNSStringToUTF16(defaultSearchEngine);
   // Set the search engine back to the default in case the test fails before
   // cleaning it up.

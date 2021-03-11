@@ -54,7 +54,7 @@ bool URLSecurityManagerWin::CanUseDefaultCredentials(
   if (!const_cast<URLSecurityManagerWin*>(this)->EnsureSystemSecurityManager())
     return false;
 
-  base::string16 url16 = base::ASCIIToUTF16(auth_origin.spec());
+  std::u16string url16 = base::ASCIIToUTF16(auth_origin.spec());
   DWORD policy = 0;
   HRESULT hr;
   hr = security_manager_->ProcessUrlAction(

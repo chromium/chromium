@@ -21,7 +21,7 @@ namespace ios_web_view {
 
 class CWVCreditCardNameFixerTest : public TestWithLocaleAndResources {
  public:
-  void AcceptNameCallback(const base::string16& name) {
+  void AcceptNameCallback(const std::u16string& name) {
     accepted_name_ = base::SysUTF16ToNSString(name);
   }
   NSString* accepted_name_;
@@ -47,7 +47,7 @@ TEST_F(CWVCreditCardNameFixerTest, Properties) {
 TEST_F(CWVCreditCardNameFixerTest, AcceptName) {
   NSString* inferred_name = @"John Doe";
   NSString* accepted_name = @"Jane Doe";
-  base::OnceCallback<void(const base::string16&)> callback = base::BindOnce(
+  base::OnceCallback<void(const std::u16string&)> callback = base::BindOnce(
       &CWVCreditCardNameFixerTest::AcceptNameCallback, base::Unretained(this));
   CWVCreditCardNameFixer* fixer =
       [[CWVCreditCardNameFixer alloc] initWithName:inferred_name

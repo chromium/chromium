@@ -15,7 +15,7 @@ class MockInfobarDelegate : public ConfirmInfoBarDelegate {
   MockInfobarDelegate();
   ~MockInfobarDelegate() override;
 
-  base::string16 GetMessageText() const override { return base::string16(); }
+  std::u16string GetMessageText() const override { return std::u16string(); }
   InfoBarIdentifier GetIdentifier() const override { return TEST_INFOBAR; }
 
   MOCK_METHOD0(Accept, bool());

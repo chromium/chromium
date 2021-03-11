@@ -32,8 +32,8 @@ class FtpDirectoryListingParserTest : public testing::Test {
  protected:
   FtpDirectoryListingParserTest() {}
 
-  std::vector<base::string16> GetSingleLineTestCase(const std::string& text) {
-    std::vector<base::string16> lines;
+  std::vector<std::u16string> GetSingleLineTestCase(const std::string& text) {
+    std::vector<std::u16string> lines;
     lines.push_back(base::UTF8ToUTF16(text));
     return lines;
   }

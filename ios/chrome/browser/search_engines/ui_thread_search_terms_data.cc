@@ -47,11 +47,11 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
   return GetApplicationContext()->GetApplicationLocale();
 }
 
-base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
+std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!from_app_list);
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::string16 rlz_string;
+  std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcode do not use rlz at all.
   std::string brand;

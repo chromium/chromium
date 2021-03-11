@@ -98,7 +98,7 @@ bool ConvertToUtf8AndNormalize(base::StringPiece text,
 
 bool ConvertToUTF16(base::StringPiece text,
                     const char* charset,
-                    base::string16* output) {
+                    std::u16string* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result = ConvertToJstring(text, charset);
   if (java_result.is_null())
@@ -109,7 +109,7 @@ bool ConvertToUTF16(base::StringPiece text,
 
 bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
                                      const char* charset,
-                                     base::string16* output) {
+                                     std::u16string* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result =
       ConvertToJstringWithSubstitutions(text, charset);
@@ -119,7 +119,7 @@ bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
   return true;
 }
 
-bool ToUpper(base::StringPiece16 str, base::string16* output) {
+bool ToUpper(base::StringPiece16 str, std::u16string* output) {
   output->clear();
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_new_str(

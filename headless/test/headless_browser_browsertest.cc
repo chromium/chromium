@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   // Tests copy-pasting text with the clipboard in headless mode.
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
-  base::string16 paste_text = base::ASCIIToUTF16("Clippy!");
+  std::u16string paste_text = base::ASCIIToUTF16("Clippy!");
   for (ui::ClipboardBuffer buffer :
        {ui::ClipboardBuffer::kCopyPaste, ui::ClipboardBuffer::kSelection,
         ui::ClipboardBuffer::kDrag}) {
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
       ui::ScopedClipboardWriter writer(buffer);
       writer.WriteText(paste_text);
     }
-    base::string16 copy_text;
+    std::u16string copy_text;
     clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
     EXPECT_EQ(paste_text, copy_text);
   }

@@ -35,25 +35,25 @@ class HeadlessClipboard : public ui::Clipboard {
   void Clear(ui::ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ui::ClipboardBuffer buffer,
                           const ui::DataTransferEndpoint* data_dst,
-                          std::vector<base::string16>* types) const override;
-  std::vector<base::string16> ReadAvailablePlatformSpecificFormatNames(
+                          std::vector<std::u16string>* types) const override;
+  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
       ui::ClipboardBuffer buffer,
       const ui::DataTransferEndpoint* data_dst) const override;
   void ReadText(ui::ClipboardBuffer buffer,
                 const ui::DataTransferEndpoint* data_dst,
-                base::string16* result) const override;
+                std::u16string* result) const override;
   void ReadAsciiText(ui::ClipboardBuffer buffer,
                      const ui::DataTransferEndpoint* data_dst,
                      std::string* result) const override;
   void ReadHTML(ui::ClipboardBuffer buffer,
                 const ui::DataTransferEndpoint* data_dst,
-                base::string16* markup,
+                std::u16string* markup,
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const override;
   void ReadSvg(ui::ClipboardBuffer buffer,
                const ui::DataTransferEndpoint* data_dst,
-               base::string16* result) const override;
+               std::u16string* result) const override;
   void ReadRTF(ui::ClipboardBuffer buffer,
                const ui::DataTransferEndpoint* data_dst,
                std::string* result) const override;
@@ -61,14 +61,14 @@ class HeadlessClipboard : public ui::Clipboard {
                  const ui::DataTransferEndpoint* data_dst,
                  ReadImageCallback callback) const override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                      const base::string16& type,
+                      const std::u16string& type,
                       const ui::DataTransferEndpoint* data_dst,
-                      base::string16* result) const override;
+                      std::u16string* result) const override;
   void ReadFilenames(ui::ClipboardBuffer buffer,
                      const ui::DataTransferEndpoint* data_dst,
                      std::vector<ui::FileInfo>* result) const override;
   void ReadBookmark(const ui::DataTransferEndpoint* data_dst,
-                    base::string16* title,
+                    std::u16string* title,
                     std::string* url) const override;
   void ReadData(const ui::ClipboardFormatType& format,
                 const ui::DataTransferEndpoint* data_dst,

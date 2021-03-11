@@ -44,11 +44,11 @@ bool IsNormalizedLocalhostTLD(const std::string& host) {
 // unescaped" to a valid UTF-8 string, return that string, as UTF-16. Otherwise,
 // convert it as-is to UTF-16. "Safely unescaped" is defined as having no
 // escaped character between '0x00' and '0x1F', inclusive.
-base::string16 UnescapeIdentityString(base::StringPiece escaped_text) {
+std::u16string UnescapeIdentityString(base::StringPiece escaped_text) {
   std::string unescaped_text;
   if (base::UnescapeBinaryURLComponentSafe(
           escaped_text, false /* fail_on_path_separators */, &unescaped_text)) {
-    base::string16 result;
+    std::u16string result;
     if (base::UTF8ToUTF16(unescaped_text.data(), unescaped_text.length(),
                           &result)) {
       return result;
@@ -420,8 +420,8 @@ bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme) {
 }
 
 void GetIdentityFromURL(const GURL& url,
-                        base::string16* username,
-                        base::string16* password) {
+                        std::u16string* username,
+                        std::u16string* password) {
   *username = UnescapeIdentityString(url.username());
   *password = UnescapeIdentityString(url.password());
 }

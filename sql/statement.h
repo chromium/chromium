@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   int64_t ColumnInt64(int col) const;
   double ColumnDouble(int col) const;
   std::string ColumnString(int col) const;
-  base::string16 ColumnString16(int col) const;
+  std::u16string ColumnString16(int col) const;
 
   // When reading a blob, you can get a raw pointer to the underlying data,
   // along with the length, or you can just ask us to copy the blob into a
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   int ColumnByteLength(int col) const;
   const void* ColumnBlob(int col) const;
   bool ColumnBlobAsString(int col, std::string* blob) const;
-  bool ColumnBlobAsString16(int col, base::string16* val) const;
+  bool ColumnBlobAsString16(int col, std::u16string* val) const;
   bool ColumnBlobAsVector(int col, std::vector<char>* val) const;
   bool ColumnBlobAsVector(int col, std::vector<unsigned char>* val) const;
 

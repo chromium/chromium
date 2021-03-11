@@ -250,8 +250,8 @@ class WebState : public base::SupportsUserData {
   // NOTE: Integer values will be returned as Type::DOUBLE because of underlying
   // library limitation.
   typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
-  virtual void ExecuteJavaScript(const base::string16& javascript) = 0;
-  virtual void ExecuteJavaScript(const base::string16& javascript,
+  virtual void ExecuteJavaScript(const std::u16string& javascript) = 0;
+  virtual void ExecuteJavaScript(const std::u16string& javascript,
                                  JavaScriptResultCallback callback) = 0;
 
   // Asynchronously executes |javaScript| in the main frame's context,
@@ -266,7 +266,7 @@ class WebState : public base::SupportsUserData {
 
   // Returns the current navigation title. This could be the title of the page
   // if it is available or the URL.
-  virtual const base::string16& GetTitle() const = 0;
+  virtual const std::u16string& GetTitle() const = 0;
 
   // Returns true if the current page is loading.
   virtual bool IsLoading() const = 0;

@@ -15,8 +15,8 @@
 
 // This test will fail if the behavior of GetMachineId changes.
 TEST(MachineDealCodeTestMachineId, MachineId) {
-  base::string16 computer_sid(base::UTF8ToUTF16(
-        "S-1-5-21-2345599882-2448789067-1921365677"));
+  std::u16string computer_sid(
+      base::UTF8ToUTF16("S-1-5-21-2345599882-2448789067-1921365677"));
   std::string id;
   rlz_lib::testing::GetMachineIdImpl(computer_sid, -1643738288, &id);
   EXPECT_STREQ("A341BA986A7E86840688977FCF20C86E253F00919E068B50F8",

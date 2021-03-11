@@ -48,7 +48,7 @@ TEST_F(TabTitleUtilTest, GetTabTitleWithDownloadTest) {
   auto task = std::make_unique<web::FakeDownloadTask>(
       GURL("https://test.test/"), /*mime_type=*/std::string());
   tab_helper->Download(std::move(task));
-  base::string16 download_title =
+  std::u16string download_title =
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_TAB_TITLE);
   NSString* ns_download_title = base::SysUTF16ToNSString(download_title);
   EXPECT_NSEQ(ns_download_title, tab_util::GetTabTitle(&web_state_));
@@ -66,13 +66,13 @@ TEST_F(TabTitleUtilTest, GetTabTitleWithNoDownloadTest) {
   DownloadManagerTabHelper::CreateForWebState(&web_state_,
                                               /*delegate=*/nullptr);
   // No title set on the web state.
-  base::string16 default_title =
+  std::u16string default_title =
       l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
   NSString* ns_default_title = base::SysUTF16ToNSString(default_title);
   EXPECT_NSEQ(ns_default_title, tab_util::GetTabTitle(&web_state_));
 
   // Title is set on the web state.
-  base::string16 custom_title = base::UTF8ToUTF16("TestTitle");
+  std::u16string custom_title = base::UTF8ToUTF16("TestTitle");
   NSString* ns_custom_title = base::SysUTF16ToNSString(custom_title);
 
   web_state_.SetTitle(custom_title);

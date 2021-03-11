@@ -48,10 +48,10 @@ class QuicCommandLineFlagTest : public QuicTest {
   }
 
   // Overload for platforms where base::CommandLine::StringType ==
-  // base::string16.
+  // std::u16string.
   static void FillCommandLineArgs(int argc,
                                   const char* const* argv,
-                                  std::vector<base::string16>* v) {
+                                  std::vector<std::u16string>* v) {
     for (int i = 0; i < argc; ++i) {
       v->push_back(base::UTF8ToUTF16(argv[i]));
     }

@@ -8416,8 +8416,8 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
 // Test the request-challenge-retry sequence for basic auth, over a QUIC
 // connection when setting up a QUIC proxy tunnel.
 TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
-  const base::string16 kBaz(base::ASCIIToUTF16("baz"));
-  const base::string16 kFoo(base::ASCIIToUTF16("foo"));
+  const std::u16string kBaz(base::ASCIIToUTF16("baz"));
+  const std::u16string kFoo(base::ASCIIToUTF16("foo"));
 
   // On the second pass, the body read of the auth challenge is synchronous, so
   // IsConnectedAndIdle returns false.  The socket should still be drained and

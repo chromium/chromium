@@ -769,8 +769,8 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
 // Test the case where auth credentials are cached.
 TEST_P(HttpProxyConnectJobTest, HaveAuth) {
   // Prepopulate auth cache.
-  const base::string16 kFoo(base::ASCIIToUTF16("foo"));
-  const base::string16 kBar(base::ASCIIToUTF16("bar"));
+  const std::u16string kFoo(base::ASCIIToUTF16("foo"));
+  const std::u16string kBar(base::ASCIIToUTF16("bar"));
   GURL proxy_url(GetParam() == HTTP
                      ? (std::string("http://") + kHttpProxyHost)
                      : (std::string("https://") + kHttpsProxyHost));

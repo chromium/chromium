@@ -72,7 +72,7 @@ const base::FilePath::CharType kDocRoot[] =
 
 struct FetchResult {
   int code;
-  base::string16 text;
+  std::u16string text;
 };
 
 // A non-mock URL request which can access http:// urls.
@@ -171,7 +171,7 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
 
   void OnURLRequestDestroyed(URLRequest* request) override {}
 
-  void OnPACScriptError(int line_number, const base::string16& error) override {
+  void OnPACScriptError(int line_number, const std::u16string& error) override {
   }
 
   bool OnCanGetCookies(const URLRequest& request,
@@ -207,7 +207,7 @@ TEST_F(PacFileFetcherImplTest, FileUrlNotAllowed) {
 
   // Fetch a file that exists, however the PacFileFetcherImpl does not allow use
   // of file://.
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(GetTestFileUrl("pac.txt"), &text, callback.callback(),
@@ -223,7 +223,7 @@ TEST_F(PacFileFetcherImplTest, RedirectToFileUrl) {
 
   GURL url(test_server_.GetURL("/redirect-to-file"));
 
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -240,7 +240,7 @@ TEST_F(PacFileFetcherImplTest, HttpMimeType) {
 
   {  // Fetch a PAC with mime type "text/plain"
     GURL url(test_server_.GetURL("/pac.txt"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -250,7 +250,7 @@ TEST_F(PacFileFetcherImplTest, HttpMimeType) {
   }
   {  // Fetch a PAC with mime type "text/html"
     GURL url(test_server_.GetURL("/pac.html"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -260,7 +260,7 @@ TEST_F(PacFileFetcherImplTest, HttpMimeType) {
   }
   {  // Fetch a PAC with mime type "application/x-ns-proxy-autoconfig"
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -277,7 +277,7 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
 
   {  // Fetch a PAC which gives a 500 -- FAIL
     GURL url(test_server_.GetURL("/500.pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -288,7 +288,7 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
   }
   {  // Fetch a PAC which gives a 404 -- FAIL
     GURL url(test_server_.GetURL("/404.pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -307,7 +307,7 @@ TEST_F(PacFileFetcherImplTest, ContentDisposition) {
   // Fetch PAC scripts via HTTP with a Content-Disposition header -- should
   // have no effect.
   GURL url(test_server_.GetURL("/downloadable.pac"));
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -333,7 +333,7 @@ TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
   GURL url(test_server_.GetURL(kHost, "/downloadable.pac"));
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -377,7 +377,7 @@ TEST_F(PacFileFetcherImplTest, NoCache) {
   // Fetch a PAC script whose HTTP headers make it cacheable for 1 hour.
   GURL url(test_server_.GetURL("/cacheable_1hr.pac"));
   {
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -393,7 +393,7 @@ TEST_F(PacFileFetcherImplTest, NoCache) {
   // call should fail, thus indicating that the file was not fetched from the
   // local cache.
   {
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -415,7 +415,7 @@ TEST_F(PacFileFetcherImplTest, TooLarge) {
   // Try fetching URL that is 101 bytes large. We should abort the request
   // after 50 bytes have been read, and fail with a too large error.
   GURL url = test_server_.GetURL("/large-pac.nsproxy");
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -428,7 +428,7 @@ TEST_F(PacFileFetcherImplTest, TooLarge) {
 
   {  // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -445,7 +445,7 @@ TEST_F(PacFileFetcherImplTest, Empty) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
   GURL url(test_server_.GetURL("/empty"));
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -467,7 +467,7 @@ TEST_F(PacFileFetcherImplTest, Hang) {
   // after 500 ms, and fail with a timeout error.
   {
     GURL url(test_server_.GetURL("/slow/proxy.pac?1.2"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -481,7 +481,7 @@ TEST_F(PacFileFetcherImplTest, Hang) {
 
   {  // Make sure we can still fetch regular URLs.
     GURL url(test_server_.GetURL("/pac.nsproxy"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -502,7 +502,7 @@ TEST_F(PacFileFetcherImplTest, Encodings) {
   // Test a response that is gzip-encoded -- should get inflated.
   {
     GURL url(test_server_.GetURL("/gzipped_pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -515,7 +515,7 @@ TEST_F(PacFileFetcherImplTest, Encodings) {
   // be converted to UTF8.
   {
     GURL url(test_server_.GetURL("/utf16be_pac"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -527,7 +527,7 @@ TEST_F(PacFileFetcherImplTest, Encodings) {
   // Test a response that lacks a charset, however starts with a UTF8 BOM.
   {
     GURL url(test_server_.GetURL("/utf8_bom"));
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -554,7 +554,7 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
   // Test fetching a "data:"-url containing a base64 encoded PAC script.
   {
     GURL url(kEncodedUrl);
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -568,7 +568,7 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
   // Test a broken "data:"-url containing a base64 encoded PAC script.
   {
     GURL url(kEncodedUrlBroken);
-    base::string16 text;
+    std::u16string text;
     TestCompletionCallback callback;
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -593,7 +593,7 @@ TEST_F(PacFileFetcherImplTest, IgnoresLimits) {
   std::vector<std::unique_ptr<PacFileFetcherImpl>> pac_fetchers;
 
   TestCompletionCallback callback;
-  base::string16 text;
+  std::u16string text;
   for (int i = 0; i < num_requests; i++) {
     auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
     GURL url(test_server_.GetURL("/hung"));
@@ -618,7 +618,7 @@ TEST_F(PacFileFetcherImplTest, OnShutdown) {
   ASSERT_TRUE(test_server_.Start());
 
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(test_server_.GetURL("/hung"), &text,
@@ -647,7 +647,7 @@ TEST_F(PacFileFetcherImplTest, OnShutdownWithNoLiveRequest) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
   pac_fetcher->OnShutdown();
 
-  base::string16 text;
+  std::u16string text;
   TestCompletionCallback callback;
   int result =
       pac_fetcher->Fetch(test_server_.GetURL("/hung"), &text,

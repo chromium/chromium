@@ -88,7 +88,7 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
     return icon_;
   }
 
-  base::string16 GetMessageText() const override {
+  std::u16string GetMessageText() const override {
     return l10n_util::GetStringUTF16(IDS_IOS_UPGRADE_AVAILABLE);
   }
 
@@ -99,7 +99,7 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   int GetButtons() const override { return BUTTON_OK; }
 
-  base::string16 GetButtonLabel(InfoBarButton button) const override {
+  std::u16string GetButtonLabel(InfoBarButton button) const override {
     DCHECK(button == BUTTON_OK);
     return l10n_util::GetStringUTF16(IDS_IOS_UPGRADE_AVAILABLE_BUTTON);
   }

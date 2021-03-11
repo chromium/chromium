@@ -26,18 +26,18 @@ class SaveCardModalRequestConfig
   ~SaveCardModalRequestConfig() override;
 
   // The card holder name of the card.
-  base::string16 cardholder_name() const { return cardholder_name_; }
+  std::u16string cardholder_name() const { return cardholder_name_; }
 
   // The expiration month of the card.
-  base::string16 expiration_date_month() const {
+  std::u16string expiration_date_month() const {
     return expiration_date_month_;
   }
 
   // The expiration year of the card.
-  base::string16 expiration_date_year() const { return expiration_date_year_; }
+  std::u16string expiration_date_year() const { return expiration_date_year_; }
 
   // The last four digits of the card.
-  base::string16 card_last_four_digits() const {
+  std::u16string card_last_four_digits() const {
     return card_last_four_digits_;
   }
 
@@ -70,10 +70,10 @@ class SaveCardModalRequestConfig
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
   // Configuration data extracted from |infobar_|'s save card delegate.
-  base::string16 cardholder_name_;
-  base::string16 expiration_date_month_;
-  base::string16 expiration_date_year_;
-  base::string16 card_last_four_digits_;
+  std::u16string cardholder_name_;
+  std::u16string expiration_date_month_;
+  std::u16string expiration_date_year_;
+  std::u16string card_last_four_digits_;
   int issuer_icon_id_;
   NSArray<SaveCardMessageWithLinks*>* legal_message_lines_;
   bool current_card_saved_ = false;

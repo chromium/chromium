@@ -25,7 +25,7 @@ DhcpPacFileFetcherMojo::DhcpPacFileFetcherMojo(
 DhcpPacFileFetcherMojo::~DhcpPacFileFetcherMojo() = default;
 
 int DhcpPacFileFetcherMojo::Fetch(
-    base::string16* utf16_text,
+    std::u16string* utf16_text,
     net::CompletionOnceCallback callback,
     const net::NetLogWithSource& net_log,
     const net::NetworkTrafficAnnotationTag traffic_annotation) {
@@ -68,7 +68,7 @@ void DhcpPacFileFetcherMojo::SetPacFileFetcherForTesting(
   pac_file_fetcher_ = std::move(pac_file_fetcher);
 }
 void DhcpPacFileFetcherMojo::ContinueFetch(
-    base::string16* utf16_text,
+    std::u16string* utf16_text,
     const net::NetworkTrafficAnnotationTag traffic_annotation,
     std::string pac_url) {
   pac_url_ = GURL(pac_url);

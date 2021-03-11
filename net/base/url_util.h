@@ -192,8 +192,8 @@ NET_EXPORT bool IsStandardSchemeWithNetworkHost(base::StringPiece scheme);
 // Extracts the unescaped username/password from |url|, saving the results
 // into |*username| and |*password|.
 NET_EXPORT_PRIVATE void GetIdentityFromURL(const GURL& url,
-                                           base::string16* username,
-                                           base::string16* password);
+                                           std::u16string* username,
+                                           std::u16string* password);
 
 // Returns true if the url's host is a Google server. This should only be used
 // for histograms and shouldn't be used to affect behavior.

@@ -77,7 +77,7 @@ class DownloadTaskImpl : public DownloadTask {
   std::string GetContentDisposition() const override;
   std::string GetOriginalMimeType() const override;
   std::string GetMimeType() const override;
-  base::string16 GetSuggestedFilename() const override;
+  std::u16string GetSuggestedFilename() const override;
   bool HasPerformedBackgroundDownload() const override;
   void AddObserver(DownloadTaskObserver* observer) override;
   void RemoveObserver(DownloadTaskObserver* observer) override;

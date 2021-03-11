@@ -1205,7 +1205,7 @@ void NavigationManagerImpl::UnsafeRestore(
 
   // Grab the title of the first item before |restored_visible_item_| (which may
   // or may not be the first index) is moved out of |items| below.
-  const base::string16& firstTitle = items[first_index]->GetTitle();
+  const std::u16string& firstTitle = items[first_index]->GetTitle();
 
   // Ordering is important. Cache the visible item of the restored session
   // before starting the new navigation, which may trigger client lookup of

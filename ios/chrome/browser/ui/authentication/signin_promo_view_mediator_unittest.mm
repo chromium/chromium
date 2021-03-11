@@ -193,7 +193,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     NSString* name = expected_default_identity_.userGivenName.length
                          ? expected_default_identity_.userGivenName
                          : expected_default_identity_.userEmail;
-    base::string16 name16 = SysNSStringToUTF16(name);
+    std::u16string name16 = SysNSStringToUTF16(name);
     NSString* accessibilityLabel =
         GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
     OCMExpect([signin_promo_view_ setAccessibilityLabel:accessibilityLabel]);

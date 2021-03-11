@@ -64,7 +64,7 @@ class SigninBrowserStateInfoUpdaterTest : public PlatformTest {
             browser_state_path()) {
     browser_state_info()->AddBrowserState(browser_state_path(),
                                           /*gaia_id=*/std::string(),
-                                          /*username=*/base::string16());
+                                          /*username=*/std::u16string());
   }
 
   signin::IdentityTestEnvironment* identity_test_env() {

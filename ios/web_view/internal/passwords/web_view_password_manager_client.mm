@@ -213,7 +213,7 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::CredentialLeakType leak_type,
     password_manager::CompromisedSitesCount saved_sites,
     const GURL& origin,
-    const base::string16& username) {
+    const std::u16string& username) {
   [bridge_ showPasswordBreachForLeakType:leak_type URL:origin];
 }
 

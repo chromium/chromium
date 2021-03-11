@@ -133,7 +133,7 @@ std::string GetFileNameFromURL(const GURL& url,
   if (!base::IsStringUTF8(decoded_filename)) {
     // TODO(jshin): this is probably not robust enough. To be sure, we need
     // encoding detection.
-    base::string16 utf16_output;
+    std::u16string utf16_output;
     if (!referrer_charset.empty() &&
         ConvertToUTF16(unescaped_url_filename, referrer_charset.c_str(),
                        &utf16_output)) {
@@ -205,7 +205,7 @@ void EnsureSafeExtension(const std::string& mime_type,
   *file_name = file_name->ReplaceExtension(extension);
 }
 
-bool FilePathToString16(const base::FilePath& path, base::string16* converted) {
+bool FilePathToString16(const base::FilePath& path, std::u16string* converted) {
 #if defined(OS_WIN)
   converted->assign(path.value().begin(), path.value().end());
   return true;
@@ -216,7 +216,7 @@ bool FilePathToString16(const base::FilePath& path, base::string16* converted) {
 #endif
 }
 
-base::string16 GetSuggestedFilenameImpl(
+std::u16string GetSuggestedFilenameImpl(
     const GURL& url,
     const std::string& content_disposition,
     const std::string& referrer_charset,
@@ -293,7 +293,7 @@ base::string16 GetSuggestedFilenameImpl(
   else
     GenerateSafeFileName(mime_type, overwrite_extension, &result);
 
-  base::string16 result16;
+  std::u16string result16;
   if (!FilePathToString16(result, &result16)) {
     result = base::FilePath(default_name_str);
     if (!FilePathToString16(result, &result16)) {
@@ -313,7 +313,7 @@ base::FilePath GenerateFileNameImpl(
     const std::string& default_file_name,
     bool should_replace_extension,
     ReplaceIllegalCharactersFunction replace_illegal_characters_function) {
-  base::string16 file_name = GetSuggestedFilenameImpl(
+  std::u16string file_name = GetSuggestedFilenameImpl(
       url, content_disposition, referrer_charset, suggested_name, mime_type,
       default_file_name, should_replace_extension,
       replace_illegal_characters_function);

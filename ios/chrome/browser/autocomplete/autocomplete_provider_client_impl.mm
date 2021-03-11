@@ -162,19 +162,19 @@ AutocompleteProviderClientImpl::GetEmbedderRepresentationOfAboutScheme() const {
   return kChromeUIScheme;
 }
 
-std::vector<base::string16> AutocompleteProviderClientImpl::GetBuiltinURLs() {
+std::vector<std::u16string> AutocompleteProviderClientImpl::GetBuiltinURLs() {
   std::vector<std::string> chrome_builtins(
       kChromeHostURLs, kChromeHostURLs + kNumberOfChromeHostURLs);
   std::sort(chrome_builtins.begin(), chrome_builtins.end());
 
-  std::vector<base::string16> builtins;
+  std::vector<std::u16string> builtins;
   for (auto& url : chrome_builtins) {
     builtins.push_back(base::ASCIIToUTF16(url));
   }
   return builtins;
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 AutocompleteProviderClientImpl::GetBuiltinsToProvideAsUserTypes() {
   return {base::ASCIIToUTF16(kChromeUIChromeURLsURL),
           base::ASCIIToUTF16(kChromeUIVersionURL)};
@@ -217,7 +217,7 @@ bool AutocompleteProviderClientImpl::IsSyncActive() const {
 }
 
 void AutocompleteProviderClientImpl::Classify(
-    const base::string16& text,
+    const std::u16string& text,
     bool prefer_keyword,
     bool allow_exact_keyword_match,
     metrics::OmniboxEventProto::PageClassification page_classification,
@@ -230,7 +230,7 @@ void AutocompleteProviderClientImpl::Classify(
 
 void AutocompleteProviderClientImpl::DeleteMatchingURLsForKeywordFromHistory(
     history::KeywordID keyword_id,
-    const base::string16& term) {
+    const std::u16string& term) {
   GetHistoryService()->DeleteMatchingURLsForKeyword(keyword_id, term);
 }
 

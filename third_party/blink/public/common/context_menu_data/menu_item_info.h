@@ -50,8 +50,8 @@ struct MenuItemInfo {
         enabled(false),
         checked(false) {}
 
-  base::string16 label;
-  base::string16 tool_tip;
+  std::u16string label;
+  std::u16string tool_tip;
   Type type;
   unsigned action;
   base::i18n::TextDirection text_direction;

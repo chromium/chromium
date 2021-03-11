@@ -314,8 +314,8 @@ void MediaPlayerBridge::OnCookiesRetrieved(const std::string& cookies) {
 }
 
 void MediaPlayerBridge::OnAuthCredentialsRetrieved(
-    const base::string16& username,
-    const base::string16& password) {
+    const std::u16string& username,
+    const std::u16string& password) {
   GURL::ReplacementsW replacements;
   if (!username.empty()) {
     replacements.SetUsernameStr(username);

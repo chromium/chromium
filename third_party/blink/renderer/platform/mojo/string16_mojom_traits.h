@@ -25,7 +25,7 @@ namespace mojo {
 // that can be used for converting an 8-bit string to a 16-bit string.
 class PLATFORM_EXPORT MaybeOwnedString16 {
  public:
-  explicit MaybeOwnedString16(base::string16 owned_storage);
+  explicit MaybeOwnedString16(std::u16string owned_storage);
   explicit MaybeOwnedString16(base::span<const uint16_t> unowned);
   ~MaybeOwnedString16();
 
@@ -33,7 +33,7 @@ class PLATFORM_EXPORT MaybeOwnedString16 {
   size_t size() const { return unowned_.size(); }
 
  private:
-  base::string16 owned_storage_;
+  std::u16string owned_storage_;
   base::span<const uint16_t> unowned_;
 };
 

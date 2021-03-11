@@ -49,10 +49,10 @@ void PageInfoDelegateImpl::OnUserActionOnPasswordUi(
   NOTREACHED();
 }
 
-base::string16 PageInfoDelegateImpl::GetWarningDetailText() {
+std::u16string PageInfoDelegateImpl::GetWarningDetailText() {
   // TODO(crbug.com/1052375): Implement.
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 #endif
 
@@ -124,7 +124,7 @@ PageInfoDelegateImpl::GetPageSpecificContentSettingsDelegate() {
 }
 
 #if defined(OS_ANDROID)
-const base::string16 PageInfoDelegateImpl::GetClientApplicationName() {
+const std::u16string PageInfoDelegateImpl::GetClientApplicationName() {
   return weblayer::GetClientApplicationName();
 }
 #endif

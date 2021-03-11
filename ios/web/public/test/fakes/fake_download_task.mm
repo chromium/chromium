@@ -97,7 +97,7 @@ std::string FakeDownloadTask::GetMimeType() const {
   return mime_type_;
 }
 
-base::string16 FakeDownloadTask::GetSuggestedFilename() const {
+std::u16string FakeDownloadTask::GetSuggestedFilename() const {
   return suggested_file_name_;
 }
 
@@ -161,7 +161,7 @@ void FakeDownloadTask::SetMimeType(const std::string& mime_type) {
 }
 
 void FakeDownloadTask::SetSuggestedFilename(
-    const base::string16& suggested_file_name) {
+    const std::u16string& suggested_file_name) {
   suggested_file_name_ = suggested_file_name;
   OnDownloadUpdated();
 }

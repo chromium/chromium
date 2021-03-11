@@ -45,14 +45,14 @@ base::LazyInstance<base::FilePath>::Leaky g_debug_dump_info =
     LAZY_INSTANCE_INITIALIZER;
 
 #if defined(OS_WIN)
-void DebugDumpPageTask(const base::string16& doc_name,
+void DebugDumpPageTask(const std::u16string& doc_name,
                        const PrintedPage* page) {
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
   static constexpr base::FilePath::CharType kExtension[] =
       FILE_PATH_LITERAL(".emf");
 
-  base::string16 name = doc_name;
+  std::u16string name = doc_name;
   name += base::ASCIIToUTF16(base::StringPrintf("_%04d", page->page_number()));
   base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
   base::File file(path,
@@ -61,14 +61,14 @@ void DebugDumpPageTask(const base::string16& doc_name,
 }
 #endif  // defined(OS_WIN)
 
-void DebugDumpTask(const base::string16& doc_name,
+void DebugDumpTask(const std::u16string& doc_name,
                    const MetafilePlayer* metafile) {
   DCHECK(PrintedDocument::HasDebugDumpPath());
 
   static constexpr base::FilePath::CharType kExtension[] =
       FILE_PATH_LITERAL(".pdf");
 
-  base::string16 name = doc_name;
+  std::u16string name = doc_name;
   base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
@@ -79,7 +79,7 @@ void DebugDumpTask(const base::string16& doc_name,
 #endif  // defined(OS_ANDROID)
 }
 
-void DebugDumpDataTask(const base::string16& doc_name,
+void DebugDumpDataTask(const std::u16string& doc_name,
                        const base::FilePath::StringType& extension,
                        const base::RefCountedMemory* data) {
   base::FilePath path =
@@ -89,7 +89,7 @@ void DebugDumpDataTask(const base::string16& doc_name,
   base::WriteFile(path, *data);
 }
 
-void DebugDumpSettings(const base::string16& doc_name,
+void DebugDumpSettings(const std::u16string& doc_name,
                        const PrintSettings& settings) {
   base::DictionaryValue job_settings;
   PrintSettingsToJobSettingsDebug(settings, &job_settings);
@@ -107,7 +107,7 @@ void DebugDumpSettings(const base::string16& doc_name,
 }  // namespace
 
 PrintedDocument::PrintedDocument(std::unique_ptr<PrintSettings> settings,
-                                 const base::string16& name,
+                                 const std::u16string& name,
                                  int cookie)
     : immutable_(std::move(settings), name, cookie) {
   // If there is a range, set the number of page
@@ -246,12 +246,12 @@ bool PrintedDocument::HasDebugDumpPath() {
 
 // static
 base::FilePath PrintedDocument::CreateDebugDumpPath(
-    const base::string16& document_name,
+    const std::u16string& document_name,
     const base::FilePath::StringType& extension) {
   DCHECK(HasDebugDumpPath());
 
   // Create a filename.
-  base::string16 filename;
+  std::u16string filename;
   base::Time now(base::Time::Now());
   filename = base::TimeFormatShortDateAndTime(now);
   filename += base::ASCIIToUTF16("_");
@@ -302,7 +302,7 @@ PrintedDocument::Mutable::Mutable() = default;
 PrintedDocument::Mutable::~Mutable() = default;
 
 PrintedDocument::Immutable::Immutable(std::unique_ptr<PrintSettings> settings,
-                                      const base::string16& name,
+                                      const std::u16string& name,
                                       int cookie)
     : settings_(std::move(settings)), name_(name), cookie_(cookie) {}
 

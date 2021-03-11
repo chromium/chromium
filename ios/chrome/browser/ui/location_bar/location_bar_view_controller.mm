@@ -685,7 +685,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   LogLikelyInterestedDefaultBrowserUserActivity();
   RecordAction(UserMetricsAction("Mobile.OmniboxContextMenu.SearchCopiedText"));
   ClipboardRecentContent::GetInstance()->GetRecentTextFromClipboard(
-      base::BindOnce(^(base::Optional<base::string16> optionalText) {
+      base::BindOnce(^(base::Optional<std::u16string> optionalText) {
         if (!optionalText) {
           return;
         }

@@ -37,7 +37,7 @@ class Fuzzer {
   virtual void FuzzFloat(float* value) = 0;
   virtual void FuzzDouble(double *value) = 0;
   virtual void FuzzString(std::string* value) = 0;
-  virtual void FuzzString16(base::string16* value) = 0;
+  virtual void FuzzString16(std::u16string* value) = 0;
   virtual void FuzzData(char* data, int length) = 0;
   virtual void FuzzBytes(void* data, int data_len) = 0;
 
@@ -64,7 +64,7 @@ class NoOpFuzzer : public Fuzzer {
   void FuzzFloat(float* value) override {}
   void FuzzDouble(double* value) override {}
   void FuzzString(std::string* value) override {}
-  void FuzzString16(base::string16* value) override {}
+  void FuzzString16(std::u16string* value) override {}
   void FuzzData(char* data, int length) override {}
   void FuzzBytes(void* data, int data_len) override {}
 };

@@ -85,7 +85,7 @@ int IOSSendTabToSelfInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 IOSSendTabToSelfInfoBarDelegate::GetButtonLabel(
+std::u16string IOSSendTabToSelfInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE_URL);
 }
@@ -98,7 +98,7 @@ void IOSSendTabToSelfInfoBarDelegate::InfoBarDismissed() {
   Cancel();
 }
 
-base::string16 IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
+std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_INFOBAR_MESSAGE);
 }
 

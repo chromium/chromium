@@ -37,7 +37,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   SignedInUserStateWithNoneManagedAccountAndNotSyncing
 };
 
-base::string16 HostedDomainForPrimaryAccount(Browser* browser) {
+std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
   base::Optional<AccountInfo> account_info =
@@ -74,7 +74,7 @@ ActionSheetCoordinator* SignoutActionSheetCoordinator(
   }
   switch (signed_in_user_state) {
     case SignedInUserStateWithManagedAccountAndSyncing: {
-      base::string16 hosted_domain = HostedDomainForPrimaryAccount(browser);
+      std::u16string hosted_domain = HostedDomainForPrimaryAccount(browser);
       title = l10n_util::GetNSStringF(
           IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT,
           hosted_domain);

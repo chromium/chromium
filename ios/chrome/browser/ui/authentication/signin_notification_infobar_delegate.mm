@@ -98,11 +98,11 @@ SigninNotificationInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetTitleText() const {
+std::u16string SigninNotificationInfoBarDelegate::GetTitleText() const {
   return title_;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetMessageText() const {
+std::u16string SigninNotificationInfoBarDelegate::GetMessageText() const {
   return message_;
 }
 
@@ -110,7 +110,7 @@ int SigninNotificationInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 SigninNotificationInfoBarDelegate::GetButtonLabel(
+std::u16string SigninNotificationInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK(button == BUTTON_OK);
   return button_text_;

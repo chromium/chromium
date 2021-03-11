@@ -28,11 +28,11 @@ namespace net {
 
 namespace {
 
-void MatchDomainUserAfterSplit(const base::string16& combined,
-                               const base::string16& expected_domain,
-                               const base::string16& expected_user) {
-  base::string16 actual_domain;
-  base::string16 actual_user;
+void MatchDomainUserAfterSplit(const std::u16string& combined,
+                               const std::u16string& expected_domain,
+                               const std::u16string& expected_user) {
+  std::u16string actual_domain;
+  std::u16string actual_user;
   SplitDomainAndUser(combined, &actual_domain, &actual_user);
   EXPECT_EQ(expected_domain, actual_domain);
   EXPECT_EQ(expected_user, actual_user);

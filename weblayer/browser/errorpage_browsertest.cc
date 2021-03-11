@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageBrowserTest, NameNotResolved) {
 
   // Currently, interstitials for error pages are displayed only on Android.
 #if defined(OS_ANDROID)
-  base::string16 expected_title =
+  std::u16string expected_title =
       l10n_util::GetStringUTF16(IDS_ANDROID_ERROR_PAGE_WEBPAGE_NOT_AVAILABLE);
   EXPECT_EQ(expected_title, GetTitle(shell()));
 #endif

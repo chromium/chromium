@@ -26,7 +26,7 @@ class MockPacFileFetcher : public PacFileFetcher {
 
   // PacFileFetcher implementation.
   int Fetch(const GURL& url,
-            base::string16* text,
+            std::u16string* text,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag traffic_annotation) override;
   void Cancel() override;
@@ -43,7 +43,7 @@ class MockPacFileFetcher : public PacFileFetcher {
  private:
   GURL pending_request_url_;
   CompletionOnceCallback pending_request_callback_;
-  base::string16* pending_request_text_;
+  std::u16string* pending_request_text_;
   base::OnceClosure on_fetch_complete_;
   bool is_shutdown_;
 };

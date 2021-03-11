@@ -94,7 +94,7 @@ bool DecodeWord(const std::string& encoded_word,
     if (base::IsStringUTF8(encoded_word)) {
       *output = encoded_word;
     } else {
-      base::string16 utf16_output;
+      std::u16string utf16_output;
       if (!referrer_charset.empty() &&
           ConvertToUTF16(encoded_word, referrer_charset.c_str(),
                          &utf16_output)) {

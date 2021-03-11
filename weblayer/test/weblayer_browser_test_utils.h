@@ -61,7 +61,7 @@ void ExecuteScriptWithUserGesture(Shell* shell, const std::string& script);
 void ExecuteScriptWithUserGesture(Tab* tab, const std::string& script);
 
 /// Gets the title of the current webpage in |shell|.
-const base::string16& GetTitle(Shell* shell);
+const std::u16string& GetTitle(Shell* shell);
 
 // Sets up the autofill system to be one that simply forwards detected forms to
 // the passed-in callback.

@@ -160,7 +160,7 @@ bool ServiceInstance::StartWithProcessHost(
   DCHECK(!service_remote_);
   DCHECK(!process_host_);
 
-  base::string16 display_name;
+  std::u16string display_name;
   switch (manifest_.display_name.type) {
     case Manifest::DisplayName::Type::kDefault:
       display_name =

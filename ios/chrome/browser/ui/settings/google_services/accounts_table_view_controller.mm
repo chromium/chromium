@@ -302,7 +302,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
       initWithType:ItemTypeSignOutManagedAccountFooter];
-  base::string16 hostedDomain = HostedDomainForPrimaryAccount(_browser);
+  std::u16string hostedDomain = HostedDomainForPrimaryAccount(_browser);
   footer.text = l10n_util::GetNSStringF(
       IDS_IOS_DISCONNECT_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE, hostedDomain);
   return footer;

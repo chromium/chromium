@@ -66,7 +66,7 @@ TEST_F(ManifestTypeConvertersTest, BasicFileHandlerIsCorrectlyConverted) {
   EXPECT_TRUE(base::EqualsASCII(manifest.file_handlers[0].name, "name"));
   ASSERT_EQ(manifest.file_handlers[0].accept.size(), 1u);
 
-  base::string16 mime = base::UTF8ToUTF16("image/png");
+  std::u16string mime = base::UTF8ToUTF16("image/png");
   ASSERT_EQ(manifest.file_handlers[0].accept.count(mime), 1u);
   EXPECT_EQ(manifest.file_handlers[0].accept[mime].size(), 1u);
   EXPECT_TRUE(

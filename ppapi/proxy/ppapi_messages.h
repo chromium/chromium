@@ -2120,7 +2120,7 @@ IPC_MESSAGE_CONTROL0(PpapiHostMsg_PDF_SaveAs)
 
 // Called by the plugin when its selection changes.
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetSelectedText,
-                     base::string16 /* selected_text */)
+                     std::u16string /* selected_text */)
 
 // Called by the plugin to set the link under the cursor.
 IPC_MESSAGE_CONTROL1(PpapiHostMsg_PDF_SetLinkUnderCursor,

@@ -79,7 +79,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     url_from_string_piece_part.Resolve(relative_string);
 
     if (relative_size % sizeof(char16_t) == 0) {
-      base::string16 relative_string16(
+      std::u16string relative_string16(
           reinterpret_cast<const char16_t*>(data + size_t_bytes),
           relative_size / sizeof(char16_t));
       url_from_string_piece_part.Resolve(relative_string16);

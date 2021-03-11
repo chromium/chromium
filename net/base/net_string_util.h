@@ -34,18 +34,18 @@ bool ConvertToUtf8AndNormalize(base::StringPiece text,
 // On failure, returns false and |output| is cleared.
 bool ConvertToUTF16(base::StringPiece text,
                     const char* charset,
-                    base::string16* output);
+                    std::u16string* output);
 
 // Converts |text| using |charset| to UTF-16, and writes it to |output|.
 // Any characters that can not be converted are replaced with U+FFFD.
 bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
                                      const char* charset,
-                                     base::string16* output);
+                                     std::u16string* output);
 
 // Converts |str| to uppercase using the default locale, and writes it to
 // |output|. On failure returns false and |output| is cleared.
 NET_EXPORT_PRIVATE bool ToUpper(base::StringPiece16 str,
-                                base::string16* output);
+                                std::u16string* output);
 
 }  // namespace net
 

@@ -53,15 +53,15 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   std::string system_font_family_name;
 #endif
 #if defined(OS_WIN)
-  base::string16 caption_font_family_name;
+  std::u16string caption_font_family_name;
   int32_t caption_font_height{0};
-  base::string16 small_caption_font_family_name;
+  std::u16string small_caption_font_family_name;
   int32_t small_caption_font_height{0};
-  base::string16 menu_font_family_name;
+  std::u16string menu_font_family_name;
   int32_t menu_font_height{0};
-  base::string16 status_font_family_name;
+  std::u16string status_font_family_name;
   int32_t status_font_height{0};
-  base::string16 message_font_family_name;
+  std::u16string message_font_family_name;
   int32_t message_font_height{0};
   int32_t vertical_scroll_bar_width_in_dips{0};
   int32_t horizontal_scroll_bar_height_in_dips{0};

@@ -50,7 +50,7 @@ ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
 
 std::unique_ptr<OmniboxNavigationObserver>
 ChromeOmniboxClientIOS::CreateOmniboxNavigationObserver(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match) {
   // TODO(blundell): Bring up an OmniboxNavigationObserver implementation on
@@ -212,7 +212,7 @@ void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {
       ->DiscardNonCommittedItems();
 }
 
-const base::string16& ChromeOmniboxClientIOS::GetTitle() const {
+const std::u16string& ChromeOmniboxClientIOS::GetTitle() const {
   return CurrentPageExists() ? controller_->GetWebState()->GetTitle()
                              : base::EmptyString16();
 }

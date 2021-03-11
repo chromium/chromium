@@ -26,7 +26,7 @@ struct StructTraits<media_session::mojom::MediaImageDataView,
     return image.src;
   }
 
-  static const base::string16& type(const media_session::MediaImage& image) {
+  static const std::u16string& type(const media_session::MediaImage& image) {
     return image.type;
   }
 
@@ -42,22 +42,22 @@ struct StructTraits<media_session::mojom::MediaImageDataView,
 template <>
 struct StructTraits<media_session::mojom::MediaMetadataDataView,
                     media_session::MediaMetadata> {
-  static const base::string16& title(
+  static const std::u16string& title(
       const media_session::MediaMetadata& metadata) {
     return metadata.title;
   }
 
-  static const base::string16& artist(
+  static const std::u16string& artist(
       const media_session::MediaMetadata& metadata) {
     return metadata.artist;
   }
 
-  static const base::string16& album(
+  static const std::u16string& album(
       const media_session::MediaMetadata& metadata) {
     return metadata.album;
   }
 
-  static const base::string16& source_title(
+  static const std::u16string& source_title(
       const media_session::MediaMetadata& metadata) {
     return metadata.source_title;
   }

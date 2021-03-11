@@ -179,7 +179,7 @@ void InputInjectorChromeos::Core::InjectTextEvent(const TextEvent& event) {
   std::string normalized_str;
   base::ConvertToUtf8AndNormalize(event.text(), base::kCodepageUTF8,
                                   &normalized_str);
-  base::string16 utf16_string = base::UTF8ToUTF16(normalized_str);
+  std::u16string utf16_string = base::UTF8ToUTF16(normalized_str);
 
   text_input_client->InsertText(
       utf16_string,

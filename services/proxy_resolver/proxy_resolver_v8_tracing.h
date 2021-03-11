@@ -35,10 +35,10 @@ class ProxyResolverV8Tracing {
     virtual ~Bindings() {}
 
     // Invoked in response to an alert() call by the PAC script.
-    virtual void Alert(const base::string16& message) = 0;
+    virtual void Alert(const std::u16string& message) = 0;
 
     // Invoked in response to an error in the PAC script.
-    virtual void OnError(int line_number, const base::string16& message) = 0;
+    virtual void OnError(int line_number, const std::u16string& message) = 0;
 
     // Returns a HostResolver to use for DNS resolution.
     virtual ProxyHostResolver* GetHostResolver() = 0;

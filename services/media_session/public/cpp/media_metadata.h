@@ -41,18 +41,18 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaMetadata {
 #endif
 
   // Title associated to the MediaSession.
-  base::string16 title;
+  std::u16string title;
 
   // Artist associated to the MediaSession.
-  base::string16 artist;
+  std::u16string artist;
 
   // Album associated to the MediaSession.
-  base::string16 album;
+  std::u16string album;
 
   // The |source_title| is a human readable title for the source of the media
   // session. This could be the name of the app or the name of the site playing
   // media.
-  base::string16 source_title;
+  std::u16string source_title;
 
   // Returns whether |this| contains no metadata.
   bool IsEmpty() const;

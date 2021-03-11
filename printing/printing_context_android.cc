@@ -210,7 +210,7 @@ PrintingContext::Result PrintingContextAndroid::UpdatePrinterSettings(
 }
 
 PrintingContext::Result PrintingContextAndroid::NewDocument(
-    const base::string16& document_name) {
+    const std::u16string& document_name) {
   DCHECK(!in_print_job_);
   in_print_job_ = true;
 

@@ -169,7 +169,7 @@ void ARQuickLookTabHelper::DownloadWithDestinationDir(
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-  base::string16 file_name = download_task_->GetSuggestedFilename();
+  std::u16string file_name = download_task_->GetSuggestedFilename();
   base::FilePath path = destination_dir.Append(base::UTF16ToUTF8(file_name));
   auto writer = std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
   writer->Initialize(base::BindRepeating(

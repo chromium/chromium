@@ -27,7 +27,7 @@ struct FtpDirectoryListingEntry {
   FtpDirectoryListingEntry();
 
   Type type;
-  base::string16 name;  // Name (UTF-16-encoded).
+  std::u16string name;   // Name (UTF-16-encoded).
   std::string raw_name;  // Name in original character encoding.
   int64_t size;          // File size, in bytes. -1 if not applicable.
 

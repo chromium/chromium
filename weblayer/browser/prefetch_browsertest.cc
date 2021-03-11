@@ -50,7 +50,7 @@ class PrefetchBrowserTest : public WebLayerBrowserTest {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  bool RunPrefetchExperiment(GURL url, const base::string16 expected_title) {
+  bool RunPrefetchExperiment(GURL url, const std::u16string expected_title) {
     content::TitleWatcher title_watcher(
         static_cast<TabImpl*>(shell()->tab())->web_contents(), expected_title);
     NavigateAndWaitForCompletion(url, shell());

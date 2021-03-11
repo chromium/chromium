@@ -123,7 +123,7 @@ void OpenInTabHelper::HandleExportableFile() {
   web::NavigationItem* item =
       web_state_->GetNavigationManager()->GetLastCommittedItem();
   const GURL& last_committed_url = item ? item->GetURL() : GURL::EmptyGURL();
-  base::string16 file_name =
+  std::u16string file_name =
       net::GetSuggestedFilename(last_committed_url, content_disposition,
                                 "",  // referrer-charset
                                 "",  // suggested-name

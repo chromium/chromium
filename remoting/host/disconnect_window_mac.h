@@ -18,7 +18,7 @@
 @interface DisconnectWindowController : NSWindowController {
  @private
   base::OnceClosure _disconnect_callback;
-  base::string16 _username;
+  std::u16string _username;
 }
 
 - (id)initWithCallback:(base::OnceClosure)disconnect_callback

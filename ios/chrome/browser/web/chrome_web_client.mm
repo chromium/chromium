@@ -228,7 +228,7 @@ void ChromeWebClient::AddSerializableData(
                                                               web_state);
 }
 
-base::string16 ChromeWebClient::GetPluginNotSupportedText() const {
+std::u16string ChromeWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 
@@ -253,7 +253,7 @@ std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
   return web::BuildMobileUserAgent(GetMobileProduct());
 }
 
-base::string16 ChromeWebClient::GetLocalizedString(int message_id) const {
+std::u16string ChromeWebClient::GetLocalizedString(int message_id) const {
   return l10n_util::GetStringUTF16(message_id);
 }
 

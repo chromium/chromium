@@ -34,8 +34,8 @@ base::Value SecurityStatusToValue(Error mapped_error, SECURITY_STATUS status) {
   return params;
 }
 
-base::Value AcquireCredentialsHandleParams(const base::string16* domain,
-                                           const base::string16* user,
+base::Value AcquireCredentialsHandleParams(const std::u16string* domain,
+                                           const std::u16string* user,
                                            Error result,
                                            SECURITY_STATUS status) {
   base::Value params{base::Value::Type::DICTIONARY};
@@ -129,9 +129,9 @@ Error MapAcquireCredentialsStatusToError(SECURITY_STATUS status) {
 }
 
 Error AcquireExplicitCredentials(SSPILibrary* library,
-                                 const base::string16& domain,
-                                 const base::string16& user,
-                                 const base::string16& password,
+                                 const std::u16string& domain,
+                                 const std::u16string& user,
+                                 const std::u16string& password,
                                  const NetLogWithSource& net_log,
                                  CredHandle* cred) {
   SEC_WINNT_AUTH_IDENTITY identity;
@@ -451,8 +451,8 @@ int HttpAuthSSPI::OnFirstRound(const AuthCredentials* credentials,
   DCHECK(!SecIsValidHandle(&cred_));
   int rv = OK;
   if (credentials) {
-    base::string16 domain;
-    base::string16 user;
+    std::u16string domain;
+    std::u16string user;
     SplitDomainAndUser(credentials->username(), &domain, &user);
     rv = AcquireExplicitCredentials(library_, domain, user,
                                     credentials->password(), net_log, &cred_);
@@ -556,7 +556,7 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
 
   // This returns a token that is passed to the remote server.
   DWORD context_attributes = 0;
-  base::string16 spn16 = base::ASCIIToUTF16(spn);
+  std::u16string spn16 = base::ASCIIToUTF16(spn);
   SECURITY_STATUS status = library_->InitializeSecurityContext(
       &cred_,                          // phCredential
       ctxt_ptr,                        // phContext
@@ -590,14 +590,14 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
   return OK;
 }
 
-void SplitDomainAndUser(const base::string16& combined,
-                        base::string16* domain,
-                        base::string16* user) {
+void SplitDomainAndUser(const std::u16string& combined,
+                        std::u16string* domain,
+                        std::u16string* user) {
   // |combined| may be in the form "user" or "DOMAIN\user".
   // Separate the two parts if they exist.
   // TODO(cbentzel): I believe user@domain is also a valid form.
   size_t backslash_idx = combined.find(L'\\');
-  if (backslash_idx == base::string16::npos) {
+  if (backslash_idx == std::u16string::npos) {
     domain->clear();
     *user = combined;
   } else {

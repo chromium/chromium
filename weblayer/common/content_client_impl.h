@@ -19,9 +19,9 @@ class ContentClientImpl : public content::ContentClient {
   ContentClientImpl();
   ~ContentClientImpl() override;
 
-  base::string16 GetLocalizedString(int message_id) override;
-  base::string16 GetLocalizedString(int message_id,
-                                    const base::string16& replacement) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  std::u16string GetLocalizedString(int message_id,
+                                    const std::u16string& replacement) override;
   base::StringPiece GetDataResource(int resource_id,
                                     ui::ScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
