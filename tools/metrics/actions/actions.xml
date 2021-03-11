@@ -15835,6 +15835,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTopToolbarOptionalButtonNewTab">
+  <owner>bttk@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <description>
+    The user tapped on the top toolbar's optional button acting as a new tab
+    button.
+  </description>
+</action>
+
 <action name="MobileTopToolbarShareButton">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>tgupta@chromium.org</owner>

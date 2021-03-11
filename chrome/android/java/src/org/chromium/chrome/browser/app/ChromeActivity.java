@@ -1772,6 +1772,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mInsetObserverView;
     }
 
+    /**
+     * Gets the supplier of the {@link TabCreatorManager} instance.
+     */
+    public ObservableSupplier<TabCreatorManager> getTabCreatorManagerSupplier() {
+        return mTabCreatorManagerSupplier;
+    }
+
     @Override
     public TabCreator getTabCreator(boolean incognito) {
         if (!mTabModelOrchestrator.areTabModelsInitialized()) {

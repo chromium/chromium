@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -666,8 +667,15 @@ public class RootUiCoordinator
                             mActivityTabProvider, mActivity.getLifecycleDispatcher(),
                             mActivity.getModalDialogManager(), voiceSearchDelegate);
             if (AdaptiveToolbarFeatures.isEnabled()) {
+                OptionalNewTabButtonController newTabButtonController =
+                        new OptionalNewTabButtonController(mActivity,
+                                mActivity.getLifecycleDispatcher(),
+                                mActivity.getTabCreatorManagerSupplier(),
+                                mTabModelSelectorSupplier);
                 AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                         new AdaptiveToolbarButtonController();
+                adaptiveToolbarButtonController.addButtonVariant(
+                        AdaptiveToolbarButtonVariant.NEW_TAB, newTabButtonController);
                 adaptiveToolbarButtonController.addButtonVariant(
                         AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
                 adaptiveToolbarButtonController.addButtonVariant(

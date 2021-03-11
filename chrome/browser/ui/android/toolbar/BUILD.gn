@@ -31,6 +31,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarFeatures.java",
+    "java/src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsContentDelegate.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediator.java",
