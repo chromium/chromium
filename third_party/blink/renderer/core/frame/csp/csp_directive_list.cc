@@ -1212,15 +1212,20 @@ bool CSPDirectiveListAllowTrustedTypePolicy(
   String raw_directive = GetRawDirectiveForMessage(
       csp.raw_directives,
       network::mojom::blink::CSPDirectiveName::TrustedTypes);
-  ReportViolation(
-      csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
-      String::Format(
-          "Refused to create a TrustedTypePolicy named '%s' because "
-          "it violates the following Content Security Policy directive: "
-          "\"%s\".",
-          policy_name.Utf8().c_str(), raw_directive.Utf8().c_str()),
-      KURL(), RedirectStatus::kNoRedirect,
-      ContentSecurityPolicy::kTrustedTypesPolicyViolation, policy_name);
+  const char* message =
+      (violation_details == ContentSecurityPolicy::kDisallowedDuplicateName)
+          ? "Refused to create a TrustedTypePolicy named '%s' because a "
+            "policy with that name already exists and the Content Security "
+            "Policy directive does not 'allow-duplicates': \"%s\"."
+          : "Refused to create a TrustedTypePolicy named '%s' because "
+            "it violates the following Content Security Policy directive: "
+            "\"%s\".";
+  ReportViolation(csp, policy, "trusted-types", CSPDirectiveName::TrustedTypes,
+                  String::Format(message, policy_name.Utf8().c_str(),
+                                 raw_directive.Utf8().c_str()),
+                  KURL(), RedirectStatus::kNoRedirect,
+                  ContentSecurityPolicy::kTrustedTypesPolicyViolation,
+                  policy_name);
 
   return CSPDirectiveListIsReportOnly(csp);
 }

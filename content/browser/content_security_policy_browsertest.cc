@@ -42,4 +42,50 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
   console_observer.Wait();
 }
 
+// Test that creating a duplicate Trusted Types policy will yield a console
+// message containing "already exists".
+//
+// This & the following test together ensure that different error causes get
+// appropriate messages.
+//
+// Note: The bulk of Trusted Types related tests are found in the WPT suite
+// under trusted-types/*. These two are here, because they need to access
+// console messages.
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
+                       TrustedTypesCreatePolicyDupeMessage) {
+  const char* page = R"(
+      data:text/html,
+      <meta http-equiv="Content-Security-Policy"
+            content="require-trusted-types-for 'script';trusted-types a;">
+      <script>
+        trustedTypes.createPolicy("a", {});
+        trustedTypes.createPolicy("a", {});
+      </script>)";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("*already exists*");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  console_observer.Wait();
+}
+
+// Test that creating a Trusted Types policy with a disallowed name will yield
+// a console message indicating a directive has been violated.
+IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
+                       TrustedTypesCreatePolicyForbiddenMessage) {
+  const char* page = R"(
+      data:text/html,
+      <meta http-equiv="Content-Security-Policy"
+            content="require-trusted-types-for 'script';trusted-types a;">
+      <script>
+        trustedTypes.createPolicy("b", {});
+      </script>)";
+
+  GURL url(page);
+  WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("*violates*the following*directive*");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  console_observer.Wait();
+}
+
 }  // namespace content
