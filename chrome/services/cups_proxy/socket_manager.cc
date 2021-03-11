@@ -263,7 +263,7 @@ void SocketManagerImpl::Finish(bool success) {
   base::OnceClosure cb;
   if (success) {
     cb = base::BindOnce(std::move(in_flight_->cb),
-                        base::Passed(&in_flight_->response));
+                        std::move(in_flight_->response));
   } else {
     cb = base::BindOnce(std::move(in_flight_->cb), nullptr);
   }

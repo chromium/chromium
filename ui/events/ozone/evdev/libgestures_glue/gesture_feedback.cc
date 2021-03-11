@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <time.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -243,8 +245,7 @@ void DumpTouchEventLog(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&CompressDumpedLog,
-                     base::Passed(&log_paths_to_be_compressed)),
+      base::BindOnce(&CompressDumpedLog, std::move(log_paths_to_be_compressed)),
       base::BindOnce(std::move(reply), log_paths));
 }
 
