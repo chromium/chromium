@@ -80,8 +80,10 @@ interface CameraAppDeviceBridge {
   SetMultipleStreamsEnabled(string device_id, bool enabled) => (bool success);
 };
 
-// Interface for communication between Chrome Camera App (Remote) and camera
-// device (Receiver).
+// Interface for communication from the Chrome Camera App (Remote) to the camera
+// device (Receiver). The Chrome Camera App is a system web app and runs inside
+// a renderer process, with all the code resides in the Chrome OS rootfs. The
+// camera device runs inside the browser process.
 interface CameraAppDevice {
   // Gets camera information |camera_info| which includes camera facing,
   // characteristics, orientation, etc.
@@ -131,6 +133,16 @@ interface CameraAppDevice {
   // Removes the camera events observer according to given observer |id|. Sets
   // |is_success| to true if remove successfully, false otherwise.
   RemoveCameraEventObserver(uint32 id) => (bool is_success);
+
+  // Sets whether to disable the camera frame rotation at source. Sets
+  // |is_success| to true if |is_enabled| is correctly set.
+  SetCameraFrameRotationEnabledAtSource(bool is_enabled) => (bool is_success);
+
+  // Gets the clock-wise rotation in degree applied, or needs to be applied if
+  // the rotation is disabled at source, on the raw camera frame in order to
+  // display the camera preview upright in the UI. The only valid values for
+  // |rotation| are 0, 90, 180, and 270.
+  GetCameraFrameRotation() => (uint32 rotation);
 };
 
 // Interface for camera device to send camera metadata to Chrome Camera App.

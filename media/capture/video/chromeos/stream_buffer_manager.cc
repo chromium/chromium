@@ -18,7 +18,6 @@
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/chromeos/request_builder.h"
-#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -83,16 +82,8 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
   DCHECK_EQ(format->pixel_format, PIXEL_FORMAT_NV12);
 
   int rotation = device_context_->GetCameraFrameRotation();
-  if (base::FeatureList::IsEnabled(
-          features::kDisableCameraFrameRotationAtSource)) {
-    // For a device that don't have the camera sensor installed to match the
-    // device's natural orientation, we have to fix the sensor orientation here.
-    // Otherwise the recorded video in Chrome camera app would have wrong
-    // orientation because we no longer rotate the frames for the video encoder.
-    rotation = device_context_->GetRotationFromSensorOrientation();
-  }
-
-  if (rotation == 0) {
+  if (rotation == 0 ||
+      !device_context_->IsCameraFrameRotationEnabledAtSource()) {
     return std::move(buffer_pair.vcd_buffer);
   }
 

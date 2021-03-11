@@ -25,6 +25,8 @@
 
 namespace media {
 
+class CameraDeviceContext;
+
 struct ReprocessTask {
  public:
   ReprocessTask();
@@ -99,6 +101,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // Notifies the camera event observers that the shutter is finished.
   void OnShutterDone();
 
+  // Sets the pointer to the camera device context instance associated with the
+  // opened camera.  Used to configure and query camera frame rotation.
+  void SetCameraDeviceContext(CameraDeviceContext* device_context);
+
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
   void SetReprocessOption(cros::mojom::Effect effect,
@@ -123,6 +129,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   void RemoveCameraEventObserver(
       uint32_t id,
       RemoveCameraEventObserverCallback callback) override;
+  void SetCameraFrameRotationEnabledAtSource(
+      bool is_enabled,
+      SetCameraFrameRotationEnabledAtSourceCallback callback) override;
+  void GetCameraFrameRotation(GetCameraFrameRotationCallback callback) override;
 
  private:
   static void DisableEeNr(ReprocessTask* task);
@@ -173,6 +183,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   uint32_t next_camera_event_observer_id_;
   base::flat_map<uint32_t, mojo::Remote<cros::mojom::CameraEventObserver>>
       camera_event_observers_;
+
+  base::Lock camera_device_context_lock_;
+  CameraDeviceContext* camera_device_context_
+      GUARDED_BY(camera_device_context_lock_);
 
   // The weak pointers should be dereferenced and invalidated on camera device
   // ipc thread.

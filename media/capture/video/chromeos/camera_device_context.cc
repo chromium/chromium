@@ -5,11 +5,15 @@
 #include "media/capture/video/chromeos/camera_device_context.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 
 namespace media {
 
 CameraDeviceContext::CameraDeviceContext()
-    : state_(State::kStopped), sensor_orientation_(0), screen_rotation_(0) {
+    : state_(State::kStopped),
+      sensor_orientation_(0),
+      screen_rotation_(0),
+      frame_rotation_at_source_(true) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -113,6 +117,7 @@ void CameraDeviceContext::SetSensorOrientation(int sensor_orientation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sensor_orientation >= 0 && sensor_orientation < 360 &&
          sensor_orientation % 90 == 0);
+  base::AutoLock lock(rotation_state_lock_);
   sensor_orientation_ = sensor_orientation;
 }
 
@@ -120,19 +125,26 @@ void CameraDeviceContext::SetScreenRotation(int screen_rotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(screen_rotation >= 0 && screen_rotation < 360 &&
          screen_rotation % 90 == 0);
+  base::AutoLock lock(rotation_state_lock_);
   screen_rotation_ = screen_rotation;
 }
 
+void CameraDeviceContext::SetCameraFrameRotationEnabledAtSource(
+    bool is_enabled) {
+  base::AutoLock lock(rotation_state_lock_);
+  frame_rotation_at_source_ = is_enabled;
+}
+
 int CameraDeviceContext::GetCameraFrameRotation() {
+  base::AutoLock lock(rotation_state_lock_);
   return (sensor_orientation_ + screen_rotation_) % 360;
 }
 
-int CameraDeviceContext::GetRotationForDisplay() {
-  return screen_rotation_;
-}
-
-int CameraDeviceContext::GetRotationFromSensorOrientation() {
-  return sensor_orientation_;
+bool CameraDeviceContext::IsCameraFrameRotationEnabledAtSource() {
+  base::AutoLock lock(rotation_state_lock_);
+  return !base::FeatureList::IsEnabled(
+             features::kDisableCameraFrameRotationAtSource) &&
+         frame_rotation_at_source_;
 }
 
 bool CameraDeviceContext::ReserveVideoCaptureBufferFromPool(

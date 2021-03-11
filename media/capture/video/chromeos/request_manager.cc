@@ -891,8 +891,7 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     // to populate the camera metadata with the color space reported by the V4L2
     // device.
     VideoFrameMetadata metadata;
-    if (base::FeatureList::IsEnabled(
-            features::kDisableCameraFrameRotationAtSource)) {
+    if (!device_context_->IsCameraFrameRotationEnabledAtSource()) {
       // Camera frame rotation at source is disabled, so we record the intended
       // video frame rotation in the metadata.  The consumer of the video frame
       // is responsible for taking care of the frame rotation.
@@ -910,7 +909,7 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
         return VIDEO_ROTATION_0;
       };
       metadata.transformation =
-          translate_rotation(device_context_->GetRotationForDisplay());
+          translate_rotation(device_context_->GetCameraFrameRotation());
     } else {
       // All frames are pre-rotated to the display orientation.
       metadata.transformation = VIDEO_ROTATION_0;

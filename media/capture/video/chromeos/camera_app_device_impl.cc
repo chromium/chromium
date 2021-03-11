@@ -6,6 +6,7 @@
 
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 
 namespace media {
@@ -65,7 +66,8 @@ CameraAppDeviceImpl::CameraAppDeviceImpl(const std::string& device_id,
       camera_info_(std::move(camera_info)),
       capture_intent_(cros::mojom::CaptureIntent::DEFAULT),
       next_metadata_observer_id_(0),
-      next_camera_event_observer_id_(0) {}
+      next_camera_event_observer_id_(0),
+      camera_device_context_(nullptr) {}
 
 CameraAppDeviceImpl::~CameraAppDeviceImpl() {
   // If the instance is bound, then this instance should only be destroyed when
@@ -152,6 +154,12 @@ void CameraAppDeviceImpl::OnShutterDone() {
       FROM_HERE,
       base::BindOnce(&CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread,
                      weak_ptr_factory_for_mojo_.GetWeakPtr()));
+}
+
+void CameraAppDeviceImpl::SetCameraDeviceContext(
+    CameraDeviceContext* camera_device_context) {
+  base::AutoLock lock(camera_device_context_lock_);
+  camera_device_context_ = camera_device_context;
 }
 
 void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
@@ -292,6 +300,39 @@ void CameraAppDeviceImpl::RemoveCameraEventObserver(
 
   bool is_success = camera_event_observers_.erase(id) == 1;
   std::move(callback).Run(is_success);
+}
+
+void CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource(
+    bool is_enabled,
+    SetCameraFrameRotationEnabledAtSourceCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  bool is_success = false;
+  {
+    base::AutoLock lock(camera_device_context_lock_);
+    if (camera_device_context_) {
+      camera_device_context_->SetCameraFrameRotationEnabledAtSource(is_enabled);
+      is_success = true;
+    }
+  }
+  std::move(callback).Run(is_success);
+}
+
+void CameraAppDeviceImpl::GetCameraFrameRotation(
+    GetCameraFrameRotationCallback callback) {
+  DCHECK(mojo_task_runner_->BelongsToCurrentThread());
+
+  uint32_t rotation = 0;
+  {
+    base::AutoLock lock(camera_device_context_lock_);
+    if (camera_device_context_ &&
+        !camera_device_context_->IsCameraFrameRotationEnabledAtSource()) {
+      // The camera rotation value can only be [0, 90, 180, 270].
+      rotation = static_cast<uint32_t>(
+          camera_device_context_->GetCameraFrameRotation());
+    }
+  }
+  std::move(callback).Run(rotation);
 }
 
 // static
