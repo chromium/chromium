@@ -26,6 +26,12 @@ namespace {
 
 const int kHardwareSampleRate = 44100;
 const int kHardwareBufferSize = 128;
+
+#if defined(OS_ANDROID)
+// The nearest higher power of two of 5766. See crbug.com/1181434.
+const int kWebAudioHighLatencyBufferSize = 6400;
+#endif  // defined(OS_ANDROID)
+
 const blink::LocalFrameToken kFrameToken;
 
 blink::LocalFrameToken MockFrameTokenFromCurrentContext() {
@@ -194,8 +200,14 @@ TEST_F(RendererWebAudioDeviceImplTest, TestLatencyHintValues) {
 
   blink::WebAudioLatencyHint playbackLatencyHint(
       blink::WebAudioLatencyHint::kCategoryPlayback);
+  #if defined(OS_ANDROID)
+  int playbackBufferSize = media::AudioLatency::GetHighLatencyBufferSize(
+      kHardwareSampleRate, kWebAudioHighLatencyBufferSize);
+  #else
   int playbackBufferSize = media::AudioLatency::GetHighLatencyBufferSize(
       kHardwareSampleRate, kHardwareBufferSize);
+  #endif  // defined(OS_ANDROID)
+
   SetupDevice(playbackLatencyHint);
 
   EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);

@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -36,6 +37,13 @@ using blink::WebView;
 namespace content {
 
 namespace {
+
+#if defined(OS_ANDROID)
+// AAudio's NONE and POWER_SAVING performance mode makes the underlying
+// buffer capacity quite large (5766) and it breaks the Audio Worklet rendering
+// mode. So we use the nearest higher power of two. See crbug.com/1181434.
+const int kWebAudioHighLatencyBufferSize = 6400;
+#endif  // defined(OS_ANDROID)
 
 blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
     WebAudioLatencyHint::AudioContextLatencyCategory latency_category) {
@@ -62,6 +70,12 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
       hardware_params.hardware_capabilities().value_or(
           media::AudioParameters::HardwareCapabilities());
 
+  TRACE_EVENT2("audio", "GetOutputBufferSize",
+               "HW min frames per buffer",
+               hardware_capabilities.min_frames_per_buffer,
+               "HW max frames per buffer",
+               hardware_capabilities.max_frames_per_buffer);
+
   // Adjust output buffer size according to the latency requirement.
   switch (latency) {
     case media::AudioLatency::LATENCY_INTERACTIVE:
@@ -71,8 +85,13 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
       return media::AudioLatency::GetRtcBufferSize(
           hardware_params.sample_rate(), hardware_params.frames_per_buffer());
     case media::AudioLatency::LATENCY_PLAYBACK:
+#if defined(OS_ANDROID)
+      return media::AudioLatency::GetHighLatencyBufferSize(
+          hardware_params.sample_rate(), kWebAudioHighLatencyBufferSize);
+#else
       return media::AudioLatency::GetHighLatencyBufferSize(
           hardware_params.sample_rate(), hardware_params.frames_per_buffer());
+#endif  // defined(OS_ANDROID)
     case media::AudioLatency::LATENCY_EXACT_MS:
       return media::AudioLatency::GetExactBufferSize(
           base::TimeDelta::FromSecondsD(latency_hint.Seconds()),
@@ -163,6 +182,11 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
 
   // Specify the latency info to be passed to the browser side.
   sink_params_.set_latency_tag(latency);
+
+  TRACE_EVENT2("audio",
+               "RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl",
+               "sink_params_", sink_params_.AsHumanReadableString(),
+               "output_buffer_size", output_buffer_size);
 
   web_audio_dest_data_ =
       blink::WebVector<float*>(static_cast<size_t>(sink_params_.channels()));
