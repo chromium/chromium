@@ -484,9 +484,8 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
 
   // Ensure that default SiteInstances are deleted when all references to them
   // are gone.
-  auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
-      &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  auto site_instance = SiteInstanceImpl::CreateForTesting(
+      &browser_context, GURL("http://foo.com"));
 
   EXPECT_EQ(AreDefaultSiteInstancesEnabled(),
             site_instance->IsDefaultSiteInstance());
@@ -700,9 +699,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
     scoped_refptr<SiteInstanceImpl> site_instance =
-        SiteInstanceImpl::CreateForUrlInfo(
-            browser_context.get(), UrlInfo::CreateForTesting(test_url),
-            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+        SiteInstanceImpl::CreateForTesting(browser_context.get(), test_url);
     EXPECT_EQ(expected_site_info, site_instance->GetSiteInfo());
   }
 
@@ -710,10 +707,8 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   // predetermined URL.
   {
     scoped_refptr<SiteInstanceImpl> bar_site_instance =
-        SiteInstanceImpl::CreateForUrlInfo(
-            browser_context.get(),
-            UrlInfo::CreateForTesting(GURL("https://bar.com/")),
-            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+        SiteInstanceImpl::CreateForTesting(browser_context.get(),
+                                           GURL("https://bar.com/"));
     scoped_refptr<SiteInstance> site_instance =
         bar_site_instance->GetRelatedSiteInstance(test_url);
     auto* site_instance_impl =
@@ -1507,9 +1502,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   // |original_url|.
   {
     scoped_refptr<SiteInstanceImpl> site_instance =
-        SiteInstanceImpl::CreateForUrlInfo(
-            browser_context.get(), UrlInfo::CreateForTesting(original_url),
-            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+        SiteInstanceImpl::CreateForTesting(browser_context.get(), original_url);
     EXPECT_EQ(expected_site_info, site_instance->GetSiteInfo());
     EXPECT_EQ(original_url, site_instance->original_url());
   }
@@ -1518,10 +1511,8 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   // predetermined URL.
   {
     scoped_refptr<SiteInstanceImpl> bar_site_instance =
-        SiteInstanceImpl::CreateForUrlInfo(
-            browser_context.get(),
-            UrlInfo::CreateForTesting(GURL("https://bar.com/")),
-            CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+        SiteInstanceImpl::CreateForTesting(browser_context.get(),
+                                           GURL("https://bar.com/"));
     scoped_refptr<SiteInstance> site_instance =
         bar_site_instance->GetRelatedSiteInstance(original_url);
     auto* site_instance_impl =
@@ -1630,21 +1621,13 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
   ChildProcessSecurityPolicyImpl::GetInstance()->AddIsolatedOrigins(
       {url::Origin::Create(kIsolatedUrl)}, IsolatedOriginSource::TEST);
 
-  auto instance1 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kNonIsolatedUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto instance2 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kIsolatedUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto instance3 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kFileUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto instance4 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(GURL(url::kAboutBlankURL)),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
-  auto instance5 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kCustomUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  auto instance1 =
+      SiteInstanceImpl::CreateForTesting(context(), kNonIsolatedUrl);
+  auto instance2 = SiteInstanceImpl::CreateForTesting(context(), kIsolatedUrl);
+  auto instance3 = SiteInstanceImpl::CreateForTesting(context(), kFileUrl);
+  auto instance4 =
+      SiteInstanceImpl::CreateForTesting(context(), GURL(url::kAboutBlankURL));
+  auto instance5 = SiteInstanceImpl::CreateForTesting(context(), kCustomUrl);
 
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
@@ -1705,9 +1688,7 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 
   // Verify that |kCustomUrl| will always construct a SiteInstance without
   // a site set now.
-  auto instance6 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kCustomUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  auto instance6 = SiteInstanceImpl::CreateForTesting(context(), kCustomUrl);
   EXPECT_FALSE(instance6->IsDefaultSiteInstance());
   EXPECT_FALSE(instance6->HasSite());
   EXPECT_FALSE(instance6->DoesSiteInfoForURLMatch(
@@ -1723,9 +1704,7 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
   // Verify that a SiteInstance created with CreateForUrlInfo() is not
   // considered a <webview> guest and has the path removed for the site URL like
   // any other standard URL.
-  auto instance1 = SiteInstanceImpl::CreateForUrlInfo(
-      context(), UrlInfo::CreateForTesting(kGuestUrl),
-      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+  auto instance1 = SiteInstanceImpl::CreateForTesting(context(), kGuestUrl);
   EXPECT_FALSE(instance1->IsGuest());
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());

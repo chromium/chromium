@@ -39,9 +39,7 @@ namespace content {
 class RenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
  public:
   scoped_refptr<SiteInstanceImpl> CreateForUrl(const GURL& url) {
-    return SiteInstanceImpl::CreateForUrlInfo(
-        browser_context(), UrlInfo::CreateForTesting(url),
-        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+    return SiteInstanceImpl::CreateForTesting(browser_context(), url);
   }
 };
 
@@ -1116,9 +1114,8 @@ TEST_F(SpareRenderProcessHostUnitTest,
   // unnecessary resource contention when 2 processes try to launch at the same
   // time).
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForUrlInfo(
-          browser_context(), UrlInfo::CreateForTesting(GURL("http://foo.com")),
-          CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+      SiteInstanceImpl::CreateForTesting(browser_context(),
+                                         GURL("http://foo.com"));
   RenderProcessHost* site_instance_process = site_instance->GetProcess();
 
   // The SiteInstance shouldn't get the old spare, because of BrowserContext
