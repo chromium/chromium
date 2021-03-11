@@ -19,6 +19,9 @@ import android.widget.RemoteViews;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
@@ -37,7 +40,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
         mBuilder = new Notification.Builder(mContext);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             channelsInitializer.safeInitialize(channelId);
-            mBuilder.setChannelId(channelId);
+            ApiHelperForO.setChannelId(mBuilder, channelId);
         }
         mMetadata = metadata;
     }
@@ -81,7 +84,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @Override
     public NotificationWrapperBuilder setSmallIcon(Icon icon) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mBuilder.setSmallIcon(icon);
+            ApiHelperForM.setSmallIcon(mBuilder, icon);
         }
         return this;
     }
@@ -145,10 +148,11 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     public NotificationWrapperBuilder addAction(
             int icon, CharSequence title, PendingIntent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && icon != 0) {
-            mBuilder.addAction(
-                    new Notification.Action
-                            .Builder(Icon.createWithResource(mContext, icon), title, intent)
-                            .build());
+            mBuilder.addAction(ApiHelperForM
+                                       .newNotificationActionBuilder(
+                                               ApiHelperForM.createIconWithResource(mContext, icon),
+                                               title, intent)
+                                       .build());
         } else {
             mBuilder.addAction(icon, title, intent);
         }
@@ -287,7 +291,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
     @SuppressWarnings("deprecation")
     public NotificationWrapperBuilder setContent(RemoteViews views) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mBuilder.setCustomContentView(views);
+            ApiHelperForN.setCustomContentView(mBuilder, views);
         } else {
             mBuilder.setContent(views);
         }
@@ -335,7 +339,7 @@ public class NotificationWrapperStandardBuilder implements NotificationWrapperBu
         assert mMetadata != null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return new NotificationWrapper(
-                    mBuilder.setCustomBigContentView(view).build(), mMetadata);
+                    ApiHelperForN.setCustomBigContentView(mBuilder, view).build(), mMetadata);
         } else {
             Notification notification = mBuilder.build();
             notification.bigContentView = view;

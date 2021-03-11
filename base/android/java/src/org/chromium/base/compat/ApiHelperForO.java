@@ -4,14 +4,20 @@
 
 package org.chromium.base.compat;
 
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.ConnectivityManager.NetworkCallback;
+import android.net.NetworkRequest;
 import android.os.Build;
+import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
@@ -94,5 +100,40 @@ public final class ApiHelperForO {
         if (afm != null) {
             afm.notifyValueChanged(view);
         }
+    }
+
+    /**
+     * See {@link ConnectivityManager#registerNetworkCallback(NetworkRequest,
+     * ConnectivityManager.NetworkCallback, Handler) }.
+     */
+    public static void registerNetworkCallback(ConnectivityManager connectivityManager,
+            NetworkRequest networkRequest, NetworkCallback networkCallback, Handler handler) {
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback, handler);
+    }
+
+    /** See {@link ValueAnimator#areAnimatorsEnabled()}. */
+    public static boolean areAnimatorsEnabled() {
+        return ValueAnimator.areAnimatorsEnabled();
+    }
+
+    /** See {@link Notification.Builder#setChannelId(String)}. */
+    public static Notification.Builder setChannelId(
+            Notification.Builder builder, String channelId) {
+        return builder.setChannelId(channelId);
+    }
+
+    /**
+     * See {@link
+     * ConnectivityManager#registerDefaultNetworkCallback(ConnectivityManager.NetworkCallback,
+     * Handler) }.
+     */
+    public static void registerDefaultNetworkCallback(ConnectivityManager connectivityManager,
+            NetworkCallback networkCallback, Handler handler) {
+        connectivityManager.registerDefaultNetworkCallback(networkCallback, handler);
+    }
+
+    /** See {@link Notification#getChannelId()}. */
+    public static String getNotificationChannelId(Notification notification) {
+        return notification.getChannelId();
     }
 }

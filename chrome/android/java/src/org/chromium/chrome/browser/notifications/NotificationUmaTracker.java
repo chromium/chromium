@@ -6,17 +6,18 @@ package org.chromium.chrome.browser.notifications;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -176,7 +177,7 @@ public class NotificationUmaTracker {
         if (type == SystemNotificationType.UNKNOWN || notification == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            logNotificationShown(type, notification.getChannelId());
+            logNotificationShown(type, ApiHelperForO.getNotificationChannelId(notification));
         } else {
             logNotificationShown(type, null);
         }
@@ -300,11 +301,10 @@ public class NotificationUmaTracker {
 
     @TargetApi(26)
     private boolean isChannelBlocked(@ChromeChannelDefinitions.ChannelId String channelId) {
-        // Use non-compat notification manager as compat does not have getNotificationChannel (yet).
-        NotificationManager notificationManager =
-                ContextUtils.getApplicationContext().getSystemService(NotificationManager.class);
-        NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
-        return channel != null && channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
+        NotificationChannelCompat channel =
+                mNotificationManager.getNotificationChannelCompat(channelId);
+        return channel != null
+                && channel.getImportance() == NotificationManagerCompat.IMPORTANCE_NONE;
     }
 
     private void saveLastShownNotification(@SystemNotificationType int type) {

@@ -13,6 +13,7 @@ import android.view.Display;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
 
 import java.util.Arrays;
@@ -153,8 +154,8 @@ import java.util.List;
         Display.Mode currentMode = null;
         List<Display.Mode> supportedModes = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            currentMode = display.getMode();
-            supportedModes = Arrays.asList(display.getSupportedModes());
+            currentMode = ApiHelperForM.getDisplayMode(display);
+            supportedModes = Arrays.asList(ApiHelperForM.getDisplaySupportedModes(display));
             assert currentMode != null;
             assert supportedModes != null;
             assert supportedModes.size() > 0;

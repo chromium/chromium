@@ -19,6 +19,9 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.base.task.AsyncTask;
 
 import java.io.File;
@@ -248,13 +251,13 @@ public abstract class PathUtils {
     public static @NonNull String[] getExternalDownloadVolumesNames() {
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
-                MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());
+                ApiHelperForQ.getExternalVolumeNames(ContextUtils.getApplicationContext());
         for (String vol : volumes) {
             if (!TextUtils.isEmpty(vol) && !vol.contains(MediaStore.VOLUME_EXTERNAL_PRIMARY)) {
-                File volumeDir = ContextUtils.getApplicationContext()
-                                         .getSystemService(StorageManager.class)
-                                         .getStorageVolume(MediaStore.Files.getContentUri(vol))
-                                         .getDirectory();
+                StorageManager manager = ApiHelperForM.getSystemService(
+                        ContextUtils.getApplicationContext(), StorageManager.class);
+                File volumeDir =
+                        ApiHelperForR.getVolumeDir(manager, MediaStore.Files.getContentUri(vol));
                 assert volumeDir.isDirectory();
                 assert volumeDir.exists();
 

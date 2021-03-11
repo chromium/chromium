@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForQ;
 
 /**
  * Utility functions that call into Android foreground service related API, and provides
@@ -69,7 +70,7 @@ public class ForegroundServiceUtils {
         if (notification == null) return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            service.startForeground(id, notification, foregroundServiceType);
+            ApiHelperForQ.startForeground(service, id, notification, foregroundServiceType);
         } else {
             service.startForeground(id, notification);
         }

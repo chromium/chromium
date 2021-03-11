@@ -9,6 +9,8 @@ import android.content.pm.PackageInfo;
 import android.location.LocationManager;
 import android.net.LinkProperties;
 import android.os.Build;
+import android.telephony.SignalStrength;
+import android.telephony.TelephonyManager;
 
 import org.chromium.base.annotations.VerifiesOnP;
 
@@ -40,5 +42,10 @@ public final class ApiHelperForP {
     /** See {@link LocationManager#isLocationEnabled() }. */
     public static boolean isLocationEnabled(LocationManager locationManager) {
         return locationManager.isLocationEnabled();
+    }
+
+    /** See {@link TelephonyManager#getSignalStrength() }. */
+    public static SignalStrength getSignalStrength(TelephonyManager telephonyManager) {
+        return telephonyManager.getSignalStrength();
     }
 }

@@ -8,7 +8,6 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
@@ -25,17 +24,16 @@ import java.util.List;
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
     private final Context mContext;
-    private final NotificationManager mNotificationManager;
+    private final NotificationManagerCompat mNotificationManager;
 
     public NotificationManagerProxyImpl(Context context) {
         mContext = context;
-        mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = NotificationManagerCompat.from(mContext);
     }
 
     @Override
     public boolean areNotificationsEnabled() {
-        return NotificationManagerCompat.from(mContext).areNotificationsEnabled();
+        return mNotificationManager.areNotificationsEnabled();
     }
 
     @Override

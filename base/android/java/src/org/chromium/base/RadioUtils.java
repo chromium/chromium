@@ -18,6 +18,8 @@ import android.telephony.TelephonyManager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForP;
 
 /**
  * Exposes radio related information about the current device.
@@ -78,7 +80,7 @@ public class RadioUtils {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
-        Network network = connectivityManager.getActiveNetwork();
+        Network network = ApiHelperForM.getActiveNetwork(connectivityManager);
         if (network == null) return false;
         NetworkCapabilities networkCapabilities =
                 connectivityManager.getNetworkCapabilities(network);
@@ -99,7 +101,7 @@ public class RadioUtils {
                         Context.TELEPHONY_SERVICE);
         int level = -1;
         try {
-            SignalStrength signalStrength = telephonyManager.getSignalStrength();
+            SignalStrength signalStrength = ApiHelperForP.getSignalStrength(telephonyManager);
             if (signalStrength != null) {
                 level = signalStrength.getLevel();
             }

@@ -418,7 +418,7 @@ class AndroidNetworkLibrary {
                         Context.CONNECTIVITY_SERVICE);
         if (connectivityManager == null) return false;
 
-        connectivityManager.reportNetworkConnectivity(null, false);
+        ApiHelperForM.reportNetworkConnectivity(connectivityManager, null, false);
         return true;
     }
 
