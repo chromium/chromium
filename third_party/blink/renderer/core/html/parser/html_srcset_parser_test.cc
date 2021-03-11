@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -325,7 +325,7 @@ TEST(HTMLSrcsetParserTest, SaveDataEnabledBasic) {
 }
 
 TEST(HTMLSrcsetParserTest, MaxDensityEnabled) {
-  RuntimeEnabledFeatures::SetSrcsetMaxDensityEnabled(true);
+  ScopedSrcsetMaxDensityForTest srcset_max_density(true);
   SrcsetParserTestCase test_cases[] = {
       {10.0, -1, "src.gif", "2x.gif 2e1x", "src.gif", 1.0, -1},
       {2.5, -1, "src.gif", "1.5x.gif 1.5x, 3x.gif 3x", "3x.gif", 3.0, -1},

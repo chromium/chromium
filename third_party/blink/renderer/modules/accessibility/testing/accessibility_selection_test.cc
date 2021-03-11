@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -339,6 +340,8 @@ class AXSelectionDeserializer final {
 
   // Pairs of focus nodes + focus offsets.
   Persistent<VectorOfPairs<Node, int>> foci_;
+
+  ScopedAccessibilityExposeHTMLElementForTest expose_html_element_{true};
 };
 
 }  // namespace
@@ -346,11 +349,6 @@ class AXSelectionDeserializer final {
 AccessibilitySelectionTest::AccessibilitySelectionTest(
     LocalFrameClient* local_frame_client)
     : AccessibilityTest(local_frame_client) {}
-
-void AccessibilitySelectionTest::SetUp() {
-  AccessibilityTest::SetUp();
-  RuntimeEnabledFeatures::SetAccessibilityExposeHTMLElementEnabled(true);
-}
 
 std::string AccessibilitySelectionTest::GetCurrentSelectionText() const {
   const SelectionInDOMTree selection =

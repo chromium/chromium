@@ -39,8 +39,8 @@ class PLATFORM_EXPORT FeatureContext {
 
 // A class that stores static enablers for all experimental features.
 
-class PLATFORM_EXPORT RuntimeEnabledFeatures {
-  STATIC_ONLY(RuntimeEnabledFeatures);
+class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
+  STATIC_ONLY(RuntimeEnabledFeaturesBase);
  public:
   class PLATFORM_EXPORT Backup {
    public:
@@ -53,16 +53,8 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
     {% endfor %}
   };
 
-  {% for feature_set in feature_sets %}
-  static void Set{{feature_set|capitalize}}FeaturesEnabled(bool);
-  {% endfor %}
-  static void SetOriginTrialControlledFeaturesEnabled(bool);
-
-  static void SetFeatureEnabledFromString(const std::string& name, bool enabled);
-
   {% for feature in features %}
   {% if not feature.in_origin_trial %}
-  static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
   static bool {{feature.name}}Enabled() {
     {% for depends_on in feature.depends_on %}
     if (!{{depends_on}}Enabled())
@@ -90,10 +82,22 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
   // feature is enabled in a given context.
 
   {% for feature in origin_trial_controlled_features %}
-  static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
   static bool {{feature.name}}EnabledByRuntimeFlag() { return {{feature.name}}Enabled(nullptr); }
   static bool {{feature.name}}Enabled(const FeatureContext*);
 
+  {% endfor %}
+
+ protected:
+  // See the comment in RuntimeEnabledFeatures for why these are protected.
+  {% for feature_set in feature_sets %}
+  static void Set{{feature_set|capitalize}}FeaturesEnabled(bool);
+  {% endfor %}
+  static void SetOriginTrialControlledFeaturesEnabled(bool);
+
+  static void SetFeatureEnabledFromString(const std::string& name, bool enabled);
+
+  {% for feature in features %}
+  static void Set{{feature.name}}Enabled(bool enabled) { {{feature.data_member_name}} = enabled; }
   {% endfor %}
 
  private:
@@ -102,6 +106,23 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures {
   {% for feature in features %}
   static bool {{feature.data_member_name}};
   {% endfor %}
+};
+
+class PLATFORM_EXPORT RuntimeEnabledFeatures : public RuntimeEnabledFeaturesBase {
+  STATIC_ONLY(RuntimeEnabledFeatures);
+
+  // Only the following friends are allowed to use the setters defined in the
+  // protected section of RuntimeEnabledFeaturesBase. Normally, unit tests
+  // should use the ScopedFeatureNameForTest classes defined in
+  // platform/testing/runtime_enabled_features_test_helpers.h.
+  friend class DevToolsEmulator;
+  friend class InternalRuntimeFlags;
+  friend class V8ContextSnapshotImpl;
+  friend class WebRuntimeFeatures;
+  friend class WebView;
+  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, Relationship);
+  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, BackupRestore);
+  FRIEND_TEST_ALL_PREFIXES(RuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled);
 };
 
 }  // namespace blink

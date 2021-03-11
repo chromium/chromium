@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
-namespace {
 
 class RuntimeEnabledFeaturesTest : public testing::Test {
   void CheckAllDisabled() {
@@ -271,5 +270,4 @@ TEST_F(RuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled) {
                    OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
 }
 
-}  // namespace
 }  // namespace blink

@@ -46,7 +46,6 @@
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_client_hints_type.h"
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
@@ -73,6 +72,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
@@ -1341,8 +1341,7 @@ TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
   base::FieldTrialParams params;
 
   {
-    RuntimeEnabledFeatures::SetBackForwardCacheExperimentHTTPHeaderEnabled(
-        false);
+    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(false);
     params[features::kBackForwardCacheABExperimentGroup] = "foo";
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -1358,8 +1357,7 @@ TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
   }
 
   {
-    RuntimeEnabledFeatures::SetBackForwardCacheExperimentHTTPHeaderEnabled(
-        true);
+    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(true);
     ResourceRequest resource_request("http://www.example.com");
     GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
 

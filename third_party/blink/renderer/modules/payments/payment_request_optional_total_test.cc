@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -89,7 +90,7 @@ class PaymentRequestOptionalTotalTest : public testing::Test {
 // methods. Total is required in this scenario.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagEnabledTotalIsRequiredWhenMixMethods) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(true);
+  ScopedDigitalGoodsForTest digital_goods(true);
 
   PaymentRequestV8TestingScope scope;
   // Intentionally leaves the total of details unset.
@@ -114,7 +115,7 @@ TEST_F(PaymentRequestOptionalTotalTest,
 // app-store billing methods, total is required.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagDisabledTotalIsRequiredWhenMixMethods) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(false);
+  ScopedDigitalGoodsForTest digital_goods(false);
 
   PaymentRequestV8TestingScope scope;
   // Intentionally leaves the total of details unset.
@@ -137,7 +138,7 @@ TEST_F(PaymentRequestOptionalTotalTest,
 // when only requesting app-store billing methods.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagEnabledTotalGetPlaceHolder) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(true);
+  ScopedDigitalGoodsForTest digital_goods(true);
 
   PaymentRequestV8TestingScope scope;
   // Intentionally leaves the total of details unset.
@@ -160,7 +161,7 @@ TEST_F(PaymentRequestOptionalTotalTest,
 // When the DigitalGoods flag is disabled: undefined total is rejected.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagDisabledTotalGetRejected) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(false);
+  ScopedDigitalGoodsForTest digital_goods(false);
 
   PaymentRequestV8TestingScope scope;
   // Intentionally leaves the total of details unset.
@@ -186,7 +187,7 @@ TEST_F(PaymentRequestOptionalTotalTest,
 // requesting app-store billing methods.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagEnabledTotalGetOverridden) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(true);
+  ScopedDigitalGoodsForTest digital_goods(true);
 
   PaymentRequestV8TestingScope scope;
   PaymentDetailsInit* details = PaymentDetailsInit::Create();
@@ -212,7 +213,7 @@ TEST_F(PaymentRequestOptionalTotalTest,
 // only requesting app-store billing methods.
 TEST_F(PaymentRequestOptionalTotalTest,
        AppStoreBillingFlagDisabledTotalNotGetOverridden) {
-  RuntimeEnabledFeatures::SetDigitalGoodsEnabled(false);
+  ScopedDigitalGoodsForTest digital_goods(false);
 
   PaymentRequestV8TestingScope scope;
   PaymentDetailsInit* details = PaymentDetailsInit::Create();

@@ -1067,7 +1067,7 @@ TEST_F(CanvasRenderingContext2DTest,
 
 TEST_F(CanvasRenderingContext2DTest,
        UnacceleratedIfNormalLatencyWillReadFrequently) {
-  RuntimeEnabledFeatures::SetNewCanvas2DAPIEnabled(true);
+  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kNormalLatency,
                 ReadFrequencyMode::kWillReadFrequency);
   DrawSomething();
@@ -1078,7 +1078,7 @@ TEST_F(CanvasRenderingContext2DTest,
 
 TEST_F(CanvasRenderingContext2DTest,
        UnacceleratedIfLowLatencyWillReadFrequently) {
-  RuntimeEnabledFeatures::SetNewCanvas2DAPIEnabled(true);
+  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kLowLatency, ReadFrequencyMode::kWillReadFrequency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
@@ -1087,7 +1087,7 @@ TEST_F(CanvasRenderingContext2DTest,
 }
 
 TEST_F(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
-  RuntimeEnabledFeatures::SetNewCanvas2DAPIEnabled(true);
+  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   IntSize size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(

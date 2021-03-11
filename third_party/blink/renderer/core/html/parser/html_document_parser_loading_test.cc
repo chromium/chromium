@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -15,29 +16,30 @@ namespace blink {
 
 class HTMLDocumentParserSimTest : public SimTest {
  protected:
-  HTMLDocumentParserSimTest() {
+  HTMLDocumentParserSimTest()
+      : original_threaded_parsing_(
+            Document::ThreadedParsingEnabledForTesting()) {
     ResetDiscardedTokenCountForTesting();
     Document::SetThreadedParsingEnabledForTesting(true);
   }
+  ~HTMLDocumentParserSimTest() override {
+    Document::SetThreadedParsingEnabledForTesting(original_threaded_parsing_);
+  }
+
+ private:
+  bool original_threaded_parsing_;
 };
 
 class HTMLDocumentParserLoadingTest
     : public HTMLDocumentParserSimTest,
-      public testing::WithParamInterface<ParserSynchronizationPolicy> {
+      public testing::WithParamInterface<ParserSynchronizationPolicy>,
+      private ScopedForceSynchronousHTMLParsingForTest {
  protected:
-  HTMLDocumentParserLoadingTest() {
-    if (GetParam() == ParserSynchronizationPolicy::kForceSynchronousParsing) {
-      Document::SetThreadedParsingEnabledForTesting(false);
-    } else {
-      Document::SetThreadedParsingEnabledForTesting(true);
-    }
-
-    if (GetParam() == ParserSynchronizationPolicy::kAllowDeferredParsing) {
-      RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(true);
-    } else {
-      RuntimeEnabledFeatures::SetForceSynchronousHTMLParsingEnabled(false);
-    }
-
+  HTMLDocumentParserLoadingTest()
+      : ScopedForceSynchronousHTMLParsingForTest(GetParam() !=
+                                                 kAllowAsynchronousParsing) {
+    Document::SetThreadedParsingEnabledForTesting(GetParam() !=
+                                                  kForceSynchronousParsing);
     platform_->SetAutoAdvanceNowToPendingTasks(false);
   }
   static bool SheetInHeadBlocksParser() {
