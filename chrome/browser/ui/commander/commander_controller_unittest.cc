@@ -249,6 +249,38 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
   EXPECT_EQ(model.items[4].title, base::ASCIIToUTF16("fifth"));
 }
 
+TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
+  std::vector<std::unique_ptr<CommandSource>> sources;
+  auto source = std::make_unique<TestCommandSource>(
+      base::BindRepeating([](const base::string16&, Browser* browser) {
+        CommandSource::CommandResults result;
+        auto window = CreateNoOpCommandItem(base::ASCIIToUTF16("window"), 99);
+        window->entity_type = CommandItem::Entity::kWindow;
+        auto command = CreateNoOpCommandItem(base::ASCIIToUTF16("command"), 90);
+        command->entity_type = CommandItem::Entity::kCommand;
+        auto tab = CreateNoOpCommandItem(base::ASCIIToUTF16("tab"), 100);
+        tab->entity_type = CommandItem::Entity::kTab;
+        result.push_back(std::move(window));
+        result.push_back(std::move(command));
+        result.push_back(std::move(tab));
+        return result;
+      }));
+  sources.push_back(std::move(source));
+  auto controller =
+      CommanderController::CreateWithSourcesForTesting(std::move(sources));
+  controller->SetUpdateCallback(base::BindRepeating(
+      &CommanderControllerTest::OnViewModelUpdated, base::Unretained(this)));
+
+  {
+    ViewModelCallbackWaiter waiter(this);
+    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+  }
+  ASSERT_EQ(received_view_models_.size(), 1u);
+  CommanderViewModel model = received_view_models_.back();
+  ASSERT_EQ(model.items.size(), 3u);
+  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("command"));
+}
+
 TEST_F(CommanderControllerTest, ViewModelRetainsBoldRanges) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
