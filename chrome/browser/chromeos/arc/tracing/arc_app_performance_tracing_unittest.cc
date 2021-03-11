@@ -93,7 +93,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
         arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
     tracing_helper().GetTracing()->OnTaskCreated(
         1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
-        std::string() /* intent */);
+        std::string() /* intent */, 0 /* session_id */);
     DCHECK(tracing_helper().GetTracingSession());
     tracing_helper().GetTracingSession()->FireTimerForTesting();
     DCHECK(tracing_helper().GetTracingSession());
@@ -119,7 +119,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
   // Report task first.
   tracing_helper().GetTracing()->OnTaskCreated(
       1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
-      std::string() /* intent */);
+      std::string() /* intent */, 0 /* session_id */);
   EXPECT_FALSE(tracing_helper().GetTracingSession());
 
   // Create window second.
@@ -147,7 +147,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
   // Report task second.
   tracing_helper().GetTracing()->OnTaskCreated(
       2 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
-      std::string() /* intent */);
+      std::string() /* intent */, 0 /* session_id */);
   ASSERT_TRUE(tracing_helper().GetTracingSession());
   // Scheduled but not started.
   EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
@@ -166,7 +166,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledForNonFocusApp) {
   EXPECT_FALSE(tracing_helper().GetTracingSession());
   tracing_helper().GetTracing()->OnTaskCreated(
       1 /* task_Id */, kNonFocusAppPackage, kNonFocusAppActivity,
-      std::string() /* intent */);
+      std::string() /* intent */, 0 /* session_id */);
   EXPECT_FALSE(tracing_helper().GetTracingSession());
   arc_widget->Close();
 }
@@ -220,7 +220,7 @@ TEST_F(ArcAppPerformanceTracingTest, TracingNotScheduledWhenAppSyncDisabled) {
   EXPECT_FALSE(tracing_helper().GetTracingSession());
   tracing_helper().GetTracing()->OnTaskCreated(
       1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
-      std::string() /* intent */);
+      std::string() /* intent */, 0 /* session_id */);
   EXPECT_FALSE(tracing_helper().GetTracingSession());
   arc_widget->Close();
 }
@@ -237,7 +237,7 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
       arc_widget->GetNativeWindow(), arc_widget->GetNativeWindow());
   tracing_helper().GetTracing()->OnTaskCreated(
       1 /* task_Id */, kFocusAppPackage, kFocusAppActivity,
-      std::string() /* intent */);
+      std::string() /* intent */, 0 /* session_id */);
 
   // No report before launch
   base::Time timestamp = base::Time::Now();

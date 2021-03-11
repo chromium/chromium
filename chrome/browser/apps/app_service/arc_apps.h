@@ -135,11 +135,12 @@ class ArcApps : public KeyedService,
   void OnPackageModified(
       const arc::mojom::ArcPackageInfo& package_info) override;
   void OnPackageListInitialRefreshed() override;
-  void OnTaskCreated(int task_id,
+  void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
-  void OnTaskDestroyed(int task_id) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
+  void OnTaskDestroyed(int32_t task_id) override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(

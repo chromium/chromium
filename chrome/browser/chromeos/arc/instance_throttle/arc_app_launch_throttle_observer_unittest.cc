@@ -60,15 +60,15 @@ TEST_F(ArcAppLaunchThrottleObserverTest, TestOnAppLaunchRequested) {
 
   // App2 launch requested but finishes before App1, observer is still active.
   observer()->OnAppLaunchRequested(app2);
-  observer()->OnTaskCreated(0, app2.package_name, "", "");
+  observer()->OnTaskCreated(0, app2.package_name, "", "", /*session_id=*/0);
   EXPECT_TRUE(observer()->active());
 
   // App3 finishes launch but observer is not waiting for app3, so it is still
   // active.
-  observer()->OnTaskCreated(0, app3.package_name, "", "");
+  observer()->OnTaskCreated(0, app3.package_name, "", "", /*session_id=*/0);
 
   // App1 finishes launch, observer is inactive.
-  observer()->OnTaskCreated(0, app1.package_name, "", "");
+  observer()->OnTaskCreated(0, app1.package_name, "", "", /*session_id=*/0);
 }
 
 // Check that a launch request expires.

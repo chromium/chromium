@@ -158,7 +158,7 @@ void FakeAppInstance::SendTaskCreated(int32_t taskId,
                                       const mojom::AppInfo& app,
                                       const std::string& intent) {
   app_host_->OnTaskCreated(taskId, app.package_name, app.activity, app.name,
-                           intent);
+                           intent, 0 /* session_id */);
 }
 
 void FakeAppInstance::SendTaskDescription(

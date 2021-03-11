@@ -66,7 +66,8 @@ void ArcMetricsServiceProxy::Shutdown() {
 void ArcMetricsServiceProxy::OnTaskCreated(int32_t task_id,
                                            const std::string& package_name,
                                            const std::string& activity,
-                                           const std::string& intent) {
+                                           const std::string& intent,
+                                           int32_t session_id) {
   arc_metrics_service_->OnTaskCreated(task_id, package_name, activity, intent);
 }
 

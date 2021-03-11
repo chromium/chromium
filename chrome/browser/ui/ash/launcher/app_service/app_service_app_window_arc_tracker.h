@@ -66,15 +66,16 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
   void OnAppRemoved(const std::string& app_id) override;
-  void OnTaskCreated(int task_id,
+  void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
   void OnTaskDescriptionChanged(
       int32_t task_id,
       const std::string& label,
       const arc::mojom::RawIconPngData& icon) override;
-  void OnTaskDestroyed(int task_id) override;
+  void OnTaskDestroyed(int32_t task_id) override;
   void OnTaskSetActive(int32_t task_id) override;
 
   // Attaches controller and sets window's property when |window| is an ARC

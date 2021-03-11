@@ -66,10 +66,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   void SaveWindowInfo(const WindowInfo& window_info);
 
   // Invoked when the task is created for an ARC app.
-  void OnTaskCreated(const std::string app_id, int task_id);
+  void OnTaskCreated(const std::string app_id,
+                     int32_t task_id,
+                     int32_t session_id);
 
   // Invoked when the task is destroyed for an ARC app.
-  void OnTaskDestroyed(int task_id);
+  void OnTaskDestroyed(int32_t task_id);
 
   // Flushes the full restore file in |profile_path| with the current restore
   // data.

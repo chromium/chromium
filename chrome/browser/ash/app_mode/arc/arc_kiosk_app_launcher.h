@@ -42,7 +42,8 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
 
   // aura::EnvObserver overrides.
   void OnWindowInitialized(aura::Window* window) override;

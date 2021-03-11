@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 48
+// Next MinVersion: 49
 
 module arc.mojom;
 
@@ -352,12 +352,14 @@ interface AppHost {
 
   // Sends information about newly created task |package_name| and |activity|
   // specifies launch activity and |intent| is initial intent used to start
-  // new task.
+  // new task. |session_id| is the window_id of |window_info| from app launch
+  // parameters. |session_id| is -1 if the window_id is not set.
   [MinVersion=4] OnTaskCreated@4(int32 task_id@0,
                                  string package_name@1,
                                  string activity@2,
                                  [MinVersion=13] string? name@3,
-                                 [MinVersion=15] string? intent@4);
+                                 [MinVersion=15] string? intent@4,
+                                 [MinVersion=48] int32 session_id@5);
 
   // Sends task label and icon. This is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().

@@ -972,7 +972,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
                            int32_t task_id) {
     ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
     prefs->OnTaskCreated(task_id, appinfo.package_name, appinfo.activity,
-                         appinfo.name, std::string());
+                         appinfo.name, std::string(), /*session_id=*/0);
   }
 
   // Creates a window with TYPE_APP shelf item type and the given app_id.

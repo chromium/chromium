@@ -181,7 +181,8 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnTaskCreated(int32_t task_id,
                                const std::string& package_name,
                                const std::string& activity,
-                               const std::string& intent) {}
+                               const std::string& intent,
+                               int32_t session_id) {}
     // Notifies that task description has been updated.
     virtual void OnTaskDescriptionChanged(
         int32_t task_id,
@@ -432,7 +433,8 @@ class ArcAppListPrefs : public KeyedService,
                      const std::string& package_name,
                      const std::string& activity,
                      const base::Optional<std::string>& name,
-                     const base::Optional<std::string>& intent) override;
+                     const base::Optional<std::string>& intent,
+                     int32_t session_id) override;
   // This interface is deprecated and will soon be replaced by
   // OnTaskDescriptionChanged().
   void OnTaskDescriptionUpdated(

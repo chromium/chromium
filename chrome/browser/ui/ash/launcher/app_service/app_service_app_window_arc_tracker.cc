@@ -121,10 +121,11 @@ void AppServiceAppWindowArcTracker::OnAppRemoved(const std::string& app_id) {
 }
 
 void AppServiceAppWindowArcTracker::OnTaskCreated(
-    int task_id,
+    int32_t task_id,
     const std::string& package_name,
     const std::string& activity_name,
-    const std::string& intent) {
+    const std::string& intent,
+    int32_t session_id) {
   DCHECK(task_id_to_arc_app_window_info_.find(task_id) ==
          task_id_to_arc_app_window_info_.end());
 
@@ -181,7 +182,7 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
   }
 }
 
-void AppServiceAppWindowArcTracker::OnTaskDestroyed(int task_id) {
+void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;

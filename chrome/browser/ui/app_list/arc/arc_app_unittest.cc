@@ -3205,7 +3205,8 @@ TEST_P(ArcAppModelBuilderTest, DontRemoveRuntimeAppOnPackageChange) {
       .Times(1);
   EXPECT_CALL(observer,
               OnTaskCreated(1 /* task_id */, app_runtime.package_name,
-                            app_runtime.activity, std::string() /* name */))
+                            app_runtime.activity, std::string() /* name */,
+                            0 /* session_id */))
       .Times(1);
 
   app_instance()->SendTaskCreated(1, app_runtime, std::string());

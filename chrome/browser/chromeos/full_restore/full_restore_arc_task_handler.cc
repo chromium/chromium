@@ -27,16 +27,17 @@ FullRestoreArcTaskHandler::FullRestoreArcTaskHandler(Profile* profile) {
 
 FullRestoreArcTaskHandler::~FullRestoreArcTaskHandler() = default;
 
-void FullRestoreArcTaskHandler::OnTaskCreated(int task_id,
+void FullRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                               const std::string& package_name,
                                               const std::string& activity,
-                                              const std::string& intent) {
+                                              const std::string& intent,
+                                              int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
-  ::full_restore::FullRestoreSaveHandler::GetInstance()->OnTaskCreated(app_id,
-                                                                       task_id);
+  ::full_restore::FullRestoreSaveHandler::GetInstance()->OnTaskCreated(
+      app_id, task_id, session_id);
 }
 
-void FullRestoreArcTaskHandler::OnTaskDestroyed(int task_id) {
+void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
   ::full_restore::FullRestoreSaveHandler::GetInstance()->OnTaskDestroyed(
       task_id);
 }

@@ -228,7 +228,8 @@ void ArcAppPerformanceTracing::OnWindowDestroying(aura::Window* window) {
 void ArcAppPerformanceTracing::OnTaskCreated(int32_t task_id,
                                              const std::string& package_name,
                                              const std::string& activity,
-                                             const std::string& intent) {
+                                             const std::string& intent,
+                                             int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
   task_id_to_app_id_[task_id] = std::make_pair(app_id, package_name);
   MaybeStartTracing();

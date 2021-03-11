@@ -1010,16 +1010,17 @@ void ArcApps::OnPackageListInitialRefreshed() {
   }
 }
 
-void ArcApps::OnTaskCreated(int task_id,
+void ArcApps::OnTaskCreated(int32_t task_id,
                             const std::string& package_name,
                             const std::string& activity,
-                            const std::string& intent) {
+                            const std::string& intent,
+                            int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
   app_id_to_task_ids_[app_id].insert(task_id);
   task_id_to_app_id_[task_id] = app_id;
 }
 
-void ArcApps::OnTaskDestroyed(int task_id) {
+void ArcApps::OnTaskDestroyed(int32_t task_id) {
   auto it = task_id_to_app_id_.find(task_id);
   if (it == task_id_to_app_id_.end()) {
     return;

@@ -675,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   // Simulate task creation so the app is marked as running/open.
   std::unique_ptr<ArcAppListPrefs::AppInfo> info = app_prefs()->GetApp(app_id1);
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
-                            info->intent_uri);
+                            info->intent_uri, /*session_id=*/0);
   EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id1)));
 
   // Check the window state in instance for app1
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, ArcAppsWindow) {
   const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
   info = app_prefs()->GetApp(app_id2);
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
-                            info->intent_uri);
+                            info->intent_uri, /*session_id=*/0);
   views::Widget* arc_window2 = CreateExoWindow("org.chromium.arc.2");
   EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id2)));
 
@@ -766,10 +766,12 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   std::unique_ptr<ArcAppListPrefs::AppInfo> info = app_prefs()->GetApp(app_id);
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                "shelf_group_1", "logical_window_1"));
+                                "shelf_group_1", "logical_window_1"),
+                            /*session_id=*/0);
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                "shelf_group_1", "logical_window_1"));
+                                "shelf_group_1", "logical_window_1"),
+                            /*session_id=*/0);
 
   // Both windows should show up in the instance registry.
   auto windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);

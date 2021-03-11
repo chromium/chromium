@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, IsAppOpen) {
   // Simulate task creation so the app is marked as running/open.
   std::unique_ptr<ArcAppListPrefs::AppInfo> info = app_prefs()->GetApp(app_id);
   app_host()->OnTaskCreated(0, info->package_name, info->activity, info->name,
-                            info->intent_uri);
+                            info->intent_uri, 0 /* session_id */);
   EXPECT_TRUE(delegate->IsAppOpen(app_id));
 }
 
@@ -589,27 +589,31 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, ShelfGroup) {
 
   // 1 task for group 1
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
-                            CreateIntentUriWithShelfGroup(kTestShelfGroup));
+                            CreateIntentUriWithShelfGroup(kTestShelfGroup),
+                            0 /* session_id */);
 
   ash::ShelfItemDelegate* delegate1 = GetShelfItemDelegate(shelf_id1);
   ASSERT_TRUE(delegate1);
 
   // 2 tasks for group 2
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
-                            CreateIntentUriWithShelfGroup(kTestShelfGroup2));
+                            CreateIntentUriWithShelfGroup(kTestShelfGroup2),
+                            0 /* session_id */);
 
   ash::ShelfItemDelegate* delegate2 = GetShelfItemDelegate(shelf_id2);
   ASSERT_TRUE(delegate2);
   ASSERT_NE(delegate1, delegate2);
 
   app_host()->OnTaskCreated(3, info->package_name, info->activity, info->name,
-                            CreateIntentUriWithShelfGroup(kTestShelfGroup2));
+                            CreateIntentUriWithShelfGroup(kTestShelfGroup2),
+                            0 /* session_id */);
 
   ASSERT_EQ(delegate2, GetShelfItemDelegate(shelf_id2));
 
   // 2 tasks for group 3 which does not have shortcut.
   app_host()->OnTaskCreated(4, info->package_name, info->activity, info->name,
-                            CreateIntentUriWithShelfGroup(kTestShelfGroup3));
+                            CreateIntentUriWithShelfGroup(kTestShelfGroup3),
+                            0 /* session_id */);
 
   ash::ShelfItemDelegate* delegate3 = GetShelfItemDelegate(shelf_id3);
   ASSERT_TRUE(delegate3);
@@ -617,7 +621,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, ShelfGroup) {
   ASSERT_NE(delegate2, delegate3);
 
   app_host()->OnTaskCreated(5, info->package_name, info->activity, info->name,
-                            CreateIntentUriWithShelfGroup(kTestShelfGroup3));
+                            CreateIntentUriWithShelfGroup(kTestShelfGroup3),
+                            0 /* session_id */);
 
   ASSERT_EQ(delegate3, GetShelfItemDelegate(shelf_id3));
 
@@ -716,7 +721,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
   // First logical window
   app_host()->OnTaskCreated(1, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                kTestShelfGroups[1], kTestLogicalWindows[1]));
+                                kTestShelfGroups[1], kTestLogicalWindows[1]),
+                            0 /* session_id */);
   arc_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SEND_EMPTY);
   app_host()->OnTaskDescriptionChanged(
@@ -732,7 +738,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
 
   app_host()->OnTaskCreated(2, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                kTestShelfGroups[2], kTestLogicalWindows[2]));
+                                kTestShelfGroups[2], kTestLogicalWindows[2]),
+                            0 /* session_id */);
   app_host()->OnTaskDescriptionChanged(
       2, kTestWindowTitles[2],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
@@ -748,7 +755,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
     app_host()->OnTaskCreated(
         task_id, info->package_name, info->activity, info->name,
         CreateIntentUriWithShelfGroupAndLogicalWindow(
-            kTestShelfGroups[task_id], kTestLogicalWindows[task_id]));
+            kTestShelfGroups[task_id], kTestLogicalWindows[task_id]),
+        0 /* session_id */);
     app_host()->OnTaskDescriptionChanged(
         task_id, kTestWindowTitles[task_id],
         arc_instance()->GenerateIconResponse(kGeneratedIconSize,
@@ -764,7 +772,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
   // tasks 1 and 2, but different group.
   app_host()->OnTaskCreated(6, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                kTestShelfGroups[6], kTestLogicalWindows[6]));
+                                kTestShelfGroups[6], kTestLogicalWindows[6]),
+                            0 /* session_id */);
   app_host()->OnTaskDescriptionChanged(
       6, kTestWindowTitles[6],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,
@@ -779,7 +788,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
 
   app_host()->OnTaskCreated(7, info->package_name, info->activity, info->name,
                             CreateIntentUriWithShelfGroupAndLogicalWindow(
-                                kTestShelfGroups[7], kTestLogicalWindows[7]));
+                                kTestShelfGroups[7], kTestLogicalWindows[7]),
+                            0 /* session_id */);
   app_host()->OnTaskDescriptionChanged(
       7, kTestWindowTitles[7],
       arc_instance()->GenerateIconResponse(kGeneratedIconSize,

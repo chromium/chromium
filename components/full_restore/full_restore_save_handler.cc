@@ -200,7 +200,8 @@ void FullRestoreSaveHandler::SaveWindowInfo(const WindowInfo& window_info) {
 }
 
 void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
-                                           int task_id) {
+                                           int32_t task_id,
+                                           int32_t session_id) {
   task_id_to_app_window_info_[task_id].app_id = app_id;
 
   auto it = app_id_to_app_launch_infos_.find(app_id);
@@ -227,7 +228,7 @@ void FullRestoreSaveHandler::OnTaskCreated(const std::string app_id,
   }
 }
 
-void FullRestoreSaveHandler::OnTaskDestroyed(int task_id) {
+void FullRestoreSaveHandler::OnTaskDestroyed(int32_t task_id) {
   RemoveAppRestoreData(task_id);
   task_id_to_app_window_info_.erase(task_id);
 }

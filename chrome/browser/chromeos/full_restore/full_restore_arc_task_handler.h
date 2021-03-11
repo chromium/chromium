@@ -35,10 +35,11 @@ class FullRestoreArcTaskHandler : public KeyedService,
   ~FullRestoreArcTaskHandler() override;
 
   // ArcAppListPrefs::Observer.
-  void OnTaskCreated(int task_id,
+  void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
   void OnTaskDestroyed(int task_id) override;
 
  private:

@@ -41,7 +41,8 @@ class ArcAppLaunchThrottleObserver : public chromeos::ThrottleObserver,
   void OnTaskCreated(int32_t task_id,
                      const std::string& package_name,
                      const std::string& activity,
-                     const std::string& intent) override;
+                     const std::string& intent,
+                     int32_t session_id) override;
 
  private:
   void OnLaunchedOrRequestExpired(const std::string& name);
