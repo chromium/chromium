@@ -138,6 +138,7 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
 
   // TODO(jamiewalch): We should pass the connection in.
   connection_ = std::make_unique<x11::Connection>();
+  connection_->AddEventObserver(this);
 
   if (!connection_->xinput().present()) {
     LOG(ERROR) << "X Record extension not available.";
