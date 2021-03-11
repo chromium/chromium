@@ -76,7 +76,17 @@ public class AutofillManagerWrapper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ComponentName componentName = mAutofillManager.getAutofillServiceComponentName();
+            ComponentName componentName = null;
+            try {
+                componentName = mAutofillManager.getAutofillServiceComponentName();
+            } catch (Exception e) {
+                // Can't catch com.android.internal.util.SyncResultReceiver.TimeoutException,
+                // because
+                // - The exception isn't Android API.
+                // - Different version of Android handle it differently.
+                // Uses Exception to catch various cases. (refer to crbug.com/1186406)
+                Log.e(TAG, "getAutofillServiceComponentName", e);
+            }
             if (componentName != null) {
                 mIsAwGCurrentAutofillService =
                         AWG_COMPONENT_NAME.equals(componentName.flattenToString());
