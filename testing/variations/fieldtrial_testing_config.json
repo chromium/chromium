@@ -2922,37 +2922,6 @@
             ]
         }
     ],
-    "DownloadsAutoResumptionNative": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DownloadsAutoResumptionNative"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DownloadsLocationChange": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DownloadsLocationChange"
-                    ]
-                }
-            ]
-        }
-    ],
     "DriveFsBidirectionalNativeMessaging": [
         {
             "platforms": [
@@ -5194,28 +5163,6 @@
                     "name": "EnableQuic",
                     "enable_features": [
                         "UseParallelRequestsForQUIC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ParallelDownloading": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "ThreeRequests_Enabled",
-                    "params": {
-                        "min_slice_size": "1365333",
-                        "parallel_request_delay": "0",
-                        "parallel_request_remaining_time": "2",
-                        "request_count": "3"
-                    },
-                    "enable_features": [
-                        "ParallelDownloading"
                     ]
                 }
             ]
