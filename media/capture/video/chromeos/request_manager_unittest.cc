@@ -94,8 +94,9 @@ class RequestManagerTest : public ::testing::Test {
     if (device_context_->AddClient(
             client_type_,
             std::make_unique<unittest_internal::MockVideoCaptureClient>())) {
+      std::string fake_device_id = "0";
       request_manager_ = std::make_unique<RequestManager>(
-          mock_callback_ops_.BindNewPipeAndPassReceiver(),
+          fake_device_id, mock_callback_ops_.BindNewPipeAndPassReceiver(),
           std::make_unique<MockStreamCaptureInterface>(), device_context_.get(),
           VideoCaptureBufferType::kSharedMemory,
           std::make_unique<FakeCameraBufferFactory>(),
@@ -103,7 +104,7 @@ class RequestManagerTest : public ::testing::Test {
               [](const uint8_t* buffer, const uint32_t bytesused,
                  const VideoCaptureFormat& capture_format,
                  const int rotation) { return mojom::Blob::New(); }),
-          base::ThreadTaskRunnerHandle::Get(), nullptr);
+          base::ThreadTaskRunnerHandle::Get());
     }
   }
 
