@@ -941,12 +941,32 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgid, OpenCommand(), kTestApplicationName, kTestFileTypeName,
       base::FilePath(kTestIconPath), FileExtensions()));
+  // Create cached file-association entries. In practice, these are created by
+  // Windows when the Open With menu is first opened.
+  base::win::RegKey key;
+  constexpr wchar_t kExtensionCacheProgidsPath[] =
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\"
+      L".test1\\OpenWithProgids";
+  constexpr wchar_t kExtensionCacheListPath[] =
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\"
+      L".test1\\OpenWithList";
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Create(HKEY_CURRENT_USER, kExtensionCacheProgidsPath,
+                       KEY_ALL_ACCESS));
+  ASSERT_EQ(ERROR_SUCCESS, key.Create(HKEY_CURRENT_USER,
+                                      kExtensionCacheListPath, KEY_ALL_ACCESS));
+  constexpr wchar_t kApplicationPath[] = L"test.exe";
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, kExtensionCacheProgidsPath, KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kTestProgid, L""));
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, kExtensionCacheListPath, KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"a", kApplicationPath));
 
   // Delete them.
   EXPECT_TRUE(ShellUtil::DeleteFileAssociations(kTestProgid));
 
   // The class key should have been completely deleted.
-  base::win::RegKey key;
   std::wstring value;
   ASSERT_NE(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
                                     L"Software\\Classes\\TestApp", KEY_READ));
@@ -971,6 +991,16 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
                                     L"Software\\Classes\\.test2", KEY_READ));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"SomeOtherApp", value);
+
+  // Windows' cached file-association entries should have been deleted.
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, kExtensionCacheProgidsPath, KEY_READ));
+  EXPECT_FALSE(key.HasValue(kTestProgid));
+  for (base::win::RegistryValueIterator iter(
+           HKEY_CURRENT_USER, kExtensionCacheListPath, WorkItem::kWow64Default);
+       iter.Valid(); ++iter) {
+    EXPECT_NE(0, wcscmp(iter.Value(), kApplicationPath));
+  }
 }
 
 TEST_F(ShellUtilRegistryTest, AddApplicationClass) {
