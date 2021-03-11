@@ -87,6 +87,8 @@ extern const char kDisableMachineCertRequest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableOOBEChromeVoxHintTimerForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnableOOBEChromeVoxHintForDevMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisablePerUserTimezone[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableRollbackOption[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -285,6 +287,10 @@ bool IsAueReachedForUpdateRequiredForTest();
 // Returns true if the OOBE ChromeVox hint timer is disabled for testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBEChromeVoxHintTimerDisabledForTesting();
+
+// Returns true if the OOBE ChromeVox hint is enabled for dev mode.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsOOBEChromeVoxHintEnabledForDevMode();
 
 // Returns true if the OEM Device Requisition can be configured.
 COMPONENT_EXPORT(ASH_CONSTANTS)

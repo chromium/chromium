@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -556,6 +557,9 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 // Clicking the 'activate' button in the dialog should activate ChromeVox.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  // A sanity check to ensure the ChromeVox hint timer is disabled for this and
+  // similar tests.
+  ASSERT_FALSE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
@@ -820,6 +824,56 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenInternationalChromeVoxHintTest,
   monitor.ExpectSpeechPatternWithLocale("*", "en-US");
   monitor.Replay();
   WaitForSpokenSuccessMetric();
+}
+
+// Tests the behavior of the ChromeVox hint in dev mode without the enabling
+// flag.
+class WelcomeScreenChromeVoxHintDevModeTest : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenChromeVoxHintDevModeTest() = default;
+  ~WelcomeScreenChromeVoxHintDevModeTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    command_line->RemoveSwitch(
+        chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+  }
+};
+
+// The ChromeVox hint timer should not be activated if the device is in dev
+// mode without the enabling flag.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintDevModeTest,
+                       TimerNotActivated) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  EXPECT_FALSE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
+}
+
+// Tests the behavior of the ChromeVox hint in dev mode with the enabling flag.
+class WelcomeScreenChromeVoxHintDevModeWithFlagTest
+    : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenChromeVoxHintDevModeWithFlagTest() = default;
+  ~WelcomeScreenChromeVoxHintDevModeWithFlagTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    command_line->AppendSwitch(
+        chromeos::switches::kEnableOOBEChromeVoxHintForDevMode);
+    command_line->RemoveSwitch(
+        chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
+  }
+};
+
+// The ChromeVox hint timer should be activated if the device is in dev mode and
+// the enabling flag is specified on the command line.
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintDevModeWithFlagTest,
+                       TimerActivated) {
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  EXPECT_TRUE(welcome_screen()->GetChromeVoxHintTimerActivatedForTesting());
 }
 
 }  // namespace chromeos
