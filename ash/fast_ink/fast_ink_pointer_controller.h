@@ -26,7 +26,7 @@ class FastInkPointerController : public ui::EventHandler {
   FastInkPointerController();
   ~FastInkPointerController() override;
 
-  bool enabled() const { return enabled_; }
+  bool is_enabled() const { return enabled_; }
 
   // Enables/disables the pointer. The user still has to press to see
   // the pointer.

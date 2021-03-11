@@ -57,6 +57,8 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   // Saves the screencast including metadata.
   void SaveScreencast(const base::FilePath& saved_video_path);
 
+  void OnLaserPointerPressed();
+
   void SetProjectorUiControllerForTest(
       std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(

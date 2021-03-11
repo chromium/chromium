@@ -44,6 +44,10 @@ ProjectorBarView::ProjectorBarView(
     ProjectorControllerImpl* projector_controller)
     : projector_controller_(projector_controller) {
   InitLayout();
+
+  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+  DCHECK(laser_pointer_controller);
+  laser_pointer_controller_observation_.Observe(laser_pointer_controller);
 }
 
 ProjectorBarView::~ProjectorBarView() = default;
@@ -76,6 +80,10 @@ views::UniqueWidgetPtr ProjectorBarView::Create(
 void ProjectorBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateVectorIcon();
+}
+
+void ProjectorBarView::OnLaserPointerStateChanged(bool enabled) {
+  laser_pointer_button_->SetToggled(enabled);
 }
 
 void ProjectorBarView::InitLayout() {
@@ -113,6 +121,12 @@ void ProjectorBarView::InitLayout() {
       base::BindRepeating(&ProjectorBarView::OnKeyIdeaButtonPressed,
                           base::Unretained(this)),
       kProjectorKeyIdeaIcon));
+
+  // Add laser pointer button.
+  laser_pointer_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
+      base::BindRepeating(&ProjectorBarView::OnLaserPointerPressed,
+                          base::Unretained(this)),
+      kPaletteTrayIconLaserPointerIcon));
 }
 
 void ProjectorBarView::UpdateVectorIcon() {
@@ -142,6 +156,10 @@ void ProjectorBarView::OnStopButtonPressed() {
 void ProjectorBarView::OnKeyIdeaButtonPressed() {
   DCHECK(projector_controller_);
   projector_controller_->MarkKeyIdea();
+}
+
+void ProjectorBarView::OnLaserPointerPressed() {
+  projector_controller_->OnLaserPointerPressed();
 }
 
 BEGIN_METADATA(ProjectorBarView, views::View)

@@ -20,7 +20,7 @@ HighlighterControllerTestApi::HighlighterControllerTestApi(
 HighlighterControllerTestApi::~HighlighterControllerTestApi() {
   if (scoped_observer_)
     DetachClient();
-  if (instance_->enabled())
+  if (instance_->is_enabled())
     instance_->SetEnabled(false);
   instance_->DestroyPointerView();
 }

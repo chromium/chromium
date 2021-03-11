@@ -54,6 +54,8 @@ void ProjectorUiController::CloseToolbar() {
   if (!projector_bar_widget_)
     return;
 
+  ResetTools();
+
   projector_bar_widget_->Close();
   model_.SetBarEnabled(false);
 }
@@ -63,7 +65,22 @@ void ProjectorUiController::OnKeyIdeaMarked() {
             kToastDuration);
 }
 
+void ProjectorUiController::OnLaserPointerPressed() {
+  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+  DCHECK(laser_pointer_controller);
+
+  laser_pointer_controller->SetEnabled(!laser_pointer_controller->is_enabled());
+}
+
 void ProjectorUiController::OnTranscription(const std::string& transcription,
                                             bool is_final) {}
+
+// TODO(llin): Refactor this logic into ProjectorTool and ProjectorToolManager.
+void ProjectorUiController::ResetTools() {
+  // Reset laser pointer.
+  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+  if (laser_pointer_controller->is_enabled())
+    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
+}
 
 }  // namespace ash

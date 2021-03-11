@@ -30,12 +30,18 @@ class ASH_EXPORT ProjectorUiController {
   virtual void CloseToolbar();
   // Invoked when key idea is marked to show a toast. Virtual for testing.
   virtual void OnKeyIdeaMarked();
+  // Invoked when laser pointer button is pressed. Virtual for testing.
+  virtual void OnLaserPointerPressed();
   // Invoked when transcription is available for rendering. Virtual for testing.
   virtual void OnTranscription(const std::string& transcription, bool is_final);
 
   ProjectorUiModel* model() { return &model_; }
 
  private:
+  // Reset tools, including resetting the state in model, closing the sub
+  // widgets, etc.
+  void ResetTools();
+
   ProjectorUiModel model_;
   views::UniqueWidgetPtr projector_bar_widget_;
 

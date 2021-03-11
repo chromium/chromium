@@ -78,6 +78,10 @@ void ProjectorControllerImpl::SaveScreencast(
   metadata_controller_->SaveMetadata(saved_video_path);
 }
 
+void ProjectorControllerImpl::OnLaserPointerPressed() {
+  ui_controller_->OnLaserPointerPressed();
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);

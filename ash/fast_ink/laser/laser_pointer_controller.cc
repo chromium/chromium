@@ -41,10 +41,22 @@ LaserPointerController::~LaserPointerController() {
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
+void LaserPointerController::AddObserver(LaserPointerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LaserPointerController::RemoveObserver(LaserPointerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void LaserPointerController::SetEnabled(bool enabled) {
+  if (enabled == is_enabled())
+    return;
+
   FastInkPointerController::SetEnabled(enabled);
   if (!enabled)
     DestroyPointerView();
+  NotifyStateChanged(enabled);
 }
 
 views::View* LaserPointerController::GetPointerView() const {
@@ -82,6 +94,11 @@ bool LaserPointerController::CanStartNewGesture(ui::TouchEvent* event) {
   if (palette_utils::PaletteContainsPointInScreen(event->root_location()))
     return false;
   return FastInkPointerController::CanStartNewGesture(event);
+}
+
+void LaserPointerController::NotifyStateChanged(bool enabled) {
+  for (LaserPointerObserver& observer : observers_)
+    observer.OnLaserPointerStateChanged(enabled);
 }
 
 LaserPointerView* LaserPointerController::GetLaserPointerView() const {

@@ -13,13 +13,33 @@
 namespace ash {
 namespace {
 
+class TestLaserPointerObserver : public LaserPointerObserver {
+ public:
+  TestLaserPointerObserver() = default;
+  ~TestLaserPointerObserver() override = default;
+
+  // LaserPointerObserver:
+  void OnLaserPointerStateChanged(bool enabled) override {
+    laser_pointer_enabled_ = enabled;
+  }
+
+  bool laser_pointer_enabled() { return laser_pointer_enabled_; }
+
+ private:
+  bool laser_pointer_enabled_ = false;
+};
+
 class LaserPointerControllerTest : public AshTestBase {
  public:
   LaserPointerControllerTest() = default;
+  LaserPointerControllerTest(const LaserPointerControllerTest&) = delete;
+  LaserPointerControllerTest& operator=(const LaserPointerControllerTest&) =
+      delete;
   ~LaserPointerControllerTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
+    observer_ = std::make_unique<TestLaserPointerObserver>();
     controller_ = std::make_unique<LaserPointerController>();
     controller_test_api_ =
         std::make_unique<LaserPointerControllerTestApi>(controller_.get());
@@ -34,11 +54,11 @@ class LaserPointerControllerTest : public AshTestBase {
   }
 
  protected:
+  TestLaserPointerObserver* observer() { return observer_.get(); }
+
   std::unique_ptr<LaserPointerController> controller_;
   std::unique_ptr<LaserPointerControllerTestApi> controller_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerControllerTest);
+  std::unique_ptr<TestLaserPointerObserver> observer_;
 };
 
 }  // namespace
@@ -163,6 +183,15 @@ TEST_F(LaserPointerControllerTest, LaserPointerPrediction) {
   EXPECT_TRUE(controller_test_api_->IsFadingAway());
   EXPECT_EQ(0,
             controller_test_api_->predicted_laser_points().GetNumberOfPoints());
+}
+
+TEST_F(LaserPointerControllerTest, NotifyLaserPointerStateChanged) {
+  controller_->AddObserver(observer());
+  controller_test_api_->SetEnabled(true);
+  EXPECT_TRUE(observer()->laser_pointer_enabled());
+  controller_test_api_->SetEnabled(false);
+  EXPECT_FALSE(observer()->laser_pointer_enabled());
+  controller_->RemoveObserver(observer());
 }
 
 }  // namespace ash
