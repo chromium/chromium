@@ -27,14 +27,12 @@ const Mp4VideoProcessor = (async () => {
 
 /**
  * @param {!AsyncWriter} output
- * @param {number} videoRotation
  * @return {!Promise<!VideoProcessor>}
  */
-async function createVideoProcessor(output, videoRotation) {
+async function createVideoProcessor(output) {
   // Comlink proxies all calls asynchronously, including constructors.
   return new (await Mp4VideoProcessor)(
-      Comlink.proxy(output),
-      {seekable: output.seekable(), rotate: videoRotation});
+      Comlink.proxy(output), {seekable: output.seekable()});
 }
 
 /**
@@ -89,27 +87,25 @@ export class VideoSaver {
   /**
    * Creates video saver for the given file.
    * @param {!FileAccessEntry} file
-   * @param {number} videoRotation
    * @return {!Promise<!VideoSaver>}
    */
-  static async createForFile(file, videoRotation) {
+  static async createForFile(file) {
     const writer = await file.getWriter();
-    const processor = await createVideoProcessor(writer, videoRotation);
+    const processor = await createVideoProcessor(writer);
     return new VideoSaver(file, processor);
   }
 
   /**
    * Creates video saver for the given intent.
    * @param {!Intent} intent
-   * @param {number} videoRotation
    * @return {!Promise<!VideoSaver>}
    */
-  static async createForIntent(intent, videoRotation) {
+  static async createForIntent(intent) {
     const file = await createPrivateTempVideoFile();
     const fileWriter = await file.getWriter();
     const intentWriter = createWriterForIntent(intent);
     const writer = AsyncWriter.combine(fileWriter, intentWriter);
-    const processor = await createVideoProcessor(writer, videoRotation);
+    const processor = await createVideoProcessor(writer);
     return new VideoSaver(file, processor);
   }
 }

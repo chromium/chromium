@@ -63,8 +63,8 @@ export class CameraIntent extends Camera {
         const buf = await blob.arrayBuffer();
         await this.intent_.appendData(new Uint8Array(buf));
       },
-      startSaveVideo: async (outputVideoRotation) => {
-        return VideoSaver.createForIntent(intent, outputVideoRotation);
+      startSaveVideo: async () => {
+        return await VideoSaver.createForIntent(intent);
       },
       finishSaveVideo: async (video) => {
         this.videoResultFile_ = await video.endWrite();

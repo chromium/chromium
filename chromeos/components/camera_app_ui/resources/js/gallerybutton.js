@@ -192,9 +192,9 @@ export class GalleryButton {
   /**
    * @override
    */
-  async startSaveVideo(videoRotation) {
+  async startSaveVideo() {
     const file = await filesystem.createVideoFile();
-    return VideoSaver.createForFile(file, videoRotation);
+    return VideoSaver.createForFile(file);
   }
 
   /**
