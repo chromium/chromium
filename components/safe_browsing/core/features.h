@@ -69,9 +69,6 @@ extern const base::Feature kPasswordProtectionShowDomainsForSavedPasswords;
 // Enable GAIA password protection for signed-in users.
 extern const base::Feature kPasswordProtectionForSignedInUsers;
 
-// Controls whether Chrome prompts Advanced Protection users for deep scanning.
-extern const base::Feature kPromptAppForDeepScanning;
-
 // Controls whether we are performing enterprise download checks for users with
 // the appropriate policies enabled.
 extern const base::Feature kSafeBrowsingEnterpriseCsd;

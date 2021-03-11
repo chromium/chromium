@@ -291,8 +291,7 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
       AdvancedProtectionStatusManagerFactory::GetForProfile(profile);
   if (!advanced_protection_status_manager)
     return false;
-  return base::FeatureList::IsEnabled(kPromptAppForDeepScanning) &&
-         advanced_protection_status_manager->IsUnderAdvancedProtection();
+  return advanced_protection_status_manager->IsUnderAdvancedProtection();
 #endif
 }
 
