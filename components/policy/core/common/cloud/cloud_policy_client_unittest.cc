@@ -336,6 +336,53 @@ em::DeviceManagementRequest GetEnrollementRequest() {
 }
 #endif
 
+em::DeviceManagementRequest GetUnregistrationRequest() {
+  em::DeviceManagementRequest unregistration_request;
+  // Accessing the field sets the type of the request.
+  unregistration_request.mutable_unregister_request();
+  return unregistration_request;
+}
+
+em::DeviceManagementResponse GetUnregistrationResponse() {
+  em::DeviceManagementResponse unregistration_response;
+  // Accessing the field sets the type of the response.
+  unregistration_response.mutable_unregister_response();
+  return unregistration_response;
+}
+
+em::DeviceManagementRequest GetUploadMachineCertificateRequest() {
+  em::DeviceManagementRequest upload_machine_certificate_request;
+  upload_machine_certificate_request.mutable_cert_upload_request()
+      ->set_device_certificate(kMachineCertificate);
+  upload_machine_certificate_request.mutable_cert_upload_request()
+      ->set_certificate_type(
+          em::DeviceCertUploadRequest::ENTERPRISE_MACHINE_CERTIFICATE);
+  return upload_machine_certificate_request;
+}
+
+em::DeviceManagementRequest GetUploadEnrollmentCertificateRequest() {
+  em::DeviceManagementRequest upload_enrollment_certificate_request;
+  upload_enrollment_certificate_request.mutable_cert_upload_request()
+      ->set_device_certificate(kEnrollmentCertificate);
+  upload_enrollment_certificate_request.mutable_cert_upload_request()
+      ->set_certificate_type(
+          em::DeviceCertUploadRequest::ENTERPRISE_ENROLLMENT_CERTIFICATE);
+  return upload_enrollment_certificate_request;
+}
+
+em::DeviceManagementRequest GetUploadEnrollmentIdRequest() {
+  em::DeviceManagementRequest upload_enrollment_id_request;
+  upload_enrollment_id_request.mutable_cert_upload_request()->set_enrollment_id(
+      kEnrollmentId);
+  return upload_enrollment_id_request;
+}
+
+em::DeviceManagementResponse GetUploadCertificateResponse() {
+  em::DeviceManagementResponse upload_certificate_response;
+  upload_certificate_response.mutable_cert_upload_response();
+  return upload_certificate_response;
+}
+
 }  // namespace
 
 class CloudPolicyClientTest : public testing::Test {
@@ -344,22 +391,6 @@ class CloudPolicyClientTest : public testing::Test {
       : job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-    unregistration_request_.mutable_unregister_request();
-    unregistration_response_.mutable_unregister_response();
-    upload_machine_certificate_request_.mutable_cert_upload_request()
-        ->set_device_certificate(kMachineCertificate);
-    upload_machine_certificate_request_.mutable_cert_upload_request()
-        ->set_certificate_type(
-            em::DeviceCertUploadRequest::ENTERPRISE_MACHINE_CERTIFICATE);
-    upload_enrollment_certificate_request_.mutable_cert_upload_request()
-        ->set_device_certificate(kEnrollmentCertificate);
-    upload_enrollment_certificate_request_.mutable_cert_upload_request()
-        ->set_certificate_type(
-            em::DeviceCertUploadRequest::ENTERPRISE_ENROLLMENT_CERTIFICATE);
-    upload_enrollment_id_request_.mutable_cert_upload_request()
-        ->set_enrollment_id(kEnrollmentId);
-    upload_certificate_response_.mutable_cert_upload_response();
-
     upload_status_request_.mutable_device_status_report_request();
     upload_status_request_.mutable_session_status_report_request();
     upload_status_request_.mutable_child_status_report_request();
@@ -533,10 +564,6 @@ class CloudPolicyClientTest : public testing::Test {
   }
 
   // Request protobufs used as expectations for the client requests.
-  em::DeviceManagementRequest unregistration_request_;
-  em::DeviceManagementRequest upload_machine_certificate_request_;
-  em::DeviceManagementRequest upload_enrollment_certificate_request_;
-  em::DeviceManagementRequest upload_enrollment_id_request_;
   em::DeviceManagementRequest upload_status_request_;
   em::DeviceManagementRequest chrome_desktop_report_request_;
   em::DeviceManagementRequest chrome_os_user_report_request_;
@@ -548,8 +575,6 @@ class CloudPolicyClientTest : public testing::Test {
   em::DeviceManagementRequest robot_auth_code_fetch_request_;
 
   // Protobufs used in successful responses.
-  em::DeviceManagementResponse unregistration_response_;
-  em::DeviceManagementResponse upload_certificate_response_;
   em::DeviceManagementResponse upload_status_response_;
   em::DeviceManagementResponse chrome_desktop_report_response_;
   em::DeviceManagementResponse chrome_os_user_report_response_;
@@ -1209,7 +1234,7 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
 TEST_F(CloudPolicyClientTest, Unregister) {
   RegisterClient();
 
-  ExpectAndCaptureJob(/*response=*/unregistration_response_);
+  ExpectAndCaptureJob(GetUnregistrationResponse());
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   client_->Unregister();
   base::RunLoop().RunUntilIdle();
@@ -1217,7 +1242,7 @@ TEST_F(CloudPolicyClientTest, Unregister) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            unregistration_request_.SerializePartialAsString());
+            GetUnregistrationRequest().SerializePartialAsString());
   EXPECT_FALSE(client_->is_registered());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
@@ -1226,10 +1251,12 @@ TEST_F(CloudPolicyClientTest, UnregisterEmpty) {
   RegisterClient();
 
   DeviceManagementService::JobConfiguration::JobType job_type;
-  unregistration_response_.clear_unregister_response();
+  em::DeviceManagementResponse unregistration_response =
+      GetUnregistrationResponse();
+  unregistration_response.clear_unregister_response();
   EXPECT_CALL(service_, StartJob)
       .WillOnce(DoAll(service_.CaptureJobType(&job_type),
-                      service_.StartJobOKAsync(unregistration_response_)));
+                      service_.StartJobOKAsync(unregistration_response)));
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
   client_->Unregister();
   base::RunLoop().RunUntilIdle();
@@ -1333,7 +1360,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
 TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificate) {
   RegisterClient();
 
-  ExpectAndCaptureJob(/*response=*/upload_certificate_response_);
+  ExpectAndCaptureJob(GetUploadCertificateResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1344,14 +1371,14 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificate) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            upload_machine_certificate_request_.SerializePartialAsString());
+            GetUploadMachineCertificateRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificate) {
   RegisterClient();
 
-  ExpectAndCaptureJob(/*response=*/upload_certificate_response_);
+  ExpectAndCaptureJob(GetUploadCertificateResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1362,15 +1389,17 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificate) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            upload_enrollment_certificate_request_.SerializePartialAsString());
+            GetUploadEnrollmentCertificateRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificateEmpty) {
   RegisterClient();
 
-  upload_certificate_response_.clear_cert_upload_response();
-  ExpectAndCaptureJob(/*response=*/upload_certificate_response_);
+  em::DeviceManagementResponse upload_certificate_response =
+      GetUploadCertificateResponse();
+  upload_certificate_response.clear_cert_upload_response();
+  ExpectAndCaptureJob(upload_certificate_response);
   EXPECT_CALL(callback_observer_, OnCallbackComplete(false)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1381,15 +1410,17 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseMachineCertificateEmpty) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            upload_machine_certificate_request_.SerializePartialAsString());
+            GetUploadMachineCertificateRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificateEmpty) {
   RegisterClient();
 
-  upload_certificate_response_.clear_cert_upload_response();
-  ExpectAndCaptureJob(/*response=*/upload_certificate_response_);
+  em::DeviceManagementResponse upload_certificate_response =
+      GetUploadCertificateResponse();
+  upload_certificate_response.clear_cert_upload_response();
+  ExpectAndCaptureJob(upload_certificate_response);
   EXPECT_CALL(callback_observer_, OnCallbackComplete(false)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1400,7 +1431,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentCertificateEmpty) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            upload_enrollment_certificate_request_.SerializePartialAsString());
+            GetUploadEnrollmentCertificateRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
@@ -1431,7 +1462,7 @@ TEST_F(CloudPolicyClientTest, UploadCertificateFailure) {
 TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentId) {
   RegisterClient();
 
-  ExpectAndCaptureJob(/*response=*/upload_certificate_response_);
+  ExpectAndCaptureJob(GetUploadCertificateResponse());
   EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
   CloudPolicyClient::StatusCallback callback =
       base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
@@ -1441,7 +1472,7 @@ TEST_F(CloudPolicyClientTest, UploadEnterpriseEnrollmentId) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_CERTIFICATE,
             job_type_);
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            upload_enrollment_id_request_.SerializePartialAsString());
+            GetUploadEnrollmentIdRequest().SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
@@ -2000,7 +2031,7 @@ TEST_F(CloudPolicyClientTest, MultipleActiveRequests) {
       .WillOnce(DoAll(
           service_.CaptureJobType(&cert_type),
           service_.StartJobAsync(net::OK, DeviceManagementService::kSuccess,
-                                 upload_certificate_response_)));
+                                 GetUploadCertificateResponse())));
 
   // Expect two calls on our upload observer, one for the status upload and
   // one for the certificate upload.
@@ -2071,7 +2102,7 @@ TEST_F(CloudPolicyClientTest, RequestCancelOnUnregister) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
   EXPECT_CALL(observer_, OnRegistrationStateChanged);
-  ExpectAndCaptureJob(/*response=*/unregistration_response_);
+  ExpectAndCaptureJob(GetUnregistrationResponse());
   client_->Unregister();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_UPLOAD_STATUS,
@@ -2080,7 +2111,7 @@ TEST_F(CloudPolicyClientTest, RequestCancelOnUnregister) {
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
-            unregistration_request_.SerializePartialAsString());
+            GetUnregistrationRequest().SerializePartialAsString());
   EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
 }
 
