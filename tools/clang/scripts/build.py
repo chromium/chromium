@@ -582,9 +582,6 @@ def main():
         '-DLLVM_LOCAL_RPATH=' + os.path.join(args.gcc_toolchain, 'lib64')
     ]
 
-  if sys.platform.startswith('linux'):
-    base_cmake_args.append('-DCLANG_DEFAULT_RTLIB=libgcc')
-
   if sys.platform == 'darwin':
     # For libc++, we only want the headers.
     base_cmake_args.extend([
@@ -999,6 +996,9 @@ def main():
           # depends on a newer version of libxml2.so than what's available on
           # the bots. To make things work, use our just-built lld as linker.
           '-fuse-ld=lld',
+          # Clang defaults to compiler-rt when targeting android after
+          # a478b0a199f4. Stick with libgcc for now. (crbug.com/1184398).
+          '--rtlib=libgcc',
       ]
       android_args = base_cmake_args + [
         '-DCMAKE_C_COMPILER=' + os.path.join(LLVM_BUILD_DIR, 'bin/clang'),
