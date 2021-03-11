@@ -441,7 +441,8 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
 
   auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
-      config_.natural_size(), pic->stride[0], uv_plane_stride, uv_plane_stride,
+      GetNaturalSize(gfx::Rect(visible_size), config_.GetPixelAspectRatio()),
+      pic->stride[0], uv_plane_stride, uv_plane_stride,
       static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
       base::TimeDelta::FromMicroseconds(pic->m.timestamp));
   if (!frame)
