@@ -178,7 +178,7 @@ void BookmarkContextMenuController::BuildMenu() {
   AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
 }
 
-void BookmarkContextMenuController::AddItem(int id, const base::string16 str) {
+void BookmarkContextMenuController::AddItem(int id, const std::u16string str) {
   menu_model_->AddItem(id, str);
 }
 
@@ -272,7 +272,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       const BookmarkNode* parent =
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
       GURL url;
-      base::string16 title;
+      std::u16string title;
       chrome::GetURLAndTitleToBookmark(
           browser_->tab_strip_model()->GetActiveWebContents(),
           &url, &title);
@@ -370,7 +370,7 @@ bool BookmarkContextMenuController::IsItemForCommandIdDynamic(int command_id)
          command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS;
 }
 
-base::string16 BookmarkContextMenuController::GetLabelForCommandId(
+std::u16string BookmarkContextMenuController::GetLabelForCommandId(
     int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_UNDO) {
     return BookmarkUndoServiceFactory::GetForProfile(profile_)->
@@ -388,7 +388,7 @@ base::string16 BookmarkContextMenuController::GetLabelForCommandId(
   }
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {

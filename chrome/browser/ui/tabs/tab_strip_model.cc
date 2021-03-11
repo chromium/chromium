@@ -1489,7 +1489,7 @@ void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
                                    browser_index);
 }
 
-std::vector<base::string16> TabStripModel::GetExistingWindowsForMoveMenu() {
+std::vector<std::u16string> TabStripModel::GetExistingWindowsForMoveMenu() {
   return delegate()->GetExistingWindowsForMoveMenu();
 }
 

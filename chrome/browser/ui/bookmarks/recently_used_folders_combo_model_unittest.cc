@@ -61,7 +61,7 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
       bookmark_model->bookmark_bar_node(), 0, base::ASCIIToUTF16("a"),
       GURL("http://a"));
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
-  std::set<base::string16> items;
+  std::set<std::u16string> items;
   for (int i = 0; i < model.GetItemCount(); ++i) {
     if (!model.IsItemSeparatorAt(i))
       EXPECT_EQ(0u, items.count(model.GetItemAt(i)));

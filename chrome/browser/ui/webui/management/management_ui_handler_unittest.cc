@@ -95,14 +95,14 @@ using testing::Return;
 using testing::ReturnRef;
 
 struct ContextualManagementSourceUpdate {
-  base::string16 extension_reporting_title;
-  base::string16 subtitle;
+  std::u16string extension_reporting_title;
+  std::u16string subtitle;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 management_overview;
-  base::string16 update_required_eol;
+  std::u16string management_overview;
+  std::u16string update_required_eol;
   bool show_proxy_server_privacy_disclosure;
 #else
-  base::string16 browser_management_notice;
+  std::u16string browser_management_notice;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   bool managed;
 };
@@ -266,7 +266,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
   ~ManagementUIHandlerTests() override = default;
 
-  base::string16 device_domain() { return device_domain_; }
+  std::u16string device_domain() { return device_domain_; }
   void EnablePolicy(const char* policy_key, policy::PolicyMap& policies) {
     policies.Set(policy_key, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
@@ -296,11 +296,11 @@ class ManagementUIHandlerTests : public TestingBaseClass {
                  std::move(policy_value.value()), nullptr);
   }
 
-  base::string16 ExtractPathFromDict(const base::Value& data,
+  std::u16string ExtractPathFromDict(const base::Value& data,
                                      const std::string path) {
     const std::string* buf = data.FindStringPath(path);
     if (!buf)
-      return base::string16();
+      return std::u16string();
     return base::UTF8ToUTF16(*buf);
   }
 
@@ -462,7 +462,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   bool GetManaged() const { return extracted_.managed; }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 GetManagementOverview() const {
+  std::u16string GetManagementOverview() const {
     return extracted_.management_overview;
   }
   base::test::ScopedFeatureList* scoped_feature_list() {
@@ -473,7 +473,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return crostini_features_.get();
   }
 
-  base::string16 GetUpdateRequiredEolMessage() const {
+  std::u16string GetUpdateRequiredEolMessage() const {
     return extracted_.update_required_eol;
   }
 
@@ -482,17 +482,17 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   }
 #else
 
-  base::string16 GetBrowserManagementNotice() const {
+  std::u16string GetBrowserManagementNotice() const {
     return extracted_.browser_management_notice;
   }
 
 #endif
 
-  base::string16 GetExtensionReportingTitle() const {
+  std::u16string GetExtensionReportingTitle() const {
     return extracted_.extension_reporting_title;
   }
 
-  base::string16 GetPageSubtitle() const { return extracted_.subtitle; }
+  std::u16string GetPageSubtitle() const { return extracted_.subtitle; }
 
   TestingProfile* GetProfile() const { return profile_.get(); }
 
@@ -545,7 +545,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   TestManagementUIHandler handler_;
   policy::MockPolicyService policy_service_;
   policy::PolicyMap empty_policy_map_;
-  base::string16 device_domain_;
+  std::u16string device_domain_;
   ContextualManagementSourceUpdate extracted_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::ScopedStubInstallAttributes> install_attributes_;
@@ -776,7 +776,7 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_ACCOUNT_MANAGED_BY,
                                        base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -792,8 +792,8 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
                                        l10n_util::GetStringUTF16(device_type)));
-  EXPECT_EQ(GetManagementOverview(), base::string16());
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetManagementOverview(), std::u16string());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -812,8 +812,8 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
-  EXPECT_EQ(GetManagementOverview(), base::string16());
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetManagementOverview(), std::u16string());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -835,7 +835,7 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY, device_domain()));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -860,7 +860,7 @@ TEST_F(ManagementUIHandlerTests,
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
                 device_domain(), base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
 
@@ -879,7 +879,7 @@ TEST_F(ManagementUIHandlerTests, ManagementContextualSourceUpdateUnmanaged) {
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_DEVICE_NOT_MANAGED));
-  EXPECT_EQ(GetUpdateRequiredEolMessage(), base::string16());
+  EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_FALSE(GetManaged());
 }
 

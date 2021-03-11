@@ -235,7 +235,7 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
   // Verify that all icons are still loaded.
   EXPECT_EQ(2u, app_provider_->icon_urls_.size());
   EXPECT_EQ(0u, app_provider_->loading_icon_urls_.size());
-  app_provider_->Start(base::string16());
+  app_provider_->Start(std::u16string());
   EXPECT_EQ(2u, app_provider_->results().size());
 
   app_instance()->SendInstallationStarted("com.package.fakepackage1");

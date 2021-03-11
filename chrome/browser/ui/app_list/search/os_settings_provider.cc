@@ -139,7 +139,7 @@ OsSettingsResult::OsSettingsResult(
   // Manually build the accessible name for the search result, in a way that
   // parallels the regular accessible names set by
   // SearchResultBaseView::ComputeAccessibleName.
-  base::string16 accessible_name = title();
+  std::u16string accessible_name = title();
   if (!details().empty()) {
     accessible_name += base::ASCIIToUTF16(", ");
     accessible_name += details();
@@ -223,7 +223,7 @@ ash::AppListSearchResultType OsSettingsProvider::ResultType() {
   return ash::AppListSearchResultType::kOsSettings;
 }
 
-void OsSettingsProvider::Start(const base::string16& query) {
+void OsSettingsProvider::Start(const std::u16string& query) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   last_query_ = query;
   // Disable the provider if:
@@ -260,7 +260,7 @@ void OsSettingsProvider::ViewClosing() {
 }
 
 void OsSettingsProvider::OnSearchReturned(
-    const base::string16& query,
+    const std::u16string& query,
     const base::TimeTicks& start_time,
     std::vector<chromeos::settings::mojom::SearchResultPtr> sorted_results) {
   // TODO(crbug.com/1068851): We are currently not ranking settings results.
@@ -321,7 +321,7 @@ void OsSettingsProvider::OnSearchResultAvailabilityChanged() {
 
 std::vector<chromeos::settings::mojom::SearchResultPtr>
 OsSettingsProvider::FilterResults(
-    const base::string16& query,
+    const std::u16string& query,
     const std::vector<chromeos::settings::mojom::SearchResultPtr>& results,
     const chromeos::settings::Hierarchy* hierarchy) {
   base::flat_set<std::string> seen_urls;

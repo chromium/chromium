@@ -123,10 +123,10 @@ void BrowserTabStripModelDelegate::MoveToExistingWindow(
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 BrowserTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
   static constexpr int kWindowTitleForMenuMaxWidth = 400;
-  std::vector<base::string16> window_titles;
+  std::vector<std::u16string> window_titles;
   existing_browsers_for_menu_list_.clear();
 
   const BrowserList* browser_list = BrowserList::GetInstance();

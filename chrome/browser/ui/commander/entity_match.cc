@@ -20,7 +20,7 @@ double constexpr kMaxTitleWidth = 1000;
 }  // namespace
 
 WindowMatch::WindowMatch(Browser* browser,
-                         const base::string16& title,
+                         const std::u16string& title,
                          double score)
     : browser(browser), title(title), score(score) {}
 WindowMatch::~WindowMatch() = default;
@@ -34,7 +34,7 @@ std::unique_ptr<CommandItem> WindowMatch::ToCommandItem() const {
 }
 
 GroupMatch::GroupMatch(tab_groups::TabGroupId group,
-                       const base::string16& title,
+                       const std::u16string& title,
                        double score)
     : group(group), title(title), score(score) {}
 GroupMatch::~GroupMatch() = default;
@@ -48,7 +48,7 @@ std::unique_ptr<CommandItem> GroupMatch::ToCommandItem() const {
 }
 
 std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
-                                              const base::string16& input,
+                                              const std::u16string& input,
                                               bool match_profile) {
   std::vector<WindowMatch> results;
   const BrowserList* browser_list = BrowserList::GetInstance();
@@ -63,7 +63,7 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
       continue;
     if (match_profile && browser->profile() != browser_to_exclude->profile())
       continue;
-    base::string16 title = browser->GetWindowTitleForMaxWidth(kMaxTitleWidth);
+    std::u16string title = browser->GetWindowTitleForMaxWidth(kMaxTitleWidth);
     if (input.empty()) {
       WindowMatch match(browser, title, mru_score);
       results.push_back(std::move(match));
@@ -82,7 +82,7 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
 
 std::vector<GroupMatch> GroupsMatchingInput(
     const Browser* browser,
-    const base::string16& input,
+    const std::u16string& input,
     base::Optional<tab_groups::TabGroupId> group_to_exclude) {
   DCHECK(browser);
   std::vector<GroupMatch> results;
@@ -96,8 +96,8 @@ std::vector<GroupMatch> GroupsMatchingInput(
     if (group_to_exclude == group_id)
       continue;
     TabGroup* group = model->GetTabGroup(group_id);
-    const base::string16& group_title = group->visual_data()->title();
-    const base::string16& title =
+    const std::u16string& group_title = group->visual_data()->title();
+    const std::u16string& title =
         group_title.empty() ? group->GetContentString() : group_title;
     if (input.empty()) {
       GroupMatch match(group_id, title, ordering_score);

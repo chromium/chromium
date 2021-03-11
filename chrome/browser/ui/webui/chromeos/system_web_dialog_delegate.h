@@ -48,7 +48,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
   // |gurl| is the HTML file path for the dialog content and must be set.
   // |title| may be empty in which case ShouldShowDialogTitle() returns false.
-  SystemWebDialogDelegate(const GURL& gurl, const base::string16& title);
+  SystemWebDialogDelegate(const GURL& gurl, const std::u16string& title);
   ~SystemWebDialogDelegate() override;
 
   // Returns an identifier used for matching an instance in FindInstance.
@@ -68,7 +68,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
   // ui::WebDialogDelegate
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
@@ -109,7 +109,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
 
  private:
   GURL gurl_;
-  base::string16 title_;
+  std::u16string title_;
   content::WebUI* webui_ = nullptr;
   ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = nullptr;

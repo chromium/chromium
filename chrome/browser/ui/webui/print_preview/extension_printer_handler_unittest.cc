@@ -710,7 +710,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
 
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
       kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kPdfSettings), print_data,
@@ -746,7 +746,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf_Reset) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kPdfSettings), print_data,
@@ -771,7 +771,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_All) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kAllTypesSettings), print_data,
@@ -808,7 +808,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,
@@ -861,7 +861,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kDuplexSettings), print_data,
@@ -914,7 +914,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_Reset) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,
@@ -942,7 +942,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_InvalidTicket) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kInvalidSettings), print_data,
@@ -963,7 +963,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_FailedConversion) {
 
   auto print_data =
       base::MakeRefCounted<base::RefCountedBytes>(kPrintData, kPrintDataLength);
-  base::string16 title = base::ASCIIToUTF16("Title");
+  std::u16string title = base::ASCIIToUTF16("Title");
 
   extension_printer_handler_->StartPrint(
       title, *base::JSONReader::Read(kSimpleRasterSettings), print_data,

@@ -103,7 +103,7 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
   ~MediaRouterFileDialog() override;
 
   virtual GURL GetLastSelectedFileUrl();
-  virtual base::string16 GetLastSelectedFileName();
+  virtual std::u16string GetLastSelectedFileName();
 
   // Checks if a file has been recorded as being selected, then attempts to
   // report interesting information about the file, such as format.

@@ -100,7 +100,7 @@ struct RegulatoryLabel {
 
 // Returns message that informs user that for update it's better to
 // connect to a network of one of the allowed types.
-base::string16 GetAllowedConnectionTypesMessage() {
+std::u16string GetAllowedConnectionTypesMessage() {
   if (help_utils_chromeos::IsUpdateOverCellularAllowed(
           /*interactive=*/true)) {
     const bool metered = chromeos::NetworkHandler::Get()
@@ -466,7 +466,7 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
     return;
   }
 
-  base::string16 channel;
+  std::u16string channel;
   bool is_powerwash_allowed;
   if (!args->GetString(0, &channel) ||
       !args->GetBoolean(1, &is_powerwash_allowed)) {
@@ -654,7 +654,7 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
                                    bool powerwash,
                                    const std::string& version,
                                    int64_t size,
-                                   const base::string16& message) {
+                                   const std::u16string& message) {
   // Only UPDATING state should have progress set.
   DCHECK(status == VersionUpdater::UPDATING || progress == 0);
 
@@ -670,7 +670,7 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (status == VersionUpdater::FAILED_OFFLINE ||
       status == VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED) {
-    base::string16 types_msg = GetAllowedConnectionTypesMessage();
+    std::u16string types_msg = GetAllowedConnectionTypesMessage();
     if (!types_msg.empty())
       event->SetString("connectionTypes", types_msg);
     else
@@ -694,7 +694,7 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
   bool actionable = state == VersionUpdater::PROMOTE_DISABLED ||
                     state == VersionUpdater::PROMOTE_ENABLED;
 
-  base::string16 text = base::string16();
+  std::u16string text = std::u16string();
   if (actionable)
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL);
   else if (state == VersionUpdater::PROMOTED)

@@ -95,17 +95,17 @@ gfx::Image ExtensionActionViewController::GetIcon(
       gfx::ImageSkia(GetIconImageSource(web_contents, size), size));
 }
 
-base::string16 ExtensionActionViewController::GetActionName() const {
+std::u16string ExtensionActionViewController::GetActionName() const {
   if (!ExtensionIsValid())
-    return base::string16();
+    return std::u16string();
 
   return base::UTF8ToUTF16(extension_->name());
 }
 
-base::string16 ExtensionActionViewController::GetAccessibleName(
+std::u16string ExtensionActionViewController::GetAccessibleName(
     content::WebContents* web_contents) const {
   if (!ExtensionIsValid())
-    return base::string16();
+    return std::u16string();
 
   // GetAccessibleName() can (surprisingly) be called during browser
   // teardown. Handle this gracefully.
@@ -115,7 +115,7 @@ base::string16 ExtensionActionViewController::GetAccessibleName(
   std::string title = extension_action()->GetTitle(
       sessions::SessionTabHelper::IdForTab(web_contents).id());
 
-  base::string16 title_utf16 =
+  std::u16string title_utf16 =
       base::UTF8ToUTF16(title.empty() ? extension()->name() : title);
 
   // Include a "host access" portion of the tooltip if the extension has or
@@ -144,7 +144,7 @@ base::string16 ExtensionActionViewController::GetAccessibleName(
   return title_utf16;
 }
 
-base::string16 ExtensionActionViewController::GetTooltip(
+std::u16string ExtensionActionViewController::GetTooltip(
     content::WebContents* web_contents) const {
   return GetAccessibleName(web_contents);
 }

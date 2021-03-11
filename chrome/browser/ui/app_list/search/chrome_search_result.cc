@@ -40,7 +40,7 @@ void ChromeSearchResult::SetIsInstalling(bool is_installing) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetTitle(const base::string16& title) {
+void ChromeSearchResult::SetTitle(const std::u16string& title) {
   metadata_->title = title;
   SetSearchResultMetadata();
 }
@@ -50,7 +50,7 @@ void ChromeSearchResult::SetTitleTags(const Tags& tags) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetDetails(const base::string16& details) {
+void ChromeSearchResult::SetDetails(const std::u16string& details) {
   metadata_->details = details;
   SetSearchResultMetadata();
 }
@@ -60,7 +60,7 @@ void ChromeSearchResult::SetDetailsTags(const Tags& tags) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetAccessibleName(const base::string16& name) {
+void ChromeSearchResult::SetAccessibleName(const std::u16string& name) {
   metadata_->accessible_name = name;
   SetSearchResultMetadata();
 }
@@ -71,7 +71,7 @@ void ChromeSearchResult::SetRating(float rating) {
 }
 
 void ChromeSearchResult::SetFormattedPrice(
-    const base::string16& formatted_price) {
+    const std::u16string& formatted_price) {
   metadata_->formatted_price = formatted_price;
   SetSearchResultMetadata();
 }

@@ -52,7 +52,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
   // be used as a feature for ranking search results provided to Rank(), but is
   // not used to create new search results. If this is a zero-state scenario,
   // the query should be empty.
-  void FetchRankings(const base::string16& query);
+  void FetchRankings(const std::u16string& query);
 
   // Modifies the scores of |results| using the saved rankings. This should be
   // called after rankings have been queried with a call to FetchRankings().
@@ -103,7 +103,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
   base::Time time_of_last_fetch_;
 
   // The query last provided to FetchRankings.
-  base::string16 last_query_;
+  std::u16string last_query_;
 
   // Ranks the kinds of results possible in the zero state results list.
   std::unique_ptr<RecurrenceRanker> zero_state_group_ranker_;

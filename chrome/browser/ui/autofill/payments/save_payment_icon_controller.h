@@ -52,7 +52,7 @@ class SavePaymentIconController {
   virtual AutofillBubbleBase* GetSaveBubbleView() const = 0;
 
   // Returns the tooltip message for the save payment icon.
-  virtual base::string16 GetSavePaymentIconTooltipText() const = 0;
+  virtual std::u16string GetSavePaymentIconTooltipText() const = 0;
 };
 
 }  // namespace autofill

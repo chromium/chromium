@@ -36,7 +36,7 @@ using ui::ime::InputMethodMenuManager;
 namespace {
 
 // Used to look up IME names.
-base::string16 GetLocalizedString(int resource_id) {
+std::u16string GetLocalizedString(int resource_id) {
   return base::ASCIIToUTF16("localized string");
 }
 

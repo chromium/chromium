@@ -48,7 +48,7 @@ class TabGroup {
   // "Google Search and 3 other tabs". Used for accessibly describing the group,
   // as well as for displaying in context menu items and tooltips when the group
   // is unnamed.
-  base::string16 GetContentString() const;
+  std::u16string GetContentString() const;
 
   // Updates internal bookkeeping for group contents, and notifies the
   // controller that contents changed when a tab is added.

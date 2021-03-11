@@ -271,7 +271,7 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
                  /*gaia_selected=*/false);
 
   // Sign out.
-  entry()->SetAuthInfo("", base::string16(), false);
+  entry()->SetAuthInfo("", std::u16string(), false);
   entry()->SetGAIAPicture(std::string(), gfx::Image());
 
   const content::TestWebUI::CallData& data_2 = *web_ui()->call_data().back();

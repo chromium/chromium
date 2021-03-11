@@ -14,10 +14,9 @@
 // A test delegate for a bubble to hang off the toolbar actions bar.
 class TestToolbarActionsBarBubbleDelegate {
  public:
-  TestToolbarActionsBarBubbleDelegate(
-      const base::string16& heading,
-      const base::string16& body,
-      const base::string16& action);
+  TestToolbarActionsBarBubbleDelegate(const std::u16string& heading,
+                                      const std::u16string& body,
+                                      const std::u16string& action);
   ~TestToolbarActionsBarBubbleDelegate();
 
   // Returns a delegate to pass to the bubble. Since the bubble typically owns
@@ -25,13 +24,13 @@ class TestToolbarActionsBarBubbleDelegate {
   // it would be deleted once the bubble closes.
   std::unique_ptr<ToolbarActionsBarBubbleDelegate> GetDelegate();
 
-  void set_action_button_text(const base::string16& action) {
+  void set_action_button_text(const std::u16string& action) {
     action_ = action;
   }
-  void set_dismiss_button_text(const base::string16& dismiss) {
+  void set_dismiss_button_text(const std::u16string& dismiss) {
     dismiss_ = dismiss;
   }
-  void set_learn_more_button_text(const base::string16& learn_more) {
+  void set_learn_more_button_text(const std::u16string& learn_more) {
     learn_more_ = learn_more;
 
     if (!info_) {
@@ -44,7 +43,7 @@ class TestToolbarActionsBarBubbleDelegate {
   void set_default_dialog_button(ui::DialogButton default_button) {
     default_button_ = default_button;
   }
-  void set_item_list_text(const base::string16& item_list) {
+  void set_item_list_text(const std::u16string& item_list) {
     item_list_ = item_list;
   }
   void set_close_on_deactivate(bool close_on_deactivate) {
@@ -69,12 +68,12 @@ class TestToolbarActionsBarBubbleDelegate {
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::CloseAction> close_action_;
 
   // Strings for the bubble.
-  base::string16 heading_;
-  base::string16 body_;
-  base::string16 action_;
-  base::string16 dismiss_;
-  base::string16 learn_more_;
-  base::string16 item_list_;
+  std::u16string heading_;
+  std::u16string body_;
+  std::u16string action_;
+  std::u16string dismiss_;
+  std::u16string learn_more_;
+  std::u16string item_list_;
 
   // The default button for the bubble.
   ui::DialogButton default_button_;

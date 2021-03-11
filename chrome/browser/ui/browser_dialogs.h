@@ -159,10 +159,10 @@ void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
 // have no |parent| window.
 void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                                     const std::string& extension_id,
-                                    const base::string16& extension_name,
+                                    const std::u16string& extension_name,
                                     const gfx::ImageSkia& extension_icon,
-                                    const base::string16& print_job_title,
-                                    const base::string16& printer_name,
+                                    const std::u16string& print_job_title,
+                                    const std::u16string& printer_name,
                                     base::OnceCallback<void(bool)> callback);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -337,7 +337,7 @@ void ShowChromeCleanerRebootPrompt(
 // if it exists.
 void ShowExtensionInstallBlockedDialog(
     const std::string& extension_name,
-    const base::string16& custom_error_message,
+    const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,
     content::WebContents* web_contents,
     base::OnceClosure done_callback);

@@ -97,13 +97,13 @@ std::string ArcAppShortcutSearchResult::GetAppId() const {
   return arc_prefs->GetAppIdByPackageName(data_->package_name.value());
 }
 
-base::string16 ArcAppShortcutSearchResult::ComputeAccessibleName() const {
+std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   DCHECK(arc_prefs);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       arc_prefs->GetApp(GetAppId());
   if (!app_info.get())
-    return base::string16();
+    return std::u16string();
 
   return l10n_util::GetStringFUTF16(IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
                                     base::UTF8ToUTF16(data_->short_label),

@@ -38,7 +38,7 @@ SharesheetExpandButton::SharesheetExpandButton(PressedCallback callback)
   icon_ = AddChildView(std::make_unique<views::ImageView>());
 
   label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), ash::CONTEXT_SHARESHEET_BUBBLE_BODY,
+      std::u16string(), ash::CONTEXT_SHARESHEET_BUBBLE_BODY,
       ash::STYLE_SHARESHEET));
   label_->SetLineHeight(kLineHeight);
   label_->SetEnabledColor(kLabelColor);

@@ -312,7 +312,7 @@ TEST_F(HidChooserControllerTest, DeviceIdFilterVendorOnly) {
 
   EXPECT_EQ(2u, hid_chooser_controller->NumOptions());
 
-  std::set<base::string16> options{hid_chooser_controller->GetOption(0),
+  std::set<std::u16string> options{hid_chooser_controller->GetOption(0),
                                    hid_chooser_controller->GetOption(1)};
   EXPECT_THAT(options,
               testing::UnorderedElementsAre(

@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   ASSERT_TRUE(controller);
 
   // Push some suggestions and select the line #3.
-  std::vector<base::string16> rows = {
+  std::vector<std::u16string> rows = {
       base::ASCIIToUTF16("suggestion1"), base::ASCIIToUTF16("suggestion2"),
       base::ASCIIToUTF16("suggestion3"), base::ASCIIToUTF16("suggestion4")};
   client->UpdateAutofillPopupDataListValues(rows, rows);

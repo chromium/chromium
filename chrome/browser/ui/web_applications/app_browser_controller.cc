@@ -158,7 +158,7 @@ bool AppBrowserController::IsForWebApp(const Browser* browser,
 }
 
 // static
-base::string16 AppBrowserController::FormatUrlOrigin(
+std::u16string AppBrowserController::FormatUrlOrigin(
     const GURL& url,
     url_formatter::FormatUrlTypes format_types) {
   auto origin = url::Origin::Create(url);
@@ -338,7 +338,7 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
 
-base::string16 AppBrowserController::GetLaunchFlashText() const {
+std::u16string AppBrowserController::GetLaunchFlashText() const {
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsFlashAppNameInsteadOfOrigin)) {
     return GetAppShortName();
@@ -464,20 +464,20 @@ base::Optional<SkColor> AppBrowserController::GetBackgroundColor() const {
   return color ? SkColorSetA(*color, SK_AlphaOPAQUE) : color;
 }
 
-base::string16 AppBrowserController::GetTitle() const {
+std::u16string AppBrowserController::GetTitle() const {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
-    return base::string16();
+    return std::u16string();
 
   content::NavigationEntry* entry =
       web_contents->GetController().GetVisibleEntry();
-  base::string16 raw_title = entry ? entry->GetTitle() : base::string16();
+  std::u16string raw_title = entry ? entry->GetTitle() : std::u16string();
 
   if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
     return raw_title;
 
-  base::string16 app_name =
+  std::u16string app_name =
       base::ASCIIToUTF16(WebAppProvider::Get(browser()->profile())
                              ->registrar()
                              .GetAppShortName(GetAppId()));

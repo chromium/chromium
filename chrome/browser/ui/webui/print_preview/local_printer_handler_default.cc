@@ -250,7 +250,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 }
 
 void LocalPrinterHandlerDefault::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     base::Value settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {

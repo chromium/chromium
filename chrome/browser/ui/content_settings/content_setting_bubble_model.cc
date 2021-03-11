@@ -149,14 +149,14 @@ ContentSettingBubbleModel::ListItem CreateUrlListItem(int32_t id,
                                                       const GURL& url) {
   // Empty URLs should get a placeholder.
   // TODO(csharrison): See if we can DCHECK that the URL will be valid here.
-  base::string16 title = url.spec().empty()
+  std::u16string title = url.spec().empty()
                              ? l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE)
                              : base::UTF8ToUTF16(url.spec());
 
   // Format the title to include the unicode single dot bullet code-point
   // \u2022 and two spaces.
   title = l10n_util::GetStringFUTF16(IDS_LIST_BULLET, title);
-  return ContentSettingBubbleModel::ListItem(nullptr, title, base::string16(),
+  return ContentSettingBubbleModel::ListItem(nullptr, title, std::u16string(),
                                              true /* has_link */,
                                              false /* has_blocked_badge */, id);
 }
@@ -186,8 +186,8 @@ void SetAllowRunningInsecureContent(content::RenderFrameHost* frame) {
 
 // ContentSettingSimpleBubbleModel ---------------------------------------------
 ContentSettingBubbleModel::ListItem::ListItem(const gfx::VectorIcon* image,
-                                              const base::string16& title,
-                                              const base::string16& description,
+                                              const std::u16string& title,
+                                              const std::u16string& description,
                                               bool has_link,
                                               bool has_blocked_badge,
                                               int32_t item_id)
@@ -415,7 +415,7 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   pending_handler_ = content_settings->pending_protocol_handler();
   previous_handler_ = content_settings->previous_protocol_handler();
 
-  base::string16 protocol = pending_handler_.GetProtocolDisplayName();
+  std::u16string protocol = pending_handler_.GetProtocolDisplayName();
 
   // Note that we ignore the |title| parameter.
   if (previous_handler_.IsEmpty()) {
@@ -429,11 +429,11 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
         base::UTF8ToUTF16(previous_handler_.url().host())));
   }
 
-  base::string16 radio_allow_label =
+  std::u16string radio_allow_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_ACCEPT);
-  base::string16 radio_deny_label =
+  std::u16string radio_deny_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_DENY);
-  base::string16 radio_ignore_label =
+  std::u16string radio_ignore_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_IGNORE);
 
   const GURL& url = web_contents->GetURL();
@@ -541,7 +541,7 @@ bool ContentSettingSingleRadioGroup::settings_changed() const {
 // content type and setting the default value based on the content setting.
 void ContentSettingSingleRadioGroup::SetRadioGroup() {
   const GURL& url = web_contents()->GetURL();
-  base::string16 display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
@@ -581,7 +581,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_NO_ACTION},
   };
 
-  base::string16 radio_allow_label;
+  std::u16string radio_allow_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedAllowIDs, base::size(kAllowedAllowIDs), content_type());
@@ -613,7 +613,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_BLOCK},
   };
 
-  base::string16 radio_block_label;
+  std::u16string radio_block_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedBlockIDs, base::size(kAllowedBlockIDs), content_type());
@@ -947,7 +947,7 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
   RadioGroup radio_group;
   radio_group.url = url;
 
-  base::string16 display_host = url_formatter::FormatUrlForSecurityDisplay(url);
+  std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
 
   DCHECK(CameraAccessed() || MicrophoneAccessed());
   int radio_allow_label_id = 0;
@@ -1000,9 +1000,9 @@ void ContentSettingMediaStreamBubbleModel::SetRadioGroup() {
     }
   }
 
-  base::string16 radio_allow_label =
+  std::u16string radio_allow_label =
       l10n_util::GetStringFUTF16(radio_allow_label_id, display_host);
-  base::string16 radio_block_label =
+  std::u16string radio_block_label =
       l10n_util::GetStringUTF16(radio_block_label_id);
 
   radio_group.default_item =
@@ -1392,7 +1392,7 @@ void ContentSettingDownloadsBubbleModel::SetRadioGroup() {
       g_browser_process->download_request_limiter();
   const GURL& download_origin =
       download_request_limiter->GetDownloadOrigin(web_contents());
-  base::string16 display_host =
+  std::u16string display_host =
       url_formatter::FormatUrlForSecurityDisplay(download_origin);
   DCHECK(download_request_limiter);
 

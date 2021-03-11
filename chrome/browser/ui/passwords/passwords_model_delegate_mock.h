@@ -64,7 +64,7 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(void, OnPasswordsRevealed, (), (override));
   MOCK_METHOD(void,
               SavePassword,
-              (const base::string16&, const base::string16&),
+              (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(void,
               SaveUnsyncedCredentialsInProfileStore,
@@ -95,7 +95,7 @@ class PasswordsModelDelegateMock
   MOCK_METHOD(bool, AuthenticateUser, (), (override));
   MOCK_METHOD(void,
               AuthenticateUserForAccountStoreOptInAndSavePassword,
-              (const base::string16&, const base::string16&),
+              (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(void,
               AuthenticateUserForAccountStoreOptInAndMovePassword,

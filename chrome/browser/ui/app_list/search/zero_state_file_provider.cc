@@ -96,7 +96,7 @@ ash::AppListSearchResultType ZeroStateFileProvider::ResultType() {
   return ash::AppListSearchResultType::kZeroStateFile;
 }
 
-void ZeroStateFileProvider::Start(const base::string16& query) {
+void ZeroStateFileProvider::Start(const std::u16string& query) {
   query_start_time_ = base::TimeTicks::Now();
   ClearResultsSilently();
   if (!files_ranker_ || !query.empty())

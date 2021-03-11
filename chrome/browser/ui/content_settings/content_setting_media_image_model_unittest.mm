@@ -45,7 +45,7 @@ bool HasIcon(const ContentSettingImageModel& model) {
 void ExpectImageModelState(const ContentSettingImageModel& model,
                            bool is_visible,
                            bool has_icon,
-                           const base::string16& tooltip,
+                           const std::u16string& tooltip,
                            int explanatory_string_id,
                            const gfx::VectorIcon* icon_badge) {
   EXPECT_EQ(model.is_visible(), is_visible);

@@ -37,8 +37,8 @@ class OfferNotificationBubbleControllerImpl
       const OfferNotificationBubbleControllerImpl&) = delete;
 
   // OfferBubbleController:
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetOkButtonLabel() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetOkButtonLabel() const override;
   AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
   const CreditCard* GetLinkedCard() const override;
   bool IsIconVisible() const override;

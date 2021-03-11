@@ -57,7 +57,7 @@ SendTabToSelfBubbleController::send_tab_to_self_bubble_view() const {
   return send_tab_to_self_bubble_view_;
 }
 
-base::string16 SendTabToSelfBubbleController::GetWindowTitle() const {
+std::u16string SendTabToSelfBubbleController::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
 }
 

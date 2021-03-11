@@ -69,7 +69,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
     ~HistoryItem();
 
     // The title for the menu item.
-    base::string16 title;
+    std::u16string title;
     // The URL that will be navigated to if the user selects this item.
     GURL url;
     // Favicon for the URL.

@@ -29,7 +29,7 @@ class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
 
   // Helper function to return the title associated with |app_id|.
   // Returns an empty title if no matching extension can be found.
-  static base::string16 GetAppTitle(Profile* profile,
+  static std::u16string GetAppTitle(Profile* profile,
                                     const std::string& app_id);
 
   // Helper function to return the app status associated with |app_id|. if the

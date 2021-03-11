@@ -119,7 +119,7 @@ class SafetyCheckHandler
 
   // Constructs a string depicting how much time passed since the completion of
   // something from the corresponding timestamps and strings IDs.
-  base::string16 GetStringForTimePassed(base::Time completion_timestamp,
+  std::u16string GetStringForTimePassed(base::Time completion_timestamp,
                                         base::Time system_time,
                                         int less_than_one_minute_ago_message_id,
                                         int minutes_ago_message_id,
@@ -129,15 +129,15 @@ class SafetyCheckHandler
 
   // Constructs the 'safety check ran' display string by how long ago safety
   // check ran.
-  base::string16 GetStringForParentRan(base::Time safety_check_completion_time);
-  base::string16 GetStringForParentRan(base::Time safety_check_completion_time,
+  std::u16string GetStringForParentRan(base::Time safety_check_completion_time);
+  std::u16string GetStringForParentRan(base::Time safety_check_completion_time,
                                        base::Time system_time);
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Constructs the string for the Chrome cleaner 'safe' state which depicts
   // how long ago its last check ran.
-  base::string16 GetStringForChromeCleanerRan();
-  base::string16 GetStringForChromeCleanerRan(base::Time cct_completion_time,
+  std::u16string GetStringForChromeCleanerRan();
+  std::u16string GetStringForChromeCleanerRan(base::Time cct_completion_time,
                                               base::Time system_time);
 
   // safe_browsing::ChromeCleanerController::Observer overrides.
@@ -228,20 +228,20 @@ class SafetyCheckHandler
 
   // Methods for building user-visible strings based on the safety check
   // state.
-  base::string16 GetStringForParent(ParentStatus status);
-  base::string16 GetStringForUpdates(UpdateStatus status);
-  base::string16 GetStringForSafeBrowsing(SafeBrowsingStatus status);
-  base::string16 GetStringForPasswords(PasswordsStatus status,
+  std::u16string GetStringForParent(ParentStatus status);
+  std::u16string GetStringForUpdates(UpdateStatus status);
+  std::u16string GetStringForSafeBrowsing(SafeBrowsingStatus status);
+  std::u16string GetStringForPasswords(PasswordsStatus status,
                                        Compromised compromised,
                                        Weak weak,
                                        Done done,
                                        Total total);
-  base::string16 GetStringForExtensions(ExtensionsStatus status,
+  std::u16string GetStringForExtensions(ExtensionsStatus status,
                                         Blocklisted blocklisted,
                                         ReenabledUser reenabled_user,
                                         ReenabledAdmin reenabled_admin);
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::string16 GetStringForChromeCleaner(ChromeCleanerStatus status,
+  std::u16string GetStringForChromeCleaner(ChromeCleanerStatus status,
                                            base::Time cct_completion_time,
                                            base::Time system_time);
 #endif
@@ -271,7 +271,7 @@ class SafetyCheckHandler
                               bool powerwash,
                               const std::string& version,
                               int64_t update_size,
-                              const base::string16& message);
+                              const std::u16string& message);
 
   // SafetyCheck::SafetyCheckHandlerInterface implementation.
   void OnSafeBrowsingCheckResult(SafeBrowsingStatus status) override;
@@ -300,7 +300,7 @@ class SafetyCheckHandler
   // Fire a safety check element WebUI update with a state and string.
   void FireBasicSafetyCheckWebUiListener(const std::string& event_name,
                                          int new_state,
-                                         const base::string16& display_string);
+                                         const std::u16string& display_string);
 
   // The current status of the safety check elements. Before safety
   // check is started, the parent is in the 'before' state.

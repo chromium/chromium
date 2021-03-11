@@ -79,7 +79,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   base::Value GetForeignSessions();
 
   // Returns a string used to show the user when a session was last modified.
-  base::string16 FormatSessionTime(const base::Time& time);
+  std::u16string FormatSessionTime(const base::Time& time);
 
   // Determines which session is to be opened, and then calls
   // OpenForeignSession, to begin the process of opening a new browser window.

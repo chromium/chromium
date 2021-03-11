@@ -38,7 +38,7 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
   void SetChallengeResponseAuthEnabledForUser(const AccountId& user,
                                               bool enabled) override;
 
-  void UpdateWarningMessage(const base::string16& message) override;
+  void UpdateWarningMessage(const std::u16string& message) override;
   void SetSystemInfo(bool show,
                      bool enforced,
                      const std::string& os_version_label_text,

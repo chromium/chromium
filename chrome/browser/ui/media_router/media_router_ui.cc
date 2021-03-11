@@ -76,7 +76,7 @@ bool IssueMatches(const Issue& issue, const UIMediaSink& ui_sink) {
           issue.info().route_id == ui_sink.route->media_route_id());
 }
 
-base::string16 GetSinkFriendlyName(const MediaSink& sink) {
+std::u16string GetSinkFriendlyName(const MediaSink& sink) {
   // Use U+2010 (HYPHEN) instead of ASCII hyphen to avoid problems with RTL
   // languages.
   const char* separator = u8" \u2010 ";
@@ -489,7 +489,7 @@ std::vector<MediaSinkWithCastModes> MediaRouterUI::GetEnabledSinks() const {
   return enabled_sinks;
 }
 
-base::string16 MediaRouterUI::GetPresentationRequestSourceName() const {
+std::u16string MediaRouterUI::GetPresentationRequestSourceName() const {
   GURL gurl = GetFrameURL();
   // Presentation URLs are only possible on https: and other secure contexts,
   // so we can omit http/https schemes here.
@@ -801,7 +801,7 @@ GURL MediaRouterUI::GetFrameURL() const {
 void MediaRouterUI::SendIssueForRouteTimeout(
     MediaCastMode cast_mode,
     const MediaSink::Id& sink_id,
-    const base::string16& presentation_request_source_name) {
+    const std::u16string& presentation_request_source_name) {
   std::string issue_title;
   switch (cast_mode) {
     case PRESENTATION:
@@ -935,7 +935,7 @@ void MediaRouterUI::OnRouteResponseReceived(
     int route_request_id,
     const MediaSink::Id& sink_id,
     MediaCastMode cast_mode,
-    const base::string16& presentation_request_source_name,
+    const std::u16string& presentation_request_source_name,
     const RouteRequestResult& result) {
   // If we receive a new route that we aren't expecting, do nothing.
   if (!current_route_request_ || route_request_id != current_route_request_->id)
@@ -962,8 +962,8 @@ void MediaRouterUI::OnRouteResponseReceived(
 }
 
 void MediaRouterUI::UpdateModelHeader() {
-  const base::string16 source_name = GetPresentationRequestSourceName();
-  const base::string16 header_text =
+  const std::u16string source_name = GetPresentationRequestSourceName();
+  const std::u16string header_text =
       source_name.empty()
           ? l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE)
           : l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE,

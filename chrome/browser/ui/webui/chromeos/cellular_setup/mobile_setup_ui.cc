@@ -79,7 +79,7 @@ bool ActivationErrorRequiresCarrier(
   return error == ash::MobileActivator::ActivationError::kActivationFailed;
 }
 
-base::string16 GetActivationErrorMessage(
+std::u16string GetActivationErrorMessage(
     ash::MobileActivator::ActivationError error,
     const std::string& carrier) {
   // If the activation error message requires the carrier name, and none was
@@ -93,11 +93,11 @@ base::string16 GetActivationErrorMessage(
 
   switch (error) {
     case ash::MobileActivator::ActivationError::kNone:
-      return base::string16();
+      return std::u16string();
     case ash::MobileActivator::ActivationError::kActivationFailed: {
       return base::ReplaceStringPlaceholders(
           base::UTF8ToUTF16(kDefaultActivationError),
-          std::vector<base::string16>(
+          std::vector<std::u16string>(
               {ui::GetChromeOSDeviceName(), base::UTF8ToUTF16(carrier)}),
           nullptr);
     }

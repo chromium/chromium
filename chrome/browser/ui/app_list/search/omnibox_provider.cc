@@ -46,7 +46,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
 
 OmniboxProvider::~OmniboxProvider() {}
 
-void OmniboxProvider::Start(const base::string16& query) {
+void OmniboxProvider::Start(const std::u16string& query) {
   controller_->Stop(false);
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from

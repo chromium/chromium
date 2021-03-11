@@ -59,7 +59,7 @@ void MoveToAccountStoreBubbleController::OnFaviconReady(
   std::move(favicon_ready_callback).Run(result.image);
 }
 
-base::string16 MoveToAccountStoreBubbleController::GetTitle() const {
+std::u16string MoveToAccountStoreBubbleController::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE);
 }
 

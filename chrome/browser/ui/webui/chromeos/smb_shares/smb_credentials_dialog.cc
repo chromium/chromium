@@ -72,7 +72,7 @@ SmbCredentialsDialog::SmbCredentialsDialog(const std::string& mount_id,
                                            const std::string& share_path,
                                            RequestCallback callback)
     : SystemWebDialogDelegate(GURL(GetDialogId(mount_id)),
-                              base::string16() /* title */),
+                              std::u16string() /* title */),
       mount_id_(mount_id),
       share_path_(share_path),
       callback_(std::move(callback)) {}

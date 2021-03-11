@@ -170,7 +170,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 // Test that AddNodeToMenu() properly adds bookmark nodes as menus,
 // including the recursive case.
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
-  base::string16 empty;
+  std::u16string empty;
 
   BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
@@ -244,7 +244,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 
 // Makes sure our internal map of BookmarkNode to NSMenuItem works.
 TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
-  base::string16 empty;
+  std::u16string empty;
   BookmarkModel* model = bridge_->GetBookmarkModel();
   EXPECT_TRUE(model);
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();

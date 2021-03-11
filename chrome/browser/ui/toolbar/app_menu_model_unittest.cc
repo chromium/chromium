@@ -45,7 +45,7 @@ class MenuError : public GlobalError {
 
   bool HasMenuItem() override { return true; }
   int MenuItemCommandID() override { return command_id_; }
-  base::string16 MenuItemLabel() override { return base::string16(); }
+  std::u16string MenuItemLabel() override { return std::u16string(); }
   void ExecuteMenuItem(Browser* browser) override { execute_count_++; }
 
   bool HasBubbleView() override { return false; }

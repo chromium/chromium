@@ -98,8 +98,8 @@ struct DictionaryIdComparator {
     const base::DictionaryValue* b_dict;
     bool b_is_dictionary = b.GetAsDictionary(&b_dict);
     DCHECK(b_is_dictionary);
-    base::string16 a_str;
-    base::string16 b_str;
+    std::u16string a_str;
+    std::u16string b_str;
     a_dict->GetString(kCertificatesHandlerNameField, &a_str);
     b_dict->GetString(kCertificatesHandlerNameField, &b_str);
     if (collator_ == nullptr)
@@ -507,7 +507,7 @@ void CertificatesHandler::HandleExportPersonal(const base::ListValue* args) {
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
       GetParentWindow(),
       reinterpret_cast<void*>(EXPORT_PERSONAL_FILE_SELECTED));
@@ -601,7 +601,7 @@ void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       base::FilePath(), &file_type_info, 1, FILE_PATH_LITERAL("p12"),
       GetParentWindow(),
       reinterpret_cast<void*>(IMPORT_PERSONAL_FILE_SELECTED));

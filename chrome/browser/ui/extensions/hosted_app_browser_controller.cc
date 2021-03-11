@@ -132,7 +132,7 @@ base::Optional<SkColor> HostedAppBrowserController::GetThemeColor() const {
   return base::nullopt;
 }
 
-base::string16 HostedAppBrowserController::GetTitle() const {
+std::u16string HostedAppBrowserController::GetTitle() const {
   // When showing the toolbar, display the name of the app, instead of the
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
@@ -172,16 +172,16 @@ const Extension* HostedAppBrowserController::GetExtension() const {
       ->GetExtensionById(GetAppId(), ExtensionRegistry::EVERYTHING);
 }
 
-base::string16 HostedAppBrowserController::GetAppShortName() const {
+std::u16string HostedAppBrowserController::GetAppShortName() const {
   const Extension* extension = GetExtension();
   return extension ? base::UTF8ToUTF16(extension->short_name())
-                   : base::string16();
+                   : std::u16string();
 }
 
-base::string16 HostedAppBrowserController::GetFormattedUrlOrigin() const {
+std::u16string HostedAppBrowserController::GetFormattedUrlOrigin() const {
   const Extension* extension = GetExtension();
   return extension ? FormatUrlOrigin(AppLaunchInfo::GetLaunchWebURL(extension))
-                   : base::string16();
+                   : std::u16string();
 }
 
 bool HostedAppBrowserController::CanUninstall() const {
@@ -225,7 +225,7 @@ bool HostedAppBrowserController::IsHostedApp() const {
 
 void HostedAppBrowserController::OnExtensionUninstallDialogClosed(
     bool success,
-    const base::string16& error) {
+    const std::u16string& error) {
   uninstall_dialog_.reset();
 }
 

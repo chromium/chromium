@@ -267,7 +267,7 @@ void KerberosAccountsHandler::OnListAccounts(
     // 'nn days' otherwise.
     base::TimeDelta tgt_validity =
         base::TimeDelta::FromSeconds(account.tgt_validity_seconds());
-    const base::string16 valid_for_duration = ui::TimeFormat::Detailed(
+    const std::u16string valid_for_duration = ui::TimeFormat::Detailed(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         tgt_validity < base::TimeDelta::FromDays(1) ? -1 : 0, tgt_validity);
 

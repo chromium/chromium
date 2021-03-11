@@ -26,9 +26,9 @@ class BaseError : public GlobalError {
     ADD_FAILURE();
     return 0;
   }
-  base::string16 MenuItemLabel() override {
+  std::u16string MenuItemLabel() override {
     ADD_FAILURE();
-    return base::string16();
+    return std::u16string();
   }
   void ExecuteMenuItem(Browser* browser) override { ADD_FAILURE(); }
 
@@ -58,7 +58,7 @@ class MenuError : public BaseError {
 
   bool HasMenuItem() override { return true; }
   int MenuItemCommandID() override { return command_id_; }
-  base::string16 MenuItemLabel() override { return base::string16(); }
+  std::u16string MenuItemLabel() override { return std::u16string(); }
   void ExecuteMenuItem(Browser* browser) override {}
 
  private:

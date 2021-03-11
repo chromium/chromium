@@ -44,8 +44,8 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   // EditSearchEngineControllerDelegate implementation.
   void OnEditedKeyword(TemplateURL* template_url,
-                       const base::string16& title,
-                       const base::string16& keyword,
+                       const std::u16string& title,
+                       const std::u16string& keyword,
                        const std::string& url) override;
 
   // SettingsPageUIHandler implementation.

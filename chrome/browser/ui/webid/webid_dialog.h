@@ -30,15 +30,15 @@ class WebIdDialog {
   // Creates and shows a confirmation dialog for initial permission. The
   // provided callback is called with appropriate status depending on whether
   // user accepted or denied/closed the dialog.
-  virtual void ShowInitialPermission(const base::string16& idp_hostname,
-                                     const base::string16& rp_hostname,
+  virtual void ShowInitialPermission(const std::u16string& idp_hostname,
+                                     const std::u16string& rp_hostname,
                                      PermissionCallback) = 0;
 
   // Creates and shows a confirmation dialog for return permission. The provided
   // callback is called with appropriate status depending on whether user
   // accepted or denied/closed the dialog.
-  virtual void ShowTokenExchangePermission(const base::string16& idp_hostname,
-                                           const base::string16& rp_hostname,
+  virtual void ShowTokenExchangePermission(const std::u16string& idp_hostname,
+                                           const std::u16string& rp_hostname,
                                            PermissionCallback) = 0;
 
   // Creates and shows a window that loads the identity provider sign in page at

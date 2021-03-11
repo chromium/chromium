@@ -50,7 +50,7 @@ gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
 }  // namespace
 
 BaseLockDialog::BaseLockDialog(GURL url, gfx::Size desired_size)
-    : SystemWebDialogDelegate(url, /*title=*/base::string16()),
+    : SystemWebDialogDelegate(url, /*title=*/std::u16string()),
       desired_size_(desired_size) {}
 
 BaseLockDialog::~BaseLockDialog() {}
@@ -78,7 +78,7 @@ void LockScreenStartReauthDialog::Show() {
       ProfileHelper::GetLockScreenProfileDir(),
       base::BindRepeating(&LockScreenStartReauthDialog::OnProfileCreated,
                           weak_factory_.GetWeakPtr()),
-      base::string16(), std::string());
+      std::u16string(), std::string());
 }
 
 void LockScreenStartReauthDialog::OnProfileCreated(

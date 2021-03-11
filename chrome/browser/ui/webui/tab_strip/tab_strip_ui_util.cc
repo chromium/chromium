@@ -108,8 +108,8 @@ bool DropTabsInNewBrowser(Browser* new_browser,
   drop_data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
                            &pickle);
 
-  base::string16 tab_id_str;
-  base::string16 group_id_str;
+  std::u16string tab_id_str;
+  std::u16string group_id_str;
   ui::ReadCustomDataForType(pickle.data(), pickle.size(),
                             base::ASCIIToUTF16(kWebUITabIdDataType),
                             &tab_id_str);

@@ -62,7 +62,7 @@ LaunchMode GetLaunchModeSlow() {
   DCHECK(shortcut_path);
   DCHECK(shortcut_path.value());
 
-  const base::string16 shortcut(
+  const std::u16string shortcut(
       base::i18n::ToLower(base::WideToUTF16(shortcut_path.value())));
 
   // The windows quick launch path is not localized.

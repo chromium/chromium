@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
   // Managed devices show an item in the menu.
   EXPECT_TRUE(test_api->IsBubbleViewVisible(ash::VIEW_ID_TRAY_ENTERPRISE,
                                             true /* open_tray */));
-  base::string16 expected_text =
+  std::u16string expected_text =
       ash::features::IsManagedDeviceUIRedesignEnabled()
           ? l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
                                        base::UTF8ToUTF16("example.com"))

@@ -82,7 +82,7 @@ void SearchController::InitializeRankers() {
   mixer_->InitializeRankers(profile_, this);
 }
 
-void SearchController::Start(const base::string16& query) {
+void SearchController::Start(const std::u16string& query) {
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
   if (query.length() > 0) {
@@ -177,7 +177,7 @@ ChromeSearchResult* SearchController::FindSearchResult(
 }
 
 void SearchController::OnSearchResultsImpressionMade(
-    const base::string16& trimmed_query,
+    const std::u16string& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int launched_index) {
   if (trimmed_query.empty()) {
@@ -194,7 +194,7 @@ void SearchController::OnSearchResultsImpressionMade(
 
 ChromeSearchResult* SearchController::GetResultByTitleForTest(
     const std::string& title) {
-  base::string16 target_title = base::ASCIIToUTF16(title);
+  std::u16string target_title = base::ASCIIToUTF16(title);
   for (const auto& provider : providers_) {
     for (const auto& result : provider->results()) {
       if (result->title() == target_title &&

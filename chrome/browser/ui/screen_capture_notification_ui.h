@@ -22,7 +22,7 @@ class ScreenCaptureNotificationUI : public MediaStreamUI {
   // Creates platform-specific screen capture notification UI. |text| specifies
   // the text that should be shown in the notification.
   static std::unique_ptr<ScreenCaptureNotificationUI> Create(
-      const base::string16& text);
+      const std::u16string& text);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUI);

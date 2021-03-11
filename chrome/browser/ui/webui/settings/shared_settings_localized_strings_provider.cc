@@ -42,7 +42,7 @@ namespace {
 // Generates a Google Help URL which includes a "board type" parameter. Some
 // help pages need to be adjusted depending on the type of CrOS device that is
 // accessing the page.
-base::string16 GetHelpUrlWithBoard(const std::string& original_url) {
+std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
   return base::ASCIIToUTF16(original_url +
                             "&b=" + base::SysInfo::GetLsbReleaseBoard());
 }

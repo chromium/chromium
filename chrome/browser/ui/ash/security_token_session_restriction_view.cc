@@ -39,7 +39,7 @@ gfx::ImageSkia GetImage() {
   return gfx::CreateVectorIcon(chromeos::kEnterpriseIcon, 20, SK_ColorDKGRAY);
 }
 
-base::string16 GetTitle(
+std::u16string GetTitle(
     chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
     case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
@@ -54,10 +54,10 @@ base::string16 GetTitle(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetButtonLabel(
+std::u16string GetButtonLabel(
     chromeos::login::SecurityTokenSessionController::Behavior behavior) {
   switch (behavior) {
     case chromeos::login::SecurityTokenSessionController::Behavior::kLogout:
@@ -71,10 +71,10 @@ base::string16 GetButtonLabel(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetDialogText(
+std::u16string GetDialogText(
     chromeos::login::SecurityTokenSessionController::Behavior behavior,
     const std::string& domain,
     base::TimeDelta time_remaining) {
@@ -107,7 +107,7 @@ base::string16 GetDialogText(
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace
@@ -128,7 +128,7 @@ SecurityTokenSessionRestrictionView::SecurityTokenSessionRestrictionView(
 
   SetAcceptCallback(std::move(accept_callback));
 
-  InitializeView(/*heading_text=*/base::string16());
+  InitializeView(/*heading_text=*/std::u16string());
   UpdateLabel();
 
   update_timer_.Start(FROM_HERE, kCountdownUpdateInterval, this,

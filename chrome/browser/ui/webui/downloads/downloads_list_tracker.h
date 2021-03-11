@@ -131,7 +131,7 @@ class DownloadsListTracker
   size_t chunk_size_ = 20u;
 
   // Current search terms.
-  std::vector<base::string16> search_terms_;
+  std::vector<std::u16string> search_terms_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsListTracker);
 };

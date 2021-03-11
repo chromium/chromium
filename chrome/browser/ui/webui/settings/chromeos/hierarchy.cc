@@ -267,7 +267,7 @@ std::string Hierarchy::ModifySearchResultUrl(
                                                                url_to_modify);
 }
 
-std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
+std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
     mojom::Subpage subpage) const {
   const SubpageMetadata& subpage_metadata = GetSubpageMetadata(subpage);
 
@@ -276,7 +276,7 @@ std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
     return GenerateHierarchyStrings(subpage_metadata.section);
 
   // Nested subpage; use recursive call, then append parent subpage name itself.
-  std::vector<base::string16> hierarchy_strings =
+  std::vector<std::u16string> hierarchy_strings =
       GenerateAncestorHierarchyStrings(*subpage_metadata.parent_subpage);
   hierarchy_strings.push_back(
       GetSubpageMetadata(*subpage_metadata.parent_subpage)
@@ -285,7 +285,7 @@ std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
   return hierarchy_strings;
 }
 
-std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
+std::vector<std::u16string> Hierarchy::GenerateAncestorHierarchyStrings(
     mojom::Setting setting) const {
   const SettingMetadata& setting_metadata = GetSettingMetadata(setting);
 
@@ -294,7 +294,7 @@ std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
     return GenerateHierarchyStrings(setting_metadata.primary.first);
 
   // Nested setting; use subpage ancestors, then append subpage name itself.
-  std::vector<base::string16> hierarchy_strings =
+  std::vector<std::u16string> hierarchy_strings =
       GenerateAncestorHierarchyStrings(*setting_metadata.primary.second);
   hierarchy_strings.push_back(
       GetSubpageMetadata(*setting_metadata.primary.second)
@@ -303,9 +303,9 @@ std::vector<base::string16> Hierarchy::GenerateAncestorHierarchyStrings(
   return hierarchy_strings;
 }
 
-std::vector<base::string16> Hierarchy::GenerateHierarchyStrings(
+std::vector<std::u16string> Hierarchy::GenerateHierarchyStrings(
     mojom::Section section) const {
-  std::vector<base::string16> hierarchy_strings;
+  std::vector<std::u16string> hierarchy_strings;
   hierarchy_strings.push_back(
       l10n_util::GetStringUTF16(IDS_INTERNAL_APP_SETTINGS));
   hierarchy_strings.push_back(GetSectionMetadata(section)

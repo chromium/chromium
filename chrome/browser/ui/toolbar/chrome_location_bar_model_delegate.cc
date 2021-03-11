@@ -58,10 +58,10 @@ content::NavigationEntry* ChromeLocationBarModelDelegate::GetNavigationEntry()
   return controller ? controller->GetVisibleEntry() : nullptr;
 }
 
-base::string16
+std::u16string
 ChromeLocationBarModelDelegate::FormattedStringWithEquivalentMeaning(
     const GURL& url,
-    const base::string16& formatted_url) const {
+    const std::u16string& formatted_url) const {
   return AutocompleteInput::FormattedStringWithEquivalentMeaning(
       url, formatted_url, ChromeAutocompleteSchemeClassifier(GetProfile()),
       nullptr);

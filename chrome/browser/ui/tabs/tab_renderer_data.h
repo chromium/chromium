@@ -39,7 +39,7 @@ struct TabRendererData {
   gfx::ImageSkia favicon;
   scoped_refptr<ThumbnailImage> thumbnail;
   TabNetworkState network_state = TabNetworkState::kNone;
-  base::string16 title;
+  std::u16string title;
   // This corresponds to WebContents::GetVisibleUrl().
   GURL visible_url;
   // This corresponds to WebContents::GetLastCommittedUrl().

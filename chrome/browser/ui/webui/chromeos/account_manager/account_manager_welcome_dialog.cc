@@ -36,7 +36,7 @@ constexpr int kMaxNumTimesShown = 1;
 
 AccountManagerWelcomeDialog::AccountManagerWelcomeDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIAccountManagerWelcomeURL),
-                              base::string16() /* title */) {}
+                              std::u16string() /* title */) {}
 
 AccountManagerWelcomeDialog::~AccountManagerWelcomeDialog() {
   DCHECK_EQ(this, g_dialog);

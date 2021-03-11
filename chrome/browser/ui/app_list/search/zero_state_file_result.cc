@@ -60,7 +60,7 @@ ZeroStateFileResult::ZeroStateFileResult(const base::FilePath& filepath,
 
   // For consistency with LauncherSearchProvider results, set the details to the
   // display name of the Files app.
-  base::string16 sanitized_name = base::CollapseWhitespace(
+  std::u16string sanitized_name = base::CollapseWhitespace(
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);

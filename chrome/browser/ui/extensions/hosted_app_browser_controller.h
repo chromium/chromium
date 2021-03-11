@@ -40,9 +40,9 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   gfx::ImageSkia GetWindowAppIcon() const override;
   gfx::ImageSkia GetWindowIcon() const override;
   base::Optional<SkColor> GetThemeColor() const override;
-  base::string16 GetTitle() const override;
-  base::string16 GetAppShortName() const override;
-  base::string16 GetFormattedUrlOrigin() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetAppShortName() const override;
+  std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   bool CanUninstall() const override;
@@ -53,7 +53,7 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
  protected:
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool success,
-                                        const base::string16& error) override;
+                                        const std::u16string& error) override;
 
   // web_app::AppBrowserController:
   void OnTabInserted(content::WebContents* contents) override;

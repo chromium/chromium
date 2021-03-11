@@ -47,7 +47,7 @@ class PdfPrinterHandler : public PrinterHandler,
                         GetPrintersDoneCallback done_callback) override;
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
-  void StartPrint(const base::string16& job_title,
+  void StartPrint(const std::u16string& job_title,
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
@@ -63,10 +63,10 @@ class PdfPrinterHandler : public PrinterHandler,
 
   // Exposed for testing.
   static base::FilePath GetFileNameForPrintJobTitle(
-      const base::string16& job_title);
+      const std::u16string& job_title);
   static base::FilePath GetFileNameForURL(const GURL& url);
   static base::FilePath GetFileName(const GURL& url,
-                                    const base::string16& job_title,
+                                    const std::u16string& job_title,
                                     bool is_savable);
 
  protected:

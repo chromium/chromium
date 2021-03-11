@@ -20,7 +20,7 @@ class OpenURLCommandSource : public CommandSource {
   OpenURLCommandSource& operator=(const OpenURLCommandSource& other) = delete;
 
   // CommandSource overrides
-  CommandSource::CommandResults GetCommands(const base::string16& input,
+  CommandSource::CommandResults GetCommands(const std::u16string& input,
                                             Browser* browser) const override;
 };
 

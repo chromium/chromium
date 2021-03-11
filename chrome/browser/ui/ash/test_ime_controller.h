@@ -43,7 +43,7 @@ class TestImeController : private ImeControllerResetterForTest,
                                         bool is_handwriting_enabled,
                                         bool is_voice_enabled) override;
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                         const base::string16& text) override;
+                         const std::u16string& text) override;
 
   // The most recent values received via mojo.
   std::string current_ime_id_;

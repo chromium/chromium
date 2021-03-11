@@ -94,7 +94,7 @@ class ChromeAutofillClient
       LocalCardMigrationCallback start_migrating_cards_callback) override;
   void ShowLocalCardMigrationResults(
       const bool has_server_error,
-      const base::string16& tip_message,
+      const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
   void ShowWebauthnOfferDialog(
@@ -111,10 +111,10 @@ class ChromeAutofillClient
       base::OnceCallback<void(const std::string&)> callback) override;
 #else  // defined(OS_ANDROID)
   void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const base::string16&)> callback) override;
+      base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
-      base::OnceCallback<void(const base::string16&, const base::string16&)>
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback) override;
 #endif
   void ConfirmSaveCreditCardLocally(
@@ -138,8 +138,8 @@ class ChromeAutofillClient
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<base::string16>& values,
-      const std::vector<base::string16>& labels) override;
+      const std::vector<std::u16string>& values,
+      const std::vector<std::u16string>& labels) override;
   base::span<const Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   PopupOpenArgs GetReopenPopupArgs() const override;
@@ -154,8 +154,8 @@ class ChromeAutofillClient
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;
-  void DidFillOrPreviewField(const base::string16& autofilled_value,
-                             const base::string16& profile_full_name) override;
+  void DidFillOrPreviewField(const std::u16string& autofilled_value,
+                             const std::u16string& profile_full_name) override;
   bool IsContextSecure() const override;
   bool ShouldShowSigninPromo() override;
   bool AreServerCardsSupported() const override;
@@ -189,7 +189,7 @@ class ChromeAutofillClient
   Profile* GetProfile() const;
   base::Optional<AccountInfo> GetAccountInfo();
   bool IsMultipleAccountUser();
-  base::string16 GetAccountHolderName();
+  std::u16string GetAccountHolderName();
 
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<FormDataImporter> form_data_importer_;

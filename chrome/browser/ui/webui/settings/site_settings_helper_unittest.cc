@@ -489,7 +489,7 @@ GURL TestUrl() {
 void ExpectValidChooserExceptionObject(
     const base::Value& actual_exception_object,
     const std::string& chooser_type,
-    const base::string16& display_name,
+    const std::u16string& display_name,
     const base::Value& chooser_object) {
   const base::Value* chooser_type_value = actual_exception_object.FindKeyOfType(
       kChooserType, base::Value::Type::STRING);
@@ -554,7 +554,7 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
       SiteSettingSourceToString(SiteSettingSource::kPreference);
-  const base::string16& kObjectName = base::ASCIIToUTF16("Gadget");
+  const std::u16string& kObjectName = base::ASCIIToUTF16("Gadget");
   ChooserExceptionDetails exception_details;
 
   // Create a chooser object for testing.

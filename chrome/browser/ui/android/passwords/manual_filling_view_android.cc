@@ -182,9 +182,9 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
 UserInfo::Field ManualFillingViewAndroid::ConvertJavaUserInfoField(
     JNIEnv* env,
     const JavaRef<jobject>& j_field_to_convert) {
-  base::string16 display_text = ConvertJavaStringToUTF16(
+  std::u16string display_text = ConvertJavaStringToUTF16(
       env, Java_UserInfoField_getDisplayText(env, j_field_to_convert));
-  base::string16 a11y_description = ConvertJavaStringToUTF16(
+  std::u16string a11y_description = ConvertJavaStringToUTF16(
       env, Java_UserInfoField_getA11yDescription(env, j_field_to_convert));
   std::string id = ConvertJavaStringToUTF8(
       env, Java_UserInfoField_getId(env, j_field_to_convert));

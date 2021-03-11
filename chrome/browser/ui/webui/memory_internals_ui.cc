@@ -245,7 +245,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::ListValue* args) {
       std::make_unique<ChromeSelectFilePolicy>(web_ui_->GetWebContents()));
 
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(), default_file,
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), default_file,
       nullptr, 0, FILE_PATH_LITERAL(".json.gz"),
       web_ui_->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
 #endif

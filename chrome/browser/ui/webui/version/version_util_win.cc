@@ -74,7 +74,7 @@ std::string GetFullWindowsVersion() {
   return version;
 }
 
-base::string16 GetCohortVersionInfo() {
+std::u16string GetCohortVersionInfo() {
   std::wstring update_cohort_name =
       install_static::InstallDetails::Get().update_cohort_name();
   if (!update_cohort_name.empty()) {
@@ -82,7 +82,7 @@ base::string16 GetCohortVersionInfo() {
                                       base::WideToUTF16(update_cohort_name));
   }
 
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace win

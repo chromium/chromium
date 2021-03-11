@@ -83,7 +83,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   // Owns this class.
   sharesheet::SharesheetServiceDelegate* delegate_;
-  base::string16 active_target_;
+  std::u16string active_target_;
   apps::mojom::IntentPtr intent_;
   sharesheet::CloseCallback close_callback_;
 

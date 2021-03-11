@@ -1200,7 +1200,7 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
         profile_path,
         base::BindRepeating(&ProcessCommandLineOnProfileCreated, command_line,
                             cur_dir),
-        base::string16(), std::string());
+        std::u16string(), std::string());
     return;
   }
   StartupBrowserCreator startup_browser_creator;

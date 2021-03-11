@@ -39,19 +39,19 @@ namespace exclusive_access_bubble {
 // Gets the text informing the user what state they have entered.
 // DEPRECATED: This is used only by the "classic" exclusive access bubble. The
 // new bubble only shows the instruction text.
-base::string16 GetLabelTextForType(ExclusiveAccessBubbleType type,
+std::u16string GetLabelTextForType(ExclusiveAccessBubbleType type,
                                    const GURL& url,
                                    extensions::ExtensionRegistry* registry);
 // Gets the text for the deny and allow buttons.
 // DEPRECATED: This is used only by the "classic" exclusive access bubble. The
 // new bubble only shows the instruction text.
-base::string16 GetDenyButtonTextForType(ExclusiveAccessBubbleType type);
-base::string16 GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
+std::u16string GetDenyButtonTextForType(ExclusiveAccessBubbleType type);
+std::u16string GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
                                          const GURL& url);
 // Gets the text instructing the user how to exit an exclusive access mode.
 // |accelerator| is the name of the key to exit fullscreen mode.
-base::string16 GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const base::string16& accelerator);
+std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
+                                         const std::u16string& accelerator);
 
 }  // namespace exclusive_access_bubble
 

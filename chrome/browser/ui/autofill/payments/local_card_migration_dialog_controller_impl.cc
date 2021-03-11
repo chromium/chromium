@@ -79,7 +79,7 @@ void LocalCardMigrationDialogControllerImpl::ShowOfferDialog(
 }
 
 void LocalCardMigrationDialogControllerImpl::UpdateCreditCardIcon(
-    const base::string16& tip_message,
+    const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     AutofillClient::MigrationDeleteCardCallback delete_local_card_callback) {
   if (local_card_migration_dialog_)
@@ -142,7 +142,7 @@ LocalCardMigrationDialogControllerImpl::GetLegalMessageLines() const {
   return legal_message_lines_;
 }
 
-const base::string16& LocalCardMigrationDialogControllerImpl::GetTipMessage()
+const std::u16string& LocalCardMigrationDialogControllerImpl::GetTipMessage()
     const {
   return tip_message_;
 }

@@ -902,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 1);
 
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->GetText().empty());
 
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
 
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->GetText().empty());
 
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
 
   EXPECT_TRUE(textfield_->GetText().empty());
 
@@ -962,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_EQ("C", base::UTF16ToUTF8(textfield_->GetText()));
   Release(ui::KeyboardCode::VKEY_COMMAND);
 
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   EXPECT_TRUE(textfield_->GetText().empty());
 
   // Verify we can traverse clipboard history and paste the last history item
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMockDLPBrowserTest, Basics) {
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
 
   // Clear `textfield_`'s contents.
-  textfield_->SetText(base::string16());
+  textfield_->SetText(std::u16string());
   ASSERT_TRUE(textfield_->GetText().empty());
 
   // Re-show the multipaste menu since the menu is closed after the previous

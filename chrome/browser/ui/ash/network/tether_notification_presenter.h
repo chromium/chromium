@@ -92,8 +92,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
 
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id,
-      const base::string16& title,
-      const base::string16& message,
+      const std::u16string& title,
+      const std::u16string& message,
       const gfx::ImageSkia& small_image,
       const message_center::RichNotificationData& rich_notification_data);
 

@@ -83,7 +83,7 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
                       l10n_util::GetStringFUTF16(IDS_FLAGS_UI_OWNER_WARNING,
                                                  base::UTF8ToUTF16(owner)));
   } else {
-    source->AddString("owner-warning", base::string16());
+    source->AddString("owner-warning", std::u16string());
   }
 #endif
 

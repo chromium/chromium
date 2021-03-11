@@ -60,8 +60,8 @@ std::unique_ptr<views::ImageView> CreateImageView(
 // as it is a transient UI invoked from the |SharesheetService|.
 SharesheetTargetButton::SharesheetTargetButton(
     PressedCallback callback,
-    const base::string16& display_name,
-    const base::string16& secondary_display_name,
+    const std::u16string& display_name,
+    const std::u16string& secondary_display_name,
     const base::Optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon)
     : Button(std::move(callback)) {
@@ -87,8 +87,8 @@ SharesheetTargetButton::SharesheetTargetButton(
   label->SetEnabledColor(kShareTargetTitleColor);
   SetLabelProperties(label);
 
-  base::string16 accessible_name = display_name;
-  if (secondary_display_name != base::string16() &&
+  std::u16string accessible_name = display_name;
+  if (secondary_display_name != std::u16string() &&
       secondary_display_name != display_name) {
     auto* secondary_label =
         label_view->AddChildView(std::make_unique<views::Label>(

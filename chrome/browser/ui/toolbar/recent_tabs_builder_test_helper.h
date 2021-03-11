@@ -45,20 +45,20 @@ class RecentTabsBuilderTestHelper {
   void AddTabWithInfo(int session_index,
                       int window_index,
                       base::Time timestamp,
-                      const base::string16& title);
+                      const std::u16string& title);
   int GetTabCount(int session_index, int window_index);
   SessionID GetTabID(int session_index, int window_index, int tab_index);
   base::Time GetTabTimestamp(int session_index,
                              int window_index,
                              int tab_index);
-  base::string16 GetTabTitle(int session_index,
-                       int window_index,
-                       int tab_index);
+  std::u16string GetTabTitle(int session_index,
+                             int window_index,
+                             int tab_index);
 
   void ExportToSessionSync(syncer::ModelTypeProcessor* processor);
   void VerifyExport(sync_sessions::OpenTabsUIDelegate* delegate);
 
-  std::vector<base::string16> GetTabTitlesSortedByRecency();
+  std::vector<std::u16string> GetTabTitlesSortedByRecency();
 
  private:
   sync_pb::SessionSpecifics BuildHeaderSpecifics(int session_index);

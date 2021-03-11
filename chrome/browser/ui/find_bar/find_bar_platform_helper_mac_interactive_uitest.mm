@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   FindBarController* find_bar_controller = browser()->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
                                               false, false, false));
 
-  base::string16 find_bar_string =
+  std::u16string find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
   ASSERT_EQ(base::ASCIIToUTF16("asdf"), find_bar_string);
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
       browser_incognito->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser_incognito);
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_T, false,
                                               false, false, false));
 
-  base::string16 find_bar_string =
+  std::u16string find_bar_string =
       find_bar_controller->find_bar()->GetFindText();
 
   ASSERT_EQ(base::ASCIIToUTF16("secret"), find_bar_string);
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   GURL url = GetURL(kSimple);
   ui_test_utils::NavigateToURL(browser(), url);
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   content::WebContents* first_active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  const base::string16 empty_string;
+  const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
 
   chrome::Find(browser());

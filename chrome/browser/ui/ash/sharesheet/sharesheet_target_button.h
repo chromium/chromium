@@ -23,8 +23,8 @@ class SharesheetTargetButton : public views::Button {
   METADATA_HEADER(SharesheetTargetButton);
 
   SharesheetTargetButton(PressedCallback callback,
-                         const base::string16& display_name,
-                         const base::string16& secondary_display_name,
+                         const std::u16string& display_name,
+                         const std::u16string& secondary_display_name,
                          const base::Optional<gfx::ImageSkia> icon,
                          const gfx::VectorIcon* vector_icon);
   SharesheetTargetButton(const SharesheetTargetButton&) = delete;

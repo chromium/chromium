@@ -237,7 +237,7 @@ void SetProfileLocked(const base::FilePath profile_path, bool locked) {
 }
 
 void SetProfileName(const base::FilePath& profile_path,
-                    const base::string16 name) {
+                    const std::u16string name) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -293,7 +293,7 @@ void OnSyncSetupComplete(Profile* profile,
     base::Optional<AccountInfo> primary_account_info =
         identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
             primary_account);
-    base::string16 profile_name;
+    std::u16string profile_name;
     if (primary_account_info.has_value()) {
       profile_name =
           profiles::GetDefaultNameForNewSignedInProfile(*primary_account_info);

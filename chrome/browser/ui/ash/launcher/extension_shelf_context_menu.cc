@@ -100,7 +100,7 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     const extensions::MenuItem::ExtensionKey app_key(app_id);
     if (!app_key.empty()) {
       int index = 0;
-      extension_items_->AppendExtensionItems(app_key, base::string16(), &index,
+      extension_items_->AppendExtensionItems(app_key, std::u16string(), &index,
                                              false);  // is_action_menu
       app_list::AddMenuItemIconsForSystemApps(
           app_id, menu_model.get(), menu_model.get()->GetItemCount() - index,

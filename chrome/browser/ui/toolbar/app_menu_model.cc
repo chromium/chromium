@@ -122,7 +122,7 @@ const base::Feature kChromeTipsInMainMenuNewBadge{
 
 // Conditionally return the update app menu item title based on upgrade detector
 // state.
-base::string16 GetUpgradeDialogMenuItemName() {
+std::u16string GetUpgradeDialogMenuItemName() {
   if (UpgradeDetector::GetInstance()->is_outdated_install() ||
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
@@ -133,12 +133,12 @@ base::string16 GetUpgradeDialogMenuItemName() {
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
-base::Optional<base::string16> GetInstallPWAAppMenuItemName(Browser* browser) {
+base::Optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents)
     return base::nullopt;
-  base::string16 app_name =
+  std::u16string app_name =
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
   if (app_name.empty())
     return base::nullopt;
@@ -316,7 +316,7 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
          command_id == IDC_INSTALL_PWA || command_id == IDC_UPGRADE_DIALOG;
 }
 
-base::string16 AppMenuModel::GetLabelForCommandId(int command_id) const {
+std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
   switch (command_id) {
     case IDC_ZOOM_PERCENT_DISPLAY:
       return zoom_label_;
@@ -342,7 +342,7 @@ base::string16 AppMenuModel::GetLabelForCommandId(int command_id) const {
       return GetUpgradeDialogMenuItemName();
     default:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 
@@ -828,15 +828,15 @@ void AppMenuModel::Build() {
 
   AddItemWithStringId(IDC_FIND, IDS_FIND);
 
-  if (base::Optional<base::string16> name =
+  if (base::Optional<std::u16string> name =
           GetInstallPWAAppMenuItemName(browser_)) {
     AddItem(IDC_INSTALL_PWA, *name);
   } else if (base::Optional<web_app::AppId> app_id =
                  web_app::GetWebAppForActiveTab(browser_)) {
     auto* provider = web_app::WebAppProvider::Get(browser_->profile());
-    const base::string16 short_name =
+    const std::u16string short_name =
         base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id));
-    const base::string16 truncated_name = gfx::TruncateString(
+    const std::u16string truncated_name = gfx::TruncateString(
         short_name, kMaxAppNameLength, gfx::CHARACTER_BREAK);
     AddItem(IDC_OPEN_IN_PWA_WINDOW,
             l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));

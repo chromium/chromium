@@ -154,7 +154,7 @@ void AppServiceAppWindowLauncherItemController::OnWindowTitleChanged(
       continue;
 
     if (app_window->show_in_shelf()) {
-      const base::string16 title = window->GetTitle();
+      const std::u16string title = window->GetTitle();
       if (!title.empty())
         ChromeLauncherController::instance()->SetItemTitle(shelf_id(), title);
     }

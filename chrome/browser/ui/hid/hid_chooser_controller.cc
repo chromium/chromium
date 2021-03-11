@@ -69,15 +69,15 @@ bool HidChooserController::ShouldShowHelpButton() const {
   return true;
 }
 
-base::string16 HidChooserController::GetNoOptionsText() const {
+std::u16string HidChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(IDS_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 HidChooserController::GetOkButtonLabel() const {
+std::u16string HidChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_USB_DEVICE_CHOOSER_CONNECT_BUTTON_TEXT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 HidChooserController::GetThrobberLabelAndTooltip() const {
   return {l10n_util::GetStringUTF16(IDS_HID_CHOOSER_LOADING_LABEL),
           l10n_util::GetStringUTF16(IDS_HID_CHOOSER_LOADING_LABEL_TOOLTIP)};
@@ -87,7 +87,7 @@ size_t HidChooserController::NumOptions() const {
   return items_.size();
 }
 
-base::string16 HidChooserController::GetOption(size_t index) const {
+std::u16string HidChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
   DCHECK(base::Contains(device_map_, items_[index]));
   const auto& device = *device_map_.find(items_[index])->second.front();

@@ -45,7 +45,7 @@ using bookmarks::BookmarkNode;
     return;
 
   const BookmarkNode* node = model->AddFolder(
-      _bookmarkNode, _bookmarkNode->children().size(), base::string16());
+      _bookmarkNode, _bookmarkNode->children().size(), std::u16string());
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkFolder);
     return;
@@ -65,9 +65,8 @@ using bookmarks::BookmarkNode;
   if (!model)
     return;
 
-  const BookmarkNode* node = model->AddFolder(_bookmarkNode,
-                                              position,
-                                              base::string16());
+  const BookmarkNode* node =
+      model->AddFolder(_bookmarkNode, position, std::u16string());
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkFolder);
     return;
@@ -120,7 +119,7 @@ using bookmarks::BookmarkNode;
   }
 
   const BookmarkNode* node = model->AddURL(
-      _bookmarkNode, _bookmarkNode->children().size(), base::string16(), url);
+      _bookmarkNode, _bookmarkNode->children().size(), std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkItem);
     return;
@@ -147,10 +146,8 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  const BookmarkNode* node = model->AddURL(_bookmarkNode,
-                                           position,
-                                           base::string16(),
-                                           url);
+  const BookmarkNode* node =
+      model->AddURL(_bookmarkNode, position, std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::errCreateBookmarkItem);
     return;

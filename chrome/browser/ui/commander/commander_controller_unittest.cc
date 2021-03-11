@@ -22,34 +22,34 @@ namespace {
 class TestCommandSource : public CommandSource {
  public:
   using GetCommandsHandler =
-      base::RepeatingCallback<CommandResults(const base::string16&,
+      base::RepeatingCallback<CommandResults(const std::u16string&,
                                              Browser* browser)>;
   explicit TestCommandSource(GetCommandsHandler handler)
       : handler_(std::move(handler)) {}
   ~TestCommandSource() override = default;
 
-  CommandResults GetCommands(const base::string16& input,
+  CommandResults GetCommands(const std::u16string& input,
                              Browser* browser) const override {
     invocations_.push_back(input);
     return handler_.Run(input, browser);
   }
 
-  const std::vector<base::string16>& invocations() const {
+  const std::vector<std::u16string>& invocations() const {
     return invocations_;
   }
 
  private:
-  mutable std::vector<base::string16> invocations_;
+  mutable std::vector<std::u16string> invocations_;
   GetCommandsHandler handler_;
 };
 
 std::unique_ptr<TestCommandSource> CreateNoOpCommandSource() {
   return std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](const base::string16&,
+      [](const std::u16string&,
          Browser* browser) -> CommandSource::CommandResults { return {}; }));
 }
 
-std::unique_ptr<CommandItem> CreateNoOpCommandItem(const base::string16& title,
+std::unique_ptr<CommandItem> CreateNoOpCommandItem(const std::u16string& title,
                                                    double score) {
   std::vector<gfx::Range> ranges{{0, title.size()}};
   auto item = std::make_unique<CommandItem>(title, score, ranges);
@@ -126,7 +126,7 @@ TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {
   EXPECT_EQ(first->invocations().size(), 0u);
   EXPECT_EQ(second->invocations().size(), 0u);
 
-  base::string16 input = base::ASCIIToUTF16("foobar");
+  std::u16string input = base::ASCIIToUTF16("foobar");
   controller->OnTextChanged(input, browser());
 
   EXPECT_EQ(first->invocations().size(), 1u);
@@ -163,14 +163,14 @@ TEST_F(CommanderControllerTest, ResultSetIdsDifferAcrossCalls) {
 TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto first = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
         result.push_back(
             CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100));
         return result;
       }));
   auto second = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
         auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
         item->annotation = base::ASCIIToUTF16("2nd");
@@ -195,7 +195,7 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
   ASSERT_EQ(model.items.size(), 2u);
 
   EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
-  EXPECT_EQ(model.items[0].annotation, base::string16());
+  EXPECT_EQ(model.items[0].annotation, std::u16string());
   EXPECT_EQ(model.items[0].entity_type, CommandItem::Entity::kCommand);
 
   EXPECT_EQ(model.items[1].title, base::ASCIIToUTF16("second"));
@@ -208,7 +208,7 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
 TEST_F(CommanderControllerTest, ViewModelSortsResults) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto first = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
         result.push_back(
             CreateNoOpCommandItem(base::ASCIIToUTF16("third"), 98));
@@ -220,7 +220,7 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
         return result;
       }));
   auto second = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
         result.push_back(
             CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99));
@@ -284,7 +284,7 @@ TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
 TEST_F(CommanderControllerTest, ViewModelRetainsBoldRanges) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
-      base::BindRepeating([=](const base::string16&, Browser* browser) {
+      base::BindRepeating([=](const std::u16string&, Browser* browser) {
         auto first = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         auto second = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
         first->matched_ranges.clear();
@@ -322,7 +322,7 @@ TEST_F(CommanderControllerTest, OnCommandSelectedInvokesOneShotCommand) {
   bool first_called = false;
   bool second_called = false;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](bool* first_called_ptr, bool* second_called_ptr, const base::string16&,
+      [](bool* first_called_ptr, bool* second_called_ptr, const std::u16string&,
          Browser* browser) {
         auto first = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         auto second = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
@@ -366,7 +366,7 @@ TEST_F(CommanderControllerTest, NoActionOnIncorrectResultId) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   bool item_called = false;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](bool* called_ptr, const base::string16&, Browser* browser) {
+      [](bool* called_ptr, const std::u16string&, Browser* browser) {
         auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         item->command =
             base::BindOnce([](bool* called) { *called = true; }, called_ptr);
@@ -397,7 +397,7 @@ TEST_F(CommanderControllerTest, NoActionOnOOBIndex) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   bool item_called = false;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](bool* called_ptr, const base::string16&, Browser* browser) {
+      [](bool* called_ptr, const std::u16string&, Browser* browser) {
         auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         item->command =
             base::BindOnce([](bool* called) { *called = true; }, called_ptr);
@@ -426,10 +426,10 @@ TEST_F(CommanderControllerTest, NoActionOnOOBIndex) {
 TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         CommandItem::CompositeCommandProvider noop =
-            base::BindRepeating([](const base::string16&) {
+            base::BindRepeating([](const std::u16string&) {
               return CommandSource::CommandResults();
             });
         item->command = std::make_pair(base::ASCIIToUTF16("Do stuff"), noop);
@@ -461,13 +461,13 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
 
 TEST_F(CommanderControllerTest, OnTextChangedPassedToCompositeCommandProvider) {
   std::vector<std::unique_ptr<CommandSource>> sources;
-  base::string16 received_string;
+  std::u16string received_string;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
-      [](base::string16* passthrough_string, const base::string16& string,
+      [](std::u16string* passthrough_string, const std::u16string& string,
          Browser* browser) {
         auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
         CommandItem::CompositeCommandProvider provider = base::BindRepeating(
-            [](base::string16* out_string, const base::string16& string) {
+            [](std::u16string* out_string, const std::u16string& string) {
               *out_string = string;
               return CommandSource::CommandResults();
             },
@@ -505,10 +505,10 @@ TEST_F(CommanderControllerTest,
        CompositeProviderCommandsArePresentedAndExecuted) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
-      base::BindRepeating([](const base::string16&, Browser* browser) {
+      base::BindRepeating([](const std::u16string&, Browser* browser) {
         auto outer = CreateNoOpCommandItem(base::ASCIIToUTF16("outer"), 100);
         CommandItem::CompositeCommandProvider provider =
-            base::BindRepeating([](const base::string16&) {
+            base::BindRepeating([](const std::u16string&) {
               CommandSource::CommandResults results;
               auto inner =
                   CreateNoOpCommandItem(base::ASCIIToUTF16("inner"), 100);
@@ -559,10 +559,10 @@ TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesProvider) {
   TestCommandSource* source = AddSource(
       &sources,
       std::make_unique<TestCommandSource>(
-          base::BindRepeating([](const base::string16&, Browser* browser) {
+          base::BindRepeating([](const std::u16string&, Browser* browser) {
             auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
             CommandItem::CompositeCommandProvider noop =
-                base::BindRepeating([](const base::string16&) {
+                base::BindRepeating([](const std::u16string&) {
                   return CommandSource::CommandResults();
                 });
             item->command =

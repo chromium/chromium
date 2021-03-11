@@ -43,7 +43,7 @@ class SendTabToSelfBubbleController
   // Returns nullptr if no bubble is currently shown.
   SendTabToSelfBubbleView* send_tab_to_self_bubble_view() const;
   // Returns the title of send tab to self bubble.
-  base::string16 GetWindowTitle() const;
+  std::u16string GetWindowTitle() const;
   // Returns the valid devices info map.
   virtual std::vector<TargetDeviceInfo> GetValidDevices() const;
   // Returns current profile.

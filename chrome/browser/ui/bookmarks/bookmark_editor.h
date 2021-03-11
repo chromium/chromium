@@ -51,7 +51,7 @@ class BookmarkEditor {
         const bookmarks::BookmarkNode* parent_node,
         size_t index,
         const GURL& url,
-        const base::string16& title);
+        const std::u16string& title);
 
     // Returns an EditDetails instance for the user adding a folder within a
     // given parent node with a specified index.
@@ -92,11 +92,11 @@ class BookmarkEditor {
 
     // If type == NEW_URL this gives the URL/title.
     GURL url;
-    base::string16 title;
+    std::u16string title;
 
     // If type == NEW_FOLDER, this is the urls/title pairs to add to the
     // folder.
-    std::vector<std::pair<GURL, base::string16> > urls;
+    std::vector<std::pair<GURL, std::u16string>> urls;
 
    private:
     explicit EditDetails(Type node_type);
@@ -118,7 +118,7 @@ class BookmarkEditor {
       bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* parent,
       const EditDetails& details,
-      const base::string16& new_title,
+      const std::u16string& new_title,
       const GURL& new_url);
 
   // Modifies a bookmark node assuming that the parent of the node may have
@@ -129,7 +129,7 @@ class BookmarkEditor {
       bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* new_parent,
       const EditDetails& details,
-      const base::string16& new_title,
+      const std::u16string& new_title,
       const GURL& new_url);
 };
 

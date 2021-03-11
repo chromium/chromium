@@ -181,8 +181,8 @@ void SaveUpdateWithAccountStoreBubbleController::OnNeverForThisSiteClicked() {
 }
 
 void SaveUpdateWithAccountStoreBubbleController::OnCredentialEdited(
-    base::string16 new_username,
-    base::string16 new_password) {
+    std::u16string new_username,
+    std::u16string new_password) {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   pending_password_.username_value = std::move(new_username);
@@ -305,7 +305,7 @@ bool SaveUpdateWithAccountStoreBubbleController::
   return delegate_->DidAuthForAccountStoreOptInFail();
 }
 
-base::string16 SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
+std::u16string SaveUpdateWithAccountStoreBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
                                : (pending_password_.federation_origin.opaque()

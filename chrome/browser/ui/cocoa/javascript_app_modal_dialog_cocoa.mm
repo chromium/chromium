@@ -92,7 +92,7 @@ JavaScriptAppModalDialogCocoa::GetAlertParams() {
 
 void JavaScriptAppModalDialogCocoa::OnAlertFinished(
     AlertDisposition disposition,
-    const base::string16& text_field_value,
+    const std::u16string& text_field_value,
     bool check_box_value) {
   switch (disposition) {
     case AlertDisposition::PRIMARY_BUTTON:
@@ -152,7 +152,7 @@ void JavaScriptAppModalDialogCocoa::ActivateAppModalDialog() {
 void JavaScriptAppModalDialogCocoa::CloseAppModalDialog() {
   // This function expects that controller_->OnClose will be called before this
   // function completes.
-  OnAlertFinished(AlertDisposition::CLOSE, base::string16(),
+  OnAlertFinished(AlertDisposition::CLOSE, std::u16string(),
                   false /* check_box_value */);
 }
 
@@ -167,7 +167,7 @@ void JavaScriptAppModalDialogCocoa::AcceptAppModalDialog() {
 }
 
 void JavaScriptAppModalDialogCocoa::CancelAppModalDialog() {
-  OnAlertFinished(AlertDisposition::SECONDARY_BUTTON, base::string16(), false
+  OnAlertFinished(AlertDisposition::SECONDARY_BUTTON, std::u16string(), false
                   /* check_box_value */);
 }
 

@@ -422,28 +422,28 @@ class Browser : public TabStripModelObserver,
   // Gets the title of the window based on the selected tab's title.
   // Disables additional formatting when |include_app_name| is false or if the
   // window is an app window.
-  base::string16 GetWindowTitleForCurrentTab(bool include_app_name) const;
+  std::u16string GetWindowTitleForCurrentTab(bool include_app_name) const;
 
   // Gets the window title of the tab at |index|.
   // Disables additional formatting when |include_app_name| is false or if the
   // window is an app window.
-  base::string16 GetWindowTitleForTab(bool include_app_name, int index) const;
+  std::u16string GetWindowTitleForTab(bool include_app_name, int index) const;
 
   // Gets the window title for the current tab, to display in a menu. If the
   // title is too long to fit in the required space, the tab title will be
   // elided. The result title might still be a larger width than specified, as
   // at least a few characters of the title are always shown.
-  base::string16 GetWindowTitleForMaxWidth(int max_width) const;
+  std::u16string GetWindowTitleForMaxWidth(int max_width) const;
 
   // Gets the window title from the provided WebContents.
   // Disables additional formatting when |include_app_name| is false or if the
   // window is an app window.
-  base::string16 GetWindowTitleFromWebContents(
+  std::u16string GetWindowTitleFromWebContents(
       bool include_app_name,
       content::WebContents* contents) const;
 
   // Prepares a title string for display (removes embedded newlines, etc).
-  static base::string16 FormatTitleForDisplay(base::string16 title);
+  static std::u16string FormatTitleForDisplay(std::u16string title);
 
   // OnBeforeUnload handling //////////////////////////////////////////////////
 

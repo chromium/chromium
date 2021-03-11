@@ -228,11 +228,10 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
         locale, NULL, ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
   }
 
-  const base::string16& title =
+  const std::u16string& title =
       l10n_util::GetStringUTF16(IDS_CANT_WRITE_USER_DIRECTORY_TITLE);
-  const base::string16& message =
-      l10n_util::GetStringFUTF16(IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY,
-                                 user_data_dir.LossyDisplayName());
+  const std::u16string& message = l10n_util::GetStringFUTF16(
+      IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY, user_data_dir.LossyDisplayName());
 
   if (cleanup_resource_bundle)
     ui::ResourceBundle::CleanupSharedInstance();

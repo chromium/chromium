@@ -29,11 +29,11 @@ class PasswordGenerationPopupController
   // Accessors
   virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
-  virtual const base::string16& password() const = 0;
+  virtual const std::u16string& password() const = 0;
 
   // Translated strings
-  virtual base::string16 SuggestedText() = 0;
-  virtual const base::string16& HelpText() = 0;
+  virtual std::u16string SuggestedText() = 0;
+  virtual const std::u16string& HelpText() = 0;
 
  protected:
   ~PasswordGenerationPopupController() override = default;

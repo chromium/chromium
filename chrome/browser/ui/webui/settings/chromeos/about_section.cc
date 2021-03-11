@@ -314,16 +314,16 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
           base::Time::Now()));
 
-  base::string16 license = l10n_util::GetStringFUTF16(
+  std::u16string license = l10n_util::GetStringFUTF16(
       IDS_VERSION_UI_LICENSE, base::ASCIIToUTF16(chrome::kChromiumProjectURL),
       base::ASCIIToUTF16(chrome::kChromeUICreditsURL));
   html_source->AddString("aboutProductLicense", license);
 
-  base::string16 os_license = l10n_util::GetStringFUTF16(
+  std::u16string os_license = l10n_util::GetStringFUTF16(
       IDS_ABOUT_CROS_VERSION_LICENSE,
       base::ASCIIToUTF16(chrome::kChromeUIOSCreditsURL));
   html_source->AddString("aboutProductOsLicense", os_license);
-  base::string16 os_with_linux_license = l10n_util::GetStringFUTF16(
+  std::u16string os_with_linux_license = l10n_util::GetStringFUTF16(
       IDS_ABOUT_CROS_WITH_LINUX_VERSION_LICENSE,
       base::ASCIIToUTF16(chrome::kChromeUIOSCreditsURL),
       base::ASCIIToUTF16(chrome::kChromeUICrostiniCreditsURL));

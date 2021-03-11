@@ -168,7 +168,7 @@ const base::FilePath::CharType* kTitle1File = FILE_PATH_LITERAL("title1.html");
 const base::FilePath::CharType* kTitle2File = FILE_PATH_LITERAL("title2.html");
 
 // Given a page title, returns the expected window caption string.
-base::string16 WindowCaptionFromPageTitle(const base::string16& page_title) {
+std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
 #if defined(OS_MAC)
   // On Mac, we don't want to suffix the page title with the application name.
   if (page_title.empty())
@@ -333,9 +333,9 @@ class BrowserTest : public extensions::ExtensionBrowserTest {
 
   // In RTL locales wrap the page title with RTL embedding characters so that it
   // matches the value returned by GetWindowTitle().
-  base::string16 LocaleWindowCaptionFromPageTitle(
-      const base::string16& expected_title) {
-    base::string16 page_title = WindowCaptionFromPageTitle(expected_title);
+  std::u16string LocaleWindowCaptionFromPageTitle(
+      const std::u16string& expected_title) {
+    std::u16string page_title = WindowCaptionFromPageTitle(expected_title);
 #if defined(OS_WIN)
     std::string locale = g_browser_process->GetApplicationLocale();
     if (base::i18n::GetTextDirectionForLocale(locale.c_str()) ==
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitle) {
   EXPECT_EQ(
       LocaleWindowCaptionFromPageTitle(ASCIIToUTF16("title1.html")),
       browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(ASCIIToUTF16("title1.html"), tab_title);
 }
@@ -414,8 +414,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
   GURL prefix_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File));
-  base::string16 tab_title;
-  base::string16 test_title;
+  std::u16string tab_title;
+  std::u16string test_title;
   for (const auto& c : cases) {
     SCOPED_TRACE(c.message);
     GURL url(prefix_url.spec() + c.suffix);
@@ -434,11 +434,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
       browser(), ui_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle2File)));
-  const base::string16 test_title(ASCIIToUTF16("Title Of Awesomeness"));
+  const std::u16string test_title(ASCIIToUTF16("Title Of Awesomeness"));
   EXPECT_EQ(
       LocaleWindowCaptionFromPageTitle(test_title),
       browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
-  base::string16 tab_title;
+  std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(test_title, tab_title);
 }
@@ -455,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
   captive_portal_params.disposition = WindowOpenDisposition::NEW_POPUP;
   captive_portal_params.is_captive_portal_popup = true;
   ui_test_utils::NavigateToURL(&captive_portal_params);
-  base::string16 captive_portal_window_title =
+  std::u16string captive_portal_window_title =
       chrome::FindBrowserWithWebContents(
           captive_portal_params.navigated_or_inserted_contents)
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
   NavigateParams normal_params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   normal_params.disposition = WindowOpenDisposition::NEW_POPUP;
   ui_test_utils::NavigateToURL(&normal_params);
-  base::string16 normal_window_title =
+  std::u16string normal_window_title =
       chrome::FindBrowserWithWebContents(
           normal_params.navigated_or_inserted_contents)
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DownloadDoesntDismissDialog) {
   download_waiter->WaitForFinished();
 
   // Close the dialog after the download finishes, to clean up.
-  js_dialog_manager->ClickDialogButtonForTesting(true, base::string16());
+  js_dialog_manager->ClickDialogButtonForTesting(true, std::u16string());
   EXPECT_FALSE(js_dialog_manager->IsShowingDialogForTesting());
 
   // Make sure input events still work in the renderer process.
@@ -2019,7 +2019,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose1) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  base::string16 title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2036,7 +2036,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, WindowOpenClose2) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  base::string16 title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2059,7 +2059,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_WindowOpenClose3) {
   add_query.SetQuery(query.c_str(), url::Component(0, query.length()));
   url = url.ReplaceComponents(add_query);
 
-  base::string16 title = ASCIIToUTF16("Title Of Awesomeness");
+  std::u16string title = ASCIIToUTF16("Title Of Awesomeness");
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url, 2);
@@ -2091,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
       base::FilePath(),
       base::FilePath().AppendASCII("fileurl_universalaccess.html"));
 
-  base::string16 expected_title(ASCIIToUTF16("Disallowed"));
+  std::u16string expected_title(ASCIIToUTF16("Disallowed"));
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
   title_watcher.AlsoWaitForTitle(ASCIIToUTF16("Allowed"));
@@ -2322,11 +2322,11 @@ class ClickModifierTest : public InProcessBrowserTest {
         base::FilePath(FILE_PATH_LITERAL("href.html")));
   }
 
-  base::string16 GetFirstPageTitle() const {
+  std::u16string GetFirstPageTitle() const {
     return ASCIIToUTF16(kFirstPageTitle);
   }
 
-  base::string16 GetSecondPageTitle() const {
+  std::u16string GetSecondPageTitle() const {
     return ASCIIToUTF16(kSecondPageTitle);
   }
 
@@ -2668,9 +2668,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DefaultMediaDevices) {
 
 namespace {
 
-void CheckDisplayModeMQ(const base::string16& display_mode,
+void CheckDisplayModeMQ(const std::u16string& display_mode,
                         content::WebContents* web_contents) {
-  base::string16 function =
+  std::u16string function =
       ASCIIToUTF16("(function() {return window.matchMedia('(display-mode: ") +
       display_mode + ASCIIToUTF16(")').matches;})();");
   bool js_result = false;

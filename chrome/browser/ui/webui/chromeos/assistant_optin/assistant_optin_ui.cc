@@ -169,7 +169,7 @@ bool AssistantOptInDialog::BounceIfActive() {
 AssistantOptInDialog::AssistantOptInDialog(
     ash::FlowType type,
     ash::AssistantSetup::StartAssistantOptInFlowCallback callback)
-    : SystemWebDialogDelegate(CreateAssistantOptInURL(type), base::string16()),
+    : SystemWebDialogDelegate(CreateAssistantOptInURL(type), std::u16string()),
       callback_(std::move(callback)) {}
 
 AssistantOptInDialog::~AssistantOptInDialog() {

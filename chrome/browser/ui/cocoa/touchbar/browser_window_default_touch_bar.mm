@@ -388,7 +388,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
     // Strip the trailing slash.
     url::Parsed parsed;
-    base::string16 displayText = url_formatter::FormatUrl(
+    std::u16string displayText = url_formatter::FormatUrl(
         contents->GetLastCommittedURL(),
         url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname,
         net::UnescapeRule::SPACES, &parsed, nullptr, nullptr);
@@ -497,7 +497,7 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
   const TemplateURL* defaultProvider =
       templateUrlService->GetDefaultSearchProvider();
   BOOL isGoogle = NO;
-  base::string16 title;
+  std::u16string title;
   if (defaultProvider) {
     isGoogle =
         defaultProvider->GetEngineType(

@@ -25,7 +25,7 @@ std::vector<content::WebContents*> GetHungWebContentsList(
 // Given a RenderProcessHost of a hung process, and a WebContents that is
 // affected by it, returns the title of the WebContents that should be used in
 // the "Hung Page" dialog.
-base::string16 GetHungWebContentsTitle(
+std::u16string GetHungWebContentsTitle(
     content::WebContents* affected_web_contents,
     content::RenderProcessHost* hung_process);
 

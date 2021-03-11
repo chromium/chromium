@@ -411,7 +411,7 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
                                 l10n_util::GetStringUTF16(IDS_LEARN_MORE));
     localized_strings.SetString("enterpriseInfoHintLink",
                                 chrome::kLearnMoreEnterpriseURL);
-    base::string16 enterprise_info;
+    std::u16string enterprise_info;
     if (connector->IsCloudManaged()) {
       const std::string enterprise_domain_manager =
           connector->GetEnterpriseDomainManager();

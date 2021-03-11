@@ -404,7 +404,7 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the one-click sign in confirmation UI. |email| holds the full email
   // address of the account that has signed in.
   virtual void ShowOneClickSigninConfirmation(
-      const base::string16& email,
+      const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) = 0;
 #endif
 

@@ -52,7 +52,7 @@ void SmbShareDialog::Show() {
 
 SmbShareDialog::SmbShareDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUISmbShareURL),
-                              base::string16() /* title */) {}
+                              std::u16string() /* title */) {}
 
 SmbShareDialog::~SmbShareDialog() = default;
 

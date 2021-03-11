@@ -19,13 +19,13 @@ FeaturePromoTextReplacements::~FeaturePromoTextReplacements() = default;
 
 // static
 FeaturePromoTextReplacements FeaturePromoTextReplacements::WithString(
-    base::string16 s) {
+    std::u16string s) {
   FeaturePromoTextReplacements result;
   result.string_replacement_ = std::move(s);
   return result;
 }
 
-base::string16 FeaturePromoTextReplacements::ApplyTo(
+std::u16string FeaturePromoTextReplacements::ApplyTo(
     int string_specifier) const {
   if (string_replacement_)
     return l10n_util::GetStringFUTF16(string_specifier, *string_replacement_);

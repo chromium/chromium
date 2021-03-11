@@ -278,10 +278,10 @@ void CookiesViewHandler::HandleGetNumCookiesString(
   int num_cookies = args->GetList()[1].GetInt();
 
   AllowJavascript();
-  const base::string16 string =
+  const std::u16string string =
       num_cookies > 0 ? l10n_util::GetPluralStringFUTF16(
                             IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies)
-                      : base::string16();
+                      : std::u16string();
 
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
@@ -289,7 +289,7 @@ void CookiesViewHandler::HandleGetNumCookiesString(
 void CookiesViewHandler::HandleGetDisplayList(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
   std::string callback_id = args->GetList()[0].GetString();
-  base::string16 filter = base::UTF8ToUTF16(args->GetList()[1].GetString());
+  std::u16string filter = base::UTF8ToUTF16(args->GetList()[1].GetString());
 
   AllowJavascript();
   pending_requests_.emplace(
@@ -302,7 +302,7 @@ void CookiesViewHandler::HandleGetDisplayList(const base::ListValue* args) {
 }
 
 void CookiesViewHandler::GetDisplayList(std::string callback_id,
-                                        const base::string16& filter) {
+                                        const std::u16string& filter) {
   if (filter != filter_) {
     filter_ = filter;
     cookies_tree_model_->UpdateSearchResults(filter_);
@@ -414,7 +414,7 @@ void CookiesViewHandler::RemoveShownItems() {
 
 void CookiesViewHandler::HandleRemoveSite(const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  base::string16 site = base::UTF8ToUTF16(args->GetList()[0].GetString());
+  std::u16string site = base::UTF8ToUTF16(args->GetList()[0].GetString());
   AllowJavascript();
   pending_requests_.emplace(
       Request::NO_BATCH,
@@ -423,7 +423,7 @@ void CookiesViewHandler::HandleRemoveSite(const base::ListValue* args) {
   ProcessPendingRequests();
 }
 
-void CookiesViewHandler::RemoveSite(const base::string16& site) {
+void CookiesViewHandler::RemoveSite(const std::u16string& site) {
   CookieTreeNode* parent = cookies_tree_model_->GetRoot();
   const auto i = std::find_if(
       parent->children().cbegin(), parent->children().cend(),
@@ -445,7 +445,7 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
   // Gather list of sites with some highlights of the categories and items.
   base::ListValue site_list;
   for (const auto& site : parent->children()) {
-    base::string16 description;
+    std::u16string description;
     for (const auto& category : site->children()) {
       if (!description.empty())
         description += base::ASCIIToUTF16(", ");

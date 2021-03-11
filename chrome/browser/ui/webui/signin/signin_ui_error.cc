@@ -15,12 +15,12 @@
 
 // static
 SigninUIError SigninUIError::Ok() {
-  return SigninUIError(Type::kOk, std::string(), base::string16());
+  return SigninUIError(Type::kOk, std::string(), std::u16string());
 }
 
 // static
 SigninUIError SigninUIError::Other(const std::string& email) {
-  return SigninUIError(Type::kOther, email, base::string16());
+  return SigninUIError(Type::kOther, email, std::u16string());
 }
 
 // static
@@ -93,11 +93,11 @@ SigninUIError::Type SigninUIError::type() const {
   return type_;
 }
 
-const base::string16& SigninUIError::email() const {
+const std::u16string& SigninUIError::email() const {
   return email_;
 }
 
-const base::string16& SigninUIError::message() const {
+const std::u16string& SigninUIError::message() const {
   return message_;
 }
 
@@ -131,5 +131,5 @@ bool SigninUIError::operator!=(const SigninUIError& other) const {
 
 SigninUIError::SigninUIError(Type type,
                              const std::string& email,
-                             const base::string16& error_message)
+                             const std::u16string& error_message)
     : type_(type), email_(base::UTF8ToUTF16(email)), message_(error_message) {}

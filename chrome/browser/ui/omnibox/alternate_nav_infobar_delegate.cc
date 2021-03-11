@@ -25,7 +25,7 @@ AlternateNavInfoBarDelegate::~AlternateNavInfoBarDelegate() {
 // static
 void AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
     content::WebContents* web_contents,
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const GURL& search_url) {
   InfoBarService* infobar_service =
@@ -37,10 +37,10 @@ void AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
           search_url))));
 }
 
-base::string16 AlternateNavInfoBarDelegate::GetMessageTextWithOffset(
+std::u16string AlternateNavInfoBarDelegate::GetMessageTextWithOffset(
     size_t* link_offset) const {
-  const base::string16 label = l10n_util::GetStringFUTF16(
-      IDS_ALTERNATE_NAV_URL_VIEW_LABEL, base::string16(), link_offset);
+  const std::u16string label = l10n_util::GetStringFUTF16(
+      IDS_ALTERNATE_NAV_URL_VIEW_LABEL, std::u16string(), link_offset);
   return label;
 }
 
@@ -53,7 +53,7 @@ const gfx::VectorIcon& AlternateNavInfoBarDelegate::GetVectorIcon() const {
   return kGlobeIcon;
 }
 
-base::string16 AlternateNavInfoBarDelegate::GetLinkText() const {
+std::u16string AlternateNavInfoBarDelegate::GetLinkText() const {
   return base::UTF8ToUTF16(destination_url_.spec());
 }
 
@@ -94,7 +94,7 @@ bool AlternateNavInfoBarDelegate::LinkClicked(
 
 AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(
     Profile* profile,
-    const base::string16& text,
+    const std::u16string& text,
     std::unique_ptr<AutocompleteMatch> match,
     const GURL& destination_url,
     const GURL& original_url)

@@ -794,7 +794,7 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name) {
 // in a chooser permission exceptions table. The chooser permission will contain
 // a list of site exceptions that correspond to the exception.
 base::Value CreateChooserExceptionObject(
-    const base::string16& display_name,
+    const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details) {
@@ -880,14 +880,14 @@ base::Value GetChooserExceptionListFromProfile(
   // Maps from a chooser exception name/object pair to a
   // ChooserExceptionDetails. This will group and sort the exceptions by the UI
   // string and object for display.
-  std::map<std::pair<base::string16, base::Value>, ChooserExceptionDetails>
+  std::map<std::pair<std::u16string, base::Value>, ChooserExceptionDetails>
       all_chooser_objects;
   for (const auto& object : objects) {
     // Don't include WebUI settings.
     if (content::HasWebUIScheme(object->origin))
       continue;
 
-    base::string16 name = chooser_context->GetObjectDisplayName(object->value);
+    std::u16string name = chooser_context->GetObjectDisplayName(object->value);
     auto& chooser_exception_details =
         all_chooser_objects[std::make_pair(name, object->value.Clone())];
 
@@ -904,7 +904,7 @@ base::Value GetChooserExceptionListFromProfile(
   }
 
   for (const auto& all_chooser_objects_entry : all_chooser_objects) {
-    const base::string16& name = all_chooser_objects_entry.first.first;
+    const std::u16string& name = all_chooser_objects_entry.first.first;
     const base::Value& object = all_chooser_objects_entry.first.second;
     const ChooserExceptionDetails& chooser_exception_details =
         all_chooser_objects_entry.second;

@@ -29,7 +29,7 @@ class CommandSource {
   // list if none are appropriate. The commands are not guaranteed to be in
   // any particular order. |browser| is the browser the active commander
   // is attached to.
-  virtual CommandResults GetCommands(const base::string16& input,
+  virtual CommandResults GetCommands(const std::u16string& input,
                                      Browser* browser) const = 0;
 };
 
@@ -58,11 +58,11 @@ struct CommandItem {
 
   using CompositeCommandProvider =
       base::RepeatingCallback<CommandSource::CommandResults(
-          const base::string16&)>;
-  using CompositeCommand = std::pair<base::string16, CompositeCommandProvider>;
+          const std::u16string&)>;
+  using CompositeCommand = std::pair<std::u16string, CompositeCommandProvider>;
 
   CommandItem();
-  CommandItem(const base::string16& title,
+  CommandItem(const std::u16string& title,
               double score,
               const std::vector<gfx::Range>& ranges);
   virtual ~CommandItem();
@@ -74,12 +74,12 @@ struct CommandItem {
 
   Type GetType();
   // The title to display to the user.
-  base::string16 title;
+  std::u16string title;
   // See Entity documentation above.
   Entity entity_type = kCommand;
   // Optional secondary text for the command. Typically used to display a
   // hotkey.
-  base::string16 annotation;
+  std::u16string annotation;
   // If this command is a one-shot, executes the command. If this command is
   // composite, provides the prompt text sent to the user, and a
   // CompositeCommandProvider to handle additional user input.

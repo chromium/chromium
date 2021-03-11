@@ -180,7 +180,7 @@ base::Value GetAccountValue(const AccountInfo& account) {
   return dictionary;
 }
 
-base::string16 GetEnterPassphraseBody(syncer::PassphraseType passphrase_type,
+std::u16string GetEnterPassphraseBody(syncer::PassphraseType passphrase_type,
                                       base::Time passphrase_time) {
   DCHECK(syncer::IsExplicitPassphrase(passphrase_type));
   switch (passphrase_type) {
@@ -204,10 +204,10 @@ base::string16 GetEnterPassphraseBody(syncer::PassphraseType passphrase_type,
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetFullEncryptionBody(syncer::PassphraseType passphrase_type,
+std::u16string GetFullEncryptionBody(syncer::PassphraseType passphrase_type,
                                      base::Time passphrase_time) {
   DCHECK(syncer::IsExplicitPassphrase(passphrase_type));
   if (passphrase_time.is_null()) {
@@ -226,7 +226,7 @@ base::string16 GetFullEncryptionBody(syncer::PassphraseType passphrase_type,
       break;
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace

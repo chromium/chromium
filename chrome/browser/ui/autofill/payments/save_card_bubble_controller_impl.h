@@ -99,10 +99,10 @@ class SaveCardBubbleControllerImpl
   void ReshowBubble();
 
   // SaveCardBubbleController:
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetExplanatoryMessage() const override;
-  base::string16 GetAcceptButtonText() const override;
-  base::string16 GetDeclineButtonText() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetExplanatoryMessage() const override;
+  std::u16string GetAcceptButtonText() const override;
+  std::u16string GetDeclineButtonText() const override;
   const AccountInfo& GetAccountInfo() const override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
@@ -122,7 +122,7 @@ class SaveCardBubbleControllerImpl
   AutofillSyncSigninState GetSyncState() const override;
 
   // SavePaymentIconController:
-  base::string16 GetSavePaymentIconTooltipText() const override;
+  std::u16string GetSavePaymentIconTooltipText() const override;
   bool ShouldShowSavingCardAnimation() const override;
   bool ShouldShowCardSavedLabelAnimation() const override;
   bool ShouldShowSaveFailureBadge() const override;

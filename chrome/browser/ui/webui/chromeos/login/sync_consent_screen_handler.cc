@@ -33,7 +33,7 @@ void GetConsentIDs(const std::unordered_set<int>& known_ids,
     // characters, so we must use base::ReplaceSubstrings* rather than
     // base::ReplaceChars.
     // TODO(alemate): Find a more elegant solution.
-    base::string16 raw_string = l10n_util::GetStringUTF16(id);
+    std::u16string raw_string = l10n_util::GetStringUTF16(id);
     std::string sanitized_string = base::UTF16ToUTF8(raw_string);
     base::ReplaceSubstringsAfterOffset(&sanitized_string, 0,
                                        "\u00A0" /* NBSP */, "&nbsp;");

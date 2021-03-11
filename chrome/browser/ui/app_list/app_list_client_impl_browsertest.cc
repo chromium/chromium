@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowContextMenu) {
     if (menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SEPARATOR)
       continue;
 
-    base::string16 label = menu_model->GetLabelAt(i);
+    std::u16string label = menu_model->GetLabelAt(i);
     EXPECT_FALSE(label.empty());
   }
 }

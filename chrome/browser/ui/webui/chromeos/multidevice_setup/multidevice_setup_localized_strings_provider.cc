@@ -73,11 +73,11 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
 
 struct LocalizedStringWithName {
   LocalizedStringWithName(const char* name,
-                          const base::string16& localized_string)
+                          const std::u16string& localized_string)
       : name(name), localized_string(localized_string) {}
 
   const char* name;
-  base::string16 localized_string;
+  std::u16string localized_string;
 };
 
 const std::vector<LocalizedStringWithName>&

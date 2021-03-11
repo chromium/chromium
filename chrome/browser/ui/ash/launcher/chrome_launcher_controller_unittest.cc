@@ -1363,7 +1363,7 @@ class MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest
                             const std::string& url) {
     V1App* v1_app = new V1App(profile, app_name);
     NavigateAndCommitActiveTabWithTitle(v1_app->browser(), GURL(url),
-                                        base::string16());
+                                        std::u16string());
     return v1_app;
   }
 
@@ -3288,7 +3288,7 @@ TEST_F(ChromeLauncherControllerTest, PendingInsertionOrder) {
 void CheckAppMenu(ChromeLauncherController* controller,
                   const ash::ShelfItem& item,
                   size_t expected_item_count,
-                  base::string16 expected_item_titles[]) {
+                  std::u16string expected_item_titles[]) {
   auto items = controller->GetAppMenuItemsForTesting(item);
   ASSERT_EQ(expected_item_count, items.size());
   for (size_t i = 0; i < expected_item_count; i++)
@@ -3310,9 +3310,9 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
 
   // Now make the created browser() visible by showing its browser window.
   browser()->window()->Show();
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
 
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item);
 
@@ -3321,13 +3321,13 @@ TEST_F(ChromeLauncherControllerTest, BrowserMenuGeneration) {
       CreateBrowserWithTestWindowForProfile(profile()));
   chrome::NewTab(browser2.get());
   browser2->window()->Show();
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = ASCIIToUTF16("Test2");
   NavigateAndCommitActiveTabWithTitle(browser2.get(), GURL("http://test2"),
                                       title2);
 
   // Check that the list contains now two entries - make furthermore sure that
   // the active item is the first entry.
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_browser, 2, two_menu_items);
 
   // Apparently we have to close all tabs we have.
@@ -3350,9 +3350,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
 
   // Show the created |browser()| by showing its window.
   browser()->window()->Show();
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("http://test1"), title1);
-  base::string16 one_menu_item1[] = {title1};
+  std::u16string one_menu_item1[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Create a browser for another user and check that it is not included in the
@@ -3363,7 +3363,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
       multi_user_util::GetAccountIdFromProfile(profile2));
   std::unique_ptr<Browser> browser2(
       CreateBrowserAndTabWithProfile(profile2, user2, "http://test2"));
-  base::string16 one_menu_item2[] = {ASCIIToUTF16(user2)};
+  std::u16string one_menu_item2[] = {ASCIIToUTF16(user2)};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, one_menu_item1);
 
   // Switch to the other user and make sure that only that browser window gets
@@ -3411,27 +3411,27 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create one empty tab.
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = ASCIIToUTF16("Test2");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL("https://bla"), title2);
 
   // and another one with another gmail instance.
   chrome::NewTab(browser());
-  base::string16 title3 = ASCIIToUTF16("Test3");
+  std::u16string title3 = ASCIIToUTF16("Test3");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title3);
-  base::string16 two_menu_items[] = {title1, title3};
+  std::u16string two_menu_items[] = {title1, title3};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
 
   // Even though the item is in the V1 app list, it should also be in the
   // browser list.
-  base::string16 browser_menu_item[] = {title3};
+  std::u16string browser_menu_item[] = {title3};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, browser_menu_item);
 
   // Test that closing of (all) the item(s) does work (and all menus get
@@ -3439,7 +3439,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuGeneration) {
   launcher_controller_->Close(item_gmail.id);
 
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
-  base::string16 browser_menu_item2[] = {title2};
+  std::u16string browser_menu_item2[] = {title2};
   CheckAppMenu(launcher_controller_.get(), item_browser, 1, browser_menu_item2);
 }
 
@@ -3468,10 +3468,10 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
   CheckAppMenu(launcher_controller_.get(), item_gmail, 0, nullptr);
 
   // Set the gmail URL to a new tab.
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
 
-  base::string16 one_menu_item[] = {title1};
+  std::u16string one_menu_item[] = {title1};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 1, one_menu_item);
 
   // Create a second profile and switch to that user.
@@ -3904,10 +3904,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = ASCIIToUTF16("Test2");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -3915,7 +3915,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
   item_gmail.id = gmail_id;
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
   ash::ShelfItemDelegate* item_delegate =
       model_->GetShelfItemDelegate(gmail_id);
@@ -3925,7 +3925,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   // this shouldn't do anything since that item is already the active tab.
   {
     ash::ShelfApplicationMenuModel menu(
-        base::string16(),
+        std::u16string(),
         launcher_controller_->GetAppMenuItemsForTesting(item_gmail),
         item_delegate);
     menu.ActivatedAt(2);
@@ -3936,7 +3936,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuExecution) {
   // this should activate the other tab.
   {
     ash::ShelfApplicationMenuModel menu(
-        base::string16(),
+        std::u16string(),
         launcher_controller_->GetAppMenuItemsForTesting(item_gmail),
         item_delegate);
     menu.ActivatedAt(1);
@@ -3953,10 +3953,10 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
   const ash::ShelfID gmail_id(extension_gmail_app_->id());
   AddExtension(extension_gmail_app_.get());
   launcher_controller_->SetRefocusURLPatternForTest(gmail_id, GURL(kGmailUrl));
-  base::string16 title1 = ASCIIToUTF16("Test1");
+  std::u16string title1 = ASCIIToUTF16("Test1");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
   chrome::NewTab(browser());
-  base::string16 title2 = ASCIIToUTF16("Test2");
+  std::u16string title2 = ASCIIToUTF16("Test2");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title2);
   app_service_test().WaitForAppService();
 
@@ -3964,7 +3964,7 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
   ash::ShelfItem item_gmail;
   item_gmail.type = ash::TYPE_PINNED_APP;
   item_gmail.id = gmail_id;
-  base::string16 two_menu_items[] = {title1, title2};
+  std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(launcher_controller_.get(), item_gmail, 2, two_menu_items);
 
   ash::ShelfItemDelegate* item_delegate =
@@ -3996,7 +3996,7 @@ TEST_F(ChromeLauncherControllerTest, GmailMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  base::string16 title = ASCIIToUTF16("Test");
+  std::u16string title = ASCIIToUTF16("Test");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -4028,7 +4028,7 @@ TEST_F(ChromeLauncherControllerTest, GmailOfflineMatching) {
 
   // Create a Gmail browser tab.
   chrome::NewTab(browser());
-  base::string16 title = ASCIIToUTF16("Test");
+  std::u16string title = ASCIIToUTF16("Test");
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kOfflineGmailUrl), title);
   content::WebContents* content =
       browser()->tab_strip_model()->GetActiveWebContents();

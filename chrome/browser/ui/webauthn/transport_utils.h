@@ -20,7 +20,7 @@ enum class TransportSelectionContext {
 };
 
 // Returns the human readable name shown for |transport| in the given |context|.
-base::string16 GetTransportHumanReadableName(AuthenticatorTransport transport,
+std::u16string GetTransportHumanReadableName(AuthenticatorTransport transport,
                                              TransportSelectionContext context);
 
 // Returns the vector icon to show next to the |transport| in the manual

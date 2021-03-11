@@ -17,8 +17,8 @@
 // static
 infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     InfoBarService* infobar_service,
-    const base::string16& shared_tab_name,
-    const base::string16& app_name,
+    const std::u16string& shared_tab_name,
+    const std::u16string& app_name,
     bool shared_tab,
     bool can_share,
     TabSharingUI* ui) {
@@ -29,8 +29,8 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
-    base::string16 shared_tab_name,
-    base::string16 app_name,
+    std::u16string shared_tab_name,
+    std::u16string app_name,
     bool shared_tab,
     bool can_share,
     TabSharingUI* ui)
@@ -55,7 +55,7 @@ TabSharingInfoBarDelegate::GetIdentifier() const {
   return TAB_SHARING_INFOBAR_DELEGATE;
 }
 
-base::string16 TabSharingInfoBarDelegate::GetMessageText() const {
+std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
   if (shared_tab_) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, app_name_);
@@ -69,7 +69,7 @@ base::string16 TabSharingInfoBarDelegate::GetMessageText() const {
                    app_name_);
 }
 
-base::string16 TabSharingInfoBarDelegate::GetButtonLabel(
+std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK)
                                        ? IDS_TAB_SHARING_INFOBAR_STOP_BUTTON

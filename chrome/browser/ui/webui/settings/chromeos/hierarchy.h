@@ -138,11 +138,11 @@ class Hierarchy {
   //                 ["Settings", "Network"]
   // Example 2 - External storage (has parent subpage):
   //                 ["Settings", "Device", "Storage management"]
-  std::vector<base::string16> GenerateAncestorHierarchyStrings(
+  std::vector<std::u16string> GenerateAncestorHierarchyStrings(
       mojom::Subpage subpage) const;
 
   // Same as above, but for settings.
-  std::vector<base::string16> GenerateAncestorHierarchyStrings(
+  std::vector<std::u16string> GenerateAncestorHierarchyStrings(
       mojom::Setting setting) const;
 
  protected:
@@ -154,7 +154,7 @@ class Hierarchy {
   class PerSectionHierarchyGenerator;
 
   // Generates an array with the Settings app name and |section|'s name.
-  std::vector<base::string16> GenerateHierarchyStrings(
+  std::vector<std::u16string> GenerateHierarchyStrings(
       mojom::Section section) const;
 
   virtual std::string ModifySearchResultUrl(

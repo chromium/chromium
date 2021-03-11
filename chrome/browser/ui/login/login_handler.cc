@@ -145,8 +145,8 @@ void LoginHandler::ShowLoginPromptAfterCommit(const GURL& request_url) {
   ShowLoginPrompt(request_url);
 }
 
-void LoginHandler::SetAuth(const base::string16& username,
-                           const base::string16& password) {
+void LoginHandler::SetAuth(const std::u16string& username,
+                           const std::u16string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<password_manager::BrowserSavePasswordProgressLogger> logger;
@@ -315,8 +315,8 @@ void LoginHandler::NotifyAuthNeeded() {
                   content::Details<LoginNotificationDetails>(&details));
 }
 
-void LoginHandler::NotifyAuthSupplied(const base::string16& username,
-                                      const base::string16& password) {
+void LoginHandler::NotifyAuthSupplied(const std::u16string& username,
+                                      const std::u16string& password) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(WasAuthHandled());
 
@@ -420,8 +420,8 @@ PasswordForm LoginHandler::MakeInputForPasswordManager(
 // static
 void LoginHandler::GetDialogStrings(const GURL& request_url,
                                     const net::AuthChallengeInfo& auth_info,
-                                    base::string16* authority,
-                                    base::string16* explanation) {
+                                    std::u16string* authority,
+                                    std::u16string* explanation) {
   GURL authority_url;
 
   if (auth_info.is_proxy) {
@@ -530,8 +530,8 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
     return;
   }
 
-  base::string16 authority;
-  base::string16 explanation;
+  std::u16string authority;
+  std::u16string explanation;
   GetDialogStrings(request_url, auth_info(), &authority, &explanation);
 
   password_manager::HttpAuthManager* httpauth_manager =
@@ -569,8 +569,8 @@ void LoginHandler::ShowLoginPrompt(const GURL& request_url) {
 }
 
 void LoginHandler::BuildViewAndNotify(
-    const base::string16& authority,
-    const base::string16& explanation,
+    const std::u16string& authority,
+    const std::u16string& explanation,
     LoginHandler::LoginModelData* login_model_data) {
   if (login_model_data)
     password_form_ = login_model_data->form;

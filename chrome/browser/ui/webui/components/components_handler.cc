@@ -84,7 +84,7 @@ void ComponentsHandler::OnEvent(Events event, const std::string& id) {
   FireWebUIListener("component-event", parameters);
 }
 
-base::string16 ComponentsHandler::ComponentEventToString(Events event) {
+std::u16string ComponentsHandler::ComponentEventToString(Events event) {
   switch (event) {
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_EVT_STATUS_STARTED);
@@ -108,7 +108,7 @@ base::string16 ComponentsHandler::ComponentEventToString(Events event) {
   return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
 }
 
-base::string16 ComponentsHandler::ServiceStatusToString(
+std::u16string ComponentsHandler::ServiceStatusToString(
     update_client::ComponentState state) {
   switch (state) {
     case update_client::ComponentState::kNew:

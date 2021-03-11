@@ -433,7 +433,7 @@ void ProfilePickerHandler::HandleGetAvailableIcons(
 
 void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
   CHECK_EQ(4U, args->GetList().size());
-  base::string16 profile_name =
+  std::u16string profile_name =
       base::UTF8ToUTF16(args->GetList()[0].GetString());
   // profileColor is undefined for the default theme.
   base::Optional<SkColor> profile_color;
@@ -588,7 +588,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
     NOTREACHED();
     return;
   }
-  base::string16 profile_name =
+  std::u16string profile_name =
       base::UTF8ToUTF16(args->GetList()[1].GetString());
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   CHECK(!profile_name.empty());
@@ -813,7 +813,7 @@ void ProfilePickerHandler::OnProfileAdded(const base::FilePath& profile_path) {
 
 void ProfilePickerHandler::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   DCHECK(IsJavascriptAllowed());
   if (RemoveProfileFromList(profile_path))
     FireWebUIListener("profile-removed", util::FilePathToValue(profile_path));
@@ -849,7 +849,7 @@ void ProfilePickerHandler::OnProfileHighResAvatarLoaded(
 
 void ProfilePickerHandler::OnProfileNameChanged(
     const base::FilePath& profile_path,
-    const base::string16& old_profile_name) {
+    const std::u16string& old_profile_name) {
   PushProfilesList();
 }
 

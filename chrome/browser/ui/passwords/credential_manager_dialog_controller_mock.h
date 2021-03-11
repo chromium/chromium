@@ -16,10 +16,10 @@ class CredentialManagerDialogControllerMock
   ~CredentialManagerDialogControllerMock() override;
 
   MOCK_CONST_METHOD0(GetLocalForms, const FormsVector&());
-  MOCK_CONST_METHOD0(GetAccoutChooserTitle, base::string16());
+  MOCK_CONST_METHOD0(GetAccoutChooserTitle, std::u16string());
   MOCK_CONST_METHOD0(ShouldShowSignInButton, bool());
-  MOCK_CONST_METHOD0(GetAutoSigninPromoTitle, base::string16());
-  MOCK_CONST_METHOD0(GetAutoSigninText, base::string16());
+  MOCK_CONST_METHOD0(GetAutoSigninPromoTitle, std::u16string());
+  MOCK_CONST_METHOD0(GetAutoSigninText, std::u16string());
   MOCK_CONST_METHOD0(ShouldShowFooter, bool());
   MOCK_METHOD0(OnSmartLockLinkClicked, void());
   MOCK_METHOD2(OnChooseCredentials,

@@ -288,8 +288,8 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
 }
 
 void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
-                                           const base::string16& title,
-                                           const base::string16& keyword,
+                                           const std::u16string& title,
+                                           const std::u16string& keyword,
                                            const std::string& url) {
   DCHECK(!url.empty());
   if (template_url)

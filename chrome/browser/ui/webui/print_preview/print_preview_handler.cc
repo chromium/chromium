@@ -781,14 +781,14 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
 
   // Getting the number formatting based on the locale and writing to
   // dictionary.
-  base::string16 number_format = base::FormatDouble(123456.78, 2);
+  std::u16string number_format = base::FormatDouble(123456.78, 2);
   size_t thousands_pos = number_format.find('3') + 1;
-  base::string16 thousands_delimiter = number_format.substr(thousands_pos, 1);
+  std::u16string thousands_delimiter = number_format.substr(thousands_pos, 1);
   if (number_format[thousands_pos] == '4')
     thousands_delimiter.clear();
   size_t decimal_pos = number_format.find('6') + 1;
   DCHECK_NE(number_format[decimal_pos], '7');
-  base::string16 decimal_delimiter = number_format.substr(decimal_pos, 1);
+  std::u16string decimal_delimiter = number_format.substr(decimal_pos, 1);
   settings->SetStringKey(kDecimalDelimiter, decimal_delimiter);
   settings->SetStringKey(kThousandsDelimiter, thousands_delimiter);
   settings->SetIntKey(kUnitType, system);

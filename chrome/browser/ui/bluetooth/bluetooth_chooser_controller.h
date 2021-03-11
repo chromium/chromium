@@ -31,15 +31,15 @@ class BluetoothChooserController : public ChooserController {
   // ChooserController:
   bool ShouldShowIconBeforeText() const override;
   bool ShouldShowReScanButton() const override;
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
-  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const override;
   size_t NumOptions() const override;
   int GetSignalStrengthLevel(size_t index) const override;
   bool IsConnected(size_t index) const override;
   bool IsPaired(size_t index) const override;
-  base::string16 GetOption(size_t index) const override;
+  std::u16string GetOption(size_t index) const override;
   void RefreshOptions() override;
   void OpenAdapterOffHelpUrl() const override;
   void OpenPermissionPreferences() const override;
@@ -60,7 +60,7 @@ class BluetoothChooserController : public ChooserController {
   // The range of |signal_strength_level| is -1 to 4 inclusively.
   void AddOrUpdateDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name,
+                         const std::u16string& device_name,
                          bool is_gatt_connected,
                          bool is_paired,
                          int signal_strength_level);
@@ -90,9 +90,9 @@ class BluetoothChooserController : public ChooserController {
   int frame_tree_node_id_ = -1;
 
   std::vector<BluetoothDeviceInfo> devices_;
-  std::unordered_map<std::string, base::string16> device_id_to_name_map_;
+  std::unordered_map<std::string, std::u16string> device_id_to_name_map_;
   // Maps from device name to number of devices with that name.
-  std::unordered_map<base::string16, int> device_name_counts_;
+  std::unordered_map<std::u16string, int> device_name_counts_;
 
   content::BluetoothChooser::EventHandler event_handler_;
 

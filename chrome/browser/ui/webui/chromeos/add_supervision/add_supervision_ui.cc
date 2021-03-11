@@ -139,7 +139,7 @@ bool AddSupervisionDialog::ShouldCloseDialogOnEscape() const {
 
 AddSupervisionDialog::AddSupervisionDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIAddSupervisionURL),
-                              base::string16()) {}
+                              std::u16string()) {}
 
 AddSupervisionDialog::~AddSupervisionDialog() = default;
 

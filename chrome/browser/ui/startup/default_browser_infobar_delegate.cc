@@ -76,7 +76,7 @@ void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
                             NUM_INFO_BAR_USER_INTERACTION_TYPES);
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetMessageText() const {
+std::u16string DefaultBrowserInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_TEXT);
 }
 
@@ -84,7 +84,7 @@ int DefaultBrowserInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 DefaultBrowserInfoBarDelegate::GetButtonLabel(
+std::u16string DefaultBrowserInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   DCHECK_EQ(BUTTON_OK, button);
   return l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_INFOBAR_OK_BUTTON_LABEL);

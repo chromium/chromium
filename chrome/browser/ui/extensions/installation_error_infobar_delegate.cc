@@ -29,19 +29,19 @@ InstallationErrorInfoBarDelegate::GetIdentifier() const {
   return INSTALLATION_ERROR_INFOBAR_DELEGATE;
 }
 
-base::string16 InstallationErrorInfoBarDelegate::GetLinkText() const {
+std::u16string InstallationErrorInfoBarDelegate::GetLinkText() const {
   return error_.type() == extensions::CrxInstallErrorType::OTHER &&
                  error_.detail() == extensions::CrxInstallErrorDetail::
                                         OFFSTORE_INSTALL_DISALLOWED
              ? l10n_util::GetStringUTF16(IDS_LEARN_MORE)
-             : base::string16();
+             : std::u16string();
 }
 
 GURL InstallationErrorInfoBarDelegate::GetLinkURL() const {
   return GURL("https://support.google.com/chrome_webstore/?p=crx_warning");
 }
 
-base::string16 InstallationErrorInfoBarDelegate::GetMessageText() const {
+std::u16string InstallationErrorInfoBarDelegate::GetMessageText() const {
   return error_.message();
 }
 

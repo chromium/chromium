@@ -64,8 +64,8 @@ class SigninUIError {
   bool IsOk() const;
 
   Type type() const;
-  const base::string16& email() const;
-  const base::string16& message() const;
+  const std::u16string& email() const;
+  const std::u16string& message() const;
 
   // Should be called only if `type()` ==
   // `Type::kAccountAlreadyUsedByAnotherProfile`.
@@ -83,12 +83,12 @@ class SigninUIError {
  private:
   SigninUIError(Type type,
                 const std::string& email,
-                const base::string16& error_message);
+                const std::u16string& error_message);
 
   // Don't forget to update operator==() when adding new class members.
   Type type_;
-  base::string16 email_;
-  base::string16 message_;
+  std::u16string email_;
+  std::u16string message_;
 
   // Defined only for Type::kAccountAlreadyUsedByAnotherProfile.
   base::FilePath another_profile_path_;

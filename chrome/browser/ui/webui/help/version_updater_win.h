@@ -30,13 +30,13 @@ class VersionUpdaterWin : public VersionUpdater,
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
 
   // UpdateCheckDelegate:
-  void OnUpdateCheckComplete(const base::string16& new_version) override;
+  void OnUpdateCheckComplete(const std::u16string& new_version) override;
   void OnUpgradeProgress(int progress,
-                         const base::string16& new_version) override;
-  void OnUpgradeComplete(const base::string16& new_version) override;
+                         const std::u16string& new_version) override;
+  void OnUpgradeComplete(const std::u16string& new_version) override;
   void OnError(GoogleUpdateErrorCode error_code,
-               const base::string16& html_error_message,
-               const base::string16& new_version) override;
+               const std::u16string& html_error_message,
+               const std::u16string& new_version) override;
 
  private:
   void DoBeginUpdateCheck(bool install_update_if_possible);

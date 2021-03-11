@@ -205,7 +205,7 @@ const ChooserTypeNameEntry* ChooserTypeFromGroupName(const std::string& name);
 // The structure of the SiteException objects is the same as the objects
 // returned by GetExceptionForPage().
 base::Value CreateChooserExceptionObject(
-    const base::string16& display_name,
+    const std::u16string& display_name,
     const base::Value& object,
     const std::string& chooser_type,
     const ChooserExceptionDetails& chooser_exception_details);

@@ -30,7 +30,7 @@ class AssistantTextSearchProvider : public SearchProvider,
   ~AssistantTextSearchProvider() override;
 
   // SearchProvider:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
 
  private:
   // SearchProvider:
@@ -47,7 +47,7 @@ class AssistantTextSearchProvider : public SearchProvider,
   // Invoke to update results based on current state.
   void UpdateResults();
 
-  base::string16 query_;
+  std::u16string query_;
 
   ScopedObserver<ash::AssistantController, ash::AssistantControllerObserver>
       assistant_controller_observer_{this};

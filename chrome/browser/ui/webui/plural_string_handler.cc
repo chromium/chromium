@@ -93,7 +93,7 @@ void PluralStringHandler::GetPluralStringTuple(const base::ListValue* args,
                                                           string1, string2)));
 }
 
-base::string16 PluralStringHandler::GetPluralizedStringForMessageName(
+std::u16string PluralStringHandler::GetPluralizedStringForMessageName(
     std::string message_name,
     int count) {
   auto message_id_it = name_to_id_.find(message_name);

@@ -109,7 +109,7 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
     }
 
     // Check if the URL is a valid search URL.
-    base::string16 search_terms;
+    std::u16string search_terms;
     bool is_valid_search_url =
         default_search_provider &&
         default_search_provider->ExtractSearchTermsFromURL(
@@ -117,7 +117,7 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
         !search_terms.empty();
     if (is_valid_search_url) {
       // If the URL is a valid search URL, try to create a related search query.
-      const base::string16& search_query =
+      const std::u16string& search_query =
           base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
 
       // Skip duplicate search queries.

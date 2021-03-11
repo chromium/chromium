@@ -288,7 +288,7 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
           l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
           base::Time::Now()));
 
-  base::string16 license = l10n_util::GetStringFUTF16(
+  std::u16string license = l10n_util::GetStringFUTF16(
       IDS_VERSION_UI_LICENSE, base::ASCIIToUTF16(chrome::kChromiumProjectURL),
       base::ASCIIToUTF16(chrome::kChromeUICreditsURL));
   html_source->AddString("aboutProductLicense", license);
@@ -540,12 +540,12 @@ void AddChromeCleanupStrings(content::WebUIDataSource* html_source) {
        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
            IDR_CHROME_CLEANUP_PARTNER),
        "</span>"});
-  const base::string16 powered_by_html =
+  const std::u16string powered_by_html =
       l10n_util::GetStringFUTF16(IDS_SETTINGS_RESET_CLEANUP_FOOTER_POWERED_BY,
                                  base::UTF8ToUTF16(powered_by_element));
   html_source->AddString("chromeCleanupPoweredByHtml", powered_by_html);
 
-  const base::string16 cleanup_details_explanation =
+  const std::u16string cleanup_details_explanation =
       l10n_util::GetStringFUTF16(IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXPLANATION,
                                  kUnwantedSoftwareProtectionWhitePaperUrl);
   html_source->AddString("chromeCleanupDetailsExplanation",
@@ -573,7 +573,7 @@ void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
 
   // The help URL is provided via Field Trial param. If none is provided, the
   // "Learn How" text is left empty so that no link is displayed.
-  base::string16 learn_how_text;
+  std::u16string learn_how_text;
   std::string help_url = GetFieldTrialParamValueByFeature(
       features::kIncompatibleApplicationsWarning, "HelpURL");
   if (!help_url.empty()) {
@@ -1535,7 +1535,7 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  base::string16 help_text = l10n_util::GetStringFUTF16(
+  std::u16string help_text = l10n_util::GetStringFUTF16(
       IDS_SETTINGS_SEARCH_NO_RESULTS_HELP,
       base::ASCIIToUTF16(chrome::kSettingsSearchHelpURL));
   html_source->AddString("searchNoResultsHelp", help_text);

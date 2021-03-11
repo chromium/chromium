@@ -31,7 +31,7 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
 
   // Overridden from ui::ComboboxModel:
   int GetItemCount() const override;
-  base::string16 GetItemAt(int index) const override;
+  std::u16string GetItemAt(int index) const override;
   bool IsItemSeparatorAt(int index) const override;
   int GetDefaultIndex() const override;
   void AddObserver(ui::ComboboxModelObserver* observer) override;

@@ -101,7 +101,7 @@ void InternetDetailDialog::ShowDialog(const std::string& network_id) {
 
 InternetDetailDialog::InternetDetailDialog(const NetworkState& network)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetDetailDialogURL),
-                              /* title= */ base::string16()),
+                              /* title= */ std::u16string()),
       network_id_(network.guid()),
       network_type_(network_util::TranslateShillTypeToONC(network.type())),
       network_name_(GetNetworkName8(network)) {

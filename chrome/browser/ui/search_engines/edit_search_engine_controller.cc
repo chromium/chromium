@@ -29,7 +29,7 @@ EditSearchEngineController::EditSearchEngineController(
 }
 
 bool EditSearchEngineController::IsTitleValid(
-    const base::string16& title_input) const {
+    const std::u16string& title_input) const {
   return !base::CollapseWhitespace(title_input, true).empty();
 }
 
@@ -67,8 +67,8 @@ bool EditSearchEngineController::IsURLValid(
 }
 
 bool EditSearchEngineController::IsKeywordValid(
-    const base::string16& keyword_input) const {
-  base::string16 keyword_input_trimmed(
+    const std::u16string& keyword_input) const {
+  std::u16string keyword_input_trimmed(
       base::CollapseWhitespace(keyword_input, true));
   if (keyword_input_trimmed.empty())
     return false;  // Do not allow empty keyword.
@@ -76,7 +76,7 @@ bool EditSearchEngineController::IsKeywordValid(
   // The omnibox doesn't properly handle search keywords with whitespace,
   // so do not allow such keywords.
   if (keyword_input_trimmed.find_first_of(base::kWhitespaceUTF16) !=
-      base::string16::npos)
+      std::u16string::npos)
     return false;
 
   const TemplateURL* turl_with_keyword =
@@ -86,8 +86,8 @@ bool EditSearchEngineController::IsKeywordValid(
 }
 
 void EditSearchEngineController::AcceptAddOrEdit(
-    const base::string16& title_input,
-    const base::string16& keyword_input,
+    const std::u16string& title_input,
+    const std::u16string& keyword_input,
     const std::string& url_input) {
   DCHECK(!keyword_input.empty());
   std::string url_string = GetFixedUpURL(url_input);

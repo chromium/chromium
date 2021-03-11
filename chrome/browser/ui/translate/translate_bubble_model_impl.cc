@@ -77,12 +77,12 @@ int TranslateBubbleModelImpl::GetNumberOfTargetLanguages() const {
   return ui_delegate_->GetNumberOfLanguages() - 1;
 }
 
-base::string16 TranslateBubbleModelImpl::GetSourceLanguageNameAt(
+std::u16string TranslateBubbleModelImpl::GetSourceLanguageNameAt(
     int index) const {
   return ui_delegate_->GetLanguageNameAt(index);
 }
 
-base::string16 TranslateBubbleModelImpl::GetTargetLanguageNameAt(
+std::u16string TranslateBubbleModelImpl::GetTargetLanguageNameAt(
     int index) const {
   // Add 1 to account for unknown language option at index 0 in
   // TranslateUIDelegate language list.

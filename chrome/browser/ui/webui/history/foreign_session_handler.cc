@@ -270,7 +270,7 @@ void ForeignSessionHandler::InitializeForeignSessions() {
   initial_session_list_ = GetForeignSessions();
 }
 
-base::string16 ForeignSessionHandler::FormatSessionTime(
+std::u16string ForeignSessionHandler::FormatSessionTime(
     const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();

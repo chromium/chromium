@@ -129,7 +129,7 @@ void ImeControllerClient::ShowModeIndicator() {
   // Get the short name of the changed input method (e.g. US, JA, etc.)
   const InputMethodDescriptor descriptor =
       input_method_manager_->GetActiveIMEState()->GetCurrentInputMethod();
-  const base::string16 short_name = descriptor.GetIndicator();
+  const std::u16string short_name = descriptor.GetIndicator();
 
   chromeos::IMECandidateWindowHandlerInterface* cw_handler =
       ui::IMEBridge::Get()->GetCandidateWindowHandler();

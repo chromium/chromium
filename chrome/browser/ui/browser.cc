@@ -679,7 +679,7 @@ gfx::Image Browser::GetCurrentPageIcon() const {
   return favicon_driver ? favicon_driver->GetFavicon() : gfx::Image();
 }
 
-base::string16 Browser::GetWindowTitleForCurrentTab(
+std::u16string Browser::GetWindowTitleForCurrentTab(
     bool include_app_name) const {
   if (!user_title_.empty())
     return base::UTF8ToUTF16(user_title_);
@@ -687,21 +687,21 @@ base::string16 Browser::GetWindowTitleForCurrentTab(
       include_app_name, tab_strip_model_->GetActiveWebContents());
 }
 
-base::string16 Browser::GetWindowTitleForTab(bool include_app_name,
+std::u16string Browser::GetWindowTitleForTab(bool include_app_name,
                                              int index) const {
   return GetWindowTitleFromWebContents(
       include_app_name, tab_strip_model_->GetWebContentsAt(index));
 }
 
-base::string16 Browser::GetWindowTitleForMaxWidth(int max_width) const {
+std::u16string Browser::GetWindowTitleForMaxWidth(int max_width) const {
   static constexpr unsigned int kMinTitleCharacters = 4;
   const gfx::FontList font_list;
 
   if (!user_title_.empty()) {
-    base::string16 title = base::UTF8ToUTF16(user_title_);
-    base::string16 pixel_elided_title = gfx::ElideText(
+    std::u16string title = base::UTF8ToUTF16(user_title_);
+    std::u16string pixel_elided_title = gfx::ElideText(
         title, font_list, max_width, gfx::ElideBehavior::ELIDE_TAIL);
-    base::string16 character_elided_title =
+    std::u16string character_elided_title =
         gfx::TruncateString(title, kMinTitleCharacters, gfx::CHARACTER_BREAK);
     return pixel_elided_title.size() > character_elided_title.size()
                ? pixel_elided_title
@@ -709,15 +709,15 @@ base::string16 Browser::GetWindowTitleForMaxWidth(int max_width) const {
   }
 
   const auto num_more_tabs = tab_strip_model_->count() - 1;
-  const base::string16 format_string = l10n_util::GetPluralStringFUTF16(
+  const std::u16string format_string = l10n_util::GetPluralStringFUTF16(
       IDS_BROWSER_WINDOW_TITLE_MENU_ENTRY, num_more_tabs);
 
   // First, format with an empty string to see how much space we have available.
-  base::string16 temp_window_title =
-      base::ReplaceStringPlaceholders(format_string, base::string16(), nullptr);
+  std::u16string temp_window_title =
+      base::ReplaceStringPlaceholders(format_string, std::u16string(), nullptr);
   int width = max_width - GetStringWidth(temp_window_title, font_list);
 
-  base::string16 title;
+  std::u16string title;
   content::WebContents* contents = tab_strip_model_->GetActiveWebContents();
   // |contents| can be NULL if GetWindowTitleForMenu is called during the
   // window's creation (before tabs have been added).
@@ -732,9 +732,9 @@ base::string16 Browser::GetWindowTitleForMaxWidth(int max_width) const {
   // Try to elide the title to fit the pixel width. If that will make the title
   // shorter than the minimum character limit, use a character elided title
   // instead.
-  base::string16 pixel_elided_title =
+  std::u16string pixel_elided_title =
       gfx::ElideText(title, font_list, width, gfx::ElideBehavior::ELIDE_TAIL);
-  base::string16 character_elided_title =
+  std::u16string character_elided_title =
       gfx::TruncateString(title, kMinTitleCharacters, gfx::CHARACTER_BREAK);
   title = pixel_elided_title.size() > character_elided_title.size()
               ? pixel_elided_title
@@ -744,10 +744,10 @@ base::string16 Browser::GetWindowTitleForMaxWidth(int max_width) const {
   return base::ReplaceStringPlaceholders(format_string, title, nullptr);
 }
 
-base::string16 Browser::GetWindowTitleFromWebContents(
+std::u16string Browser::GetWindowTitleFromWebContents(
     bool include_app_name,
     content::WebContents* contents) const {
-  base::string16 title = base::UTF8ToUTF16(user_title_);
+  std::u16string title = base::UTF8ToUTF16(user_title_);
 
   // |contents| can be NULL because GetWindowTitleForCurrentTab is called by the
   // window during the window's creation (before tabs have been added).
@@ -799,12 +799,12 @@ base::string16 Browser::GetWindowTitleFromWebContents(
 }
 
 // static
-base::string16 Browser::FormatTitleForDisplay(base::string16 title) {
+std::u16string Browser::FormatTitleForDisplay(std::u16string title) {
   size_t current_index = 0;
   size_t match_index;
   while ((match_index = title.find(L'\n', current_index)) !=
-         base::string16::npos) {
-    title.replace(match_index, 1, base::string16());
+         std::u16string::npos) {
+    title.replace(match_index, 1, std::u16string());
     current_index = match_index;
   }
 
@@ -1040,7 +1040,7 @@ void Browser::OpenFile() {
   file_types.allowed_paths =
       ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(), directory,
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), directory,
       &file_types, 0, base::FilePath::StringType(), parent_window, NULL);
 }
 

@@ -86,7 +86,7 @@ class ChromeLauncherController
   ash::ShelfID CreateAppLauncherItem(
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
       ash::ShelfItemStatus status,
-      const base::string16& title = base::string16());
+      const std::u16string& title = std::u16string());
 
   // Returns the shelf item with the given id, or null if |id| isn't found.
   const ash::ShelfItem* GetItem(const ash::ShelfID& id) const;
@@ -99,7 +99,7 @@ class ChromeLauncherController
   void SetItemStatus(const ash::ShelfID& id, ash::ShelfItemStatus status);
 
   // Updates the shelf item title (displayed in the tooltip).
-  void SetItemTitle(const ash::ShelfID& id, const base::string16& title);
+  void SetItemTitle(const ash::ShelfID& id, const std::u16string& title);
 
   // Closes or unpins the shelf item.
   void CloseLauncherItem(const ash::ShelfID& id);
@@ -206,7 +206,7 @@ class ChromeLauncherController
 
   // Get the title for the application menu entry for |web_contents|.
   // Returns "New Tab" if |web_contents| is null or has not loaded.
-  base::string16 GetAppMenuTitle(content::WebContents* web_contents) const;
+  std::u16string GetAppMenuTitle(content::WebContents* web_contents) const;
 
   // Returns the ash::ShelfItemDelegate of BrowserShortcut.
   BrowserShortcutLauncherItemController*
@@ -297,7 +297,7 @@ class ChromeLauncherController
                                              int index);
   ash::ShelfID CreateAppShortcutLauncherItem(const ash::ShelfID& shelf_id,
                                              int index,
-                                             const base::string16& title);
+                                             const std::u16string& title);
 
   // Remembers / restores list of running applications.
   // Note that this order will neither be stored in the preference nor will it
@@ -340,7 +340,7 @@ class ChromeLauncherController
       ash::ShelfItemStatus status,
       int index,
       ash::ShelfItemType shelf_item_type,
-      const base::string16& title = base::string16());
+      const std::u16string& title = std::u16string());
 
   // Create the Chrome browser shortcut ShelfItem.
   void CreateBrowserShortcutLauncherItem();

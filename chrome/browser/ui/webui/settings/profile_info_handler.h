@@ -50,7 +50,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
 
   // ProfileAttributesStorage::Observer implementation.
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
  private:

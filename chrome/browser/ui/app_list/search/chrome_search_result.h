@@ -48,15 +48,15 @@ class ChromeSearchResult {
   ChromeSearchResult();
   virtual ~ChromeSearchResult();
 
-  const base::string16& title() const { return metadata_->title; }
+  const std::u16string& title() const { return metadata_->title; }
   const Tags& title_tags() const { return metadata_->title_tags; }
-  const base::string16& details() const { return metadata_->details; }
+  const std::u16string& details() const { return metadata_->details; }
   const Tags& details_tags() const { return metadata_->details_tags; }
-  const base::string16& accessible_name() const {
+  const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }
   float rating() const { return metadata_->rating; }
-  const base::string16& formatted_price() const {
+  const std::u16string& formatted_price() const {
     return metadata_->formatted_price;
   }
   const std::string& id() const { return metadata_->id; }
@@ -86,13 +86,13 @@ class ChromeSearchResult {
 
   // The following methods set Chrome side data here, and call model updater
   // interface to update Ash.
-  void SetTitle(const base::string16& title);
+  void SetTitle(const std::u16string& title);
   void SetTitleTags(const Tags& tags);
-  void SetDetails(const base::string16& details);
+  void SetDetails(const std::u16string& details);
   void SetDetailsTags(const Tags& tags);
-  void SetAccessibleName(const base::string16& name);
+  void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
-  void SetFormattedPrice(const base::string16& formatted_price);
+  void SetFormattedPrice(const std::u16string& formatted_price);
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);

@@ -53,7 +53,7 @@ class HelpAppProvider : public SearchProvider,
   HelpAppProvider& operator=(const HelpAppProvider&) = delete;
 
   // SearchProvider:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   void AppListShown() override;
   ash::AppListSearchResultType ResultType() override;
 

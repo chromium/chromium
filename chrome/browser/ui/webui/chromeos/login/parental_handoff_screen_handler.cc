@@ -45,7 +45,7 @@ void ParentalHandoffScreenHandler::DeclareLocalizedValues(
 
 void ParentalHandoffScreenHandler::Initialize() {}
 
-void ParentalHandoffScreenHandler::Show(const base::string16& username) {
+void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   base::DictionaryValue data;
   data.SetString(kUsername, username);
 

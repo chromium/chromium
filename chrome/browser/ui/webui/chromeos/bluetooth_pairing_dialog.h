@@ -19,13 +19,13 @@ class BluetoothPairingDialog : public SystemWebDialogDelegate {
   // Shows a bluetooth pairing dialog. The dialog is returned for testing.
   static SystemWebDialogDelegate* ShowDialog(
       const std::string& address,
-      const base::string16& name_for_display,
+      const std::u16string& name_for_display,
       bool paired,
       bool connected);
 
  protected:
   BluetoothPairingDialog(const std::string& address,
-                         const base::string16& name_for_display,
+                         const std::u16string& name_for_display,
                          bool paired,
                          bool connected);
   ~BluetoothPairingDialog() override;

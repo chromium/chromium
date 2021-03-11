@@ -543,7 +543,7 @@ void MediaClientImpl::ShowCameraOffNotification() {
               IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(
               IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE),
-          base::string16(), GURL(),
+          std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kCameraPrivacySwitchNotifierId),

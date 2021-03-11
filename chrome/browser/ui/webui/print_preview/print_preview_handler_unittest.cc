@@ -205,7 +205,7 @@ class TestPrinterHandler : public PrinterHandler {
   void StartGrantPrinterAccess(const std::string& printer_id,
                                GetPrinterInfoCallback callback) override {}
 
-  void StartPrint(const base::string16& job_title,
+  void StartPrint(const std::u16string& job_title,
                   base::Value settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override {

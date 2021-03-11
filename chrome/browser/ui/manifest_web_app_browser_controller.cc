@@ -70,11 +70,11 @@ gfx::ImageSkia ManifestWebAppBrowserController::GetWindowIcon() const {
   return browser()->GetCurrentPageIcon().AsImageSkia();
 }
 
-base::string16 ManifestWebAppBrowserController::GetAppShortName() const {
-  return base::string16();
+std::u16string ManifestWebAppBrowserController::GetAppShortName() const {
+  return std::u16string();
 }
 
-base::string16 ManifestWebAppBrowserController::GetFormattedUrlOrigin() const {
+std::u16string ManifestWebAppBrowserController::GetFormattedUrlOrigin() const {
   return FormatUrlOrigin(GetAppStartUrl());
 }
 

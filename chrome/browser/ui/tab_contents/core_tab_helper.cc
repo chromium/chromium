@@ -64,12 +64,12 @@ CoreTabHelper::CoreTabHelper(WebContents* web_contents)
 
 CoreTabHelper::~CoreTabHelper() {}
 
-base::string16 CoreTabHelper::GetDefaultTitle() {
+std::u16string CoreTabHelper::GetDefaultTitle() {
   return l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
 }
 
-base::string16 CoreTabHelper::GetStatusText() const {
-  base::string16 status_text;
+std::u16string CoreTabHelper::GetStatusText() const {
+  std::u16string status_text;
   GetStatusTextForWebContents(&status_text, web_contents());
   return status_text;
 }
@@ -136,8 +136,8 @@ std::unique_ptr<content::WebContents> CoreTabHelper::SwapWebContents(
 }
 
 // static
-bool CoreTabHelper::GetStatusTextForWebContents(
-    base::string16* status_text, content::WebContents* source) {
+bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
+                                                content::WebContents* source) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* guest_manager = guest_view::GuestViewManager::FromBrowserContext(
       source->GetBrowserContext());
@@ -309,7 +309,7 @@ void CoreTabHelper::DoSearchByImageInNewTab(
     return;
 
   TemplateURLRef::SearchTermsArgs search_args =
-      TemplateURLRef::SearchTermsArgs(base::string16());
+      TemplateURLRef::SearchTermsArgs(std::u16string());
   search_args.image_thumbnail_content.assign(thumbnail_data.begin(),
                                              thumbnail_data.end());
   search_args.image_url = src_url;

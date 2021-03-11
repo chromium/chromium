@@ -79,7 +79,7 @@ class ParentPermissionDialog {
       Profile* profile,
       gfx::NativeWindow window,
       const gfx::ImageSkia& icon,
-      const base::string16& message,
+      const std::u16string& message,
       ParentPermissionDialog::DoneCallback done_callback);
 
   // Creates a ParentPermissionDialog customized for the installation of the

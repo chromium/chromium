@@ -41,7 +41,7 @@ class MockChromeOmniboxNavigationObserver
  public:
   MockChromeOmniboxNavigationObserver(
       Profile* profile,
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternate_nav_match,
       bool* displayed_infobar)
@@ -82,19 +82,19 @@ class ChromeOmniboxNavigationObserverTest
 
   // Functions that return the name of certain search keywords that are part
   // of the TemplateURLService attached to this profile.
-  static base::string16 auto_generated_search_keyword() {
+  static std::u16string auto_generated_search_keyword() {
     return base::ASCIIToUTF16("auto_generated_search_keyword");
   }
-  static base::string16 non_auto_generated_search_keyword() {
+  static std::u16string non_auto_generated_search_keyword() {
     return base::ASCIIToUTF16("non_auto_generated_search_keyword");
   }
-  static base::string16 default_search_keyword() {
+  static std::u16string default_search_keyword() {
     return base::ASCIIToUTF16("default_search_keyword");
   }
-  static base::string16 prepopulated_search_keyword() {
+  static std::u16string prepopulated_search_keyword() {
     return base::ASCIIToUTF16("prepopulated_search_keyword");
   }
-  static base::string16 policy_search_keyword() {
+  static std::u16string policy_search_keyword() {
     return base::ASCIIToUTF16("policy_search_keyword");
   }
 
@@ -165,7 +165,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, LoadStateAfterPendingNavigation) {
 
 TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
   struct TestData {
-    base::string16 keyword;
+    std::u16string keyword;
     int status_code;
     bool expect_exists;
   };
@@ -177,7 +177,7 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
       {prepopulated_search_keyword(), 404, true},
       {policy_search_keyword(), 404, true}};
 
-  base::string16 query = base::ASCIIToUTF16(" text");
+  std::u16string query = base::ASCIIToUTF16(" text");
   for (size_t i = 0; i < cases.size(); ++i) {
     SCOPED_TRACE("case #" + base::NumberToString(i));
     // The keyword should always exist at the beginning.

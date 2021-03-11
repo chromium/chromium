@@ -41,8 +41,8 @@ void LogError(Error error) {
 }
 
 std::string GetHistogramSuffix(ash::AppListNotifier::Location location,
-                               const base::string16& raw_query) {
-  base::string16 query;
+                               const std::u16string& raw_query) {
+  std::u16string query;
   base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
   if (location == ash::AppListNotifier::Location::kList) {
     return query.empty() ? "ListZeroState" : "ListSearch";
@@ -58,7 +58,7 @@ std::string GetHistogramSuffix(ash::AppListNotifier::Location location,
 
 void LogTypeAction(const std::string& histogram_prefix,
                    ash::AppListNotifier::Location location,
-                   const base::string16& query,
+                   const std::u16string& query,
                    const SearchMetricsObserver::Result& result) {
   if (result.type == ash::SEARCH_RESULT_TYPE_BOUNDARY) {
     // TODO(crbug.com/1159285): The boundary value is the default value for
@@ -74,7 +74,7 @@ void LogTypeAction(const std::string& histogram_prefix,
 }
 
 void LogOverallAction(ash::AppListNotifier::Location location,
-                      const base::string16& query,
+                      const std::u16string& query,
                       Action action) {
   const std::string histogram_name = base::StrCat(
       {"Apps.AppList.UserEvent.Overall.", GetHistogramSuffix(location, query)});
@@ -96,7 +96,7 @@ SearchMetricsObserver::~SearchMetricsObserver() = default;
 void SearchMetricsObserver::OnImpression(
     ash::AppListNotifier::Location location,
     const std::vector<Result>& results,
-    const base::string16& query) {
+    const std::u16string& query) {
   for (const Result& result : results) {
     LogTypeAction("Apps.AppList.UserEvent.TypeImpression", location, query,
                   result);
@@ -106,7 +106,7 @@ void SearchMetricsObserver::OnImpression(
 
 void SearchMetricsObserver::OnAbandon(ash::AppListNotifier::Location location,
                                       const std::vector<Result>& results,
-                                      const base::string16& query) {
+                                      const std::u16string& query) {
   for (const auto& result : results) {
     LogTypeAction("Apps.AppList.UserEvent.TypeAbandon", location, query,
                   result);
@@ -117,14 +117,14 @@ void SearchMetricsObserver::OnAbandon(ash::AppListNotifier::Location location,
 void SearchMetricsObserver::OnLaunch(ash::AppListNotifier::Location location,
                                      const Result& launched,
                                      const std::vector<Result>& shown,
-                                     const base::string16& query) {
+                                     const std::u16string& query) {
   LogTypeAction("Apps.AppList.UserEvent.TypeLaunch", location, query, launched);
   LogOverallAction(location, query, Action::kLaunch);
 }
 
 void SearchMetricsObserver::OnIgnore(ash::AppListNotifier::Location location,
                                      const std::vector<Result>& results,
-                                     const base::string16& query) {
+                                     const std::u16string& query) {
   LogOverallAction(location, query, Action::kIgnore);
 }
 

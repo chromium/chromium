@@ -45,13 +45,13 @@ void ExistingBaseSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
 ExistingBaseSubMenuModel::~ExistingBaseSubMenuModel() = default;
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
-    const base::string16 menu_text)
+    const std::u16string menu_text)
     : text(menu_text) {
   image = base::nullopt;
 }
 
 ExistingBaseSubMenuModel::MenuItemInfo::MenuItemInfo(
-    const base::string16& menu_text,
+    const std::u16string& menu_text,
     ui::ImageModel menu_image)
     : text(menu_text) {
   image = base::Optional<ui::ImageModel>{menu_image};

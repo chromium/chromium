@@ -27,7 +27,7 @@ namespace {
 
 // TODO(lgrey): It *might* make to pull this out later into a CommandSource
 // method or a free function in some common place. Not committing yet.
-std::unique_ptr<CommandItem> ItemForTitle(const base::string16& title,
+std::unique_ptr<CommandItem> ItemForTitle(const std::u16string& title,
                                           FuzzyFinder& finder,
                                           std::vector<gfx::Range>* ranges) {
   double score = finder.Find(title, ranges);
@@ -152,7 +152,7 @@ std::unique_ptr<CommandItem> CreateMoveTabsToWindowItem(
 
 CommandSource::CommandResults MoveTabsToWindowCommandsForWindowsMatching(
     Browser* source,
-    const base::string16& input) {
+    const std::u16string& input) {
   CommandSource::CommandResults results;
   // TODO(https://crbug.com/1181879): Add "New window" here when issue 1181879
   // is fixed.
@@ -173,11 +173,11 @@ void AddTabsToGroup(base::WeakPtr<Browser> browser,
 
 CommandSource::CommandResults AddTabsToGroupCommandsForGroupsMatching(
     Browser* browser,
-    const base::string16& input) {
+    const std::u16string& input) {
   CommandSource::CommandResults results;
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   // Add "New Group", if appropriate. It should score highest with no input.
-  base::string16 new_group_title =
+  std::u16string new_group_title =
       l10n_util::GetStringUTF16(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP);
   if (input.empty()) {
     auto item = std::make_unique<CommandItem>(new_group_title, .99,
@@ -211,7 +211,7 @@ TabCommandSource::TabCommandSource() = default;
 TabCommandSource::~TabCommandSource() = default;
 
 CommandSource::CommandResults TabCommandSource::GetCommands(
-    const base::string16& input,
+    const std::u16string& input,
     Browser* browser) const {
   CommandSource::CommandResults results;
   FuzzyFinder finder(input);
@@ -268,7 +268,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
 
   bool is_active_pinned =
       tab_strip_model->IsTabPinned(tab_strip_model->active_index());
-  base::string16 active_title = is_active_pinned
+  std::u16string active_title = is_active_pinned
                                     ? base::ASCIIToUTF16("Unpin tab")
                                     : base::ASCIIToUTF16("Pin tab");
   if (auto item = ItemForTitle(active_title, finder, &ranges)) {

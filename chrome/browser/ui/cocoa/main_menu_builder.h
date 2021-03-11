@@ -29,7 +29,7 @@ namespace chrome {
 // burden.
 void BuildMainMenu(NSApplication* nsapp,
                    id<NSApplicationDelegate> app_delegate,
-                   const base::string16& product_name,
+                   const std::u16string& product_name,
                    bool is_pwa);
 
 // Internal ////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ class MenuItemBuilder {
 
   // Specifies the string to substitute for the $1 found in the string for
   // |string_id_|.
-  MenuItemBuilder& string_format_1(const base::string16& arg) {
+  MenuItemBuilder& string_format_1(const std::u16string& arg) {
     string_arg1_ = arg;
     return *this;
   }
@@ -127,7 +127,7 @@ class MenuItemBuilder {
   bool is_separator_ = false;
 
   int string_id_ = 0;
-  base::string16 string_arg1_;
+  std::u16string string_arg1_;
 
   int tag_ = 0;
 

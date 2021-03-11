@@ -57,7 +57,7 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddEduStrings(content::WebUIDataSource* source,
-                   const base::string16& username) {
+                   const std::u16string& username) {
   source->AddLocalizedString("okButton", IDS_APP_OK);
   source->AddLocalizedString("backButton", IDS_EDU_LOGIN_BACK);
   source->AddLocalizedString("nextButton", IDS_EDU_LOGIN_NEXT);
@@ -283,7 +283,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = CreateWebUIDataSource(profile);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 username =
+  std::u16string username =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

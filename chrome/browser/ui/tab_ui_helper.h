@@ -30,7 +30,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   // Get the title of the tab. When the associated WebContents' title is empty,
   // a customized title is used.
-  base::string16 GetTitle() const;
+  std::u16string GetTitle() const;
 
   // Get the favicon of the tab. It will return a favicon from history service
   // if it needs to, otherwise, it will return the favicon of the WebContents.
@@ -58,7 +58,7 @@ class TabUIHelper : public content::WebContentsObserver,
 
   struct TabUIData {
     explicit TabUIData(const GURL& url);
-    base::string16 title;
+    std::u16string title;
     gfx::Image favicon;
   };
 

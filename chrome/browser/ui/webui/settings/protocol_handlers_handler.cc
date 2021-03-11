@@ -172,8 +172,8 @@ void ProtocolHandlersHandler::HandleSetDefault(const base::ListValue* args) {
 
 ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
     const base::ListValue* args) const {
-  base::string16 protocol;
-  base::string16 url;
+  std::u16string protocol;
+  std::u16string url;
   bool ok = args->GetString(0, &protocol) && args->GetString(1, &url);
   if (!ok)
     return ProtocolHandler::EmptyProtocolHandler();

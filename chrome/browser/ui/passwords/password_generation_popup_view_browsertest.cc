@@ -38,7 +38,7 @@ class TestPasswordGenerationPopupController
                                       10,
                                       10),
                 /*max_length=*/10,
-                /*generation_element=*/base::string16(),
+                /*generation_element=*/std::u16string(),
                 autofill::FieldRendererId(100),
                 /*is_generation_element_password_type=*/true,
                 /*text_direction=*/base::i18n::TextDirection(),

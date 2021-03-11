@@ -102,7 +102,7 @@ bool TestBrowserDialog::VerifyUi() {
   if (added.size() != 1) {
     LOG(INFO) << "VerifyUi(): Expected 1 added widget; got " << added.size();
     if (added.size() > 1) {
-      base::string16 widget_title_log =
+      std::u16string widget_title_log =
           base::ASCIIToUTF16("Added Widgets are: ");
       for (views::Widget* widget : added) {
         widget_title_log += widget->widget_delegate()->GetWindowTitle() +

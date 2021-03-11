@@ -110,7 +110,7 @@ void SetHistoryEntryUrlAndTitle(
   result->SetStringKey("url", entry.url.spec());
 
   bool using_url_as_the_title = false;
-  base::string16 title_to_set(entry.title);
+  std::u16string title_to_set(entry.title);
   if (entry.title.empty()) {
     using_url_as_the_title = true;
     title_to_set = base::UTF8ToUTF16(entry.url.spec());
@@ -176,7 +176,7 @@ base::Value HistoryEntryToValue(
   base::Value result(base::Value::Type::DICTIONARY);
   SetHistoryEntryUrlAndTitle(entry, &result);
 
-  base::string16 domain = url_formatter::IDNToUnicode(entry.url.host());
+  std::u16string domain = url_formatter::IDNToUnicode(entry.url.host());
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty())
@@ -205,9 +205,9 @@ base::Value HistoryEntryToValue(
   // the monthly view.
   result.SetStringKey("dateShort", base::TimeFormatShortDate(entry.time));
 
-  base::string16 snippet_string;
-  base::string16 date_relative_day;
-  base::string16 date_time_of_day;
+  std::u16string snippet_string;
+  std::u16string date_relative_day;
+  std::u16string date_time_of_day;
   bool is_blocked_visit = false;
   int host_filtering_behavior = -1;
 
@@ -218,7 +218,7 @@ base::Value HistoryEntryToValue(
     snippet_string = entry.snippet;
   } else {
     base::Time midnight = clock->Now().LocalMidnight();
-    base::string16 date_str =
+    std::u16string date_str =
         ui::TimeFormat::RelativeDate(entry.time, &midnight);
     if (date_str.empty()) {
       date_str = base::TimeFormatFriendlyDate(entry.time);
@@ -346,7 +346,7 @@ void BrowsingHistoryHandler::StartQueryHistory() {
       this, local_history, sync_service);
 
   // 150 = RESULTS_PER_PAGE from chrome/browser/resources/history/constants.js
-  SendHistoryQuery(150, base::string16());
+  SendHistoryQuery(150, std::u16string());
 }
 
 void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
@@ -386,7 +386,7 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
 }
 
 void BrowsingHistoryHandler::SendHistoryQuery(int max_count,
-                                              const base::string16& query) {
+                                              const std::u16string& query) {
   history::QueryOptions options;
   options.max_count = max_count;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
@@ -464,7 +464,7 @@ void BrowsingHistoryHandler::HandleClearBrowsingData(
 }
 
 void BrowsingHistoryHandler::HandleRemoveBookmark(const base::ListValue* args) {
-  base::string16 url = ExtractStringValue(args);
+  std::u16string url = ExtractStringValue(args);
   Profile* profile = GetProfile();
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
   bookmarks::RemoveAllBookmarks(model, GURL(url));

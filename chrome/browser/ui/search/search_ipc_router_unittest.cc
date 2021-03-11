@@ -83,7 +83,7 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
                void(const ntp_tiles::NTPTileImpression& impression));
   MOCK_METHOD1(OnLogMostVisitedNavigation,
                void(const ntp_tiles::NTPTileImpression& impression));
-  MOCK_METHOD1(PasteIntoOmnibox, void(const base::string16&));
+  MOCK_METHOD1(PasteIntoOmnibox, void(const std::u16string&));
   MOCK_METHOD1(OnSetCustomBackgroundURL, void(const GURL& url));
   MOCK_METHOD5(OnSetCustomBackgroundInfo,
                void(const GURL& background_url,
@@ -105,7 +105,7 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
   MOCK_METHOD0(OnConfirmThemeChanges, void());
   MOCK_METHOD1(DeleteAutocompleteMatch, void(uint8_t line));
   MOCK_METHOD2(QueryAutocomplete,
-               void(const base::string16& input,
+               void(const std::u16string& input,
                     bool prevent_inline_autocomplete));
   MOCK_METHOD1(StopAutocomplete, void(bool clear_result));
   MOCK_METHOD1(LogCharTypedToRepaintLatency, void(uint32_t latency_ms));
@@ -754,7 +754,7 @@ TEST_F(SearchIPCRouterTest, ProcessPasteAndOpenDropdownMsg) {
   bool is_active_tab = IsActiveTab(contents);
   EXPECT_TRUE(is_active_tab);
 
-  base::string16 text;
+  std::u16string text;
   EXPECT_CALL(*mock_delegate(), PasteIntoOmnibox(text)).Times(1);
   EXPECT_CALL(*policy, ShouldProcessPasteIntoOmnibox(is_active_tab))
       .Times(1)
@@ -765,7 +765,7 @@ TEST_F(SearchIPCRouterTest, ProcessPasteAndOpenDropdownMsg) {
 TEST_F(SearchIPCRouterTest, IgnorePasteAndOpenDropdownMsg) {
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
   SetupMockDelegateAndPolicy();
-  base::string16 text;
+  std::u16string text;
   EXPECT_CALL(*mock_delegate(), PasteIntoOmnibox(text)).Times(0);
 
   content::WebContents* contents = web_contents();
@@ -1106,7 +1106,7 @@ TEST_F(SearchIPCRouterTest, SendAutocompleteResultChanged) {
 
   GetSearchIPCRouter().AutocompleteResultChanged(
       search::mojom::AutocompleteResult::New(
-          base::string16(),
+          std::u16string(),
           base::flat_map<int32_t, search::mojom::SuggestionGroupPtr>(),
           std::vector<search::mojom::AutocompleteMatchPtr>()));
 }
@@ -1123,7 +1123,7 @@ TEST_F(SearchIPCRouterTest, IgnoreAutocompleteResultChanged) {
 
   GetSearchIPCRouter().AutocompleteResultChanged(
       search::mojom::AutocompleteResult::New(
-          base::string16(),
+          std::u16string(),
           base::flat_map<int32_t, search::mojom::SuggestionGroupPtr>(),
           std::vector<search::mojom::AutocompleteMatchPtr>()));
 }
@@ -1167,7 +1167,7 @@ TEST_F(SearchIPCRouterTest, IgnoreQueryAutocomplete) {
       .Times(1)
       .WillOnce(Return(false));
 
-  GetSearchIPCRouter().QueryAutocomplete(base::string16(), false);
+  GetSearchIPCRouter().QueryAutocomplete(std::u16string(), false);
 }
 
 TEST_F(SearchIPCRouterTest, IgnoreBlocklistPromo) {

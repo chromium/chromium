@@ -45,15 +45,15 @@ class SaveCardBubbleController {
   static SaveCardBubbleController* Get(content::WebContents* web_contents);
 
   // Returns the title that should be displayed in the bubble.
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
 
   // Returns the explanatory text that should be displayed in the bubble.
   // Returns an empty string if no message should be displayed.
-  virtual base::string16 GetExplanatoryMessage() const = 0;
+  virtual std::u16string GetExplanatoryMessage() const = 0;
 
   // Returns the button label text for save card bubbles.
-  virtual base::string16 GetAcceptButtonText() const = 0;
-  virtual base::string16 GetDeclineButtonText() const = 0;
+  virtual std::u16string GetAcceptButtonText() const = 0;
+  virtual std::u16string GetDeclineButtonText() const = 0;
 
   // Returns the account info of the signed-in user.
   virtual const AccountInfo& GetAccountInfo() const = 0;

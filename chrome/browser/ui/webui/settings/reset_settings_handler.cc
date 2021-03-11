@@ -277,7 +277,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
-  base::string16 reset_tool_name;
+  std::u16string reset_tool_name;
 #if defined(OS_WIN)
   Profile* profile = Profile::FromWebUI(web_ui());
   TriggeredProfileResetter* triggered_profile_resetter =

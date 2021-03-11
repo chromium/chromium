@@ -42,8 +42,8 @@ class LoginHandlerAndroid : public LoginHandler {
 
  protected:
   // LoginHandler methods:
-  void BuildViewImpl(const base::string16& authority,
-                     const base::string16& explanation,
+  void BuildViewImpl(const std::u16string& authority,
+                     const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

@@ -27,8 +27,8 @@ const int kNumberOfExpirationYears = 10;
 // Returns the items that are in the expiration year dropdown. If
 // |additional_year| is not 0 and not within the normal range, it will be added
 // accordingly.
-std::vector<base::string16> GetExpirationYearItems(int additional_year) {
-  std::vector<base::string16> years;
+std::vector<std::u16string> GetExpirationYearItems(int additional_year) {
+  std::vector<std::u16string> years;
   // Add the "Year" placeholder item.
   years.push_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
@@ -51,7 +51,7 @@ std::vector<base::string16> GetExpirationYearItems(int additional_year) {
 }
 
 // Formats a month, zero-padded (e.g. "02").
-base::string16 FormatMonth(int month) {
+std::u16string FormatMonth(int month) {
   return base::ASCIIToUTF16(base::StringPrintf("%.2d", month));
 }
 
@@ -68,7 +68,7 @@ int MonthComboboxModel::GetItemCount() const {
   return 13;
 }
 
-base::string16 MonthComboboxModel::GetItemAt(int index) const {
+std::u16string MonthComboboxModel::GetItemAt(int index) const {
   return index == 0 ? l10n_util::GetStringUTF16(
                           IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
                     : FormatMonth(index);
@@ -91,7 +91,7 @@ YearComboboxModel::YearComboboxModel(int additional_year)
 YearComboboxModel::~YearComboboxModel() {}
 
 void YearComboboxModel::SetDefaultIndexByYear(int year) {
-  const base::string16& year_value = base::NumberToString16(year);
+  const std::u16string& year_value = base::NumberToString16(year);
   for (int i = 1; i < GetItemCount(); i++) {
     if (year_value == GetItemAt(i)) {
       default_index_ = i;

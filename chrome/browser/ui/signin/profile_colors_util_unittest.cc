@@ -78,7 +78,7 @@ class ProfileColorsUtilTest : public testing::Test {
         testing_profile_manager_.profile_manager()->user_data_dir().AppendASCII(
             base::StringPrintf("testing_profile_path%" PRIuS,
                                number_of_profiles));
-    base::string16 name = base::ASCIIToUTF16(
+    std::u16string name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_name%" PRIuS, number_of_profiles));
     storage()->AddProfile(profile_path, name, std::string(), name, true,
                           number_of_profiles, std::string(), EmptyAccountId());

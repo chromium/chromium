@@ -85,7 +85,7 @@ class PasswordGenerationPopupControllerImpl
   void Show(GenerationUIState state);
 
   // Update the password to be displayed in the UI.
-  void UpdatePassword(base::string16 new_password);
+  void UpdatePassword(std::u16string new_password);
 
   // Hides the popup, since its position is no longer valid.
   void FrameWasScrolled();
@@ -141,9 +141,9 @@ class PasswordGenerationPopupControllerImpl
 
   GenerationUIState state() const override;
   bool password_selected() const override;
-  const base::string16& password() const override;
-  base::string16 SuggestedText() override;
-  const base::string16& HelpText() override;
+  const std::u16string& password() const override;
+  std::u16string SuggestedText() override;
+  const std::u16string& HelpText() override;
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> GetWeakPtr();
 
@@ -179,10 +179,10 @@ class PasswordGenerationPopupControllerImpl
   const autofill::PopupControllerCommon controller_common_;
 
   // Help text in the footer.
-  base::string16 help_text_;
+  std::u16string help_text_;
 
   // The password value to be displayed in the UI.
-  base::string16 current_password_;
+  std::u16string current_password_;
   // Whether the row with the password is currently selected/highlighted.
   bool password_selected_;
 

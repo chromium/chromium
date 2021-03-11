@@ -251,7 +251,7 @@ void AppServiceAppResult::HandleSuggestionChip(Profile* profile) {
 
 void AppServiceAppResult::UpdateContinueReadingFavicon(
     bool continue_to_google_server) {
-  base::string16 title;
+  std::u16string title;
   GURL url;
   if (app_list::HasRecommendableForeignTab(profile(), &title, &url,
                                            /*test_delegate=*/nullptr)) {

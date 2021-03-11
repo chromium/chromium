@@ -15,7 +15,7 @@ namespace app_list {
 SettingsShortcutProvider::SettingsShortcutProvider(Profile* profile)
     : profile_(profile) {}
 
-void SettingsShortcutProvider::Start(const base::string16& query) {
+void SettingsShortcutProvider::Start(const std::u16string& query) {
   SearchProvider::Results search_results;
   // TODO(wutao): Use tokenized string match.
   base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents finder(query);

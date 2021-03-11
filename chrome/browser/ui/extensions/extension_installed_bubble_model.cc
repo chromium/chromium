@@ -41,10 +41,10 @@ base::Optional<extensions::Command> CommandForExtensionAction(
   return base::nullopt;
 }
 
-base::string16 MakeHowToUseText(const extensions::ActionInfo* action,
+std::u16string MakeHowToUseText(const extensions::ActionInfo* action,
                                 base::Optional<extensions::Command> command,
                                 const std::string& keyword) {
-  base::string16 extra;
+  std::u16string extra;
   if (command.has_value())
     extra = command->accelerator().GetShortcutText();
 
@@ -64,7 +64,7 @@ base::string16 MakeHowToUseText(const extensions::ActionInfo* action,
   }
 
   if (!message_id)
-    return base::string16();
+    return std::u16string();
 
   return extra.empty() ? l10n_util::GetStringUTF16(message_id)
                        : l10n_util::GetStringFUTF16(message_id, extra);
@@ -109,7 +109,7 @@ ExtensionInstalledBubbleModel::ExtensionInstalledBubbleModel(
 
 ExtensionInstalledBubbleModel::~ExtensionInstalledBubbleModel() = default;
 
-base::string16 ExtensionInstalledBubbleModel::GetHowToUseText() const {
+std::u16string ExtensionInstalledBubbleModel::GetHowToUseText() const {
   DCHECK(show_how_to_use_);
   return how_to_use_text_;
 }

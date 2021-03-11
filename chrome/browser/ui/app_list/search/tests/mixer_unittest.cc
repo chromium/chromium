@@ -79,7 +79,7 @@ class TestSearchProvider : public SearchProvider {
   ~TestSearchProvider() override {}
 
   // SearchProvider overrides:
-  void Start(const base::string16& query) override {
+  void Start(const std::u16string& query) override {
     ClearResults();
     for (size_t i = 0; i < count_; ++i) {
       const std::string id =
@@ -161,13 +161,13 @@ class MixerTest : public testing::Test {
   }
 
   void RunQuery() {
-    const base::string16 query;
+    const std::u16string query;
 
     for (size_t i = 0; i < providers_.size(); ++i)
       providers_[i]->Start(query);
 
     mixer_->MixAndPublish(ash::AppListConfig::instance().max_search_results(),
-                          base::string16());
+                          std::u16string());
   }
 
   std::string GetResults() const {

@@ -27,7 +27,7 @@ class ManagementUI : public content::WebUIController {
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ScaleFactor scale_factor);
 
-  static base::string16 GetManagementPageSubtitle(Profile* profile);
+  static std::u16string GetManagementPageSubtitle(Profile* profile);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ManagementUI);

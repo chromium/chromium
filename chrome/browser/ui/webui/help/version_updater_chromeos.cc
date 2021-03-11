@@ -78,7 +78,7 @@ bool IsAutoUpdateDisabled() {
   return update_disabled;
 }
 
-base::string16 GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
+std::u16string GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
                                         bool metered) {
   const std::string type = network->type();
   if (chromeos::NetworkTypePattern::WiFi().MatchesType(type)) {
@@ -93,7 +93,7 @@ base::string16 GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
   if (chromeos::NetworkTypePattern::VPN().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 // Returns whether an update is allowed. If not, it calls the callback with
@@ -121,7 +121,7 @@ bool EnsureCanUpdate(bool interactive,
                  0, l10n_util::GetStringUTF16(IDS_UPGRADE_OFFLINE));
     return false;
   } else if (status == NETWORK_STATUS_DISALLOWED) {
-    base::string16 message = l10n_util::GetStringFUTF16(
+    std::u16string message = l10n_util::GetStringFUTF16(
         IDS_UPGRADE_DISALLOWED, GetConnectionTypeAsUTF16(network, metered));
     callback.Run(VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED, 0, false,
                  false, std::string(), 0, message);
@@ -219,7 +219,7 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
     // show appropriate error message.
     LOG(ERROR) << "Error setting update over cellular one time permission.";
     callback_.Run(VersionUpdater::FAILED, 0, false, false, std::string(), 0,
-                  base::string16());
+                  std::u16string());
   }
 }
 
@@ -275,7 +275,7 @@ void VersionUpdaterCros::UpdateStatusChanged(
   int progress = 0;
   std::string version = status.new_version();
   int64_t size = status.new_size();
-  base::string16 message;
+  std::u16string message;
 
   // If the status change is for an installation, this means that DLCs are being
   // installed and has nothing to with the OS. Ignore this status change.
@@ -343,5 +343,5 @@ void VersionUpdaterCros::OnUpdateCheck(
   // If version updating is not implemented, this binary is the most up-to-date
   // possible with respect to automatic updating.
   if (result == UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED)
-    callback_.Run(UPDATED, 0, false, false, std::string(), 0, base::string16());
+    callback_.Run(UPDATED, 0, false, false, std::string(), 0, std::u16string());
 }

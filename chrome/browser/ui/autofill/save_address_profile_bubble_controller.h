@@ -15,7 +15,7 @@ class SaveAddressProfileBubbleController {
  public:
   virtual ~SaveAddressProfileBubbleController() = default;
 
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
   virtual const AutofillProfile& GetProfileToSave() const = 0;
   virtual void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision) = 0;

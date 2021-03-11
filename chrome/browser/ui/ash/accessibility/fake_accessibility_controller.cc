@@ -70,8 +70,8 @@ void FakeAccessibilityController::ToggleDictationFromSource(
 void FakeAccessibilityController::HandleAutoclickScrollableBoundsFound(
     gfx::Rect& bounds_in_screen) {}
 
-base::string16 FakeAccessibilityController::GetBatteryDescription() const {
-  return base::string16();
+std::u16string FakeAccessibilityController::GetBatteryDescription() const {
+  return std::u16string();
 }
 
 void FakeAccessibilityController::SetVirtualKeyboardVisible(bool is_visible) {}

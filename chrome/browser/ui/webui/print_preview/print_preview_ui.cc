@@ -384,7 +384,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                     chrome::kCloudPrintCertificateErrorLearnMoreURL);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::string16 shortcut_text(base::UTF8ToUTF16(kBasicPrintShortcut));
+  const std::u16string shortcut_text(base::UTF8ToUTF16(kBasicPrintShortcut));
   source->AddString("systemDialogOption",
                     l10n_util::GetStringFUTF16(
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));
@@ -767,7 +767,7 @@ void PrintPreviewUI::OnNupPdfDocumentConvertDone(
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
 }
 
-void PrintPreviewUI::SetInitiatorTitle(const base::string16& job_title) {
+void PrintPreviewUI::SetInitiatorTitle(const std::u16string& job_title) {
   initiator_title_ = job_title;
 }
 

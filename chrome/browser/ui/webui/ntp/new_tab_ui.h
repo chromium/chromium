@@ -43,11 +43,11 @@ class NewTabUI : public content::WebUIController {
   // Adds "url", "title", and "direction" keys on incoming dictionary, setting
   // title as the url as a fallback on empty title.
   static void SetUrlTitleAndDirection(base::Value* dictionary,
-                                      const base::string16& title,
+                                      const std::u16string& title,
                                       const GURL& gurl);
 
   // Adds "full_name" and "full_name_direction" keys on incoming dictionary.
-  static void SetFullNameAndDirection(const base::string16& full_name,
+  static void SetFullNameAndDirection(const std::u16string& full_name,
                                       base::DictionaryValue* dictionary);
 
  private:

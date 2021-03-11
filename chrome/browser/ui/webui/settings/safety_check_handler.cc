@@ -554,7 +554,7 @@ void SafetyCheckHandler::OnChromeCleanerCheckResult(
 }
 #endif
 
-base::string16 SafetyCheckHandler::GetStringForParent(ParentStatus status) {
+std::u16string SafetyCheckHandler::GetStringForParent(ParentStatus status) {
   switch (status) {
     case ParentStatus::kBefore:
       return l10n_util::GetStringUTF16(
@@ -567,7 +567,7 @@ base::string16 SafetyCheckHandler::GetStringForParent(ParentStatus status) {
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
+std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
   switch (status) {
     case UpdateStatus::kChecking:
       return base::UTF8ToUTF16("");
@@ -609,7 +609,7 @@ base::string16 SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForSafeBrowsing(
+std::u16string SafetyCheckHandler::GetStringForSafeBrowsing(
     SafeBrowsingStatus status) {
   switch (status) {
     case SafeBrowsingStatus::kChecking:
@@ -637,7 +637,7 @@ base::string16 SafetyCheckHandler::GetStringForSafeBrowsing(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForPasswords(
+std::u16string SafetyCheckHandler::GetStringForPasswords(
     PasswordsStatus status,
     Compromised compromised,
     Weak weak,
@@ -702,7 +702,7 @@ base::string16 SafetyCheckHandler::GetStringForPasswords(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForExtensions(
+std::u16string SafetyCheckHandler::GetStringForExtensions(
     ExtensionsStatus status,
     Blocklisted blocklisted,
     ReenabledUser reenabled_user,
@@ -741,7 +741,7 @@ base::string16 SafetyCheckHandler::GetStringForExtensions(
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::string16 SafetyCheckHandler::GetStringForChromeCleaner(
+std::u16string SafetyCheckHandler::GetStringForChromeCleaner(
     ChromeCleanerStatus status,
     base::Time cct_completion_time,
     base::Time system_time) {
@@ -778,7 +778,7 @@ base::string16 SafetyCheckHandler::GetStringForChromeCleaner(
 }
 #endif
 
-base::string16 SafetyCheckHandler::GetStringForTimePassed(
+std::u16string SafetyCheckHandler::GetStringForTimePassed(
     base::Time completion_timestamp,
     base::Time system_time,
     int less_than_one_minute_ago_message_id,
@@ -829,7 +829,7 @@ base::string16 SafetyCheckHandler::GetStringForTimePassed(
   }
 }
 
-base::string16 SafetyCheckHandler::GetStringForParentRan(
+std::u16string SafetyCheckHandler::GetStringForParentRan(
     base::Time safety_check_completion_time,
     base::Time system_time) {
   return SafetyCheckHandler::GetStringForTimePassed(
@@ -841,14 +841,14 @@ base::string16 SafetyCheckHandler::GetStringForParentRan(
       IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_AFTER_DAYS);
 }
 
-base::string16 SafetyCheckHandler::GetStringForParentRan(
+std::u16string SafetyCheckHandler::GetStringForParentRan(
     base::Time safety_check_completion_time) {
   return SafetyCheckHandler::GetStringForParentRan(safety_check_completion_time,
                                                    base::Time::Now());
 }
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::string16 SafetyCheckHandler::GetStringForChromeCleanerRan(
+std::u16string SafetyCheckHandler::GetStringForChromeCleanerRan(
     base::Time cct_completion_time,
     base::Time system_time) {
   if (cct_completion_time.is_null()) {
@@ -914,7 +914,7 @@ void SafetyCheckHandler::OnVersionUpdaterResult(VersionUpdater::Status status,
                                                 bool powerwash,
                                                 const std::string& version,
                                                 int64_t update_size,
-                                                const base::string16& message) {
+                                                const std::u16string& message) {
   if (status == VersionUpdater::FAILED) {
     update_helper_->CheckConnectivity(
         base::BindOnce(&SafetyCheckHandler::DetermineIfOfflineOrError,
@@ -1113,7 +1113,7 @@ void SafetyCheckHandler::CompleteParentIfChildrenCompleted() {
 void SafetyCheckHandler::FireBasicSafetyCheckWebUiListener(
     const std::string& event_name,
     int new_state,
-    const base::string16& display_string) {
+    const std::u16string& display_string) {
   base::DictionaryValue event;
   event.SetIntKey(kNewState, new_state);
   event.SetStringKey(kDisplayString, display_string);

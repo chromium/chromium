@@ -24,11 +24,11 @@ using ::testing::_;
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
  public:
-  MOCK_METHOD1(GeneratedPasswordAccepted, void(const base::string16&));
+  MOCK_METHOD1(GeneratedPasswordAccepted, void(const std::u16string&));
   MOCK_METHOD3(GeneratedPasswordAccepted,
                void(const autofill::FormData&,
                     autofill::FieldRendererId,
-                    const base::string16&));
+                    const std::u16string&));
 };
 
 class PasswordGenerationPopupControllerImplTest

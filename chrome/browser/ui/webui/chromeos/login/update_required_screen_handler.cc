@@ -91,7 +91,7 @@ void UpdateRequiredScreenHandler::Initialize() {
 
 void UpdateRequiredScreenHandler::SetEnterpriseAndDeviceName(
     const std::string& enterpriseDomain,
-    const base::string16& deviceName) {
+    const std::u16string& deviceName) {
   CallJS("login.UpdateRequiredScreen.setEnterpriseAndDeviceName",
          enterpriseDomain, deviceName);
 }
@@ -135,7 +135,7 @@ void UpdateRequiredScreenHandler::SetUpdateProgressValue(int progress) {
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   CallJS("login.UpdateRequiredScreen.setUpdateProgressMessage", message);
 }
 

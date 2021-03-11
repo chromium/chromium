@@ -31,12 +31,12 @@ void VersionUpdaterWin::CheckForUpdate(StatusCallback callback,
   // There is no supported integration with Google Update for Chromium.
   callback_ = std::move(callback);
 
-  callback_.Run(CHECKING, 0, false, false, std::string(), 0, base::string16());
+  callback_.Run(CHECKING, 0, false, false, std::string(), 0, std::u16string());
   DoBeginUpdateCheck(false /* !install_update_if_possible */);
 }
 
 void VersionUpdaterWin::OnUpdateCheckComplete(
-    const base::string16& new_version) {
+    const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (new_version.empty()) {
     // Google Update says that no new version is available. Check to see if a
@@ -52,27 +52,27 @@ void VersionUpdaterWin::OnUpdateCheckComplete(
 
   // Notify the caller that the update is now beginning and initiate it.
   DoBeginUpdateCheck(true /* install_update_if_possible */);
-  callback_.Run(UPDATING, 0, false, false, std::string(), 0, base::string16());
+  callback_.Run(UPDATING, 0, false, false, std::string(), 0, std::u16string());
 }
 
 void VersionUpdaterWin::OnUpgradeProgress(int progress,
-                                          const base::string16& new_version) {
+                                          const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   callback_.Run(UPDATING, progress, false, false, std::string(), 0,
-                base::string16());
+                std::u16string());
 }
 
-void VersionUpdaterWin::OnUpgradeComplete(const base::string16& new_version) {
+void VersionUpdaterWin::OnUpgradeComplete(const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   callback_.Run(NEARLY_UPDATED, 0, false, false, std::string(), 0,
-                base::string16());
+                std::u16string());
 }
 
 void VersionUpdaterWin::OnError(GoogleUpdateErrorCode error_code,
-                                const base::string16& html_error_message,
-                                const base::string16& new_version) {
+                                const std::u16string& html_error_message,
+                                const std::u16string& new_version) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::string16 message;
+  std::u16string message;
   Status status = FAILED;
 
   switch (error_code) {
@@ -109,7 +109,7 @@ void VersionUpdaterWin::DoBeginUpdateCheck(bool install_update_if_possible) {
 
 void VersionUpdaterWin::OnPendingRestartCheck(bool is_update_pending_restart) {
   callback_.Run(is_update_pending_restart ? NEARLY_UPDATED : UPDATED, 0, false,
-                false, std::string(), 0, base::string16());
+                false, std::string(), 0, std::u16string());
 }
 
 VersionUpdater* VersionUpdater::Create(content::WebContents* web_contents) {

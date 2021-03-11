@@ -24,7 +24,7 @@ SimpleCommandSource::SimpleCommandSource() {
 SimpleCommandSource::~SimpleCommandSource() = default;
 
 CommandSource::CommandResults SimpleCommandSource::GetCommands(
-    const base::string16& input,
+    const std::u16string& input,
     Browser* browser) const {
   // TODO(lgrey): Temporarily using hardcoded English titles instead of
   // translated strings so we can experiment without adding translation load.
@@ -32,7 +32,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
   // ship.
   const struct {
     int id;
-    base::string16 title;
+    std::u16string title;
   } command_map[] = {
       {IDC_FIND, l10n_util::GetStringUTF16(IDS_FIND)},
       {IDC_SAVE_PAGE, l10n_util::GetStringUTF16(IDS_SAVE_PAGE)},
@@ -71,7 +71,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
   for (const auto& command_spec : command_map) {
     if (!chrome::IsCommandEnabled(browser, command_spec.id))
       continue;
-    base::string16 title = command_spec.title;
+    std::u16string title = command_spec.title;
     base::Erase(title, '&');
     double score = finder.Find(title, &ranges);
     if (score == 0)

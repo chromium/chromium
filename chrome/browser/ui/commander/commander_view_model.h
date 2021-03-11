@@ -18,15 +18,15 @@ namespace commander {
 struct CommandItemViewModel {
  public:
   CommandItemViewModel(
-      const base::string16& title,
+      const std::u16string& title,
       const std::vector<gfx::Range>& matched_ranges,
       CommandItem::Entity entity_type = CommandItem::Entity::kCommand,
-      const base::string16& annotation = base::string16());
+      const std::u16string& annotation = std::u16string());
   explicit CommandItemViewModel(const CommandItem& item);
   ~CommandItemViewModel();
   CommandItemViewModel(const CommandItemViewModel& other);
   // The displayed title of the command.
-  base::string16 title;
+  std::u16string title;
   // The locations of spans in |title| that should be emphasised to
   // indicate to the user why the command was surfaced for their input.
   std::vector<gfx::Range> matched_ranges;
@@ -34,7 +34,7 @@ struct CommandItemViewModel {
   CommandItem::Entity entity_type;
   // Optional secondary text for the command. Typically used to display a
   // hotkey.
-  base::string16 annotation;
+  std::u16string annotation;
 };
 
 // A view model for a set of results to be presented by the commander UI.
@@ -62,7 +62,7 @@ struct CommanderViewModel {
   std::vector<CommandItemViewModel> items;
   // Prompt text to be shown when entering a composite command. Should only
   // be populated if and only if `action` is kPrompt.
-  base::string16 prompt_text;
+  std::u16string prompt_text;
   // The action the view should take in response to receiving this view model.
   Action action;
 };

@@ -674,13 +674,13 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
   bool is_child = user_manager::UserManager::Get()->IsLoggedInAsChildUser();
   html_source->AddBoolean("isChild", is_child);
 
-  base::string16 tooltip;
+  std::u16string tooltip;
   if (is_child) {
     std::string custodian = supervised_user_service->GetCustodianName();
     std::string second_custodian =
         supervised_user_service->GetSecondCustodianName();
 
-    base::string16 child_managed_tooltip;
+    std::u16string child_managed_tooltip;
     if (second_custodian.empty()) {
       child_managed_tooltip = l10n_util::GetStringFUTF16(
           IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_ONE_PARENT_TOOLTIP,

@@ -217,7 +217,7 @@ void CreateAndShowNewWindowWithContents(
 
 bool GetTabURLAndTitleToSave(content::WebContents* web_contents,
                              GURL* url,
-                             base::string16* title) {
+                             std::u16string* title) {
   // |web_contents| can be nullptr if the last tab in the browser was closed
   // but the browser wasn't closed yet. https://crbug.com/799668
   if (!web_contents)
@@ -1007,7 +1007,7 @@ void BookmarkCurrentTab(Browser* browser) {
     return;  // Ignore requests until bookmarks are loaded.
 
   GURL url;
-  base::string16 title;
+  std::u16string title;
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   // |web_contents| can be nullptr if the last tab in the browser was closed
@@ -1079,7 +1079,7 @@ bool MoveCurrentTabToReadLater(Browser* browser) {
 
 bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   ReadingListModel* model = GetReadingListModel(browser);
   if (!model || !GetTabURLAndTitleToSave(web_contents, &url, &title) ||
       !model->IsUrlSupported(url))
@@ -1099,7 +1099,7 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
 
 bool MarkCurrentTabAsReadInReadLater(Browser* browser) {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   ReadingListModel* model = GetReadingListModel(browser);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
@@ -1114,7 +1114,7 @@ bool MarkCurrentTabAsReadInReadLater(Browser* browser) {
 
 bool IsCurrentTabUnreadInReadLater(Browser* browser) {
   GURL url;
-  base::string16 title;
+  std::u16string title;
   ReadingListModel* model = GetReadingListModel(browser);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();

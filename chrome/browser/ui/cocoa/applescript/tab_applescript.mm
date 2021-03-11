@@ -166,7 +166,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   if (!entry)
     return nil;
 
-  base::string16 title = entry ? entry->GetTitle() : base::string16();
+  std::u16string title = entry ? entry->GetTitle() : std::u16string();
   return base::SysUTF16ToNSString(title);
 }
 
@@ -318,7 +318,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   content::RenderFrameHost::JavaScriptResultCallback callback =
       base::BindOnce(&ResumeAppleEventAndSendReply, suspensionID);
 
-  base::string16 script = base::SysNSStringToUTF16(
+  std::u16string script = base::SysNSStringToUTF16(
       [[command evaluatedArguments] objectForKey:@"javascript"]);
   frame->ExecuteJavaScriptInIsolatedWorld(script, std::move(callback),
                                           ISOLATED_WORLD_ID_APPLESCRIPT);

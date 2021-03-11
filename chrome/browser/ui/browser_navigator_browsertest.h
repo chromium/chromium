@@ -41,7 +41,7 @@ class BrowserNavigatorTest : public InProcessBrowserTest {
   bool OpenPOSTURLInNewForegroundTabAndGetTitle(const GURL& url,
                                                 const std::string& post_data,
                                                 bool is_browser_initiated,
-                                                base::string16* title);
+                                                std::u16string* title);
 
   Browser* NavigateHelper(const GURL& url,
                           Browser* browser,

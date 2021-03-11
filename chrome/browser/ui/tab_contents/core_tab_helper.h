@@ -24,10 +24,10 @@ class CoreTabHelper : public content::WebContentsObserver,
   ~CoreTabHelper() override;
 
   // Initial title assigned to NavigationEntries from Navigate.
-  static base::string16 GetDefaultTitle();
+  static std::u16string GetDefaultTitle();
 
   // Returns a human-readable description the tab's loading state.
-  base::string16 GetStatusText() const;
+  std::u16string GetStatusText() const;
 
   void UpdateContentRestrictions(int content_restrictions);
 
@@ -58,7 +58,7 @@ class CoreTabHelper : public content::WebContentsObserver,
   explicit CoreTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<CoreTabHelper>;
 
-  static bool GetStatusTextForWebContents(base::string16* status_text,
+  static bool GetStatusTextForWebContents(std::u16string* status_text,
                                           content::WebContents* source);
 
   // content::WebContentsObserver overrides:

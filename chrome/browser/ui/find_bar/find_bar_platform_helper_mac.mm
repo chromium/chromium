@@ -42,7 +42,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
         removeObserver:find_pasteboard_notification_observer_];
   }
 
-  void OnUserChangedFindText(base::string16 text) override {
+  void OnUserChangedFindText(std::u16string text) override {
     if (find_bar_controller_->web_contents()
             ->GetBrowserContext()
             ->IsOffTheRecord()) {

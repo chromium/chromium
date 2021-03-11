@@ -305,15 +305,15 @@ void SigninScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_PUBLIC_ACCOUNT_MONITORING_INFO_ITEM_4);
   builder->Add("publicSessionSelectLanguage", IDS_LANGUAGE_SELECTION_SELECT);
   builder->Add("publicSessionSelectKeyboard", IDS_KEYBOARD_SELECTION_SELECT);
-  builder->Add("removeUserWarningTextNonSyncNoStats", base::string16());
-  builder->Add("removeUserWarningTextNonSyncCalculating", base::string16());
-  builder->Add("removeUserWarningTextHistory", base::string16());
-  builder->Add("removeUserWarningTextPasswords", base::string16());
-  builder->Add("removeUserWarningTextBookmarks", base::string16());
-  builder->Add("removeUserWarningTextAutofill", base::string16());
-  builder->Add("removeUserWarningTextCalculating", base::string16());
-  builder->Add("removeUserWarningTextSyncNoStats", base::string16());
-  builder->Add("removeUserWarningTextSyncCalculating", base::string16());
+  builder->Add("removeUserWarningTextNonSyncNoStats", std::u16string());
+  builder->Add("removeUserWarningTextNonSyncCalculating", std::u16string());
+  builder->Add("removeUserWarningTextHistory", std::u16string());
+  builder->Add("removeUserWarningTextPasswords", std::u16string());
+  builder->Add("removeUserWarningTextBookmarks", std::u16string());
+  builder->Add("removeUserWarningTextAutofill", std::u16string());
+  builder->Add("removeUserWarningTextCalculating", std::u16string());
+  builder->Add("removeUserWarningTextSyncNoStats", std::u16string());
+  builder->Add("removeUserWarningTextSyncCalculating", std::u16string());
   builder->Add("removeNonOwnerUserWarningText",
                IDS_LOGIN_POD_NON_OWNER_USER_REMOVE_WARNING);
   builder->Add("removeUserWarningButtonTitle",

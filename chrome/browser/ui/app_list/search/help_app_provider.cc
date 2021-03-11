@@ -71,7 +71,7 @@ HelpAppProvider::HelpAppProvider(Profile* profile) : profile_(profile) {
 
 HelpAppProvider::~HelpAppProvider() = default;
 
-void HelpAppProvider::Start(const base::string16& query) {
+void HelpAppProvider::Start(const std::u16string& query) {
   // This provider doesn't handle searches, if there is any query just clear the
   // results and return.
   if (!query.empty()) {

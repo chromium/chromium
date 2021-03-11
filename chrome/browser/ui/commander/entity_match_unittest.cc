@@ -40,7 +40,7 @@ class CommanderEntityMatchTest : public BrowserWithTestWindowTest {
 
   // Creates a tab per string in |titles|, then places each one in a group,
   // titled with the corresponding string.
-  void CreateGroups(std::vector<base::string16> titles) {
+  void CreateGroups(std::vector<std::u16string> titles) {
     // Create the tabs first so they don't get autogrouped and make odd things
     // happen.
     for (size_t i = 0; i < titles.size(); ++i)

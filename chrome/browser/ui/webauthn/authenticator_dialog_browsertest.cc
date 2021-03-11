@@ -87,23 +87,23 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "set_pin") {
       model->CollectPIN(device::pin::PINEntryReason::kSet,
                         device::pin::PINEntryError::kNoError, 6, 0,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin") {
       model->CollectPIN(device::pin::PINEntryReason::kChallenge,
                         device::pin::PINEntryError::kNoError, 6, 8,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_two_tries_remaining") {
       model->CollectPIN(device::pin::PINEntryReason::kChallenge,
                         device::pin::PINEntryError::kWrongPIN, 6, 2,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_one_try_remaining") {
       model->CollectPIN(device::pin::PINEntryReason::kChallenge,
                         device::pin::PINEntryError::kWrongPIN, 6, 1,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "get_pin_fallback") {
       model->CollectPIN(device::pin::PINEntryReason::kChallenge,
                         device::pin::PINEntryError::kInternalUvLocked, 6, 8,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "inline_bio_enrollment") {
       model->StartInlineBioEnrollment(base::DoNothing());
       timer_.Start(
@@ -127,11 +127,11 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "force_pin_change") {
       model->CollectPIN(device::pin::PINEntryReason::kChange,
                         device::pin::PINEntryError::kNoError, 6, 0,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "force_pin_change_same_as_current") {
       model->CollectPIN(device::pin::PINEntryReason::kChange,
                         device::pin::PINEntryError::kSameAsCurrentPIN, 6, 0,
-                        base::BindOnce([](base::string16 pin) {}));
+                        base::BindOnce([](std::u16string pin) {}));
     } else if (name == "second_tap") {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kClientPinTapAgain);

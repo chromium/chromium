@@ -58,7 +58,7 @@ class AppBrowserController : public TabStripModelObserver,
   static bool IsForWebApp(const Browser* browser, const AppId& app_id);
 
   // Renders |url|'s origin as Unicode.
-  static base::string16 FormatUrlOrigin(
+  static std::u16string FormatUrlOrigin(
       const GURL& url,
       url_formatter::FormatUrlTypes format_types =
           url_formatter::kFormatUrlOmitUsernamePassword |
@@ -74,7 +74,7 @@ class AppBrowserController : public TabStripModelObserver,
   const ui::ThemeProvider* GetThemeProvider() const;
 
   // Returns the text to flash in the title bar on app launch.
-  base::string16 GetLaunchFlashText() const;
+  std::u16string GetLaunchFlashText() const;
 
   // Returns whether this controller was created for an installed PWA.
   virtual bool IsHostedApp() const;
@@ -113,14 +113,14 @@ class AppBrowserController : public TabStripModelObserver,
   virtual base::Optional<SkColor> GetBackgroundColor() const;
 
   // Returns the title to be displayed in the window title bar.
-  virtual base::string16 GetTitle() const;
+  virtual std::u16string GetTitle() const;
 
   // Gets the short name of the app.
-  virtual base::string16 GetAppShortName() const = 0;
+  virtual std::u16string GetAppShortName() const = 0;
 
   // Gets the origin of the app start url suitable for display (e.g
   // example.com.au).
-  virtual base::string16 GetFormattedUrlOrigin() const = 0;
+  virtual std::u16string GetFormattedUrlOrigin() const = 0;
 
   // Gets the start_url for the app.
   virtual GURL GetAppStartUrl() const = 0;

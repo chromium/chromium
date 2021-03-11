@@ -27,8 +27,8 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
                                     Delegate* delegate);
   ~MockTabModalConfirmDialogDelegate() override;
 
-  base::string16 GetTitle() override;
-  base::string16 GetDialogMessage() override;
+  std::u16string GetTitle() override;
+  std::u16string GetDialogMessage() override;
 
   void OnAccepted() override;
   void OnCanceled() override;

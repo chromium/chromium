@@ -22,7 +22,7 @@ int SourceLanguageComboboxModel::GetItemCount() const {
   return model_->GetNumberOfSourceLanguages();
 }
 
-base::string16 SourceLanguageComboboxModel::GetItemAt(int index) const {
+std::u16string SourceLanguageComboboxModel::GetItemAt(int index) const {
   return model_->GetSourceLanguageNameAt(index);
 }
 

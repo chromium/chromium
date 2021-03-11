@@ -30,9 +30,9 @@ class PostSaveCompromisedBubbleController
   ~PostSaveCompromisedBubbleController() override;
 
   BubbleType type() const { return type_; }
-  base::string16 GetBody();
+  std::u16string GetBody();
   gfx::Range GetSettingLinkRange() const;
-  base::string16 GetButtonText() const;
+  std::u16string GetButtonText() const;
   int GetImageID(bool dark) const;
 
   // The user chose to check passwords.
@@ -43,7 +43,7 @@ class PostSaveCompromisedBubbleController
 
  private:
   // PasswordBubbleControllerBase:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   BubbleType type_;

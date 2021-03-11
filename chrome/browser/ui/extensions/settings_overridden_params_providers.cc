@@ -85,7 +85,7 @@ struct SecondarySearchInfo {
 
   // The name of the search engine; only populated when |type| is
   // kNonGoogleInDefaultList.
-  base::string16 name;
+  std::u16string name;
 };
 
 // Returns details about the search that would take over, if the currently-
@@ -187,7 +187,7 @@ GetNtpOverriddenParams(Profile* profile) {
   constexpr char kBackToGoogleDialogHistogramName[] =
       "Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult";
 
-  base::string16 dialog_title;
+  std::u16string dialog_title;
   const char* histogram_name = nullptr;
   const gfx::VectorIcon* icon = nullptr;
   if (use_back_to_google_messaging) {
@@ -205,7 +205,7 @@ GetNtpOverriddenParams(Profile* profile) {
   DCHECK(!dialog_title.empty());
   DCHECK(histogram_name);
 
-  base::string16 dialog_message = l10n_util::GetStringFUTF16(
+  std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
       base::UTF8ToUTF16(extension->name().c_str()));
 
@@ -262,7 +262,7 @@ GetSearchOverriddenParams(Profile* profile) {
       url_formatter::kFormatUrlOmitTrivialSubdomains |
       url_formatter::kFormatUrlTrimAfterHost |
       url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS;
-  base::string16 formatted_search_url = url_formatter::FormatUrl(
+  std::u16string formatted_search_url = url_formatter::FormatUrl(
       search_url, kFormatRules, net::UnescapeRule::SPACES, nullptr, nullptr,
       nullptr);
 
@@ -275,7 +275,7 @@ GetSearchOverriddenParams(Profile* profile) {
 
   const char* histogram_name = nullptr;
   const gfx::VectorIcon* icon = nullptr;
-  base::string16 dialog_title;
+  std::u16string dialog_title;
   switch (secondary_search.type) {
     case SecondarySearchInfo::Type::kGoogle:
       histogram_name = kBackToGoogleHistogramName;
@@ -298,7 +298,7 @@ GetSearchOverriddenParams(Profile* profile) {
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_GENERIC);
       break;
   }
-  base::string16 dialog_message = l10n_util::GetStringFUTF16(
+  std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
       base::UTF8ToUTF16(extension->name().c_str()));
 

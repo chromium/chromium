@@ -228,7 +228,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   // password, etc the user chose while we wait for them to enter a password,
   // wait for file to be read, etc.
   base::FilePath file_path_;
-  base::string16 password_;
+  std::u16string password_;
   // The WebUI callback ID of the last in-flight async request. There is always
   // only one in-flight such request.
   std::string webui_callback_id_;

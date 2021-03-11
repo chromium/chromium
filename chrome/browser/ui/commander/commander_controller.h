@@ -26,7 +26,7 @@ class CommanderController : public CommanderBackend {
   CommanderController& operator=(const CommanderController& other) = delete;
 
   // CommanderBackend overrides.
-  void OnTextChanged(const base::string16& text, Browser* browser) override;
+  void OnTextChanged(const std::u16string& text, Browser* browser) override;
   void OnCommandSelected(size_t command_index, int result_set_id) override;
   void OnCompositeCommandCancelled() override;
   void SetUpdateCallback(ViewModelUpdateCallback callback) override;

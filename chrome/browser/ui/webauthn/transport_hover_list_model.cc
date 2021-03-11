@@ -36,8 +36,8 @@ bool TransportHoverListModel::ShouldShowPlaceholderForEmptyList() const {
   return false;
 }
 
-base::string16 TransportHoverListModel::GetPlaceholderText() const {
-  return base::string16();
+std::u16string TransportHoverListModel::GetPlaceholderText() const {
+  return std::u16string();
 }
 
 const gfx::VectorIcon* TransportHoverListModel::GetPlaceholderIcon() const {
@@ -60,7 +60,7 @@ std::vector<int> TransportHoverListModel::GetButtonTags() const {
   return tag_list;
 }
 
-base::string16 TransportHoverListModel::GetItemText(int item_tag) const {
+std::u16string TransportHoverListModel::GetItemText(int item_tag) const {
   if (item_tag == kNativeWinApiTag) {
     return l10n_util::GetStringUTF16(
         IDS_WEBAUTHN_TRANSPORT_POPUP_DIFFERENT_AUTHENTICATOR_WIN);
@@ -70,8 +70,8 @@ base::string16 TransportHoverListModel::GetItemText(int item_tag) const {
       TransportSelectionContext::kTransportSelectionSheet);
 }
 
-base::string16 TransportHoverListModel::GetDescriptionText(int item_tag) const {
-  return base::string16();
+std::u16string TransportHoverListModel::GetDescriptionText(int item_tag) const {
+  return std::u16string();
 }
 
 const gfx::VectorIcon* TransportHoverListModel::GetItemIcon(

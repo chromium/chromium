@@ -219,7 +219,7 @@ void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   CHECK(args);
   CHECK_EQ(1u, args->GetSize());
 
-  base::string16 new_profile_name;
+  std::u16string new_profile_name;
   CHECK(args->GetString(0, &new_profile_name));
 
   base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);

@@ -121,7 +121,7 @@ void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
     app_list_controller_->SetSearchEngineIsGoogle(is_google);
 }
 
-void ChromeAppListModelUpdater::UpdateSearchBox(const base::string16& text,
+void ChromeAppListModelUpdater::UpdateSearchBox(const std::u16string& text,
                                                 bool initiated_by_user) {
   if (!app_list_controller_)
     return;

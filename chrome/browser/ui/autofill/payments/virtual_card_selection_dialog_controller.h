@@ -23,10 +23,10 @@ class VirtualCardSelectionDialogController {
 
   virtual bool IsOkButtonEnabled() = 0;
 
-  virtual base::string16 GetContentTitle() const = 0;
-  virtual base::string16 GetContentExplanation() const = 0;
-  virtual base::string16 GetOkButtonLabel() const = 0;
-  virtual base::string16 GetCancelButtonLabel() const = 0;
+  virtual std::u16string GetContentTitle() const = 0;
+  virtual std::u16string GetContentExplanation() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
+  virtual std::u16string GetCancelButtonLabel() const = 0;
 
   virtual const std::vector<CreditCard*>& GetCardList() const = 0;
 

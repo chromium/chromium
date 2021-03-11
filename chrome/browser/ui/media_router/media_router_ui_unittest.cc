@@ -92,7 +92,7 @@ class MockMediaRouterFileDialog : public MediaRouterFileDialog {
   ~MockMediaRouterFileDialog() override {}
 
   MOCK_METHOD0(GetLastSelectedFileUrl, GURL());
-  MOCK_METHOD0(GetLastSelectedFileName, base::string16());
+  MOCK_METHOD0(GetLastSelectedFileName, std::u16string());
   MOCK_METHOD1(OpenFileDialog, void(Browser* browser));
 };
 

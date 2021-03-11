@@ -25,7 +25,7 @@ WebUITestHandler::WebUITestHandler() = default;
 WebUITestHandler::~WebUITestHandler() = default;
 
 void WebUITestHandler::PreloadJavaScript(
-    const base::string16& js_text,
+    const std::u16string& js_text,
     content::RenderFrameHost* preload_frame) {
   DCHECK(preload_frame);
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
@@ -34,13 +34,13 @@ void WebUITestHandler::PreloadJavaScript(
   chrome_render_frame->ExecuteWebUIJavaScript(js_text);
 }
 
-void WebUITestHandler::RunJavaScript(const base::string16& js_text) {
+void WebUITestHandler::RunJavaScript(const std::u16string& js_text) {
   GetWebUI()->GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
       js_text, base::NullCallback());
 }
 
 bool WebUITestHandler::RunJavaScriptTestWithResult(
-    const base::string16& js_text) {
+    const std::u16string& js_text) {
   test_succeeded_ = false;
   run_test_succeeded_ = false;
   content::RenderFrameHost* frame =

@@ -24,7 +24,7 @@ class GenerationConfirmationBubbleController
   void OnNavigateToPasswordManagerAccountDashboardLinkClicked(
       password_manager::ManagePasswordsReferrer referrer);
 
-  const base::string16& save_confirmation_text() const {
+  const std::u16string& save_confirmation_text() const {
     return save_confirmation_text_;
   }
   const gfx::Range& save_confirmation_link_range() const {
@@ -33,10 +33,10 @@ class GenerationConfirmationBubbleController
 
  private:
   // PasswordBubbleControllerBase methods:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
-  base::string16 save_confirmation_text_;
+  std::u16string save_confirmation_text_;
   gfx::Range save_confirmation_link_range_;
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_;

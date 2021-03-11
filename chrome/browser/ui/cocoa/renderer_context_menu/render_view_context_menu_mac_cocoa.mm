@@ -172,7 +172,7 @@ class ToolkitDelegateMacCocoa : public RenderViewContextMenu::ToolkitDelegate {
   void UpdateMenuItem(int command_id,
                       bool enabled,
                       bool hidden,
-                      const base::string16& title) override {
+                      const std::u16string& title) override {
     context_menu_->UpdateToolkitMenuItem(command_id, enabled, hidden, title);
   }
 
@@ -252,7 +252,7 @@ void RenderViewContextMenuMacCocoa::UpdateToolkitMenuItem(
     int command_id,
     bool enabled,
     bool hidden,
-    const base::string16& title) {
+    const std::u16string& title) {
   NSMenuItem* item =
       GetMenuItemByID(&menu_model_, [menu_controller_ menu], command_id);
   if (!item)

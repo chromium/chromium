@@ -36,11 +36,11 @@ bool ShouldDisplayManagedUi(Profile* profile) {
   return enterprise_util::HasBrowserPoliciesApplied(profile);
 }
 
-base::string16 GetManagedUiMenuItemLabel(Profile* profile) {
+std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
 
   int string_id = IDS_MANAGED;
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   if (!account_manager.empty()) {
     string_id = IDS_MANAGED_BY;
     replacements.push_back(base::UTF8ToUTF16(account_manager));
@@ -49,12 +49,12 @@ base::string16 GetManagedUiMenuItemLabel(Profile* profile) {
   return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
 }
 
-base::string16 GetManagedUiWebUILabel(Profile* profile) {
+std::u16string GetManagedUiWebUILabel(Profile* profile) {
   std::string account_manager = ManagementUIHandler::GetAccountManager(profile);
 
   int string_id = IDS_MANAGED_WITH_HYPERLINK;
 
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   if (!account_manager.empty()) {
     string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
@@ -65,7 +65,7 @@ base::string16 GetManagedUiWebUILabel(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-base::string16 GetDeviceManagedUiWebUILabel() {
+std::u16string GetDeviceManagedUiWebUILabel() {
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
   const std::string device_manager =
@@ -75,7 +75,7 @@ base::string16 GetDeviceManagedUiWebUILabel() {
 
   int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
 
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
   replacements.push_back(ui::GetChromeOSDeviceName());
   if (!device_manager.empty()) {

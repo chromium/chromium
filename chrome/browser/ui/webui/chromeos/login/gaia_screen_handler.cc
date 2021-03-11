@@ -288,7 +288,7 @@ base::Value MakeSecurityTokenPinDialogParameters(
       "formattedError",
       GenerateErrorMessage(error_label, attempts_left, enable_user_input));
   if (attempts_left == -1) {
-    params.SetStringKey("formattedAttemptsLeft", base::string16());
+    params.SetStringKey("formattedAttemptsLeft", std::u16string());
   } else {
     params.SetStringKey(
         "formattedAttemptsLeft",

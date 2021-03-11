@@ -162,8 +162,8 @@ void NaClDomHandler::OnJavascriptDisallowed() {
 }
 
 void AddPair(base::ListValue* list,
-             const base::string16& key,
-             const base::string16& value) {
+             const std::u16string& key,
+             const std::u16string& value) {
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
   results->SetString("key", key);
   results->SetString("value", value);
@@ -231,8 +231,8 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
   std::vector<content::WebPluginInfo> info_array;
   PluginService::GetInstance()->GetPluginInfoArray(
       GURL(), "application/x-nacl", false, &info_array, NULL);
-  base::string16 nacl_version;
-  base::string16 nacl_key = ASCIIToUTF16("NaCl plugin");
+  std::u16string nacl_version;
+  std::u16string nacl_key = ASCIIToUTF16("NaCl plugin");
   if (info_array.empty()) {
     AddPair(list, nacl_key, ASCIIToUTF16("Disabled"));
   } else {
@@ -261,7 +261,7 @@ void NaClDomHandler::AddPluginList(base::ListValue* list) {
 
 void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
   // Display whether PNaCl is enabled.
-  base::string16 pnacl_enabled_string = ASCIIToUTF16("Enabled");
+  std::u16string pnacl_enabled_string = ASCIIToUTF16("Enabled");
   if (!isPluginEnabled(0)) {
     pnacl_enabled_string = ASCIIToUTF16("Disabled in profile prefs");
   }
@@ -289,7 +289,7 @@ void NaClDomHandler::AddPnaclInfo(base::ListValue* list) {
 }
 
 void NaClDomHandler::AddNaClInfo(base::ListValue* list) {
-  base::string16 nacl_enabled_string = ASCIIToUTF16("Disabled");
+  std::u16string nacl_enabled_string = ASCIIToUTF16("Disabled");
   if (isPluginEnabled(0) &&
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableNaCl)) {

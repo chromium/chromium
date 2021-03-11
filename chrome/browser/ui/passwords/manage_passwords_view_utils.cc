@@ -74,9 +74,9 @@ gfx::ImageSkia ScaleImageForAccountAvatar(gfx::ImageSkia skia_image) {
       gfx::Size(kAvatarImageSize, kAvatarImageSize));
 }
 
-std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
+std::pair<std::u16string, std::u16string> GetCredentialLabelsForAccountChooser(
     const password_manager::PasswordForm& form) {
-  base::string16 federation;
+  std::u16string federation;
   if (!form.federation_origin.opaque())
     federation = GetDisplayFederation(form);
 
@@ -92,12 +92,12 @@ std::pair<base::string16, base::string16> GetCredentialLabelsForAccountChooser(
       form.username_value + base::ASCIIToUTF16("\n") + federation);
 }
 
-base::string16 GetSavePasswordDialogTitleText(
+std::u16string GetSavePasswordDialogTitleText(
     const GURL& user_visible_url,
     const url::Origin& form_origin_url,
     PasswordTitleType dialog_type) {
   std::vector<size_t> offsets;
-  std::vector<base::string16> replacements;
+  std::vector<std::u16string> replacements;
   int title_id = 0;
   switch (dialog_type) {
     case PasswordTitleType::SAVE_PASSWORD:
@@ -127,7 +127,7 @@ base::string16 GetSavePasswordDialogTitleText(
   return l10n_util::GetStringFUTF16(title_id, replacements, &offsets);
 }
 
-base::string16 GetManagePasswordsDialogTitleText(
+std::u16string GetManagePasswordsDialogTitleText(
     const GURL& user_visible_url,
     const url::Origin& password_origin_url,
     bool has_credentials) {
@@ -136,7 +136,7 @@ base::string16 GetManagePasswordsDialogTitleText(
   // (i.e. the one seen in the omnibox) and the managed password origin URL
   // differ or not.
   if (!SameDomainOrHost(user_visible_url, password_origin_url)) {
-    base::string16 formatted_url =
+    std::u16string formatted_url =
         url_formatter::FormatOriginForSecurityDisplay(password_origin_url);
     return l10n_util::GetStringFUTF16(
         has_credentials
@@ -149,20 +149,20 @@ base::string16 GetManagePasswordsDialogTitleText(
                       : IDS_MANAGE_PASSWORDS_NO_PASSWORDS_TITLE);
 }
 
-base::string16 GetDisplayUsername(const password_manager::PasswordForm& form) {
+std::u16string GetDisplayUsername(const password_manager::PasswordForm& form) {
   return form.username_value.empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : form.username_value;
 }
 
-base::string16 GetDisplayUsername(
+std::u16string GetDisplayUsername(
     const password_manager::UiCredential& credential) {
   return credential.username().empty()
              ? l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
              : credential.username();
 }
 
-base::string16 GetDisplayFederation(
+std::u16string GetDisplayFederation(
     const password_manager::PasswordForm& form) {
   return url_formatter::FormatOriginForSecurityDisplay(
       form.federation_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);

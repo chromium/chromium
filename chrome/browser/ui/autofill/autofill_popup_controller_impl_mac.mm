@@ -72,8 +72,8 @@ void AutofillPopupControllerImplMac::Show(
 }
 
 void AutofillPopupControllerImplMac::UpdateDataListValues(
-    const std::vector<base::string16>& values,
-    const std::vector<base::string16>& labels) {
+    const std::vector<std::u16string>& values,
+    const std::vector<std::u16string>& labels) {
   if (touch_bar_controller_)
     [touch_bar_controller_ invalidateTouchBar];
 

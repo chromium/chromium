@@ -46,7 +46,7 @@ class FamilyLinkUserInternalsMessageHandler
   void SendFamilyLinkUserSettings(const base::DictionaryValue* settings);
 
   void OnTryURLResult(
-      const std::map<std::string, base::string16>& allowlists,
+      const std::map<std::string, std::u16string>& allowlists,
       const std::string& callback_id,
       SupervisedUserURLFilter::FilteringBehavior behavior,
       supervised_user_error_page::FilteringBehaviorReason reason,

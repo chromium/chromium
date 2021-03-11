@@ -175,7 +175,7 @@ class AppLauncherHandler
     AppInstallInfo();
     ~AppInstallInfo();
 
-    base::string16 title;
+    std::u16string title;
     GURL app_url;
     syncer::StringOrdinal page_ordinal;
   };
@@ -192,7 +192,7 @@ class AppLauncherHandler
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error) override;
+                                        const std::u16string& error) override;
 
   // ExtensionEnableFlowDelegate:
   void ExtensionEnableFlowFinished() override;

@@ -341,7 +341,7 @@ void EnrollmentScreenHandler::ShowEnrollmentSpinnerScreen() {
 
 void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
     const std::string& manager,
-    const base::string16& device_type) {
+    const std::u16string& device_type) {
   CallJS("login.OAuthEnrollmentScreen.setEnterpriseDomainInfo", manager,
          device_type);
 }

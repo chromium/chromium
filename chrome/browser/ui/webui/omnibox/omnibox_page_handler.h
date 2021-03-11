@@ -64,7 +64,7 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
   // Looks up whether the hostname is a typed host (i.e., has received
   // typed visits).  Return true if the lookup succeeded; if so, the
   // value of |is_typed_host| is set appropriately.
-  bool LookupIsTypedHost(const base::string16& host, bool* is_typed_host) const;
+  bool LookupIsTypedHost(const std::u16string& host, bool* is_typed_host) const;
 
   // Re-initializes the AutocompleteController in preparation for the
   // next query.

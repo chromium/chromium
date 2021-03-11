@@ -20,8 +20,8 @@ class AutofillLoggerAndroid {
  public:
   // Called when a field containing |autofilled_value| has been filled
   // with data from |profile_full_name|.
-  static void DidFillOrPreviewField(const base::string16& autofilled_value,
-                                    const base::string16& profile_full_name);
+  static void DidFillOrPreviewField(const std::u16string& autofilled_value,
+                                    const std::u16string& profile_full_name);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutofillLoggerAndroid);

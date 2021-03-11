@@ -69,7 +69,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
 
   // |eol_return_banner_text| contains the update required end of life banner
   // text which is left empty when the banner should not be shown.
-  base::string16 eol_return_banner_text;
+  std::u16string eol_return_banner_text;
   if (device_managed && handler->ShouldShowUpdateRequiredEolBanner()) {
     base::Optional<int> days = handler->GetTimeRemainingInDays();
     // We only need to show the banner if less than equal to one week remains to
@@ -78,9 +78,9 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       // |days| could have value equal to zero if we are very close to the
       // deadline.
       int days_remaining = days.value() ? days.value() : 1;
-      base::string16 domain_name =
+      std::u16string domain_name =
           base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
-      base::string16 link_url =
+      std::u16string link_url =
           base::UTF8ToUTF16(chrome::kChromeUIManagementURL);
       if (days_remaining == 7) {
         eol_return_banner_text = l10n_util::GetStringFUTF16(

@@ -149,7 +149,7 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS()
     : InlineLoginDialogChromeOS(GetInlineLoginUrl(std::string())) {}
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
-    : SystemWebDialogDelegate(url, base::string16() /* title */),
+    : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
       url_(url) {
   DCHECK(!dialog);
@@ -159,7 +159,7 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
     const GURL& url,
     base::OnceClosure close_dialog_closure)
-    : SystemWebDialogDelegate(url, base::string16() /* title */),
+    : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
       url_(url),
       close_dialog_closure_(std::move(close_dialog_closure)) {

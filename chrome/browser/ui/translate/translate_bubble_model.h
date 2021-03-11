@@ -59,10 +59,10 @@ class TranslateBubbleModel {
   virtual int GetNumberOfTargetLanguages() const = 0;
 
   // Returns the displayable name for the source language at |index|.
-  virtual base::string16 GetSourceLanguageNameAt(int index) const = 0;
+  virtual std::u16string GetSourceLanguageNameAt(int index) const = 0;
 
   // Returns the displayable name for the target language at |index|.
-  virtual base::string16 GetTargetLanguageNameAt(int index) const = 0;
+  virtual std::u16string GetTargetLanguageNameAt(int index) const = 0;
 
   // Returns the source language code.
   virtual std::string GetSourceLanguageCode() const = 0;

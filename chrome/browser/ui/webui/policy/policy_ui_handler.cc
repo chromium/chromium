@@ -127,7 +127,7 @@ namespace {
 
 // Formats the association state indicated by |data|. If |data| is NULL, the
 // state is considered to be UNMANAGED.
-base::string16 FormatAssociationState(const em::PolicyData* data) {
+std::u16string FormatAssociationState(const em::PolicyData* data) {
   if (data) {
     switch (data->state()) {
       case em::PolicyData::ACTIVE:
@@ -149,10 +149,10 @@ base::string16 FormatAssociationState(const em::PolicyData* data) {
 // CloudPolicyStore errors take precedence to show in the status message.
 // Other errors (such as transient policy fetching problems) get displayed
 // only if CloudPolicyStore is in STATUS_OK.
-base::string16 GetPolicyStatusFromStore(
+std::u16string GetPolicyStatusFromStore(
     const policy::CloudPolicyStore* store,
     const policy::CloudPolicyClient* client) {
-  base::string16 status =
+  std::u16string status =
       policy::FormatStoreStatus(store->status(), store->validation_status());
   if (store->status() == policy::CloudPolicyStore::STATUS_OK) {
     if (client && client->status() != policy::DM_STATUS_SUCCESS)
@@ -163,7 +163,7 @@ base::string16 GetPolicyStatusFromStore(
   return status;
 }
 
-base::string16 GetTimeSinceLastRefreshString(base::Time last_refresh_time) {
+std::u16string GetTimeSinceLastRefreshString(base::Time last_refresh_time) {
   if (last_refresh_time.is_null())
     return l10n_util::GetStringUTF16(IDS_POLICY_NEVER_FETCHED);
   base::Time now = base::Time::NowFromSystemTime();
@@ -181,7 +181,7 @@ void GetStatusFromCore(const policy::CloudPolicyCore* core,
   const policy::CloudPolicyRefreshScheduler* refresh_scheduler =
       core->refresh_scheduler();
 
-  const base::string16 status = GetPolicyStatusFromStore(store, client);
+  const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
   std::string client_id = policy ? policy->device_id() : std::string();
@@ -591,7 +591,7 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
     dict->SetString("deviceId", dmTokenStorage->RetrieveClientId());
   }
   if (store) {
-    base::string16 status = GetPolicyStatusFromStore(store, client);
+    std::u16string status = GetPolicyStatusFromStore(store, client);
 
     dict->SetString("status", status);
     const em::PolicyData* policy = store->policy();
@@ -703,7 +703,7 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
       (policy && policy->has_timestamp())
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
-  const base::string16 status =
+  const std::u16string status =
       policy::FormatStoreStatus(policy_manager_->store()->status(),
                                 policy_manager_->store()->validation_status());
   dict->SetString("status", status);
@@ -1174,7 +1174,7 @@ void PolicyUIHandler::HandleExportPoliciesJson(const base::ListValue* args) {
   file_type_info.extensions = {{FILE_PATH_LITERAL("json")}};
   gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
   export_policies_select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, base::string16(), initial_path,
+      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), initial_path,
       &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
 }
 
@@ -1233,7 +1233,7 @@ std::string PolicyUIHandler::GetPoliciesAsJson() const {
       "application", base::Value(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
   std::string cohort_name;
 #if defined(OS_WIN)
-  base::string16 cohort_version_info =
+  std::u16string cohort_version_info =
       version_utils::win::GetCohortVersionInfo();
   if (!cohort_version_info.empty()) {
     cohort_name = base::StringPrintf(

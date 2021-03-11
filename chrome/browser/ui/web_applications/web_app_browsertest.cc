@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CopyURL) {
   chrome::ExecuteCommand(app_browser, IDC_COPY_URL);
 
   ui::Clipboard* const clipboard = ui::Clipboard::GetForCurrentThread();
-  base::string16 result;
+  std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
   EXPECT_EQ(result, base::UTF8ToUTF16(kExampleURL));
@@ -977,7 +977,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, EmptyTitlesDoNotDisplayUrl) {
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(base::string16(), app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(std::u16string(), app_browser->GetWindowTitleForCurrentTab(false));
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.com", "/simple.html"));
   EXPECT_EQ(base::ASCIIToUTF16("OK"),
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, EmptyTitlesDoNotDisplayUrl) {
 // title when off scope.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopeUrlsDisplayAppTitle) {
   const GURL app_url = GetSecureAppURL();
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = base::ASCIIToUTF16("A Web App");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -1018,7 +1018,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InScopeHttpUrlsDisplayAppTitle) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("app.site.com", "/simple.html");
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = base::ASCIIToUTF16("A Web App");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -1049,7 +1049,7 @@ class WebAppBrowserTest_PrefixInTitle : public WebAppBrowserTest {
 // Ensure that web app windows display the app title as a prefix.
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
   const GURL app_url = GetSecureAppURL();
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = base::ASCIIToUTF16("A Web App");
 
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
                        EmptyTitlesDisplayAppName) {
   const GURL app_url = https_server()->GetURL("app.site.com", "/empty.html");
-  const base::string16 app_title = base::ASCIIToUTF16("A Web App");
+  const std::u16string app_title = base::ASCIIToUTF16("A Web App");
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();

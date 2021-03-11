@@ -161,7 +161,7 @@ void ExtensionPrinterHandler::StartGetCapability(
 }
 
 void ExtensionPrinterHandler::StartPrint(
-    const base::string16& job_title,
+    const std::u16string& job_title,
     base::Value settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
@@ -352,9 +352,9 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
                 .Set("name",
                      DevicePermissionsManager::GetPermissionMessage(
                          device->vendor_id, device->product_id,
-                         device->manufacturer_name.value_or(base::string16()),
-                         device->product_name.value_or(base::string16()),
-                         base::string16(), false))
+                         device->manufacturer_name.value_or(std::u16string()),
+                         device->product_name.value_or(std::u16string()),
+                         std::u16string(), false))
                 .Set("extensionId", extension->id())
                 .Set("extensionName", extension->name())
                 .Set("provisional", true)

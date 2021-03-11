@@ -41,7 +41,7 @@ class RealboxHandler : public realbox::mojom::PageHandler,
 
   // realbox::mojom::PageHandler:
   void SetPage(mojo::PendingRemote<realbox::mojom::Page> pending_page) override;
-  void QueryAutocomplete(const base::string16& input,
+  void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
   void StopAutocomplete(bool clear_result) override;
   void OpenAutocompleteMatch(uint8_t line,

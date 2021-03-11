@@ -81,7 +81,7 @@ int ACMatchStyleToTagStyle(int styles) {
 }
 
 // Translates ACMatchClassifications into ChromeSearchResult tags.
-void ACMatchClassificationsToTags(const base::string16& text,
+void ACMatchClassificationsToTags(const std::u16string& text,
                                   const ACMatchClassifications& text_classes,
                                   ChromeSearchResult::Tags* tags) {
   int tag_styles = ash::SearchResultTag::NONE;
@@ -186,7 +186,7 @@ gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
       dimension / 2, gfx::kGoogleBlue600, icon);
 }
 
-base::Optional<base::string16> GetAdditionalText(
+base::Optional<std::u16string> GetAdditionalText(
     const SuggestionAnswer::ImageLine& line) {
   if (line.additional_text()) {
     const auto additional_text = line.additional_text()->text();
@@ -196,8 +196,8 @@ base::Optional<base::string16> GetAdditionalText(
   return base::nullopt;
 }
 
-base::string16 ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
-  std::vector<base::string16> text;
+std::u16string ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
+  std::vector<std::u16string> text;
   for (const auto& text_field : line.text_fields()) {
     text.push_back(text_field.text());
   }
@@ -483,7 +483,7 @@ void OmniboxResult::SetZeroSuggestionActions() {
     ash::OmniBoxZeroStateAction button_action =
         ash::GetOmniBoxZeroStateAction(i);
     gfx::ImageSkia button_image;
-    base::string16 button_tooltip;
+    std::u16string button_tooltip;
     bool visible_on_hover = false;
     const int kImageButtonIconSize =
         ash::AppListConfig::instance().search_list_badge_icon_dimension();

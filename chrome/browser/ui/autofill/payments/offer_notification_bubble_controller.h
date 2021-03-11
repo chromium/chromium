@@ -42,10 +42,10 @@ class OfferNotificationBubbleController {
       content::WebContents* web_contents);
 
   // Returns the title that should be displayed in the bubble.
-  virtual base::string16 GetWindowTitle() const = 0;
+  virtual std::u16string GetWindowTitle() const = 0;
 
   // Returns the label text for the Ok button.
-  virtual base::string16 GetOkButtonLabel() const = 0;
+  virtual std::u16string GetOkButtonLabel() const = 0;
 
   // Returns the reference to the offer notification bubble view.
   virtual AutofillBubbleBase* GetOfferNotificationBubbleView() const = 0;

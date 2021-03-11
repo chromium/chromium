@@ -158,7 +158,7 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
   handler->SetAuth(base::UTF8ToUTF16("foo"), base::UTF8ToUTF16("bar"));
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = base::ASCIIToUTF16("OK");
+  std::u16string expected_title = base::ASCIIToUTF16("OK");
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   EXPECT_FALSE(browser->location_bar_model()->GetFormattedFullURL().empty());
@@ -315,8 +315,8 @@ const char kAuthDigestPage[] = "/auth-digest";
 // (https://crbug.com/636875).
 const char kNoAuthPage1[] = "/simple.html";
 
-base::string16 ExpectedTitleFromAuth(const base::string16& username,
-                                     const base::string16& password) {
+std::u16string ExpectedTitleFromAuth(const std::u16string& username,
+                                     const std::u16string& password) {
   // The TestServer sets the title to username/password on successful login.
   return username + base::UTF8ToUTF16("/") + password;
 }
@@ -415,7 +415,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
     SetAuthFor(handler);
     auth_supplied_waiter.Wait();
 
-    base::string16 expected_title = ExpectedTitleFromAuth(
+    std::u16string expected_title = ExpectedTitleFromAuth(
         base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
     content::TitleWatcher title_watcher(contents, expected_title);
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -463,12 +463,12 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestDigestAuth) {
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = *observer.handlers().begin();
 
-  base::string16 username(base::UTF8ToUTF16(username_digest_));
-  base::string16 password(base::UTF8ToUTF16(password_));
+  std::u16string username(base::UTF8ToUTF16(username_digest_));
+  std::u16string password(base::UTF8ToUTF16(password_));
   handler->SetAuth(username, password);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(username, password);
+  std::u16string expected_title = ExpectedTitleFromAuth(username, password);
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 }
@@ -515,9 +515,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestTwoAuths) {
   LoginHandler* handler1 = *observer.handlers().begin();
   LoginHandler* handler2 = *(++(observer.handlers().begin()));
 
-  base::string16 expected_title1 = ExpectedTitleFromAuth(
+  std::u16string expected_title1 = ExpectedTitleFromAuth(
       base::UTF8ToUTF16(username_basic_), base::UTF8ToUTF16(password_));
-  base::string16 expected_title2 = ExpectedTitleFromAuth(
+  std::u16string expected_title2 = ExpectedTitleFromAuth(
       base::UTF8ToUTF16(username_digest_), base::UTF8ToUTF16(password_));
   content::TitleWatcher title_watcher1(contents1, expected_title1);
   content::TitleWatcher title_watcher2(contents2, expected_title2);
@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(base::UTF8ToUTF16("status=401"));
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(base::UTF8ToUTF16("status=200"));
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1375,15 +1375,15 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = *observer.handlers().begin();
 
-  base::string16 username(base::UTF8ToUTF16(username_digest_));
-  base::string16 password(base::UTF8ToUTF16(password_));
+  std::u16string username(base::UTF8ToUTF16(username_digest_));
+  std::u16string password(base::UTF8ToUTF16(password_));
   handler->SetAuth(username, password);
   auth_supplied_waiter.Wait();
 
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(base::UTF8ToUTF16("status=200"));
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(2, observer.auth_supplied_count());
@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  base::string16 expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(base::UTF8ToUTF16("status=401"));
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1460,7 +1460,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -1854,7 +1854,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
                                      ui::PAGE_TRANSITION_TYPED, false));
     EXPECT_EQ(0, observer.auth_supplied_count());
 
-    const base::string16 kExpectedTitle =
+    const std::u16string kExpectedTitle =
         base::ASCIIToUTF16("Denied: Missing Authorization Header");
     content::TitleWatcher title_watcher(contents, kExpectedTitle);
     EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
@@ -1913,7 +1913,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
@@ -1948,7 +1948,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoRepostDialogAfterCredentials) {
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher auth_supplied_title_watcher(contents, expected_title);
   EXPECT_EQ(expected_title, auth_supplied_title_watcher.WaitAndGetTitle());
@@ -1993,7 +1993,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, PromptWithNoVisibleEntry) {
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
 
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher auth_supplied_title_watcher(opened_contents,
                                                     expected_title);
@@ -2065,7 +2065,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuth) {
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   handler->SetAuth(base::ASCIIToUTF16("chrome"), base::ASCIIToUTF16("chrome"));
   auth_supplied_waiter.Wait();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Index of /");
+  const std::u16string kExpectedTitle = base::ASCIIToUTF16("Index of /");
   content::TitleWatcher title_watcher(contents, kExpectedTitle);
   EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
 }
@@ -2096,7 +2096,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, FtpAuthWithCache) {
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   handler->SetAuth(base::ASCIIToUTF16("chrome"), base::ASCIIToUTF16("chrome"));
   auth_supplied_waiter.Wait();
-  const base::string16 kExpectedTitle = base::ASCIIToUTF16("Index of /");
+  const std::u16string kExpectedTitle = base::ASCIIToUTF16("Index of /");
   content::TitleWatcher title_watcher(contents, kExpectedTitle);
   EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
 
@@ -2156,7 +2156,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   LoginHandler* handler = *observer.handlers().begin();
   SetAuthFor(handler);
   auth_supplied_waiter.Wait();
-  base::string16 expected_title = ExpectedTitleFromAuth(
+  std::u16string expected_title = ExpectedTitleFromAuth(
       base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
   content::TitleWatcher title_watcher(web_contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
@@ -2330,7 +2330,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest, OnAuthRequiredCancels) {
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
   ui_test_utils::NavigateToURL(browser(), test_page);
 
-  base::string16 expected_title(
+  std::u16string expected_title(
       base::UTF8ToUTF16("Denied: Missing Authorization Header"));
   EXPECT_EQ(expected_title, contents->GetTitle());
 }
@@ -2375,7 +2375,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
     content::TestNavigationObserver reload_observer(web_contents);
     handler->CancelAuth();
     reload_observer.Wait();
-    const base::string16 kExpectedTitle =
+    const std::u16string kExpectedTitle =
         base::ASCIIToUTF16("Denied: Missing Authorization Header");
     EXPECT_EQ(kExpectedTitle, web_contents->GetTitle());
   }
@@ -2394,7 +2394,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
     SetAuthFor(handler);
     auth_supplied_waiter.Wait();
 
-    base::string16 expected_title = ExpectedTitleFromAuth(
+    std::u16string expected_title = ExpectedTitleFromAuth(
         base::ASCIIToUTF16("basicuser"), base::ASCIIToUTF16("secret"));
     content::TitleWatcher auth_supplied_title_watcher(web_contents,
                                                       expected_title);

@@ -326,7 +326,7 @@ void ChromeLauncherController::Init() {
 ash::ShelfID ChromeLauncherController::CreateAppLauncherItem(
     std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
     ash::ShelfItemStatus status,
-    const base::string16& title) {
+    const std::u16string& title) {
   return InsertAppLauncherItem(std::move(item_delegate), status,
                                model_->item_count(), ash::TYPE_APP, title);
 }
@@ -360,7 +360,7 @@ void ChromeLauncherController::SetItemStatus(const ash::ShelfID& id,
 }
 
 void ChromeLauncherController::SetItemTitle(const ash::ShelfID& id,
-                                            const base::string16& title) {
+                                            const std::u16string& title) {
   const ash::ShelfItem* item = GetItem(id);
   if (item && item->title != title) {
     ash::ShelfItem new_item = *item;
@@ -712,11 +712,11 @@ gfx::Image ChromeLauncherController::GetAppMenuIcon(
   return result;
 }
 
-base::string16 ChromeLauncherController::GetAppMenuTitle(
+std::u16string ChromeLauncherController::GetAppMenuTitle(
     content::WebContents* web_contents) const {
   if (!web_contents)
     return l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
-  const base::string16& title = web_contents->GetTitle();
+  const std::u16string& title = web_contents->GetTitle();
   if (!title.empty())
     return title;
   WebContentsToAppIDMap::const_iterator iter =
@@ -999,13 +999,13 @@ void ChromeLauncherController::OnAppImageUpdated(const std::string& app_id,
 ash::ShelfID ChromeLauncherController::CreateAppShortcutLauncherItem(
     const ash::ShelfID& shelf_id,
     int index) {
-  return CreateAppShortcutLauncherItem(shelf_id, index, base::string16());
+  return CreateAppShortcutLauncherItem(shelf_id, index, std::u16string());
 }
 
 ash::ShelfID ChromeLauncherController::CreateAppShortcutLauncherItem(
     const ash::ShelfID& shelf_id,
     int index,
-    const base::string16& title) {
+    const std::u16string& title) {
   return InsertAppLauncherItem(
       AppShortcutLauncherItemController::Create(shelf_id), ash::STATUS_CLOSED,
       index, ash::TYPE_PINNED_APP, title);
@@ -1224,7 +1224,7 @@ ash::ShelfID ChromeLauncherController::InsertAppLauncherItem(
     ash::ShelfItemStatus status,
     int index,
     ash::ShelfItemType shelf_item_type,
-    const base::string16& title) {
+    const std::u16string& title) {
   CHECK(item_delegate);
   if (GetItem(item_delegate->shelf_id())) {
     // TODO(crbug.com/1090134): try and identify why this would be called when

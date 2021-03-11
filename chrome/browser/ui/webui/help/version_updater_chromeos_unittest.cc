@@ -39,7 +39,7 @@ void CheckNotification(VersionUpdater::Status /* status */,
                        bool /* powerwash */,
                        const std::string& /* version */,
                        int64_t /* size */,
-                       const base::string16& /* message */) {}
+                       const std::u16string& /* message */) {}
 
 }  // namespace
 

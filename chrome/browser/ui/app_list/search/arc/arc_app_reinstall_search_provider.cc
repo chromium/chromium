@@ -252,7 +252,7 @@ ash::AppListSearchResultType ArcAppReinstallSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kPlayStoreReinstallApp;
 }
 
-void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
+void ArcAppReinstallSearchProvider::Start(const std::u16string& query) {
   query_is_empty_ = query.empty();
   if (!query_is_empty_) {
     ClearResults();

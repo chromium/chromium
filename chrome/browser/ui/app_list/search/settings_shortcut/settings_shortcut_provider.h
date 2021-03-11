@@ -22,7 +22,7 @@ class SettingsShortcutProvider : public SearchProvider {
   ~SettingsShortcutProvider() override = default;
 
   // SearchProvider overrides:
-  void Start(const base::string16& query) override;
+  void Start(const std::u16string& query) override;
   ash::AppListSearchResultType ResultType() override;
 
  private:

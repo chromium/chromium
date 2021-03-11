@@ -50,8 +50,8 @@ class UpdateView {
 
   virtual void SetUpdateState(UIState value) = 0;
   virtual void SetUpdateStatus(int percent,
-                               const base::string16& percent_message,
-                               const base::string16& timeleft_message) = 0;
+                               const std::u16string& percent_message,
+                               const std::u16string& timeleft_message) = 0;
   virtual void ShowLowBatteryWarningMessage(bool value) = 0;
   virtual void SetAutoTransition(bool value) = 0;
   virtual void SetCancelUpdateShortcutEnabled(bool value) = 0;
@@ -73,8 +73,8 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
 
   void SetUpdateState(UpdateView::UIState value) override;
   void SetUpdateStatus(int percent,
-                       const base::string16& percent_message,
-                       const base::string16& timeleft_message) override;
+                       const std::u16string& percent_message,
+                       const std::u16string& timeleft_message) override;
   void ShowLowBatteryWarningMessage(bool value) override;
   void SetAutoTransition(bool value) override;
   void SetCancelUpdateShortcutEnabled(bool value) override;

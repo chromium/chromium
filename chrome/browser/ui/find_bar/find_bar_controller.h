@@ -69,10 +69,10 @@ class FindBarController : public content::NotificationObserver,
   void OnFindEmptyText(content::WebContents* web_contents) override;
   void OnFindResultAvailable(content::WebContents* web_contents) override;
 
-  void SetText(base::string16 text);
+  void SetText(std::u16string text);
 
   // Called when the find text is updated in response to a user action.
-  void OnUserChangedFindText(base::string16 text);
+  void OnUserChangedFindText(std::u16string text);
 
   FindBar* find_bar() const { return find_bar_.get(); }
 
@@ -90,7 +90,7 @@ class FindBarController : public content::NotificationObserver,
   void MaybeSetPrepopulateText();
 
   // Gets the text that is selected in the current tab, or an empty string.
-  base::string16 GetSelectedText();
+  std::u16string GetSelectedText();
 
   content::NotificationRegistrar registrar_;
 

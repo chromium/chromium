@@ -21,11 +21,11 @@ class BlockedActionBubbleDelegate : public ToolbarActionsBarBubbleDelegate {
   // ToolbarActionsBarBubbleDelegate:
   bool ShouldShow() override;
   bool ShouldCloseOnDeactivate() override;
-  base::string16 GetHeadingText() override;
-  base::string16 GetBodyText(bool anchored_to_action) override;
-  base::string16 GetItemListText() override;
-  base::string16 GetActionButtonText() override;
-  base::string16 GetDismissButtonText() override;
+  std::u16string GetHeadingText() override;
+  std::u16string GetBodyText(bool anchored_to_action) override;
+  std::u16string GetItemListText() override;
+  std::u16string GetActionButtonText() override;
+  std::u16string GetDismissButtonText() override;
   ui::DialogButton GetDefaultDialogButton() override;
   std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>
   GetExtraViewInfo() override;

@@ -48,7 +48,7 @@ PermissionMenuModel::PermissionMenuModel(Profile* profile,
       permission_(info),
       callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
-  base::string16 label;
+  std::u16string label;
 
   DCHECK_NE(permission_.default_setting, CONTENT_SETTING_NUM_SETTINGS);
 

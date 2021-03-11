@@ -29,7 +29,7 @@ class PasswordGenerationDialogViewAndroid
 
   // Called to show the dialog. |password| is the generated password.
   void Show(
-      base::string16& password,
+      std::u16string& password,
       base::WeakPtr<password_manager::PasswordManagerDriver>
           target_frame_driver,
       autofill::password_generation::PasswordGenerationType type) override;

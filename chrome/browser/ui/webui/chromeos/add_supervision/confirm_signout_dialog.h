@@ -28,7 +28,7 @@ class ConfirmSignoutDialog : public views::DialogDelegateView {
 
   // views::WidgetDelegate:
   ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
 
   // views::DialogDelegate:
   bool Accept() override;

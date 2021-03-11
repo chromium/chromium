@@ -77,9 +77,9 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   bool IsBound() const;
 
   // Setters
-  void SetInitiatorTitle(const base::string16& initiator_title);
+  void SetInitiatorTitle(const std::u16string& initiator_title);
 
-  const base::string16& initiator_title() const { return initiator_title_; }
+  const std::u16string& initiator_title() const { return initiator_title_; }
 
   bool source_is_arc() const { return source_is_arc_; }
 
@@ -298,7 +298,7 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Store the initiator title, used for populating the print preview dialog
   // title.
-  base::string16 initiator_title_;
+  std::u16string initiator_title_;
 
   // The list of 0-based page numbers that will be rendered.
   std::vector<uint32_t> pages_to_render_;

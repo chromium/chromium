@@ -60,7 +60,7 @@ LauncherSearchProvider::~LauncherSearchProvider() {
     service->OnQueryEnded();
 }
 
-void LauncherSearchProvider::Start(const base::string16& query) {
+void LauncherSearchProvider::Start(const std::u16string& query) {
   query_timer_.Stop();
 
   // Clear all search results of the previous query. Since results are
@@ -137,7 +137,7 @@ void LauncherSearchProvider::DelayQuery(base::OnceClosure closure) {
   last_query_time_ = base::Time::Now();
 }
 
-void LauncherSearchProvider::StartInternal(const base::string16& query) {
+void LauncherSearchProvider::StartInternal(const std::u16string& query) {
   if (!query.empty()) {
     query_start_time_ = base::TimeTicks::Now();
     Service::Get(profile_)->OnQueryStarted(this, base::UTF16ToUTF8(query),

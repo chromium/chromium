@@ -71,7 +71,7 @@ class VersionUpdater {
                                        bool powerwash,
                                        const std::string& version,
                                        int64_t update_size,
-                                       const base::string16& message)>
+                                       const std::u16string& message)>
       StatusCallback;
 
   // Used to show or hide the promote UI elements. Mac-only.

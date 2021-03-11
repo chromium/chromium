@@ -32,7 +32,7 @@ class MockSystemWebDialog : public SystemWebDialogDelegate {
  public:
   explicit MockSystemWebDialog(const char* id = nullptr)
       : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetConfigDialogURL),
-                                base::string16()) {
+                                std::u16string()) {
     if (id)
       id_ = std::string(id);
   }

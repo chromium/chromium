@@ -44,7 +44,7 @@ class JavaScriptAppModalDialogCocoa
 
   // Called when the alert completes. Deletes |this|.
   void OnAlertFinished(remote_cocoa::mojom::AlertDisposition disposition,
-                       const base::string16& prompt_text,
+                       const std::u16string& prompt_text,
                        bool suppress_js_messages);
 
   // Called if there is an error connecting to the alert process. Deletes

@@ -31,12 +31,12 @@ class FindBarState : public KeyedService,
   static void ConfigureWebContents(content::WebContents* web_contents);
 
   // find_in_page::FindTabHelper::Delegate:
-  void SetLastSearchText(const base::string16& text) override;
-  base::string16 GetSearchPrepopulateText() override;
+  void SetLastSearchText(const std::u16string& text) override;
+  std::u16string GetSearchPrepopulateText() override;
 
  private:
   Profile* profile_;
-  base::string16 last_prepopulate_text_;
+  std::u16string last_prepopulate_text_;
 
   DISALLOW_COPY_AND_ASSIGN(FindBarState);
 };

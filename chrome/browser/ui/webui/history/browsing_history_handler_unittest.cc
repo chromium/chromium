@@ -60,7 +60,7 @@ class BrowsingHistoryHandlerWithWebUIForTesting
     test_clock_.SetNow(PretendNow());
   }
 
-  void SendHistoryQuery(int count, const base::string16& query) override {
+  void SendHistoryQuery(int count, const std::u16string& query) override {
     if (postpone_query_results_) {
       return;
     }

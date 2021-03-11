@@ -693,11 +693,11 @@ IN_PROC_BROWSER_TEST_F(ArcAppLauncherBrowserTest, LogicalWindow) {
                                         kTestLogicalWindow2,
                                         kTestLogicalWindow,
                                         kTestLogicalWindow};
-  const base::string16 kTestWindowUTF16Title =
+  const std::u16string kTestWindowUTF16Title =
       base::ASCIIToUTF16(kTestWindowTitle);
-  const base::string16 kTestWindowUTF16Title2 =
+  const std::u16string kTestWindowUTF16Title2 =
       base::ASCIIToUTF16(kTestWindowTitle2);
-  const base::string16 kTestWindowUTF16Title3 =
+  const std::u16string kTestWindowUTF16Title3 =
       base::ASCIIToUTF16(kTestWindowTitle3);
 
   // Create windows that will be associated with the tasks. Without this,

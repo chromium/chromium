@@ -65,7 +65,7 @@ void RealboxHandler::SetPage(
   page_.Bind(std::move(pending_page));
 }
 
-void RealboxHandler::QueryAutocomplete(const base::string16& input,
+void RealboxHandler::QueryAutocomplete(const std::u16string& input,
                                        bool prevent_inline_autocomplete) {
   if (!autocomplete_controller_) {
     autocomplete_controller_ = std::make_unique<AutocompleteController>(
@@ -204,7 +204,7 @@ void RealboxHandler::OpenAutocompleteMatch(
 
   OmniboxLog log(
       /*text=*/input.focus_type() != OmniboxFocusType::DEFAULT
-          ? base::string16()
+          ? std::u16string()
           : input.text(),
       /*just_deleted_text=*/input.prevent_inline_autocomplete(),
       /*input_type=*/input.type(),
@@ -220,7 +220,7 @@ void RealboxHandler::OpenAutocompleteMatch(
       elapsed_time_since_first_autocomplete_query,
       /*completed_length=*/match.allowed_to_be_default_match
           ? match.inline_autocompletion.length()
-          : base::string16::npos,
+          : std::u16string::npos,
       /*elapsed_time_since_last_change_to_default_match=*/
       elapsed_time_since_last_change_to_default_match,
       /*result=*/autocomplete_controller_->result());

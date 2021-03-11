@@ -30,16 +30,16 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
   virtual const FormsVector& GetLocalForms() const = 0;
 
   // Returns a title of the account chooser.
-  virtual base::string16 GetAccoutChooserTitle() const = 0;
+  virtual std::u16string GetAccoutChooserTitle() const = 0;
 
   // Whether the account chooser should display the "Sign in" button.
   virtual bool ShouldShowSignInButton() const = 0;
 
   // Returns the title for the autosignin first run dialog.
-  virtual base::string16 GetAutoSigninPromoTitle() const = 0;
+  virtual std::u16string GetAutoSigninPromoTitle() const = 0;
 
   // Returns a text of the auto signin first run promo.
-  virtual base::string16 GetAutoSigninText() const = 0;
+  virtual std::u16string GetAutoSigninText() const = 0;
 
   // Returns true if the footer about Google Account should be shown.
   virtual bool ShouldShowFooter() const = 0;

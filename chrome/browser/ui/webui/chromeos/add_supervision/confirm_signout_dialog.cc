@@ -61,7 +61,7 @@ ui::ModalType ConfirmSignoutDialog::GetModalType() const {
   return ui::ModalType::MODAL_TYPE_SYSTEM;
 }
 
-base::string16 ConfirmSignoutDialog::GetWindowTitle() const {
+std::u16string ConfirmSignoutDialog::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_ADD_SUPERVISION_EXIT_DIALOG_TITLE);
 }
 

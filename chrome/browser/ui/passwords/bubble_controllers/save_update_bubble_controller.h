@@ -38,8 +38,8 @@ class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
 
   // Called by the view code when username or password is corrected using
   // the username correction or password selection features in PendingView.
-  void OnCredentialEdited(base::string16 new_username,
-                          base::string16 new_password);
+  void OnCredentialEdited(std::u16string new_username,
+                          std::u16string new_password);
 
   // The password bubble can switch its state between "save" and "update"
   // depending on the user input. |state_| only captures the correct state on
@@ -63,7 +63,7 @@ class SaveUpdateBubbleController : public PasswordBubbleControllerBase {
   bool RevealPasswords();
 
   // PasswordBubbleControllerBase methods:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
 
   password_manager::ui::State state() const { return state_; }
 

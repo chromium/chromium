@@ -19,7 +19,7 @@ std::string GetFullWindowsVersion();
 // Return a formatted version of the update cohort string
 // IDS_VERSION_UI_COHORT_NAME filled with the update cohort of this Chromium
 // install.
-base::string16 GetCohortVersionInfo();
+std::u16string GetCohortVersionInfo();
 
 }  // namespace win
 }  // namespace version_utils

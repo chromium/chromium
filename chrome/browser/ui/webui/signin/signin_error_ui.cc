@@ -104,14 +104,14 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
         l10n_util::GetStringFUTF16(title_string_id, last_login_error.email()));
   }
 
-  source->AddString("signinErrorMessage", base::string16());
-  source->AddString("profileBlockedMessage", base::string16());
-  source->AddString("profileBlockedAddPersonSuggestion", base::string16());
-  source->AddString("profileBlockedRemoveProfileSuggestion", base::string16());
+  source->AddString("signinErrorMessage", std::u16string());
+  source->AddString("profileBlockedMessage", std::u16string());
+  source->AddString("profileBlockedAddPersonSuggestion", std::u16string());
+  source->AddString("profileBlockedRemoveProfileSuggestion", std::u16string());
 
   // Tweak the dialog UI depending on whether the signin error is
   // username-in-use error and the error UI is shown with a browser window.
-  base::string16 existing_name;
+  std::u16string existing_name;
   if (is_profile_blocked) {
     source->AddLocalizedString("profileBlockedMessage",
                                IDS_OLD_PROFILES_DISABLED_MESSAGE);

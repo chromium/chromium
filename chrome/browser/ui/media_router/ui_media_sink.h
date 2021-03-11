@@ -42,11 +42,11 @@ struct UIMediaSink {
   std::string id;
 
   // Name that can be used by the user to identify the sink.
-  base::string16 friendly_name;
+  std::u16string friendly_name;
 
   // Normally the sink status text is set from |state|. This field allows it
   // to be overridden for error states or to show route descriptions.
-  base::string16 status_text;
+  std::u16string status_text;
 
   // Presentation URL to use when initiating a new casting activity for this
   // sink. For sites that integrate with the Presentation API, this is the

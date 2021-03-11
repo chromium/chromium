@@ -33,8 +33,8 @@ namespace {
 
 // Retrieves the executable and profile paths on the FILE thread.
 void GetFilePaths(const base::FilePath& profile_path,
-                  base::string16* exec_path_out,
-                  base::string16* profile_path_out) {
+                  std::u16string* exec_path_out,
+                  std::u16string* profile_path_out) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -111,8 +111,8 @@ void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.
-  base::string16* exec_path_buffer = new base::string16;
-  base::string16* profile_path_buffer = new base::string16;
+  std::u16string* exec_path_buffer = new std::u16string;
+  std::u16string* profile_path_buffer = new std::u16string;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFilePaths, Profile::FromWebUI(web_ui())->GetPath(),
@@ -125,8 +125,8 @@ void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
 }
 
 void VersionHandler::OnGotFilePaths(std::string callback_id,
-                                    base::string16* executable_path_data,
-                                    base::string16* profile_path_data) {
+                                    std::u16string* executable_path_data,
+                                    std::u16string* profile_path_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Value response(base::Value::Type::DICTIONARY);
   response.SetKey(version_ui::kKeyExecPath, base::Value(*executable_path_data));

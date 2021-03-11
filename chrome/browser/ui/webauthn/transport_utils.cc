@@ -61,7 +61,7 @@ int GetMessageIdForTransportOnOtherTransportsPopup(
 
 }  // namespace
 
-base::string16 GetTransportHumanReadableName(
+std::u16string GetTransportHumanReadableName(
     AuthenticatorTransport transport,
     TransportSelectionContext context) {
   int message_id =

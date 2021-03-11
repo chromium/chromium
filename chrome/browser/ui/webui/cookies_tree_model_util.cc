@@ -352,7 +352,7 @@ const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromPath(
 
 const CookieTreeNode* CookiesTreeModelUtil::GetTreeNodeFromTitle(
     const CookieTreeNode* root,
-    const base::string16& title) {
+    const std::u16string& title) {
   // TODO(dschuyler): This is an O(n) lookup for O(1) space, but it could be
   // improved to O(1) lookup if desired (by using O(n) space).
   const auto i = std::find_if(

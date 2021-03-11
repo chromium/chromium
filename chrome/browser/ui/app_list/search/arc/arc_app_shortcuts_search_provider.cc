@@ -32,7 +32,7 @@ ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kArcAppShortcut;
 }
 
-void ArcAppShortcutsSearchProvider::Start(const base::string16& query) {
+void ArcAppShortcutsSearchProvider::Start(const std::u16string& query) {
   arc::mojom::AppInstance* app_instance =
       arc::ArcServiceManager::Get()
           ? ARC_GET_INSTANCE_FOR_METHOD(

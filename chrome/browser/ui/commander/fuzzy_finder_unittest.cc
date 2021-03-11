@@ -13,8 +13,8 @@ namespace commander {
 namespace {
 // Convenience function to avoid visual noise from constructing FuzzyFinder
 // objects in-test.
-double FuzzyFind(const base::string16& needle,
-                 const base::string16& haystack,
+double FuzzyFind(const std::u16string& needle,
+                 const std::u16string& haystack,
                  std::vector<gfx::Range>* matched_ranges) {
   return FuzzyFinder(needle).Find(haystack, matched_ranges);
 }

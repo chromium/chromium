@@ -66,7 +66,7 @@ bool GlobalErrorWithStandardBubble::ShouldShowCloseButton() const {
   return false;
 }
 
-base::string16
+std::u16string
 GlobalErrorWithStandardBubble::GetBubbleViewDetailsButtonLabel() {
   return {};
 }

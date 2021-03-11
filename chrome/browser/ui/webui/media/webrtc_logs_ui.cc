@@ -260,7 +260,7 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     std::unique_ptr<base::DictionaryValue> upload(new base::DictionaryValue());
     upload->SetString("id", i->upload_id);
 
-    base::string16 value_w;
+    std::u16string value_w;
     if (!i->upload_time.is_null())
       value_w = base::TimeFormatFriendlyDateAndTime(i->upload_time);
     upload->SetString("upload_time", value_w);
@@ -302,7 +302,7 @@ void WebRtcLogsDOMHandler::UpdateUIWithTextLogs(
     // was already in the variable. In case it's empty set the string to
     // inform that the time is unknown.
     if (value_w.empty())
-      value_w = base::string16(base::ASCIIToUTF16("(unknown time)"));
+      value_w = std::u16string(base::ASCIIToUTF16("(unknown time)"));
     upload->SetString("capture_time", value_w);
 
     upload_list->Append(std::move(upload));

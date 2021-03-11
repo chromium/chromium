@@ -274,7 +274,7 @@ void StorageHandler::UpdateStorageItem(
   if (calculation_type != calculator::SizeCalculator::CalculationType::kSystem)
     UpdateSystemSize(calculation_type, total_bytes);
 
-  base::string16 message;
+  std::u16string message;
   if (total_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {

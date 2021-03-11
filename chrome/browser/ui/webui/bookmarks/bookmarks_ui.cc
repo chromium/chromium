@@ -38,7 +38,7 @@ namespace {
 void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id) {
-  base::string16 str = l10n_util::GetStringUTF16(id);
+  std::u16string str = l10n_util::GetStringUTF16(id);
   base::Erase(str, '&');
   source->AddString(message, str);
 }

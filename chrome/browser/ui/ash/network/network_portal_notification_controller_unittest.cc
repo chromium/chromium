@@ -125,7 +125,7 @@ TEST_F(NetworkPortalNotificationControllerTest, NotificationUpdated) {
                     ->GetDisplayedNotificationsForType(
                         NotificationHandler::Type::TRANSIENT)
                     .size());
-  const base::string16 initial_message =
+  const std::u16string initial_message =
       display_service_->GetNotification(kNotificationId)->message();
 
   // Second network is also behind a captive portal, so notification

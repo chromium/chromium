@@ -31,13 +31,13 @@ class FontAccessChooserController : public ChooserController {
   FontAccessChooserController& operator=(FontAccessChooserController&) = delete;
 
   // ChooserController:
-  base::string16 GetNoOptionsText() const override;
-  base::string16 GetOkButtonLabel() const override;
-  std::pair<base::string16, base::string16> GetThrobberLabelAndTooltip()
+  std::u16string GetNoOptionsText() const override;
+  std::u16string GetOkButtonLabel() const override;
+  std::pair<std::u16string, std::u16string> GetThrobberLabelAndTooltip()
       const override;
   size_t NumOptions() const override;
-  base::string16 GetOption(size_t index) const override;
-  base::string16 GetSelectAllCheckboxLabel() const override;
+  std::u16string GetOption(size_t index) const override;
+  std::u16string GetSelectAllCheckboxLabel() const override;
 
   bool ShouldShowHelpButton() const override;
   bool ShouldShowReScanButton() const override;

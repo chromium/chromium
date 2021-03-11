@@ -50,7 +50,7 @@ class SearchController {
 
   void InitializeRankers();
 
-  void Start(const base::string16& query);
+  void Start(const std::u16string& query);
   void ViewClosing();
 
   void OpenResult(ChromeSearchResult* result, int event_flags);
@@ -77,7 +77,7 @@ class SearchController {
   // Called when items in the results list have been on screen for some amount
   // of time, or the user clicked a search result.
   void OnSearchResultsImpressionMade(
-      const base::string16& trimmed_query,
+      const std::u16string& trimmed_query,
       const ash::SearchResultIdWithPositionIndices& results,
       int launched_index);
 
@@ -100,7 +100,7 @@ class SearchController {
   bool query_for_recommendation_ = false;
 
   // The query associated with the most recent search.
-  base::string16 last_query_;
+  std::u16string last_query_;
 
   // The ID of the most recently launched app. This is used for app list launch
   // recording.

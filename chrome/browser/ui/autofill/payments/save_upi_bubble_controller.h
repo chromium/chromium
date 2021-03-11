@@ -18,7 +18,7 @@ class SaveUPIBubbleController {
   virtual ~SaveUPIBubbleController() = default;
 
   // Returns the UPI ID being stored.
-  virtual base::string16 GetUpiId() const = 0;
+  virtual std::u16string GetUpiId() const = 0;
 
   // The user accepted the prompt to save the UPI ID.
   virtual void OnAccept() = 0;

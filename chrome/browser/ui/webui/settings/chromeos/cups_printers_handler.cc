@@ -876,7 +876,7 @@ void CupsPrintersHandler::HandleSelectPPDFile(const base::ListValue* args) {
   file_type_info.extensions.push_back({"ppd"});
   file_type_info.extensions.push_back({"ppd.gz"});
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(), downloads_path,
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(), downloads_path,
       &file_type_info, 0, FILE_PATH_LITERAL(""), owning_window, nullptr);
 }
 

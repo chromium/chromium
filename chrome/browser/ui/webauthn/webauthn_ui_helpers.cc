@@ -12,7 +12,7 @@
 
 namespace webauthn_ui_helpers {
 
-base::string16 RpIdToElidedHost(const std::string& relying_party_id,
+std::u16string RpIdToElidedHost(const std::string& relying_party_id,
                                 size_t width) {
   GURL relying_party_id_url(base::StrCat(
       {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));

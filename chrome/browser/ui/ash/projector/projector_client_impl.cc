@@ -39,7 +39,7 @@ void ProjectorClientImpl::StopSpeechRecognition() {
 }
 
 void ProjectorClientImpl::OnSpeechResult(
-    const base::string16& text,
+    const std::u16string& text,
     bool is_final,
     const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>& timing) {
   DCHECK(timing.has_value());

@@ -23,7 +23,7 @@ void DiagnosticsDialog::ShowDialog() {
 
 DiagnosticsDialog::DiagnosticsDialog()
     : SystemWebDialogDelegate(GURL(kChromeUIDiagnosticsAppUrl),
-                              /*title=*/base::string16()) {}
+                              /*title=*/std::u16string()) {}
 
 DiagnosticsDialog::~DiagnosticsDialog() = default;
 

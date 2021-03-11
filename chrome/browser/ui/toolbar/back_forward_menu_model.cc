@@ -88,19 +88,19 @@ int BackForwardMenuModel::GetCommandIdAt(int index) const {
   return index;
 }
 
-base::string16 BackForwardMenuModel::GetLabelAt(int index) const {
+std::u16string BackForwardMenuModel::GetLabelAt(int index) const {
   // Return label "Show Full History" for the last item of the menu.
   if (index == GetItemCount() - 1)
     return l10n_util::GetStringUTF16(IDS_HISTORY_SHOWFULLHISTORY_LINK);
 
   // Return an empty string for a separator.
   if (IsSeparator(index))
-    return base::string16();
+    return std::u16string();
 
   // Return the entry title, escaping any '&' characters and eliding it if it's
   // super long.
   NavigationEntry* entry = GetNavigationEntry(index);
-  base::string16 menu_text(entry->GetTitleForDisplay());
+  std::u16string menu_text(entry->GetTitleForDisplay());
   menu_text = ui::EscapeMenuLabelAmpersands(menu_text);
   menu_text = gfx::ElideText(menu_text, gfx::FontList(),
                              kMaxBackForwardMenuWidth, gfx::ELIDE_TAIL);
@@ -390,7 +390,7 @@ bool BackForwardMenuModel::ItemHasIcon(int index) const {
   return index < GetItemCount() && !IsSeparator(index);
 }
 
-base::string16 BackForwardMenuModel::GetShowFullHistoryLabel() const {
+std::u16string BackForwardMenuModel::GetShowFullHistoryLabel() const {
   return l10n_util::GetStringUTF16(IDS_HISTORY_SHOWFULLHISTORY_LINK);
 }
 

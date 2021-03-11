@@ -156,7 +156,7 @@ base::RefCountedMemory* ManagementUI::GetFaviconResourceBytes(
 }
 
 // static
-base::string16 ManagementUI::GetManagementPageSubtitle(Profile* profile) {
+std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();

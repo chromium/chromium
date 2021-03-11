@@ -109,7 +109,7 @@ class MediaRouterFileDialogTest : public Test {
   }
 
   void SelectFileAndExpectFailure(const base::FilePath& path) {
-    base::string16 path_name = path.BaseName().LossyDisplayName();
+    std::u16string path_name = path.BaseName().LossyDisplayName();
     std::string error_title = l10n_util::GetStringFUTF8(
         IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR, path_name);
 

@@ -178,7 +178,7 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
 
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       base::FilePath(), &file_type_info, 0, base::FilePath::StringType(),
       browser->window()->GetNativeWindow(), nullptr);
 }

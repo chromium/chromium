@@ -32,12 +32,12 @@ class ChromeOmniboxClient : public OmniboxClient {
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
   std::unique_ptr<OmniboxNavigationObserver> CreateOmniboxNavigationObserver(
-      const base::string16& text,
+      const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternate_nav_match) override;
   bool CurrentPageExists() const override;
   const GURL& GetURL() const override;
-  const base::string16& GetTitle() const override;
+  const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
   bool IsLoading() const override;
   bool IsPasteAndGoEnabled() const override;
@@ -75,7 +75,7 @@ class ChromeOmniboxClient : public OmniboxClient {
       FaviconFetchedCallback on_favicon_fetched) override;
   void OnTextChanged(const AutocompleteMatch& current_match,
                      bool user_input_in_progress,
-                     const base::string16& user_text,
+                     const std::u16string& user_text,
                      const AutocompleteResult& result,
                      bool has_focus) override;
   void OnRevert() override;

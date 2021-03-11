@@ -330,7 +330,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
     int visibility_index = context_menu->GetIndexOfCommandId(
         extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
     ASSERT_GE(visibility_index, 0);
-    base::string16 visibility_label =
+    std::u16string visibility_label =
         context_menu->GetLabelAt(visibility_index);
     EXPECT_EQ(l10n_util::GetStringUTF16(expected_visibility_string),
               visibility_label);

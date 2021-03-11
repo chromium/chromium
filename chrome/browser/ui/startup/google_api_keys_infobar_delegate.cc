@@ -30,7 +30,7 @@ GoogleApiKeysInfoBarDelegate::GetIdentifier() const {
   return GOOGLE_API_KEYS_INFOBAR_DELEGATE;
 }
 
-base::string16 GoogleApiKeysInfoBarDelegate::GetLinkText() const {
+std::u16string GoogleApiKeysInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
 }
 
@@ -38,7 +38,7 @@ GURL GoogleApiKeysInfoBarDelegate::GetLinkURL() const {
   return GURL(google_apis::kAPIKeysDevelopersHowToURL);
 }
 
-base::string16 GoogleApiKeysInfoBarDelegate::GetMessageText() const {
+std::u16string GoogleApiKeysInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_MISSING_GOOGLE_API_KEYS);
 }
 

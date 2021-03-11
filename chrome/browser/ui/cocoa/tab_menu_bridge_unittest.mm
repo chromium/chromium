@@ -79,7 +79,7 @@ class TabMenuBridgeTest : public ::testing::Test {
   }
 
   int ModelIndexForTabNamed(const std::string& name) {
-    base::string16 title16 = base::UTF8ToUTF16(name);
+    std::u16string title16 = base::UTF8ToUTF16(name);
     for (int i = 0; i < model()->count(); ++i) {
       if (model()->GetWebContentsAt(i)->GetTitle() == title16)
         return i;

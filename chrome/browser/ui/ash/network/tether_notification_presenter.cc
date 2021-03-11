@@ -221,7 +221,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE),
-      base::string16() /* display_source */, GURL() /* origin_url */,
+      std::u16string() /* display_source */, GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierTether),
       {} /* rich_notification_data */,
@@ -297,13 +297,13 @@ void TetherNotificationPresenter::OnNotificationClosed(
 std::unique_ptr<message_center::Notification>
 TetherNotificationPresenter::CreateNotification(
     const std::string& id,
-    const base::string16& title,
-    const base::string16& message,
+    const std::u16string& title,
+    const std::u16string& message,
     const gfx::ImageSkia& small_image,
     const message_center::RichNotificationData& rich_notification_data) {
   auto notification = std::make_unique<message_center::Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
-      message, gfx::Image() /* image */, base::string16() /* display_source */,
+      message, gfx::Image() /* image */, std::u16string() /* display_source */,
       GURL() /* origin_url */,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierTether),

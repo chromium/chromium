@@ -51,7 +51,7 @@ std::string GetStringFromDictionary(const base::Optional<base::Value>& dict,
 }
 
 // Error messages based on |error_name|, not network_state->GetError().
-base::string16 GetConnectErrorString(const std::string& error_name) {
+std::u16string GetConnectErrorString(const std::string& error_name) {
   if (error_name == NetworkConnectionHandler::kErrorNotFound)
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_CONNECT_FAILED);
   if (error_name == NetworkConnectionHandler::kErrorConfigureFailed) {
@@ -66,7 +66,7 @@ base::string16 GetConnectErrorString(const std::string& error_name) {
     return l10n_util::GetStringUTF16(
         IDS_CHROMEOS_NETWORK_ERROR_ACTIVATION_FAILED);
   }
-  return base::string16();
+  return std::u16string();
 }
 
 const gfx::VectorIcon& GetErrorNotificationVectorIcon(
@@ -82,15 +82,15 @@ const gfx::VectorIcon& GetErrorNotificationVectorIcon(
 void ShowErrorNotification(const std::string& identifier,
                            const std::string& notification_id,
                            const std::string& network_type,
-                           const base::string16& title,
-                           const base::string16& message,
+                           const std::u16string& title,
+                           const std::u16string& message,
                            base::RepeatingClosure callback) {
   NET_LOG(ERROR) << "ShowErrorNotification: " << identifier << ": "
                  << base::UTF16ToUTF8(title);
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          message, base::string16() /* display_source */, GURL(),
+          message, std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierNetworkError),
@@ -305,7 +305,7 @@ void NetworkStateNotifier::UpdateCellularOutOfCredits() {
   base::TimeDelta dtime = base::Time::Now() - out_of_credits_notify_time_;
   if (dtime.InSeconds() > kMinTimeBetweenOutOfCreditsNotifySeconds) {
     out_of_credits_notify_time_ = base::Time::Now();
-    base::string16 error_msg =
+    std::u16string error_msg =
         l10n_util::GetStringFUTF16(IDS_NETWORK_OUT_OF_CREDITS_BODY,
                                    base::UTF8ToUTF16(primary_network->name()));
     ShowErrorNotification(
@@ -342,7 +342,7 @@ void NetworkStateNotifier::UpdateCellularActivating(
           l10n_util::GetStringUTF16(IDS_NETWORK_CELLULAR_ACTIVATED_TITLE),
           l10n_util::GetStringFUTF16(IDS_NETWORK_CELLULAR_ACTIVATED,
                                      base::UTF8ToUTF16((cellular->name()))),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork),
           {},
@@ -387,7 +387,7 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
           l10n_util::GetStringUTF16(IDS_NETWORK_ACTIVATION_ERROR_TITLE),
           l10n_util::GetStringFUTF16(IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION,
                                      base::UTF8ToUTF16((cellular->name()))),
-          base::string16() /* display_source */, GURL(),
+          std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierNetworkError),
@@ -432,7 +432,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
     const std::string& error_name,
     const std::string& service_path,
     base::Optional<base::Value> shill_properties) {
-  base::string16 error = GetConnectErrorString(error_name);
+  std::u16string error = GetConnectErrorString(error_name);
   NET_LOG(DEBUG) << "Notify: " << NetworkPathId(service_path)
                  << ": Connect error: " << error_name << ": "
                  << base::UTF16ToUTF8(error);
@@ -499,7 +499,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   std::string network_error_details =
       GetStringFromDictionary(shill_properties, shill::kErrorDetailsProperty);
 
-  base::string16 error_msg;
+  std::u16string error_msg;
   if (!network_error_details.empty()) {
     // network_name shouldn't be empty if network_error_details is set.
     error_msg = l10n_util::GetStringFUTF16(
@@ -527,7 +527,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
 
 void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
   DCHECK(vpn);
-  base::string16 error_msg = l10n_util::GetStringFUTF16(
+  std::u16string error_msg = l10n_util::GetStringFUTF16(
       IDS_NETWORK_VPN_CONNECTION_LOST_BODY, base::UTF8ToUTF16(vpn->name));
   ShowErrorNotification(
       NetworkGuidId(vpn->guid), kNetworkConnectNotificationId, shill::kTypeVPN,

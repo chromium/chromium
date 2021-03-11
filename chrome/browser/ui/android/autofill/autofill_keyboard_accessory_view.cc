@@ -73,7 +73,7 @@ void AutofillKeyboardAccessoryView::Show() {
           GetIconResourceID(suggestion.icon));
     }
     // Set the offer title to display as the item tag.
-    base::string16 item_tag = base::string16();
+    std::u16string item_tag = std::u16string();
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableOffersInClankKeyboardAccessory) &&
         !suggestion.offer_label.empty()) {
@@ -96,8 +96,8 @@ void AutofillKeyboardAccessoryView::Show() {
 }
 
 void AutofillKeyboardAccessoryView::ConfirmDeletion(
-    const base::string16& confirmation_title,
-    const base::string16& confirmation_body,
+    const std::u16string& confirmation_title,
+    const std::u16string& confirmation_body,
     base::OnceClosure confirm_deletion) {
   JNIEnv* env = base::android::AttachCurrentThread();
   confirm_deletion_ = std::move(confirm_deletion);

@@ -115,7 +115,7 @@ void ChromePageInfoDelegate::OnUserActionOnPasswordUi(
       /*verdict_token=*/"", safe_browsing::WarningUIType::PAGE_INFO, action);
 }
 
-base::string16 ChromePageInfoDelegate::GetWarningDetailText() {
+std::u16string ChromePageInfoDelegate::GetWarningDetailText() {
   std::vector<size_t> placeholder_offsets;
   auto* chrome_password_protection_service =
       GetChromePasswordProtectionService();
@@ -126,7 +126,7 @@ base::string16 ChromePageInfoDelegate::GetWarningDetailText() {
                    chrome_password_protection_service
                        ->reused_password_account_type_for_last_shown_warning(),
                    &placeholder_offsets)
-             : base::string16();
+             : std::u16string();
 }
 #endif
 
@@ -219,7 +219,7 @@ ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
 }
 
 #if defined(OS_ANDROID)
-const base::string16 ChromePageInfoDelegate::GetClientApplicationName() {
+const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
   return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
 }
 #endif

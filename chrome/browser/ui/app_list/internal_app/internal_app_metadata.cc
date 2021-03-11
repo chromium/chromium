@@ -95,7 +95,7 @@ bool IsInternalApp(const std::string& app_id) {
 
 bool HasRecommendableForeignTab(
     Profile* profile,
-    base::string16* title,
+    std::u16string* title,
     GURL* url,
     sync_sessions::OpenTabsUIDelegate* test_delegate) {
   sync_sessions::SessionSyncService* service =

@@ -86,7 +86,7 @@ void ProfileCustomizationHandler::HandleInitialized(
 
 void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
   CHECK_EQ(1u, args->GetSize());
-  base::string16 profile_name =
+  std::u16string profile_name =
       base::UTF8ToUTF16(args->GetList()[0].GetString());
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);

@@ -43,8 +43,8 @@ class ComponentsHandler : public content::WebUIMessageHandler,
   void OnEvent(Events event, const std::string& id) override;
 
  private:
-  static base::string16 ComponentEventToString(Events event);
-  static base::string16 ServiceStatusToString(
+  static std::u16string ComponentEventToString(Events event);
+  static std::u16string ServiceStatusToString(
       update_client::ComponentState state);
 
   std::unique_ptr<base::ListValue> LoadComponents();

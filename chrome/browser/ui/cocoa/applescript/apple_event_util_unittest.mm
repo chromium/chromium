@@ -104,7 +104,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
       }
       return FourCharToString(typeUnicodeText) + "(\"" +
              base::UTF16ToUTF8(
-                 base::string16(data_vector.begin(), data_vector.end())) +
+                 std::u16string(data_vector.begin(), data_vector.end())) +
              "\")";
     }
     // Lists look like:

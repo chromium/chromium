@@ -297,7 +297,7 @@ void AppServiceContextMenu::BuildExtensionAppShortcutsMenu(
   // Assign unique IDs to commands added by the app itself.
   int index = ash::USE_LAUNCH_TYPE_COMMAND_END;
   extension_menu_items_->AppendExtensionItems(
-      extensions::MenuItem::ExtensionKey(app_id()), base::string16(), &index,
+      extensions::MenuItem::ExtensionKey(app_id()), std::u16string(), &index,
       false /*is_action_menu*/);
 
   const int appended_count = index - ash::USE_LAUNCH_TYPE_COMMAND_END;

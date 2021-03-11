@@ -90,7 +90,7 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
     current_model_updater_->SetActive(false);
 }
 
-void AppListClientImpl::StartSearch(const base::string16& trimmed_query) {
+void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
     search_controller_->Start(trimmed_query);
     OnSearchStarted();
@@ -238,7 +238,7 @@ void AppListClientImpl::GetContextMenuModel(
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   app_list_target_visibility_ = visible;
   if (visible && search_controller_)
-    search_controller_->Start(base::string16());
+    search_controller_->Start(std::u16string());
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
@@ -368,7 +368,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   OnTemplateURLServiceChanged();
 
   // Clear search query.
-  current_model_updater_->UpdateSearchBox(base::string16(),
+  current_model_updater_->UpdateSearchBox(std::u16string(),
                                           false /* initiated_by_user */);
 }
 
@@ -378,7 +378,7 @@ void AppListClientImpl::SetUpSearchUI() {
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/999287.
-  StartSearch(base::string16());
+  StartSearch(std::u16string());
 }
 
 app_list::SearchController* AppListClientImpl::search_controller() {
@@ -470,7 +470,7 @@ void AppListClientImpl::OpenURL(Profile* profile,
 }
 
 void AppListClientImpl::NotifySearchResultsForLogging(
-    const base::string16& trimmed_query,
+    const std::u16string& trimmed_query,
     const ash::SearchResultIdWithPositionIndices& results,
     int position_index) {
   if (search_controller_) {

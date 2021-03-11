@@ -58,7 +58,7 @@ BluetoothScanningPromptAndroid::~BluetoothScanningPromptAndroid() {
 void BluetoothScanningPromptAndroid::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& device_name) {
+    const std::u16string& device_name) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_device_id =
       ConvertUTF8ToJavaString(env, device_id);

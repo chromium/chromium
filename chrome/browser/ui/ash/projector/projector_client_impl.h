@@ -33,7 +33,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
-      const base::string16& text,
+      const std::u16string& text,
       bool is_final,
       const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>& timing)
       override;

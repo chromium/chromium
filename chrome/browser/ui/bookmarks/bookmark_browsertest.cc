@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
   BookmarkModel* bookmark_model1 = WaitForBookmarkModel(browser()->profile());
 
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
-      base::string16(), std::string(), ProfileManager::CreateCallback());
+      std::u16string(), std::string(), ProfileManager::CreateCallback());
   Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
 
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
 // generation for dragging a single bookmark.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const base::string16 page_title(base::ASCIIToUTF16("foo"));
+  const std::u16string page_title(base::ASCIIToUTF16("foo"));
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node = model->AddURL(root, 0, page_title, page_url);
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
         GURL url;
-        base::string16 title;
+        std::u16string title;
         EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
         EXPECT_EQ(page_url, url);
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
 // generation for dragging multiple bookmarks.
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   BookmarkModel* model = WaitForBookmarkModel(browser()->profile());
-  const base::string16 page_title(base::ASCIIToUTF16("foo"));
+  const std::u16string page_title(base::ASCIIToUTF16("foo"));
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
                                   gfx::Point point, int operation) {
 #if !defined(OS_MAC)
         GURL url;
-        base::string16 title;
+        std::u16string title;
         // On Mac 10.11 and 10.12, this returns true, even though we set no url.
         // See https://crbug.com/893432.
         EXPECT_FALSE(drag_data->provider().GetURLAndTitle(

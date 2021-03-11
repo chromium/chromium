@@ -147,11 +147,11 @@ LauncherControllerHelper::LauncherControllerHelper(Profile* profile)
 LauncherControllerHelper::~LauncherControllerHelper() {}
 
 // static
-base::string16 LauncherControllerHelper::GetAppTitle(
+std::u16string LauncherControllerHelper::GetAppTitle(
     Profile* profile,
     const std::string& app_id) {
   if (app_id.empty())
-    return base::string16();
+    return std::u16string();
 
   // Get the title if the app is an ARC app. ARC shortcuts could call this
   // function when it's created, so AppService can't be used for ARC shortcuts,
@@ -177,7 +177,7 @@ base::string16 LauncherControllerHelper::GetAppTitle(
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
   if (!registry)
-    return base::string16();
+    return std::u16string();
 
   auto* extension = registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::EVERYTHING);
@@ -187,7 +187,7 @@ base::string16 LauncherControllerHelper::GetAppTitle(
   if (crostini::IsUnmatchedCrostiniShelfAppId(app_id))
     return crostini::GetCrostiniShelfTitle(app_id);
 
-  return base::string16();
+  return std::u16string();
 }
 
 // static

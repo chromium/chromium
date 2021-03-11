@@ -31,7 +31,7 @@ class TestManagementProvider : public extensions::ManagementPolicy::Provider {
   std::string GetDebugPolicyProviderName() const override { return "test"; }
   bool MustRemainDisabled(const extensions::Extension* extension,
                           extensions::disable_reason::DisableReason* reason,
-                          base::string16* error) const override {
+                          std::u16string* error) const override {
     return extension->id() == extension_id_;
   }
 

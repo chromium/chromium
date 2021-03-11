@@ -286,8 +286,8 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
                                              NSInteger index) {
   // Elide the title of the history item, or use the URL if there is none.
   const std::string& url = item->url.possibly_invalid_spec();
-  const base::string16& full_title = item->title;
-  const base::string16& title =
+  const std::u16string& full_title = item->title;
+  const std::u16string& title =
       full_title.empty() ? base::UTF8ToUTF16(url) : full_title;
 
   item->menu_item.reset(
@@ -336,7 +336,7 @@ void HistoryMenuBridge::CreateMenu() {
   options.SetRecentDayRange(kVisitedScope);
 
   history_service_->QueryHistory(
-      base::string16(), options,
+      std::u16string(), options,
       base::BindOnce(&HistoryMenuBridge::OnVisitedHistoryResults,
                      base::Unretained(this)),
       &cancelable_task_tracker_);

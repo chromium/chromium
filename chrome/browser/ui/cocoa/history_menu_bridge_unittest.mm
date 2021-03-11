@@ -105,7 +105,7 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
   }
 
   std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
-      const base::string16& title) {
+      const std::u16string& title) {
     auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
     item->title = title;
     item->url = GURL(title);
@@ -218,12 +218,12 @@ TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuEmpty) {
 TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
   NSMenu* menu = [[[NSMenu alloc] initWithTitle:@"history foo"] autorelease];
 
-  const base::string16 short_url = base::ASCIIToUTF16("http://foo/");
-  const base::string16 long_url = base::ASCIIToUTF16(
-      "http://super-duper-long-url--."
-      "that.cannot.possibly.fit.even-in-80-columns"
-      "or.be.reasonably-displayed-in-a-menu"
-      "without.looking-ridiculous.com/"); // 140 chars total
+  const std::u16string short_url = base::ASCIIToUTF16("http://foo/");
+  const std::u16string long_url =
+      base::ASCIIToUTF16("http://super-duper-long-url--."
+                         "that.cannot.possibly.fit.even-in-80-columns"
+                         "or.be.reasonably-displayed-in-a-menu"
+                         "without.looking-ridiculous.com/");  // 140 chars total
 
   AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
   AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);

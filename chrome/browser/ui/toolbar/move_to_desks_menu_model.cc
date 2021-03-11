@@ -26,7 +26,7 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
   // so we can retrieve the move to desk items' indices properly.
   move_to_desk_group_offset_ = GetItemCount();
   for (int i = 0; i < kMaxNumberOfDesks; ++i)
-    AddCheckItem(IDC_MOVE_TO_DESK_1 + i, base::string16());
+    AddCheckItem(IDC_MOVE_TO_DESK_1 + i, std::u16string());
 }
 
 bool MoveToDesksMenuModel::MayHaveMnemonicsAt(int index) const {
@@ -42,7 +42,7 @@ bool MoveToDesksMenuModel::IsVisibleAt(int index) const {
          desks_helper_->GetNumberOfDesks();
 }
 
-base::string16 MoveToDesksMenuModel::GetLabelAt(int index) const {
+std::u16string MoveToDesksMenuModel::GetLabelAt(int index) const {
   if (index == assign_to_all_desks_item_index_)
     return l10n_util::GetStringUTF16(IDS_ASSIGN_TO_ALL_DESKS);
   return desks_helper_->GetDeskName(OffsetIndexForMoveToDeskGroup(index));

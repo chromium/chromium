@@ -20,7 +20,7 @@ namespace {
 
 // Return the internationalized message |message_id|, with the product name
 // substituted in for $1.
-base::string16 String16WithProductName(int message_id) {
+std::u16string String16WithProductName(int message_id) {
   return l10n_util::GetStringFUTF16(
       message_id, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 }
@@ -126,7 +126,7 @@ void CenterVertically(NSView* view) {
 
   // This string starts with the app name, which is strongly LTR, so force the
   // correct layout.
-  base::string16 completeInstallationString =
+  std::u16string completeInstallationString =
       String16WithProductName(IDS_FIRSTRUN_DLG_MAC_COMPLETE_INSTALLATION_LABEL);
   base::i18n::AdjustStringForLocaleDirection(&completeInstallationString);
   NSTextField* completionLabel = [TextFieldUtils

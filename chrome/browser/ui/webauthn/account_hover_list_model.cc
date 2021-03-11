@@ -23,8 +23,8 @@ bool AccountHoverListModel::ShouldShowPlaceholderForEmptyList() const {
   return false;
 }
 
-base::string16 AccountHoverListModel::GetPlaceholderText() const {
-  return base::string16();
+std::u16string AccountHoverListModel::GetPlaceholderText() const {
+  return std::u16string();
 }
 
 const gfx::VectorIcon* AccountHoverListModel::GetPlaceholderIcon() const {
@@ -42,14 +42,14 @@ std::vector<int> AccountHoverListModel::GetButtonTags() const {
   return tag_list;
 }
 
-base::string16 AccountHoverListModel::GetItemText(int item_tag) const {
+std::u16string AccountHoverListModel::GetItemText(int item_tag) const {
   const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
   if (user.display_name && !user.display_name->empty())
     return base::UTF8ToUTF16(user.display_name.value());
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_UNKNOWN_ACCOUNT);
 }
 
-base::string16 AccountHoverListModel::GetDescriptionText(int item_tag) const {
+std::u16string AccountHoverListModel::GetDescriptionText(int item_tag) const {
   const device::PublicKeyCredentialUserEntity& user = users_list_->at(item_tag);
   return base::UTF8ToUTF16(user.name.value_or(""));
 }

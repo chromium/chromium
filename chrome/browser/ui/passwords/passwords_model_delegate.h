@@ -106,8 +106,8 @@ class PasswordsModelDelegate {
   // Called from the model when the user chooses to save a password. The
   // username and password seen on the ui is sent as a parameter, and
   // handled accordingly if user had edited them.
-  virtual void SavePassword(const base::string16& username,
-                            const base::string16& password) = 0;
+  virtual void SavePassword(const std::u16string& username,
+                            const std::u16string& password) = 0;
 
   // Called when the user chooses to save locally some of the unsynced
   // credentials that were deleted from the account store on signout.
@@ -163,8 +163,8 @@ class PasswordsModelDelegate {
   // reauth, it saves the password if it's still relevant. Otherwise, it changes
   // the default destination to local and reopens the save bubble.
   virtual void AuthenticateUserForAccountStoreOptInAndSavePassword(
-      const base::string16& username,
-      const base::string16& password) = 0;
+      const std::u16string& username,
+      const std::u16string& password) = 0;
 
   // Called from the Move bubble controller when gaia re-auth is needed
   // to move passwords. This method triggers the reauth flow. Upon successful

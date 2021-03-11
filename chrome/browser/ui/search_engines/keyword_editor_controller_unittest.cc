@@ -24,10 +24,10 @@
 
 using base::ASCIIToUTF16;
 
-static const base::string16 kA(ASCIIToUTF16("a"));
-static const base::string16 kA1(ASCIIToUTF16("a1"));
-static const base::string16 kB(ASCIIToUTF16("b"));
-static const base::string16 kB1(ASCIIToUTF16("b1"));
+static const std::u16string kA(ASCIIToUTF16("a"));
+static const std::u16string kA1(ASCIIToUTF16("a1"));
+static const std::u16string kB(ASCIIToUTF16("b"));
+static const std::u16string kB1(ASCIIToUTF16("b1"));
 
 // Base class for keyword editor tests. Creates a profile containing an
 // empty TemplateURLService.

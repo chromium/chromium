@@ -15,10 +15,10 @@
 
 namespace exclusive_access_bubble {
 
-base::string16 GetLabelTextForType(ExclusiveAccessBubbleType type,
+std::u16string GetLabelTextForType(ExclusiveAccessBubbleType type,
                                    const GURL& url,
                                    extensions::ExtensionRegistry* registry) {
-  base::string16 host(base::UTF8ToUTF16(url.host()));
+  std::u16string host(base::UTF8ToUTF16(url.host()));
   if (registry) {
     const extensions::Extension* extension =
         registry->enabled_extensions().GetExtensionOrAppByURL(url);
@@ -48,10 +48,10 @@ base::string16 GetLabelTextForType(ExclusiveAccessBubbleType type,
             IDS_FULLSCREEN_UNKNOWN_EXTENSION_TRIGGERED_FULLSCREEN);
       case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
         NOTREACHED();
-        return base::string16();
+        return std::u16string();
     }
     NOTREACHED();
-    return base::string16();
+    return std::u16string();
   }
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
@@ -71,13 +71,13 @@ base::string16 GetLabelTextForType(ExclusiveAccessBubbleType type,
           IDS_FULLSCREEN_EXTENSION_TRIGGERED_FULLSCREEN, host);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetDenyButtonTextForType(ExclusiveAccessBubbleType type) {
+std::u16string GetDenyButtonTextForType(ExclusiveAccessBubbleType type) {
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
@@ -87,13 +87,13 @@ base::string16 GetDenyButtonTextForType(ExclusiveAccessBubbleType type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
       NOTREACHED();  // No button in this case.
-      return base::string16();
+      return std::u16string();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
+std::u16string GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
                                          const GURL& url) {
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
@@ -104,14 +104,14 @@ base::string16 GetAllowButtonTextForType(ExclusiveAccessBubbleType type,
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
       NOTREACHED();  // No button in this case.
-      return base::string16();
+      return std::u16string();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 GetInstructionTextForType(ExclusiveAccessBubbleType type,
-                                         const base::string16& accelerator) {
+std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
+                                         const std::u16string& accelerator) {
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_MOUSELOCK_EXIT_INSTRUCTION:
@@ -130,10 +130,10 @@ base::string16 GetInstructionTextForType(ExclusiveAccessBubbleType type,
           IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_MOUSELOCK, accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
 }  // namespace exclusive_access_bubble

@@ -558,7 +558,7 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
       l10n_util::GetStringUTF16(IDS_UPLOAD_IMAGE_FORMAT));
   choose_local_custom_background_callback_ = std::move(callback);
   select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_OPEN_FILE, base::string16(),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
       profile_->last_selected_directory(), &file_types, 0,
       base::FilePath::StringType(), web_contents_->GetTopLevelNativeWindow(),
       nullptr);

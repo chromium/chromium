@@ -174,7 +174,7 @@ ui::ModalType CertificateViewerDialog::GetDialogModalType() const {
   return ui::MODAL_TYPE_NONE;
 }
 
-base::string16 CertificateViewerDialog::GetDialogTitle() const {
+std::u16string CertificateViewerDialog::GetDialogTitle() const {
   return title_;
 }
 

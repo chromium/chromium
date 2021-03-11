@@ -41,7 +41,7 @@ class SaveAddressProfileBubbleControllerImpl
                      address_profile_save_prompt_callback);
 
   // SaveAddressProfileBubbleController:
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   const AutofillProfile& GetProfileToSave() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision) override;

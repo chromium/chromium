@@ -45,7 +45,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;
-  base::string16 GetBatteryDescription() const override;
+  std::u16string GetBatteryDescription() const override;
   void SetVirtualKeyboardVisible(bool is_visible) override;
   void PerformAcceleratorAction(
       ash::AcceleratorAction accelerator_action) override;

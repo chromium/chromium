@@ -76,17 +76,17 @@ bool BluetoothChooserController::ShouldShowReScanButton() const {
   return true;
 }
 
-base::string16 BluetoothChooserController::GetNoOptionsText() const {
+std::u16string BluetoothChooserController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_DEVICE_CHOOSER_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 BluetoothChooserController::GetOkButtonLabel() const {
+std::u16string BluetoothChooserController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 BluetoothChooserController::GetThrobberLabelAndTooltip() const {
   return {
       l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
@@ -110,7 +110,7 @@ bool BluetoothChooserController::IsPaired(size_t index) const {
   return devices_[index].is_paired;
 }
 
-base::string16 BluetoothChooserController::GetOption(size_t index) const {
+std::u16string BluetoothChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
   const std::string& device_id = devices_[index].id;
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
@@ -242,14 +242,14 @@ void BluetoothChooserController::OnDiscoveryStateChanged(
 void BluetoothChooserController::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& device_name,
+    const std::u16string& device_name,
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {
   auto name_it = device_id_to_name_map_.find(device_id);
   if (name_it != device_id_to_name_map_.end()) {
     if (should_update_name) {
-      base::string16 previous_device_name = name_it->second;
+      std::u16string previous_device_name = name_it->second;
       name_it->second = device_name;
 
       const auto& it = device_name_counts_.find(previous_device_name);

@@ -74,7 +74,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   int GetMaxWidthForItemAtIndex(int item_index) const;
   bool GetURLAndTitleForItemAtIndex(int index,
                                     std::string* url,
-                                    base::string16* title);
+                                    std::u16string* title);
 
  private:
   struct TabNavigationItem;
@@ -97,7 +97,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // Build a recently closed tab item with parameters needed to restore it, and
   // add it to the menumodel at |curr_model_index|.
   void BuildLocalTabItem(SessionID session_id,
-                         const base::string16& title,
+                         const std::u16string& title,
                          const GURL& url,
                          int curr_model_index);
 

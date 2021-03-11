@@ -22,7 +22,7 @@ class BookmarkCommandSource : public CommandSource {
   BookmarkCommandSource& operator=(const BookmarkCommandSource& other) = delete;
 
   // Command source overrides
-  CommandSource::CommandResults GetCommands(const base::string16& input,
+  CommandSource::CommandResults GetCommands(const std::u16string& input,
                                             Browser* browser) const override;
 };
 

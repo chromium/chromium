@@ -33,7 +33,7 @@ const char kTabTitleFormat[] = "session=%d;window=%d;tab=%d";
 const uint64_t kMaxMinutesRange = 1000;
 
 struct TitleTimestampPair {
-  base::string16 title;
+  std::u16string title;
   base::Time timestamp;
 };
 
@@ -69,7 +69,7 @@ struct RecentTabsBuilderTestHelper::TabInfo {
   TabInfo() : id(SessionID::InvalidValue()) {}
   SessionID id;
   base::Time timestamp;
-  base::string16 title;
+  std::u16string title;
 };
 struct RecentTabsBuilderTestHelper::WindowInfo {
   WindowInfo() : id(SessionID::InvalidValue()) {}
@@ -138,13 +138,13 @@ void RecentTabsBuilderTestHelper::AddTab(int session_index, int window_index) {
   base::Time timestamp =
       start_time_ +
       base::TimeDelta::FromMinutes(base::RandGenerator(kMaxMinutesRange));
-  AddTabWithInfo(session_index, window_index, timestamp, base::string16());
+  AddTabWithInfo(session_index, window_index, timestamp, std::u16string());
 }
 
 void RecentTabsBuilderTestHelper::AddTabWithInfo(int session_index,
                                                  int window_index,
                                                  base::Time timestamp,
-                                                 const base::string16& title) {
+                                                 const std::u16string& title) {
   TabInfo tab_info;
   tab_info.id = SessionID::NewUnique();
   tab_info.timestamp = timestamp;
@@ -170,10 +170,10 @@ base::Time RecentTabsBuilderTestHelper::GetTabTimestamp(int session_index,
       .tabs[tab_index].timestamp;
 }
 
-base::string16 RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
+std::u16string RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
                                                         int window_index,
                                                         int tab_index) {
-  base::string16 title =
+  std::u16string title =
       sessions_[session_index].windows[window_index].tabs[tab_index].title;
   if (title.empty()) {
     title = base::UTF8ToUTF16(ToTabTitle(
@@ -227,7 +227,7 @@ void RecentTabsBuilderTestHelper::VerifyExport(
   }
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   std::vector<TitleTimestampPair> tabs;
   for (int s = 0; s < GetSessionCount(); ++s) {
@@ -242,7 +242,7 @@ RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   }
   sort(tabs.begin(), tabs.end(), SortTabTimesByRecency);
 
-  std::vector<base::string16> titles;
+  std::vector<std::u16string> titles;
   for (size_t i = 0; i < tabs.size(); ++i)
     titles.push_back(tabs[i].title);
   return titles;

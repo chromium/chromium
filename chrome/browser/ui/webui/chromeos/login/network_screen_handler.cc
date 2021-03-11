@@ -72,7 +72,7 @@ void NetworkScreenHandler::Unbind() {
   BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
-void NetworkScreenHandler::ShowError(const base::string16& message) {
+void NetworkScreenHandler::ShowError(const std::u16string& message) {
   CallJS("login.NetworkScreen.showError", message);
 }
 
@@ -83,7 +83,7 @@ void NetworkScreenHandler::ClearErrors() {
 
 void NetworkScreenHandler::ShowConnectingStatus(
     bool connecting,
-    const base::string16& network_id) {}
+    const std::u16string& network_id) {}
 
 void NetworkScreenHandler::SetOfflineDemoModeEnabled(bool enabled) {
   CallJS("login.NetworkScreen.setOfflineDemoModeEnabled", enabled);

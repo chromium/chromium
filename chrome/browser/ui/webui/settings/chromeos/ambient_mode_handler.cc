@@ -107,7 +107,7 @@ void EncodeImage(const gfx::ImageSkia& image,
   }
 }
 
-base::string16 GetAlbumDescription(const ash::PersonalAlbum& album) {
+std::u16string GetAlbumDescription(const ash::PersonalAlbum& album) {
   if (album.album_id == ash::kAmbientModeRecentHighlightsAlbumId) {
     return l10n_util::GetStringUTF16(
         IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_RECENT_DESC);

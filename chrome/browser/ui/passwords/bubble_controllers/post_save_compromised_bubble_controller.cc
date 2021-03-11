@@ -38,13 +38,13 @@ PostSaveCompromisedBubbleController::~PostSaveCompromisedBubbleController() {
     OnBubbleClosing();
 }
 
-base::string16 PostSaveCompromisedBubbleController::GetBody() {
+std::u16string PostSaveCompromisedBubbleController::GetBody() {
   switch (type_) {
     case BubbleType::kPasswordUpdatedSafeState: {
-      base::string16 settings =
+      std::u16string settings =
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SAFE_STATE_SETTINGS);
       size_t offset = 0;
-      base::string16 body = l10n_util::GetStringFUTF16(
+      std::u16string body = l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_SAFE_STATE_BODY_MESSAGE, settings, &offset);
       link_range_ = gfx::Range(offset, offset + settings.size());
       return body;
@@ -60,10 +60,10 @@ gfx::Range PostSaveCompromisedBubbleController::GetSettingLinkRange() const {
   return link_range_;
 }
 
-base::string16 PostSaveCompromisedBubbleController::GetButtonText() const {
+std::u16string PostSaveCompromisedBubbleController::GetButtonText() const {
   switch (type_) {
     case BubbleType::kPasswordUpdatedSafeState:
-      return base::string16();
+      return std::u16string();
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       return l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_CHECK_REMAINING_BUTTON);
@@ -103,7 +103,7 @@ void PostSaveCompromisedBubbleController::OnSettingsClicked() {
         password_manager::ManagePasswordsReferrer::kSafeStateBubble);
 }
 
-base::string16 PostSaveCompromisedBubbleController::GetTitle() const {
+std::u16string PostSaveCompromisedBubbleController::GetTitle() const {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UPDATED_BUBBLE_TITLE);
 }
 

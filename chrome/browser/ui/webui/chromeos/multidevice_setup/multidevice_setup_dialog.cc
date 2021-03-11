@@ -92,7 +92,7 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 }
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
-    : SystemWebDialogDelegate(CreateMultiDeviceSetupURL(), base::string16()) {}
+    : SystemWebDialogDelegate(CreateMultiDeviceSetupURL(), std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
   for (auto& callback : on_close_callbacks_)

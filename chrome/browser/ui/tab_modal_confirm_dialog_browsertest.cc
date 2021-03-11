@@ -30,12 +30,12 @@ MockTabModalConfirmDialogDelegate::MockTabModalConfirmDialogDelegate(
 
 MockTabModalConfirmDialogDelegate::~MockTabModalConfirmDialogDelegate() {}
 
-base::string16 MockTabModalConfirmDialogDelegate::GetTitle() {
-  return base::string16();
+std::u16string MockTabModalConfirmDialogDelegate::GetTitle() {
+  return std::u16string();
 }
 
-base::string16 MockTabModalConfirmDialogDelegate::GetDialogMessage() {
-  return base::string16();
+std::u16string MockTabModalConfirmDialogDelegate::GetDialogMessage() {
+  return std::u16string();
 }
 
 void MockTabModalConfirmDialogDelegate::OnAccepted() {

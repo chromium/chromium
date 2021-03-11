@@ -94,7 +94,7 @@ void AddStringResources(content::WebUIDataSource* source) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  base::string16 device_name = ui::GetChromeOSDeviceName();
+  std::u16string device_name = ui::GetChromeOSDeviceName();
 
   source->AddString("promptMessage",
                     l10n_util::GetStringFUTF8(

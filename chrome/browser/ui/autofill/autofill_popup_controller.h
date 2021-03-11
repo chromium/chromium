@@ -42,16 +42,16 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual const Suggestion& GetSuggestionAt(int row) const = 0;
 
   // Returns the suggestion value string at the given |row| index.
-  virtual const base::string16& GetSuggestionValueAt(int row) const = 0;
+  virtual const std::u16string& GetSuggestionValueAt(int row) const = 0;
 
   // Returns the suggestion label string at the given |row| index.
-  virtual const base::string16& GetSuggestionLabelAt(int row) const = 0;
+  virtual const std::u16string& GetSuggestionLabelAt(int row) const = 0;
 
   // Returns whether the item at |list_index| can be removed. If so, fills
   // out |title| and |body| (when non-null) with relevant user-facing text.
   virtual bool GetRemovalConfirmationText(int index,
-                                          base::string16* title,
-                                          base::string16* body) = 0;
+                                          std::u16string* title,
+                                          std::u16string* body) = 0;
 
   // Removes the suggestion at the given index.
   virtual bool RemoveSuggestion(int index) = 0;

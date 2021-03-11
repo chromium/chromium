@@ -7,10 +7,10 @@
 namespace commander {
 
 CommandItemViewModel::CommandItemViewModel(
-    const base::string16& title,
+    const std::u16string& title,
     const std::vector<gfx::Range>& matched_ranges,
     CommandItem::Entity entity_type,
-    const base::string16& annotation)
+    const std::u16string& annotation)
     : title(title),
       matched_ranges(matched_ranges),
       entity_type(entity_type),

@@ -20,11 +20,10 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   void SetDelegate(ToolbarActionViewDelegate* delegate) override;
   gfx::Image GetIcon(content::WebContents* web_contents,
                      const gfx::Size& size) override;
-  base::string16 GetActionName() const override;
-  base::string16 GetAccessibleName(content::WebContents* web_contents)
-      const override;
-  base::string16 GetTooltip(content::WebContents* web_contents)
-      const override;
+  std::u16string GetActionName() const override;
+  std::u16string GetAccessibleName(
+      content::WebContents* web_contents) const override;
+  std::u16string GetTooltip(content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool HasPopup(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
@@ -41,9 +40,9 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   void ShowPopup(bool by_user);
 
   // Configure the test controller. These also call UpdateDelegate().
-  void SetActionName(const base::string16& name);
-  void SetAccessibleName(const base::string16& name);
-  void SetTooltip(const base::string16& tooltip);
+  void SetActionName(const std::u16string& name);
+  void SetAccessibleName(const std::u16string& name);
+  void SetTooltip(const std::u16string& tooltip);
   void SetEnabled(bool is_enabled);
   void SetDisabledClickOpensMenu(bool disabled_click_opens_menu);
 
@@ -60,11 +59,11 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
   ToolbarActionViewDelegate* delegate_ = nullptr;
 
   // Action name for the controller.
-  base::string16 action_name_;
+  std::u16string action_name_;
 
   // The optional accessible name and tooltip; by default these are empty.
-  base::string16 accessible_name_;
-  base::string16 tooltip_;
+  std::u16string accessible_name_;
+  std::u16string tooltip_;
 
   // Whether or not the action is enabled.
   bool is_enabled_ = true;

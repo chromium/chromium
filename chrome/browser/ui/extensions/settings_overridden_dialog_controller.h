@@ -20,8 +20,8 @@ class SettingsOverriddenDialogController {
  public:
   // A struct describing the contents to be displayed in the dialog.
   struct ShowParams {
-    base::string16 dialog_title;
-    base::string16 message;
+    std::u16string dialog_title;
+    std::u16string message;
 
     // The icon to display, if any. If non-null, the VectorIcon should have
     // all its colors fully specified; otherwise a placehold grey color will

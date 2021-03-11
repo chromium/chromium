@@ -30,7 +30,7 @@ void PressRevert(Browser* browser);
 // Selects the target language with the given display name on the opened
 // translate bubble.
 void SelectTargetLanguageByDisplayName(Browser* browser,
-                                       const base::string16& display_name);
+                                       const std::u16string& display_name);
 
 }  // namespace test_utils
 

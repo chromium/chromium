@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPPromoTest, PromoWithExtensionsLinkNoPermission) {
 
   // Observe another roundtrip to the renderer process to ensure that the event
   // loop has been executed.
-  base::string16 expected_title(base::UTF8ToUTF16("loaded"));
+  std::u16string expected_title(base::UTF8ToUTF16("loaded"));
   content::TitleWatcher title_watcher(active_tab, expected_title);
   // Click on a priviliged link.
   content::DidStartNavigationObserver did_start_navigation_observer(active_tab);

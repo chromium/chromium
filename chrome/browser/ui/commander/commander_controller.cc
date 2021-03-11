@@ -41,7 +41,7 @@ CommanderController::CommanderController(CommandSources sources)
 
 CommanderController::~CommanderController() = default;
 
-void CommanderController::OnTextChanged(const base::string16& text,
+void CommanderController::OnTextChanged(const std::u16string& text,
                                         Browser* browser) {
   std::vector<std::unique_ptr<CommandItem>> items;
   if (composite_command_provider_) {

@@ -32,10 +32,10 @@ void PasswordReuseDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       env, window_android->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
 
   std::vector<size_t> placeholder_offsets;
-  base::string16 warning_detail_text =
+  std::u16string warning_detail_text =
       controller_->GetWarningDetailText(&placeholder_offsets);
 
-  const std::vector<base::string16> placeholders =
+  const std::vector<std::u16string> placeholders =
       controller_->GetPlaceholdersForSavedPasswordWarningText();
 
   DCHECK_EQ(placeholder_offsets.size(), placeholders.size());

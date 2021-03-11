@@ -46,11 +46,11 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
     content::WebContents* web_contents)
     : AutofillBubbleControllerBase(web_contents) {}
 
-base::string16 OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
+std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_REMINDER_TITLE);
 }
 
-base::string16 OfferNotificationBubbleControllerImpl::GetOkButtonLabel() const {
+std::u16string OfferNotificationBubbleControllerImpl::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL);
 }

@@ -24,22 +24,22 @@ bool BluetoothScanningPromptController::ShouldShowHelpButton() const {
   return false;
 }
 
-base::string16 BluetoothScanningPromptController::GetNoOptionsText() const {
+std::u16string BluetoothScanningPromptController::GetNoOptionsText() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_SCANNING_PROMPT_NO_DEVICES_FOUND_PROMPT);
 }
 
-base::string16 BluetoothScanningPromptController::GetOkButtonLabel() const {
+std::u16string BluetoothScanningPromptController::GetOkButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_SCANNING_PROMPT_ALLOW_BUTTON_TEXT);
 }
 
-base::string16 BluetoothScanningPromptController::GetCancelButtonLabel() const {
+std::u16string BluetoothScanningPromptController::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(
       IDS_BLUETOOTH_SCANNING_PROMPT_BLOCK_BUTTON_TEXT);
 }
 
-std::pair<base::string16, base::string16>
+std::pair<std::u16string, std::u16string>
 BluetoothScanningPromptController::GetThrobberLabelAndTooltip() const {
   return {
       l10n_util::GetStringUTF16(IDS_BLUETOOTH_DEVICE_CHOOSER_SCANNING_LABEL),
@@ -59,7 +59,7 @@ size_t BluetoothScanningPromptController::NumOptions() const {
   return device_ids_.size();
 }
 
-base::string16 BluetoothScanningPromptController::GetOption(
+std::u16string BluetoothScanningPromptController::GetOption(
     size_t index) const {
   DCHECK_LT(index, device_ids_.size());
   const std::string& device_id = device_ids_[index];
@@ -103,8 +103,8 @@ void BluetoothScanningPromptController::OpenHelpCenterUrl() const {}
 void BluetoothScanningPromptController::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
-    const base::string16& device_name) {
-  base::string16 device_name_for_display = device_name;
+    const std::u16string& device_name) {
+  std::u16string device_name_for_display = device_name;
   if (device_name_for_display.empty()) {
     device_name_for_display = l10n_util::GetStringFUTF16(
         IDS_BLUETOOTH_SCANNING_DEVICE_UNKNOWN, base::UTF8ToUTF16(device_id));
@@ -113,7 +113,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
   auto name_it = device_id_to_name_map_.find(device_id);
   if (name_it != device_id_to_name_map_.end()) {
     if (should_update_name) {
-      base::string16 previous_device_name = name_it->second;
+      std::u16string previous_device_name = name_it->second;
       name_it->second = device_name_for_display;
 
       const auto& it = device_name_counts_.find(previous_device_name);

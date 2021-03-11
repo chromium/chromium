@@ -52,7 +52,7 @@ RosettaRequiredInfoBarDelegate::GetIdentifier() const {
   return ROSETTA_REQUIRED_INFOBAR_DELEGATE;
 }
 
-base::string16 RosettaRequiredInfoBarDelegate::GetLinkText() const {
+std::u16string RosettaRequiredInfoBarDelegate::GetLinkText() const {
   return l10n_util::GetStringUTF16(IDS_ROSETTA_REQUIRED_INFOBAR_LINK_TEXT);
 }
 
@@ -60,7 +60,7 @@ GURL RosettaRequiredInfoBarDelegate::GetLinkURL() const {
   return GURL("https://support.google.com/chrome/?p=mac_ARM");
 }
 
-base::string16 RosettaRequiredInfoBarDelegate::GetMessageText() const {
+std::u16string RosettaRequiredInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringUTF16(IDS_ROSETTA_REQUIRED_INFOBAR_TEXT);
 }
 
@@ -68,7 +68,7 @@ int RosettaRequiredInfoBarDelegate::GetButtons() const {
   return BUTTON_OK;
 }
 
-base::string16 RosettaRequiredInfoBarDelegate::GetButtonLabel(
+std::u16string RosettaRequiredInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   return l10n_util::GetStringUTF16(IDS_ROSETTA_REQUIRED_INFOBAR_BUTTON_TEXT);
 }

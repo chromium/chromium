@@ -30,8 +30,8 @@ class ExtensionSettingsOverriddenDialog
     Params(extensions::ExtensionId controlling_extension_id,
            const char* extension_acknowledged_preference_name,
            const char* dialog_result_histogram_name,
-           base::string16 dialog_title,
-           base::string16 dialog_message,
+           std::u16string dialog_title,
+           std::u16string dialog_message,
            const gfx::VectorIcon* icon);
     Params(Params&& params);
     Params(const Params& params) = delete;
@@ -46,8 +46,8 @@ class ExtensionSettingsOverriddenDialog
     // dialog.
     std::string dialog_result_histogram_name;
 
-    base::string16 dialog_title;
-    base::string16 dialog_message;
+    std::u16string dialog_title;
+    std::u16string dialog_message;
 
     // The icon to display in the dialog, if any.
     const gfx::VectorIcon* icon = nullptr;

@@ -209,7 +209,7 @@ void SearchResultRanker::InitializeRankers(
       chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
-void SearchResultRanker::FetchRankings(const base::string16& query) {
+void SearchResultRanker::FetchRankings(const std::u16string& query) {
   last_query_ = query;
 
   // The search controller potentially calls SearchController::FetchResults

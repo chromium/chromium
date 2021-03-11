@@ -917,7 +917,7 @@ void SiteSettingsHandler::HandleGetFormattedBytes(const base::ListValue* args) {
   double num_bytes;
   CHECK(args->GetDouble(1, &num_bytes));
 
-  const base::string16 string = ui::FormatBytes(int64_t(num_bytes));
+  const std::u16string string = ui::FormatBytes(int64_t(num_bytes));
   ResolveJavascriptCallback(*callback_id, base::Value(string));
 }
 

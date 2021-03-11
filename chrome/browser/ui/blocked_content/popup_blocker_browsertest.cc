@@ -172,7 +172,7 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
       WindowOpenDisposition disposition,
       WhatToExpect what_to_expect,
       ShouldCheckTitle check_title,
-      const base::string16& expected_title = base::ASCIIToUTF16("PASS")) {
+      const std::u16string& expected_title = base::ASCIIToUTF16("PASS")) {
     GURL url(embedded_test_server()->GetURL(test_name));
 
     ui_test_utils::NavigateToURL(browser, url);
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 
   // Make sure the navigation in the new tab actually finished.
   WebContents* web_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
-  base::string16 expected_title(base::ASCIIToUTF16("Popup Success!"));
+  std::u16string expected_title(base::ASCIIToUTF16("Popup Success!"));
   content::TitleWatcher title_watcher(web_contents, expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   WaitForHistoryBackendToRun(browser()->profile());
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
   bool ignored;
   javascript_dialogs::AppModalDialogManager::GetInstance()->RunJavaScriptDialog(
       tab, tab->GetMainFrame(), content::JAVASCRIPT_DIALOG_TYPE_ALERT,
-      base::string16(), base::string16(), base::DoNothing(), &ignored);
+      std::u16string(), std::u16string(), base::DoNothing(), &ignored);
   javascript_dialogs::AppModalDialogController* dialog =
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(dialog);

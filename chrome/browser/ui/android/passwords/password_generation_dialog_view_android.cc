@@ -41,14 +41,14 @@ PasswordGenerationDialogViewAndroid::~PasswordGenerationDialogViewAndroid() {
 }
 
 void PasswordGenerationDialogViewAndroid::Show(
-    base::string16& password,
+    std::u16string& password,
     base::WeakPtr<password_manager::PasswordManagerDriver> target_frame_driver,
     autofill::password_generation::PasswordGenerationType type) {
   generation_type_ = type;
   target_frame_driver_ = std::move(target_frame_driver);
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  base::string16 explanation_text =
+  std::u16string explanation_text =
       l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
 
   Java_PasswordGenerationDialogBridge_showDialog(

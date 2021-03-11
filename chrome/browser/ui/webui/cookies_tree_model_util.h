@@ -50,7 +50,7 @@ class CookiesTreeModelUtil {
   // Gets tree node from |title| under |root|. |title| is a node title. Return
   // NULL if |title| is not found.
   const CookieTreeNode* GetTreeNodeFromTitle(const CookieTreeNode* root,
-                                             const base::string16& title);
+                                             const std::u16string& title);
 
  private:
   using CookiesTreeNodeIdMap = base::IDMap<const CookieTreeNode*>;

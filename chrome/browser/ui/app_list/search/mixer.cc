@@ -137,7 +137,7 @@ void Mixer::AddProviderToGroup(size_t group_id, SearchProvider* provider) {
   groups_[group_id]->AddProvider(provider);
 }
 
-void Mixer::MixAndPublish(size_t num_max_results, const base::string16& query) {
+void Mixer::MixAndPublish(size_t num_max_results, const std::u16string& query) {
   FetchResults(query);
 
   SortedResults results;
@@ -190,7 +190,7 @@ void Mixer::MixAndPublish(size_t num_max_results, const base::string16& query) {
   model_updater_->PublishSearchResults(new_results);
 }
 
-void Mixer::FetchResults(const base::string16& query) {
+void Mixer::FetchResults(const std::u16string& query) {
   if (search_result_ranker_)
     search_result_ranker_->FetchRankings(query);
   for (const auto& group : groups_)

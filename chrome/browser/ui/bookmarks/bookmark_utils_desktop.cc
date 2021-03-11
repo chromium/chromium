@@ -78,9 +78,9 @@ int ChildURLCountTotal(const BookmarkNode* node) {
 #if !defined(OS_ANDROID)
 // Returns in |urls|, the url and title pairs for each open tab in browser.
 void GetURLsForOpenTabs(Browser* browser,
-                        std::vector<std::pair<GURL, base::string16>>* urls) {
+                        std::vector<std::pair<GURL, std::u16string>>* urls) {
   for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-    std::pair<GURL, base::string16> entry;
+    std::pair<GURL, std::u16string> entry;
     GetURLAndTitleToBookmark(browser->tab_strip_model()->GetWebContentsAt(i),
                              &(entry.first), &(entry.second));
     urls->push_back(entry);

@@ -24,10 +24,10 @@ class CastDialogModel {
   // there is no such sink.
   base::Optional<size_t> GetFirstActiveSinkIndex() const;
 
-  void set_dialog_header(const base::string16& dialog_header) {
+  void set_dialog_header(const std::u16string& dialog_header) {
     dialog_header_ = dialog_header;
   }
-  const base::string16& dialog_header() const { return dialog_header_; }
+  const std::u16string& dialog_header() const { return dialog_header_; }
 
   void set_media_sinks(const std::vector<UIMediaSink>& media_sinks) {
     media_sinks_ = media_sinks;
@@ -37,7 +37,7 @@ class CastDialogModel {
  private:
   // The header to use at the top of the dialog.
   // This reflects the current activity associated with the tab.
-  base::string16 dialog_header_;
+  std::u16string dialog_header_;
 
   // Sink data in the order they should be shown in the dialog.
   std::vector<UIMediaSink> media_sinks_;

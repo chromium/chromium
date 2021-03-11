@@ -98,7 +98,7 @@ GURL GetURLToBookmark(content::WebContents* web_contents) {
 
 void GetURLAndTitleToBookmark(content::WebContents* web_contents,
                               GURL* url,
-                              base::string16* title) {
+                              std::u16string* title) {
   *url = GetURLToBookmark(web_contents);
   if (dom_distiller::url_utils::IsDistilledPage(web_contents->GetURL())) {
     // Users cannot bookmark Reader Mode pages directly. Instead, a bookmark
@@ -120,7 +120,7 @@ void ToggleBookmarkBarWhenVisible(content::BrowserContext* browser_context) {
   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
 }
 
-base::string16 FormatBookmarkURLForDisplay(const GURL& url) {
+std::u16string FormatBookmarkURLForDisplay(const GURL& url) {
   // Because this gets re-parsed by FixupURL(), it's safe to omit the scheme
   // and trailing slash, and unescape most characters. However, it's
   // important not to drop any username/password, or unescape anything that

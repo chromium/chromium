@@ -220,7 +220,7 @@ TEST_F(SearchResultRankerTest, MixedTypesRankersAreDisabledWithFlag) {
 
   for (int i = 0; i < 20; ++i)
     ranker->Train(app_launch_data);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   auto results =
       MakeSearchResults({"A", "B", "C", "D"},
@@ -266,7 +266,7 @@ TEST_F(SearchResultRankerTest, AppModelImprovesScores) {
     ranker->Train(app_B);
     ranker->Train(app_A);
   }
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   auto results =
       MakeSearchResults({"A", "B", "C", "D"},
@@ -298,7 +298,7 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupModelDisabledWithFlag) {
   for (int i = 0; i < 10; ++i) {
     ranker->Train(app_launch_data_a);
   }
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   // C and D should be ranked first because their group score should be higher.
   auto results =
@@ -329,7 +329,7 @@ TEST_F(SearchResultRankerTest, ZeroStateGroupTrainingImprovesScores) {
   launch.query = "";
   for (int i = 0; i < 10; ++i)
     ranker->Train(launch);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   // A and B should be ranked first because their group score should be higher.
   auto results =
@@ -358,7 +358,7 @@ TEST_F(SearchResultRankerTest, ZeroStateColdStart) {
   ranker->InitializeRankers(MakeSearchController());
   Wait();
 
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
   auto results =
       MakeSearchResults({"Z", "O", "D"},
                         {ResultType::kZeroStateFile, ResultType::kOmnibox,
@@ -417,7 +417,7 @@ TEST_F(SearchResultRankerTest, ZeroStateMissingGroupAdded) {
   launch.query = "";
   for (int i = 0; i < 10; ++i)
     ranker->Train(launch);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   auto results = MakeSearchResults(
       {"A1", "A2", "Z1", "Z2", "Z3", "Z4", "Z5", "D1", "D2"},
@@ -457,7 +457,7 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
   launch.query = "";
   for (int i = 0; i < 10; ++i)
     ranker->Train(launch);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   auto results =
       MakeSearchResults({"Z1", "Z2", "Z3", "Z4", "Z5", "D1", "O1"},
@@ -494,7 +494,7 @@ TEST_F(SearchResultRankerTest, ZeroStateStaleResultIgnored) {
   launch.query = "";
   for (int i = 0; i < 10; ++i)
     ranker->Train(launch);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   const auto results = MakeSearchResults(
       {"A1", "A2", "Z1", "Z2", "Z3", "Z4", "Z5", "D1"},
@@ -546,7 +546,7 @@ TEST_F(SearchResultRankerTest, ZeroStateCacheResetWhenTopResultChanges) {
   launch.query = "";
   for (int i = 0; i < 10; ++i)
     ranker->Train(launch);
-  ranker->FetchRankings(base::string16());
+  ranker->FetchRankings(std::u16string());
 
   const auto results_1 = MakeSearchResults(
       {"A1", "A2", "Z1", "Z2", "Z3", "Z4", "Z5", "D1", "D2"},

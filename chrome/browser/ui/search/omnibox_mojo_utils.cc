@@ -147,7 +147,7 @@ std::vector<search::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
 }
 
 search::mojom::AutocompleteResultPtr CreateAutocompleteResult(
-    const base::string16& input,
+    const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {

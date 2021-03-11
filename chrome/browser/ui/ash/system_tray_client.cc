@@ -257,8 +257,8 @@ SystemTrayClient* SystemTrayClient::Get() {
 
 void SystemTrayClient::SetUpdateNotificationState(
     ash::NotificationStyle style,
-    const base::string16& notification_title,
-    const base::string16& notification_body) {
+    const std::u16string& notification_title,
+    const std::u16string& notification_body) {
   update_notification_style_ = style;
   update_notification_title_ = notification_title;
   update_notification_body_ = notification_body;
@@ -305,7 +305,7 @@ void SystemTrayClient::ShowBluetoothSettings() {
 
 void SystemTrayClient::ShowBluetoothPairingDialog(
     const std::string& address,
-    const base::string16& name_for_display,
+    const std::u16string& name_for_display,
     bool paired,
     bool connected) {
   if (chromeos::BluetoothPairingDialog::ShowDialog(address, name_for_display,

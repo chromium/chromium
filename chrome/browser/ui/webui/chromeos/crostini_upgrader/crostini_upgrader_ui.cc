@@ -85,7 +85,7 @@ void AddStringResources(content::WebUIDataSource* source) {
                     std::string{chrome::kLinuxAppsLearnMoreURL} +
                         "&b=" + base::SysInfo::GetLsbReleaseBoard());
 
-  base::string16 device_name = ui::GetChromeOSDeviceName();
+  std::u16string device_name = ui::GetChromeOSDeviceName();
   source->AddString("offlineError",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_OFFLINE_ERROR, device_name));

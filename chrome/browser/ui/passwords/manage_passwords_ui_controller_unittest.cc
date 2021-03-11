@@ -520,10 +520,10 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
         .WillRepeatedly(Return(recorder.get()));
     EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
     EXPECT_CALL(*test_form_manager,
-                OnUpdateUsernameFromPrompt(base::string16(u"other_username")))
+                OnUpdateUsernameFromPrompt(std::u16string(u"other_username")))
         .Times(test.edit_username);
     EXPECT_CALL(*test_form_manager,
-                OnUpdatePasswordFromPrompt(base::string16(u"other_pwd")))
+                OnUpdatePasswordFromPrompt(std::u16string(u"other_pwd")))
         .Times(test.change_password);
     EXPECT_CALL(*test_form_manager, Save());
     controller()->OnPasswordSubmitted(std::move(test_form_manager));
@@ -729,7 +729,7 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSubmittedToNonWebbyURL) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
-  base::string16 kTestUsername = u"test_username";
+  std::u16string kTestUsername = u"test_username";
   std::vector<const PasswordForm*> forms;
   forms.push_back(&test_local_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -925,7 +925,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRun) {
 TEST_F(ManagePasswordsUIControllerTest, AutoSigninFirstRunAfterAutofill) {
   // Setup the managed state first.
   const PasswordForm* test_form_ptr = &test_local_form();
-  const base::string16 kTestUsername = test_form_ptr->username_value;
+  const std::u16string kTestUsername = test_form_ptr->username_value;
   std::vector<const PasswordForm*> forms;
   forms.push_back(test_form_ptr);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
@@ -971,7 +971,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
                              url::Origin::Create(test_local_form().url));
   ExpectIconAndControllerStateIs(password_manager::ui::AUTO_SIGNIN_STATE);
   std::vector<const PasswordForm*> forms;
-  base::string16 kTestUsername = test_local_form().username_value;
+  std::u16string kTestUsername = test_local_form().username_value;
   forms.push_back(&test_local_form());
   controller()->OnPasswordAutofilled(
       forms, url::Origin::Create(forms.front()->url), nullptr);
@@ -980,7 +980,7 @@ TEST_F(ManagePasswordsUIControllerTest, AutofillDuringAutoSignin) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, InactiveOnPSLMatched) {
-  base::string16 kTestUsername = u"test_username";
+  std::u16string kTestUsername = u"test_username";
   std::vector<const PasswordForm*> forms;
   PasswordForm psl_matched_test_form(test_local_form());
   psl_matched_test_form.is_public_suffix_match = true;

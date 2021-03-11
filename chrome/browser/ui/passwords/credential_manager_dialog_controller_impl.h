@@ -33,11 +33,11 @@ class CredentialManagerDialogControllerImpl
 
   // CredentialManagerDialogController:
   const FormsVector& GetLocalForms() const override;
-  base::string16 GetAccoutChooserTitle() const override;
+  std::u16string GetAccoutChooserTitle() const override;
   bool IsShowingAccountChooser() const override;
   bool ShouldShowSignInButton() const override;
-  base::string16 GetAutoSigninPromoTitle() const override;
-  base::string16 GetAutoSigninText() const override;
+  std::u16string GetAutoSigninPromoTitle() const override;
+  std::u16string GetAutoSigninText() const override;
   bool ShouldShowFooter() const override;
   void OnChooseCredentials(
       const password_manager::PasswordForm& password_form,

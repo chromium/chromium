@@ -354,7 +354,7 @@ void AppServiceShelfContextMenu::BuildExtensionAppShortcutsMenu(
 
   int index = 0;
   extension_menu_items_->AppendExtensionItems(
-      extensions::MenuItem::ExtensionKey(item().id.app_id), base::string16(),
+      extensions::MenuItem::ExtensionKey(item().id.app_id), std::u16string(),
       &index, false /*is_action_menu*/);
 
   app_list::AddMenuItemIconsForSystemApps(

@@ -50,7 +50,7 @@ class Mixer {
   void AddProviderToGroup(size_t group_id, SearchProvider* provider);
 
   // Collects the results, sorts and publishes them.
-  void MixAndPublish(size_t num_max_results, const base::string16& query);
+  void MixAndPublish(size_t num_max_results, const std::u16string& query);
 
   // Sets a SearchResultRanker to re-rank non-app search results before they are
   // published.
@@ -88,7 +88,7 @@ class Mixer {
   class Group;
   typedef std::vector<std::unique_ptr<Group>> Groups;
 
-  void FetchResults(const base::string16& query);
+  void FetchResults(const std::u16string& query);
 
   AppListModelUpdater* const model_updater_;  // Not owned.
 

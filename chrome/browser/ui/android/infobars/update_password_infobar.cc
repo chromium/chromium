@@ -50,7 +50,7 @@ UpdatePasswordInfoBar::CreateRenderInfoBar(
       account_info_.has_value()
           ? ConvertToJavaAccountInfo(env, account_info_.value())
           : nullptr;
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   unsigned int selected_username =
       update_password_delegate->GetDisplayUsernames(&usernames);
   ScopedJavaLocalRef<jobjectArray> display_usernames =

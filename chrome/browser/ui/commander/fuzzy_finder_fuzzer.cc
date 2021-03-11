@@ -12,9 +12,9 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
   std::vector<gfx::Range> ranges;
-  base::string16 needle =
+  std::u16string needle =
       base::UTF8ToUTF16(provider.ConsumeRandomLengthString());
-  base::string16 haystack =
+  std::u16string haystack =
       base::UTF8ToUTF16(provider.ConsumeRandomLengthString());
 
   commander::FuzzyFinder(needle).Find(haystack, &ranges);

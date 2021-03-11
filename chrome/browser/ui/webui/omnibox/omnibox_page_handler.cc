@@ -224,7 +224,7 @@ void OmniboxPageHandler::OnResultChanged(AutocompleteController* controller,
       (base::Time::Now() - time_omnibox_started_).InMilliseconds();
   response->done = controller->done();
   response->type = AutocompleteInput::TypeToString(input_.type());
-  const base::string16 host =
+  const std::u16string host =
       input_.text().substr(input_.parts().host.begin, input_.parts().host.len);
   response->host = base::UTF16ToUTF8(host);
   bool is_typed_host;
@@ -301,7 +301,7 @@ void OmniboxPageHandler::OnBitmapFetched(const std::string& image_url,
   page_->HandleAnswerImageData(image_url, data_url);
 }
 
-bool OmniboxPageHandler::LookupIsTypedHost(const base::string16& host,
+bool OmniboxPageHandler::LookupIsTypedHost(const std::u16string& host,
                                            bool* is_typed_host) const {
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfile(profile_,

@@ -25,7 +25,7 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   // SimpleMenuModel:
   bool MayHaveMnemonicsAt(int index) const override;
   bool IsVisibleAt(int index) const override;
-  base::string16 GetLabelAt(int index) const override;
+  std::u16string GetLabelAt(int index) const override;
   bool IsItemCheckedAt(int index) const override;
 
  private:

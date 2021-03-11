@@ -108,7 +108,7 @@ ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kPlayStoreApp;
 }
 
-void ArcPlayStoreSearchProvider::Start(const base::string16& query) {
+void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   // Clear any results from the previous query.
   ClearResultsSilently();
@@ -132,7 +132,7 @@ void ArcPlayStoreSearchProvider::Start(const base::string16& query) {
 }
 
 void ArcPlayStoreSearchProvider::OnResults(
-    const base::string16& query,
+    const std::u16string& query,
     base::TimeTicks query_start_time,
     arc::ArcPlayStoreSearchRequestState state,
     std::vector<arc::mojom::AppDiscoveryResultPtr> results) {

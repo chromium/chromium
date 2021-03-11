@@ -62,7 +62,7 @@ std::unique_ptr<CommandItem> CreateMergeWindowItem(Browser* source,
 
 CommandSource::CommandResults SwitchCommandsForWindowsMatching(
     Browser* browser_to_exclude,
-    const base::string16& input) {
+    const std::u16string& input) {
   CommandSource::CommandResults results;
   for (auto& match : WindowsMatchingInput(browser_to_exclude, input))
     results.push_back(CreateSwitchWindowItem(match));
@@ -71,7 +71,7 @@ CommandSource::CommandResults SwitchCommandsForWindowsMatching(
 
 CommandSource::CommandResults MergeCommandsForWindowsMatching(
     Browser* source_browser,
-    const base::string16& input) {
+    const std::u16string& input) {
   CommandSource::CommandResults results;
   for (auto& match : WindowsMatchingInput(source_browser, input, true))
     results.push_back(CreateMergeWindowItem(source_browser, match));
@@ -84,7 +84,7 @@ WindowCommandSource::WindowCommandSource() = default;
 WindowCommandSource::~WindowCommandSource() = default;
 
 CommandSource::CommandResults WindowCommandSource::GetCommands(
-    const base::string16& input,
+    const std::u16string& input,
     Browser* browser) const {
   CommandSource::CommandResults results;
   BrowserList* browser_list = BrowserList::GetInstance();
@@ -97,8 +97,8 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
   std::vector<gfx::Range> ranges;
   // TODO(lgrey): Temporarily using untranslated strings since it's not
   // yet clear which commands will ship.
-  base::string16 open_title = base::ASCIIToUTF16("Switch to window...");
-  base::string16 merge_title =
+  std::u16string open_title = base::ASCIIToUTF16("Switch to window...");
+  std::u16string merge_title =
       base::ASCIIToUTF16("Merge current window into...");
 
   double score = finder.Find(open_title, &ranges);

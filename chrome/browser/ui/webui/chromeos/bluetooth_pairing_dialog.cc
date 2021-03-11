@@ -45,7 +45,7 @@ void AddBluetoothStrings(content::WebUIDataSource* html_source) {
 // static
 SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
     const std::string& address,
-    const base::string16& name_for_display,
+    const std::u16string& name_for_display,
     bool paired,
     bool connected) {
   std::string cannonical_address =
@@ -68,11 +68,11 @@ SystemWebDialogDelegate* BluetoothPairingDialog::ShowDialog(
 
 BluetoothPairingDialog::BluetoothPairingDialog(
     const std::string& address,
-    const base::string16& name_for_display,
+    const std::u16string& name_for_display,
     bool paired,
     bool connected)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIBluetoothPairingURL),
-                              base::string16() /* title */),
+                              std::u16string() /* title */),
       address_(address) {
   device_data_.SetString("address", address);
   device_data_.SetString("name", name_for_display);

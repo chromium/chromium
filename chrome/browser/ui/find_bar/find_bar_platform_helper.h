@@ -22,7 +22,7 @@ class FindBarPlatformHelper {
   virtual ~FindBarPlatformHelper();
 
   // Called when the user changes the find text to |text|.
-  virtual void OnUserChangedFindText(base::string16 text) = 0;
+  virtual void OnUserChangedFindText(std::u16string text) = 0;
 
  protected:
   explicit FindBarPlatformHelper(FindBarController* find_bar_controller);

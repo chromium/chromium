@@ -30,7 +30,7 @@ class AlternateNavInfoBarDelegateTest : public TestInfoBar {
     AutocompleteMatch match;
     match.destination_url = GURL("http://intranetsite/");
     AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
-        GetWebContents(), base::string16(), match, GURL("http://example.com/"));
+        GetWebContents(), std::u16string(), match, GURL("http://example.com/"));
   }
 };
 

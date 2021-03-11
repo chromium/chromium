@@ -163,7 +163,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
   // model.GetHowToUseText(), since on Mac, modifier keys are represented by
   // special sigils rather than their textual names.
   ui::Accelerator accelerator(ui::VKEY_E, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
-  EXPECT_NE(base::string16::npos,
+  EXPECT_NE(std::u16string::npos,
             model.GetHowToUseText().find(accelerator.GetShortcutText()));
 }
 

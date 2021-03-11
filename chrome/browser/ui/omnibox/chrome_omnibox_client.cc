@@ -95,7 +95,7 @@ ChromeOmniboxClient::CreateAutocompleteProviderClient() {
 
 std::unique_ptr<OmniboxNavigationObserver>
 ChromeOmniboxClient::CreateOmniboxNavigationObserver(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternate_nav_match) {
   return std::make_unique<ChromeOmniboxNavigationObserver>(
@@ -111,7 +111,7 @@ const GURL& ChromeOmniboxClient::GetURL() const {
                              : GURL::EmptyGURL();
 }
 
-const base::string16& ChromeOmniboxClient::GetTitle() const {
+const std::u16string& ChromeOmniboxClient::GetTitle() const {
   return CurrentPageExists() ? controller_->GetWebContents()->GetTitle()
                              : base::EmptyString16();
 }
@@ -321,7 +321,7 @@ gfx::Image ChromeOmniboxClient::GetFaviconForKeywordSearchProvider(
 
 void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
                                         bool user_input_in_progress,
-                                        const base::string16& user_text,
+                                        const std::u16string& user_text,
                                         const AutocompleteResult& result,
                                         bool has_focus) {
   AutocompleteActionPredictor::Action recommended_action =

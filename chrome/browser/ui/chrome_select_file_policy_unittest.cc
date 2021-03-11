@@ -45,7 +45,7 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
         this, std::make_unique<ChromeSelectFilePolicy>(nullptr));
 
     const base::FilePath file_path;
-    const base::string16 title = base::string16();
+    const std::u16string title = std::u16string();
 
     file_selection_initialisation_in_progress = true;
     select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,

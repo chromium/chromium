@@ -190,7 +190,7 @@ WebAppBrowserController* WebAppBrowserController::AsWebAppBrowserController() {
   return this;
 }
 
-base::string16 WebAppBrowserController::GetTitle() const {
+std::u16string WebAppBrowserController::GetTitle() const {
   // When showing the toolbar, display the name of the app, instead of the
   // current page as the title.
   if (ShouldShowCustomTabBar()) {
@@ -201,11 +201,11 @@ base::string16 WebAppBrowserController::GetTitle() const {
   return AppBrowserController::GetTitle();
 }
 
-base::string16 WebAppBrowserController::GetAppShortName() const {
+std::u16string WebAppBrowserController::GetAppShortName() const {
   return base::UTF8ToUTF16(registrar().GetAppShortName(GetAppId()));
 }
 
-base::string16 WebAppBrowserController::GetFormattedUrlOrigin() const {
+std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
   return FormatUrlOrigin(GetAppStartUrl());
 }
 

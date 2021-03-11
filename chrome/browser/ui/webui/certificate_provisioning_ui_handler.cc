@@ -52,7 +52,7 @@ CertProvisioningScheduler* GetCertProvisioningSchedulerForDevice() {
 
 // Returns localized representation for the state of a certificate provisioning
 // process.
-base::string16 GetProvisioningProcessStatus(CertProvisioningWorkerState state) {
+std::u16string GetProvisioningProcessStatus(CertProvisioningWorkerState state) {
   using CertProvisioningWorkerState = CertProvisioningWorkerState;
   switch (state) {
     case CertProvisioningWorkerState ::kInitState:
@@ -94,10 +94,10 @@ base::string16 GetProvisioningProcessStatus(CertProvisioningWorkerState state) {
 
 // Returns a localized representation of the last update time as a delay (e.g.
 // "5 minutes ago".
-base::string16 GetTimeSinceLastUpdate(base::Time last_update_time) {
+std::u16string GetTimeSinceLastUpdate(base::Time last_update_time) {
   const base::Time now = base::Time::NowFromSystemTime();
   if (last_update_time.is_null() || last_update_time > now)
-    return base::string16();
+    return std::u16string();
   const base::TimeDelta elapsed_time = now - last_update_time;
   return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
                                 ui::TimeFormat::LENGTH_SHORT, elapsed_time);

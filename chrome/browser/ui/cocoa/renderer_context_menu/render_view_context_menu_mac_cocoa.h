@@ -36,7 +36,7 @@ class RenderViewContextMenuMacCocoa : public RenderViewContextMenuMac {
   void UpdateToolkitMenuItem(int command_id,
                              bool enabled,
                              bool hidden,
-                             const base::string16& title);
+                             const std::u16string& title);
 
   // The Cocoa menu controller for this menu.
   base::scoped_nsobject<MenuControllerCocoa> menu_controller_;

@@ -191,7 +191,7 @@ AppWindowLauncherItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
   AppMenuItems items;
-  base::string16 app_title = LauncherControllerHelper::GetAppTitle(
+  std::u16string app_title = LauncherControllerHelper::GetAppTitle(
       ChromeLauncherController::instance()->profile(), app_id());
   int command_id = -1;
   for (const auto* it : windows()) {

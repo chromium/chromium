@@ -136,7 +136,7 @@ ash::AppListSearchResultType DriveZeroStateProvider::ResultType() {
   return ash::AppListSearchResultType::kDriveQuickAccess;
 }
 
-void DriveZeroStateProvider::Start(const base::string16& query) {
+void DriveZeroStateProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
 

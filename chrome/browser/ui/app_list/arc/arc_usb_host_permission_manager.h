@@ -31,8 +31,8 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
  public:
   struct UsbDeviceEntry {
     UsbDeviceEntry(const std::string& guid,
-                   const base::string16& device_name,
-                   const base::string16& serial_number,
+                   const std::u16string& device_name,
+                   const std::u16string& serial_number,
                    uint16_t vendor_id,
                    uint16_t product_id);
     UsbDeviceEntry(const UsbDeviceEntry& other);
@@ -50,10 +50,10 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     // or it is owned by UsbPermissionRequest.
     std::string guid;
     // Device name which is shown in the permission dialog.
-    base::string16 device_name;
+    std::u16string device_name;
     // Serial_number of the device. If this field is null if device is
     // considered as non-persistent.
-    base::string16 serial_number;
+    std::u16string serial_number;
     // Vendor_id of the device.
     uint16_t vendor_id;
     // Product id of the device.
@@ -108,15 +108,15 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   void RequestUsbAccessPermission(
       const std::string& package_name,
       const std::string& guid,
-      const base::string16& serial_number,
-      const base::string16& manufacturer_string,
-      const base::string16& product_string,
+      const std::u16string& serial_number,
+      const std::u16string& manufacturer_string,
+      const std::u16string& product_string,
       uint16_t vendor_id,
       uint16_t product_id,
       ArcUsbHostUiDelegate::RequestPermissionCallback callback) override;
   bool HasUsbAccessPermission(const std::string& package_name,
                               const std::string& guid,
-                              const base::string16& serial_number,
+                              const std::u16string& serial_number,
                               uint16_t vendor_id,
                               uint16_t product_id) const override;
   void GrantUsbAccessPermission(const std::string& package_name,
@@ -125,7 +125,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
                                 uint16_t product_id) override;
   std::unordered_set<std::string> GetEventPackageList(
       const std::string& guid,
-      const base::string16& serial_number,
+      const std::u16string& serial_number,
       uint16_t vendor_id,
       uint16_t product_id) const override;
   void DeviceRemoved(const std::string& guid) override;

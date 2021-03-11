@@ -147,7 +147,7 @@ TEST_F(ExtensionMessageBubbleBridgeUnitTest,
             extra_view_info->text);
   EXPECT_FALSE(extra_view_info->is_learn_more);
 
-  EXPECT_EQ(base::string16(), bridge->GetActionButtonText());
+  EXPECT_EQ(std::u16string(), bridge->GetActionButtonText());
 }
 
 // Tests the ExtensionMessageBubbleBridge in conjunction with the

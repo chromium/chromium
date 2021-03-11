@@ -38,8 +38,8 @@ class SystemTrayClient : public ash::SystemTrayClient,
   // triggers the notification to be shown with the given body and title.
   // Only applies to OS updates.
   void SetUpdateNotificationState(ash::NotificationStyle style,
-                                  const base::string16& notification_title,
-                                  const base::string16& notification_body);
+                                  const std::u16string& notification_title,
+                                  const std::u16string& notification_body);
 
   // Shows a notification that a Lacros browser update is available.
   void SetLacrosUpdateAvailable();
@@ -55,7 +55,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void ShowSettings(int64_t display_id) override;
   void ShowBluetoothSettings() override;
   void ShowBluetoothPairingDialog(const std::string& address,
-                                  const base::string16& name_for_display,
+                                  const std::u16string& name_for_display,
                                   bool paired,
                                   bool connected) override;
   void ShowDateSettings() override;
@@ -120,10 +120,10 @@ class SystemTrayClient : public ash::SystemTrayClient,
   ash::NotificationStyle update_notification_style_;
 
   // Update notification title to be overwritten.
-  base::string16 update_notification_title_;
+  std::u16string update_notification_title_;
 
   // Update notification body to be overwritten.
-  base::string16 update_notification_body_;
+  std::u16string update_notification_body_;
 
   // Avoid sending ash an empty enterprise domain manager at startup and
   // suppress duplicate IPCs during the session.

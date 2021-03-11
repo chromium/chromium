@@ -74,10 +74,10 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
 // Creates a result with some default values.
 mojom::SearchResultPtr CreateDummyResult() {
   return mojom::SearchResult::New(
-      /*result_text=*/base::string16(),
-      /*canonical_result_text=*/base::string16(), /*url=*/"",
+      /*result_text=*/std::u16string(),
+      /*canonical_result_text=*/std::u16string(), /*url=*/"",
       mojom::SearchResultIcon::kPrinter, /*relevance_score=*/0.5,
-      /*hierarchy_strings=*/std::vector<base::string16>(),
+      /*hierarchy_strings=*/std::vector<std::u16string>(),
       mojom::SearchResultDefaultRank::kMedium,
       /*was_generated_from_text_match=*/false,
       mojom::SearchResultType::kSection,

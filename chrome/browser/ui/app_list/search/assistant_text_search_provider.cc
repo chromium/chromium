@@ -47,7 +47,7 @@ bool AreResultsAllowed() {
 
 class AssistantTextSearchResult : public ChromeSearchResult {
  public:
-  explicit AssistantTextSearchResult(const base::string16& text)
+  explicit AssistantTextSearchResult(const std::u16string& text)
       : action_url_(ash::assistant::util::CreateAssistantQueryDeepLink(
             base::UTF16ToUTF8(text))) {
     set_id(kIdPrefix + base::UTF16ToUTF8(text));
@@ -98,7 +98,7 @@ ash::AppListSearchResultType AssistantTextSearchProvider::ResultType() {
   return ash::AppListSearchResultType::kAssistantText;
 }
 
-void AssistantTextSearchProvider::Start(const base::string16& query) {
+void AssistantTextSearchProvider::Start(const std::u16string& query) {
   query_ = query;
   UpdateResults();
 }

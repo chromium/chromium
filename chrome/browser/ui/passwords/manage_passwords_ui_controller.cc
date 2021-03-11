@@ -93,7 +93,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyFormVector(
 
 const password_manager::InteractionsStats* FindStatsByUsername(
     base::span<const password_manager::InteractionsStats> stats,
-    const base::string16& username) {
+    const std::u16string& username) {
   auto it = std::find_if(stats.begin(), stats.end(),
                          [&username](const auto& element) {
                            return username == element.username_value;
@@ -492,8 +492,8 @@ void ManagePasswordsUIController::OnPasswordsRevealed() {
   passwords_data_.form_manager()->OnPasswordsRevealed();
 }
 
-void ManagePasswordsUIController::SavePassword(const base::string16& username,
-                                               const base::string16& password) {
+void ManagePasswordsUIController::SavePassword(const std::u16string& username,
+                                               const std::u16string& password) {
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
 
@@ -548,7 +548,7 @@ void ManagePasswordsUIController::SaveUnsyncedCredentialsInProfileStore(
     // similar to |form| actually contains the same essential information. This
     // means Save() can be safely called here, no password loss happens.
     profile_store_form_saver->Save(form, /*matches=*/{},
-                                   /*old_password=*/base::string16());
+                                   /*old_password=*/std::u16string());
   }
   ClearPopUpFlagForBubble();
   passwords_data_.OnInactive();
@@ -655,8 +655,8 @@ bool ManagePasswordsUIController::AuthenticateUser() {
 
 void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAndSavePassword(
-        const base::string16& username,
-        const base::string16& password) {
+        const std::u16string& username,
+        const std::u16string& password) {
   password_manager::PasswordManagerClient* client = passwords_data_.client();
   client->TriggerReauthForPrimaryAccount(
       signin_metrics::ReauthAccessPoint::kPasswordSaveBubble,
@@ -830,8 +830,8 @@ void ManagePasswordsUIController::
     FinishSavingPasswordAfterAccountStoreOptInAuth(
         const url::Origin& origin,
         password_manager::PasswordFormManagerForUI* form_manager,
-        const base::string16& username,
-        const base::string16& password,
+        const std::u16string& username,
+        const std::u16string& password,
         password_manager::PasswordManagerClient::ReauthSucceeded
             reauth_succeeded) {
   if (reauth_succeeded) {

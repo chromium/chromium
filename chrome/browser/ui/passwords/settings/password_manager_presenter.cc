@@ -304,12 +304,12 @@ PasswordManagerPresenter::GetPasswordsForKey(
   return {};
 }
 
-std::vector<base::string16> PasswordManagerPresenter::GetUsernamesForRealm(
+std::vector<std::u16string> PasswordManagerPresenter::GetUsernamesForRealm(
     size_t index) {
   const password_manager::PasswordForm* current_form =
       TryGetPasswordForm(password_map_, index);
   FormVector password_forms = GetAllPasswords();
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   for (auto& password_form : password_forms) {
     if (current_form->signon_realm == password_form->signon_realm)
       usernames.push_back(password_form->username_value);
@@ -417,7 +417,7 @@ void PasswordManagerPresenter::OnMovePasswordToAccountCompleted(
 void PasswordManagerPresenter::RequestPlaintextPassword(
     const std::string& sort_key,
     password_manager::PlaintextReason reason,
-    base::OnceCallback<void(base::Optional<base::string16>)> callback) const {
+    base::OnceCallback<void(base::Optional<std::u16string>)> callback) const {
   auto it = password_map_.find(sort_key);
   if (it == password_map_.end()) {
     std::move(callback).Run(base::nullopt);

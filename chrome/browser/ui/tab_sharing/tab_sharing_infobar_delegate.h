@@ -28,16 +28,16 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   // infobar with "currently shared tab" layout (see class comment). If
   // |can_share| is false, [Share this tab] button is not displayed.
   static infobars::InfoBar* Create(InfoBarService* infobar_service,
-                                   const base::string16& shared_tab_name,
-                                   const base::string16& app_name,
+                                   const std::u16string& shared_tab_name,
+                                   const std::u16string& app_name,
                                    bool shared_tab,
                                    bool can_share,
                                    TabSharingUI* ui);
   ~TabSharingInfoBarDelegate() override = default;
 
  private:
-  TabSharingInfoBarDelegate(base::string16 shared_tab_name,
-                            base::string16 app_name,
+  TabSharingInfoBarDelegate(std::u16string shared_tab_name,
+                            std::u16string app_name,
                             bool shared_tab,
                             bool can_share,
                             TabSharingUI* ui);
@@ -46,16 +46,16 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool EqualsDelegate(InfoBarDelegate* delegate) const override;
   bool ShouldExpire(const NavigationDetails& details) const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  base::string16 GetButtonLabel(InfoBarButton button) const override;
+  std::u16string GetMessageText() const override;
+  std::u16string GetButtonLabel(InfoBarButton button) const override;
   int GetButtons() const override;
   bool Accept() override;
   bool Cancel() override;
   bool IsCloseable() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 
-  const base::string16 shared_tab_name_;
-  const base::string16 app_name_;
+  const std::u16string shared_tab_name_;
+  const std::u16string app_name_;
   bool shared_tab_;
   bool can_share_;
 

@@ -102,22 +102,22 @@ class FindInPageControllerTest : public InProcessBrowserTest {
     return GetFindBarWindowInfoForBrowser(browser(), position, fully_visible);
   }
 
-  base::string16 GetFindBarTextForBrowser(Browser* browser) {
+  std::u16string GetFindBarTextForBrowser(Browser* browser) {
     FindBar* find_bar = browser->GetFindBarController()->find_bar();
     return find_bar->GetFindText();
   }
 
-  base::string16 GetFindBarText() {
+  std::u16string GetFindBarText() {
     return GetFindBarTextForBrowser(browser());
   }
 
-  base::string16 GetFindBarMatchCountTextForBrowser(Browser* browser) {
+  std::u16string GetFindBarMatchCountTextForBrowser(Browser* browser) {
     const FindBarTesting* find_bar =
         browser->GetFindBarController()->find_bar()->GetFindBarTesting();
     return find_bar->GetMatchCountText();
   }
 
-  base::string16 GetMatchCountText() {
+  std::u16string GetMatchCountText() {
     return GetFindBarMatchCountTextForBrowser(browser());
   }
 
@@ -157,7 +157,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   }
 
   int FindInPage16(WebContents* web_contents,
-                   const base::string16& search_str,
+                   const std::u16string& search_str,
                    bool forward,
                    bool case_sensitive,
                    int* ordinal) {
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindCrash_Issue1341577) {
   int ordinal = 0;
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const base::string16 search_str = WideToUTF16(L"\u0D4C");
+  const std::u16string search_str = WideToUTF16(L"\u0D4C");
   FindInPage16(web_contents, search_str, kFwd, kIgnoreCase, &ordinal);
   FindInPage16(web_contents, search_str, kFwd, kIgnoreCase, &ordinal);
 
@@ -1301,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, PrepopulateInNewTab) {
   // in the first tab.
   EXPECT_EQ(ASCIIToUTF16("page"), GetFindBarText());
   // But it should not seem like a search has been issued.
-  EXPECT_EQ(base::string16(), GetMatchCountText());
+  EXPECT_EQ(std::u16string(), GetMatchCountText());
 }
 
 // This makes sure that we can search for A in tabA, then for B in tabB and

@@ -167,7 +167,7 @@ void UntrustedSource::StartDataRequest(
           url::DecodeURLMode::kUTF8OrIsomorphic, &output);
       params.insert(
           {url.query().substr(key.begin, key.len),
-           base::UTF16ToUTF8(base::string16(output.data(), output.length()))});
+           base::UTF16ToUTF8(std::u16string(output.data(), output.length()))});
     }
     // Extract desired values.
     ServeBackgroundImage(

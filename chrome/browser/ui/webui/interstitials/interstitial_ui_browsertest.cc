@@ -32,7 +32,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   // in the rendered page. Thus an empty body_text never fails.
   void TestInterstitial(GURL url,
                         const std::string& page_title,
-                        const base::string16& body_text) {
+                        const std::u16string& body_text) {
     ui_test_utils::NavigateToURL(browser(), url);
     EXPECT_EQ(
       base::ASCIIToUTF16(page_title),
@@ -58,7 +58,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   // Convenience function to test interstitial pages without provided body_text.
   void TestInterstitial(GURL url,
                         const std::string& page_title) {
-    TestInterstitial(url, page_title, base::string16());
+    TestInterstitial(url, page_title, std::u16string());
   }
 
   // Convenience function to test interstitial pages with l10n message_ids as
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
   content::TestNavigationObserver navigation_observer(web_contents);
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   navigation_observer.Wait();
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(title, base::ASCIIToUTF16("Interstitials"));
 }
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialViewSource) {
   ui_test_utils::NavigateToURL(browser(),
                                GURL("view-source:chrome://interstitials/"));
   int found;
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("<title>Interstitials</title>");
   found = ui_test_utils::FindInPage(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title,
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest,
   ui_test_utils::NavigateToURL(browser(),
                                GURL("view-source:chrome://interstitials/ssl"));
   int found;
-  base::string16 expected_title =
+  std::u16string expected_title =
       base::ASCIIToUTF16("<title>Privacy error</title");
   found = ui_test_utils::FindInPage(
       browser()->tab_strip_model()->GetActiveWebContents(), expected_title,

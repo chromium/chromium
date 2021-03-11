@@ -17,7 +17,7 @@ OpenURLCommandSource::OpenURLCommandSource() = default;
 OpenURLCommandSource::~OpenURLCommandSource() = default;
 
 CommandSource::CommandResults OpenURLCommandSource::GetCommands(
-    const base::string16& input,
+    const std::u16string& input,
     Browser* browser) const {
   // TODO(lgrey): Strings are temporarily unlocalized since this is
   // experimental.
@@ -41,7 +41,7 @@ CommandSource::CommandResults OpenURLCommandSource::GetCommands(
   std::vector<gfx::Range> ranges;
   FuzzyFinder finder(input);
   for (const auto& command_spec : command_map) {
-    base::string16 title = base::ASCIIToUTF16(command_spec.title);
+    std::u16string title = base::ASCIIToUTF16(command_spec.title);
     double score = finder.Find(title, &ranges);
     if (score == 0)
       continue;

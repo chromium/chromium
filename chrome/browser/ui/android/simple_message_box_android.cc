@@ -12,23 +12,23 @@
 namespace chrome {
 
 void ShowWarningMessageBox(gfx::NativeWindow parent,
-                           const base::string16& title,
-                           const base::string16& message) {
+                           const std::u16string& title,
+                           const std::u16string& message) {
   NOTIMPLEMENTED();
 }
 
 MessageBoxResult ShowQuestionMessageBox(gfx::NativeWindow parent,
-                                        const base::string16& title,
-                                        const base::string16& message) {
+                                        const std::u16string& title,
+                                        const std::u16string& message) {
   NOTIMPLEMENTED();
   return MESSAGE_BOX_RESULT_NO;
 }
 
 void ShowWarningMessageBoxWithCheckbox(
     gfx::NativeWindow parent,
-    const base::string16& title,
-    const base::string16& message,
-    const base::string16& checkbox_text,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& checkbox_text,
     base::OnceCallback<void(bool checked)> callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(false);

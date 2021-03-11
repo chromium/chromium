@@ -1403,7 +1403,7 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
     default_setting_ = default_setting;
   }
 
-  base::string16 GetDefaultSoundSettingString() {
+  std::u16string GetDefaultSoundSettingString() {
     auto delegate = ChromePageInfoUiDelegate(profile());
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, CONTENT_SETTING_DEFAULT,
@@ -1411,7 +1411,7 @@ class UnifiedAutoplaySoundSettingsPageInfoTest
         /*is_one_time=*/false);
   }
 
-  base::string16 GetSoundSettingString(ContentSetting setting) {
+  std::u16string GetSoundSettingString(ContentSetting setting) {
     auto delegate = ChromePageInfoUiDelegate(profile());
     return PageInfoUI::PermissionActionToUIString(
         &delegate, ContentSettingsType::SOUND, setting, default_setting_,

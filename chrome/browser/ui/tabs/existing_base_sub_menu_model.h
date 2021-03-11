@@ -50,13 +50,13 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
  protected:
   struct MenuItemInfo {
-    explicit MenuItemInfo(const base::string16 menu_text);
-    MenuItemInfo(const base::string16& menu_text, ui::ImageModel menu_image);
+    explicit MenuItemInfo(const std::u16string menu_text);
+    MenuItemInfo(const std::u16string& menu_text, ui::ImageModel menu_image);
     MenuItemInfo(const MenuItemInfo& menu_item_info);
     ~MenuItemInfo();
 
     // The text for an entry in the sub menu.
-    const base::string16 text;
+    const std::u16string text;
 
     // The optional image for an entry in the sub menu.
     base::Optional<ui::ImageModel> image;

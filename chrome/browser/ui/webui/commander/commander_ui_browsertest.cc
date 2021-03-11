@@ -58,7 +58,7 @@ class CommanderUITest : public InProcessBrowserTest,
     ASSERT_TRUE(content::ExecuteScript(contents_.get(), js));
   }
   // CommanderHandler::Delegate implementation.
-  void OnTextChanged(const base::string16& text) override {
+  void OnTextChanged(const std::u16string& text) override {
     text_changed_invocations_.push_back(text);
   }
   void OnOptionSelected(size_t option_index, int result_set_id) override {
@@ -76,7 +76,7 @@ class CommanderUITest : public InProcessBrowserTest,
   }
   void OnHandlerEnabled(bool enabled) override {}
 
-  const std::vector<base::string16> text_changed_invocations() {
+  const std::vector<std::u16string> text_changed_invocations() {
     return text_changed_invocations_;
   }
   const std::vector<std::pair<size_t, int>> option_selected_invocations() {
@@ -95,7 +95,7 @@ class CommanderUITest : public InProcessBrowserTest,
   std::unique_ptr<content::WebContents> contents_;
   int dismiss_invocation_count_ = 0;
   int composite_command_cancelled_invocation_count_ = 0;
-  std::vector<base::string16> text_changed_invocations_;
+  std::vector<std::u16string> text_changed_invocations_;
   std::vector<std::pair<size_t, int>> option_selected_invocations_;
   std::vector<int> height_changed_invocations_;
 };
@@ -140,7 +140,7 @@ TEST(CommanderHandlerTest, DisplayResultsViewModelPassed) {
 
   commander::CommanderViewModel vm;
   vm.action = commander::CommanderViewModel::Action::kDisplayResults;
-  base::string16 item_title = base::ASCIIToUTF16("Test item");
+  std::u16string item_title = base::ASCIIToUTF16("Test item");
   std::vector<gfx::Range> item_ranges = {gfx::Range(0, 4)};
   vm.items.emplace_back(item_title, item_ranges);
   vm.result_set_id = 42;

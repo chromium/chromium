@@ -295,14 +295,14 @@ class SafetyCheckHandlerTest : public testing::Test {
   std::string GenerateExtensionId(char char_to_repeat);
 
   void VerifyDisplayString(const base::DictionaryValue* event,
-                           const base::string16& expected);
+                           const std::u16string& expected);
   void VerifyDisplayString(const base::DictionaryValue* event,
                            const std::string& expected);
 
   // Replaces any instances of browser name (e.g. Google Chrome, Chromium,
   // etc) with "browser" to make sure tests work both on Chromium and
   // Google Chrome.
-  void ReplaceBrowserName(base::string16* s);
+  void ReplaceBrowserName(std::u16string* s);
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -397,14 +397,14 @@ std::string SafetyCheckHandlerTest::GenerateExtensionId(char char_to_repeat) {
 
 void SafetyCheckHandlerTest::VerifyDisplayString(
     const base::DictionaryValue* event,
-    const base::string16& expected) {
-  base::string16 display;
+    const std::u16string& expected) {
+  std::u16string display;
   ASSERT_TRUE(event->GetString("displayString", &display));
   ReplaceBrowserName(&display);
   // Need to also replace any instances of Chrome and Chromium in the
   // expected string due to an edge case on ChromeOS, where a device name
   // is "Chrome", which gets replaced in the display string.
-  base::string16 expected_replaced = expected;
+  std::u16string expected_replaced = expected;
   ReplaceBrowserName(&expected_replaced);
   EXPECT_EQ(expected_replaced, display);
 }
@@ -415,7 +415,7 @@ void SafetyCheckHandlerTest::VerifyDisplayString(
   VerifyDisplayString(event, base::ASCIIToUTF16(expected));
 }
 
-void SafetyCheckHandlerTest::ReplaceBrowserName(base::string16* s) {
+void SafetyCheckHandlerTest::ReplaceBrowserName(std::u16string* s) {
   base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Google Chrome"),
                                      base::ASCIIToUTF16("Browser"));
   base::ReplaceSubstringsAfterOffset(s, 0, base::ASCIIToUTF16("Chrome"),
@@ -446,7 +446,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::string16 expected = base::ASCIIToUTF16("Your ") +
+  std::u16string expected = base::ASCIIToUTF16("Your ") +
                             ui::GetChromeOSDeviceName() +
                             base::ASCIIToUTF16(" is up to date");
   VerifyDisplayString(event, expected);
@@ -1431,7 +1431,7 @@ class SafetyCheckHandlerChromeCleanerIdleTest
       public testing::WithParamInterface<
           std::tuple<safe_browsing::ChromeCleanerController::IdleReason,
                      SafetyCheckHandler::ChromeCleanerStatus,
-                     base::string16>> {
+                     std::u16string>> {
  protected:
   void SetUp() override {
     SafetyCheckHandlerTest::SetUp();
@@ -1442,7 +1442,7 @@ class SafetyCheckHandlerChromeCleanerIdleTest
 
   safe_browsing::ChromeCleanerController::IdleReason idle_reason_;
   SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  base::string16 expected_display_string_;
+  std::u16string expected_display_string_;
 };
 
 TEST_P(SafetyCheckHandlerChromeCleanerIdleTest, CheckChromeCleanerIdleStates) {
@@ -1563,7 +1563,7 @@ class SafetyCheckHandlerChromeCleanerNonIdleTest
       public testing::WithParamInterface<
           std::tuple<safe_browsing::ChromeCleanerController::State,
                      SafetyCheckHandler::ChromeCleanerStatus,
-                     base::string16>> {
+                     std::u16string>> {
  protected:
   void SetUp() override {
     SafetyCheckHandlerTest::SetUp();
@@ -1574,7 +1574,7 @@ class SafetyCheckHandlerChromeCleanerNonIdleTest
 
   safe_browsing::ChromeCleanerController::State state_;
   SafetyCheckHandler::ChromeCleanerStatus expected_cct_status_;
-  base::string16 expected_display_string_;
+  std::u16string expected_display_string_;
 };
 
 TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
@@ -1723,7 +1723,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   for (auto tuple : tuples) {
     const base::Time time =
         system_time - base::TimeDelta::FromSeconds(std::get<1>(tuple));
-    const base::string16 display_string =
+    const std::u16string display_string =
         safety_check_->GetStringForParentRan(time, system_time);
     EXPECT_EQ(base::UTF8ToUTF16(
                   base::StrCat({"Safety check ran ", std::get<0>(tuple)})),
@@ -1735,7 +1735,7 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
 TEST_F(SafetyCheckHandlerTest, CheckChromeCleanerRanDisplayString) {
   // Test string without timestamp.
   base::Time null_time;
-  base::string16 display_string =
+  std::u16string display_string =
       safety_check_->GetStringForChromeCleanerRan(null_time, null_time);
   ReplaceBrowserName(&display_string);
   EXPECT_EQ(display_string,

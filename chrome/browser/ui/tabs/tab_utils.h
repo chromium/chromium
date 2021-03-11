@@ -64,7 +64,7 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
     content::WebContents* contents);
 
 // Returns a localized string describing the |alert_state|.
-base::string16 GetTabAlertStateText(const TabAlertState alert_state);
+std::u16string GetTabAlertStateText(const TabAlertState alert_state);
 
 // Sets whether all audio output from |contents| is muted, along with the
 // |reason| it is to be muted/unmuted (via UI or extension API).  When |reason|

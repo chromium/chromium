@@ -23,7 +23,7 @@ class BluetoothScanningPromptAndroid : public content::BluetoothScanningPrompt {
   // content::BluetoothScanningPrompt:
   void AddOrUpdateDevice(const std::string& device_id,
                          bool should_update_name,
-                         const base::string16& device_name) override;
+                         const std::u16string& device_name) override;
 
   // Report the dialog's result.
   void OnDialogFinished(JNIEnv* env,

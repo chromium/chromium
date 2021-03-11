@@ -81,17 +81,17 @@ class ToolbarActionViewController {
 
   // Returns the name of the action, which can be separate from the accessible
   // name or name for the tooltip.
-  virtual base::string16 GetActionName() const = 0;
+  virtual std::u16string GetActionName() const = 0;
 
   // Returns the accessible name to use for the given |web_contents|.
   // May be passed null, or a |web_contents| that returns -1 for
   // |sessions::SessionTabHelper::IdForTab(..)|.
-  virtual base::string16 GetAccessibleName(content::WebContents* web_contents)
-      const = 0;
+  virtual std::u16string GetAccessibleName(
+      content::WebContents* web_contents) const = 0;
 
   // Returns the tooltip to use for the given |web_contents|.
-  virtual base::string16 GetTooltip(content::WebContents* web_contents)
-      const = 0;
+  virtual std::u16string GetTooltip(
+      content::WebContents* web_contents) const = 0;
 
   // Returns true if the action should be enabled on the given |web_contents|.
   virtual bool IsEnabled(content::WebContents* web_contents) const = 0;

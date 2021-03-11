@@ -125,7 +125,7 @@ media_session::mojom::MediaSessionInfo::SessionState ToSessionState(
   }
 }
 
-base::string16 GetSourceTitle(const media_router::MediaRoute& route) {
+std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
   if (route.media_sink_name().empty())
     return base::UTF8ToUTF16(route.description());
 
@@ -226,12 +226,12 @@ void CastMediaNotificationItem::OnRouteUpdated(
     const media_router::MediaRoute& route) {
   DCHECK_EQ(route.media_route_id(), media_route_id_);
   bool updated = false;
-  const base::string16 new_source_title = GetSourceTitle(route);
+  const std::u16string new_source_title = GetSourceTitle(route);
   if (metadata_.source_title != new_source_title) {
     metadata_.source_title = new_source_title;
     updated = true;
   }
-  const base::string16 new_artist = base::UTF8ToUTF16(route.description());
+  const std::u16string new_artist = base::UTF8ToUTF16(route.description());
   if (metadata_.artist != new_artist) {
     metadata_.artist = new_artist;
     updated = true;

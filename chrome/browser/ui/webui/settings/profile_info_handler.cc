@@ -88,7 +88,7 @@ void ProfileInfoHandler::OnUserImageChanged(const user_manager::User& user) {
 
 void ProfileInfoHandler::OnProfileNameChanged(
     const base::FilePath& /* profile_path */,
-    const base::string16& /* old_profile_name */) {
+    const std::u16string& /* old_profile_name */) {
   PushProfileInfo();
 }
 

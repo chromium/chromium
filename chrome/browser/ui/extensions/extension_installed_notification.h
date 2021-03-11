@@ -21,7 +21,7 @@ class ExtensionInstalledNotification
 
   // NotificationDelegate override:
   void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+             const base::Optional<std::u16string>& reply) override;
 
  protected:
   // This class is ref-counted.

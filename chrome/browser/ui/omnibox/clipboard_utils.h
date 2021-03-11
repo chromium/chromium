@@ -28,6 +28,6 @@ static const size_t kMaxClipboardTextLength = 500 * 1024;
 // from bookmarks on the clipboard.
 // If `notify_if_restricted` is set to true, a notification will be shown to
 // the user if the clipboard contents can't be accessed.
-base::string16 GetClipboardText(bool notify_if_restricted);
+std::u16string GetClipboardText(bool notify_if_restricted);
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_

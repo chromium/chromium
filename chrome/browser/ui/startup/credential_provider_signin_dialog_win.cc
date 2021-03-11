@@ -330,10 +330,10 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
     return ui::MODAL_TYPE_WINDOW;
   }
 
-  base::string16 GetDialogTitle() const override { return base::string16(); }
+  std::u16string GetDialogTitle() const override { return std::u16string(); }
 
-  base::string16 GetAccessibleDialogTitle() const override {
-    return base::string16();
+  std::u16string GetAccessibleDialogTitle() const override {
+    return std::u16string();
   }
 
   std::string GetDialogName() const override {

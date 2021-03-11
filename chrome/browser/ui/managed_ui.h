@@ -27,16 +27,16 @@ namespace chrome {
 bool ShouldDisplayManagedUi(Profile* profile);
 
 // The label for the App Menu item for Managed UI.
-base::string16 GetManagedUiMenuItemLabel(Profile* profile);
+std::u16string GetManagedUiMenuItemLabel(Profile* profile);
 
 // The label for the WebUI footnote for Managed UI indicating that the browser
 // is managed. These strings contain HTML for an <a> element.
-base::string16 GetManagedUiWebUILabel(Profile* profile);
+std::u16string GetManagedUiWebUILabel(Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The label for the WebUI footnote for Managed UI indicating that the device
 // is mananged. These strings contain HTML for an <a> element.
-base::string16 GetDeviceManagedUiWebUILabel();
+std::u16string GetDeviceManagedUiWebUILabel();
 #endif
 
 }  // namespace chrome

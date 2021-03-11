@@ -41,7 +41,7 @@ class SaveUnsyncedCredentialsLocallyBubbleController
 
  private:
   // PasswordBubbleControllerBase methods:
-  base::string16 GetTitle() const override;
+  std::u16string GetTitle() const override;
   void ReportInteractions() override;
 
   password_manager::metrics_util::UIDismissalReason dismissal_reason_;

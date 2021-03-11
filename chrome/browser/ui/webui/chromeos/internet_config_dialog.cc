@@ -107,7 +107,7 @@ InternetConfigDialog::InternetConfigDialog(const std::string& dialog_id,
                                            const std::string& network_type,
                                            const std::string& network_id)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIIntenetConfigDialogURL),
-                              base::string16() /* title */),
+                              std::u16string() /* title */),
       dialog_id_(dialog_id),
       network_type_(network_type),
       network_id_(network_id) {}
