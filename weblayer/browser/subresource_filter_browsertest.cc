@@ -9,29 +9,24 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
-#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
-#include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/grit/weblayer_resources.h"
 #include "weblayer/shell/browser/shell.h"
-#include "weblayer/test/weblayer_browser_test.h"
+#include "weblayer/test/subresource_filter_browser_test_harness.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 #if defined(OS_ANDROID)
@@ -92,71 +87,6 @@ class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
 #endif  // if defined(OS_ANDROID)
 
 }  // namespace
-
-class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
- public:
-  SubresourceFilterBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        subresource_filter::kAdsInterventionsEnforced);
-  }
-
-  ~SubresourceFilterBrowserTest() override = default;
-  SubresourceFilterBrowserTest(const SubresourceFilterBrowserTest&) = delete;
-  SubresourceFilterBrowserTest& operator=(const SubresourceFilterBrowserTest&) =
-      delete;
-
-  void SetUpOnMainThread() override {
-    // Wait for the initial publishing of production data that occurs as part of
-    // startup to complete. This is crucial for tests that inject test ruleset
-    // data and wait for it to be published via TestRulesetPublisher: if the
-    // initial publishing is still in process when those tests start running,
-    // they can end up incorrectly proceeding on the publishing of the
-    // production data rather than their test data.
-    WaitForSubresourceFilterRulesetDataToBePublished();
-
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        "components/test/data");
-
-    // This test suite does "cross-site" navigations to various domains that
-    // must all resolve to localhost.
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
- protected:
-  void SetRulesetToDisallowURLsWithPathSuffix(const std::string& suffix) {
-    subresource_filter::testing::TestRulesetPair test_ruleset_pair;
-    test_ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
-        suffix, &test_ruleset_pair);
-
-    subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
-        BrowserProcess::GetInstance()->subresource_filter_ruleset_service());
-    ASSERT_NO_FATAL_FAILURE(
-        test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
-  }
-
-#if !defined(OS_ANDROID)
-  // Installs a fake database manager so that the safe browsing activation
-  // throttle will be created (WebLayer currently has a safe browsing database
-  // available in production only on Android).
-  void InstallFakeSafeBrowsingDatabaseManagerInWebContents(
-      content::WebContents* web_contents) {
-    scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
-        base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-
-    auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-        subresource_filter::ContentSubresourceFilterThrottleManager::
-            FromWebContents(web_contents)
-                ->client());
-    client_impl->set_database_manager_for_testing(std::move(database_manager));
-  }
-#endif
-
- private:
-  subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;
-  base::test::ScopedFeatureList feature_list_;
-};
 
 // Tests that the ruleset service is available.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, RulesetService) {

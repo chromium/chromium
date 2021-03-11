@@ -76,7 +76,6 @@ include_rules = [
   "+components/translate/core/common",
   "+components/ukm",
   "+components/unified_consent/pref_names.h",
-  "+components/url_pattern_index/proto",
   "+components/url_formatter",
   "+components/user_prefs",
   "+components/variations",

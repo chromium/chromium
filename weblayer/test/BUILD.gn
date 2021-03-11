@@ -189,6 +189,8 @@ test("weblayer_browsertests") {
     "load_completion_observer.h",
     "stub_autofill_provider.cc",
     "stub_autofill_provider.h",
+    "subresource_filter_browser_test_harness.cc",
+    "subresource_filter_browser_test_harness.h",
     "test_launcher_delegate_impl.cc",
     "test_launcher_delegate_impl.h",
     "test_navigation_observer.cc",

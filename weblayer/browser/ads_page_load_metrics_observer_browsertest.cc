@@ -4,42 +4,29 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
-#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/common_features.h"
-#include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
-#include "components/url_pattern_index/proto/rules.pb.h"
-#include "net/dns/mock_host_resolver.h"
-#include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
-#include "weblayer/test/weblayer_browser_test.h"
+#include "weblayer/test/subresource_filter_browser_test_harness.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
 namespace weblayer {
 
-class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
+// This test harness does not start the test server and allows
+// ControllableHttpResponses to be declared.
+class AdsPageLoadMetricsObserverResourceBrowserTest
+    : public SubresourceFilterBrowserTest {
  public:
-  AdsPageLoadMetricsObserverBrowserTest() {
+  AdsPageLoadMetricsObserverResourceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kAdTagging, {}}}, {});
   }
 
-  ~AdsPageLoadMetricsObserverBrowserTest() override = default;
+  ~AdsPageLoadMetricsObserverResourceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    // Wait for the initial publishing of production data that occurs as part of
-    // startup to complete. This is crucial for tests that inject test ruleset
-    // data and wait for it to be published via TestRulesetPublisher: if the
-    // initial publishing is still in process when those tests start running,
-    // they can end up incorrectly proceeding on the publishing of the
-    // production data rather than their test data.
-    WaitForSubresourceFilterRulesetDataToBePublished();
-
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        "components/test/data");
-
-    host_resolver()->AddRule("*", "127.0.0.1");
+    SubresourceFilterBrowserTest::SetUpOnMainThread();
 
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
@@ -55,22 +42,13 @@ class AdsPageLoadMetricsObserverBrowserTest : public WebLayerBrowserTest {
   }
 
  private:
-  void SetRulesetWithRules(
-      const std::vector<url_pattern_index::proto::UrlRule>& rules) {
-    subresource_filter::testing::TestRulesetPair test_ruleset_pair;
-    test_ruleset_creator_.CreateRulesetWithRules(rules, &test_ruleset_pair);
+  // SubresourceFilterBrowserTest:
+  bool StartEmbeddedTestServerAutomatically() override { return false; }
 
-    subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
-        BrowserProcess::GetInstance()->subresource_filter_ruleset_service());
-    ASSERT_NO_FATAL_FAILURE(
-        test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
-  }
-
-  subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedAdResources) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
