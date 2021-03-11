@@ -121,7 +121,6 @@ public abstract class SigninFragmentBase
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
     private ProfileDataCache mProfileDataCache;
     private List<String> mAccountNames;
-    private boolean mResumed;
     private boolean mDestroyed;
     private boolean mIsSigninInProgress;
     private boolean mHasGmsError;
@@ -577,7 +576,6 @@ public abstract class SigninFragmentBase
     @Override
     public void onResume() {
         super.onResume();
-        mResumed = true;
         mAccountManagerFacade.addObserver(mAccountsChangedObserver);
         mProfileDataCache.addObserver(mProfileDataCacheObserver);
         triggerUpdateAccounts();
@@ -588,7 +586,6 @@ public abstract class SigninFragmentBase
     @Override
     public void onPause() {
         super.onPause();
-        mResumed = false;
         mProfileDataCache.removeObserver(mProfileDataCacheObserver);
         mAccountManagerFacade.removeObserver(mAccountsChangedObserver);
 
@@ -611,7 +608,9 @@ public abstract class SigninFragmentBase
     }
 
     private void updateAccounts(AccountManagerResult<List<Account>> accounts) {
-        if (!mResumed) return;
+        if (!isResumed()) {
+            return;
+        }
 
         mAccountNames = getAccountNames(accounts);
         mHasGmsError = mAccountNames == null;
