@@ -5,6 +5,7 @@ const kBadNativeIoNames = [
   'has.dot',
   'has/slash',
   'x'.repeat(101),
+  '',
 ];
 
 const kDefaultCapacity = 1024 * 1024;

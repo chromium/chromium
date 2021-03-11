@@ -12,7 +12,7 @@ promise_test(async testCase => {
   writtenBytes.set([64, 65, 66, 67]);
   await promise_rejects_dom(
     testCase, 'QuotaExceededError', file.write(writtenBytes, 0));
-}, 'write() fails without any capacity request.');
+}, 'NativeIOFile.write() fails without any capacity request.');
 
 promise_test(async testCase => {
   const file = await storageFoundation.open('test_file');
@@ -22,14 +22,16 @@ promise_test(async testCase => {
   testCase.add_cleanup(async () => {
     await file.close();
     await storageFoundation.delete('test_file');
-    await storageFoundation.releaseCapacity(1);
+    await storageFoundation.releaseCapacity(granted_capacity);
   });
   const writeSharedArrayBuffer = new SharedArrayBuffer(granted_capacity - 1);
   const writtenBytes = new Uint8Array(writeSharedArrayBuffer);
   writtenBytes.set(Array(granted_capacity - 1).fill(64));
 
-  file.write(writtenBytes, 0);
-}, 'write() succeeds when given a buffer of length granted capacity - 1');
+  const writeCount = await file.write(writtenBytes, 0);
+  assert_equals(writeCount, granted_capacity - 1);
+}, 'NativeIOFile.write() succeeds when given a buffer of length ' +
+     'granted capacity - 1');
 
 promise_test(async testCase => {
   const file = await storageFoundation.open('test_file');
@@ -44,8 +46,9 @@ promise_test(async testCase => {
   const writtenBytes = new Uint8Array(writeSharedArrayBuffer);
   writtenBytes.set(Array(granted_capacity).fill(64));
 
-  file.write(writtenBytes, 0);
-}, 'write() succeeds when given the granted capacity');
+  const writeCount = await file.write(writtenBytes, 0);
+  assert_equals(writeCount, granted_capacity);
+}, 'NativeIOFile.write() succeeds when given the granted capacity');
 
 promise_test(async testCase => {
   const file = await storageFoundation.open('test_file');
@@ -63,4 +66,4 @@ promise_test(async testCase => {
 
   await promise_rejects_dom(testCase,
     'QuotaExceededError', file.write(writtenBytes, 0));
-}, 'write() fails when given the granted capacity + 1');
+}, 'NativeIOFile.write() fails when given the granted capacity + 1');
