@@ -4131,6 +4131,24 @@
       }
     },
 
+    'lacros_all_tast_tests_amd64_generic': {
+      'lacros_all_tast_tests_amd64_generic': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+          'dimension_sets': [
+            {
+              'cpu': 'x86',
+              'kvm': '1',
+              'os': 'Ubuntu-16.04',
+            }
+          ],
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     'lacros_skylab_poc': {
       'mainline_lacros_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros")',

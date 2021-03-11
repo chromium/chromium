@@ -41407,8 +41407,8 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "lacros_smoke_tast_tests_amd64_generic",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_smoke_tast_tests_amd64_generic/"
+        "test": "lacros_all_tast_tests_amd64_generic",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests_amd64_generic/"
       }
     ]
   },
