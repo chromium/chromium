@@ -30,7 +30,8 @@ namespace {
 // required by cloud print server.
 PrinterTags PreparePrinterTags(const PrinterTags& printer_tags) {
   PrinterTags printer_tags_out = printer_tags;
-  printer_tags_out[kChromeVersionTagName] = chrome::GetVersionString();
+  printer_tags_out[kChromeVersionTagName] =
+      chrome::GetVersionString(chrome::WithExtendedStable(false));
   printer_tags_out[kSystemNameTagName] =
       base::SysInfo::OperatingSystemName();
   printer_tags_out[kSystemVersionTagName] =
