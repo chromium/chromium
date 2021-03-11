@@ -2928,25 +2928,6 @@
             ]
         }
     ],
-    "DownloadResumptionWithoutStrongValidators": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "download_validation_length": "1024"
-                    },
-                    "enable_features": [
-                        "AllowDownloadResumptionWithoutStrongValidators"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadWithServicificationM77": [
         {
             "platforms": [
