@@ -22674,6 +22674,19 @@ Called by update_document_policy_enum.py.-->
   <int value="902" label="SERVICE_POLICY_NOT_FOUND"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyRestriction">
+  <summary>
+    Type of restriction enforced by Data Leak Prevention policy.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Clipboard"/>
+  <int value="2" label="Screenshot"/>
+  <int value="3" label="Printing"/>
+  <int value="4" label="Privacy Screen"/>
+  <int value="5" label="Screenshare"/>
+  <int value="6" label="Files"/>
+</enum>
+
 <enum name="EnterpriseDMServerRequestSuccess">
   <summary>
     Number of DeviceManagementServer request retries as defined in

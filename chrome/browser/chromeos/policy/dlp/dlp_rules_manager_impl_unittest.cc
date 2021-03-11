@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -74,6 +76,7 @@ class DlpRulesManagerImplTest : public testing::Test {
 
   ScopedTestingLocalState testing_local_state_;
   DlpRulesManagerImpl dlp_rules_manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DlpRulesManagerImplTest, EmptyPref) {
@@ -86,6 +89,8 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
             dlp_rules_manager_.IsRestrictedDestination(
                 GURL(kExampleUrl), GURL(kGoogleUrl),
                 DlpRulesManager::Restriction::kClipboard));
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, false, 1);
 }
 
 TEST_F(DlpRulesManagerImplTest, BlockPriority) {
@@ -140,6 +145,14 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
             dlp_rules_manager_.IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, true, 1);
+  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                      DlpRulesManager::Restriction::kClipboard,
+                                      2);
+  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                      DlpRulesManager::Restriction::kScreenshot,
+                                      1);
 
   // Clear pref
   UpdatePolicyPref(base::Value(base::Value::Type::LIST));

@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
@@ -121,18 +123,25 @@ class DataTransferDlpControllerTest
   content::BrowserTaskEnvironment task_environment_;
   ::testing::StrictMock<MockDlpRulesManager> rules_manager_;
   ::testing::StrictMock<MockDlpController> dlp_controller_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DataTransferDlpControllerTest, NullSrc) {
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(nullptr, nullptr));
   EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(nullptr, nullptr,
                                                     /*is_drop=*/false));
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, ClipboardHistoryDst) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_Allow) {
@@ -267,6 +276,10 @@ TEST_P(DlpControllerTest, Allow) {
   EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(&data_src, dst_ptr,
                                                     /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
 }
 
 TEST_P(DlpControllerTest, Block) {
@@ -296,6 +309,10 @@ TEST_P(DlpControllerTest, Block) {
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, dst_ptr,
                                                      /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
 }
 
 TEST_P(DlpControllerTest, Warn) {
@@ -331,6 +348,12 @@ TEST_P(DlpControllerTest, Warn) {
       .WillRepeatedly(testing::Return(false));
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, dst_ptr));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false,
+      show_warning ? 1 : 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true,
+      show_warning ? 1 : 0);
 }
 
 TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
@@ -387,6 +410,10 @@ TEST_P(DlpControllerVMsTest, Allow) {
   EXPECT_EQ(true, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
                                                     /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, false, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Block) {
@@ -416,6 +443,10 @@ TEST_P(DlpControllerVMsTest, Block) {
   EXPECT_EQ(false, dlp_controller_.IsDragDropAllowed(&data_src, &data_dst,
                                                      /*is_drop=*/do_notify));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kDragDropBlockedUMA, true, 1);
 }
 
 TEST_P(DlpControllerVMsTest, Warn) {
@@ -434,6 +465,8 @@ TEST_P(DlpControllerVMsTest, Warn) {
 
   EXPECT_EQ(true, dlp_controller_.IsClipboardReadAllowed(&data_src, &data_dst));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
+  histogram_tester_.ExpectUniqueSample(
+      GetDlpHistogramPrefix() + dlp::kClipboardReadBlockedUMA, false, 1);
 }
 
 }  // namespace policy

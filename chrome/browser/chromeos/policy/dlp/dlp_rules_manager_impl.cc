@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -233,7 +234,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   const base::ListValue* rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
-  if (!rules_list) {
+  DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
+                      rules_list && !rules_list->empty());
+  if (!rules_list || rules_list->empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
@@ -314,6 +317,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
         request_to_daemon.mutable_rules()->Add(std::move(files_rule));
       }
 
+      DlpRestrictionConfiguredHistogram(rule_restriction);
       restrictions_map_[rule_restriction].emplace(rules_counter, rule_level);
     }
     ++rules_counter;
@@ -327,6 +331,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
   // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
   if (request_to_daemon.rules_size() > 0) {
+    DlpBooleanHistogram(dlp::kFilesDaemonStartedUMA, true);
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
   }

@@ -2441,6 +2441,8 @@ source_set("chromeos") {
     "policy/dlp/dlp_data_transfer_notifier.h",
     "policy/dlp/dlp_drag_drop_notifier.cc",
     "policy/dlp/dlp_drag_drop_notifier.h",
+    "policy/dlp/dlp_histogram_helper.cc",
+    "policy/dlp/dlp_histogram_helper.h",
     "policy/dlp/dlp_notification_helper.cc",
     "policy/dlp/dlp_notification_helper.h",
     "policy/dlp/dlp_policy_constants.h",

@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/syslog_logging.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -117,8 +118,10 @@ bool ShouldNotifyOnPaste(const ui::DataTransferEndpoint* const data_dst) {
 
 // static
 void DataTransferDlpController::Init(const DlpRulesManager& dlp_rules_manager) {
-  if (!HasInstance())
+  if (!HasInstance()) {
+    DlpBooleanHistogram(dlp::kDataTransferControllerStartedUMA, true);
     new DataTransferDlpController(dlp_rules_manager);
+  }
 }
 
 bool DataTransferDlpController::IsClipboardReadAllowed(
@@ -163,6 +166,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
     default:
       break;
   }
+  DlpBooleanHistogram(dlp::kClipboardReadBlockedUMA, !is_read_allowed);
   return is_read_allowed;
 }
 
@@ -217,7 +221,9 @@ bool DataTransferDlpController::IsDragDropAllowed(
     NotifyBlockedPaste(data_src, data_dst);
   }
 
-  return level == DlpRulesManager::Level::kAllow;
+  const bool is_drop_allowed = level == DlpRulesManager::Level::kAllow;
+  DlpBooleanHistogram(dlp::kDragDropBlockedUMA, !is_drop_allowed);
+  return is_drop_allowed;
 }
 
 DataTransferDlpController::DataTransferDlpController(
