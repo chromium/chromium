@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/strings/utf_string_conversions.h"
 #include "sql/statement.h"
 
 namespace storage {

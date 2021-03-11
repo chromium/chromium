@@ -4,18 +4,15 @@
 
 #include <stdint.h>
 
-#include "base/strings/utf_string_conversions.h"
 #include "storage/common/database/database_connections.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace storage {
 
 TEST(DatabaseConnectionsTest, DatabaseConnectionsTest) {
   const std::string kOriginId("origin_id");
-  const std::u16string kName(ASCIIToUTF16("database_name"));
-  const std::u16string kName2(ASCIIToUTF16("database_name2"));
+  const std::u16string kName(u"database_name");
+  const std::u16string kName2(u"database_name2");
   const int64_t kSize = 1000;
 
   DatabaseConnections connections;

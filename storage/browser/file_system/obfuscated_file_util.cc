@@ -21,8 +21,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_context.h"

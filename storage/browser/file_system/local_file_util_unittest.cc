@@ -13,8 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
