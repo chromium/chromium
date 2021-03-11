@@ -67,6 +67,7 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
       base::OnceClosure success_callback,
       base::OnceClosure error_callback) override;
   bool SimulateLocalGattCharacteristicNotificationsRequest(
+      BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
       bool start) override;
   std::vector<uint8_t> LastNotifactionValueForCharacteristic(
