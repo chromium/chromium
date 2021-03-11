@@ -38,6 +38,9 @@ class LoginScreenUiCloseFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  // Callback upon completion of window closing.
+  void OnClosed(bool success, const base::Optional<std::string>& error);
+
   DISALLOW_COPY_AND_ASSIGN(LoginScreenUiCloseFunction);
 };
 

@@ -7,9 +7,10 @@
 #include <memory>
 
 #include "base/test/gtest_util.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -157,9 +158,13 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   }
 
   void CheckCanCloseWindow(const extensions::Extension* extension) {
-    std::string error;
-    EXPECT_TRUE(ui_handler_->Close(extension, &error));
-    EXPECT_TRUE(error.empty());
+    base::MockCallback<UiHandler::WindowClosedCallback> callback;
+    EXPECT_CALL(callback,
+                Run(true, base::Optional<std::string>(base::nullopt)));
+    ui_handler_->Close(extension, callback.Get());
+    // Invoke close callback from dialog delegate because UiHandler::Close() is
+    // synchronous and will invoke its callback after that.
+    fake_window_factory_->RunLastCloseCallback();
     EXPECT_FALSE(ui_handler_->HasOpenWindow(extension->id()));
   }
 
@@ -175,9 +180,12 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   void CheckCannotCloseWindow(const extensions::Extension* extension,
                               const std::string& expected_error) {
-    std::string error;
-    EXPECT_FALSE(ui_handler_->Close(extension, &error));
-    EXPECT_EQ(expected_error, error);
+    base::MockCallback<UiHandler::WindowClosedCallback> callback;
+    EXPECT_CALL(callback,
+                Run(false, base::Optional<std::string>(expected_error)));
+    ui_handler_->Close(extension, callback.Get());
+    // No need to invoke the close callback here since in case of no open window
+    // we directly invoke the callback with an error.
   }
 
   void CheckCannotUseAPI(const extensions::Extension* extension) {

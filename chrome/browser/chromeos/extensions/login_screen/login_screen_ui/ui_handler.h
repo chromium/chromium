@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/session_manager/core/session_manager.h"
@@ -45,6 +46,10 @@ struct ExtensionIdToWindowMapping {
 class UiHandler : public session_manager::SessionManagerObserver,
                   public extensions::ExtensionRegistryObserver {
  public:
+  using WindowClosedCallback =
+      base::OnceCallback<void(bool success,
+                              const base::Optional<std::string>& error)>;
+
   static UiHandler* Get(bool can_create);
   static void Shutdown();
 
@@ -60,13 +65,18 @@ class UiHandler : public session_manager::SessionManagerObserver,
 
   // Endpoint for calls to the chrome.loginScreenUi.close() API. If an error
   // occurs, |error| will contain the error description.
-  bool Close(const extensions::Extension* extension, std::string* error);
+  void Close(const extensions::Extension* extension,
+             WindowClosedCallback close_callback);
 
-  // Removes and closes the window for the given |extension_id|. This is also
-  // passed as close callback to the windows during creation to detect when a
-  // window was manually closed by the user. Returns true, if a window was
-  // closed.
-  bool RemoveWindowForExtension(const std::string& extension_id);
+  // Removes and closes the window for the given |extension_id|.
+  void RemoveWindowForExtension(const std::string& extension_id);
+
+  // Is passed as close callback to the windows during creation to detect when a
+  // window was manually closed by the user.
+  void OnWindowClosed(const std::string& extension_id);
+
+  // Resets the current window and sets the OOBE dialog state to HIDDEN.
+  void ResetWindowAndHide();
 
   bool HasOpenWindow(const std::string& extension_id) const;
 
@@ -95,6 +105,8 @@ class UiHandler : public session_manager::SessionManagerObserver,
   bool login_or_lock_screen_active_ = false;
 
   std::unique_ptr<ExtensionIdToWindowMapping> current_window_;
+
+  WindowClosedCallback close_callback_;
 
   ScopedObserver<session_manager::SessionManager,
                  session_manager::SessionManagerObserver>
