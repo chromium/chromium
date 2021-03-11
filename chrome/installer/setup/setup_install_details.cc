@@ -86,6 +86,9 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
       &update_ap, &update_cohort_name);
   details->set_channel(channel.channel_name);
   details->set_channel_origin(channel.origin);
+  if (channel.origin == install_static::ChannelOrigin::kPolicy)
+    details->set_channel_override(channel_from_cmd_line);
+  details->set_is_extended_stable_channel(channel.is_extended_stable);
   details->set_update_ap(update_ap);
   details->set_update_cohort_name(update_cohort_name);
 

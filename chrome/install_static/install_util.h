@@ -293,14 +293,19 @@ bool RecursiveDirectoryCreate(const std::wstring& full_path);
 struct DetermineChannelResult {
   std::wstring channel_name;
   ChannelOrigin origin;
+
+  // True if this client follows the extended stable update channel. May only be
+  // true if `channel_name` is "" and `origin` is kPolicy.
+  bool is_extended_stable;
 };
 
-// Returns the unadorned channel name and its origin based on the channel
-// strategy for the install mode. |channel_override|, if not empty is the
-// channel to return if |mode| supports non-fixed channels. |update_ap|, if not
-// null, is set to the raw "ap" value read from Chrome's ClientState key in the
-// registry. |update_cohort_name|, if not null, is set to the raw "cohort\name"
-// value read from Chrome's ClientState key in the registry.
+// Returns the unadorned channel name, its origin, and an indication of whether
+// or not a stable ("") channel is truly the extended stable channel based on
+// the channel strategy for the install mode. |channel_override|, if not empty
+// is the channel to return if |mode| supports non-fixed channels. |update_ap|,
+// if not null, is set to the raw "ap" value read from Chrome's ClientState key
+// in the registry. |update_cohort_name|, if not null, is set to the raw
+// "cohort\name" value read from Chrome's ClientState key in the registry.
 DetermineChannelResult DetermineChannel(const InstallConstants& mode,
                                         bool system_level,
                                         const wchar_t* channel_override,

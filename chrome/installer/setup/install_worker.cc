@@ -714,18 +714,10 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
             new Not(new ConditionRunIfFileExists(new_chrome_exe))));
     regular_update_work_items->set_log_message("RegularUpdateWorkItemList");
 
-    // Convey the channel name to the browser if this installer instance's
-    // channel is enforced by policy. Otherwise, delete the registry value.
-    const auto& install_details = install_static::InstallDetails::Get();
-    if (install_details.channel_origin() ==
-        install_static::ChannelOrigin::kPolicy) {
-      post_install_task_list->AddSetRegValueWorkItem(
-          root, clients_key, KEY_WOW64_32KEY, google_update::kRegChannelField,
-          install_details.channel(), true);
-    } else {
-      regular_update_work_items->AddDeleteRegValueWorkItem(
-          root, clients_key, KEY_WOW64_32KEY, google_update::kRegChannelField);
-    }
+    // If a channel was specified by policy, update the "channel" registry value
+    // with it so that the browser knows which channel to use, otherwise delete
+    // whatever value that key holds.
+    AddChannelWorkItems(root, clients_key, regular_update_work_items.get());
 
     // Since this was not an in-use-update, delete 'opv', 'cpv',
     // and 'cmd' keys.
@@ -1045,6 +1037,24 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
     AppCommand cmd(cmd_line.GetCommandLineString());
     cmd.set_is_auto_run_on_os_upgrade(true);
     cmd.AddWorkItems(installer_state.root_key(), cmd_key, install_list);
+  }
+}
+
+void AddChannelWorkItems(HKEY root,
+                         const std::wstring& clients_key,
+                         WorkItemList* list) {
+  const auto& install_details = install_static::InstallDetails::Get();
+  if (install_details.channel_origin() ==
+      install_static::ChannelOrigin::kPolicy) {
+    // Use channel_override rather than simply channel so that extended stable
+    // is differentiated from regular.
+    list->AddSetRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
+                                 google_update::kRegChannelField,
+                                 install_details.channel_override(),
+                                 /*overwrite=*/true);
+  } else {
+    list->AddDeleteRegValueWorkItem(root, clients_key, KEY_WOW64_32KEY,
+                                    google_update::kRegChannelField);
   }
 }
 

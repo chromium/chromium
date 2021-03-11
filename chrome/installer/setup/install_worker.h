@@ -99,6 +99,13 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
                            const base::Version& new_version,
                            WorkItemList* install_list);
 
+// Adds work items to set or delete the "channel" value in `clients_key`. The
+// value is set if a channel was provided to the installer via the --channel
+// command line switch and deleted otherwise.
+void AddChannelWorkItems(HKEY root,
+                         const std::wstring& clients_key,
+                         WorkItemList* list);
+
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALL_WORKER_H_

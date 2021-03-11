@@ -307,20 +307,23 @@ TEST_P(MakeProductDetailsTest, DefaultChannel) {
 // Test that the default channel is sniffed properly based on the channel
 // override.
 TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
-  static constexpr std::tuple<const wchar_t*, const wchar_t*, const wchar_t*>
+  static constexpr std::tuple<const wchar_t*, const wchar_t*, const wchar_t*,
+                              bool>
       kChannelOverrides[] = {
-          {nullptr, L"", L""},     {nullptr, L"1.1-beta", L"beta"},
-          {L"", L"", L""},         {L"", L"1.1-beta", L""},
-          {L"stable", L"", L""},   {L"stable", L"1.1-beta", L""},
-          {L"dev", L"", L"dev"},   {L"dev", L"1.1-beta", L"dev"},
-          {L"beta", L"", L"beta"}, {L"beta", L"2.0-dev", L"beta"},
+          {L"", L"", L"", false},         {L"", L"1.1-beta", L"", false},
+          {L"stable", L"", L"", false},   {L"stable", L"1.1-beta", L"", false},
+          {L"extended", L"", L"", true},  {L"extended", L"1.1-beta", L"", true},
+          {L"dev", L"", L"dev", false},   {L"dev", L"1.1-beta", L"dev", false},
+          {L"beta", L"", L"beta", false}, {L"beta", L"2.0-dev", L"beta", false},
       };
   for (const auto& override_ap_channel : kChannelOverrides) {
     const wchar_t* channel_override;
     const wchar_t* ap;
     const wchar_t* expected_channel;
+    bool extended_stable;
 
-    std::tie(channel_override, ap, expected_channel) = override_ap_channel;
+    std::tie(channel_override, ap, expected_channel, extended_stable) =
+        override_ap_channel;
     if (ap)
       SetAp(ap);
     if (channel_override)
@@ -331,6 +334,9 @@ TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
     if (kInstallModes[test_data().index].channel_strategy ==
         ChannelStrategy::ADDITIONAL_PARAMETERS) {
       EXPECT_THAT(details->channel(), StrEq(expected_channel));
+      EXPECT_THAT(details->channel_origin(), Eq(ChannelOrigin::kPolicy));
+      EXPECT_THAT(details->channel_override(), StrEq(channel_override));
+      EXPECT_THAT(details->is_extended_stable_channel(), Eq(extended_stable));
     } else {
       // "ap" and override are ignored for this mode.
       EXPECT_THAT(details->channel(), StrEq(test_data().channel));

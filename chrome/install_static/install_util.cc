@@ -69,6 +69,7 @@ namespace {
 // Chrome channel display names.
 constexpr wchar_t kChromeChannelDev[] = L"dev";
 constexpr wchar_t kChromeChannelBeta[] = L"beta";
+constexpr wchar_t kChromeChannelExtended[] = L"extended";
 constexpr wchar_t kChromeChannelStableExplicit[] = L"stable";
 #endif
 
@@ -309,17 +310,26 @@ std::wstring ChannelFromAdditionalParameters(const InstallConstants& mode,
 }
 
 bool GetChromeChannelNameFromString(const wchar_t* channel_test,
-                                    std::wstring& channel) {
+                                    std::wstring& channel,
+                                    bool& is_extended_stable) {
   if (!channel_test)
     return false;
-  if (!*channel_test || !lstrcmpiW(channel_test, kChromeChannelStableExplicit))
+  if (!*channel_test ||
+      !lstrcmpiW(channel_test, kChromeChannelStableExplicit)) {
     channel = std::wstring();
-  else if (!lstrcmpiW(channel_test, kChromeChannelBeta))
+    is_extended_stable = false;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelExtended)) {
+    channel = std::wstring();
+    is_extended_stable = true;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelBeta)) {
     channel = kChromeChannelBeta;
-  else if (!lstrcmpiW(channel_test, kChromeChannelDev))
+    is_extended_stable = false;
+  } else if (!lstrcmpiW(channel_test, kChromeChannelDev)) {
     channel = kChromeChannelDev;
-  else
+    is_extended_stable = false;
+  } else {
     return false;
+  }
   return true;
 }
 
@@ -706,8 +716,7 @@ std::wstring GetChromeChannelName() {
 }
 
 bool IsExtendedStableChannel() {
-  // TODO(https://crbug.com/1185621): Detect extended stable.
-  return false;
+  return InstallDetails::Get().is_extended_stable_channel();
 }
 
 bool MatchPattern(const std::wstring& source, const std::wstring& pattern) {
@@ -939,7 +948,8 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
                                         std::wstring* update_ap,
                                         std::wstring* update_cohort_name) {
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-  return {std::wstring(), ChannelOrigin::kInstallMode};
+  return {std::wstring(), ChannelOrigin::kInstallMode,
+          /*is_extended_stable=*/false};
 #else
   // Read the "ap" value and cache it if requested.
   std::wstring client_state(GetClientStateKeyPath(mode.app_guid));
@@ -963,17 +973,23 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
       break;
     case ChannelStrategy::ADDITIONAL_PARAMETERS: {
       std::wstring channel_override_value;
-      if (channel_override && GetChromeChannelNameFromString(
-                                  channel_override, channel_override_value)) {
-        return {std::move(channel_override_value), ChannelOrigin::kPolicy};
+      bool is_extended_stable = false;
+      if (channel_override &&
+          GetChromeChannelNameFromString(
+              channel_override, channel_override_value, is_extended_stable)) {
+        return {std::move(channel_override_value), ChannelOrigin::kPolicy,
+                is_extended_stable};
       }
       return {ChannelFromAdditionalParameters(mode, ap_value),
-              ChannelOrigin::kAdditionalParameters};
+              ChannelOrigin::kAdditionalParameters,
+              /*is_extended_stable=*/false};
     }
     case ChannelStrategy::FIXED:
-      return {mode.default_channel_name, ChannelOrigin::kInstallMode};
+      return {mode.default_channel_name, ChannelOrigin::kInstallMode,
+              /*is_extended_stable=*/false};
   }
-  return {std::wstring(), ChannelOrigin::kInstallMode};
+  return {std::wstring(), ChannelOrigin::kInstallMode,
+          /*is_extended_stable=*/false};
 #endif
 }
 
