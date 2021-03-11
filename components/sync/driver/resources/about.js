@@ -235,3 +235,5 @@ cr.define('chrome.sync.about_tab', function() {
 
 document.addEventListener(
     'DOMContentLoaded', chrome.sync.about_tab.onLoad, false);
+
+window.addAboutExpandListener = chrome.sync.about_tab.addExpandListener;
