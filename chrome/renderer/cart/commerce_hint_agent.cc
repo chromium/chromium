@@ -331,18 +331,27 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
     base::Optional<blink::WebNavigationType> navigation_type) {
-  if (IsAddToCart(url.PathForRequestPiece())) {
+  starting_url_ = url;
+}
+
+void CommerceHintAgent::DidCommitProvisionalLoad(
+    ui::PageTransition transition) {
+  if (!starting_url_.is_valid())
+    return;
+  if (IsAddToCart(starting_url_.PathForRequestPiece())) {
     RecordCommerceEvent(CommerceEvent::kAddToCartByURL);
     OnAddToCart(render_frame());
   }
-  if (IsVisitCheckout(url)) {
+  if (IsVisitCheckout(starting_url_)) {
     RecordCommerceEvent(CommerceEvent::kVisitCheckout);
     OnVisitCheckout(render_frame());
   }
-  if (IsPurchase(url)) {
+  if (IsPurchase(starting_url_)) {
     RecordCommerceEvent(CommerceEvent::kPurchaseByURL);
     OnPurchase(render_frame());
   }
+
+  starting_url_ = GURL();
 }
 
 void CommerceHintAgent::DidFinishLoad() {

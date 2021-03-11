@@ -152,8 +152,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   bool satisfied_;
 };
 
-// TODO(crbug/1179241): Deflake this test.
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, DISABLED_AddToCartByURL) {
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, AddToCartByURL) {
   // For add-to-cart by URL, normally a URL in that domain has already been
   // committed.
   NavigateToURL("https://www.walmart.com/");
@@ -182,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForCartCount(kExpectedExample);
 }
 
-// TODO(crbug/1179241): Deflake this test.
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, DISABLED_VisitCheckout) {
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCheckout) {
   service_->AddCart(kMockExample, kMockExampleProto);
   WaitForCartCount(kExpectedExample);
 
@@ -192,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, DISABLED_VisitCheckout) {
   WaitForCartCount(kEmptyExpected);
 }
 
-// TODO(crbug/1179241): Deflake this test.
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, DISABLED_PurchaseByURL) {
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, PurchaseByURL) {
   service_->AddCart(kMockAmazon, kMockAmazonProto);
   WaitForCartCount(kExpectedAmazon);
 
